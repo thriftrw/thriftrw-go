@@ -13,13 +13,13 @@ type parseCase struct {
 	document string
 }
 
-func assertParseCases(t *testing.T, cases []parseCase) {
-	for _, c := range cases {
-		program, err := Parse([]byte(c.document))
-		if assert.NoError(t, err, "Parsing failed:\n%s", c.document) {
+func assertParseCases(t *testing.T, tests []parseCase) {
+	for _, tt := range tests {
+		program, err := Parse([]byte(tt.document))
+		if assert.NoError(t, err, "Parsing failed:\n%s", tt.document) {
 			assert.Equal(
-				t, c.program, program,
-				"Got unexpected program when parsing:\n%s", c.document,
+				t, tt.program, program,
+				"Got unexpected program when parsing:\n%s", tt.document,
 			)
 		}
 	}
@@ -33,19 +33,19 @@ func TestParseEmpty(t *testing.T) {
 }
 
 func TestParseErrors(t *testing.T) {
-	invalids := []string{
+	tests := []string{
 		"namespace foo \x00",
 		`const string 42 = "foo"`,
 	}
 
-	for _, s := range invalids {
-		_, err := Parse([]byte(s))
-		assert.Error(t, err, "Expected error while parsing:\n%s", s)
+	for _, tt := range tests {
+		_, err := Parse([]byte(tt))
+		assert.Error(t, err, "Expected error while parsing:\n%s", tt)
 	}
 }
 
 func TestParseHeaders(t *testing.T) {
-	cases := []parseCase{
+	tests := []parseCase{
 		{
 			&Program{Includes: []*Include{
 				&Include{"foo.thrift", 2},
@@ -92,11 +92,11 @@ func TestParseHeaders(t *testing.T) {
 			`,
 		},
 	}
-	assertParseCases(t, cases)
+	assertParseCases(t, tests)
 }
 
 func TestParseConstants(t *testing.T) {
-	cases := []parseCase{
+	tests := []parseCase{
 		{
 			&Program{Constants: []*Constant{
 				&Constant{
@@ -249,11 +249,11 @@ func TestParseConstants(t *testing.T) {
 			`,
 		},
 	}
-	assertParseCases(t, cases)
+	assertParseCases(t, tests)
 }
 
 func TestParseTypedef(t *testing.T) {
-	cases := []parseCase{
+	tests := []parseCase{
 		{
 			&Program{Typedefs: []*Typedef{
 				&Typedef{
@@ -291,5 +291,5 @@ func TestParseTypedef(t *testing.T) {
 		},
 	}
 
-	assertParseCases(t, cases)
+	assertParseCases(t, tests)
 }

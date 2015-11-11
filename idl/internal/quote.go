@@ -7,9 +7,22 @@ import "strconv"
 //
 // 	UnquoteSingleQuoted([]byte("'foo'")) == "foo"
 func UnquoteSingleQuoted(in []byte) (string, error) {
-	out := make([]byte, len(in))
+	out := string(swapQuotes(in))
+	str, err := strconv.Unquote(out)
+	if err != nil {
+		return str, err
+	}
 
 	// s/'/"/g, s/"/'/g
+	out = string(swapQuotes([]byte(str)))
+	return out, nil
+}
+
+// swapQuotes replaces all single quotes with double quotes and all double
+// quotes with single quotes.
+func swapQuotes(in []byte) []byte {
+	// s/'/"/g, s/"/'/g
+	out := make([]byte, len(in))
 	for idx, c := range in {
 		if c == '"' {
 			c = '\''
@@ -18,22 +31,5 @@ func UnquoteSingleQuoted(in []byte) (string, error) {
 		}
 		out[idx] = c
 	}
-
-	str, err := strconv.Unquote(string(out))
-	if err != nil {
-		return str, err
-	}
-
-	// s/'/"/g, s/"/'/g
-	out = make([]byte, len(str))
-	for idx, c := range []byte(str) {
-		if c == '"' {
-			c = '\''
-		} else if c == '\'' {
-			c = '"'
-		}
-		out[idx] = c
-	}
-
-	return string(out), nil
+	return out
 }

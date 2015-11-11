@@ -7,7 +7,7 @@ import (
 )
 
 func TestUnquoteSingleQuoted(t *testing.T) {
-	cases := []struct {
+	tests := []struct {
 		in  string
 		out string
 	}{
@@ -17,10 +17,10 @@ func TestUnquoteSingleQuoted(t *testing.T) {
 		{`'a \\"b\\" c'`, `a \"b\" c`},
 	}
 
-	for _, c := range cases {
-		got, err := UnquoteSingleQuoted([]byte(c.in))
-		if assert.NoError(t, err, "Failed to unquote: %#v", c.in) {
-			assert.Equal(t, c.out, got, "Unquote incorrect: %#v", c.in)
+	for _, tt := range tests {
+		got, err := UnquoteSingleQuoted([]byte(tt.in))
+		if assert.NoError(t, err, "Failed to unquote: %#v", tt.in) {
+			assert.Equal(t, tt.out, got, "Unquote incorrect: %#v", tt.in)
 		}
 	}
 }
