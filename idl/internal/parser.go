@@ -25,3 +25,5 @@ func Parse(s []byte) (*ast.Program, error) {
 
 //go:generate go tool yacc thrift.y
 //go:generate goimports -w ./y.go
+
+//go:generate ./generated.sh
