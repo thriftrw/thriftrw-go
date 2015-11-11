@@ -27,6 +27,7 @@ type Constant struct {
 // Typedef is used to define an alias for another type.
 //
 // 	typedef string UUID
+// 	typedef i64 Timestamp (unit = "milliseconds")
 type Typedef struct {
 	Name        string
 	Type        Type
@@ -37,6 +38,12 @@ type Typedef struct {
 // Enum is a set of named integer values.
 //
 // 	enum Status { Enabled, Disabled }
+//
+// 	enum Role {
+// 		User = 1,
+// 		Moderator = 2 (py.name = "Mod"),
+// 		Admin = 3
+// 	} (go.name = "UserRole")
 type Enum struct {
 	Name        string
 	Items       []*EnumItem
@@ -56,9 +63,14 @@ type EnumItem struct {
 // Struct is a collection of named fields with different types.
 //
 // 	struct User {
-// 		1: required string name
-// 		2: optional Status status
+// 		1: required string name (min_length = "3")
+// 		2: optional Status status = Enabled;
 // 	}
+//
+// 	struct i128 {
+// 		1: required i64 high
+// 		2: required i64 low
+// 	} (py.serializer = "foo.Int128Serializer")
 type Struct struct {
 	Name       string
 	Fields     []*Field
@@ -88,8 +100,9 @@ type Exception struct {
 // Service is a collection of functions.
 //
 // 	service KeyValue {
-// 		void setValue(string key, binary value)
-// 	}
+// 		void setValue(1: string key, 2: binary value)
+// 		binary getValue(1: string key)
+// 	} (router.serviceName = "key_value")
 type Service struct {
 	Name     string
 	Function []*Function
@@ -101,6 +114,11 @@ type Service struct {
 }
 
 // Function is a single function inside a service.
+//
+// 	binary getValue(1: string key)
+// 		throws (1: KeyNotFoundError notFound) (
+// 			ttl.milliseconds = "250"
+// 		)
 type Function struct {
 	Name        string
 	Parameters  []*Field
@@ -112,6 +130,11 @@ type Function struct {
 
 // Field is a single field inside a struct, union, exception, or a single item
 // in the parameter or exception list of a function.
+//
+// 	1: required i32 foo = 0
+// 	2: optional binary (max_length = "4096") bar
+// 	3: i64 baz (go.name = "qux")
+//
 type Field struct {
 	ID   int
 	Name string
