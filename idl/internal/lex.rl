@@ -11,11 +11,7 @@ import (
     "github.com/uber/thriftrw-go/ast"
 )
 
-const bufferLength int = 4096
-
 %%{
-# vim:set ft=ragel:
-
 write data;
 
 # Access state consistent across Lex() calls using the "lex" object.
@@ -27,8 +23,10 @@ variable pe lex.pe;
 
 type lexer struct {
     line int
-    parseFailed bool
     program *ast.Program
+
+    err parseError
+    parseFailed bool
 
     // Ragel:
     p, pe, cs, ts, te, act int
@@ -39,6 +37,7 @@ type lexer struct {
 func newLexer(data []byte) *lexer {
     lex := &lexer{
         line: 1,
+        err: newParseError(),
         parseFailed: false,
         data: data,
         p: 0,
@@ -149,7 +148,6 @@ func (lex *lexer) Lex(out *yySymType) int {
 
                 if i64, err := strconv.ParseInt(str, base, 64); err != nil {
                     lex.Error(err.Error())
-                    // TODO wat do
                 } else {
                     out.i64 = i64
                     tok = INTCONSTANT
@@ -201,14 +199,12 @@ func (lex *lexer) Lex(out *yySymType) int {
     }%%
 
     if lex.cs == thrift_error {
-        lex.Error(fmt.Sprintf("Parse error at line %d", lex.line))
-        // TODO
+        lex.Error(fmt.Sprintf("unknown token at index %d", lex.p))
     }
     return tok
 }
 
 func (lex *lexer) Error(e string) {
-    fmt.Printf("Line %d: %s\n", lex.line, e)
-    // TODO we need to accumulate a list of errors somewhere.
     lex.parseFailed = true
+    lex.err.add(lex.line, e)
 }

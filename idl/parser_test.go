@@ -32,6 +32,18 @@ func TestParseEmpty(t *testing.T) {
 	}
 }
 
+func TestParseErrors(t *testing.T) {
+	invalids := []string{
+		"namespace foo \x00",
+		`const string 42 = "foo"`,
+	}
+
+	for _, s := range invalids {
+		_, err := Parse([]byte(s))
+		assert.Error(t, err, "Expected error while parsing:\n%s", s)
+	}
+}
+
 func TestParseHeaders(t *testing.T) {
 	cases := []parseCase{
 		{

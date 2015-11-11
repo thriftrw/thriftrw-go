@@ -1,10 +1,6 @@
 package internal
 
-import (
-	"errors"
-
-	"github.com/uber/thriftrw-go/ast"
-)
+import "github.com/uber/thriftrw-go/ast"
 
 func init() {
 	// TODO configure parser here
@@ -17,7 +13,7 @@ func Parse(s []byte) (*ast.Program, error) {
 	if e == 0 && !lex.parseFailed {
 		return lex.program, nil
 	}
-	return nil, errors.New("failed to parse")
+	return nil, lex.err
 }
 
 //go:generate ragel -Z -G2 -o lex.go lex.rl
