@@ -3,9 +3,10 @@ package idl
 import (
 	"testing"
 
+	. "github.com/uber/thriftrw-go/ast"
+
 	"github.com/stretchr/testify/assert"
 )
-import . "github.com/uber/thriftrw-go/ast"
 
 type parseCase struct {
 	program  *Program
@@ -13,18 +14,22 @@ type parseCase struct {
 }
 
 func assertParseCases(t *testing.T, cases []parseCase) {
-	for idx, c := range cases {
-		num := idx + 1
+	for _, c := range cases {
 		program, err := Parse([]byte(c.document))
-		assert.Nil(t, err, "case-%d: %v", num, err)
-		assert.Equal(t, c.program, program, "case-%d failed", num)
+		if assert.NoError(t, err, "Parsing failed:\n%s", c.document) {
+			assert.Equal(
+				t, c.program, program,
+				"Got unexpected program when parsing:\n%s", c.document,
+			)
+		}
 	}
 }
 
 func TestParseEmpty(t *testing.T) {
 	program, err := Parse([]byte{})
-	assert.Nil(t, err, "%v", err)
-	assert.Equal(t, &Program{}, program)
+	if assert.NoError(t, err, "%v", err) {
+		assert.Equal(t, &Program{}, program)
+	}
 }
 
 func TestParseHeaders(t *testing.T) {
@@ -209,6 +214,26 @@ func TestParseConstants(t *testing.T) {
 					[1, 2, 3]  # optional separator
 					[4, 5, 6]
 				];
+			`,
+		},
+		{
+			&Program{Constants: []*Constant{
+				&Constant{
+					Name:  "foo",
+					Type:  BaseType{ID: StringBaseTypeID},
+					Value: ConstantValue(ConstantString(`a "b" c`)),
+					Line:  2,
+				},
+				&Constant{
+					Name:  "bar",
+					Type:  BaseType{ID: StringBaseTypeID},
+					Value: ConstantValue(ConstantString(`a 'b' c`)),
+					Line:  3,
+				},
+			}},
+			`
+				const string foo = 'a "b" c'
+				const string bar = "a 'b' c"
 			`,
 		},
 	}

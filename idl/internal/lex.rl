@@ -169,24 +169,23 @@ func (lex *lexer) Lex(out *yySymType) int {
             };
 
             literal => {
-                // TODO might be worth moving some of this into a separate
-                // function.
-                str := string(lex.data[lex.ts:lex.te])
-                if len(str) != 0 && str[0] == '\'' {
-                    // Convert to double quoted for strconv.
-                    str = strings.Replace(
-                        string(str[1:len(str)-1]), `\'`, `'`, -1,
-                    );
-                    str = `"` + str + `"`;
+                bs := lex.data[lex.ts:lex.te]
+
+                var str string
+                var err error
+                if len(bs) > 0 && bs[0] == '\'' {
+                    str, err = UnquoteSingleQuoted(bs)
+                } else {
+                    str, err = strconv.Unquote(string(bs))
                 }
 
-                if lit, err := strconv.Unquote(str); err != nil {
+                if err != nil {
                     lex.Error(err.Error())
-                    // TODO
                 } else {
-                    out.str = lit
+                    out.str = str
                     tok = LITERAL
                 }
+
                 fbreak;
             };
 
