@@ -9,8 +9,9 @@ const _BaseTypeID_name = "BoolBaseTypeIDByteBaseTypeIDI16BaseTypeIDI32BaseTypeID
 var _BaseTypeID_index = [...]uint8{0, 14, 28, 41, 54, 67, 83, 99, 115}
 
 func (i BaseTypeID) String() string {
+	i -= 1
 	if i < 0 || i >= BaseTypeID(len(_BaseTypeID_index)-1) {
-		return fmt.Sprintf("BaseTypeID(%d)", i)
+		return fmt.Sprintf("BaseTypeID(%d)", i+1)
 	}
 	return _BaseTypeID_name[_BaseTypeID_index[i]:_BaseTypeID_index[i+1]]
 }
