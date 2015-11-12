@@ -24,6 +24,9 @@ import "github.com/uber/thriftrw-go/ast"
     header ast.Header
     headers []ast.Header
 
+    enumItem *ast.EnumItem
+    enumItems []*ast.EnumItem
+
     definition ast.Definition
     definitions []ast.Definition
 
@@ -53,6 +56,9 @@ import "github.com/uber/thriftrw-go/ast"
 %type <header> header
 %type <headers> headers
 
+%type <enumItem> enum_item
+%type <enumItems> enum_items
+
 %type <definition> definition
 %type <definitions> definitions
 
@@ -81,6 +87,10 @@ program
             return 0
         }
     ;
+
+/***************************************************************************
+ Headers
+ ***************************************************************************/
 
 headers
     : /* no headers */     { $$ = nil }
@@ -113,6 +123,10 @@ header
         }
     ;
 
+/***************************************************************************
+ Definitions
+ ***************************************************************************/
+
 definitions
     : /* nothing */ { $$ = nil }
     | definitions definition { $$ = append($1, $2) }
@@ -138,7 +152,40 @@ definition
                 Line: $1,
             }
         }
+    | lineno ENUM IDENTIFIER '{' enum_items '}' type_annotations
+        {
+            $$ = &ast.Enum{
+                Name: $3,
+                Items: $5,
+                Annotations: $7,
+                Line: $1,
+            }
+        }
     ;
+
+enum_items
+    : /* nothing */ { $$ = nil }
+    | enum_items enum_item optional_sep { $$ = append($1, $2) }
+    ;
+
+enum_item
+    : lineno IDENTIFIER type_annotations
+        { $$ = &ast.EnumItem{Name: $2, Annotations: $3, Line: $1} }
+    | lineno IDENTIFIER '=' INTCONSTANT type_annotations
+        {
+            value := int($4)
+            $$ = &ast.EnumItem{
+                Name: $2,
+                Value: &value,
+                Annotations: $5,
+                Line: $1,
+            }
+        }
+    ;
+
+/***************************************************************************
+ Types
+ ***************************************************************************/
 
 type
     : base_type_name type_annotations
@@ -166,6 +213,10 @@ base_type_name
     | BINARY  { $$ = ast.BinaryBaseTypeID }
     ;
 
+/***************************************************************************
+ Constant values
+ ***************************************************************************/
+
 const_value
     : INTCONSTANT { $$ = ast.ConstantInteger($1) }
     | DUBCONSTANT { $$ = ast.ConstantDouble($1) }
@@ -191,6 +242,10 @@ const_map_items
         { $$ = append($1, ast.ConstantMapItem{Key: $2, Value: $4}) }
     ;
 
+/***************************************************************************
+ Type annotations
+ ***************************************************************************/
+
 type_annotations
     : /* nothing */         { $$ = nil }
     | '(' type_annotation_list ')' { $$ = $2 }
@@ -202,6 +257,9 @@ type_annotation_list
         { $$ = append($1, &ast.Annotation{Name: $3, Value: $5, Line: $2}) }
     ;
 
+/***************************************************************************
+ Other
+ ***************************************************************************/
 
 /* Grammar rules that need to record a line number at a specific token should
    include this somewhere. For example,

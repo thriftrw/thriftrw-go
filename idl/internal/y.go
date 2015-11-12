@@ -31,6 +31,9 @@ type yySymType struct {
 	header  ast.Header
 	headers []ast.Header
 
+	enumItem  *ast.EnumItem
+	enumItems []*ast.EnumItem
+
 	definition  ast.Definition
 	definitions []ast.Definition
 
@@ -112,13 +115,13 @@ var yyToknames = [...]string{
 	"FALSE",
 	"'*'",
 	"'='",
+	"'{'",
+	"'}'",
 	"'<'",
 	"','",
 	"'>'",
 	"'['",
 	"']'",
-	"'{'",
-	"'}'",
 	"':'",
 	"'('",
 	"')'",
@@ -136,93 +139,98 @@ var yyExca = [...]int{
 	1, -1,
 	-2, 0,
 	-1, 2,
-	8, 40,
-	9, 40,
+	8, 45,
+	9, 45,
 	-2, 7,
 	-1, 3,
 	1, 1,
-	-2, 40,
+	-2, 45,
 }
 
-const yyNprod = 44
+const yyNprod = 49
 const yyPrivate = 57344
 
 var yyTokenNames []string
 var yyStates []string
 
-const yyLast = 113
+const yyLast = 138
 
 var yyAct = [...]int{
 
-	60, 33, 20, 55, 46, 5, 7, 61, 34, 78,
-	51, 47, 48, 76, 15, 59, 62, 58, 57, 37,
-	36, 35, 75, 40, 11, 79, 29, 51, 47, 48,
-	14, 67, 10, 9, 8, 12, 64, 39, 38, 49,
-	50, 45, 32, 52, 56, 31, 53, 63, 54, 73,
-	42, 43, 44, 30, 41, 66, 49, 50, 65, 3,
-	69, 70, 13, 53, 71, 54, 6, 2, 52, 52,
-	72, 74, 68, 77, 51, 47, 48, 4, 80, 16,
-	82, 52, 83, 81, 21, 22, 23, 24, 25, 26,
-	27, 28, 17, 18, 19, 1, 0, 0, 0, 0,
-	0, 0, 0, 49, 50, 0, 0, 0, 0, 0,
-	53, 0, 54,
+	35, 64, 65, 88, 21, 16, 50, 5, 7, 66,
+	59, 36, 36, 90, 86, 63, 62, 30, 61, 39,
+	38, 37, 67, 42, 85, 43, 11, 55, 51, 52,
+	15, 9, 8, 12, 10, 93, 91, 13, 80, 74,
+	71, 41, 48, 45, 46, 47, 40, 34, 56, 60,
+	33, 32, 70, 31, 69, 44, 53, 54, 73, 72,
+	58, 3, 14, 76, 77, 57, 81, 75, 78, 6,
+	79, 55, 51, 52, 49, 68, 2, 56, 56, 82,
+	84, 87, 4, 17, 89, 1, 0, 92, 55, 51,
+	52, 0, 0, 95, 96, 56, 97, 94, 0, 0,
+	53, 54, 0, 0, 58, 83, 0, 0, 0, 57,
+	0, 0, 0, 0, 0, 0, 0, 53, 54, 0,
+	0, 58, 0, 0, 0, 0, 57, 22, 23, 24,
+	25, 26, 27, 28, 29, 18, 19, 20,
 }
 var yyPact = [...]int{
 
-	-1000, -1000, -1000, -1000, -1000, 25, -1000, 1, 30, 26,
-	73, 73, -1000, 49, 41, 38, -38, -17, -18, -19,
-	34, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000, 33,
-	-1000, -1000, -14, -1000, -1000, 73, 73, 73, -1000, -38,
-	69, -44, -21, -23, -25, -32, -32, -1000, -1000, -1000,
-	-1000, -1000, 32, -1000, -1000, -1000, 27, 73, -38, -38,
-	-1000, -1000, -1000, -1000, -1000, 22, 5, -15, -27, -1000,
-	-1000, -1000, -32, -1000, -36, 20, -38, -1000, 69, -32,
-	-1000, -32, -1000, -1000,
+	-1000, -1000, -1000, -1000, -1000, 23, -1000, 3, 32, 26,
+	116, 116, 49, -1000, 47, 46, 43, -35, -19, -20,
+	-21, 42, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
+	37, -15, -1000, -1000, -12, -1000, -1000, 116, 116, 116,
+	-1000, -35, -1000, 83, -37, -23, -26, -27, -39, -17,
+	-39, -1000, -1000, -1000, -1000, -1000, 36, -1000, -1000, -1000,
+	35, 116, -35, -35, -1000, -1000, -1000, -35, -39, 34,
+	-1000, -1000, 22, 66, -13, -28, -1000, -1000, -1000, -1000,
+	-34, -1000, -39, -1000, -32, 31, -35, -1000, 29, -1000,
+	83, -39, -1000, -35, -39, -1000, -1000, -1000,
 }
 var yyPgo = [...]int{
 
-	0, 2, 95, 14, 79, 77, 67, 66, 59, 4,
-	58, 55, 54, 1, 0,
+	0, 4, 85, 5, 83, 82, 76, 75, 74, 69,
+	61, 6, 59, 58, 55, 0, 1,
 }
 var yyR1 = [...]int{
 
-	0, 2, 6, 6, 5, 5, 5, 8, 8, 7,
-	7, 3, 3, 3, 3, 3, 4, 4, 4, 4,
-	4, 4, 4, 4, 9, 9, 9, 9, 9, 9,
-	9, 9, 10, 10, 11, 11, 13, 13, 12, 12,
-	1, 14, 14, 14,
+	0, 2, 6, 6, 5, 5, 5, 10, 10, 9,
+	9, 9, 8, 8, 7, 7, 3, 3, 3, 3,
+	3, 4, 4, 4, 4, 4, 4, 4, 4, 11,
+	11, 11, 11, 11, 11, 11, 11, 12, 12, 13,
+	13, 15, 15, 14, 14, 1, 16, 16, 16,
 }
 var yyR2 = [...]int{
 
 	0, 2, 0, 2, 3, 4, 4, 0, 2, 7,
-	6, 2, 7, 5, 5, 2, 1, 1, 1, 1,
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 2,
-	3, 3, 0, 3, 0, 5, 0, 3, 0, 6,
-	0, 1, 1, 0,
+	6, 7, 0, 3, 3, 5, 2, 7, 5, 5,
+	2, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+	1, 1, 1, 1, 2, 3, 3, 0, 3, 0,
+	5, 0, 3, 0, 6, 0, 1, 1, 0,
 }
 var yyChk = [...]int{
 
-	-1000, -2, -6, -8, -5, -1, -7, -1, 9, 8,
-	31, 23, 5, 36, 4, -3, -4, 19, 20, 21,
-	-1, 11, 12, 13, 14, 15, 16, 17, 18, -3,
-	4, 4, 4, -13, 46, 38, 38, 38, 4, 4,
-	37, -12, -3, -3, -3, -13, -9, 6, 7, 34,
-	35, 5, -1, 41, 43, 47, -1, 39, 40, 40,
-	-14, 39, 48, -14, 4, -10, -11, 4, -3, -13,
-	-13, 42, -9, 44, -9, 37, 40, -14, 45, 5,
-	-13, -9, -14, -14,
+	-1000, -2, -6, -10, -5, -1, -9, -1, 9, 8,
+	31, 23, 30, 5, 36, 4, -3, -4, 19, 20,
+	21, -1, 11, 12, 13, 14, 15, 16, 17, 18,
+	-3, 4, 4, 4, 4, -15, 46, 40, 40, 40,
+	4, 4, 38, 37, -14, -3, -3, -3, -15, -8,
+	-11, 6, 7, 34, 35, 5, -1, 43, 38, 47,
+	-1, 41, 42, 42, -16, 41, 48, 39, -7, -1,
+	-16, 4, -12, -13, 4, -3, -15, -15, -15, -16,
+	4, 44, -11, 39, -11, 37, 42, -15, 37, -16,
+	45, 5, -15, 6, -11, -16, -15, -16,
 }
 var yyDef = [...]int{
 
 	2, -2, -2, -2, 3, 0, 8, 0, 0, 0,
-	40, 40, 4, 0, 0, 0, 36, 0, 0, 0,
-	0, 16, 17, 18, 19, 20, 21, 22, 23, 0,
-	5, 6, 0, 11, 38, 40, 40, 40, 15, 36,
-	40, 40, 0, 0, 0, 43, 43, 24, 25, 26,
-	27, 28, 0, 32, 34, 37, 0, 40, 36, 36,
-	10, 41, 42, 9, 29, 40, 40, 0, 0, 13,
-	14, 30, 43, 31, 0, 0, 36, 33, 40, 43,
-	12, 43, 39, 35,
+	45, 45, 0, 4, 0, 0, 0, 41, 0, 0,
+	0, 0, 21, 22, 23, 24, 25, 26, 27, 28,
+	0, 0, 5, 6, 0, 16, 43, 45, 45, 45,
+	20, 41, 12, 45, 45, 0, 0, 0, 48, 45,
+	48, 29, 30, 31, 32, 33, 0, 37, 39, 42,
+	0, 45, 41, 41, 10, 46, 47, 41, 48, 0,
+	9, 34, 45, 45, 0, 0, 18, 19, 11, 13,
+	41, 35, 48, 36, 0, 0, 41, 14, 0, 38,
+	45, 48, 17, 41, 48, 44, 15, 40,
 }
 var yyTok1 = [...]int{
 
@@ -230,15 +238,15 @@ var yyTok1 = [...]int{
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	46, 47, 36, 3, 39, 3, 3, 3, 3, 3,
+	46, 47, 36, 3, 41, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 45, 48,
-	38, 37, 40, 3, 3, 3, 3, 3, 3, 3,
+	40, 37, 42, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 41, 3, 42, 3, 3, 3, 3, 3, 3,
+	3, 43, 3, 44, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
 	3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
-	3, 3, 3, 43, 3, 44,
+	3, 3, 3, 38, 3, 39,
 }
 var yyTok2 = [...]int{
 
@@ -593,7 +601,7 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line thrift.y:69
+		//line thrift.y:75
 		{
 			yyVAL.prog = &ast.Program{}
 
@@ -610,19 +618,19 @@ yydefault:
 		}
 	case 2:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:86
+		//line thrift.y:96
 		{
 			yyVAL.headers = nil
 		}
 	case 3:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line thrift.y:87
+		//line thrift.y:97
 		{
 			yyVAL.headers = append(yyDollar[1].headers, yyDollar[2].header)
 		}
 	case 4:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:92
+		//line thrift.y:102
 		{
 			yyVAL.header = &ast.Include{
 				Path: yyDollar[3].str,
@@ -631,7 +639,7 @@ yydefault:
 		}
 	case 5:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line thrift.y:99
+		//line thrift.y:109
 		{
 			yyVAL.header = &ast.Namespace{
 				Scope: "*",
@@ -641,7 +649,7 @@ yydefault:
 		}
 	case 6:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line thrift.y:107
+		//line thrift.y:117
 		{
 			yyVAL.header = &ast.Namespace{
 				Scope: yyDollar[3].str,
@@ -651,19 +659,19 @@ yydefault:
 		}
 	case 7:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:117
+		//line thrift.y:131
 		{
 			yyVAL.definitions = nil
 		}
 	case 8:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line thrift.y:118
+		//line thrift.y:132
 		{
 			yyVAL.definitions = append(yyDollar[1].definitions, yyDollar[2].definition)
 		}
 	case 9:
 		yyDollar = yyS[yypt-7 : yypt+1]
-		//line thrift.y:124
+		//line thrift.y:138
 		{
 			yyVAL.definition = &ast.Constant{
 				Name:  yyDollar[4].str,
@@ -674,7 +682,7 @@ yydefault:
 		}
 	case 10:
 		yyDollar = yyS[yypt-6 : yypt+1]
-		//line thrift.y:133
+		//line thrift.y:147
 		{
 			yyVAL.definition = &ast.Typedef{
 				Name:        yyDollar[4].str,
@@ -684,182 +692,223 @@ yydefault:
 			}
 		}
 	case 11:
+		yyDollar = yyS[yypt-7 : yypt+1]
+		//line thrift.y:156
+		{
+			yyVAL.definition = &ast.Enum{
+				Name:        yyDollar[3].str,
+				Items:       yyDollar[5].enumItems,
+				Annotations: yyDollar[7].typeAnnotations,
+				Line:        yyDollar[1].line,
+			}
+		}
+	case 12:
+		yyDollar = yyS[yypt-0 : yypt+1]
+		//line thrift.y:167
+		{
+			yyVAL.enumItems = nil
+		}
+	case 13:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line thrift.y:168
+		{
+			yyVAL.enumItems = append(yyDollar[1].enumItems, yyDollar[2].enumItem)
+		}
+	case 14:
+		yyDollar = yyS[yypt-3 : yypt+1]
+		//line thrift.y:173
+		{
+			yyVAL.enumItem = &ast.EnumItem{Name: yyDollar[2].str, Annotations: yyDollar[3].typeAnnotations, Line: yyDollar[1].line}
+		}
+	case 15:
+		yyDollar = yyS[yypt-5 : yypt+1]
+		//line thrift.y:175
+		{
+			value := int(yyDollar[4].i64)
+			yyVAL.enumItem = &ast.EnumItem{
+				Name:        yyDollar[2].str,
+				Value:       &value,
+				Annotations: yyDollar[5].typeAnnotations,
+				Line:        yyDollar[1].line,
+			}
+		}
+	case 16:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line thrift.y:145
+		//line thrift.y:192
 		{
 			yyVAL.fieldType = ast.BaseType{ID: yyDollar[1].baseTypeID, Annotations: yyDollar[2].typeAnnotations}
 		}
-	case 12:
+	case 17:
 		yyDollar = yyS[yypt-7 : yypt+1]
-		//line thrift.y:149
+		//line thrift.y:196
 		{
 			yyVAL.fieldType = ast.MapType{KeyType: yyDollar[3].fieldType, ValueType: yyDollar[5].fieldType, Annotations: yyDollar[7].typeAnnotations}
 		}
-	case 13:
+	case 18:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line thrift.y:151
+		//line thrift.y:198
 		{
 			yyVAL.fieldType = ast.ListType{ValueType: yyDollar[3].fieldType, Annotations: yyDollar[5].typeAnnotations}
 		}
-	case 14:
+	case 19:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line thrift.y:153
+		//line thrift.y:200
 		{
 			yyVAL.fieldType = ast.SetType{ValueType: yyDollar[3].fieldType, Annotations: yyDollar[5].typeAnnotations}
 		}
-	case 15:
+	case 20:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line thrift.y:155
+		//line thrift.y:202
 		{
 			yyVAL.fieldType = ast.TypeReference{Name: yyDollar[2].str, Line: yyDollar[1].line}
 		}
-	case 16:
+	case 21:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:159
+		//line thrift.y:206
 		{
 			yyVAL.baseTypeID = ast.BoolBaseTypeID
 		}
-	case 17:
+	case 22:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:160
+		//line thrift.y:207
 		{
 			yyVAL.baseTypeID = ast.ByteBaseTypeID
 		}
-	case 18:
+	case 23:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:161
+		//line thrift.y:208
 		{
 			yyVAL.baseTypeID = ast.I16BaseTypeID
 		}
-	case 19:
+	case 24:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:162
+		//line thrift.y:209
 		{
 			yyVAL.baseTypeID = ast.I32BaseTypeID
 		}
-	case 20:
+	case 25:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:163
+		//line thrift.y:210
 		{
 			yyVAL.baseTypeID = ast.I64BaseTypeID
 		}
-	case 21:
+	case 26:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:164
+		//line thrift.y:211
 		{
 			yyVAL.baseTypeID = ast.DoubleBaseTypeID
 		}
-	case 22:
+	case 27:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:165
+		//line thrift.y:212
 		{
 			yyVAL.baseTypeID = ast.StringBaseTypeID
 		}
-	case 23:
+	case 28:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:166
+		//line thrift.y:213
 		{
 			yyVAL.baseTypeID = ast.BinaryBaseTypeID
 		}
-	case 24:
+	case 29:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:170
+		//line thrift.y:221
 		{
 			yyVAL.constantValue = ast.ConstantInteger(yyDollar[1].i64)
 		}
-	case 25:
+	case 30:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:171
+		//line thrift.y:222
 		{
 			yyVAL.constantValue = ast.ConstantDouble(yyDollar[1].dub)
 		}
-	case 26:
+	case 31:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:172
+		//line thrift.y:223
 		{
 			yyVAL.constantValue = ast.ConstantBoolean(true)
 		}
-	case 27:
+	case 32:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:173
+		//line thrift.y:224
 		{
 			yyVAL.constantValue = ast.ConstantBoolean(false)
 		}
-	case 28:
+	case 33:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:174
+		//line thrift.y:225
 		{
 			yyVAL.constantValue = ast.ConstantString(yyDollar[1].str)
 		}
-	case 29:
+	case 34:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line thrift.y:176
+		//line thrift.y:227
 		{
 			yyVAL.constantValue = ast.ConstantReference{Name: yyDollar[2].str, Line: yyDollar[1].line}
 		}
-	case 30:
+	case 35:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:178
+		//line thrift.y:229
 		{
 			yyVAL.constantValue = ast.ConstantList{Items: yyDollar[2].constantValues}
 		}
-	case 31:
+	case 36:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:179
+		//line thrift.y:230
 		{
 			yyVAL.constantValue = ast.ConstantMap{Items: yyDollar[2].constantMapItems}
 		}
-	case 32:
+	case 37:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:183
+		//line thrift.y:234
 		{
 			yyVAL.constantValues = nil
 		}
-	case 33:
+	case 38:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:185
+		//line thrift.y:236
 		{
 			yyVAL.constantValues = append(yyDollar[1].constantValues, yyDollar[2].constantValue)
 		}
-	case 34:
+	case 39:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:189
+		//line thrift.y:240
 		{
 			yyVAL.constantMapItems = nil
 		}
-	case 35:
+	case 40:
 		yyDollar = yyS[yypt-5 : yypt+1]
-		//line thrift.y:191
+		//line thrift.y:242
 		{
 			yyVAL.constantMapItems = append(yyDollar[1].constantMapItems, ast.ConstantMapItem{Key: yyDollar[2].constantValue, Value: yyDollar[4].constantValue})
 		}
-	case 36:
+	case 41:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:195
+		//line thrift.y:250
 		{
 			yyVAL.typeAnnotations = nil
 		}
-	case 37:
+	case 42:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:196
+		//line thrift.y:251
 		{
 			yyVAL.typeAnnotations = yyDollar[2].typeAnnotations
 		}
-	case 38:
+	case 43:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:200
+		//line thrift.y:255
 		{
 			yyVAL.typeAnnotations = nil
 		}
-	case 39:
+	case 44:
 		yyDollar = yyS[yypt-6 : yypt+1]
-		//line thrift.y:202
+		//line thrift.y:257
 		{
 			yyVAL.typeAnnotations = append(yyDollar[1].typeAnnotations, &ast.Annotation{Name: yyDollar[3].str, Value: yyDollar[5].str, Line: yyDollar[2].line})
 		}
-	case 40:
+	case 45:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:216
+		//line thrift.y:274
 		{
 			yyVAL.line = yylex.(*lexer).line
 		}

@@ -36,6 +36,10 @@ func TestParseErrors(t *testing.T) {
 	tests := []string{
 		"namespace foo \x00",
 		`const string 42 = "foo"`,
+		`typedef foo bar baz`,
+		`typedef foo`,
+		`enum Foo {`,
+		`enum { }`,
 	}
 
 	for _, tt := range tests {
@@ -287,6 +291,56 @@ func TestParseTypedef(t *testing.T) {
 				typedef string UUID (length = "32");
 
 				typedef i64 (js.type = "Date") Date
+			`,
+		},
+	}
+
+	assertParseCases(t, tests)
+}
+
+func TestParseEnum(t *testing.T) {
+	aValue := 42
+
+	tests := []parseCase{
+		{
+			&Program{Enums: []*Enum{&Enum{Name: "EmptyEnum", Line: 1}}},
+			`enum EmptyEnum {}`,
+		},
+		{
+			&Program{Enums: []*Enum{
+				&Enum{
+					Name: "SillyEnum",
+					Items: []*EnumItem{
+						&EnumItem{
+							Name: "foo",
+							Annotations: []*Annotation{
+								&Annotation{
+									Name:  "x",
+									Value: "y",
+									Line:  3,
+								},
+							},
+							Line: 3,
+						},
+						&EnumItem{Name: "bar", Line: 3},
+						&EnumItem{Name: "baz", Value: &aValue, Line: 4},
+						&EnumItem{Name: "qux", Line: 5},
+						&EnumItem{Name: "quux", Line: 6},
+					},
+					Annotations: []*Annotation{
+						&Annotation{Name: "_", Value: "__", Line: 7},
+						&Annotation{Name: "foo", Value: "bar", Line: 7},
+					},
+					Line: 2,
+				},
+			}},
+			`
+				enum SillyEnum {
+					foo (x = "y"), bar /*
+					*/ baz = 42
+					qux;
+					quux
+				} (_ = "__", foo = "bar")
 			`,
 		},
 	}
