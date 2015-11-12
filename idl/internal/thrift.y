@@ -269,14 +269,14 @@ type
     ;
 
 base_type_name
-    : BOOL    { $$ =   ast.BoolBaseTypeID }
-    | BYTE    { $$ =   ast.ByteBaseTypeID }
-    | I16     { $$ =    ast.I16BaseTypeID }
-    | I32     { $$ =    ast.I32BaseTypeID }
-    | I64     { $$ =    ast.I64BaseTypeID }
-    | DOUBLE  { $$ = ast.DoubleBaseTypeID }
-    | STRING  { $$ = ast.StringBaseTypeID }
-    | BINARY  { $$ = ast.BinaryBaseTypeID }
+    : BOOL    { $$ =   ast.BoolTypeID }
+    | BYTE    { $$ =   ast.ByteTypeID }
+    | I16     { $$ =    ast.I16TypeID }
+    | I32     { $$ =    ast.I32TypeID }
+    | I64     { $$ =    ast.I64TypeID }
+    | DOUBLE  { $$ = ast.DoubleTypeID }
+    | STRING  { $$ = ast.StringTypeID }
+    | BINARY  { $$ = ast.BinaryTypeID }
     ;
 
 /***************************************************************************

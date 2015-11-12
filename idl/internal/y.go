@@ -867,49 +867,49 @@ yydefault:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		//line thrift.y:272
 		{
-			yyVAL.baseTypeID = ast.BoolBaseTypeID
+			yyVAL.baseTypeID = ast.BoolTypeID
 		}
 	case 33:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		//line thrift.y:273
 		{
-			yyVAL.baseTypeID = ast.ByteBaseTypeID
+			yyVAL.baseTypeID = ast.ByteTypeID
 		}
 	case 34:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		//line thrift.y:274
 		{
-			yyVAL.baseTypeID = ast.I16BaseTypeID
+			yyVAL.baseTypeID = ast.I16TypeID
 		}
 	case 35:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		//line thrift.y:275
 		{
-			yyVAL.baseTypeID = ast.I32BaseTypeID
+			yyVAL.baseTypeID = ast.I32TypeID
 		}
 	case 36:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		//line thrift.y:276
 		{
-			yyVAL.baseTypeID = ast.I64BaseTypeID
+			yyVAL.baseTypeID = ast.I64TypeID
 		}
 	case 37:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		//line thrift.y:277
 		{
-			yyVAL.baseTypeID = ast.DoubleBaseTypeID
+			yyVAL.baseTypeID = ast.DoubleTypeID
 		}
 	case 38:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		//line thrift.y:278
 		{
-			yyVAL.baseTypeID = ast.StringBaseTypeID
+			yyVAL.baseTypeID = ast.StringTypeID
 		}
 	case 39:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		//line thrift.y:279
 		{
-			yyVAL.baseTypeID = ast.BinaryBaseTypeID
+			yyVAL.baseTypeID = ast.BinaryTypeID
 		}
 	case 40:
 		yyDollar = yyS[yypt-1 : yypt+1]

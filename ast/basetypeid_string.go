@@ -4,9 +4,9 @@ package ast
 
 import "fmt"
 
-const _BaseTypeID_name = "BoolBaseTypeIDByteBaseTypeIDI16BaseTypeIDI32BaseTypeIDI64BaseTypeIDDoubleBaseTypeIDStringBaseTypeIDBinaryBaseTypeID"
+const _BaseTypeID_name = "BoolTypeIDByteTypeIDI16TypeIDI32TypeIDI64TypeIDDoubleTypeIDStringTypeIDBinaryTypeID"
 
-var _BaseTypeID_index = [...]uint8{0, 14, 28, 41, 54, 67, 83, 99, 115}
+var _BaseTypeID_index = [...]uint8{0, 10, 20, 29, 38, 47, 59, 71, 83}
 
 func (i BaseTypeID) String() string {
 	i -= 1

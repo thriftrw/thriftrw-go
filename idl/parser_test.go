@@ -109,13 +109,13 @@ func TestParseConstants(t *testing.T) {
 			&Program{Constants: []*Constant{
 				&Constant{
 					Name:  "foo",
-					Type:  BaseType{ID: I32BaseTypeID},
+					Type:  BaseType{ID: I32TypeID},
 					Value: ConstantValue(ConstantInteger(42)),
 					Line:  2,
 				},
 				&Constant{
 					Name: "bar",
-					Type: BaseType{ID: I64BaseTypeID},
+					Type: BaseType{ID: I64TypeID},
 					Value: ConstantValue(
 						ConstantReference{
 							Name: "shared.baz",
@@ -126,13 +126,13 @@ func TestParseConstants(t *testing.T) {
 				},
 				&Constant{
 					Name:  "baz",
-					Type:  BaseType{ID: StringBaseTypeID},
+					Type:  BaseType{ID: StringTypeID},
 					Value: ConstantValue(ConstantString("hello world")),
 					Line:  5,
 				},
 				&Constant{
 					Name:  "qux",
-					Type:  BaseType{ID: DoubleBaseTypeID},
+					Type:  BaseType{ID: DoubleTypeID},
 					Value: ConstantValue(ConstantDouble(3.141592)),
 					Line:  7,
 				},
@@ -151,7 +151,7 @@ func TestParseConstants(t *testing.T) {
 				&Constant{
 					Name: "baz",
 					Type: BaseType{
-						ID: BoolBaseTypeID,
+						ID: BoolTypeID,
 						Annotations: []*Annotation{
 							&Annotation{Name: "foo", Value: "a\nb", Line: 1},
 						},
@@ -161,7 +161,7 @@ func TestParseConstants(t *testing.T) {
 				},
 				&Constant{
 					Name:  "include_something",
-					Type:  BaseType{ID: BoolBaseTypeID},
+					Type:  BaseType{ID: BoolTypeID},
 					Value: ConstantValue(ConstantBoolean(false)),
 					Line:  2,
 				},
@@ -175,12 +175,12 @@ func TestParseConstants(t *testing.T) {
 					Name: "stuff",
 					Type: MapType{
 						KeyType: BaseType{
-							ID: StringBaseTypeID,
+							ID: StringTypeID,
 							Annotations: []*Annotation{
 								&Annotation{Name: "foo", Value: "bar", Line: 2},
 							},
 						},
-						ValueType: BaseType{ID: I32BaseTypeID},
+						ValueType: BaseType{ID: I32TypeID},
 						Annotations: []*Annotation{
 							&Annotation{Name: "baz", Value: "qux", Line: 2},
 						},
@@ -202,7 +202,7 @@ func TestParseConstants(t *testing.T) {
 				&Constant{
 					Name: "list_of_lists",
 					Type: ListType{ValueType: ListType{
-						ValueType: BaseType{ID: I32BaseTypeID},
+						ValueType: BaseType{ID: I32TypeID},
 					}},
 					Value: ConstantValue(ConstantList{
 						Items: []ConstantValue{
@@ -240,13 +240,13 @@ func TestParseConstants(t *testing.T) {
 			&Program{Constants: []*Constant{
 				&Constant{
 					Name:  "foo",
-					Type:  BaseType{ID: StringBaseTypeID},
+					Type:  BaseType{ID: StringTypeID},
 					Value: ConstantValue(ConstantString(`a "b" c`)),
 					Line:  2,
 				},
 				&Constant{
 					Name:  "bar",
-					Type:  BaseType{ID: StringBaseTypeID},
+					Type:  BaseType{ID: StringTypeID},
 					Value: ConstantValue(ConstantString(`a 'b' c`)),
 					Line:  3,
 				},
@@ -266,7 +266,7 @@ func TestParseTypedef(t *testing.T) {
 			&Program{Typedefs: []*Typedef{
 				&Typedef{
 					Name: "UUID",
-					Type: BaseType{ID: StringBaseTypeID},
+					Type: BaseType{ID: StringTypeID},
 					Annotations: []*Annotation{
 						&Annotation{
 							Name:  "length",
@@ -279,7 +279,7 @@ func TestParseTypedef(t *testing.T) {
 				&Typedef{
 					Name: "Date",
 					Type: BaseType{
-						ID: I64BaseTypeID,
+						ID: I64TypeID,
 						Annotations: []*Annotation{
 							&Annotation{
 								Name:  "js.type",
@@ -375,14 +375,14 @@ func TestParseStruct(t *testing.T) {
 						&Field{
 							ID:           1,
 							Name:         "high",
-							Type:         BaseType{ID: I64BaseTypeID},
+							Type:         BaseType{ID: I64TypeID},
 							Requiredness: Required,
 							Line:         3,
 						},
 						&Field{
 							ID:           2,
 							Name:         "low",
-							Type:         BaseType{ID: I64BaseTypeID},
+							Type:         BaseType{ID: I64TypeID},
 							Requiredness: Required,
 							Line:         4,
 						},
@@ -405,7 +405,7 @@ func TestParseStruct(t *testing.T) {
 							Name:         "plainText",
 							Requiredness: Unspecified,
 							Type: BaseType{
-								ID: StringBaseTypeID,
+								ID: StringTypeID,
 								Annotations: []*Annotation{
 									&Annotation{
 										Name:  "format",
@@ -419,7 +419,7 @@ func TestParseStruct(t *testing.T) {
 						&Field{
 							ID:   2,
 							Name: "pdf",
-							Type: BaseType{ID: BinaryBaseTypeID},
+							Type: BaseType{ID: BinaryTypeID},
 							// Requiredness intentionally skipped because
 							// zero-value for it is Unspecified.
 							Annotations: []*Annotation{
@@ -441,7 +441,7 @@ func TestParseStruct(t *testing.T) {
 						&Field{
 							ID:           1,
 							Name:         "message",
-							Type:         BaseType{ID: StringBaseTypeID},
+							Type:         BaseType{ID: StringTypeID},
 							Requiredness: Optional,
 							Line:         13,
 						},
