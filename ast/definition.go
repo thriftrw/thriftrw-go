@@ -6,13 +6,11 @@ type Definition interface {
 	definition()
 }
 
-func (*Constant) definition()  {}
-func (*Enum) definition()      {}
-func (*Exception) definition() {}
-func (*Service) definition()   {}
-func (*Struct) definition()    {}
-func (*Typedef) definition()   {}
-func (*Union) definition()     {}
+func (*Constant) definition() {}
+func (*Enum) definition()     {}
+func (*Service) definition()  {}
+func (*Struct) definition()   {}
+func (*Typedef) definition()  {}
 
 // Constant is a constant declared in the Thrift file using a const statement.
 //
@@ -60,7 +58,19 @@ type EnumItem struct {
 	Line        int
 }
 
+// StructType specifies whether a struct-like type is a struct, union, or
+// exception.
+type StructureType int
+
+const (
+	StructType    StructureType = iota + 1 // struct
+	UnionType                              // union
+	ExceptionType                          // exception
+)
+
 // Struct is a collection of named fields with different types.
+//
+// This type encompasses structs, unions, and exceptions.
 //
 // 	struct User {
 // 		1: required string name (min_length = "3")
@@ -71,30 +81,19 @@ type EnumItem struct {
 // 		1: required i64 high
 // 		2: required i64 low
 // 	} (py.serializer = "foo.Int128Serializer")
-type Struct struct {
-	Name       string
-	Fields     []*Field
-	Annotation []*Annotation
-	Line       int
-}
-
-// Union is similar to a Struct except only a single field of the union can be
-// populated at any time.
 //
 // 	union Contents {
 // 		1: string plainText
 // 		2: binary pdf
 // 	}
-type Union struct {
-	Struct
-}
-
-// Exception is similar to a Struct, but it represents error types that may be
-// returned by methods in case of failure.
 //
 // 	exception ServiceError { 1: required string message }
-type Exception struct {
-	Struct
+type Struct struct {
+	Name        string
+	Type        StructureType
+	Fields      []*Field
+	Annotations []*Annotation
+	Line        int
 }
 
 // Service is a collection of functions.
@@ -128,6 +127,16 @@ type Function struct {
 	Annotations []*Annotation
 }
 
+// Requiredness represents whether a field was marked as required or optional,
+// or if the user did not specify either.
+type Requiredness int
+
+const (
+	Unspecified Requiredness = iota // unspecified (default)
+	Required                        // required
+	Optional                        // optional
+)
+
 // Field is a single field inside a struct, union, exception, or a single item
 // in the parameter or exception list of a function.
 //
@@ -136,13 +145,11 @@ type Function struct {
 // 	3: i64 baz (go.name = "qux")
 //
 type Field struct {
-	ID   int
-	Name string
-	Type Type
-	// Requiredness may be true or false, or nil if the optional/required
-	// wasn't specified.
-	Requiredness *bool
-	DefaultValue *ConstantValue
+	ID           int
+	Name         string
+	Type         Type
+	Requiredness Requiredness
+	Default      ConstantValue
 	Annotations  []*Annotation
 	Line         int
 }
