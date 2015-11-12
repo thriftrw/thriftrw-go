@@ -307,8 +307,12 @@ func TestParseEnum(t *testing.T) {
 
 	tests := []parseCase{
 		{
-			&Program{Enums: []*Enum{&Enum{Name: "EmptyEnum", Line: 1}}},
-			`enum EmptyEnum {}`,
+			&Program{Enums: []*Enum{&Enum{Name: "EmptyEnum", Line: 2}}},
+			`
+				enum EmptyEnum
+				{
+				}
+			`,
 		},
 		{
 			&Program{Enums: []*Enum{
