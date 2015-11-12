@@ -36,6 +36,14 @@ func TestParseErrors(t *testing.T) {
 	tests := []string{
 		"namespace foo \x00",
 		`const string 42 = "foo"`,
+		`typedef foo bar baz`,
+		`typedef foo`,
+		`enum Foo {`,
+		`enum { }`,
+		`
+			enum Foo {}
+			include "bar.thrift"
+		`,
 	}
 
 	for _, tt := range tests {
@@ -101,13 +109,13 @@ func TestParseConstants(t *testing.T) {
 			&Program{Constants: []*Constant{
 				&Constant{
 					Name:  "foo",
-					Type:  BaseType{ID: I32BaseTypeID},
+					Type:  BaseType{ID: I32TypeID},
 					Value: ConstantValue(ConstantInteger(42)),
 					Line:  2,
 				},
 				&Constant{
 					Name: "bar",
-					Type: BaseType{ID: I64BaseTypeID},
+					Type: BaseType{ID: I64TypeID},
 					Value: ConstantValue(
 						ConstantReference{
 							Name: "shared.baz",
@@ -118,13 +126,13 @@ func TestParseConstants(t *testing.T) {
 				},
 				&Constant{
 					Name:  "baz",
-					Type:  BaseType{ID: StringBaseTypeID},
+					Type:  BaseType{ID: StringTypeID},
 					Value: ConstantValue(ConstantString("hello world")),
 					Line:  5,
 				},
 				&Constant{
 					Name:  "qux",
-					Type:  BaseType{ID: DoubleBaseTypeID},
+					Type:  BaseType{ID: DoubleTypeID},
 					Value: ConstantValue(ConstantDouble(3.141592)),
 					Line:  7,
 				},
@@ -143,7 +151,7 @@ func TestParseConstants(t *testing.T) {
 				&Constant{
 					Name: "baz",
 					Type: BaseType{
-						ID: BoolBaseTypeID,
+						ID: BoolTypeID,
 						Annotations: []*Annotation{
 							&Annotation{Name: "foo", Value: "a\nb", Line: 1},
 						},
@@ -153,7 +161,7 @@ func TestParseConstants(t *testing.T) {
 				},
 				&Constant{
 					Name:  "include_something",
-					Type:  BaseType{ID: BoolBaseTypeID},
+					Type:  BaseType{ID: BoolTypeID},
 					Value: ConstantValue(ConstantBoolean(false)),
 					Line:  2,
 				},
@@ -167,12 +175,12 @@ func TestParseConstants(t *testing.T) {
 					Name: "stuff",
 					Type: MapType{
 						KeyType: BaseType{
-							ID: StringBaseTypeID,
+							ID: StringTypeID,
 							Annotations: []*Annotation{
 								&Annotation{Name: "foo", Value: "bar", Line: 2},
 							},
 						},
-						ValueType: BaseType{ID: I32BaseTypeID},
+						ValueType: BaseType{ID: I32TypeID},
 						Annotations: []*Annotation{
 							&Annotation{Name: "baz", Value: "qux", Line: 2},
 						},
@@ -194,7 +202,7 @@ func TestParseConstants(t *testing.T) {
 				&Constant{
 					Name: "list_of_lists",
 					Type: ListType{ValueType: ListType{
-						ValueType: BaseType{ID: I32BaseTypeID},
+						ValueType: BaseType{ID: I32TypeID},
 					}},
 					Value: ConstantValue(ConstantList{
 						Items: []ConstantValue{
@@ -232,13 +240,13 @@ func TestParseConstants(t *testing.T) {
 			&Program{Constants: []*Constant{
 				&Constant{
 					Name:  "foo",
-					Type:  BaseType{ID: StringBaseTypeID},
+					Type:  BaseType{ID: StringTypeID},
 					Value: ConstantValue(ConstantString(`a "b" c`)),
 					Line:  2,
 				},
 				&Constant{
 					Name:  "bar",
-					Type:  BaseType{ID: StringBaseTypeID},
+					Type:  BaseType{ID: StringTypeID},
 					Value: ConstantValue(ConstantString(`a 'b' c`)),
 					Line:  3,
 				},
@@ -258,7 +266,7 @@ func TestParseTypedef(t *testing.T) {
 			&Program{Typedefs: []*Typedef{
 				&Typedef{
 					Name: "UUID",
-					Type: BaseType{ID: StringBaseTypeID},
+					Type: BaseType{ID: StringTypeID},
 					Annotations: []*Annotation{
 						&Annotation{
 							Name:  "length",
@@ -271,7 +279,7 @@ func TestParseTypedef(t *testing.T) {
 				&Typedef{
 					Name: "Date",
 					Type: BaseType{
-						ID: I64BaseTypeID,
+						ID: I64TypeID,
 						Annotations: []*Annotation{
 							&Annotation{
 								Name:  "js.type",
@@ -287,6 +295,178 @@ func TestParseTypedef(t *testing.T) {
 				typedef string UUID (length = "32");
 
 				typedef i64 (js.type = "Date") Date
+			`,
+		},
+	}
+
+	assertParseCases(t, tests)
+}
+
+func TestParseEnum(t *testing.T) {
+	aValue := 42
+
+	tests := []parseCase{
+		{
+			&Program{Enums: []*Enum{&Enum{Name: "EmptyEnum", Line: 2}}},
+			`
+				enum EmptyEnum
+				{
+				}
+			`,
+		},
+		{
+			&Program{Enums: []*Enum{
+				&Enum{
+					Name: "SillyEnum",
+					Items: []*EnumItem{
+						&EnumItem{
+							Name: "foo",
+							Annotations: []*Annotation{
+								&Annotation{
+									Name:  "x",
+									Value: "y",
+									Line:  3,
+								},
+							},
+							Line: 3,
+						},
+						&EnumItem{Name: "bar", Line: 3},
+						&EnumItem{Name: "baz", Value: &aValue, Line: 4},
+						&EnumItem{Name: "qux", Line: 5},
+						&EnumItem{Name: "quux", Line: 6},
+					},
+					Annotations: []*Annotation{
+						&Annotation{Name: "_", Value: "__", Line: 7},
+						&Annotation{Name: "foo", Value: "bar", Line: 7},
+					},
+					Line: 2,
+				},
+			}},
+			`
+				enum SillyEnum {
+					foo (x = "y"), bar /*
+					*/ baz = 42
+					qux;
+					quux
+				} (_ = "__", foo = "bar")
+			`,
+		},
+	}
+
+	assertParseCases(t, tests)
+}
+
+func TestParseStruct(t *testing.T) {
+	tests := []parseCase{
+		{
+			&Program{Structs: []*Struct{
+				&Struct{Name: "EmptyStruct", Type: StructType, Line: 2},
+				&Struct{Name: "EmptyUnion", Type: UnionType, Line: 3},
+				&Struct{Name: "EmptyExc", Type: ExceptionType, Line: 4},
+			}},
+			`
+				struct EmptyStruct {}
+				union EmptyUnion {}
+				exception EmptyExc {}
+			`,
+		},
+		{
+			&Program{Structs: []*Struct{
+				&Struct{
+					Name: "i128",
+					Type: StructType,
+					Fields: []*Field{
+						&Field{
+							ID:           1,
+							Name:         "high",
+							Type:         BaseType{ID: I64TypeID},
+							Requiredness: Required,
+							Line:         3,
+						},
+						&Field{
+							ID:           2,
+							Name:         "low",
+							Type:         BaseType{ID: I64TypeID},
+							Requiredness: Required,
+							Line:         4,
+						},
+					},
+					Annotations: []*Annotation{
+						&Annotation{
+							Name:  "serializer",
+							Value: "Int128Serializer",
+							Line:  5,
+						},
+					},
+					Line: 2,
+				},
+				&Struct{
+					Name: "Contents",
+					Type: UnionType,
+					Fields: []*Field{
+						&Field{
+							ID:           1,
+							Name:         "plainText",
+							Requiredness: Unspecified,
+							Type: BaseType{
+								ID: StringTypeID,
+								Annotations: []*Annotation{
+									&Annotation{
+										Name:  "format",
+										Value: "markdown",
+										Line:  8,
+									},
+								},
+							},
+							Line: 8,
+						},
+						&Field{
+							ID:   2,
+							Name: "pdf",
+							Type: BaseType{ID: BinaryTypeID},
+							// Requiredness intentionally skipped because
+							// zero-value for it is Unspecified.
+							Annotations: []*Annotation{
+								&Annotation{
+									Name:  "name",
+									Value: "pdfFile",
+									Line:  9,
+								},
+							},
+							Line: 9,
+						},
+					},
+					Line: 7,
+				},
+				&Struct{
+					Name: "GreatSadness",
+					Type: ExceptionType,
+					Fields: []*Field{
+						&Field{
+							ID:           1,
+							Name:         "message",
+							Type:         BaseType{ID: StringTypeID},
+							Requiredness: Optional,
+							Line:         13,
+						},
+					},
+					Line: 12,
+				},
+			}},
+			`
+				struct i128 {
+					1: required i64 high
+					2: required i64 low
+				} (serializer = "Int128Serializer")
+
+				union Contents {
+					1: string (format = "markdown") plainText
+					2: binary pdf (name = "pdfFile")
+				}
+
+				exception GreatSadness {
+					1: optional string message
+				}
 			`,
 		},
 	}

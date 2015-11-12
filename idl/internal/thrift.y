@@ -19,10 +19,18 @@ import "github.com/uber/thriftrw-go/ast"
     dub float64
 
     fieldType ast.Type
+    structType ast.StructureType
     baseTypeID ast.BaseTypeID
+    fieldRequired ast.Requiredness
+
+    field *ast.Field
+    fields []*ast.Field
 
     header ast.Header
     headers []ast.Header
+
+    enumItem *ast.EnumItem
+    enumItems []*ast.EnumItem
 
     definition ast.Definition
     definitions []ast.Definition
@@ -49,9 +57,17 @@ import "github.com/uber/thriftrw-go/ast"
 %type <prog> program
 %type <fieldType> type
 %type <baseTypeID> base_type_name
+%type <fieldRequired> field_required
+%type <structType> struct_type
+
+%type <field> field
+%type <fields> fields
 
 %type <header> header
 %type <headers> headers
+
+%type <enumItem> enum_item
+%type <enumItems> enum_items
 
 %type <definition> definition
 %type <definitions> definitions
@@ -81,6 +97,10 @@ program
             return 0
         }
     ;
+
+/***************************************************************************
+ Headers
+ ***************************************************************************/
 
 headers
     : /* no headers */     { $$ = nil }
@@ -113,14 +133,18 @@ header
         }
     ;
 
+/***************************************************************************
+ Definitions
+ ***************************************************************************/
+
 definitions
     : /* nothing */ { $$ = nil }
-    | definitions definition { $$ = append($1, $2) }
+    | definitions definition optional_sep { $$ = append($1, $2) }
     ;
 
 
 definition
-    : lineno CONST type IDENTIFIER '=' const_value optional_sep
+    : lineno CONST type IDENTIFIER '=' const_value
         {
             $$ = &ast.Constant{
                 Name: $4,
@@ -129,7 +153,7 @@ definition
                 Line: $1,
             }
         }
-    | lineno TYPEDEF type IDENTIFIER type_annotations optional_sep
+    | lineno TYPEDEF type IDENTIFIER type_annotations
         {
             $$ = &ast.Typedef{
                 Name: $4,
@@ -138,7 +162,96 @@ definition
                 Line: $1,
             }
         }
+    | lineno ENUM IDENTIFIER '{' enum_items '}' type_annotations
+        {
+            $$ = &ast.Enum{
+                Name: $3,
+                Items: $5,
+                Annotations: $7,
+                Line: $1,
+            }
+        }
+    | lineno struct_type IDENTIFIER '{' fields '}' type_annotations
+        {
+            $$ = &ast.Struct{
+                Name: $3,
+                Type: $2,
+                Fields: $5,
+                Annotations: $7,
+                Line: $1,
+            }
+        }
     ;
+
+struct_type
+    : STRUCT    { $$ =    ast.StructType }
+    | UNION     { $$ =     ast.UnionType }
+    | EXCEPTION { $$ = ast.ExceptionType }
+    ;
+
+enum_items
+    : /* nothing */ { $$ = nil }
+    | enum_items enum_item optional_sep { $$ = append($1, $2) }
+    ;
+
+enum_item
+    : lineno IDENTIFIER type_annotations
+        { $$ = &ast.EnumItem{Name: $2, Annotations: $3, Line: $1} }
+    | lineno IDENTIFIER '=' INTCONSTANT type_annotations
+        {
+            value := int($4)
+            $$ = &ast.EnumItem{
+                Name: $2,
+                Value: &value,
+                Annotations: $5,
+                Line: $1,
+            }
+        }
+    ;
+
+fields
+    : /* nothing */ { $$ = nil }
+    | fields field optional_sep { $$ = append($1, $2) }
+    ;
+
+
+field
+    : lineno INTCONSTANT ':' field_required type IDENTIFIER type_annotations
+        {
+            $$ = &ast.Field{
+                ID: int($2),
+                Name: $6,
+                Type: $5,
+                Requiredness: $4,
+                Annotations: $7,
+                Line: $1,
+            }
+        }
+    | lineno INTCONSTANT ':' field_required type IDENTIFIER '=' const_value
+      type_annotations
+        {
+            $$ = &ast.Field{
+                ID: int($2),
+                Name: $6,
+                Type: $5,
+                Requiredness: $4,
+                Default: $8,
+                Annotations: $9,
+                Line: $1,
+            }
+        }
+    ;
+
+
+field_required
+    : REQUIRED { $$ =    ast.Required }
+    | OPTIONAL { $$ =    ast.Optional }
+    | /* na */ { $$ = ast.Unspecified }
+    ;
+
+/***************************************************************************
+ Types
+ ***************************************************************************/
 
 type
     : base_type_name type_annotations
@@ -156,15 +269,19 @@ type
     ;
 
 base_type_name
-    : BOOL    { $$ =   ast.BoolBaseTypeID }
-    | BYTE    { $$ =   ast.ByteBaseTypeID }
-    | I16     { $$ =    ast.I16BaseTypeID }
-    | I32     { $$ =    ast.I32BaseTypeID }
-    | I64     { $$ =    ast.I64BaseTypeID }
-    | DOUBLE  { $$ = ast.DoubleBaseTypeID }
-    | STRING  { $$ = ast.StringBaseTypeID }
-    | BINARY  { $$ = ast.BinaryBaseTypeID }
+    : BOOL    { $$ =   ast.BoolTypeID }
+    | BYTE    { $$ =   ast.ByteTypeID }
+    | I16     { $$ =    ast.I16TypeID }
+    | I32     { $$ =    ast.I32TypeID }
+    | I64     { $$ =    ast.I64TypeID }
+    | DOUBLE  { $$ = ast.DoubleTypeID }
+    | STRING  { $$ = ast.StringTypeID }
+    | BINARY  { $$ = ast.BinaryTypeID }
     ;
+
+/***************************************************************************
+ Constant values
+ ***************************************************************************/
 
 const_value
     : INTCONSTANT { $$ = ast.ConstantInteger($1) }
@@ -191,6 +308,10 @@ const_map_items
         { $$ = append($1, ast.ConstantMapItem{Key: $2, Value: $4}) }
     ;
 
+/***************************************************************************
+ Type annotations
+ ***************************************************************************/
+
 type_annotations
     : /* nothing */         { $$ = nil }
     | '(' type_annotation_list ')' { $$ = $2 }
@@ -202,6 +323,9 @@ type_annotation_list
         { $$ = append($1, &ast.Annotation{Name: $3, Value: $5, Line: $2}) }
     ;
 
+/***************************************************************************
+ Other
+ ***************************************************************************/
 
 /* Grammar rules that need to record a line number at a specific token should
    include this somewhere. For example,

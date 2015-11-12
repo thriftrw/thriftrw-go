@@ -12,13 +12,11 @@ type Program struct {
 
 	// Definitions
 
-	Constants  []*Constant
-	Typedefs   []*Typedef
-	Enums      []*Enum
-	Structs    []*Struct
-	Unions     []*Union
-	Exceptions []*Exception
-	Services   []*Service
+	Constants []*Constant
+	Typedefs  []*Typedef
+	Enums     []*Enum
+	Structs   []*Struct
+	Services  []*Service
 }
 
 // TODO is AddHeader and AddDefinition even needed
@@ -46,10 +44,6 @@ func (p *Program) AddDefinition(definition Definition) error {
 		p.Enums = append(p.Enums, def)
 	case *Struct:
 		p.Structs = append(p.Structs, def)
-	case *Union:
-		p.Unions = append(p.Unions, def)
-	case *Exception:
-		p.Exceptions = append(p.Exceptions, def)
 	case *Service:
 		p.Services = append(p.Services, def)
 	default:

@@ -18,14 +18,14 @@ type BaseTypeID int
 
 // IDs of the base types supported by Thrift.
 const (
-	BoolBaseTypeID   BaseTypeID = iota + 1 // bool
-	ByteBaseTypeID                         // byte
-	I16BaseTypeID                          // i16
-	I32BaseTypeID                          // i32
-	I64BaseTypeID                          // i64
-	DoubleBaseTypeID                       // double
-	StringBaseTypeID                       // string
-	BinaryBaseTypeID                       // binary
+	BoolTypeID   BaseTypeID = iota + 1 // bool
+	ByteTypeID                         // byte
+	I16TypeID                          // i16
+	I32TypeID                          // i32
+	I64TypeID                          // i64
+	DoubleTypeID                       // double
+	StringTypeID                       // string
+	BinaryTypeID                       // binary
 )
 
 // BaseType is a reference to a Thrift base type.
