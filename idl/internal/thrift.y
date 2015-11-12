@@ -19,7 +19,12 @@ import "github.com/uber/thriftrw-go/ast"
     dub float64
 
     fieldType ast.Type
+    structType ast.StructureType
     baseTypeID ast.BaseTypeID
+    fieldRequired ast.Requiredness
+
+    field *ast.Field
+    fields []*ast.Field
 
     header ast.Header
     headers []ast.Header
@@ -52,6 +57,11 @@ import "github.com/uber/thriftrw-go/ast"
 %type <prog> program
 %type <fieldType> type
 %type <baseTypeID> base_type_name
+%type <fieldRequired> field_required
+%type <structType> struct_type
+
+%type <field> field
+%type <fields> fields
 
 %type <header> header
 %type <headers> headers
@@ -129,12 +139,12 @@ header
 
 definitions
     : /* nothing */ { $$ = nil }
-    | definitions definition { $$ = append($1, $2) }
+    | definitions definition optional_sep { $$ = append($1, $2) }
     ;
 
 
 definition
-    : lineno CONST type IDENTIFIER '=' const_value optional_sep
+    : lineno CONST type IDENTIFIER '=' const_value
         {
             $$ = &ast.Constant{
                 Name: $4,
@@ -143,7 +153,7 @@ definition
                 Line: $1,
             }
         }
-    | lineno TYPEDEF type IDENTIFIER type_annotations optional_sep
+    | lineno TYPEDEF type IDENTIFIER type_annotations
         {
             $$ = &ast.Typedef{
                 Name: $4,
@@ -161,6 +171,22 @@ definition
                 Line: $1,
             }
         }
+    | lineno struct_type IDENTIFIER '{' fields '}' type_annotations
+        {
+            $$ = &ast.Struct{
+                Name: $3,
+                Type: $2,
+                Fields: $5,
+                Annotations: $7,
+                Line: $1,
+            }
+        }
+    ;
+
+struct_type
+    : STRUCT    { $$ =    ast.StructType }
+    | UNION     { $$ =     ast.UnionType }
+    | EXCEPTION { $$ = ast.ExceptionType }
     ;
 
 enum_items
@@ -181,6 +207,46 @@ enum_item
                 Line: $1,
             }
         }
+    ;
+
+fields
+    : /* nothing */ { $$ = nil }
+    | fields field optional_sep { $$ = append($1, $2) }
+    ;
+
+
+field
+    : lineno INTCONSTANT ':' field_required type IDENTIFIER type_annotations
+        {
+            $$ = &ast.Field{
+                ID: int($2),
+                Name: $6,
+                Type: $5,
+                Requiredness: $4,
+                Annotations: $7,
+                Line: $1,
+            }
+        }
+    | lineno INTCONSTANT ':' field_required type IDENTIFIER '=' const_value
+      type_annotations
+        {
+            $$ = &ast.Field{
+                ID: int($2),
+                Name: $6,
+                Type: $5,
+                Requiredness: $4,
+                Default: $8,
+                Annotations: $9,
+                Line: $1,
+            }
+        }
+    ;
+
+
+field_required
+    : REQUIRED { $$ =    ast.Required }
+    | OPTIONAL { $$ =    ast.Optional }
+    | /* na */ { $$ = ast.Unspecified }
     ;
 
 /***************************************************************************

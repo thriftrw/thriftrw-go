@@ -40,6 +40,10 @@ func TestParseErrors(t *testing.T) {
 		`typedef foo`,
 		`enum Foo {`,
 		`enum { }`,
+		`
+			enum Foo {}
+			include "bar.thrift"
+		`,
 	}
 
 	for _, tt := range tests {
@@ -341,6 +345,124 @@ func TestParseEnum(t *testing.T) {
 					qux;
 					quux
 				} (_ = "__", foo = "bar")
+			`,
+		},
+	}
+
+	assertParseCases(t, tests)
+}
+
+func TestParseStruct(t *testing.T) {
+	tests := []parseCase{
+		{
+			&Program{Structs: []*Struct{
+				&Struct{Name: "EmptyStruct", Type: StructType, Line: 2},
+				&Struct{Name: "EmptyUnion", Type: UnionType, Line: 3},
+				&Struct{Name: "EmptyExc", Type: ExceptionType, Line: 4},
+			}},
+			`
+				struct EmptyStruct {}
+				union EmptyUnion {}
+				exception EmptyExc {}
+			`,
+		},
+		{
+			&Program{Structs: []*Struct{
+				&Struct{
+					Name: "i128",
+					Type: StructType,
+					Fields: []*Field{
+						&Field{
+							ID:           1,
+							Name:         "high",
+							Type:         BaseType{ID: I64BaseTypeID},
+							Requiredness: Required,
+							Line:         3,
+						},
+						&Field{
+							ID:           2,
+							Name:         "low",
+							Type:         BaseType{ID: I64BaseTypeID},
+							Requiredness: Required,
+							Line:         4,
+						},
+					},
+					Annotations: []*Annotation{
+						&Annotation{
+							Name:  "serializer",
+							Value: "Int128Serializer",
+							Line:  5,
+						},
+					},
+					Line: 2,
+				},
+				&Struct{
+					Name: "Contents",
+					Type: UnionType,
+					Fields: []*Field{
+						&Field{
+							ID:           1,
+							Name:         "plainText",
+							Requiredness: Unspecified,
+							Type: BaseType{
+								ID: StringBaseTypeID,
+								Annotations: []*Annotation{
+									&Annotation{
+										Name:  "format",
+										Value: "markdown",
+										Line:  8,
+									},
+								},
+							},
+							Line: 8,
+						},
+						&Field{
+							ID:   2,
+							Name: "pdf",
+							Type: BaseType{ID: BinaryBaseTypeID},
+							// Requiredness intentionally skipped because
+							// zero-value for it is Unspecified.
+							Annotations: []*Annotation{
+								&Annotation{
+									Name:  "name",
+									Value: "pdfFile",
+									Line:  9,
+								},
+							},
+							Line: 9,
+						},
+					},
+					Line: 7,
+				},
+				&Struct{
+					Name: "GreatSadness",
+					Type: ExceptionType,
+					Fields: []*Field{
+						&Field{
+							ID:           1,
+							Name:         "message",
+							Type:         BaseType{ID: StringBaseTypeID},
+							Requiredness: Optional,
+							Line:         13,
+						},
+					},
+					Line: 12,
+				},
+			}},
+			`
+				struct i128 {
+					1: required i64 high
+					2: required i64 low
+				} (serializer = "Int128Serializer")
+
+				union Contents {
+					1: string (format = "markdown") plainText
+					2: binary pdf (name = "pdfFile")
+				}
+
+				exception GreatSadness {
+					1: optional string message
+				}
 			`,
 		},
 	}
