@@ -1,10 +1,12 @@
 package idl
 
 import (
+	"strings"
 	"testing"
 
 	. "github.com/uber/thriftrw-go/ast"
 
+	"github.com/kr/pretty"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,10 +19,14 @@ func assertParseCases(t *testing.T, tests []parseCase) {
 	for _, tt := range tests {
 		program, err := Parse([]byte(tt.document))
 		if assert.NoError(t, err, "Parsing failed:\n%s", tt.document) {
-			assert.Equal(
+			succ := assert.Equal(
 				t, tt.program, program,
 				"Got unexpected program when parsing:\n%s", tt.document,
 			)
+			if !succ {
+				lines := pretty.Diff(tt.program, program)
+				t.Log("\n\t" + strings.Join(lines, "\n\t"))
+			}
 		}
 	}
 }
@@ -44,6 +50,10 @@ func TestParseErrors(t *testing.T) {
 			enum Foo {}
 			include "bar.thrift"
 		`,
+		`service Foo extends {}`,
+		`service Foo Bar {}`,
+		`service Foo { void foo() () (foo = "bar") }`,
+		`service Foo { void foo() throws }`,
 	}
 
 	for _, tt := range tests {
@@ -110,30 +120,28 @@ func TestParseConstants(t *testing.T) {
 				&Constant{
 					Name:  "foo",
 					Type:  BaseType{ID: I32TypeID},
-					Value: ConstantValue(ConstantInteger(42)),
+					Value: ConstantInteger(42),
 					Line:  2,
 				},
 				&Constant{
 					Name: "bar",
 					Type: BaseType{ID: I64TypeID},
-					Value: ConstantValue(
-						ConstantReference{
-							Name: "shared.baz",
-							Line: 3,
-						},
-					),
+					Value: ConstantReference{
+						Name: "shared.baz",
+						Line: 3,
+					},
 					Line: 3,
 				},
 				&Constant{
 					Name:  "baz",
 					Type:  BaseType{ID: StringTypeID},
-					Value: ConstantValue(ConstantString("hello world")),
+					Value: ConstantString("hello world"),
 					Line:  5,
 				},
 				&Constant{
 					Name:  "qux",
 					Type:  BaseType{ID: DoubleTypeID},
-					Value: ConstantValue(ConstantDouble(3.141592)),
+					Value: ConstantDouble(3.141592),
 					Line:  7,
 				},
 			}},
@@ -156,13 +164,13 @@ func TestParseConstants(t *testing.T) {
 							&Annotation{Name: "foo", Value: "a\nb", Line: 1},
 						},
 					},
-					Value: ConstantValue(ConstantBoolean(true)),
+					Value: ConstantBoolean(true),
 					Line:  1,
 				},
 				&Constant{
 					Name:  "include_something",
 					Type:  BaseType{ID: BoolTypeID},
-					Value: ConstantValue(ConstantBoolean(false)),
+					Value: ConstantBoolean(false),
 					Line:  2,
 				},
 			}},
@@ -185,7 +193,7 @@ func TestParseConstants(t *testing.T) {
 							&Annotation{Name: "baz", Value: "qux", Line: 2},
 						},
 					},
-					Value: ConstantValue(ConstantMap{
+					Value: ConstantMap{
 						Items: []ConstantMapItem{
 							ConstantMapItem{
 								Key:   ConstantString("a"),
@@ -196,7 +204,7 @@ func TestParseConstants(t *testing.T) {
 								Value: ConstantInteger(2),
 							},
 						},
-					}),
+					},
 					Line: 2,
 				},
 				&Constant{
@@ -204,25 +212,40 @@ func TestParseConstants(t *testing.T) {
 					Type: ListType{ValueType: ListType{
 						ValueType: BaseType{ID: I32TypeID},
 					}},
-					Value: ConstantValue(ConstantList{
+					Value: ConstantList{
 						Items: []ConstantValue{
-							ConstantValue(ConstantList{
+							ConstantList{
 								Items: []ConstantValue{
 									ConstantInteger(1),
 									ConstantInteger(2),
 									ConstantInteger(3),
 								},
-							}),
-							ConstantValue(ConstantList{
+							},
+							ConstantList{
 								Items: []ConstantValue{
 									ConstantInteger(4),
 									ConstantInteger(5),
 									ConstantInteger(6),
 								},
-							}),
+							},
 						},
-					}),
+					},
 					Line: 6,
+				},
+				&Constant{
+					Name: "const_struct",
+					Type: TypeReference{Name: "Item", Line: 10},
+					Value: ConstantMap{Items: []ConstantMapItem{
+						ConstantMapItem{
+							Key:   ConstantString("key"),
+							Value: ConstantString("foo"),
+						},
+						ConstantMapItem{
+							Key:   ConstantString("value"),
+							Value: ConstantInteger(42),
+						},
+					}},
+					Line: 10,
 				},
 			}},
 			`
@@ -234,6 +257,10 @@ func TestParseConstants(t *testing.T) {
 					[1, 2, 3]  # optional separator
 					[4, 5, 6]
 				];
+				const Item const_struct = {
+					"key": "foo",
+					"value": 42,
+				};
 			`,
 		},
 		{
@@ -241,13 +268,13 @@ func TestParseConstants(t *testing.T) {
 				&Constant{
 					Name:  "foo",
 					Type:  BaseType{ID: StringTypeID},
-					Value: ConstantValue(ConstantString(`a "b" c`)),
+					Value: ConstantString(`a "b" c`),
 					Line:  2,
 				},
 				&Constant{
 					Name:  "bar",
 					Type:  BaseType{ID: StringTypeID},
-					Value: ConstantValue(ConstantString(`a 'b' c`)),
+					Value: ConstantString(`a 'b' c`),
 					Line:  3,
 				},
 			}},
@@ -467,6 +494,102 @@ func TestParseStruct(t *testing.T) {
 				exception GreatSadness {
 					1: optional string message
 				}
+			`,
+		},
+	}
+
+	assertParseCases(t, tests)
+}
+
+func TestParseServices(t *testing.T) {
+	tests := []parseCase{
+		{
+			&Program{Services: []*Service{
+				&Service{Name: "EmptyService", Line: 2},
+				&Service{
+					Name: "AnotherEmptyService",
+					Parent: &ServiceReference{
+						Name: "EmptyService",
+						Line: 3,
+					},
+					Line: 3,
+				},
+			}},
+			`
+				service EmptyService {}
+				service AnotherEmptyService extends EmptyService {}
+			`,
+		},
+		{
+			&Program{Services: []*Service{
+				&Service{
+					Name: "KeyValue",
+					Functions: []*Function{
+						&Function{
+							Name:   "empty",
+							OneWay: true,
+							Line:   4,
+						},
+						&Function{
+							Name:       "something",
+							ReturnType: BaseType{ID: I32TypeID},
+							Exceptions: []*Field{
+								&Field{
+									ID:   1,
+									Name: "sadness",
+									Type: TypeReference{
+										Name: "GreatSadness",
+										Line: 8,
+									},
+									Line: 8,
+								},
+							},
+							OneWay: false,
+							Line:   7,
+						},
+						&Function{
+							Name: "somethingElse",
+							Parameters: []*Field{
+								&Field{
+									ID:   1,
+									Name: "a",
+									Type: TypeReference{Name: "A", Line: 11},
+									Line: 11,
+								},
+								&Field{
+									ID:   2,
+									Name: "b",
+									Type: TypeReference{Name: "B", Line: 12},
+									Line: 12,
+								},
+							},
+							Line: 10,
+						},
+					},
+					Annotations: []*Annotation{
+						&Annotation{
+							Name:  "ttl.milliseconds",
+							Value: "200",
+							Line:  14,
+						},
+					},
+					Line: 2,
+				},
+			}},
+			`
+				service KeyValue {
+					oneway void
+						empty()
+							throws ()
+
+					i32 something(
+					) throws (1: GreatSadness sadness);
+
+					void somethingElse(
+						1: A a;
+						2: B b;
+					),
+				} (ttl.milliseconds = "200")
 			`,
 		},
 	}

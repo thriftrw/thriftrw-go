@@ -14,6 +14,7 @@ import "github.com/uber/thriftrw-go/ast"
 
     // Other intermediate variables:
 
+    bul bool
     str string
     i64 int64
     dub float64
@@ -28,6 +29,9 @@ import "github.com/uber/thriftrw-go/ast"
 
     header ast.Header
     headers []ast.Header
+
+    function *ast.Function
+    functions []*ast.Function
 
     enumItem *ast.EnumItem
     enumItems []*ast.EnumItem
@@ -65,6 +69,9 @@ import "github.com/uber/thriftrw-go/ast"
 
 %type <header> header
 %type <headers> headers
+
+%type <function> function
+%type <functions> functions
 
 %type <enumItem> enum_item
 %type <enumItems> enum_items
@@ -144,6 +151,7 @@ definitions
 
 
 definition
+    /* constants */
     : lineno CONST type IDENTIFIER '=' const_value
         {
             $$ = &ast.Constant{
@@ -153,6 +161,7 @@ definition
                 Line: $1,
             }
         }
+    /* types */
     | lineno TYPEDEF type IDENTIFIER type_annotations
         {
             $$ = &ast.Typedef{
@@ -178,6 +187,32 @@ definition
                 Type: $2,
                 Fields: $5,
                 Annotations: $7,
+                Line: $1,
+            }
+        }
+    /* services */
+    | lineno SERVICE IDENTIFIER '{' functions '}' type_annotations
+        {
+            $$ = &ast.Service{
+                Name: $3,
+                Functions: $5,
+                Annotations: $7,
+                Line: $1,
+            }
+        }
+    | lineno SERVICE IDENTIFIER EXTENDS lineno IDENTIFIER '{' functions '}'
+      type_annotations
+        {
+            parent := &ast.ServiceReference{
+                Name: $6,
+                Line: $5,
+            }
+
+            $$ = &ast.Service{
+                Name: $3,
+                Functions: $8,
+                Parent: parent,
+                Annotations: $10,
                 Line: $1,
             }
         }
@@ -242,11 +277,46 @@ field
         }
     ;
 
-
 field_required
     : REQUIRED { $$ =    ast.Required }
     | OPTIONAL { $$ =    ast.Optional }
     | /* na */ { $$ = ast.Unspecified }
+    ;
+
+functions
+    : /* nothing */ { $$ = nil }
+    | functions function optional_sep { $$ = append($1, $2) }
+    ;
+
+function
+    : oneway function_type lineno IDENTIFIER '(' fields ')' throws
+      type_annotations
+        {
+            $$ = &ast.Function{
+                Name: $4,
+                Parameters: $6,
+                ReturnType: $<fieldType>2,
+                Exceptions: $<fields>8,
+                OneWay: $<bul>1,
+                Annotations: $9,
+                Line: $3,
+            }
+        }
+    ;
+
+oneway
+    : ONEWAY        { $<bul>$ = true }
+    | /* nothing */ { $<bul>$ = false }
+    ;
+
+function_type
+    : VOID { $<fieldType>$ = nil }
+    | type { $<fieldType>$ = $1  }
+    ;
+
+throws
+    : /* nothing */  { $<fields>$ = nil }
+    | THROWS '(' fields ')' { $<fields>$ = $3 }
     ;
 
 /***************************************************************************
