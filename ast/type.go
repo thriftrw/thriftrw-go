@@ -68,11 +68,7 @@ func (bt BaseType) String() string {
 		panic(fmt.Sprintf("unknown base type %v", bt))
 	}
 
-	if s := FormatAnnotations(bt.Annotations); len(s) > 0 {
-		name = name + " " + s
-	}
-
-	return name
+	return appendAnnotations(name, bt.Annotations)
 }
 
 // MapType is a reference to a the Thrift map type.
@@ -90,13 +86,10 @@ type MapType struct {
 func (MapType) fieldType() {}
 
 func (mt MapType) String() string {
-	name := fmt.Sprintf("map<%s, %s>", mt.KeyType, mt.ValueType)
-
-	if s := FormatAnnotations(mt.Annotations); len(s) > 0 {
-		name = name + " " + s
-	}
-
-	return name
+	return appendAnnotations(
+		fmt.Sprintf("map<%s, %s>", mt.KeyType, mt.ValueType),
+		mt.Annotations,
+	)
 }
 
 // ListType is a reference to the Thrift list type.
@@ -114,13 +107,10 @@ type ListType struct {
 func (ListType) fieldType() {}
 
 func (lt ListType) String() string {
-	name := fmt.Sprintf("list<%s>", lt.ValueType.String())
-
-	if s := FormatAnnotations(lt.Annotations); len(s) > 0 {
-		name = name + " " + s
-	}
-
-	return name
+	return appendAnnotations(
+		fmt.Sprintf("list<%s>", lt.ValueType.String()),
+		lt.Annotations,
+	)
 }
 
 // SetType is a reference to the Thrift set type.
@@ -138,13 +128,10 @@ type SetType struct {
 func (SetType) fieldType() {}
 
 func (st SetType) String() string {
-	name := fmt.Sprintf("set<%s>", st.ValueType.String())
-
-	if s := FormatAnnotations(st.Annotations); len(s) > 0 {
-		name = name + " " + s
-	}
-
-	return name
+	return appendAnnotations(
+		fmt.Sprintf("set<%s>", st.ValueType.String()),
+		st.Annotations,
+	)
 }
 
 // TypeReference references a user-defined type.
@@ -157,4 +144,11 @@ func (TypeReference) fieldType() {}
 
 func (tr TypeReference) String() string {
 	return tr.Name
+}
+
+func appendAnnotations(s string, anns []*Annotation) string {
+	if a := FormatAnnotations(anns); len(a) > 0 {
+		return s + " " + a
+	}
+	return s
 }
