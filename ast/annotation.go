@@ -29,8 +29,8 @@ func FormatAnnotations(anns []*Annotation) string {
 	}
 
 	as := make([]string, len(anns))
-	for idx, ann := range anns {
-		as[idx] = ann.String()
+	for i, ann := range anns {
+		as[i] = ann.String()
 	}
 
 	return "(" + strings.Join(as, ", ") + ")"

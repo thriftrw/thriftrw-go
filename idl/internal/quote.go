@@ -23,13 +23,13 @@ func UnquoteSingleQuoted(in []byte) (string, error) {
 func swapQuotes(in []byte) []byte {
 	// s/'/"/g, s/"/'/g
 	out := make([]byte, len(in))
-	for idx, c := range in {
+	for i, c := range in {
 		if c == '"' {
 			c = '\''
 		} else if c == '\'' {
 			c = '"'
 		}
-		out[idx] = c
+		out[i] = c
 	}
 	return out
 }
