@@ -1,5 +1,10 @@
 package ast
 
+import (
+	"fmt"
+	"strings"
+)
+
 // Annotation represents a type annotation. Type annotations are key-value
 // pairs in the form,
 //
@@ -11,4 +16,22 @@ type Annotation struct {
 	Name  string
 	Value string
 	Line  int
+}
+
+func (ann *Annotation) String() string {
+	return fmt.Sprintf("%s = %q", ann.Name, ann.Value)
+}
+
+// FormatAnnotations formats a collection of annotations into a string.
+func FormatAnnotations(anns []*Annotation) string {
+	if len(anns) == 0 {
+		return ""
+	}
+
+	as := make([]string, len(anns))
+	for i, ann := range anns {
+		as[i] = ann.String()
+	}
+
+	return "(" + strings.Join(as, ", ") + ")"
 }

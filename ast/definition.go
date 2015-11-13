@@ -103,8 +103,8 @@ type Struct struct {
 // 		binary getValue(1: string key)
 // 	} (router.serviceName = "key_value")
 type Service struct {
-	Name     string
-	Function []*Function
+	Name      string
+	Functions []*Function
 	// Reference to the parent service if this service inherits another
 	// service, nil otherwise.
 	Parent      *ServiceReference
@@ -125,6 +125,7 @@ type Function struct {
 	Exceptions  []*Field
 	OneWay      bool
 	Annotations []*Annotation
+	Line        int
 }
 
 // Requiredness represents whether a field was marked as required or optional,

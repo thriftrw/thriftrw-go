@@ -1,15 +1,13 @@
 package ast
 
+import "fmt"
+
 // Type unifies the different types representing Thrift field types.
 type Type interface {
+	fmt.Stringer
+
 	fieldType()
 }
-
-func (BaseType) fieldType()      {}
-func (MapType) fieldType()       {}
-func (ListType) fieldType()      {}
-func (SetType) fieldType()       {}
-func (TypeReference) fieldType() {}
 
 // BaseTypeID is an identifier for primitive types supported by Thrift.
 type BaseTypeID int
@@ -44,6 +42,35 @@ type BaseType struct {
 	Annotations []*Annotation
 }
 
+func (BaseType) fieldType() {}
+
+func (bt BaseType) String() string {
+	var name string
+
+	switch bt.ID {
+	case BoolTypeID:
+		name = "bool"
+	case ByteTypeID:
+		name = "byte"
+	case I16TypeID:
+		name = "i16"
+	case I32TypeID:
+		name = "i32"
+	case I64TypeID:
+		name = "i64"
+	case DoubleTypeID:
+		name = "double"
+	case StringTypeID:
+		name = "string"
+	case BinaryTypeID:
+		name = "binary"
+	default:
+		panic(fmt.Sprintf("unknown base type %v", bt))
+	}
+
+	return appendAnnotations(name, bt.Annotations)
+}
+
 // MapType is a reference to a the Thrift map type.
 //
 // 	map<k, v>
@@ -54,6 +81,15 @@ type BaseType struct {
 type MapType struct {
 	KeyType, ValueType Type
 	Annotations        []*Annotation
+}
+
+func (MapType) fieldType() {}
+
+func (mt MapType) String() string {
+	return appendAnnotations(
+		fmt.Sprintf("map<%s, %s>", mt.KeyType, mt.ValueType),
+		mt.Annotations,
+	)
 }
 
 // ListType is a reference to the Thrift list type.
@@ -68,6 +104,15 @@ type ListType struct {
 	Annotations []*Annotation
 }
 
+func (ListType) fieldType() {}
+
+func (lt ListType) String() string {
+	return appendAnnotations(
+		fmt.Sprintf("list<%s>", lt.ValueType.String()),
+		lt.Annotations,
+	)
+}
+
 // SetType is a reference to the Thrift set type.
 //
 // 	set<a>
@@ -80,8 +125,30 @@ type SetType struct {
 	Annotations []*Annotation
 }
 
+func (SetType) fieldType() {}
+
+func (st SetType) String() string {
+	return appendAnnotations(
+		fmt.Sprintf("set<%s>", st.ValueType.String()),
+		st.Annotations,
+	)
+}
+
 // TypeReference references a user-defined type.
 type TypeReference struct {
 	Name string
 	Line int
+}
+
+func (TypeReference) fieldType() {}
+
+func (tr TypeReference) String() string {
+	return tr.Name
+}
+
+func appendAnnotations(s string, anns []*Annotation) string {
+	if a := FormatAnnotations(anns); len(a) > 0 {
+		return s + " " + a
+	}
+	return s
 }
