@@ -11,8 +11,8 @@ import (
 )
 
 type parseCase struct {
-	program  *Program
 	document string
+	program  *Program
 }
 
 func assertParseCases(t *testing.T, tests []parseCase) {
@@ -65,36 +65,26 @@ func TestParseErrors(t *testing.T) {
 func TestParseHeaders(t *testing.T) {
 	tests := []parseCase{
 		{
-			&Program{Includes: []*Include{
-				&Include{"foo.thrift", 2},
-				&Include{"bar.thrift", 3},
-			}},
 			`
 				include "foo.thrift"
 				include "bar.thrift"
 			`,
+			&Program{Includes: []*Include{
+				&Include{"foo.thrift", 2},
+				&Include{"bar.thrift", 3},
+			}},
 		},
 		{
-			&Program{Namespaces: []*Namespace{
-				&Namespace{"py", "bar", 2},
-				&Namespace{"*", "foo", 3},
-			}},
 			`
 				namespace py bar
 				namespace * foo
 			`,
+			&Program{Namespaces: []*Namespace{
+				&Namespace{"py", "bar", 2},
+				&Namespace{"*", "foo", 3},
+			}},
 		},
 		{
-			&Program{
-				Includes: []*Include{
-					&Include{"shared.thrift", 3},
-					&Include{"errors.thrift", 9},
-				},
-				Namespaces: []*Namespace{
-					&Namespace{"go", "foo_service", 4},
-					&Namespace{"py", "services.foo", 12},
-				},
-			},
 			`
 				// defines shared types
 				include "shared.thrift"
@@ -108,6 +98,16 @@ func TestParseHeaders(t *testing.T) {
 				/* python code goes to service.foo */
 				namespace py services.foo
 			`,
+			&Program{
+				Includes: []*Include{
+					&Include{"shared.thrift", 3},
+					&Include{"errors.thrift", 9},
+				},
+				Namespaces: []*Namespace{
+					&Namespace{"go", "foo_service", 4},
+					&Namespace{"py", "services.foo", 12},
+				},
+			},
 		},
 	}
 	assertParseCases(t, tests)
@@ -116,6 +116,14 @@ func TestParseHeaders(t *testing.T) {
 func TestParseConstants(t *testing.T) {
 	tests := []parseCase{
 		{
+			`
+				const i32 foo = 42
+				const i64 bar = shared.baz;
+
+				const string baz = "hello world";
+
+				const double qux = 3.141592
+			`,
 			&Program{Constants: []*Constant{
 				&Constant{
 					Name:  "foo",
@@ -145,16 +153,10 @@ func TestParseConstants(t *testing.T) {
 					Line:  7,
 				},
 			}},
-			`
-				const i32 foo = 42
-				const i64 bar = shared.baz;
-
-				const string baz = "hello world";
-
-				const double qux = 3.141592
-			`,
 		},
 		{
+			`const bool (foo = "a\nb") baz = true
+			 const bool include_something = false`,
 			&Program{Constants: []*Constant{
 				&Constant{
 					Name: "baz",
@@ -174,10 +176,22 @@ func TestParseConstants(t *testing.T) {
 					Line:  2,
 				},
 			}},
-			`const bool (foo = "a\nb") baz = true
-			 const bool include_something = false`,
 		},
 		{
+			`
+				const map<string (foo = "bar"), i32> (baz = "qux") stuff = {
+					"a": 1,
+					"b": 2,
+				}
+				const list<list<i32>> list_of_lists = [
+					[1, 2, 3]  # optional separator
+					[4, 5, 6]
+				];
+				const Item const_struct = {
+					"key": "foo",
+					"value": 42,
+				};
+			`,
 			&Program{Constants: []*Constant{
 				&Constant{
 					Name: "stuff",
@@ -248,22 +262,12 @@ func TestParseConstants(t *testing.T) {
 					Line: 10,
 				},
 			}},
-			`
-				const map<string (foo = "bar"), i32> (baz = "qux") stuff = {
-					"a": 1,
-					"b": 2,
-				}
-				const list<list<i32>> list_of_lists = [
-					[1, 2, 3]  # optional separator
-					[4, 5, 6]
-				];
-				const Item const_struct = {
-					"key": "foo",
-					"value": 42,
-				};
-			`,
 		},
 		{
+			`
+				const string foo = 'a "b" c'
+				const string bar = "a 'b' c"
+			`,
 			&Program{Constants: []*Constant{
 				&Constant{
 					Name:  "foo",
@@ -278,10 +282,6 @@ func TestParseConstants(t *testing.T) {
 					Line:  3,
 				},
 			}},
-			`
-				const string foo = 'a "b" c'
-				const string bar = "a 'b' c"
-			`,
 		},
 	}
 	assertParseCases(t, tests)
@@ -290,6 +290,11 @@ func TestParseConstants(t *testing.T) {
 func TestParseTypedef(t *testing.T) {
 	tests := []parseCase{
 		{
+			`
+				typedef string UUID (length = "32");
+
+				typedef i64 (js.type = "Date") Date
+			`,
 			&Program{Typedefs: []*Typedef{
 				&Typedef{
 					Name: "UUID",
@@ -318,11 +323,6 @@ func TestParseTypedef(t *testing.T) {
 					Line: 4,
 				},
 			}},
-			`
-				typedef string UUID (length = "32");
-
-				typedef i64 (js.type = "Date") Date
-			`,
 		},
 	}
 
@@ -334,14 +334,22 @@ func TestParseEnum(t *testing.T) {
 
 	tests := []parseCase{
 		{
-			&Program{Enums: []*Enum{&Enum{Name: "EmptyEnum", Line: 2}}},
 			`
 				enum EmptyEnum
 				{
 				}
 			`,
+			&Program{Enums: []*Enum{&Enum{Name: "EmptyEnum", Line: 2}}},
 		},
 		{
+			`
+				enum SillyEnum {
+					foo (x = "y"), bar /*
+					*/ baz = 42
+					qux;
+					quux
+				} (_ = "__", foo = "bar")
+			`,
 			&Program{Enums: []*Enum{
 				&Enum{
 					Name: "SillyEnum",
@@ -369,14 +377,6 @@ func TestParseEnum(t *testing.T) {
 					Line: 2,
 				},
 			}},
-			`
-				enum SillyEnum {
-					foo (x = "y"), bar /*
-					*/ baz = 42
-					qux;
-					quux
-				} (_ = "__", foo = "bar")
-			`,
 		},
 	}
 
@@ -386,18 +386,33 @@ func TestParseEnum(t *testing.T) {
 func TestParseStruct(t *testing.T) {
 	tests := []parseCase{
 		{
-			&Program{Structs: []*Struct{
-				&Struct{Name: "EmptyStruct", Type: StructType, Line: 2},
-				&Struct{Name: "EmptyUnion", Type: UnionType, Line: 3},
-				&Struct{Name: "EmptyExc", Type: ExceptionType, Line: 4},
-			}},
 			`
 				struct EmptyStruct {}
 				union EmptyUnion {}
 				exception EmptyExc {}
 			`,
+			&Program{Structs: []*Struct{
+				&Struct{Name: "EmptyStruct", Type: StructType, Line: 2},
+				&Struct{Name: "EmptyUnion", Type: UnionType, Line: 3},
+				&Struct{Name: "EmptyExc", Type: ExceptionType, Line: 4},
+			}},
 		},
 		{
+			`
+				struct i128 {
+					1: required i64 high
+					2: required i64 low
+				} (serializer = "Int128Serializer")
+
+				union Contents {
+					1: string (format = "markdown") plainText
+					2: binary pdf (name = "pdfFile")
+				}
+
+				exception GreatSadness {
+					1: optional string message
+				}
+			`,
 			&Program{Structs: []*Struct{
 				&Struct{
 					Name: "i128",
@@ -480,21 +495,6 @@ func TestParseStruct(t *testing.T) {
 					Line: 12,
 				},
 			}},
-			`
-				struct i128 {
-					1: required i64 high
-					2: required i64 low
-				} (serializer = "Int128Serializer")
-
-				union Contents {
-					1: string (format = "markdown") plainText
-					2: binary pdf (name = "pdfFile")
-				}
-
-				exception GreatSadness {
-					1: optional string message
-				}
-			`,
 		},
 	}
 
@@ -504,6 +504,10 @@ func TestParseStruct(t *testing.T) {
 func TestParseServices(t *testing.T) {
 	tests := []parseCase{
 		{
+			`
+				service EmptyService {}
+				service AnotherEmptyService extends EmptyService {}
+			`,
 			&Program{Services: []*Service{
 				&Service{Name: "EmptyService", Line: 2},
 				&Service{
@@ -515,12 +519,23 @@ func TestParseServices(t *testing.T) {
 					Line: 3,
 				},
 			}},
-			`
-				service EmptyService {}
-				service AnotherEmptyService extends EmptyService {}
-			`,
 		},
 		{
+			`
+				service KeyValue {
+					oneway void
+						empty()
+							throws ()
+
+					i32 something(
+					) throws (1: GreatSadness sadness);
+
+					void somethingElse(
+						1: A a;
+						2: B b;
+					) (py.name = "something_else"),
+				} (ttl.milliseconds = "200")
+			`,
 			&Program{Services: []*Service{
 				&Service{
 					Name: "KeyValue",
@@ -583,21 +598,6 @@ func TestParseServices(t *testing.T) {
 					Line: 2,
 				},
 			}},
-			`
-				service KeyValue {
-					oneway void
-						empty()
-							throws ()
-
-					i32 something(
-					) throws (1: GreatSadness sadness);
-
-					void somethingElse(
-						1: A a;
-						2: B b;
-					) (py.name = "something_else"),
-				} (ttl.milliseconds = "200")
-			`,
 		},
 	}
 
