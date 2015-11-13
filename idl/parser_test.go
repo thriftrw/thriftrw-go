@@ -563,6 +563,13 @@ func TestParseServices(t *testing.T) {
 									Line: 12,
 								},
 							},
+							Annotations: []*Annotation{
+								&Annotation{
+									Name:  "py.name",
+									Value: "something_else",
+									Line:  13,
+								},
+							},
 							Line: 10,
 						},
 					},
@@ -588,7 +595,7 @@ func TestParseServices(t *testing.T) {
 					void somethingElse(
 						1: A a;
 						2: B b;
-					),
+					) (py.name = "something_else"),
 				} (ttl.milliseconds = "200")
 			`,
 		},
