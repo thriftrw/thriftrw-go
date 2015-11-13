@@ -4,9 +4,9 @@ import "fmt"
 
 // Type unifies the different types representing Thrift field types.
 type Type interface {
-	fieldType()
-
 	fmt.Stringer
+
+	fieldType()
 }
 
 // BaseTypeID is an identifier for primitive types supported by Thrift.
