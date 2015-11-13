@@ -24,7 +24,7 @@ func (ann *Annotation) String() string {
 
 // FormatAnnotations formats a collection of annotations into a string.
 func FormatAnnotations(anns []*Annotation) string {
-	if anns == nil || len(anns) == 0 {
+	if len(anns) == 0 {
 		return ""
 	}
 
