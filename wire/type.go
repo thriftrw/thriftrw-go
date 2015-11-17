@@ -18,13 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package idl provides a parser for Thrift IDL files.
-package idl
+package wire
 
-import "github.com/uber/thriftrw-go/ast"
-import "github.com/uber/thriftrw-go/idl/internal"
+// Type identifies the different types supported by Thrift over the wire.
+type Type byte
 
-// Parse parses a Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	return internal.Parse(s)
-}
+// Type codes of the different types supported by Thrift.
+const (
+	TBool   Type = 2
+	TByte   Type = 3
+	TDouble Type = 4
+	TI16    Type = 6
+	TI32    Type = 8
+	TI64    Type = 10
+	TBinary Type = 11
+	TStruct Type = 12
+	TMap    Type = 13
+	TSet    Type = 14
+	TList   Type = 15
+)
+
+//go:generate stringer -type=Type

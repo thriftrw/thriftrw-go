@@ -18,13 +18,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package idl provides a parser for Thrift IDL files.
-package idl
+// Package protocol provides implementations of different Thrift protocols.
+package protocol
 
-import "github.com/uber/thriftrw-go/ast"
-import "github.com/uber/thriftrw-go/idl/internal"
+import (
+	"io"
 
-// Parse parses a Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	return internal.Parse(s)
+	"github.com/uber/thriftrw-go/wire"
+)
+
+// Protocol defines a specific way for a Thrift value to be encoded or
+// decoded.
+type Protocol interface {
+	// Encode the given Value and write the result to the given Writer.
+	Encode(v wire.Value, w io.Writer) error
+
+	// TODO
+	Decode(v *wire.Value, r io.Reader) error
 }

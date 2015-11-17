@@ -11,9 +11,10 @@ GENERATED_FILES = frozenset([
     "ast/basetypeid_string.go",
     "idl/internal/lex.go",
     "idl/internal/y.go",
+    "wire/type_string.go",
 ])
 
-PACKAGES = ['ast', 'idl']
+PACKAGES = ['.']
 
 
 def findup(path, start=None):
