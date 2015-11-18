@@ -83,6 +83,8 @@ func (bw *Writer) writeField(f wire.Field) error {
 
 	// value
 	if err := bw.WriteValue(f.Value); err != nil {
+		// TODO(abg): Figure out better error handling story. We need access
+		// to the underlying error object if it's a network error.
 		return fmt.Errorf(
 			"failed to write field %d (%v): %s",
 			f.ID, f.Value.Type, err,
