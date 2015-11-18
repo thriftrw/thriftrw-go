@@ -32,8 +32,8 @@ import (
 
 var bigEndian = binary.BigEndian
 
-// Writer implements basic logic for writing the the Thrift Binary Protocol to
-// an io.Writer.
+// Writer implements basic logic for writing the Thrift Binary Protocol to an
+// io.Writer.
 type Writer struct {
 	Writer io.Writer
 
@@ -41,38 +41,33 @@ type Writer struct {
 	buffer [8]byte
 }
 
-// Write writes the given slice of bytes.
-func (bw *Writer) Write(bs []byte) error {
+func (bw *Writer) write(bs []byte) error {
 	_, err := bw.Writer.Write(bs)
 	return err
 }
 
-// WriteByte writes out a single byte.
-func (bw *Writer) WriteByte(b byte) error {
+func (bw *Writer) writeByte(b byte) error {
 	bs := bw.buffer[0:1]
 	bs[0] = b
-	return bw.Write(bs)
+	return bw.write(bs)
 }
 
-// WriteInt16 writes the given 16-bit integer using big endian byte ordering.
-func (bw *Writer) WriteInt16(n int16) error {
+func (bw *Writer) writeInt16(n int16) error {
 	bs := bw.buffer[0:2]
 	bigEndian.PutUint16(bs, uint16(n))
-	return bw.Write(bs)
+	return bw.write(bs)
 }
 
-// WriteInt32 writes the given 32-bit integer using big endian byte ordering.
-func (bw *Writer) WriteInt32(n int32) error {
+func (bw *Writer) writeInt32(n int32) error {
 	bs := bw.buffer[0:4]
 	bigEndian.PutUint32(bs, uint32(n))
-	return bw.Write(bs)
+	return bw.write(bs)
 }
 
-// WriteInt64 writes the given 64-bit integer using big endian byte ordering.
-func (bw *Writer) WriteInt64(n int64) error {
+func (bw *Writer) writeInt64(n int64) error {
 	bs := bw.buffer[0:8]
 	bigEndian.PutUint64(bs, uint64(n))
-	return bw.Write(bs)
+	return bw.write(bs)
 }
 
 // WriteValue writes out the given Thrift value.
@@ -80,41 +75,41 @@ func (bw *Writer) WriteValue(v wire.Value) error {
 	switch v.Type {
 	case wire.TBool:
 		if v.Bool {
-			return bw.WriteByte(1)
+			return bw.writeByte(1)
 		}
-		return bw.WriteByte(0)
+		return bw.writeByte(0)
 
 	case wire.TByte:
-		return bw.WriteByte(byte(v.Byte))
+		return bw.writeByte(byte(v.Byte))
 
 	case wire.TDouble:
 		value := math.Float64bits(v.Double)
-		return bw.WriteInt64(int64(value))
+		return bw.writeInt64(int64(value))
 
 	case wire.TI16:
-		return bw.WriteInt16(v.I16)
+		return bw.writeInt16(v.I16)
 
 	case wire.TI32:
-		return bw.WriteInt32(v.I32)
+		return bw.writeInt32(v.I32)
 
 	case wire.TI64:
-		return bw.WriteInt64(v.I64)
+		return bw.writeInt64(v.I64)
 
 	case wire.TBinary:
-		if err := bw.WriteInt32(int32(len(v.Binary))); err != nil {
+		if err := bw.writeInt32(int32(len(v.Binary))); err != nil {
 			return err
 		}
-		return bw.Write(v.Binary)
+		return bw.write(v.Binary)
 
 	case wire.TStruct:
 		for _, f := range v.Struct.Fields {
 			// type:1
-			if err := bw.WriteByte(byte(f.Value.Type)); err != nil {
+			if err := bw.writeByte(byte(f.Value.Type)); err != nil {
 				return err
 			}
 
 			// id:2
-			if err := bw.WriteInt16(f.ID); err != nil {
+			if err := bw.writeInt16(f.ID); err != nil {
 				return err
 			}
 
@@ -125,23 +120,22 @@ func (bw *Writer) WriteValue(v wire.Value) error {
 					f.ID, f.Value.Type, err,
 				)
 			}
-
 		}
-		return bw.WriteByte(0) // end struct
+		return bw.writeByte(0) // end struct
 
 	case wire.TMap:
 		// ktype:1
-		if err := bw.WriteByte(byte(v.Map.KeyType)); err != nil {
+		if err := bw.writeByte(byte(v.Map.KeyType)); err != nil {
 			return err
 		}
 
 		// vtype:1
-		if err := bw.WriteByte(byte(v.Map.ValueType)); err != nil {
+		if err := bw.writeByte(byte(v.Map.ValueType)); err != nil {
 			return err
 		}
 
 		// length:4
-		if err := bw.WriteInt32(int32(len(v.Map.Items))); err != nil {
+		if err := bw.writeInt32(int32(len(v.Map.Items))); err != nil {
 			return err
 		}
 
@@ -158,12 +152,12 @@ func (bw *Writer) WriteValue(v wire.Value) error {
 
 	case wire.TSet:
 		// vtype:1
-		if err := bw.WriteByte(byte(v.Set.ValueType)); err != nil {
+		if err := bw.writeByte(byte(v.Set.ValueType)); err != nil {
 			return err
 		}
 
 		// length:4
-		if err := bw.WriteInt32(int32(len(v.Set.Items))); err != nil {
+		if err := bw.writeInt32(int32(len(v.Set.Items))); err != nil {
 			return err
 		}
 
@@ -177,12 +171,12 @@ func (bw *Writer) WriteValue(v wire.Value) error {
 
 	case wire.TList:
 		// vtype:1
-		if err := bw.WriteByte(byte(v.List.ValueType)); err != nil {
+		if err := bw.writeByte(byte(v.List.ValueType)); err != nil {
 			return err
 		}
 
 		// length:4
-		if err := bw.WriteInt32(int32(len(v.List.Items))); err != nil {
+		if err := bw.writeInt32(int32(len(v.List.Items))); err != nil {
 			return err
 		}
 
