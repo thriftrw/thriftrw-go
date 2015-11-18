@@ -70,6 +70,102 @@ func (bw *Writer) writeInt64(n int64) error {
 	return bw.write(bs)
 }
 
+func (bw *Writer) writeField(f wire.Field) error {
+	// type:1
+	if err := bw.writeByte(byte(f.Value.Type)); err != nil {
+		return err
+	}
+
+	// id:2
+	if err := bw.writeInt16(f.ID); err != nil {
+		return err
+	}
+
+	// value
+	if err := bw.WriteValue(f.Value); err != nil {
+		return fmt.Errorf(
+			"failed to write field %d (%v): %s",
+			f.ID, f.Value.Type, err,
+		)
+	}
+
+	return nil
+}
+
+func (bw *Writer) writeStruct(s wire.Struct) error {
+	for _, f := range s.Fields {
+		if err := bw.writeField(f); err != nil {
+			return err
+		}
+	}
+	return bw.writeByte(0) // end struct
+}
+
+func (bw *Writer) writeMap(m wire.Map) error {
+	// ktype:1
+	if err := bw.writeByte(byte(m.KeyType)); err != nil {
+		return err
+	}
+
+	// vtype:1
+	if err := bw.writeByte(byte(m.ValueType)); err != nil {
+		return err
+	}
+
+	// length:4
+	if err := bw.writeInt32(int32(len(m.Items))); err != nil {
+		return err
+	}
+
+	for _, item := range m.Items {
+		if err := bw.WriteValue(item.Key); err != nil {
+			return err
+		}
+		if err := bw.WriteValue(item.Value); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (bw *Writer) writeSet(s wire.Set) error {
+	// vtype:1
+	if err := bw.writeByte(byte(s.ValueType)); err != nil {
+		return err
+	}
+
+	// length:4
+	if err := bw.writeInt32(int32(len(s.Items))); err != nil {
+		return err
+	}
+
+	for _, item := range s.Items {
+		if err := bw.WriteValue(item); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (bw *Writer) writeList(l wire.List) error {
+	// vtype:1
+	if err := bw.writeByte(byte(l.ValueType)); err != nil {
+		return err
+	}
+
+	// length:4
+	if err := bw.writeInt32(int32(len(l.Items))); err != nil {
+		return err
+	}
+
+	for _, item := range l.Items {
+		if err := bw.WriteValue(item); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // WriteValue writes out the given Thrift value.
 func (bw *Writer) WriteValue(v wire.Value) error {
 	switch v.Type {
@@ -102,91 +198,16 @@ func (bw *Writer) WriteValue(v wire.Value) error {
 		return bw.write(v.Binary)
 
 	case wire.TStruct:
-		for _, f := range v.Struct.Fields {
-			// type:1
-			if err := bw.writeByte(byte(f.Value.Type)); err != nil {
-				return err
-			}
-
-			// id:2
-			if err := bw.writeInt16(f.ID); err != nil {
-				return err
-			}
-
-			// value
-			if err := bw.WriteValue(f.Value); err != nil {
-				return fmt.Errorf(
-					"failed to write field %d (%v): %s",
-					f.ID, f.Value.Type, err,
-				)
-			}
-		}
-		return bw.writeByte(0) // end struct
+		return bw.writeStruct(v.Struct)
 
 	case wire.TMap:
-		// ktype:1
-		if err := bw.writeByte(byte(v.Map.KeyType)); err != nil {
-			return err
-		}
-
-		// vtype:1
-		if err := bw.writeByte(byte(v.Map.ValueType)); err != nil {
-			return err
-		}
-
-		// length:4
-		if err := bw.writeInt32(int32(len(v.Map.Items))); err != nil {
-			return err
-		}
-
-		for _, item := range v.Map.Items {
-			if err := bw.WriteValue(item.Key); err != nil {
-				return err
-			}
-			if err := bw.WriteValue(item.Value); err != nil {
-				return err
-			}
-		}
-
-		return nil
+		return bw.writeMap(v.Map)
 
 	case wire.TSet:
-		// vtype:1
-		if err := bw.writeByte(byte(v.Set.ValueType)); err != nil {
-			return err
-		}
-
-		// length:4
-		if err := bw.writeInt32(int32(len(v.Set.Items))); err != nil {
-			return err
-		}
-
-		for _, item := range v.Set.Items {
-			if err := bw.WriteValue(item); err != nil {
-				return err
-			}
-		}
-
-		return nil
+		return bw.writeSet(v.Set)
 
 	case wire.TList:
-		// vtype:1
-		if err := bw.writeByte(byte(v.List.ValueType)); err != nil {
-			return err
-		}
-
-		// length:4
-		if err := bw.writeInt32(int32(len(v.List.Items))); err != nil {
-			return err
-		}
-
-		for _, item := range v.List.Items {
-			if err := bw.WriteValue(item); err != nil {
-				return err
-			}
-		}
-
-		return nil
+		return bw.writeList(v.List)
 
 	default:
 		return fmt.Errorf("unknown ttype %v", v.Type)
