@@ -27,6 +27,7 @@ func init() {
 	yyErrorVerbose = true
 }
 
+// Parse parses the given Thrift document.
 func Parse(s []byte) (*ast.Program, error) {
 	lex := newLexer(s)
 	e := yyParse(lex)

@@ -78,10 +78,11 @@ type EnumItem struct {
 	Line        int
 }
 
-// StructType specifies whether a struct-like type is a struct, union, or
+// StructureType specifies whether a struct-like type is a struct, union, or
 // exception.
 type StructureType int
 
+// Different kinds of struct-like objects supported by us.
 const (
 	StructType    StructureType = iota + 1 // struct
 	UnionType                              // union
@@ -152,6 +153,7 @@ type Function struct {
 // or if the user did not specify either.
 type Requiredness int
 
+// Different requiredness levels that are supported.
 const (
 	Unspecified Requiredness = iota // unspecified (default)
 	Required                        // required

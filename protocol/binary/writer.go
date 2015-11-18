@@ -76,51 +76,50 @@ func (bw *Writer) WriteInt64(n int64) error {
 }
 
 // WriteValue writes out the given Thrift value.
-func (w *Writer) WriteValue(v wire.Value) error {
+func (bw *Writer) WriteValue(v wire.Value) error {
 	switch v.Type {
 	case wire.TBool:
 		if v.Bool {
-			return w.WriteByte(1)
-		} else {
-			return w.WriteByte(0)
+			return bw.WriteByte(1)
 		}
+		return bw.WriteByte(0)
 
 	case wire.TByte:
-		return w.WriteByte(byte(v.Byte))
+		return bw.WriteByte(byte(v.Byte))
 
 	case wire.TDouble:
 		value := math.Float64bits(v.Double)
-		return w.WriteInt64(int64(value))
+		return bw.WriteInt64(int64(value))
 
 	case wire.TI16:
-		return w.WriteInt16(v.I16)
+		return bw.WriteInt16(v.I16)
 
 	case wire.TI32:
-		return w.WriteInt32(v.I32)
+		return bw.WriteInt32(v.I32)
 
 	case wire.TI64:
-		return w.WriteInt64(v.I64)
+		return bw.WriteInt64(v.I64)
 
 	case wire.TBinary:
-		if err := w.WriteInt32(int32(len(v.Binary))); err != nil {
+		if err := bw.WriteInt32(int32(len(v.Binary))); err != nil {
 			return err
 		}
-		return w.Write(v.Binary)
+		return bw.Write(v.Binary)
 
 	case wire.TStruct:
 		for _, f := range v.Struct.Fields {
 			// type:1
-			if err := w.WriteByte(byte(f.Value.Type)); err != nil {
+			if err := bw.WriteByte(byte(f.Value.Type)); err != nil {
 				return err
 			}
 
 			// id:2
-			if err := w.WriteInt16(f.ID); err != nil {
+			if err := bw.WriteInt16(f.ID); err != nil {
 				return err
 			}
 
 			// value
-			if err := w.WriteValue(f.Value); err != nil {
+			if err := bw.WriteValue(f.Value); err != nil {
 				return fmt.Errorf(
 					"failed to write field %d (%v): %s",
 					f.ID, f.Value.Type, err,
@@ -128,29 +127,29 @@ func (w *Writer) WriteValue(v wire.Value) error {
 			}
 
 		}
-		return w.WriteByte(0) // end struct
+		return bw.WriteByte(0) // end struct
 
 	case wire.TMap:
 		// ktype:1
-		if err := w.WriteByte(byte(v.Map.KeyType)); err != nil {
+		if err := bw.WriteByte(byte(v.Map.KeyType)); err != nil {
 			return err
 		}
 
 		// vtype:1
-		if err := w.WriteByte(byte(v.Map.ValueType)); err != nil {
+		if err := bw.WriteByte(byte(v.Map.ValueType)); err != nil {
 			return err
 		}
 
 		// length:4
-		if err := w.WriteInt32(int32(len(v.Map.Items))); err != nil {
+		if err := bw.WriteInt32(int32(len(v.Map.Items))); err != nil {
 			return err
 		}
 
 		for _, item := range v.Map.Items {
-			if err := w.WriteValue(item.Key); err != nil {
+			if err := bw.WriteValue(item.Key); err != nil {
 				return err
 			}
-			if err := w.WriteValue(item.Value); err != nil {
+			if err := bw.WriteValue(item.Value); err != nil {
 				return err
 			}
 		}
@@ -159,17 +158,17 @@ func (w *Writer) WriteValue(v wire.Value) error {
 
 	case wire.TSet:
 		// vtype:1
-		if err := w.WriteByte(byte(v.Set.ValueType)); err != nil {
+		if err := bw.WriteByte(byte(v.Set.ValueType)); err != nil {
 			return err
 		}
 
 		// length:4
-		if err := w.WriteInt32(int32(len(v.Set.Items))); err != nil {
+		if err := bw.WriteInt32(int32(len(v.Set.Items))); err != nil {
 			return err
 		}
 
 		for _, item := range v.Set.Items {
-			if err := w.WriteValue(item); err != nil {
+			if err := bw.WriteValue(item); err != nil {
 				return err
 			}
 		}
@@ -178,17 +177,17 @@ func (w *Writer) WriteValue(v wire.Value) error {
 
 	case wire.TList:
 		// vtype:1
-		if err := w.WriteByte(byte(v.List.ValueType)); err != nil {
+		if err := bw.WriteByte(byte(v.List.ValueType)); err != nil {
 			return err
 		}
 
 		// length:4
-		if err := w.WriteInt32(int32(len(v.List.Items))); err != nil {
+		if err := bw.WriteInt32(int32(len(v.List.Items))); err != nil {
 			return err
 		}
 
 		for _, item := range v.List.Items {
-			if err := w.WriteValue(item); err != nil {
+			if err := bw.WriteValue(item); err != nil {
 				return err
 			}
 		}
