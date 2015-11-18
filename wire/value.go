@@ -47,19 +47,19 @@ type Value struct {
 func (v Value) String() string {
 	switch v.Type {
 	case TBool:
-		return fmt.Sprintf("%v", v.Bool)
+		return fmt.Sprint(v.Bool)
 	case TByte:
-		return fmt.Sprintf("%v", v.Byte)
+		return fmt.Sprint(v.Byte)
 	case TDouble:
-		return fmt.Sprintf("%v", v.Double)
+		return fmt.Sprint(v.Double)
 	case TI16:
-		return fmt.Sprintf("%v", v.I16)
+		return fmt.Sprint(v.I16)
 	case TI32:
-		return fmt.Sprintf("%v", v.I32)
+		return fmt.Sprint(v.I32)
 	case TI64:
-		return fmt.Sprintf("%v", v.I64)
+		return fmt.Sprint(v.I64)
 	case TBinary:
-		return fmt.Sprintf("%v", v.Binary)
+		return fmt.Sprint(v.Binary)
 	case TStruct:
 		return v.Struct.String()
 	case TMap:
