@@ -37,8 +37,10 @@ func init() {
 type binaryProtocol struct{}
 
 func (binaryProtocol) Encode(v wire.Value, w io.Writer) error {
-	writer := binary.Writer{Writer: w}
-	return writer.WriteValue(v)
+	writer := binary.BorrowWriter(w)
+	err := writer.WriteValue(v)
+	binary.ReturnWriter(writer)
+	return err
 }
 
 func (binaryProtocol) Decode(v *wire.Value, r io.Reader) error {
