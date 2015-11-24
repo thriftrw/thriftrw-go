@@ -35,13 +35,14 @@ func TestValueListFromSliceAll(t *testing.T) {
 	}
 
 	i := 0
-	ValueListFromSlice(slice).ForEach(func(v Value) error {
+	err := ValueListFromSlice(slice).ForEach(func(v Value) error {
 		assert.Equal(t, slice[i], v)
 		i++
 
 		return nil
 	})
 
+	assert.NoError(t, err)
 	assert.Equal(t, 3, i)
 }
 
@@ -52,18 +53,21 @@ func TestValueListFromSliceBreak(t *testing.T) {
 		Value{Type: TI32, I32: 3},
 	}
 
+	expectedErr := fmt.Errorf("fail")
+
 	i := 0
-	ValueListFromSlice(slice).ForEach(func(v Value) error {
+	err := ValueListFromSlice(slice).ForEach(func(v Value) error {
 		assert.Equal(t, slice[i], v)
 		i++
 		if i == 2 {
 			// Break after processing I32: 2
-			return fmt.Errorf("fail")
+			return expectedErr
 		} else {
 			return nil
 		}
 	})
 
+	assert.Equal(t, expectedErr, err)
 	assert.Equal(t, 2, i)
 }
 
@@ -86,13 +90,14 @@ func TestMapItemListFromSliceAll(t *testing.T) {
 	}
 
 	i := 0
-	MapItemListFromSlice(slice).ForEach(func(v MapItem) error {
+	err := MapItemListFromSlice(slice).ForEach(func(v MapItem) error {
 		assert.Equal(t, slice[i], v)
 		i++
 
 		return nil
 	})
 
+	assert.NoError(t, err)
 	assert.Equal(t, 3, i)
 }
 
@@ -112,17 +117,20 @@ func TestMapItemListFromSliceBreak(t *testing.T) {
 		},
 	}
 
+	expectedErr := fmt.Errorf("fail")
+
 	i := 0
-	MapItemListFromSlice(slice).ForEach(func(v MapItem) error {
+	err := MapItemListFromSlice(slice).ForEach(func(v MapItem) error {
 		assert.Equal(t, slice[i], v)
 		i++
 		if i == 2 {
 			// Break after processing I32: 2
-			return fmt.Errorf("fail")
+			return expectedErr
 		} else {
 			return nil
 		}
 	})
 
+	assert.Equal(t, expectedErr, err)
 	assert.Equal(t, 2, i)
 }
