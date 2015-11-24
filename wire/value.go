@@ -101,14 +101,16 @@ func (f Field) String() string {
 // Set is a set of values.
 type Set struct {
 	ValueType Type
-	Items     []Value
+	Size      int
+	Items     ValueList
 }
 
 func (s Set) String() string {
-	items := make([]string, len(s.Items))
-	for i, item := range s.Items {
-		items[i] = item.String()
-	}
+	items := make([]string, 0, s.Size)
+	s.Items.ForEach(func(item Value) error {
+		items = append(items, item.String())
+		return nil
+	})
 
 	return fmt.Sprintf("[set]%v{%s}", s.ValueType, strings.Join(items, ", "))
 }
@@ -116,14 +118,16 @@ func (s Set) String() string {
 // List is a list of values.
 type List struct {
 	ValueType Type
-	Items     []Value
+	Size      int
+	Items     ValueList
 }
 
 func (l List) String() string {
-	items := make([]string, len(l.Items))
-	for i, item := range l.Items {
-		items[i] = item.String()
-	}
+	items := make([]string, 0, l.Size)
+	l.Items.ForEach(func(item Value) error {
+		items = append(items, item.String())
+		return nil
+	})
 
 	return fmt.Sprintf("[]%v{%s}", l.ValueType, strings.Join(items, ", "))
 }
@@ -132,14 +136,16 @@ func (l List) String() string {
 type Map struct {
 	KeyType   Type
 	ValueType Type
-	Items     []MapItem
+	Size      int
+	Items     MapItemList
 }
 
 func (m Map) String() string {
-	items := make([]string, len(m.Items))
-	for i, item := range m.Items {
-		items[i] = item.String()
-	}
+	items := make([]string, 0, m.Size)
+	m.Items.ForEach(func(item MapItem) error {
+		items = append(items, item.String())
+		return nil
+	})
 
 	return fmt.Sprintf(
 		"map[%v]%v{%s}", m.KeyType, m.ValueType, strings.Join(items, ", "),
