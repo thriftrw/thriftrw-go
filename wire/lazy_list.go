@@ -44,17 +44,11 @@ type MapItemList interface {
 
 //////////////////////////////////////////////////////////////////////////////
 
-type valueListFromSlice struct {
-	values []Value
-}
-
 // ValueListFromSlice builds a ValueList from the given slice of Values.
-func ValueListFromSlice(ls []Value) ValueList {
-	return valueListFromSlice{ls}
-}
+type ValueListFromSlice []Value
 
-func (v valueListFromSlice) ForEach(f func(Value) error) error {
-	for _, v := range v.values {
+func (vs ValueListFromSlice) ForEach(f func(Value) error) error {
+	for _, v := range vs {
 		if err := f(v); err != nil {
 			return err
 		}
@@ -64,17 +58,11 @@ func (v valueListFromSlice) ForEach(f func(Value) error) error {
 
 //////////////////////////////////////////////////////////////////////////////
 
-type mapItemListFromSlice struct {
-	items []MapItem
-}
-
 // MapItemListFromSlice builds a MapItemList from the given slice of Values.
-func MapItemListFromSlice(ls []MapItem) MapItemList {
-	return mapItemListFromSlice{ls}
-}
+type MapItemListFromSlice []MapItem
 
-func (v mapItemListFromSlice) ForEach(f func(MapItem) error) error {
-	for _, v := range v.items {
+func (vs MapItemListFromSlice) ForEach(f func(MapItem) error) error {
+	for _, v := range vs {
 		if err := f(v); err != nil {
 			return err
 		}
