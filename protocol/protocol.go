@@ -33,6 +33,6 @@ type Protocol interface {
 	// Encode the given Value and write the result to the given Writer.
 	Encode(v wire.Value, w io.Writer) error
 
-	// TODO
-	Decode(v *wire.Value, r io.Reader) error
+	// Decode reads a Value of the given type from the given Reader.
+	Decode(r io.ReaderAt, t wire.Type) (wire.Value, error)
 }

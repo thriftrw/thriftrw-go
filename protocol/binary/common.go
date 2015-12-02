@@ -18,33 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package protocol
+// Package binary implements the Thrift Binary protocol.
+package binary
 
-import (
-	"io"
+import "encoding/binary"
 
-	"github.com/uber/thriftrw-go/protocol/binary"
-	"github.com/uber/thriftrw-go/wire"
-)
-
-// Binary implements the Thrift Binary Protocol.
-var Binary Protocol
-
-func init() {
-	Binary = binaryProtocol{}
-}
-
-type binaryProtocol struct{}
-
-func (binaryProtocol) Encode(v wire.Value, w io.Writer) error {
-	writer := binary.BorrowWriter(w)
-	err := writer.WriteValue(v)
-	binary.ReturnWriter(writer)
-	return err
-}
-
-func (binaryProtocol) Decode(r io.ReaderAt, t wire.Type) (wire.Value, error) {
-	reader := binary.NewReader(r)
-	value, _, err := reader.ReadValue(t, 0)
-	return value, err
-}
+var bigEndian = binary.BigEndian
