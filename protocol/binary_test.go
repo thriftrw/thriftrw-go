@@ -22,10 +22,12 @@ package protocol
 
 import (
 	"bytes"
+	"fmt"
 	"math"
 	"strings"
 	"testing"
 
+	"github.com/uber/thriftrw-go/protocol/binary"
 	"github.com/uber/thriftrw-go/wire"
 
 	"github.com/kr/pretty"
@@ -35,6 +37,49 @@ import (
 type encodeDecodeTest struct {
 	value   wire.Value
 	encoded []byte
+}
+
+// Fully evaluate lazy collections inside a Value.
+func evaluate(v wire.Value) error {
+	switch v.Type {
+	case wire.TBool:
+		return nil
+	case wire.TByte:
+		return nil
+	case wire.TDouble:
+		return nil
+	case wire.TI16:
+		return nil
+	case wire.TI32:
+		return nil
+	case wire.TI64:
+		return nil
+	case wire.TBinary:
+		return nil
+	case wire.TStruct:
+		for _, f := range v.Struct.Fields {
+			if err := evaluate(f.Value); err != nil {
+				return err
+			}
+		}
+		return nil
+	case wire.TMap:
+		return v.Map.Items.ForEach(func(item wire.MapItem) error {
+			if err := evaluate(item.Key); err != nil {
+				return err
+			}
+			if err := evaluate(item.Value); err != nil {
+				return err
+			}
+			return nil
+		})
+	case wire.TSet:
+		return v.Set.Items.ForEach(evaluate)
+	case wire.TList:
+		return v.List.Items.ForEach(evaluate)
+	default:
+		return fmt.Errorf("unknown type %s", v.Type)
+	}
 }
 
 // Test for primitive encode/decode cases where assert's reflection based
@@ -90,6 +135,30 @@ func checkEncodeDecodeToPrimitive(t *testing.T, typ wire.Type, tests []encodeDec
 	}
 }
 
+type decodeFailureTest struct {
+	data []byte
+}
+
+func checkDecodeFailure(t *testing.T, typ wire.Type, tests []decodeFailureTest) {
+	for _, tt := range tests {
+		value, err := Binary.Decode(bytes.NewReader(tt.data), typ)
+		if err == nil {
+			// lazy collections need to be fully evaluated for the failure to
+			// propagate
+			err = evaluate(value)
+		}
+		if assert.Error(t, err, "Expected failure parsing %#v, got %s", tt.data, value) {
+			assert.True(
+				t,
+				binary.IsDecodeError(err),
+				"Expected decode error while parsing %#v, got %s",
+				tt.data,
+				err,
+			)
+		}
+	}
+}
+
 func TestBool(t *testing.T) {
 	tests := []encodeDecodeTest{
 		{vbool(false), []byte{0x00}},
@@ -97,6 +166,14 @@ func TestBool(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TBool, tests)
+}
+
+func TestBoolDecodeFailure(t *testing.T) {
+	tests := []decodeFailureTest{
+		{data: []byte{0x02}}, // values outside 0 and 1
+	}
+
+	checkDecodeFailure(t, wire.TBool, tests)
 }
 
 func TestByte(t *testing.T) {
@@ -209,6 +286,14 @@ func TestBinary(t *testing.T) {
 	checkEncodeDecode(t, wire.TBinary, tests)
 }
 
+func TestBinaryDecodeFailure(t *testing.T) {
+	tests := []decodeFailureTest{
+		{data: []byte{0xff, 0x30, 0x30, 0x30}}, // negative length
+	}
+
+	checkDecodeFailure(t, wire.TBinary, tests)
+}
+
 func TestStruct(t *testing.T) {
 	tests := []encodeDecodeTest{
 		{vstruct(), []byte{0x00}},
@@ -312,6 +397,17 @@ func TestMap(t *testing.T) {
 	checkEncodeDecodeToPrimitive(t, wire.TMap, tests)
 }
 
+func TestMapDecodeFailure(t *testing.T) {
+	tests := []decodeFailureTest{
+		{data: []byte{
+			0x08, 0x0B, // key: i32, value: binary
+			0xff, 0x00, 0x00, 0x30, // negative length
+		}},
+	}
+
+	checkDecodeFailure(t, wire.TMap, tests)
+}
+
 func TestSet(t *testing.T) {
 	tests := []encodeDecodeTest{
 		{vset(wire.TBool), []byte{0x02, 0x00, 0x00, 0x00, 0x00}},
@@ -322,6 +418,17 @@ func TestSet(t *testing.T) {
 	}
 
 	checkEncodeDecodeToPrimitive(t, wire.TSet, tests)
+}
+
+func TestSetDecodeFailure(t *testing.T) {
+	tests := []decodeFailureTest{
+		{data: []byte{
+			0x08,                   // type: i32
+			0xff, 0x00, 0x30, 0x30, // negative length
+		}},
+	}
+
+	checkDecodeFailure(t, wire.TSet, tests)
 }
 
 func TestList(t *testing.T) {
@@ -371,6 +478,22 @@ func TestList(t *testing.T) {
 	}
 
 	checkEncodeDecodeToPrimitive(t, wire.TList, tests)
+}
+
+func TestListDecodeFailure(t *testing.T) {
+	tests := []decodeFailureTest{
+		{data: []byte{
+			0x0B,                   // type: i32
+			0xff, 0x00, 0x30, 0x00, // negative length
+		}},
+		{data: []byte{
+			0x02, // type: bool
+			0x00, 0x00, 0x00, 0x01,
+			0x10, // invalid bool
+		}},
+	}
+
+	checkDecodeFailure(t, wire.TList, tests)
 }
 
 func TestStructOfContainers(t *testing.T) {

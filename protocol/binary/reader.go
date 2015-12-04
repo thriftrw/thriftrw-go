@@ -21,7 +21,6 @@
 package binary
 
 import (
-	"fmt"
 	"io"
 	"math"
 
@@ -41,6 +40,27 @@ func NewReader(r io.ReaderAt) Reader {
 
 // For the reader, we keep track of the read offset manually everywhere so
 // that we can implement lazy collections without extra allocations
+
+// fixedWidth returns the encoded size of a value of the given type. If the
+// type's width depends on the value, -1 is returned.
+func fixedWidth(t wire.Type) int64 {
+	switch t {
+	case wire.TBool:
+		return 1
+	case wire.TByte:
+		return 1
+	case wire.TDouble:
+		return 8
+	case wire.TI16:
+		return 2
+	case wire.TI32:
+		return 4
+	case wire.TI64:
+		return 8
+	default:
+		return -1
+	}
+}
 
 func (br *Reader) skipStruct(off int64) (int64, error) {
 	typ, off, err := br.readByte(off)
@@ -82,6 +102,18 @@ func (br *Reader) skipMap(off int64) (int64, error) {
 		return off, err
 	}
 
+	if count < 0 {
+		return off, decodeErrorf("negative length %d requested for map", count)
+	}
+
+	kw := fixedWidth(kt)
+	vw := fixedWidth(vt)
+	if kw > 0 && vw > 0 {
+		// key and value are fixed width. calculate exact offset increase.
+		off += int64(count) * (kw + vw)
+		return off, err
+	}
+
 	for i := int32(0); i < count; i++ {
 		off, err = br.skipValue(kt, off)
 		if err != nil {
@@ -105,6 +137,16 @@ func (br *Reader) skipList(off int64) (int64, error) {
 
 	count, off, err := br.readInt32(off)
 	if err != nil {
+		return off, err
+	}
+	if count < 0 {
+		return off, decodeErrorf("negative length %d requested for collection", count)
+	}
+
+	vw := fixedWidth(vt)
+	if vw > 0 {
+		// value is fixed width. can calculate new offset right away.
+		off += int64(count) * vw
 		return off, err
 	}
 
@@ -135,6 +177,11 @@ func (br *Reader) skipValue(t wire.Type, off int64) (int64, error) {
 		if length, off, err := br.readInt32(off); err != nil {
 			return off, err
 		} else {
+			if length < 0 {
+				return off, decodeErrorf(
+					"negative length %d requested for binary value", length,
+				)
+			}
 			off += int64(length)
 			return off, err
 		}
@@ -147,7 +194,7 @@ func (br *Reader) skipValue(t wire.Type, off int64) (int64, error) {
 	case wire.TList:
 		return br.skipList(off)
 	default:
-		return off, fmt.Errorf("unknown ttype %v", t)
+		return off, decodeErrorf("unknown ttype %v", t)
 	}
 }
 
@@ -229,6 +276,9 @@ func (br *Reader) readMap(off int64) (wire.Map, int64, error) {
 	if err != nil {
 		return wire.Map{}, off, err
 	}
+	if count < 0 {
+		return wire.Map{}, off, decodeErrorf("negative length %d requested for map", count)
+	}
 
 	kt := wire.Type(kt_)
 	vt := wire.Type(vt_)
@@ -270,6 +320,9 @@ func (br *Reader) readSet(off int64) (wire.Set, int64, error) {
 	if err != nil {
 		return wire.Set{}, off, err
 	}
+	if count < 0 {
+		return wire.Set{}, off, decodeErrorf("negative length %d requested for set", count)
+	}
 
 	start := off
 	for i := int32(0); i < count; i++ {
@@ -301,6 +354,9 @@ func (br *Reader) readList(off int64) (wire.List, int64, error) {
 	if err != nil {
 		return wire.List{}, off, err
 	}
+	if count < 0 {
+		return wire.List{}, off, decodeErrorf("negative length %d requested for list", count)
+	}
 
 	start := off
 	for i := int32(0); i < count; i++ {
@@ -328,6 +384,12 @@ func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 		b, off, err := br.readByte(off)
 		if err != nil {
 			return wire.Value{}, off, err
+		}
+
+		if b != 0 && b != 1 {
+			return wire.Value{}, off, decodeErrorf(
+				"invalid value '%d' for bool field", b,
+			)
 		}
 
 		return wire.Value{Type: t, Bool: b == 1}, off, nil
@@ -358,6 +420,11 @@ func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 		if err != nil {
 			return wire.Value{}, off, err
 		}
+		if length < 0 {
+			return wire.Value{}, off, decodeErrorf(
+				"negative length %d requested for binary value", length,
+			)
+		}
 
 		bs := make([]byte, length)
 		if length != 0 {
@@ -382,7 +449,7 @@ func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 		return wire.Value{Type: t, List: l}, off, err
 
 	default:
-		return wire.Value{}, off, fmt.Errorf("unknown ttype %v", t)
+		return wire.Value{}, off, decodeErrorf("unknown ttype %v", t)
 	}
 }
 
