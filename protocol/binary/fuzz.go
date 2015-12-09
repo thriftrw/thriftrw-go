@@ -42,13 +42,13 @@ func Fuzz(data []byte) int {
 	buffer := bytes.Buffer{}
 	writer := BorrowWriter(&buffer)
 	if err := writer.WriteValue(value); err != nil {
-		panic(fmt.Sprintf("error encoding %s: %s", value, err))
+		panic(fmt.Sprintf("error encoding %v: %v", value, err))
 	}
 	ReturnWriter(writer)
 
 	if encoded := buffer.Bytes(); !bytes.Equal(data, encoded) {
 		panic(fmt.Sprintf(
-			"encoding mismatch for %s:\n\t   %#v (got)\n\t!= %#v (expected)\n",
+			"encoding mismatch for %v:\n\t   %#v (got)\n\t!= %#v (expected)\n",
 			value, encoded, data,
 		))
 	}
@@ -83,6 +83,6 @@ func evaluate(v wire.Value) error {
 	case wire.TList:
 		return v.List.Items.ForEach(evaluate)
 	default:
-		return fmt.Errorf("unknown type %s", v.Type)
+		return fmt.Errorf("unknown type %v", v.Type)
 	}
 }
