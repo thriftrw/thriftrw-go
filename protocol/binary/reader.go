@@ -27,6 +27,8 @@ import (
 	"github.com/uber/thriftrw-go/wire"
 )
 
+// Reader implements a parser for the Thrift Binary Protocol based on an
+// io.ReaderAt.
 type Reader struct {
 	reader io.ReaderAt
 
@@ -34,6 +36,7 @@ type Reader struct {
 	buffer [8]byte
 }
 
+// NewReader builds a new Reader based on the given io.ReaderAt.
 func NewReader(r io.ReaderAt) Reader {
 	return Reader{reader: r}
 }
@@ -296,17 +299,18 @@ func (br *Reader) readMap(off int64) (wire.Map, int64, error) {
 		}
 	}
 
+	items := borrowLazyMapItemList()
+	items.ktype = kt
+	items.vtype = vt
+	items.count = count
+	items.reader = br
+	items.startOffset = start
+
 	return wire.Map{
 		KeyType:   kt,
 		ValueType: vt,
 		Size:      int(count),
-		Items: lazyMapItemList{
-			ktype:       kt,
-			vtype:       vt,
-			count:       count,
-			reader:      br,
-			startOffset: start,
-		},
+		Items:     items,
 	}, off, err
 }
 
@@ -332,15 +336,16 @@ func (br *Reader) readSet(off int64) (wire.Set, int64, error) {
 		}
 	}
 
+	items := borrowLazyValueList()
+	items.count = count
+	items.typ = wire.Type(typ)
+	items.reader = br
+	items.startOffset = start
+
 	return wire.Set{
 		ValueType: wire.Type(typ),
 		Size:      int(count),
-		Items: lazyValueList{
-			count:       count,
-			typ:         wire.Type(typ),
-			reader:      br,
-			startOffset: start,
-		},
+		Items:     items,
 	}, off, err
 }
 
@@ -366,18 +371,23 @@ func (br *Reader) readList(off int64) (wire.List, int64, error) {
 		}
 	}
 
+	items := borrowLazyValueList()
+	items.count = count
+	items.typ = wire.Type(typ)
+	items.reader = br
+	items.startOffset = start
+
 	return wire.List{
 		ValueType: wire.Type(typ),
 		Size:      int(count),
-		Items: lazyValueList{
-			count:       count,
-			typ:         wire.Type(typ),
-			reader:      br,
-			startOffset: start,
-		},
+		Items:     items,
 	}, off, err
 }
 
+// ReadValue reads a value off the given type off the wire starting at the
+// given offset.
+//
+// Returns the Value, the new offset, and an error if there was a decode error.
 func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 	switch t {
 	case wire.TBool:
@@ -451,62 +461,4 @@ func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 	default:
 		return wire.Value{}, off, decodeErrorf("unknown ttype %v", t)
 	}
-}
-
-type lazyValueList struct {
-	count       int32
-	typ         wire.Type
-	reader      *Reader
-	startOffset int64
-}
-
-func (ll lazyValueList) ForEach(f func(wire.Value) error) error {
-	off := ll.startOffset
-
-	var val wire.Value
-	var err error
-	for i := int32(0); i < ll.count; i++ {
-		val, off, err = ll.reader.ReadValue(ll.typ, off)
-
-		if err != nil {
-			return err
-		}
-
-		if err := f(val); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-type lazyMapItemList struct {
-	ktype, vtype wire.Type
-	count        int32
-	reader       *Reader
-	startOffset  int64
-}
-
-func (lm lazyMapItemList) ForEach(f func(wire.MapItem) error) error {
-	off := lm.startOffset
-
-	var k, v wire.Value
-	var err error
-
-	for i := int32(0); i < lm.count; i++ {
-		k, off, err = lm.reader.ReadValue(lm.ktype, off)
-		if err != nil {
-			return err
-		}
-
-		v, off, err = lm.reader.ReadValue(lm.vtype, off)
-		if err != nil {
-			return err
-		}
-
-		item := wire.MapItem{Key: k, Value: v}
-		if err := f(item); err != nil {
-			return err
-		}
-	}
-	return nil
 }

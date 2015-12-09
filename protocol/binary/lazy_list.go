@@ -1,0 +1,116 @@
+// Copyright (c) 2015 Uber Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+package binary
+
+import (
+	"sync"
+
+	"github.com/uber/thriftrw-go/wire"
+)
+
+var (
+	lazyValueListPool = sync.Pool{New: func() interface{} {
+		return &lazyValueList{}
+	}}
+	lazyMapItemListPool = sync.Pool{New: func() interface{} {
+		return &lazyMapItemList{}
+	}}
+)
+
+func borrowLazyValueList() *lazyValueList {
+	return lazyValueListPool.Get().(*lazyValueList)
+}
+
+func borrowLazyMapItemList() *lazyMapItemList {
+	return lazyMapItemListPool.Get().(*lazyMapItemList)
+}
+
+// lazyValueList is an implementation of ValueList which parses Values from a
+// Reader on-demand.
+type lazyValueList struct {
+	count       int32
+	typ         wire.Type
+	reader      *Reader
+	startOffset int64
+}
+
+func (ll *lazyValueList) ForEach(f func(wire.Value) error) error {
+	off := ll.startOffset
+
+	var val wire.Value
+	var err error
+	for i := int32(0); i < ll.count; i++ {
+		val, off, err = ll.reader.ReadValue(ll.typ, off)
+
+		if err != nil {
+			return err
+		}
+
+		if err := f(val); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (ll *lazyValueList) Close() {
+	ll.reader = nil
+	lazyValueListPool.Put(ll)
+}
+
+// lazyValueList is an implementation of ValueList which parses MapItems from
+// a Reader on-demand.
+type lazyMapItemList struct {
+	ktype, vtype wire.Type
+	count        int32
+	reader       *Reader
+	startOffset  int64
+}
+
+func (lm *lazyMapItemList) ForEach(f func(wire.MapItem) error) error {
+	off := lm.startOffset
+
+	var k, v wire.Value
+	var err error
+
+	for i := int32(0); i < lm.count; i++ {
+		k, off, err = lm.reader.ReadValue(lm.ktype, off)
+		if err != nil {
+			return err
+		}
+
+		v, off, err = lm.reader.ReadValue(lm.vtype, off)
+		if err != nil {
+			return err
+		}
+
+		item := wire.MapItem{Key: k, Value: v}
+		if err := f(item); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (lm *lazyMapItemList) Close() {
+	lm.reader = nil
+	lazyMapItemListPool.Put(lm)
+}

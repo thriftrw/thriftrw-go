@@ -29,6 +29,9 @@ type ValueList interface {
 	// If any call fails with an error, that error is returned and the
 	// iteration is stopped.
 	ForEach(f func(Value) error) error
+
+	// Close indicates that the caller is finished reading from the lazy list.
+	Close()
 }
 
 // MapItemList represents a collection of MapItem objects as an iteration
@@ -40,6 +43,9 @@ type MapItemList interface {
 	// If any call fails with an error, that error is returned and the
 	// iteration is stopped.
 	ForEach(f func(MapItem) error) error
+
+	// Close indicates that the caller is finished reading from the lazy list.
+	Close()
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -56,6 +62,8 @@ func (vs ValueListFromSlice) ForEach(f func(Value) error) error {
 	return nil
 }
 
+func (ValueListFromSlice) Close() {}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // MapItemListFromSlice builds a MapItemList from the given slice of Values.
@@ -69,3 +77,5 @@ func (vs MapItemListFromSlice) ForEach(f func(MapItem) error) error {
 	}
 	return nil
 }
+
+func (MapItemListFromSlice) Close() {}
