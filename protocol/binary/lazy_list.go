@@ -55,11 +55,13 @@ type lazyValueList struct {
 func (ll *lazyValueList) ForEach(f func(wire.Value) error) error {
 	off := ll.startOffset
 
-	var val wire.Value
-	var err error
 	for i := int32(0); i < ll.count; i++ {
-		val, off, err = ll.reader.ReadValue(ll.typ, off)
+		var (
+			val wire.Value
+			err error
+		)
 
+		val, off, err = ll.reader.ReadValue(ll.typ, off)
 		if err != nil {
 			return err
 		}
@@ -76,8 +78,8 @@ func (ll *lazyValueList) Close() {
 	lazyValueListPool.Put(ll)
 }
 
-// lazyValueList is an implementation of ValueList which parses MapItems from
-// a Reader on-demand.
+// lazyMapItemList is an implementation of MapItemList which parses MapItems
+// from a Reader on-demand.
 type lazyMapItemList struct {
 	ktype, vtype wire.Type
 	count        int32
@@ -88,10 +90,12 @@ type lazyMapItemList struct {
 func (lm *lazyMapItemList) ForEach(f func(wire.MapItem) error) error {
 	off := lm.startOffset
 
-	var k, v wire.Value
-	var err error
-
 	for i := int32(0); i < lm.count; i++ {
+		var (
+			k, v wire.Value
+			err  error
+		)
+
 		k, off, err = lm.reader.ReadValue(lm.ktype, off)
 		if err != nil {
 			return err

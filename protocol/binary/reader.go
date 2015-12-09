@@ -72,7 +72,7 @@ func (br *Reader) skipStruct(off int64) (int64, error) {
 	}
 
 	for typ != 0 {
-		off += 2
+		off += 2 // field ID
 		off, err = br.skipValue(wire.Type(typ), off)
 		if err != nil {
 			return off, err
@@ -87,24 +87,23 @@ func (br *Reader) skipStruct(off int64) (int64, error) {
 }
 
 func (br *Reader) skipMap(off int64) (int64, error) {
-	kt_, off, err := br.readByte(off)
+	ktByte, off, err := br.readByte(off)
 	if err != nil {
 		return off, err
 	}
 
-	vt_, off, err := br.readByte(off)
+	vtByte, off, err := br.readByte(off)
 	if err != nil {
 		return off, err
 	}
 
-	kt := wire.Type(kt_)
-	vt := wire.Type(vt_)
+	kt := wire.Type(ktByte)
+	vt := wire.Type(vtByte)
 
 	count, off, err := br.readInt32(off)
 	if err != nil {
 		return off, err
 	}
-
 	if count < 0 {
 		return off, decodeErrorf("negative length %d requested for map", count)
 	}
@@ -132,11 +131,11 @@ func (br *Reader) skipMap(off int64) (int64, error) {
 }
 
 func (br *Reader) skipList(off int64) (int64, error) {
-	vt_, off, err := br.readByte(off)
+	vtByte, off, err := br.readByte(off)
 	if err != nil {
 		return off, err
 	}
-	vt := wire.Type(vt_)
+	vt := wire.Type(vtByte)
 
 	count, off, err := br.readInt32(off)
 	if err != nil {
@@ -163,19 +162,11 @@ func (br *Reader) skipList(off int64) (int64, error) {
 }
 
 func (br *Reader) skipValue(t wire.Type, off int64) (int64, error) {
+	if w := fixedWidth(t); w > 0 {
+		return off + w, nil
+	}
+
 	switch t {
-	case wire.TBool:
-		return off + 1, nil
-	case wire.TByte:
-		return off + 1, nil
-	case wire.TDouble:
-		return off + 8, nil
-	case wire.TI16:
-		return off + 2, nil
-	case wire.TI32:
-		return off + 4, nil
-	case wire.TI64:
-		return off + 8, nil
 	case wire.TBinary:
 		if length, off, err := br.readInt32(off); err != nil {
 			return off, err
@@ -265,12 +256,12 @@ func (br *Reader) readStruct(off int64) (wire.Struct, int64, error) {
 }
 
 func (br *Reader) readMap(off int64) (wire.Map, int64, error) {
-	kt_, off, err := br.readByte(off)
+	ktByte, off, err := br.readByte(off)
 	if err != nil {
 		return wire.Map{}, off, err
 	}
 
-	vt_, off, err := br.readByte(off)
+	vtByte, off, err := br.readByte(off)
 	if err != nil {
 		return wire.Map{}, off, err
 	}
@@ -283,8 +274,8 @@ func (br *Reader) readMap(off int64) (wire.Map, int64, error) {
 		return wire.Map{}, off, decodeErrorf("negative length %d requested for map", count)
 	}
 
-	kt := wire.Type(kt_)
-	vt := wire.Type(vt_)
+	kt := wire.Type(ktByte)
+	vt := wire.Type(vtByte)
 
 	start := off
 	for i := int32(0); i < count; i++ {

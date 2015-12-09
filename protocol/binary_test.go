@@ -82,6 +82,11 @@ func evaluate(v wire.Value) error {
 	}
 }
 
+func prettyDiff(left, right interface{}) string {
+	diffs := pretty.Diff(left, right)
+	return strings.Join(diffs, "\n")
+}
+
 // Test for primitive encode/decode cases where assert's reflection based
 // equals method suffices.
 func checkEncodeDecode(t *testing.T, typ wire.Type, tests []encodeDecodeTest) {
@@ -95,12 +100,7 @@ func checkEncodeDecode(t *testing.T, typ wire.Type, tests []encodeDecodeTest) {
 
 		value, err := Binary.Decode(bytes.NewReader(tt.encoded), typ)
 		if assert.NoError(t, err, "Decode failed:\n%s", tt.value) {
-			assert.Equal(
-				t,
-				tt.value,
-				value,
-				"\n"+strings.Join(pretty.Diff(tt.value, value), "\n"),
-			)
+			assert.Equal(t, tt.value, value, "\n"+prettyDiff(tt.value, value))
 		}
 	}
 }

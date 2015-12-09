@@ -46,8 +46,7 @@ func Fuzz(data []byte) int {
 	}
 	ReturnWriter(writer)
 
-	encoded := buffer.Bytes()
-	if !bytesSame(data, encoded) {
+	if encoded := buffer.Bytes(); !bytes.Equal(data, encoded) {
 		panic(fmt.Sprintf(
 			"encoding mismatch for %s:\n\t   %#v (got)\n\t!= %#v (expected)\n",
 			value, encoded, data,
@@ -55,18 +54,6 @@ func Fuzz(data []byte) int {
 	}
 
 	return 1
-}
-
-func bytesSame(ls, rs []byte) bool {
-	if len(ls) != len(rs) {
-		return false
-	}
-	for i := 0; i < len(ls); i++ {
-		if ls[i] != rs[i] {
-			return false
-		}
-	}
-	return true
 }
 
 // fully evaluate a value that contains lazy lists, etc.
