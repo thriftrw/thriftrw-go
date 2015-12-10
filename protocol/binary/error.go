@@ -18,37 +18,26 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package protocol
+package binary
 
-import (
-	"io"
+import "fmt"
 
-	"github.com/uber/thriftrw-go/protocol/binary"
-	"github.com/uber/thriftrw-go/wire"
-)
-
-// Binary implements the Thrift Binary Protocol.
-var Binary Protocol
-
-func init() {
-	Binary = binaryProtocol{}
+type decodeError struct {
+	message string
 }
 
-type binaryProtocol struct{}
-
-func (binaryProtocol) Encode(v wire.Value, w io.Writer) error {
-	writer := binary.BorrowWriter(w)
-	err := writer.WriteValue(v)
-	binary.ReturnWriter(writer)
-	return err
+func (e decodeError) Error() string {
+	return e.message
 }
 
-func (binaryProtocol) Decode(r io.ReaderAt, t wire.Type) (wire.Value, error) {
-	reader := binary.NewReader(r)
-	value, _, err := reader.ReadValue(t, 0)
-	if err == io.EOF {
-		// All EOFs are unexpected for the decoder
-		err = io.ErrUnexpectedEOF
-	}
-	return value, err
+func decodeErrorf(f string, args ...interface{}) decodeError {
+	return decodeError{message: fmt.Sprintf(f, args...)}
+}
+
+// IsDecodeError checks if an error is a protocol decode error.
+func IsDecodeError(e error) bool {
+	// TODO decode error can probably be shared across protocols. move to
+	// protocol/
+	_, isDecodeError := e.(decodeError)
+	return isDecodeError
 }

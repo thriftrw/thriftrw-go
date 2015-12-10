@@ -18,11 +18,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package binary implements the Thrift Binary protocol.
 package binary
 
 import (
-	"encoding/binary"
 	"fmt"
 	"io"
 	"math"
@@ -31,9 +29,7 @@ import (
 	"github.com/uber/thriftrw-go/wire"
 )
 
-var bigEndian = binary.BigEndian
-
-var pool = sync.Pool{New: func() interface{} {
+var writerPool = sync.Pool{New: func() interface{} {
 	writer := &Writer{}
 	writer.writeValue = writer.WriteValue
 	writer.writeMapItem = writer.realWriteMapItem
@@ -63,7 +59,7 @@ type Writer struct {
 //
 // This Writer must be returned back using ReturnWriter.
 func BorrowWriter(w io.Writer) *Writer {
-	writer := pool.Get().(*Writer)
+	writer := writerPool.Get().(*Writer)
 	writer.writer = w
 	return writer
 }
@@ -71,7 +67,7 @@ func BorrowWriter(w io.Writer) *Writer {
 // ReturnWriter returns a previously borrowed Writer back to the system.
 func ReturnWriter(w *Writer) {
 	w.writer = nil
-	pool.Put(w)
+	writerPool.Put(w)
 }
 
 func (bw *Writer) write(bs []byte) error {
