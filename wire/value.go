@@ -358,8 +358,8 @@ func SetsAreEqual(left, right Set) bool {
 		return false
 	}
 
-	leftValues := ValueListToSlice(left.Items)
-	rightValues := ValueListToSlice(right.Items)
+	leftValues := ValueListToSlice(left.Items, left.Size)
+	rightValues := ValueListToSlice(right.Items, right.Size)
 
 	// values are unordered, but they're also not guaranteed to be hashable.
 	// So we treat their string() representation as their hash to match values
@@ -407,8 +407,8 @@ func ListsAreEqual(left, right List) bool {
 		return false
 	}
 
-	leftItems := ValueListToSlice(left.Items)
-	rightItems := ValueListToSlice(right.Items)
+	leftItems := ValueListToSlice(left.Items, left.Size)
+	rightItems := ValueListToSlice(right.Items, right.Size)
 
 	for i, lv := range leftItems {
 		rv := rightItems[i]
@@ -450,8 +450,8 @@ func MapsAreEqual(left, right Map) bool {
 		return false
 	}
 
-	leftItems := MapItemListToSlice(left.Items)
-	rightItems := MapItemListToSlice(right.Items)
+	leftItems := MapItemListToSlice(left.Items, left.Size)
+	rightItems := MapItemListToSlice(right.Items, right.Size)
 
 	// maps are unordered, but the keys are not not guaranteed to be hashable.
 	// So we treat their string() representation as their hash to match values

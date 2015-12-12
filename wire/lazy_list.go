@@ -83,8 +83,14 @@ func (MapItemListFromSlice) Close() {}
 //////////////////////////////////////////////////////////////////////////////
 
 // ValueListToSlice builds a slice of values from the given ValueList.
-func ValueListToSlice(l ValueList) []Value {
-	var items []Value
+//
+// Capacity may be provided to set an initial capacity for the slice.
+func ValueListToSlice(l ValueList, capacity int) []Value {
+	if capacity < 0 {
+		capacity = 0
+	}
+
+	items := make([]Value, 0, capacity)
 	l.ForEach(func(v Value) error {
 		items = append(items, v)
 		return nil
@@ -93,8 +99,14 @@ func ValueListToSlice(l ValueList) []Value {
 }
 
 // MapItemListToSlice builds a slice of values from the given MapItemList.
-func MapItemListToSlice(l MapItemList) []MapItem {
-	var items []MapItem
+//
+// Capacity may be provided to set an initial capacity for the slice.
+func MapItemListToSlice(l MapItemList, capacity int) []MapItem {
+	if capacity < 0 {
+		capacity = 0
+	}
+
+	items := make([]MapItem, 0, capacity)
 	l.ForEach(func(v MapItem) error {
 		items = append(items, v)
 		return nil
