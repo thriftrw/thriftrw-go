@@ -393,28 +393,28 @@ func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 			)
 		}
 
-		return wire.Value{Type: t, Bool: b == 1}, off, nil
+		return wire.NewValueBool(b == 1), off, nil
 
 	case wire.TByte:
 		b, off, err := br.readByte(off)
-		return wire.Value{Type: t, Byte: int8(b)}, off, err
+		return wire.NewValueByte(int8(b)), off, err
 
 	case wire.TDouble:
 		value, off, err := br.readInt64(off)
 		d := math.Float64frombits(uint64(value))
-		return wire.Value{Type: t, Double: d}, off, err
+		return wire.NewValueDouble(d), off, err
 
 	case wire.TI16:
 		n, off, err := br.readInt16(off)
-		return wire.Value{Type: t, I16: n}, off, err
+		return wire.NewValueI16(n), off, err
 
 	case wire.TI32:
 		n, off, err := br.readInt32(off)
-		return wire.Value{Type: t, I32: n}, off, err
+		return wire.NewValueI32(n), off, err
 
 	case wire.TI64:
 		n, off, err := br.readInt64(off)
-		return wire.Value{Type: t, I64: n}, off, err
+		return wire.NewValueI64(n), off, err
 
 	case wire.TBinary:
 		length, off, err := br.readInt32(off)
@@ -431,23 +431,23 @@ func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 		if length != 0 {
 			off, err = br.read(bs, off)
 		}
-		return wire.Value{Type: t, Binary: bs}, off, err
+		return wire.NewValueBinary(bs), off, err
 
 	case wire.TStruct:
 		s, off, err := br.readStruct(off)
-		return wire.Value{Type: t, Struct: s}, off, err
+		return wire.NewValueStruct(s), off, err
 
 	case wire.TMap:
 		m, off, err := br.readMap(off)
-		return wire.Value{Type: t, Map: m}, off, err
+		return wire.NewValueMap(m), off, err
 
 	case wire.TSet:
 		s, off, err := br.readSet(off)
-		return wire.Value{Type: t, Set: s}, off, err
+		return wire.NewValueSet(s), off, err
 
 	case wire.TList:
 		l, off, err := br.readList(off)
-		return wire.Value{Type: t, List: l}, off, err
+		return wire.NewValueList(l), off, err
 
 	default:
 		return wire.Value{}, off, decodeErrorf("unknown ttype %v", t)

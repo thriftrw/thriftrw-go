@@ -24,13 +24,11 @@ import (
 	"bytes"
 	"fmt"
 	"math"
-	"strings"
 	"testing"
 
 	"github.com/uber/thriftrw-go/protocol/binary"
 	"github.com/uber/thriftrw-go/wire"
 
-	"github.com/kr/pretty"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -41,7 +39,7 @@ type encodeDecodeTest struct {
 
 // Fully evaluate lazy collections inside a Value.
 func evaluate(v wire.Value) error {
-	switch v.Type {
+	switch v.Type() {
 	case wire.TBool:
 		return nil
 	case wire.TByte:
@@ -57,14 +55,14 @@ func evaluate(v wire.Value) error {
 	case wire.TBinary:
 		return nil
 	case wire.TStruct:
-		for _, f := range v.Struct.Fields {
+		for _, f := range v.GetStruct().Fields {
 			if err := evaluate(f.Value); err != nil {
 				return err
 			}
 		}
 		return nil
 	case wire.TMap:
-		return v.Map.Items.ForEach(func(item wire.MapItem) error {
+		return v.GetMap().Items.ForEach(func(item wire.MapItem) error {
 			if err := evaluate(item.Key); err != nil {
 				return err
 			}
@@ -74,59 +72,34 @@ func evaluate(v wire.Value) error {
 			return nil
 		})
 	case wire.TSet:
-		return v.Set.Items.ForEach(evaluate)
+		return v.GetSet().Items.ForEach(evaluate)
 	case wire.TList:
-		return v.List.Items.ForEach(evaluate)
+		return v.GetList().Items.ForEach(evaluate)
 	default:
-		return fmt.Errorf("unknown type %s", v.Type)
+		return fmt.Errorf("unknown type %s", v.Type())
 	}
 }
 
-func prettyDiff(left, right interface{}) string {
-	diffs := pretty.Diff(left, right)
-	return strings.Join(diffs, "\n")
-}
-
-// Test for primitive encode/decode cases where assert's reflection based
-// equals method suffices.
 func checkEncodeDecode(t *testing.T, typ wire.Type, tests []encodeDecodeTest) {
 	for _, tt := range tests {
 		buffer := bytes.Buffer{}
 
+		// encode and match bytes
 		err := Binary.Encode(tt.value, &buffer)
 		if assert.NoError(t, err, "Encode failed:\n%s", tt.value) {
 			assert.Equal(t, tt.encoded, buffer.Bytes())
 		}
 
+		// decode and match value
 		value, err := Binary.Decode(bytes.NewReader(tt.encoded), typ)
 		if assert.NoError(t, err, "Decode failed:\n%s", tt.value) {
-			assert.Equal(t, tt.value, value, "\n"+prettyDiff(tt.value, value))
-		}
-	}
-}
-
-// Test for encode/decode cases where values must first be normalized using
-// ToPrimitive.
-func checkEncodeDecodeToPrimitive(t *testing.T, typ wire.Type, tests []encodeDecodeTest) {
-	for _, tt := range tests {
-		buffer := bytes.Buffer{}
-
-		err := Binary.Encode(tt.value, &buffer)
-		if assert.NoError(t, err, "Encode failed:\n%s", tt.value) {
-			assert.Equal(t, tt.encoded, buffer.Bytes())
-		}
-
-		value, err := Binary.Decode(bytes.NewReader(tt.encoded), typ)
-		if assert.NoError(t, err, "Decode failed:\n%s", tt.value) {
-			assert.Equal(
-				t,
-				wire.ToPrimitive(tt.value),
-				wire.ToPrimitive(value),
-				"\n"+strings.Join(pretty.Diff(tt.value, value), "\n"),
+			assert.True(
+				t, wire.ValuesAreEqual(tt.value, value),
+				fmt.Sprintf("\n\t   %v (expected)\n\t!= %v (actual)", tt.value, value),
 			)
 		}
 
-		// encode the decoded Value again
+		// encode the decoded value again
 		buffer = bytes.Buffer{}
 		err = Binary.Encode(value, &buffer)
 		if assert.NoError(t, err, "Encode of decoded value failed:\n%s", tt.value) {
@@ -269,8 +242,8 @@ func TestDoubleNaN(t *testing.T) {
 
 	v, err := Binary.Decode(bytes.NewReader(encoded), wire.TDouble)
 	if assert.NoError(t, err, "Decode failed:\n%s", value) {
-		assert.Equal(t, wire.TDouble, v.Type)
-		assert.True(t, math.IsNaN(v.Double))
+		assert.Equal(t, wire.TDouble, v.Type())
+		assert.True(t, math.IsNaN(v.GetDouble()))
 	}
 }
 
@@ -350,7 +323,7 @@ func TestStruct(t *testing.T) {
 		},
 	}
 
-	checkEncodeDecodeToPrimitive(t, wire.TStruct, tests)
+	checkEncodeDecode(t, wire.TStruct, tests)
 }
 
 func TestMap(t *testing.T) {
@@ -394,7 +367,7 @@ func TestMap(t *testing.T) {
 		},
 	}
 
-	checkEncodeDecodeToPrimitive(t, wire.TMap, tests)
+	checkEncodeDecode(t, wire.TMap, tests)
 }
 
 func TestMapDecodeFailure(t *testing.T) {
@@ -417,7 +390,7 @@ func TestSet(t *testing.T) {
 		},
 	}
 
-	checkEncodeDecodeToPrimitive(t, wire.TSet, tests)
+	checkEncodeDecode(t, wire.TSet, tests)
 }
 
 func TestSetDecodeFailure(t *testing.T) {
@@ -477,7 +450,7 @@ func TestList(t *testing.T) {
 		},
 	}
 
-	checkEncodeDecodeToPrimitive(t, wire.TList, tests)
+	checkEncodeDecode(t, wire.TList, tests)
 }
 
 func TestListDecodeFailure(t *testing.T) {
@@ -579,7 +552,7 @@ func TestStructOfContainers(t *testing.T) {
 		},
 	}
 
-	checkEncodeDecodeToPrimitive(t, wire.TStruct, tests)
+	checkEncodeDecode(t, wire.TStruct, tests)
 }
 
 // TODO test input too short errors

@@ -101,7 +101,7 @@ func (bw *Writer) writeInt64(n int64) error {
 
 func (bw *Writer) writeField(f wire.Field) error {
 	// type:1
-	if err := bw.writeByte(byte(f.Value.Type)); err != nil {
+	if err := bw.writeByte(byte(f.Value.Type())); err != nil {
 		return err
 	}
 
@@ -116,7 +116,7 @@ func (bw *Writer) writeField(f wire.Field) error {
 		// to the underlying error object if it's a network error.
 		return fmt.Errorf(
 			"failed to write field %d (%v): %s",
-			f.ID, f.Value.Type, err,
+			f.ID, f.Value.Type(), err,
 		)
 	}
 
@@ -189,48 +189,49 @@ func (bw *Writer) writeList(l wire.List) error {
 // WriteValue writes the given Thrift value to the underlying stream using the
 // Thrift Binary Protocol.
 func (bw *Writer) WriteValue(v wire.Value) error {
-	switch v.Type {
+	switch v.Type() {
 	case wire.TBool:
-		if v.Bool {
+		if v.GetBool() {
 			return bw.writeByte(1)
 		}
 		return bw.writeByte(0)
 
 	case wire.TByte:
-		return bw.writeByte(byte(v.Byte))
+		return bw.writeByte(byte(v.GetByte()))
 
 	case wire.TDouble:
-		value := math.Float64bits(v.Double)
+		value := math.Float64bits(v.GetDouble())
 		return bw.writeInt64(int64(value))
 
 	case wire.TI16:
-		return bw.writeInt16(v.I16)
+		return bw.writeInt16(v.GetI16())
 
 	case wire.TI32:
-		return bw.writeInt32(v.I32)
+		return bw.writeInt32(v.GetI32())
 
 	case wire.TI64:
-		return bw.writeInt64(v.I64)
+		return bw.writeInt64(v.GetI64())
 
 	case wire.TBinary:
-		if err := bw.writeInt32(int32(len(v.Binary))); err != nil {
+		b := v.GetBinary()
+		if err := bw.writeInt32(int32(len(b))); err != nil {
 			return err
 		}
-		return bw.write(v.Binary)
+		return bw.write(b)
 
 	case wire.TStruct:
-		return bw.writeStruct(v.Struct)
+		return bw.writeStruct(v.GetStruct())
 
 	case wire.TMap:
-		return bw.writeMap(v.Map)
+		return bw.writeMap(v.GetMap())
 
 	case wire.TSet:
-		return bw.writeSet(v.Set)
+		return bw.writeSet(v.GetSet())
 
 	case wire.TList:
-		return bw.writeList(v.List)
+		return bw.writeList(v.GetList())
 
 	default:
-		return fmt.Errorf("unknown ttype %v", v.Type)
+		return fmt.Errorf("unknown ttype %v", v.Type())
 	}
 }

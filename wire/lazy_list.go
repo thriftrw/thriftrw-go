@@ -79,3 +79,25 @@ func (vs MapItemListFromSlice) ForEach(f func(MapItem) error) error {
 }
 
 func (MapItemListFromSlice) Close() {}
+
+//////////////////////////////////////////////////////////////////////////////
+
+// ValueListToSlice builds a slice of values from the given ValueList.
+func ValueListToSlice(l ValueList) []Value {
+	var items []Value
+	l.ForEach(func(v Value) error {
+		items = append(items, v)
+		return nil
+	})
+	return items
+}
+
+// MapItemListToSlice builds a slice of values from the given MapItemList.
+func MapItemListToSlice(l MapItemList) []MapItem {
+	var items []MapItem
+	l.ForEach(func(v MapItem) error {
+		items = append(items, v)
+		return nil
+	})
+	return items
+}
