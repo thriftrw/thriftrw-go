@@ -82,84 +82,33 @@ func (v Value) Get() interface{} {
 
 // ValuesAreEqual checks if two values are equal.
 func ValuesAreEqual(left, right Value) bool {
+	if left.typ != right.typ {
+		return false
+	}
+
 	switch left.typ {
 	case TBool:
-		switch right.typ {
-		case TBool:
-			return left.tbool == right.tbool
-		default:
-			return false
-		}
+		return left.tbool == right.tbool
 	case TByte:
-		switch right.typ {
-		case TByte:
-			return left.tbyte == right.tbyte
-		default:
-			return false
-		}
+		return left.tbyte == right.tbyte
 	case TDouble:
-		switch right.typ {
-		case TDouble:
-			return left.tdouble == right.tdouble
-		default:
-			return false
-		}
+		return left.tdouble == right.tdouble
 	case TI16:
-		switch right.typ {
-		case TI16:
-			return left.ti16 == right.ti16
-		default:
-			return false
-		}
+		return left.ti16 == right.ti16
 	case TI32:
-		switch right.typ {
-		case TI32:
-			return left.ti32 == right.ti32
-		default:
-			return false
-		}
+		return left.ti32 == right.ti32
 	case TI64:
-		switch right.typ {
-		case TI64:
-			return left.ti64 == right.ti64
-		default:
-			return false
-		}
+		return left.ti64 == right.ti64
 	case TBinary:
-		switch right.typ {
-		case TBinary:
-			return bytes.Equal(left.tbinary, right.tbinary)
-		default:
-			return false
-		}
+		return bytes.Equal(left.tbinary, right.tbinary)
 	case TStruct:
-		switch right.typ {
-		case TStruct:
-			return StructsAreEqual(left.tstruct, right.tstruct)
-		default:
-			return false
-		}
+		return StructsAreEqual(left.tstruct, right.tstruct)
 	case TMap:
-		switch right.typ {
-		case TMap:
-			return MapsAreEqual(left.tmap, right.tmap)
-		default:
-			return false
-		}
+		return MapsAreEqual(left.tmap, right.tmap)
 	case TSet:
-		switch right.typ {
-		case TSet:
-			return SetsAreEqual(left.tset, right.tset)
-		default:
-			return false
-		}
+		return SetsAreEqual(left.tset, right.tset)
 	case TList:
-		switch right.typ {
-		case TList:
-			return ListsAreEqual(left.tlist, right.tlist)
-		default:
-			return false
-		}
+		return ListsAreEqual(left.tlist, right.tlist)
 	default:
 		return false
 	}
