@@ -29,47 +29,225 @@ import (
 //
 // The Type of the value determines which field in the Value is valid.
 type Value struct {
-	Type Type
+	typ Type
 
-	Bool   bool
-	Byte   int8
-	Double float64
-	I16    int16
-	I32    int32
-	I64    int64
-	Binary []byte
-	Struct Struct
-	Map    Map
-	Set    Set
-	List   List
+	tbool   bool
+	tbyte   int8
+	tdouble float64
+	ti16    int16
+	ti32    int32
+	ti64    int64
+	tbinary []byte
+	tstruct Struct
+	tmap    Map
+	tset    Set
+	tlist   List
+}
+
+// Type retrieves the type of value inside a Value.
+func (v Value) Type() Type {
+	return v.typ
+}
+
+// Get retrieves whatever value the given Value contains.
+func (v Value) Get() interface{} {
+	switch v.typ {
+	case TBool:
+		return v.tbool
+	case TByte:
+		return v.tbyte
+	case TDouble:
+		return v.tdouble
+	case TI16:
+		return v.ti16
+	case TI32:
+		return v.ti32
+	case TI64:
+		return v.ti64
+	case TBinary:
+		return v.tbinary
+	case TStruct:
+		return v.tstruct
+	case TMap:
+		return v.tmap
+	case TSet:
+		return v.tset
+	case TList:
+		return v.tlist
+	default:
+		panic(fmt.Sprintf("Unknown value type %v", v.typ))
+	}
+}
+
+// NewValueBool constructs a new Value that contains a boolean.
+func NewValueBool(v bool) Value {
+	return Value{
+		typ:   TBool,
+		tbool: v,
+	}
+}
+
+// GetBool gets the Bool value from a Value.
+func (v Value) GetBool() bool {
+	return v.tbool
+}
+
+// NewValueByte constructs a new Value that contains a byte
+func NewValueByte(v int8) Value {
+	return Value{
+		typ:   TByte,
+		tbyte: v,
+	}
+}
+
+// GetByte gets the Byte value from a Value.
+func (v Value) GetByte() int8 {
+	return v.tbyte
+}
+
+// NewValueDouble constructs a new Value that contains a double.
+func NewValueDouble(v float64) Value {
+	return Value{
+		typ:     TDouble,
+		tdouble: v,
+	}
+}
+
+// GetDouble gets the Double value from a Value.
+func (v Value) GetDouble() float64 {
+	return v.tdouble
+}
+
+// NewValueI16 constructs a new Value that contains a 16-bit integer.
+func NewValueI16(v int16) Value {
+	return Value{
+		typ:  TI16,
+		ti16: v,
+	}
+}
+
+// GetI16 gets the I16 value from a Value.
+func (v Value) GetI16() int16 {
+	return v.ti16
+}
+
+// NewValueI32 constructs a new Value that contains a 32-bit integer.
+func NewValueI32(v int32) Value {
+	return Value{
+		typ:  TI32,
+		ti32: v,
+	}
+}
+
+// GetI32 gets the I32 value from a Value.
+func (v Value) GetI32() int32 {
+	return v.ti32
+}
+
+// NewValueI64 constructs a new Value that contains a 64-bit integer.
+func NewValueI64(v int64) Value {
+	return Value{
+		typ:  TI64,
+		ti64: v,
+	}
+}
+
+// GetI64 gets the I64 value from a Value.
+func (v Value) GetI64() int64 {
+	return v.ti64
+}
+
+// NewValueBinary constructs a new Value that contains a binary string.
+func NewValueBinary(v []byte) Value {
+	return Value{
+		typ:     TBinary,
+		tbinary: v,
+	}
+}
+
+// GetBinary gets the Binary value from a Value.
+func (v Value) GetBinary() []byte {
+	return v.tbinary
+}
+
+// NewValueStruct constructs a new Value that contains a struct.
+func NewValueStruct(v Struct) Value {
+	return Value{
+		typ:     TStruct,
+		tstruct: v,
+	}
+}
+
+// GetStruct gets the Struct value from a Value.
+func (v Value) GetStruct() Struct {
+	return v.tstruct
+}
+
+// NewValueMap constructs a new Value that contains a map.
+func NewValueMap(v Map) Value {
+	return Value{
+		typ:  TMap,
+		tmap: v,
+	}
+}
+
+// GetMap gets the Map value from a Value.
+func (v Value) GetMap() Map {
+	return v.tmap
+}
+
+// NewValueSet constructs a new Value that contains a set.
+func NewValueSet(v Set) Value {
+	return Value{
+		typ:  TSet,
+		tset: v,
+	}
+}
+
+// GetSet gets the Set value from a Value.
+func (v Value) GetSet() Set {
+	return v.tset
+}
+
+// NewValueList constructs a new Value that contains a list.
+func NewValueList(v List) Value {
+	return Value{
+		typ:   TList,
+		tlist: v,
+	}
+}
+
+// GetList gets the List value from a Value.
+func (v Value) GetList() List {
+	return v.tlist
 }
 
 func (v Value) String() string {
-	switch v.Type {
+	switch v.typ {
 	case TBool:
-		return fmt.Sprint(v.Bool)
+		return fmt.Sprintf("TBool(%v)", v.tbool)
 	case TByte:
-		return fmt.Sprint(v.Byte)
+		return fmt.Sprintf("TByte(%v)", v.tbyte)
 	case TDouble:
-		return fmt.Sprint(v.Double)
+		return fmt.Sprintf("TDouble(%v)", v.tdouble)
 	case TI16:
-		return fmt.Sprint(v.I16)
+		return fmt.Sprintf("TI16(%v)", v.ti16)
 	case TI32:
-		return fmt.Sprint(v.I32)
+		return fmt.Sprintf("TI32(%v)", v.ti32)
 	case TI64:
-		return fmt.Sprint(v.I64)
+		return fmt.Sprintf("TI64(%v)", v.ti64)
 	case TBinary:
-		return fmt.Sprint(v.Binary)
+		return fmt.Sprintf("TBinary(%v)", v.tbinary)
 	case TStruct:
-		return v.Struct.String()
+		return fmt.Sprintf("TStruct(%v)", v.tstruct)
 	case TMap:
-		return v.Map.String()
+		return fmt.Sprintf("TMap(%v)", v.tmap)
 	case TSet:
-		return v.Set.String()
+		return fmt.Sprintf("TSet(%v)", v.tset)
 	case TList:
-		return v.List.String()
+		return fmt.Sprintf("TList(%v)", v.tlist)
 	default:
-		return fmt.Sprintf("%#v", v)
+		panic(fmt.Sprintf("Unknown value type %v", v.typ))
 	}
 }
 
@@ -78,6 +256,14 @@ func (v Value) String() string {
 // At this level, structs don't have names or named fields.
 type Struct struct {
 	Fields []Field
+}
+
+func (s Struct) fieldMap() map[int16]Value {
+	m := make(map[int16]Value, len(s.Fields))
+	for _, f := range s.Fields {
+		m[f.ID] = f.Value
+	}
+	return m
 }
 
 func (s Struct) String() string {

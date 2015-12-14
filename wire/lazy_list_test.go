@@ -29,9 +29,9 @@ import (
 
 func TestValueListFromSliceAll(t *testing.T) {
 	slice := []Value{
-		Value{Type: TI32, I32: 1},
-		Value{Type: TI32, I32: 2},
-		Value{Type: TI32, I32: 3},
+		NewValueI32(1),
+		NewValueI32(2),
+		NewValueI32(3),
 	}
 
 	i := 0
@@ -48,9 +48,9 @@ func TestValueListFromSliceAll(t *testing.T) {
 
 func TestValueListFromSliceBreak(t *testing.T) {
 	slice := []Value{
-		Value{Type: TI32, I32: 1},
-		Value{Type: TI32, I32: 2},
-		Value{Type: TI32, I32: 3},
+		NewValueI32(1),
+		NewValueI32(2),
+		NewValueI32(3),
 	}
 
 	expectedErr := fmt.Errorf("fail")
@@ -76,16 +76,16 @@ func TestValueListFromSliceBreak(t *testing.T) {
 func TestMapItemListFromSliceAll(t *testing.T) {
 	slice := []MapItem{
 		MapItem{
-			Key:   Value{Type: TI32, I32: 1},
-			Value: Value{Type: TI64, I64: 101},
+			Key:   NewValueI32(1),
+			Value: NewValueI64(101),
 		},
 		MapItem{
-			Key:   Value{Type: TI32, I32: 2},
-			Value: Value{Type: TI64, I64: 102},
+			Key:   NewValueI32(2),
+			Value: NewValueI64(102),
 		},
 		MapItem{
-			Key:   Value{Type: TI32, I32: 3},
-			Value: Value{Type: TI64, I64: 103},
+			Key:   NewValueI32(3),
+			Value: NewValueI64(103),
 		},
 	}
 
@@ -104,16 +104,16 @@ func TestMapItemListFromSliceAll(t *testing.T) {
 func TestMapItemListFromSliceBreak(t *testing.T) {
 	slice := []MapItem{
 		MapItem{
-			Key:   Value{Type: TI32, I32: 1},
-			Value: Value{Type: TI64, I64: 101},
+			Key:   NewValueI32(1),
+			Value: NewValueI64(101),
 		},
 		MapItem{
-			Key:   Value{Type: TI32, I32: 2},
-			Value: Value{Type: TI64, I64: 102},
+			Key:   NewValueI32(2),
+			Value: NewValueI64(102),
 		},
 		MapItem{
-			Key:   Value{Type: TI32, I32: 3},
-			Value: Value{Type: TI64, I64: 103},
+			Key:   NewValueI32(3),
+			Value: NewValueI64(103),
 		},
 	}
 

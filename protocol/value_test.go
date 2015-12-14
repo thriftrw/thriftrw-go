@@ -26,35 +26,35 @@ import "github.com/uber/thriftrw-go/wire"
 // constructing complex Value objects during protocol.
 
 func vbool(b bool) wire.Value {
-	return wire.Value{Type: wire.TBool, Bool: b}
+	return wire.NewValueBool(b)
 }
 
 func vbyte(b int8) wire.Value {
-	return wire.Value{Type: wire.TByte, Byte: b}
+	return wire.NewValueByte(b)
 }
 
 func vi16(i int16) wire.Value {
-	return wire.Value{Type: wire.TI16, I16: i}
+	return wire.NewValueI16(i)
 }
 
 func vi32(i int32) wire.Value {
-	return wire.Value{Type: wire.TI32, I32: i}
+	return wire.NewValueI32(i)
 }
 
 func vi64(i int64) wire.Value {
-	return wire.Value{Type: wire.TI64, I64: i}
+	return wire.NewValueI64(i)
 }
 
 func vdouble(f float64) wire.Value {
-	return wire.Value{Type: wire.TDouble, Double: f}
+	return wire.NewValueDouble(f)
 }
 
 func vbinary(s string) wire.Value {
-	return wire.Value{Type: wire.TBinary, Binary: []byte(s)}
+	return wire.NewValueBinary([]byte(s))
 }
 
 func vstruct(fs ...wire.Field) wire.Value {
-	return wire.Value{Type: wire.TStruct, Struct: wire.Struct{Fields: fs}}
+	return wire.NewValueStruct(wire.Struct{Fields: fs})
 }
 
 func vfield(id int16, v wire.Value) wire.Field {
@@ -62,37 +62,28 @@ func vfield(id int16, v wire.Value) wire.Field {
 }
 
 func vlist(typ wire.Type, vs ...wire.Value) wire.Value {
-	return wire.Value{
-		Type: wire.TList,
-		List: wire.List{
-			ValueType: typ,
-			Size:      len(vs),
-			Items:     wire.ValueListFromSlice(vs),
-		},
-	}
+	return wire.NewValueList(wire.List{
+		ValueType: typ,
+		Size:      len(vs),
+		Items:     wire.ValueListFromSlice(vs),
+	})
 }
 
 func vset(typ wire.Type, vs ...wire.Value) wire.Value {
-	return wire.Value{
-		Type: wire.TSet,
-		Set: wire.Set{
-			ValueType: typ,
-			Size:      len(vs),
-			Items:     wire.ValueListFromSlice(vs),
-		},
-	}
+	return wire.NewValueSet(wire.Set{
+		ValueType: typ,
+		Size:      len(vs),
+		Items:     wire.ValueListFromSlice(vs),
+	})
 }
 
 func vmap(kt, vt wire.Type, items ...wire.MapItem) wire.Value {
-	return wire.Value{
-		Type: wire.TMap,
-		Map: wire.Map{
-			KeyType:   kt,
-			ValueType: vt,
-			Size:      len(items),
-			Items:     wire.MapItemListFromSlice(items),
-		},
-	}
+	return wire.NewValueMap(wire.Map{
+		KeyType:   kt,
+		ValueType: vt,
+		Size:      len(items),
+		Items:     wire.MapItemListFromSlice(items),
+	})
 }
 
 func vitem(k, v wire.Value) wire.MapItem {
