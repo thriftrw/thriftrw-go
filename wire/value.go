@@ -21,7 +21,6 @@
 package wire
 
 import (
-	"bytes"
 	"fmt"
 	"strings"
 )
@@ -77,40 +76,6 @@ func (v Value) Get() interface{} {
 		return v.tlist
 	default:
 		panic(fmt.Sprintf("Unknown value type %v", v.typ))
-	}
-}
-
-// ValuesAreEqual checks if two values are equal.
-func ValuesAreEqual(left, right Value) bool {
-	if left.typ != right.typ {
-		return false
-	}
-
-	switch left.typ {
-	case TBool:
-		return left.tbool == right.tbool
-	case TByte:
-		return left.tbyte == right.tbyte
-	case TDouble:
-		return left.tdouble == right.tdouble
-	case TI16:
-		return left.ti16 == right.ti16
-	case TI32:
-		return left.ti32 == right.ti32
-	case TI64:
-		return left.ti64 == right.ti64
-	case TBinary:
-		return bytes.Equal(left.tbinary, right.tbinary)
-	case TStruct:
-		return StructsAreEqual(left.tstruct, right.tstruct)
-	case TMap:
-		return MapsAreEqual(left.tmap, right.tmap)
-	case TSet:
-		return SetsAreEqual(left.tset, right.tset)
-	case TList:
-		return ListsAreEqual(left.tlist, right.tlist)
-	default:
-		return false
 	}
 }
 
@@ -293,29 +258,6 @@ type Struct struct {
 	Fields []Field
 }
 
-// StructsAreEqual checks if two structs are equal.
-func StructsAreEqual(left, right Struct) bool {
-	if len(left.Fields) != len(right.Fields) {
-		return false
-	}
-
-	// Fields are unordered so we need to build a map to actually compare
-	// them.
-
-	leftFields := left.fieldMap()
-	rightFields := right.fieldMap()
-
-	for i, lvalue := range leftFields {
-		if rvalue, ok := rightFields[i]; !ok {
-			return false
-		} else if !ValuesAreEqual(lvalue, rvalue) {
-			return false
-		}
-	}
-
-	return true
-}
-
 func (s Struct) fieldMap() map[int16]Value {
 	m := make(map[int16]Value, len(s.Fields))
 	for _, f := range s.Fields {
@@ -349,38 +291,6 @@ type Set struct {
 	Items     ValueList
 }
 
-// SetsAreEqual checks if two sets are equal.
-func SetsAreEqual(left, right Set) bool {
-	if left.ValueType != right.ValueType {
-		return false
-	}
-	if left.Size != right.Size {
-		return false
-	}
-
-	leftValues := ValueListToSlice(left.Items, left.Size)
-	rightValues := ValueListToSlice(right.Items, right.Size)
-
-	// values are unordered, but they're also not guaranteed to be hashable.
-	// So we treat their string() representation as their hash to match values
-	// up to possible candidates.
-	m := make(map[string]Value)
-
-	for _, v := range leftValues {
-		m[v.String()] = v
-	}
-
-	for _, rv := range rightValues {
-		if lv, ok := m[rv.String()]; !ok {
-			return false
-		} else if !ValuesAreEqual(lv, rv) {
-			return false
-		}
-	}
-
-	return true
-}
-
 func (s Set) String() string {
 	items := make([]string, 0, s.Size)
 	s.Items.ForEach(func(item Value) error {
@@ -396,28 +306,6 @@ type List struct {
 	ValueType Type
 	Size      int
 	Items     ValueList
-}
-
-// ListsAreEqual checks if two lists are equal.
-func ListsAreEqual(left, right List) bool {
-	if left.ValueType != right.ValueType {
-		return false
-	}
-	if left.Size != right.Size {
-		return false
-	}
-
-	leftItems := ValueListToSlice(left.Items, left.Size)
-	rightItems := ValueListToSlice(right.Items, right.Size)
-
-	for i, lv := range leftItems {
-		rv := rightItems[i]
-		if !ValuesAreEqual(lv, rv) {
-			return false
-		}
-	}
-
-	return true
 }
 
 func (l List) String() string {
@@ -436,43 +324,6 @@ type Map struct {
 	ValueType Type
 	Size      int
 	Items     MapItemList
-}
-
-// MapsAreEqual checks if two maps are equal.
-func MapsAreEqual(left, right Map) bool {
-	if left.KeyType != right.KeyType {
-		return false
-	}
-	if left.ValueType != right.ValueType {
-		return false
-	}
-	if left.Size != right.Size {
-		return false
-	}
-
-	leftItems := MapItemListToSlice(left.Items, left.Size)
-	rightItems := MapItemListToSlice(right.Items, right.Size)
-
-	// maps are unordered, but the keys are not not guaranteed to be hashable.
-	// So we treat their string() representation as their hash to match values
-	// up
-	m := make(map[string]MapItem)
-
-	for _, i := range leftItems {
-		m[i.Key.String()] = i
-	}
-
-	for _, ri := range rightItems {
-		if li, ok := m[ri.Key.String()]; !ok {
-			return false
-		} else if !ValuesAreEqual(li.Key, ri.Key) {
-			return false
-		} else if !ValuesAreEqual(li.Value, ri.Value) {
-			return false
-		}
-	}
-
-	return true
 }
 
 func (m Map) String() string {
