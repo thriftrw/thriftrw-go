@@ -45,12 +45,12 @@ type Value struct {
 }
 
 // Type retrieves the type of value inside a Value.
-func (v Value) Type() Type {
+func (v *Value) Type() Type {
 	return v.typ
 }
 
 // Get retrieves whatever value the given Value contains.
-func (v Value) Get() interface{} {
+func (v *Value) Get() interface{} {
 	switch v.typ {
 	case TBool:
 		return v.tbool
@@ -88,7 +88,7 @@ func NewValueBool(v bool) Value {
 }
 
 // GetBool gets the Bool value from a Value.
-func (v Value) GetBool() bool {
+func (v *Value) GetBool() bool {
 	return v.tbool
 }
 
@@ -101,7 +101,7 @@ func NewValueByte(v int8) Value {
 }
 
 // GetByte gets the Byte value from a Value.
-func (v Value) GetByte() int8 {
+func (v *Value) GetByte() int8 {
 	return v.tbyte
 }
 
@@ -114,7 +114,7 @@ func NewValueDouble(v float64) Value {
 }
 
 // GetDouble gets the Double value from a Value.
-func (v Value) GetDouble() float64 {
+func (v *Value) GetDouble() float64 {
 	return v.tdouble
 }
 
@@ -127,7 +127,7 @@ func NewValueI16(v int16) Value {
 }
 
 // GetI16 gets the I16 value from a Value.
-func (v Value) GetI16() int16 {
+func (v *Value) GetI16() int16 {
 	return v.ti16
 }
 
@@ -140,7 +140,7 @@ func NewValueI32(v int32) Value {
 }
 
 // GetI32 gets the I32 value from a Value.
-func (v Value) GetI32() int32 {
+func (v *Value) GetI32() int32 {
 	return v.ti32
 }
 
@@ -153,7 +153,7 @@ func NewValueI64(v int64) Value {
 }
 
 // GetI64 gets the I64 value from a Value.
-func (v Value) GetI64() int64 {
+func (v *Value) GetI64() int64 {
 	return v.ti64
 }
 
@@ -166,7 +166,7 @@ func NewValueBinary(v []byte) Value {
 }
 
 // GetBinary gets the Binary value from a Value.
-func (v Value) GetBinary() []byte {
+func (v *Value) GetBinary() []byte {
 	return v.tbinary
 }
 
@@ -179,7 +179,7 @@ func NewValueStruct(v Struct) Value {
 }
 
 // GetStruct gets the Struct value from a Value.
-func (v Value) GetStruct() Struct {
+func (v *Value) GetStruct() Struct {
 	return v.tstruct
 }
 
@@ -192,7 +192,7 @@ func NewValueMap(v Map) Value {
 }
 
 // GetMap gets the Map value from a Value.
-func (v Value) GetMap() Map {
+func (v *Value) GetMap() Map {
 	return v.tmap
 }
 
@@ -205,7 +205,7 @@ func NewValueSet(v Set) Value {
 }
 
 // GetSet gets the Set value from a Value.
-func (v Value) GetSet() Set {
+func (v *Value) GetSet() Set {
 	return v.tset
 }
 
@@ -218,11 +218,11 @@ func NewValueList(v List) Value {
 }
 
 // GetList gets the List value from a Value.
-func (v Value) GetList() List {
+func (v *Value) GetList() List {
 	return v.tlist
 }
 
-func (v Value) String() string {
+func (v *Value) String() string {
 	switch v.typ {
 	case TBool:
 		return fmt.Sprintf("TBool(%v)", v.tbool)
