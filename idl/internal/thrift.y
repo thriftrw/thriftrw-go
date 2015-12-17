@@ -122,6 +122,14 @@ header
                 Line: $1,
             }
         }
+    | lineno INCLUDE IDENTIFIER LITERAL
+        {
+            $$ = &ast.Include{
+                Name: $3,
+                Path: $4,
+                Line: $1,
+            }
+        }
     | lineno NAMESPACE '*' IDENTIFIER
         {
             $$ = &ast.Namespace{
@@ -391,6 +399,8 @@ type_annotation_list
     : /* nothing */ { $$ = nil }
     | type_annotation_list lineno IDENTIFIER '=' LITERAL optional_sep
         { $$ = append($1, &ast.Annotation{Name: $3, Value: $5, Line: $2}) }
+    | type_annotation_list lineno IDENTIFIER optional_sep
+        { $$ = append($1, &ast.Annotation{Name: $3, Value: "", Line: $2}) }
     ;
 
 /***************************************************************************

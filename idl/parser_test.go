@@ -74,6 +74,7 @@ func TestParseErrors(t *testing.T) {
 		`service Foo Bar {}`,
 		`service Foo { void foo() () (foo = "bar") }`,
 		`service Foo { void foo() throws }`,
+		`typedef string (foo =) UUID`,
 	}
 
 	for _, tt := range tests {
@@ -87,11 +88,11 @@ func TestParseHeaders(t *testing.T) {
 		{
 			`
 				include "foo.thrift"
-				include "bar.thrift"
+				include t "bar.thrift"
 			`,
 			&Program{Includes: []*Include{
-				&Include{"foo.thrift", 2},
-				&Include{"bar.thrift", 3},
+				&Include{Path: "foo.thrift", Line: 2},
+				&Include{Path: "bar.thrift", Name: "t", Line: 3},
 			}},
 		},
 		{
@@ -120,8 +121,8 @@ func TestParseHeaders(t *testing.T) {
 			`,
 			&Program{
 				Includes: []*Include{
-					&Include{"shared.thrift", 3},
-					&Include{"errors.thrift", 9},
+					&Include{Path: "shared.thrift", Line: 3},
+					&Include{Path: "errors.thrift", Line: 9},
 				},
 				Namespaces: []*Namespace{
 					&Namespace{"go", "foo_service", 4},
@@ -199,7 +200,7 @@ func TestParseConstants(t *testing.T) {
 		},
 		{
 			`
-				const map<string (foo = "bar"), i32> (baz = "qux") stuff = {
+				const map<string (foo), i32> (baz = "qux") stuff = {
 					"a": 1,
 					"b": 2,
 				}
@@ -219,7 +220,7 @@ func TestParseConstants(t *testing.T) {
 						KeyType: BaseType{
 							ID: StringTypeID,
 							Annotations: []*Annotation{
-								&Annotation{Name: "foo", Value: "bar", Line: 2},
+								&Annotation{Name: "foo", Value: "", Line: 2},
 							},
 						},
 						ValueType: BaseType{ID: I32TypeID},
@@ -364,7 +365,7 @@ func TestParseEnum(t *testing.T) {
 		{
 			`
 				enum SillyEnum {
-					foo (x = "y"), bar /*
+					foo (x), bar /*
 					*/ baz = 42
 					qux;
 					quux
@@ -379,7 +380,7 @@ func TestParseEnum(t *testing.T) {
 							Annotations: []*Annotation{
 								&Annotation{
 									Name:  "x",
-									Value: "y",
+									Value: "",
 									Line:  3,
 								},
 							},
