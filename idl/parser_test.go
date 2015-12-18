@@ -90,7 +90,7 @@ func TestParseHeaders(t *testing.T) {
 				include "foo.thrift"
 				include t "bar.thrift"
 			`,
-			&Program{Includes: []*Include{
+			&Program{Headers: []Header{
 				&Include{Path: "foo.thrift", Line: 2},
 				&Include{Path: "bar.thrift", Name: "t", Line: 3},
 			}},
@@ -100,7 +100,7 @@ func TestParseHeaders(t *testing.T) {
 				namespace py bar
 				namespace * foo
 			`,
-			&Program{Namespaces: []*Namespace{
+			&Program{Headers: []Header{
 				&Namespace{"py", "bar", 2},
 				&Namespace{"*", "foo", 3},
 			}},
@@ -120,12 +120,10 @@ func TestParseHeaders(t *testing.T) {
 				namespace py services.foo
 			`,
 			&Program{
-				Includes: []*Include{
+				Headers: []Header{
 					&Include{Path: "shared.thrift", Line: 3},
-					&Include{Path: "errors.thrift", Line: 9},
-				},
-				Namespaces: []*Namespace{
 					&Namespace{"go", "foo_service", 4},
+					&Include{Path: "errors.thrift", Line: 9},
 					&Namespace{"py", "services.foo", 12},
 				},
 			},
@@ -145,7 +143,7 @@ func TestParseConstants(t *testing.T) {
 
 				const double qux = 3.141592
 			`,
-			&Program{Constants: []*Constant{
+			&Program{Definitions: []Definition{
 				&Constant{
 					Name:  "foo",
 					Type:  BaseType{ID: I32TypeID},
@@ -178,7 +176,7 @@ func TestParseConstants(t *testing.T) {
 		{
 			`const bool (foo = "a\nb") baz = true
 			 const bool include_something = false`,
-			&Program{Constants: []*Constant{
+			&Program{Definitions: []Definition{
 				&Constant{
 					Name: "baz",
 					Type: BaseType{
@@ -213,7 +211,7 @@ func TestParseConstants(t *testing.T) {
 					"value": 42,
 				};
 			`,
-			&Program{Constants: []*Constant{
+			&Program{Definitions: []Definition{
 				&Constant{
 					Name: "stuff",
 					Type: MapType{
@@ -289,7 +287,7 @@ func TestParseConstants(t *testing.T) {
 				const string foo = 'a "b" c'
 				const string bar = "a 'b' c"
 			`,
-			&Program{Constants: []*Constant{
+			&Program{Definitions: []Definition{
 				&Constant{
 					Name:  "foo",
 					Type:  BaseType{ID: StringTypeID},
@@ -316,7 +314,7 @@ func TestParseTypedef(t *testing.T) {
 
 				typedef i64 (js.type = "Date") Date
 			`,
-			&Program{Typedefs: []*Typedef{
+			&Program{Definitions: []Definition{
 				&Typedef{
 					Name: "UUID",
 					Type: BaseType{ID: StringTypeID},
@@ -360,7 +358,7 @@ func TestParseEnum(t *testing.T) {
 				{
 				}
 			`,
-			&Program{Enums: []*Enum{&Enum{Name: "EmptyEnum", Line: 2}}},
+			&Program{Definitions: []Definition{&Enum{Name: "EmptyEnum", Line: 2}}},
 		},
 		{
 			`
@@ -371,7 +369,7 @@ func TestParseEnum(t *testing.T) {
 					quux
 				} (_ = "__", foo = "bar")
 			`,
-			&Program{Enums: []*Enum{
+			&Program{Definitions: []Definition{
 				&Enum{
 					Name: "SillyEnum",
 					Items: []*EnumItem{
@@ -412,7 +410,7 @@ func TestParseStruct(t *testing.T) {
 				union EmptyUnion {}
 				exception EmptyExc {}
 			`,
-			&Program{Structs: []*Struct{
+			&Program{Definitions: []Definition{
 				&Struct{Name: "EmptyStruct", Type: StructType, Line: 2},
 				&Struct{Name: "EmptyUnion", Type: UnionType, Line: 3},
 				&Struct{Name: "EmptyExc", Type: ExceptionType, Line: 4},
@@ -434,7 +432,7 @@ func TestParseStruct(t *testing.T) {
 					1: optional string message
 				}
 			`,
-			&Program{Structs: []*Struct{
+			&Program{Definitions: []Definition{
 				&Struct{
 					Name: "i128",
 					Type: StructType,
@@ -529,7 +527,7 @@ func TestParseServices(t *testing.T) {
 				service EmptyService {}
 				service AnotherEmptyService extends EmptyService {}
 			`,
-			&Program{Services: []*Service{
+			&Program{Definitions: []Definition{
 				&Service{Name: "EmptyService", Line: 2},
 				&Service{
 					Name: "AnotherEmptyService",
@@ -557,7 +555,7 @@ func TestParseServices(t *testing.T) {
 					) (py.name = "something_else"),
 				} (ttl.milliseconds = "200")
 			`,
-			&Program{Services: []*Service{
+			&Program{Definitions: []Definition{
 				&Service{
 					Name: "KeyValue",
 					Functions: []*Function{

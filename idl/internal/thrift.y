@@ -90,16 +90,7 @@ import "github.com/uber/thriftrw-go/ast"
 program
     : headers definitions
         {
-            $$ = &ast.Program{}
-
-            for _, header := range $1 {
-                $$.AddHeader(header)
-            }
-
-            for _, def := range $2 {
-                $$.AddDefinition(def)
-            }
-
+            $$ = &ast.Program{Headers: $1, Definitions: $2}
             yylex.(*lexer).program = $$
             return 0
         }
