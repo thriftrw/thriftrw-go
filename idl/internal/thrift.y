@@ -400,7 +400,7 @@ type_annotation_list
     | type_annotation_list lineno IDENTIFIER '=' LITERAL optional_sep
         { $$ = append($1, &ast.Annotation{Name: $3, Value: $5, Line: $2}) }
     | type_annotation_list lineno IDENTIFIER optional_sep
-        { $$ = append($1, &ast.Annotation{Name: $3, Value: "", Line: $2}) }
+        { $$ = append($1, &ast.Annotation{Name: $3, Line: $2}) }
     ;
 
 /***************************************************************************

@@ -1157,7 +1157,7 @@ yydefault:
 		yyDollar = yyS[yypt-4 : yypt+1]
 		//line thrift.y:403
 		{
-			yyVAL.typeAnnotations = append(yyDollar[1].typeAnnotations, &ast.Annotation{Name: yyDollar[3].str, Value: "", Line: yyDollar[2].line})
+			yyVAL.typeAnnotations = append(yyDollar[1].typeAnnotations, &ast.Annotation{Name: yyDollar[3].str, Line: yyDollar[2].line})
 		}
 	case 69:
 		yyDollar = yyS[yypt-0 : yypt+1]
