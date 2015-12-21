@@ -20,9 +20,14 @@
 
 package ast
 
+// HeaderInfo provides a common way to access the line for a header.
+type HeaderInfo struct {
+	Line int
+}
+
 // Header unifies types representing header in the AST.
 type Header interface {
-	HeaderLine() int
+	Info() HeaderInfo
 	header()
 }
 
@@ -40,8 +45,12 @@ type Include struct {
 	Line int
 }
 
-func (i *Include) header()         {}
-func (i *Include) HeaderLine() int { return i.Line }
+func (i *Include) header() {}
+
+// Info for Include.
+func (i *Include) Info() HeaderInfo {
+	return HeaderInfo{Line: i.Line}
+}
 
 // Namespace statements allow users to choose the package name used by the
 // generated code in certain languages.
@@ -53,5 +62,9 @@ type Namespace struct {
 	Line  int
 }
 
-func (n *Namespace) header()         {}
-func (n *Namespace) HeaderLine() int { return n.Line }
+func (n *Namespace) header() {}
+
+// Info for Namespace.
+func (n *Namespace) Info() HeaderInfo {
+	return HeaderInfo{Line: n.Line}
+}
