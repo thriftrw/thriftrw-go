@@ -31,8 +31,14 @@ func (*Namespace) header() {}
 // Include is a request to include another Thrift file.
 //
 // 	include "shared.thrift"
+//
+// thriftrw's custom Include-As syntax may be used to change the name under
+// which the file is imported.
+//
+// 	include t "shared.thrift"
 type Include struct {
 	Path string
+	Name string
 	Line int
 }
 
