@@ -23,14 +23,10 @@ package ast
 // Definition unifies the different types representing items defined in the
 // Thrift file.
 type Definition interface {
+	DefinitionName() string
+	DefinitionLine() int
 	definition()
 }
-
-func (*Constant) definition() {}
-func (*Enum) definition()     {}
-func (*Service) definition()  {}
-func (*Struct) definition()   {}
-func (*Typedef) definition()  {}
 
 // Constant is a constant declared in the Thrift file using a const statement.
 //
@@ -42,6 +38,10 @@ type Constant struct {
 	Line  int
 }
 
+func (c *Constant) definition()            {}
+func (c *Constant) DefinitionName() string { return c.Name }
+func (c *Constant) DefinitionLine() int    { return c.Line }
+
 // Typedef is used to define an alias for another type.
 //
 // 	typedef string UUID
@@ -52,6 +52,11 @@ type Typedef struct {
 	Annotations []*Annotation
 	Line        int
 }
+
+// Definition implementation for Typedef.
+func (t *Typedef) definition()            {}
+func (t *Typedef) DefinitionName() string { return t.Name }
+func (t *Typedef) DefinitionLine() int    { return t.Line }
 
 // Enum is a set of named integer values.
 //
@@ -68,6 +73,11 @@ type Enum struct {
 	Annotations []*Annotation
 	Line        int
 }
+
+// DefinitionName for Enum.
+func (e *Enum) definition()            {}
+func (e *Enum) DefinitionName() string { return e.Name }
+func (e *Enum) DefinitionLine() int    { return e.Line }
 
 // EnumItem is a single item in an Enum definition.
 type EnumItem struct {
@@ -117,6 +127,11 @@ type Struct struct {
 	Line        int
 }
 
+// DefinitionName implementation for Struct.
+func (s *Struct) definition()            {}
+func (s *Struct) DefinitionName() string { return s.Name }
+func (s *Struct) DefinitionLine() int    { return s.Line }
+
 // Service is a collection of functions.
 //
 // 	service KeyValue {
@@ -132,6 +147,11 @@ type Service struct {
 	Annotations []*Annotation
 	Line        int
 }
+
+// DefinitionName implementation for Service.
+func (s *Service) definition()            {}
+func (s *Service) DefinitionName() string { return s.Name }
+func (s *Service) DefinitionLine() int    { return s.Line }
 
 // Function is a single function inside a service.
 //
