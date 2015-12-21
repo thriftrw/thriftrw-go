@@ -91,8 +91,8 @@ func TestParseHeaders(t *testing.T) {
 				include t "bar.thrift"
 			`,
 			&Program{Headers: []Header{
-				&Include{Path: "foo.thrift", Line: 2},
-				&Include{Path: "bar.thrift", Name: "t", Line: 3},
+				&Include{Path: "foo.thrift", ILine: 2},
+				&Include{Path: "bar.thrift", Name: "t", ILine: 3},
 			}},
 		},
 		{
@@ -121,9 +121,9 @@ func TestParseHeaders(t *testing.T) {
 			`,
 			&Program{
 				Headers: []Header{
-					&Include{Path: "shared.thrift", Line: 3},
+					&Include{Path: "shared.thrift", ILine: 3},
 					&Namespace{"go", "foo_service", 4},
-					&Include{Path: "errors.thrift", Line: 9},
+					&Include{Path: "errors.thrift", ILine: 9},
 					&Namespace{"py", "services.foo", 12},
 				},
 			},
@@ -145,31 +145,31 @@ func TestParseConstants(t *testing.T) {
 			`,
 			&Program{Definitions: []Definition{
 				&Constant{
-					Name:  "foo",
+					CName: "foo",
 					Type:  BaseType{ID: I32TypeID},
 					Value: ConstantInteger(42),
-					Line:  2,
+					CLine: 2,
 				},
 				&Constant{
-					Name: "bar",
-					Type: BaseType{ID: I64TypeID},
+					CName: "bar",
+					Type:  BaseType{ID: I64TypeID},
 					Value: ConstantReference{
 						Name: "shared.baz",
 						Line: 3,
 					},
-					Line: 3,
+					CLine: 3,
 				},
 				&Constant{
-					Name:  "baz",
+					CName: "baz",
 					Type:  BaseType{ID: StringTypeID},
 					Value: ConstantString("hello world"),
-					Line:  5,
+					CLine: 5,
 				},
 				&Constant{
-					Name:  "qux",
+					CName: "qux",
 					Type:  BaseType{ID: DoubleTypeID},
 					Value: ConstantDouble(3.141592),
-					Line:  7,
+					CLine: 7,
 				},
 			}},
 		},
@@ -178,7 +178,7 @@ func TestParseConstants(t *testing.T) {
 			 const bool include_something = false`,
 			&Program{Definitions: []Definition{
 				&Constant{
-					Name: "baz",
+					CName: "baz",
 					Type: BaseType{
 						ID: BoolTypeID,
 						Annotations: []*Annotation{
@@ -186,13 +186,13 @@ func TestParseConstants(t *testing.T) {
 						},
 					},
 					Value: ConstantBoolean(true),
-					Line:  1,
+					CLine: 1,
 				},
 				&Constant{
-					Name:  "include_something",
+					CName: "include_something",
 					Type:  BaseType{ID: BoolTypeID},
 					Value: ConstantBoolean(false),
-					Line:  2,
+					CLine: 2,
 				},
 			}},
 		},
@@ -213,7 +213,7 @@ func TestParseConstants(t *testing.T) {
 			`,
 			&Program{Definitions: []Definition{
 				&Constant{
-					Name: "stuff",
+					CName: "stuff",
 					Type: MapType{
 						KeyType: BaseType{
 							ID: StringTypeID,
@@ -238,10 +238,10 @@ func TestParseConstants(t *testing.T) {
 							},
 						},
 					},
-					Line: 2,
+					CLine: 2,
 				},
 				&Constant{
-					Name: "list_of_lists",
+					CName: "list_of_lists",
 					Type: ListType{ValueType: ListType{
 						ValueType: BaseType{ID: I32TypeID},
 					}},
@@ -263,11 +263,11 @@ func TestParseConstants(t *testing.T) {
 							},
 						},
 					},
-					Line: 6,
+					CLine: 6,
 				},
 				&Constant{
-					Name: "const_struct",
-					Type: TypeReference{Name: "Item", Line: 10},
+					CName: "const_struct",
+					Type:  TypeReference{Name: "Item", Line: 10},
 					Value: ConstantMap{Items: []ConstantMapItem{
 						ConstantMapItem{
 							Key:   ConstantString("key"),
@@ -278,7 +278,7 @@ func TestParseConstants(t *testing.T) {
 							Value: ConstantInteger(42),
 						},
 					}},
-					Line: 10,
+					CLine: 10,
 				},
 			}},
 		},
@@ -289,16 +289,16 @@ func TestParseConstants(t *testing.T) {
 			`,
 			&Program{Definitions: []Definition{
 				&Constant{
-					Name:  "foo",
+					CName: "foo",
 					Type:  BaseType{ID: StringTypeID},
 					Value: ConstantString(`a "b" c`),
-					Line:  2,
+					CLine: 2,
 				},
 				&Constant{
-					Name:  "bar",
+					CName: "bar",
 					Type:  BaseType{ID: StringTypeID},
 					Value: ConstantString(`a 'b' c`),
-					Line:  3,
+					CLine: 3,
 				},
 			}},
 		},
@@ -316,8 +316,8 @@ func TestParseTypedef(t *testing.T) {
 			`,
 			&Program{Definitions: []Definition{
 				&Typedef{
-					Name: "UUID",
-					Type: BaseType{ID: StringTypeID},
+					TName: "UUID",
+					Type:  BaseType{ID: StringTypeID},
 					Annotations: []*Annotation{
 						&Annotation{
 							Name:  "length",
@@ -325,10 +325,10 @@ func TestParseTypedef(t *testing.T) {
 							Line:  2,
 						},
 					},
-					Line: 2,
+					TLine: 2,
 				},
 				&Typedef{
-					Name: "Date",
+					TName: "Date",
 					Type: BaseType{
 						ID: I64TypeID,
 						Annotations: []*Annotation{
@@ -339,7 +339,7 @@ func TestParseTypedef(t *testing.T) {
 							},
 						},
 					},
-					Line: 4,
+					TLine: 4,
 				},
 			}},
 		},
@@ -358,7 +358,7 @@ func TestParseEnum(t *testing.T) {
 				{
 				}
 			`,
-			&Program{Definitions: []Definition{&Enum{Name: "EmptyEnum", Line: 2}}},
+			&Program{Definitions: []Definition{&Enum{EName: "EmptyEnum", ELine: 2}}},
 		},
 		{
 			`
@@ -371,7 +371,7 @@ func TestParseEnum(t *testing.T) {
 			`,
 			&Program{Definitions: []Definition{
 				&Enum{
-					Name: "SillyEnum",
+					EName: "SillyEnum",
 					Items: []*EnumItem{
 						&EnumItem{
 							Name: "foo",
@@ -393,7 +393,7 @@ func TestParseEnum(t *testing.T) {
 						&Annotation{Name: "_", Value: "__", Line: 7},
 						&Annotation{Name: "foo", Value: "bar", Line: 7},
 					},
-					Line: 2,
+					ELine: 2,
 				},
 			}},
 		},
@@ -411,9 +411,9 @@ func TestParseStruct(t *testing.T) {
 				exception EmptyExc {}
 			`,
 			&Program{Definitions: []Definition{
-				&Struct{Name: "EmptyStruct", Type: StructType, Line: 2},
-				&Struct{Name: "EmptyUnion", Type: UnionType, Line: 3},
-				&Struct{Name: "EmptyExc", Type: ExceptionType, Line: 4},
+				&Struct{SName: "EmptyStruct", Type: StructType, SLine: 2},
+				&Struct{SName: "EmptyUnion", Type: UnionType, SLine: 3},
+				&Struct{SName: "EmptyExc", Type: ExceptionType, SLine: 4},
 			}},
 		},
 		{
@@ -434,8 +434,8 @@ func TestParseStruct(t *testing.T) {
 			`,
 			&Program{Definitions: []Definition{
 				&Struct{
-					Name: "i128",
-					Type: StructType,
+					SName: "i128",
+					Type:  StructType,
 					Fields: []*Field{
 						&Field{
 							ID:           1,
@@ -459,11 +459,11 @@ func TestParseStruct(t *testing.T) {
 							Line:  5,
 						},
 					},
-					Line: 2,
+					SLine: 2,
 				},
 				&Struct{
-					Name: "Contents",
-					Type: UnionType,
+					SName: "Contents",
+					Type:  UnionType,
 					Fields: []*Field{
 						&Field{
 							ID:           1,
@@ -497,11 +497,11 @@ func TestParseStruct(t *testing.T) {
 							Line: 9,
 						},
 					},
-					Line: 7,
+					SLine: 7,
 				},
 				&Struct{
-					Name: "GreatSadness",
-					Type: ExceptionType,
+					SName: "GreatSadness",
+					Type:  ExceptionType,
 					Fields: []*Field{
 						&Field{
 							ID:           1,
@@ -511,7 +511,7 @@ func TestParseStruct(t *testing.T) {
 							Line:         13,
 						},
 					},
-					Line: 12,
+					SLine: 12,
 				},
 			}},
 		},
@@ -528,14 +528,14 @@ func TestParseServices(t *testing.T) {
 				service AnotherEmptyService extends EmptyService {}
 			`,
 			&Program{Definitions: []Definition{
-				&Service{Name: "EmptyService", Line: 2},
+				&Service{SName: "EmptyService", SLine: 2},
 				&Service{
-					Name: "AnotherEmptyService",
+					SName: "AnotherEmptyService",
 					Parent: &ServiceReference{
 						Name: "EmptyService",
 						Line: 3,
 					},
-					Line: 3,
+					SLine: 3,
 				},
 			}},
 		},
@@ -557,7 +557,7 @@ func TestParseServices(t *testing.T) {
 			`,
 			&Program{Definitions: []Definition{
 				&Service{
-					Name: "KeyValue",
+					SName: "KeyValue",
 					Functions: []*Function{
 						&Function{
 							Name:   "empty",
@@ -614,7 +614,7 @@ func TestParseServices(t *testing.T) {
 							Line:  14,
 						},
 					},
-					Line: 2,
+					SLine: 2,
 				},
 			}},
 		},

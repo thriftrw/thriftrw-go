@@ -23,8 +23,8 @@ package ast
 // Definition unifies the different types representing items defined in the
 // Thrift file.
 type Definition interface {
-	DefinitionName() string
-	DefinitionLine() int
+	Name() string
+	Line() int
 	definition()
 }
 
@@ -32,31 +32,31 @@ type Definition interface {
 //
 // 	const i32 foo = 42
 type Constant struct {
-	Name  string
+	CName string
 	Type  Type
 	Value ConstantValue
-	Line  int
+	CLine int
 }
 
-func (c *Constant) definition()            {}
-func (c *Constant) DefinitionName() string { return c.Name }
-func (c *Constant) DefinitionLine() int    { return c.Line }
+func (c *Constant) definition()  {}
+func (c *Constant) Name() string { return c.CName }
+func (c *Constant) Line() int    { return c.CLine }
 
 // Typedef is used to define an alias for another type.
 //
 // 	typedef string UUID
 // 	typedef i64 Timestamp (unit = "milliseconds")
 type Typedef struct {
-	Name        string
+	TName       string
 	Type        Type
 	Annotations []*Annotation
-	Line        int
+	TLine       int
 }
 
 // Definition implementation for Typedef.
-func (t *Typedef) definition()            {}
-func (t *Typedef) DefinitionName() string { return t.Name }
-func (t *Typedef) DefinitionLine() int    { return t.Line }
+func (t *Typedef) definition()  {}
+func (t *Typedef) Name() string { return t.TName }
+func (t *Typedef) Line() int    { return t.TLine }
 
 // Enum is a set of named integer values.
 //
@@ -68,16 +68,16 @@ func (t *Typedef) DefinitionLine() int    { return t.Line }
 // 		Admin = 3
 // 	} (go.name = "UserRole")
 type Enum struct {
-	Name        string
+	EName       string
 	Items       []*EnumItem
 	Annotations []*Annotation
-	Line        int
+	ELine       int
 }
 
 // DefinitionName for Enum.
-func (e *Enum) definition()            {}
-func (e *Enum) DefinitionName() string { return e.Name }
-func (e *Enum) DefinitionLine() int    { return e.Line }
+func (e *Enum) definition()  {}
+func (e *Enum) Name() string { return e.EName }
+func (e *Enum) Line() int    { return e.ELine }
 
 // EnumItem is a single item in an Enum definition.
 type EnumItem struct {
@@ -120,17 +120,17 @@ const (
 //
 // 	exception ServiceError { 1: required string message }
 type Struct struct {
-	Name        string
+	SName       string
 	Type        StructureType
 	Fields      []*Field
 	Annotations []*Annotation
-	Line        int
+	SLine       int
 }
 
 // DefinitionName implementation for Struct.
-func (s *Struct) definition()            {}
-func (s *Struct) DefinitionName() string { return s.Name }
-func (s *Struct) DefinitionLine() int    { return s.Line }
+func (s *Struct) definition()  {}
+func (s *Struct) Name() string { return s.SName }
+func (s *Struct) Line() int    { return s.SLine }
 
 // Service is a collection of functions.
 //
@@ -139,19 +139,19 @@ func (s *Struct) DefinitionLine() int    { return s.Line }
 // 		binary getValue(1: string key)
 // 	} (router.serviceName = "key_value")
 type Service struct {
-	Name      string
+	SName     string
 	Functions []*Function
 	// Reference to the parent service if this service inherits another
 	// service, nil otherwise.
 	Parent      *ServiceReference
 	Annotations []*Annotation
-	Line        int
+	SLine       int
 }
 
 // DefinitionName implementation for Service.
-func (s *Service) definition()            {}
-func (s *Service) DefinitionName() string { return s.Name }
-func (s *Service) DefinitionLine() int    { return s.Line }
+func (s *Service) definition()  {}
+func (s *Service) Name() string { return s.SName }
+func (s *Service) Line() int    { return s.SLine }
 
 // Function is a single function inside a service.
 //

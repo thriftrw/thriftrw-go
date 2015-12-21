@@ -110,7 +110,7 @@ header
         {
             $$ = &ast.Include{
                 Path: $3,
-                Line: $1,
+                ILine: $1,
             }
         }
     | lineno INCLUDE IDENTIFIER LITERAL
@@ -118,7 +118,7 @@ header
             $$ = &ast.Include{
                 Name: $3,
                 Path: $4,
-                Line: $1,
+                ILine: $1,
             }
         }
     | lineno NAMESPACE '*' IDENTIFIER
@@ -126,7 +126,7 @@ header
             $$ = &ast.Namespace{
                 Scope: "*",
                 Name: $4,
-                Line: $1,
+                NLine: $1,
             }
         }
     | lineno NAMESPACE IDENTIFIER IDENTIFIER
@@ -134,7 +134,7 @@ header
             $$ = &ast.Namespace{
                 Scope: $3,
                 Name: $4,
-                Line: $1,
+                NLine: $1,
             }
         }
     ;
@@ -154,49 +154,49 @@ definition
     : lineno CONST type IDENTIFIER '=' const_value
         {
             $$ = &ast.Constant{
-                Name: $4,
+                CName: $4,
                 Type: $3,
                 Value: $6,
-                Line: $1,
+                CLine: $1,
             }
         }
     /* types */
     | lineno TYPEDEF type IDENTIFIER type_annotations
         {
             $$ = &ast.Typedef{
-                Name: $4,
+                TName: $4,
                 Type: $3,
                 Annotations: $5,
-                Line: $1,
+                TLine: $1,
             }
         }
     | lineno ENUM IDENTIFIER '{' enum_items '}' type_annotations
         {
             $$ = &ast.Enum{
-                Name: $3,
+                EName: $3,
                 Items: $5,
                 Annotations: $7,
-                Line: $1,
+                ELine: $1,
             }
         }
     | lineno struct_type IDENTIFIER '{' fields '}' type_annotations
         {
             $$ = &ast.Struct{
-                Name: $3,
+                SName: $3,
                 Type: $2,
                 Fields: $5,
                 Annotations: $7,
-                Line: $1,
+                SLine: $1,
             }
         }
     /* services */
     | lineno SERVICE IDENTIFIER '{' functions '}' type_annotations
         {
             $$ = &ast.Service{
-                Name: $3,
+                SName: $3,
                 Functions: $5,
                 Annotations: $7,
-                Line: $1,
+                SLine: $1,
             }
         }
     | lineno SERVICE IDENTIFIER EXTENDS lineno IDENTIFIER '{' functions '}'
@@ -208,11 +208,11 @@ definition
             }
 
             $$ = &ast.Service{
-                Name: $3,
+                SName: $3,
                 Functions: $8,
                 Parent: parent,
                 Annotations: $10,
-                Line: $1,
+                SLine: $1,
             }
         }
     ;

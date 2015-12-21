@@ -22,7 +22,7 @@ package ast
 
 // Header unifies types representing header in the AST.
 type Header interface {
-	HeaderLine() int
+	Line() int
 	header()
 }
 
@@ -35,13 +35,13 @@ type Header interface {
 //
 // 	include t "shared.thrift"
 type Include struct {
-	Path string
-	Name string
-	Line int
+	Path  string
+	Name  string
+	ILine int
 }
 
-func (i *Include) header()         {}
-func (i *Include) HeaderLine() int { return i.Line }
+func (i *Include) header()   {}
+func (i *Include) Line() int { return i.ILine }
 
 // Namespace statements allow users to choose the package name used by the
 // generated code in certain languages.
@@ -50,8 +50,8 @@ func (i *Include) HeaderLine() int { return i.Line }
 type Namespace struct {
 	Scope string
 	Name  string
-	Line  int
+	NLine int
 }
 
-func (n *Namespace) header()         {}
-func (n *Namespace) HeaderLine() int { return n.Line }
+func (n *Namespace) header()   {}
+func (n *Namespace) Line() int { return n.NLine }

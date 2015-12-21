@@ -20,8 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
-
 //line thrift.y:2
 package internal
 
@@ -684,8 +682,8 @@ yydefault:
 		//line thrift.y:110
 		{
 			yyVAL.header = &ast.Include{
-				Path: yyDollar[3].str,
-				Line: yyDollar[1].line,
+				Path:  yyDollar[3].str,
+				ILine: yyDollar[1].line,
 			}
 		}
 	case 5:
@@ -693,9 +691,9 @@ yydefault:
 		//line thrift.y:117
 		{
 			yyVAL.header = &ast.Include{
-				Name: yyDollar[3].str,
-				Path: yyDollar[4].str,
-				Line: yyDollar[1].line,
+				Name:  yyDollar[3].str,
+				Path:  yyDollar[4].str,
+				ILine: yyDollar[1].line,
 			}
 		}
 	case 6:
@@ -705,7 +703,7 @@ yydefault:
 			yyVAL.header = &ast.Namespace{
 				Scope: "*",
 				Name:  yyDollar[4].str,
-				Line:  yyDollar[1].line,
+				NLine: yyDollar[1].line,
 			}
 		}
 	case 7:
@@ -715,7 +713,7 @@ yydefault:
 			yyVAL.header = &ast.Namespace{
 				Scope: yyDollar[3].str,
 				Name:  yyDollar[4].str,
-				Line:  yyDollar[1].line,
+				NLine: yyDollar[1].line,
 			}
 		}
 	case 8:
@@ -735,10 +733,10 @@ yydefault:
 		//line thrift.y:155
 		{
 			yyVAL.definition = &ast.Constant{
-				Name:  yyDollar[4].str,
+				CName: yyDollar[4].str,
 				Type:  yyDollar[3].fieldType,
 				Value: yyDollar[6].constantValue,
-				Line:  yyDollar[1].line,
+				CLine: yyDollar[1].line,
 			}
 		}
 	case 11:
@@ -746,10 +744,10 @@ yydefault:
 		//line thrift.y:165
 		{
 			yyVAL.definition = &ast.Typedef{
-				Name:        yyDollar[4].str,
+				TName:       yyDollar[4].str,
 				Type:        yyDollar[3].fieldType,
 				Annotations: yyDollar[5].typeAnnotations,
-				Line:        yyDollar[1].line,
+				TLine:       yyDollar[1].line,
 			}
 		}
 	case 12:
@@ -757,10 +755,10 @@ yydefault:
 		//line thrift.y:174
 		{
 			yyVAL.definition = &ast.Enum{
-				Name:        yyDollar[3].str,
+				EName:       yyDollar[3].str,
 				Items:       yyDollar[5].enumItems,
 				Annotations: yyDollar[7].typeAnnotations,
-				Line:        yyDollar[1].line,
+				ELine:       yyDollar[1].line,
 			}
 		}
 	case 13:
@@ -768,11 +766,11 @@ yydefault:
 		//line thrift.y:183
 		{
 			yyVAL.definition = &ast.Struct{
-				Name:        yyDollar[3].str,
+				SName:       yyDollar[3].str,
 				Type:        yyDollar[2].structType,
 				Fields:      yyDollar[5].fields,
 				Annotations: yyDollar[7].typeAnnotations,
-				Line:        yyDollar[1].line,
+				SLine:       yyDollar[1].line,
 			}
 		}
 	case 14:
@@ -780,10 +778,10 @@ yydefault:
 		//line thrift.y:194
 		{
 			yyVAL.definition = &ast.Service{
-				Name:        yyDollar[3].str,
+				SName:       yyDollar[3].str,
 				Functions:   yyDollar[5].functions,
 				Annotations: yyDollar[7].typeAnnotations,
-				Line:        yyDollar[1].line,
+				SLine:       yyDollar[1].line,
 			}
 		}
 	case 15:
@@ -796,11 +794,11 @@ yydefault:
 			}
 
 			yyVAL.definition = &ast.Service{
-				Name:        yyDollar[3].str,
+				SName:       yyDollar[3].str,
 				Functions:   yyDollar[8].functions,
 				Parent:      parent,
 				Annotations: yyDollar[10].typeAnnotations,
-				Line:        yyDollar[1].line,
+				SLine:       yyDollar[1].line,
 			}
 		}
 	case 16:
