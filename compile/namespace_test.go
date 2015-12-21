@@ -18,28 +18,66 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package compile
 
-import "github.com/uber/thriftrw-go/ast"
+import (
+	"testing"
 
-func init() {
-	yyErrorVerbose = true
-}
+	"github.com/stretchr/testify/assert"
+)
 
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
+func TestNamespaceCaseSensitive(t *testing.T) {
+	tests := [][]struct {
+		name  string
+		works bool
+	}{
+		{
+			{"foo", true},
+			{"bar", true},
+		},
+		{
+			{"foo", true},
+			{"foo", false},
+			{"Foo", true},
+		},
 	}
-	return nil, lex.err
+
+	for _, tt := range tests {
+		ns := newNamespace(caseSensitive)
+		for _, op := range tt {
+			if op.works {
+				assert.NoError(t, ns.claim(op.name))
+			} else {
+				assert.Error(t, ns.claim(op.name))
+			}
+		}
+	}
 }
 
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
+func TestNamespaceCaseInsensitive(t *testing.T) {
+	tests := [][]struct {
+		name  string
+		works bool
+	}{
+		{
+			{"foo", true},
+			{"bar", true},
+		},
+		{
+			{"foo", true},
+			{"Foo", false},
+			{"bar", true},
+		},
+	}
 
-//go:generate go tool yacc thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
+	for _, tt := range tests {
+		ns := newNamespace(caseInsensitive)
+		for _, op := range tt {
+			if op.works {
+				assert.NoError(t, ns.claim(op.name))
+			} else {
+				assert.Error(t, ns.claim(op.name))
+			}
+		}
+	}
+}

@@ -36,8 +36,8 @@ func decodeErrorf(f string, args ...interface{}) decodeError {
 
 // IsDecodeError checks if an error is a protocol decode error.
 func IsDecodeError(e error) bool {
-	// TODO decode error can probably be shared across protocols. move to
-	// protocol/
+	// TODO(abg): decode error can probably be shared across protocols. move
+	// to protocol/
 	_, isDecodeError := e.(decodeError)
 	return isDecodeError
 }

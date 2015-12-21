@@ -224,7 +224,7 @@ func (br *Reader) readInt64(off int64) (int64, int64, error) {
 
 func (br *Reader) readStruct(off int64) (wire.Struct, int64, error) {
 	var fields []wire.Field
-	// TODO lazy FieldList
+	// TODO(abg) add a lazy FieldList type instead of []Field.
 
 	typ, off, err := br.readByte(off)
 	if err != nil {

@@ -18,28 +18,52 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package compile
 
-import "github.com/uber/thriftrw-go/ast"
+import "fmt"
 
-func init() {
-	yyErrorVerbose = true
+// fakeScope is an implementation of Scope for testing. Instances may be
+// constructed easily with the scope() function.
+type fakeScope struct {
+	types    map[string]TypeSpec
+	services map[string]*Service
 }
 
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
+func (s fakeScope) LookupType(name string) (TypeSpec, error) {
+	if t, ok := s.types[name]; ok {
+		return t, nil
 	}
-	return nil, lex.err
+	return nil, fmt.Errorf("unknown type: %s", name)
 }
 
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
+func (s fakeScope) LookupService(name string) (*Service, error) {
+	if svc, ok := s.services[name]; ok {
+		return svc, nil
+	}
+	return nil, fmt.Errorf("unknown service: %s", name)
+}
 
-//go:generate go tool yacc thrift.y
-//go:generate goimports -w ./y.go
+// Helper to construct Scopes from the given pairs of items.
+func scope(items ...struct {
+	name  string
+	value interface{}
+}) Scope {
+	scope := fakeScope{
+		types:    make(map[string]TypeSpec),
+		services: make(map[string]*Service),
+	}
 
-//go:generate ./generated.sh
+	for _, item := range items {
+		name := item.name
+		value := item.value
+		switch v := value.(type) {
+		case TypeSpec:
+			scope.types[name] = v
+		case *Service:
+			scope.services[name] = v
+		default:
+			panic(fmt.Sprintf("unknown type %T of value %v", value, value))
+		}
+	}
+	return scope
+}

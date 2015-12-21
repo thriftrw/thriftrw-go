@@ -18,28 +18,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package compile
 
 import "github.com/uber/thriftrw-go/ast"
 
-func init() {
-	yyErrorVerbose = true
+// Constant represents a single named constant value from the Thrift file.
+type Constant struct {
+	Type  TypeSpec
+	Value ast.ConstantValue
+
+	compiled bool
+	src      *ast.Constant
 }
 
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
+// NewConstant builds a new constant from the AST constant.
+func NewConstant(src *ast.Constant) *Constant {
+	return &Constant{compiled: false, src: src}
+}
+
+// ThriftName is the name of the constant as defined in the Thrift file.
+func (c *Constant) ThriftName() string {
+	return c.src.Name
+}
+
+// Compile compiles the constant.
+func (c *Constant) Compile(scope Scope) error {
+	if c.compiled {
+		return nil
 	}
-	return nil, lex.err
+
+	c.compiled = true
+	// TODO(abg)
+	return nil
 }
-
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
-
-//go:generate go tool yacc thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
