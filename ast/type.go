@@ -37,7 +37,7 @@ type BaseTypeID int
 // IDs of the base types supported by Thrift.
 const (
 	BoolTypeID   BaseTypeID = iota + 1 // bool
-	ByteTypeID                         // byte
+	I8TypeID                           // byte/i8
 	I16TypeID                          // i16
 	I32TypeID                          // i32
 	I64TypeID                          // i64
@@ -70,7 +70,7 @@ func (bt BaseType) String() string {
 	switch bt.ID {
 	case BoolTypeID:
 		name = "bool"
-	case ByteTypeID:
+	case I8TypeID:
 		name = "byte"
 	case I16TypeID:
 		name = "i16"

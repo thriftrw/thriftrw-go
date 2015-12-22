@@ -32,8 +32,8 @@ type Value struct {
 	typ Type
 
 	tbool   bool
-	tbyte   int8
 	tdouble float64
+	ti8     int8
 	ti16    int16
 	ti32    int32
 	ti64    int64
@@ -54,8 +54,8 @@ func (v *Value) Get() interface{} {
 	switch v.typ {
 	case TBool:
 		return v.tbool
-	case TByte:
-		return v.tbyte
+	case TI8:
+		return v.ti8
 	case TDouble:
 		return v.tdouble
 	case TI16:
@@ -92,17 +92,17 @@ func (v *Value) GetBool() bool {
 	return v.tbool
 }
 
-// NewValueByte constructs a new Value that contains a byte
-func NewValueByte(v int8) Value {
+// NewValueI8 constructs a new Value that contains a byte
+func NewValueI8(v int8) Value {
 	return Value{
-		typ:   TByte,
-		tbyte: v,
+		typ: TI8,
+		ti8: v,
 	}
 }
 
-// GetByte gets the Byte value from a Value.
-func (v *Value) GetByte() int8 {
-	return v.tbyte
+// GetI8 gets the I8 value from a Value.
+func (v *Value) GetI8() int8 {
+	return v.ti8
 }
 
 // NewValueDouble constructs a new Value that contains a double.
@@ -226,8 +226,8 @@ func (v *Value) String() string {
 	switch v.typ {
 	case TBool:
 		return fmt.Sprintf("TBool(%v)", v.tbool)
-	case TByte:
-		return fmt.Sprintf("TByte(%v)", v.tbyte)
+	case TI8:
+		return fmt.Sprintf("TI8(%v)", v.ti8)
 	case TDouble:
 		return fmt.Sprintf("TDouble(%v)", v.tdouble)
 	case TI16:

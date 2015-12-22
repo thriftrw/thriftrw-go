@@ -59,7 +59,7 @@ func Fuzz(data []byte) int {
 // fully evaluate a value that contains lazy lists, etc.
 func evaluate(v wire.Value) error {
 	switch v.Type {
-	case wire.TBool, wire.TByte, wire.TDouble, wire.TI16, wire.TI32, wire.TI64, wire.TBinary:
+	case wire.TBool, wire.TI8, wire.TDouble, wire.TI16, wire.TI32, wire.TI64, wire.TBinary:
 		return nil
 	case wire.TStruct:
 		for _, f := range v.Struct.Fields {

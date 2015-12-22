@@ -53,7 +53,7 @@ import "github.com/uber/thriftrw-go/ast"
 
 // Reserved keywords
 %token NAMESPACE INCLUDE
-%token VOID BOOL BYTE I16 I32 I64 DOUBLE STRING BINARY MAP LIST SET
+%token VOID BOOL BYTE I8 I16 I32 I64 DOUBLE STRING BINARY MAP LIST SET
 %token ONEWAY TYPEDEF STRUCT UNION EXCEPTION EXTENDS THROWS SERVICE ENUM CONST
 %token REQUIRED OPTIONAL TRUE FALSE
 
@@ -339,7 +339,8 @@ type
 
 base_type_name
     : BOOL    { $$ =   ast.BoolTypeID }
-    | BYTE    { $$ =   ast.ByteTypeID }
+    | BYTE    { $$ =     ast.I8TypeID }
+    | I8      { $$ =     ast.I8TypeID }
     | I16     { $$ =    ast.I16TypeID }
     | I32     { $$ =    ast.I32TypeID }
     | I64     { $$ =    ast.I64TypeID }

@@ -39,8 +39,8 @@ func ValuesAreEqual(left, right Value) bool {
 	switch left.typ {
 	case TBool:
 		return left.tbool == right.tbool
-	case TByte:
-		return left.tbyte == right.tbyte
+	case TI8:
+		return left.ti8 == right.ti8
 	case TDouble:
 		return left.tdouble == right.tdouble
 	case TI16:
@@ -204,7 +204,7 @@ func mapsAreEqualUnhashable(size int, l, r MapItemList) bool {
 
 func isHashable(t Type) bool {
 	switch t {
-	case TBool, TByte, TDouble, TI16, TI32, TI64, TBinary:
+	case TBool, TI8, TDouble, TI16, TI32, TI64, TBinary:
 		return true
 	default:
 		return false
@@ -213,7 +213,7 @@ func isHashable(t Type) bool {
 
 func toHashable(v Value) interface{} {
 	switch v.Type() {
-	case TBool, TByte, TDouble, TI16, TI32, TI64:
+	case TBool, TI8, TDouble, TI16, TI32, TI64:
 		return v.Get()
 	case TBinary:
 		return string(v.GetBinary())

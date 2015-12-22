@@ -29,8 +29,8 @@ func vbool(b bool) wire.Value {
 	return wire.NewValueBool(b)
 }
 
-func vbyte(b int8) wire.Value {
-	return wire.NewValueByte(b)
+func vi8(b int8) wire.Value {
+	return wire.NewValueI8(b)
 }
 
 func vi16(i int16) wire.Value {

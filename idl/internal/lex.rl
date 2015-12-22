@@ -103,6 +103,7 @@ func (lex *lexer) Lex(out *yySymType) int {
             'void'      __ => { tok =      VOID; fbreak; };
             'bool'      __ => { tok =      BOOL; fbreak; };
             'byte'      __ => { tok =      BYTE; fbreak; };
+            'i8'        __ => { tok =        I8; fbreak; };
             'i16'       __ => { tok =       I16; fbreak; };
             'i32'       __ => { tok =       I32; fbreak; };
             'i64'       __ => { tok =       I64; fbreak; };
