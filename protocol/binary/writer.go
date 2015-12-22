@@ -196,8 +196,8 @@ func (bw *Writer) WriteValue(v wire.Value) error {
 		}
 		return bw.writeByte(0)
 
-	case wire.TByte:
-		return bw.writeByte(byte(v.GetByte()))
+	case wire.TI8:
+		return bw.writeByte(byte(v.GetI8()))
 
 	case wire.TDouble:
 		value := math.Float64bits(v.GetDouble())

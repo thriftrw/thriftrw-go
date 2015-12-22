@@ -26,14 +26,14 @@ package wire
 import "fmt"
 
 const (
-	_Type_name_0 = "TBoolTByteTDouble"
+	_Type_name_0 = "TBoolTI8TDouble"
 	_Type_name_1 = "TI16"
 	_Type_name_2 = "TI32"
 	_Type_name_3 = "TI64TBinaryTStructTMapTSetTList"
 )
 
 var (
-	_Type_index_0 = [...]uint8{0, 5, 10, 17}
+	_Type_index_0 = [...]uint8{0, 5, 8, 15}
 	_Type_index_1 = [...]uint8{0, 4}
 	_Type_index_2 = [...]uint8{0, 4}
 	_Type_index_3 = [...]uint8{0, 4, 11, 18, 22, 26, 31}

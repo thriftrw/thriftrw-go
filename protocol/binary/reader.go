@@ -50,7 +50,7 @@ func fixedWidth(t wire.Type) int64 {
 	switch t {
 	case wire.TBool:
 		return 1
-	case wire.TByte:
+	case wire.TI8:
 		return 1
 	case wire.TDouble:
 		return 8
@@ -395,9 +395,9 @@ func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 
 		return wire.NewValueBool(b == 1), off, nil
 
-	case wire.TByte:
+	case wire.TI8:
 		b, off, err := br.readByte(off)
-		return wire.NewValueByte(int8(b)), off, err
+		return wire.NewValueI8(int8(b)), off, err
 
 	case wire.TDouble:
 		value, off, err := br.readInt64(off)

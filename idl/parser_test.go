@@ -313,6 +313,9 @@ func TestParseTypedef(t *testing.T) {
 				typedef string UUID (length = "32");
 
 				typedef i64 (js.type = "Date") Date
+
+				typedef i8 foo
+				typedef byte bar
 			`,
 			&Program{Definitions: []Definition{
 				&Typedef{
@@ -340,6 +343,16 @@ func TestParseTypedef(t *testing.T) {
 						},
 					},
 					Line: 4,
+				},
+				&Typedef{
+					Name: "foo",
+					Type: BaseType{ID: I8TypeID},
+					Line: 6,
+				},
+				&Typedef{
+					Name: "bar",
+					Type: BaseType{ID: I8TypeID},
+					Line: 7,
 				},
 			}},
 		},

@@ -42,7 +42,7 @@ func evaluate(v wire.Value) error {
 	switch v.Type() {
 	case wire.TBool:
 		return nil
-	case wire.TByte:
+	case wire.TI8:
 		return nil
 	case wire.TDouble:
 		return nil
@@ -149,16 +149,16 @@ func TestBoolDecodeFailure(t *testing.T) {
 	checkDecodeFailure(t, wire.TBool, tests)
 }
 
-func TestByte(t *testing.T) {
+func TestI8(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vbyte(0), []byte{0x00}},
-		{vbyte(1), []byte{0x01}},
-		{vbyte(-1), []byte{0xff}},
-		{vbyte(127), []byte{0x7f}},
-		{vbyte(-128), []byte{0x80}},
+		{vi8(0), []byte{0x00}},
+		{vi8(1), []byte{0x01}},
+		{vi8(-1), []byte{0xff}},
+		{vi8(127), []byte{0x7f}},
+		{vi8(-128), []byte{0x80}},
 	}
 
-	checkEncodeDecode(t, wire.TByte, tests)
+	checkEncodeDecode(t, wire.TI8, tests)
 }
 
 func TestI16(t *testing.T) {

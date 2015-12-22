@@ -26,7 +26,7 @@ type Type byte
 // Type codes of the different types supported by Thrift.
 const (
 	TBool   Type = 2
-	TByte   Type = 3
+	TI8     Type = 3
 	TDouble Type = 4
 	TI16    Type = 6
 	TI32    Type = 8
