@@ -24,6 +24,7 @@ import (
 	"path/filepath"
 	"strings"
 	"unicode"
+	"unicode/utf8"
 )
 
 // capitalize changes the first letter of a string to upper case.
@@ -31,9 +32,8 @@ func capitalize(s string) string {
 	if len(s) == 0 {
 		return s
 	}
-	x := []rune(s)
-	return string(unicode.ToUpper(x[0])) + string(x[1:])
-	// TODO(abg): surely there has to be a better way
+	x, i := utf8.DecodeRuneInString(s)
+	return string(unicode.ToUpper(x)) + string(s[i:])
 }
 
 // fileBaseName returns the base name of the given file without the extension.
