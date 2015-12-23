@@ -38,11 +38,7 @@ func capitalize(s string) string {
 
 // fileBaseName returns the base name of the given file without the extension.
 func fileBaseName(p string) string {
-	p = filepath.Base(p)
-	if i := strings.LastIndexByte(p, '.'); i > 0 {
-		p = p[:i]
-	}
-	return p
+	return strings.TrimSuffix(filepath.Base(p), filepath.Ext(p))
 }
 
 // splitInclude splits the given string at the first ".".
