@@ -38,7 +38,7 @@ var (
 // error.
 type namespace struct {
 	transform func(string) string
-	names     map[string]bool
+	names     map[string]struct{}
 }
 
 // newNamespace instantiates a new namespace.
@@ -48,7 +48,7 @@ type namespace struct {
 func newNamespace(t namespaceType) namespace {
 	return namespace{
 		transform: t,
-		names:     make(map[string]bool),
+		names:     make(map[string]struct{}),
 	}
 }
 
@@ -59,7 +59,7 @@ func (n namespace) claim(name string) error {
 	if _, ok := n.names[s]; ok {
 		return nameConflict{name: name}
 	}
-	n.names[s] = true
+	n.names[s] = struct{}{}
 	return nil
 }
 
