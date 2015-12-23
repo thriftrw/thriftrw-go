@@ -32,23 +32,23 @@ import (
 
 // Compile parses and compiles the Thrift file at the given path and any other
 // Thrift file it includes.
-func Compile(path string) (Module, error) {
+func Compile(path string) (*Module, error) {
 	return newCompiler().compile(path)
 }
 
 // compiler is responsible for compiling Thrift files.
 type compiler struct {
 	// Map from file path to Module representing that file.
-	Modules map[string]Module
+	Modules map[string]*Module
 }
 
 func newCompiler() compiler {
 	return compiler{
-		Modules: make(map[string]Module),
+		Modules: make(map[string]*Module),
 	}
 }
 
-func (c compiler) compile(p string) (Module, error) {
+func (c compiler) compile(p string) (*Module, error) {
 	m, err := c.load(p)
 	if err != nil {
 		return m, err
@@ -71,10 +71,10 @@ func (c compiler) compile(p string) (Module, error) {
 // load populates the compiler with information from the given Thrift file.
 //
 // The types aren't actually compiled in this step.
-func (c compiler) load(p string) (Module, error) {
+func (c compiler) load(p string) (*Module, error) {
 	p, err := filepath.Abs(p)
 	if err != nil {
-		return Module{}, err
+		return nil, err
 	}
 
 	if m, ok := c.Modules[p]; ok {
@@ -85,19 +85,19 @@ func (c compiler) load(p string) (Module, error) {
 	s, err := ioutil.ReadFile(p)
 	if err != nil {
 		// TODO(abg): real error type instead of strings
-		return Module{}, fmt.Errorf("error reading %s: %s", p, err)
+		return nil, fmt.Errorf("error reading %s: %s", p, err)
 	}
 
 	prog, err := idl.Parse(s)
 	if err != nil {
 		// TODO(abg): real error type instead of strings
-		return Module{}, fmt.Errorf("error parsing %s: %s", p, err)
+		return nil, fmt.Errorf("error parsing %s: %s", p, err)
 	}
 
-	m := Module{
+	m := &Module{
 		Name:       fileBaseName(p),
 		ThriftPath: p,
-		Includes:   make(map[string]IncludedModule),
+		Includes:   make(map[string]*IncludedModule),
 		Constants:  make(map[string]Constant),
 		Types:      make(map[string]TypeSpec),
 		Services:   make(map[string]*Service),
@@ -108,7 +108,7 @@ func (c compiler) load(p string) (Module, error) {
 
 	if err := c.gather(m, prog); err != nil {
 		// TODO(abg): Real error types intsead of string
-		return Module{}, fmt.Errorf("failed to compile %s: %s", p, err)
+		return nil, fmt.Errorf("failed to compile %s: %s", p, err)
 	}
 	return m, nil
 }
@@ -120,7 +120,7 @@ func (c compiler) load(p string) (Module, error) {
 //
 // prog is the parsed representation of it, and m is the Module representing
 // this file.
-func (c compiler) gather(m Module, prog *ast.Program) error {
+func (c compiler) gather(m *Module, prog *ast.Program) error {
 	// Namespace of items defined in the Thrift file.
 	//
 	// This is not shared with the Go namespace because we will capitalize
@@ -175,10 +175,10 @@ func (c compiler) gather(m Module, prog *ast.Program) error {
 // include loads the file specified by the given include in the given Module.
 //
 // The path to the file is relative to the ThriftPath of the given module.
-func (c compiler) include(m Module, include *ast.Include) (IncludedModule, error) {
+func (c compiler) include(m *Module, include *ast.Include) (*IncludedModule, error) {
 	if len(include.Name) > 0 {
 		// TODO(abg): Add support for include-as flag somewhere.
-		return IncludedModule{}, includeError{
+		return nil, includeError{
 			Include: include,
 			Reason:  errors.New("include-as syntax is currently disabled"),
 		}
@@ -187,8 +187,8 @@ func (c compiler) include(m Module, include *ast.Include) (IncludedModule, error
 	ipath := filepath.Join(filepath.Dir(m.ThriftPath), include.Path)
 	incM, err := c.load(ipath)
 	if err != nil {
-		return IncludedModule{}, includeError{Include: include, Reason: err}
+		return nil, includeError{Include: include, Reason: err}
 	}
 
-	return IncludedModule{Name: fileBaseName(include.Path), Module: incM}, nil
+	return &IncludedModule{Name: fileBaseName(include.Path), Module: incM}, nil
 }

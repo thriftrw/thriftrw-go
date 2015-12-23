@@ -37,14 +37,14 @@ type Module struct {
 	// Mapping from the /Thrift name/ to the compiled representation of
 	// different definitions.
 
-	Includes  map[string]IncludedModule
+	Includes  map[string]*IncludedModule
 	Constants map[string]Constant
 	Types     map[string]TypeSpec
 	Services  map[string]*Service
 }
 
 // LookupType TODO
-func (m Module) LookupType(name string) (TypeSpec, error) {
+func (m *Module) LookupType(name string) (TypeSpec, error) {
 	if t, ok := m.Types[name]; ok {
 		return t, nil
 	}
@@ -59,7 +59,7 @@ func (m Module) LookupType(name string) (TypeSpec, error) {
 }
 
 // LookupService TODO
-func (m Module) LookupService(name string) (*Service, error) {
+func (m *Module) LookupService(name string) (*Service, error) {
 	return nil, nil // TODO
 }
 
@@ -70,7 +70,7 @@ func (m Module) LookupService(name string) (*Service, error) {
 // the Module name except when our custom include-as syntax is used.
 type IncludedModule struct {
 	Name   string
-	Module Module
+	Module *Module
 }
 
 // TODO(abg): Add support for include-as syntax.
