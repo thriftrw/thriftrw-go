@@ -27,32 +27,37 @@ import (
 
 // MapSpec represents a key-value mapping between two types.
 type MapSpec struct {
-	compileOnce
+	linkOnce
 
 	KeySpec, ValueSpec TypeSpec
-	src                ast.MapType
 }
 
-// NewMapSpec constructs a new MapSpec from the given AST.
-func NewMapSpec(src ast.MapType) *MapSpec {
-	return &MapSpec{src: src}
+// compileMapType compiles the given MapType AST into a MapSpec.
+func compileMapType(src ast.MapType) *MapSpec {
+	return &MapSpec{
+		KeySpec:   compileType(src.KeyType),
+		ValueSpec: compileType(src.ValueType),
+	}
 }
 
-// Compile resolves the type references in the MapSpec.
-func (m *MapSpec) Compile(scope Scope) error {
-	if m.compiled() {
-		return nil
+// Link resolves the type references in the MapSpec.
+func (m *MapSpec) Link(scope Scope) (TypeSpec, error) {
+	if m.linked() {
+		return nil, nil
 	}
 
 	var err error
-
-	m.KeySpec, err = ResolveType(m.src.KeyType, scope)
+	m.KeySpec, err = m.KeySpec.Link(scope)
 	if err != nil {
-		return err
+		return m, err
 	}
 
-	m.ValueSpec, err = ResolveType(m.src.ValueType, scope)
-	return err
+	m.ValueSpec, err = m.ValueSpec.Link(scope)
+	if err != nil {
+		return m, err
+	}
+
+	return m, nil
 }
 
 // TypeCode for MapSpec
@@ -64,30 +69,29 @@ func (m *MapSpec) TypeCode() wire.Type {
 
 // ListSpec represents lists of values of the same type.
 type ListSpec struct {
-	compileOnce
+	linkOnce
 
 	ValueSpec TypeSpec
-	src       ast.ListType
 }
 
-// NewListSpec constructs a new ListSpec from the given AST.
-func NewListSpec(src ast.ListType) *ListSpec {
-	return &ListSpec{src: src}
+// compileListSpec compiles the given ListType AST into a ListSpec.
+func compileListType(src ast.ListType) *ListSpec {
+	return &ListSpec{ValueSpec: compileType(src.ValueType)}
 }
 
-// Compile resolves the type references in the ListSpec.
-func (m *ListSpec) Compile(scope Scope) error {
-	if m.compiled() {
-		return nil
+// Link resolves the type references in the ListSpec.
+func (l *ListSpec) Link(scope Scope) (TypeSpec, error) {
+	if l.linked() {
+		return nil, nil
 	}
 
-	spec, err := ResolveType(m.src.ValueType, scope)
-	m.ValueSpec = spec
-	return err
+	var err error
+	l.ValueSpec, err = l.ValueSpec.Link(scope)
+	return l, err
 }
 
 // TypeCode for ListSpec
-func (m *ListSpec) TypeCode() wire.Type {
+func (l *ListSpec) TypeCode() wire.Type {
 	return wire.TList
 }
 
@@ -95,29 +99,28 @@ func (m *ListSpec) TypeCode() wire.Type {
 
 // SetSpec represents sets of values of the same type.
 type SetSpec struct {
-	compileOnce
+	linkOnce
 
 	ValueSpec TypeSpec
-	src       ast.SetType
 }
 
-// NewSetSpec constructs a new SetSpec from the given AST.
-func NewSetSpec(src ast.SetType) *SetSpec {
-	return &SetSpec{src: src}
+// compileSetSpec compiles the given SetType AST into a SetSpec.
+func compileSetType(src ast.SetType) *SetSpec {
+	return &SetSpec{ValueSpec: compileType(src.ValueType)}
 }
 
-// Compile resolves the type references in the SetSpec.
-func (m *SetSpec) Compile(scope Scope) error {
-	if m.compiled() {
-		return nil
+// Link resolves the type references in the SetSpec.
+func (s *SetSpec) Link(scope Scope) (TypeSpec, error) {
+	if s.linked() {
+		return nil, nil
 	}
 
-	spec, err := ResolveType(m.src.ValueType, scope)
-	m.ValueSpec = spec
-	return err
+	var err error
+	s.ValueSpec, err = s.ValueSpec.Link(scope)
+	return s, err
 }
 
 // TypeCode for SetSpec
-func (m *SetSpec) TypeCode() wire.Type {
+func (s *SetSpec) TypeCode() wire.Type {
 	return wire.TSet
 }

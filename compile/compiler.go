@@ -59,8 +59,14 @@ func (c compiler) compile(p string) (*Module, error) {
 	// TODO(abg): compile services
 	// TODO(abg): might be worth accumulating compile errors with a max count
 
-	for _, typ := range m.Types {
-		if err := typ.Compile(m); err != nil {
+	types := make(map[string]TypeSpec)
+	for name, typ := range m.Types {
+		types[name] = typ
+	}
+
+	for name, typ := range types {
+		m.Types[name], err = typ.Link(m)
+		if err != nil {
 			return m, err
 		}
 	}
@@ -160,7 +166,10 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 		case *ast.Typedef:
 			// TODO
 		case *ast.Enum:
-			enum := NewEnumSpec(definition)
+			enum, err := compileEnum(definition)
+			if err != nil {
+				return err
+			}
 			m.Types[enum.ThriftName()] = enum
 		case *ast.Struct:
 			// TODO

@@ -20,11 +20,50 @@
 
 package compile
 
-// Unit represents a single compilation unit.
-type Unit interface {
-	// Compile this unit or return an error.
-	//
-	// All implementations of Compile MUST be idempotent. It must be okay to
-	// call Compile on an object that's already compiled.
-	Compile(scope Scope) error
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestCapitalize(t *testing.T) {
+	tests := []struct{ input, output string }{
+		{"", ""},
+		{"foo", "Foo"},
+		{" foo", " foo"},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.output, capitalize(tt.input))
+	}
+}
+
+func TestFileBaseName(t *testing.T) {
+	tests := []struct{ input, output string }{
+		{"foo.bar", "foo"},
+		{"foo/bar.thrift", "bar"},
+		{"foo/bar-baz.thrift", "bar-baz"},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.output, fileBaseName(tt.input))
+	}
+}
+
+func TestSplitInclude(t *testing.T) {
+	tests := []struct {
+		input       string
+		outputLeft  string
+		outputRight string
+	}{
+		{"UUID", "", "UUID"},
+		{"common.UUID", "common", "UUID"},
+		{"common.types.UUID", "common", "types.UUID"},
+	}
+
+	for _, tt := range tests {
+		left, right := splitInclude(tt.input)
+		assert.Equal(t, tt.outputLeft, left)
+		assert.Equal(t, tt.outputRight, right)
+	}
 }

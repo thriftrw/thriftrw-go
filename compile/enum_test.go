@@ -27,6 +27,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/uber/thriftrw-go/ast"
 	"github.com/uber/thriftrw-go/idl"
+	"github.com/uber/thriftrw-go/wire"
 )
 
 func i(x int) *int {
@@ -55,6 +56,7 @@ func TestCompileSuccess(t *testing.T) {
 			// Default values
 			"enum Role { Disabled, User, Moderator, Admin }",
 			&EnumSpec{
+				Name: "Role",
 				Items: []EnumItem{
 					EnumItem{"Disabled", ast.ConstantInteger(0)},
 					EnumItem{"User", ast.ConstantInteger(1)},
@@ -67,6 +69,7 @@ func TestCompileSuccess(t *testing.T) {
 			// Explicit values
 			"enum CommentStatus { Visible = 12345, Hidden = 54321 }",
 			&EnumSpec{
+				Name: "CommentStatus",
 				Items: []EnumItem{
 					EnumItem{"Visible", ast.ConstantInteger(12345)},
 					EnumItem{"Hidden", ast.ConstantInteger(54321)},
@@ -75,8 +78,9 @@ func TestCompileSuccess(t *testing.T) {
 		},
 		{
 			// Mixed
-			"enum Foo { A, B, C = 10, D, E }",
+			"enum foo { A, B, C = 10, D, E }",
 			&EnumSpec{
+				Name: "foo",
 				Items: []EnumItem{
 					EnumItem{"A", ast.ConstantInteger(0)},
 					EnumItem{"B", ast.ConstantInteger(1)},
@@ -88,8 +92,9 @@ func TestCompileSuccess(t *testing.T) {
 		},
 		{
 			// Same values
-			"enum Bar { A, B = 0, C, D = 0, E }",
+			"enum bar { A, B = 0, C, D = 0, E }",
 			&EnumSpec{
+				Name: "bar",
 				Items: []EnumItem{
 					EnumItem{"A", ast.ConstantInteger(0)},
 					EnumItem{"B", ast.ConstantInteger(0)},
@@ -103,16 +108,42 @@ func TestCompileSuccess(t *testing.T) {
 
 	for _, tt := range tests {
 		src := parseEnum(tt.src)
-		spec := NewEnumSpec(src)
-
-		// so that we don't have to do this in the test table
-		tt.spec.src = src
-		tt.spec.compiled()
-
-		if assert.NoError(t, spec.Compile(scope())) {
+		enumspec, err := compileEnum(src)
+		if assert.NoError(t, err) {
+			spec, err := enumspec.Link(scope())
+			assert.NoError(t, err)
+			assert.Equal(t, wire.TI32, spec.TypeCode())
 			assert.Equal(t, tt.spec, spec)
+
+			// compiling twice should not error
+			spec, err = spec.Link(scope())
+			assert.NoError(t, err)
 		}
 	}
 }
 
-// TODO(abg): compilation failure errors
+func TestCompileFailure(t *testing.T) {
+	tests := []struct {
+		src      string
+		messages []string
+	}{
+		{
+			"enum Foo { A, B, C, A, D }",
+			[]string{
+				"cannot compile \"Foo.A\"",
+				"the name \"A\" has already been used",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		src := parseEnum(tt.src)
+		_, err := compileEnum(src)
+
+		if assert.Error(t, err) {
+			for _, msg := range tt.messages {
+				assert.Contains(t, err.Error(), msg)
+			}
+		}
+	}
+}

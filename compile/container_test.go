@@ -20,26 +20,44 @@
 
 package compile
 
-import "github.com/uber/thriftrw-go/wire"
+import (
+	"testing"
 
-// TypeSpecs for primitive Thrift types.
-var (
-	BoolSpec   = primitiveTypeSpec(wire.TBool)
-	I8Spec     = primitiveTypeSpec(wire.TI8)
-	I16Spec    = primitiveTypeSpec(wire.TI16)
-	I32Spec    = primitiveTypeSpec(wire.TI32)
-	I64Spec    = primitiveTypeSpec(wire.TI64)
-	DoubleSpec = primitiveTypeSpec(wire.TDouble)
-	StringSpec = primitiveTypeSpec(wire.TBinary)
-	BinarySpec = primitiveTypeSpec(wire.TBinary)
+	"github.com/stretchr/testify/assert"
+
+	"github.com/uber/thriftrw-go/ast"
+	"github.com/uber/thriftrw-go/wire"
 )
 
-type primitiveTypeSpec wire.Type
+func TestCompileList(t *testing.T) {
+	tests := []struct {
+		input  ast.ListType
+		scope  Scope
+		output *ListSpec
+	}{
+		{
+			ast.ListType{ValueType: ast.BaseType{ID: ast.I32TypeID}},
+			nil,
+			&ListSpec{ValueSpec: I32Spec},
+		},
+		{
+			ast.ListType{ValueType: ast.TypeReference{Name: "Foo"}},
+			scope("Foo", &ListSpec{ValueSpec: I32Spec}),
+			&ListSpec{ValueSpec: &ListSpec{ValueSpec: I32Spec}},
+		},
+	}
+	for _, tt := range tests {
+		tt.output.Link(scope())
 
-func (t primitiveTypeSpec) TypeCode() wire.Type {
-	return wire.Type(t)
-}
+		scp := tt.scope
+		if scp == nil {
+			scp = scope()
+		}
 
-func (t primitiveTypeSpec) Link(Scope) (TypeSpec, error) {
-	return t, nil
+		spec, err := compileType(tt.input).Link(scp)
+		if assert.NoError(t, err) {
+			assert.Equal(t, wire.TList, spec.TypeCode())
+			assert.Equal(t, tt.output, spec)
+		}
+	}
 }
