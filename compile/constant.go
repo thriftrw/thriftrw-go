@@ -24,11 +24,11 @@ import "github.com/uber/thriftrw-go/ast"
 
 // Constant represents a single named constant value from the Thrift file.
 type Constant struct {
+	compileOnce
+
 	Type  TypeSpec
 	Value ast.ConstantValue
-
-	compileOnce
-	src *ast.Constant
+	src   *ast.Constant
 }
 
 // NewConstant builds a new constant from the AST constant.

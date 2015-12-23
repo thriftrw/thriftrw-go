@@ -27,10 +27,10 @@ import (
 
 // MapSpec represents a key-value mapping between two types.
 type MapSpec struct {
-	KeySpec, ValueSpec TypeSpec
-
 	compileOnce
-	src ast.MapType
+
+	KeySpec, ValueSpec TypeSpec
+	src                ast.MapType
 }
 
 // NewMapSpec constructs a new MapSpec from the given AST.
@@ -64,10 +64,10 @@ func (m *MapSpec) TypeCode() wire.Type {
 
 // ListSpec represents lists of values of the same type.
 type ListSpec struct {
-	ValueSpec TypeSpec
-
 	compileOnce
-	src ast.ListType
+
+	ValueSpec TypeSpec
+	src       ast.ListType
 }
 
 // NewListSpec constructs a new ListSpec from the given AST.
@@ -95,10 +95,10 @@ func (m *ListSpec) TypeCode() wire.Type {
 
 // SetSpec represents sets of values of the same type.
 type SetSpec struct {
-	ValueSpec TypeSpec
-
 	compileOnce
-	src ast.SetType
+
+	ValueSpec TypeSpec
+	src       ast.SetType
 }
 
 // NewSetSpec constructs a new SetSpec from the given AST.

@@ -27,10 +27,10 @@ import (
 
 // EnumSpec represents an enum defined in the Thrift file.
 type EnumSpec struct {
-	Items []EnumItem
-
 	compileOnce
-	src *ast.Enum
+
+	Items []EnumItem
+	src   *ast.Enum
 }
 
 // EnumItem is a single item inside an enum.
