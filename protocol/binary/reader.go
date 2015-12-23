@@ -168,17 +168,17 @@ func (br *Reader) skipValue(t wire.Type, off int64) (int64, error) {
 
 	switch t {
 	case wire.TBinary:
-		if length, off, err := br.readInt32(off); err != nil {
-			return off, err
-		} else {
-			if length < 0 {
-				return off, decodeErrorf(
-					"negative length %d requested for binary value", length,
-				)
-			}
-			off += int64(length)
+		length, off, err := br.readInt32(off)
+		if err != nil {
 			return off, err
 		}
+		if length < 0 {
+			return off, decodeErrorf(
+				"negative length %d requested for binary value", length,
+			)
+		}
+		off += int64(length)
+		return off, err
 	case wire.TStruct:
 		return br.skipStruct(off)
 	case wire.TMap:
@@ -389,7 +389,7 @@ func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 
 		if b != 0 && b != 1 {
 			return wire.Value{}, off, decodeErrorf(
-				"invalid value '%d' for bool field", b,
+				"invalid value %q for bool field", b,
 			)
 		}
 

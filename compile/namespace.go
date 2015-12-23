@@ -72,6 +72,6 @@ type nameConflict struct {
 
 func (e nameConflict) Error() string {
 	return fmt.Sprintf(
-		"the name %s has already been used on line %d", e.name, e.line,
+		"the name %q has already been used on line %d", e.name, e.line,
 	)
 }

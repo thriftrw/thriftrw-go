@@ -35,7 +35,7 @@ type includeError struct {
 
 func (e includeError) Error() string {
 	return fmt.Sprintf(
-		"cannot include '%s' as '%s' on line %d: %v",
+		"cannot include %q as %q on line %d: %v",
 		e.Include.Path, e.Include.Name, e.Include.Line, e.Reason,
 	)
 }
@@ -49,7 +49,7 @@ type definitionError struct {
 
 func (e definitionError) Error() string {
 	return fmt.Sprintf(
-		"cannot define '%s' on line %d: %v",
+		"cannot define %q on line %d: %v",
 		e.Definition.Info().Name, e.Definition.Info().Line, e.Reason,
 	)
 }
@@ -64,7 +64,7 @@ type compileError struct {
 
 func (e compileError) Error() string {
 	return fmt.Sprintf(
-		"cannot compile '%s' on line %d: %v", e.Target, e.Line, e.Reason,
+		"cannot compile %q on line %d: %v", e.Target, e.Line, e.Reason,
 	)
 }
 
@@ -77,7 +77,7 @@ type referenceError struct {
 
 func (e referenceError) Error() string {
 	return fmt.Sprintf(
-		"could not resolve reference '%s' on line %d: %v",
+		"could not resolve reference %q on line %d: %v",
 		e.Target, e.Line, e.Reason,
 	)
 }
@@ -87,7 +87,7 @@ type unrecognizedModuleError struct {
 }
 
 func (e unrecognizedModuleError) Error() string {
-	return fmt.Sprintf("unknown module '%s'", e.Name)
+	return fmt.Sprintf("unknown module %q", e.Name)
 }
 
 // lookupError is raised when an unknown identifier is requested via the
@@ -98,7 +98,7 @@ type lookupError struct {
 }
 
 func (e lookupError) Error() string {
-	msg := fmt.Sprintf("unknown identifier '%s'", e.Name)
+	msg := fmt.Sprintf("unknown identifier %q", e.Name)
 	if e.Reason != nil {
 		msg = fmt.Sprintf("%s: %v", msg, e.Reason)
 	}
