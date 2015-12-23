@@ -67,7 +67,7 @@ func (e *EnumSpec) Compile(scope Scope) error {
 	prev := -1
 	var items []EnumItem
 	for _, astItem := range e.src.Items {
-		if err := enumNS.claim(astItem.Name); err != nil {
+		if err := enumNS.claim(astItem.Name, astItem.Line); err != nil {
 			return compileError{
 				Target: e.ThriftName() + "." + astItem.Name,
 				Line:   astItem.Line,

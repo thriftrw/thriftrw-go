@@ -38,7 +38,7 @@ var (
 // error.
 type namespace struct {
 	transform func(string) string
-	names     map[string]struct{}
+	names     map[string]int
 }
 
 // newNamespace instantiates a new namespace.
@@ -48,18 +48,18 @@ type namespace struct {
 func newNamespace(t namespaceType) namespace {
 	return namespace{
 		transform: t,
-		names:     make(map[string]struct{}),
+		names:     make(map[string]int),
 	}
 }
 
 // claim requests the given name in the namespace. If the name is already
 // claimed, an error will be returned.
-func (n namespace) claim(name string) error {
+func (n namespace) claim(name string, line int) error {
 	s := n.transform(name)
-	if _, ok := n.names[s]; ok {
-		return nameConflict{name: name}
+	if line, ok := n.names[s]; ok {
+		return nameConflict{name: name, line: line}
 	}
-	n.names[s] = struct{}{}
+	n.names[s] = line
 	return nil
 }
 
@@ -67,8 +67,11 @@ func (n namespace) claim(name string) error {
 // name that has already been used.
 type nameConflict struct {
 	name string
+	line int
 }
 
 func (e nameConflict) Error() string {
-	return fmt.Sprintf("the name %s is already taken", e.name)
+	return fmt.Sprintf(
+		"the name %s has already been used on line %d", e.name, e.line,
+	)
 }

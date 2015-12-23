@@ -139,7 +139,7 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 			return err
 		}
 
-		if err := thriftNS.claim(include.Name); err != nil {
+		if err := thriftNS.claim(include.Name, header.Line); err != nil {
 			return includeError{
 				Include: header,
 				Reason:  err,
@@ -150,7 +150,7 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 	}
 
 	for _, d := range prog.Definitions {
-		if err := thriftNS.claim(d.Info().Name); err != nil {
+		if err := thriftNS.claim(d.Info().Name, d.Info().Line); err != nil {
 			return definitionError{Definition: d, Reason: err}
 		}
 

@@ -46,9 +46,9 @@ func TestNamespaceCaseSensitive(t *testing.T) {
 		ns := newNamespace(caseSensitive)
 		for _, op := range tt {
 			if op.works {
-				assert.NoError(t, ns.claim(op.name))
+				assert.NoError(t, ns.claim(op.name, 0))
 			} else {
-				assert.Error(t, ns.claim(op.name))
+				assert.Error(t, ns.claim(op.name, 0))
 			}
 		}
 	}
@@ -74,9 +74,9 @@ func TestNamespaceCaseInsensitive(t *testing.T) {
 		ns := newNamespace(caseInsensitive)
 		for _, op := range tt {
 			if op.works {
-				assert.NoError(t, ns.claim(op.name))
+				assert.NoError(t, ns.claim(op.name, 0))
 			} else {
-				assert.Error(t, ns.claim(op.name))
+				assert.Error(t, ns.claim(op.name, 0))
 			}
 		}
 	}
