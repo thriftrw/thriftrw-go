@@ -81,3 +81,26 @@ func (e referenceError) Error() string {
 		e.Target, e.Line, e.Reason,
 	)
 }
+
+type unrecognizedModuleError struct {
+	Name string
+}
+
+func (e unrecognizedModuleError) Error() string {
+	return fmt.Sprintf("unknown module '%s'", e.Name)
+}
+
+// lookupError is raised when an unknown identifier is requested via the
+// Lookup* methods.
+type lookupError struct {
+	Name   string
+	Reason error
+}
+
+func (e lookupError) Error() string {
+	msg := fmt.Sprintf("unknown identifier '%s'", e.Name)
+	if e.Reason != nil {
+		msg = fmt.Sprintf("%s: %v", msg, e.Reason)
+	}
+	return msg
+}

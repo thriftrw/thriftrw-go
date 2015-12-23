@@ -20,8 +20,6 @@
 
 package compile
 
-import "fmt"
-
 // Module represents a compiled Thrift module. It contains all information
 // about all known types, constants, services, and includes from the Thrift
 // file.
@@ -49,9 +47,17 @@ func (m *Module) LookupType(name string) (TypeSpec, error) {
 		return t, nil
 	}
 
-	if mname, name := splitInclude(name); len(mname) > 0 {
+	if mname, iname := splitInclude(name); len(mname) > 0 {
 		if included, ok := m.Includes[mname]; ok {
-			return included.Module.LookupType(name)
+			spec, err := included.Module.LookupType(iname)
+			if err != nil {
+				return nil, lookupError{Name: name, Reason: err}
+			}
+			return spec, nil
+		}
+		return nil, lookupError{
+			Name:   name,
+			Reason: unrecognizedModuleError{Name: mname},
 		}
 	}
 
@@ -74,13 +80,3 @@ type IncludedModule struct {
 }
 
 // TODO(abg): Add support for include-as syntax.
-
-// lookupError is raised when an unknown identifier is requested via the
-// Lookup* methods.
-type lookupError struct {
-	Name string
-}
-
-func (e lookupError) Error() string {
-	return fmt.Sprintf("unrecognized identifier '%s'", e.Name)
-}
