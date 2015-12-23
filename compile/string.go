@@ -18,28 +18,36 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package compile
 
-import "github.com/uber/thriftrw-go/ast"
+import (
+	"path/filepath"
+	"strings"
+	"unicode"
+	"unicode/utf8"
+)
 
-func init() {
-	yyErrorVerbose = true
-}
-
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
+// capitalize changes the first letter of a string to upper case.
+func capitalize(s string) string {
+	if len(s) == 0 {
+		return s
 	}
-	return nil, lex.err
+	x, i := utf8.DecodeRuneInString(s)
+	return string(unicode.ToUpper(x)) + string(s[i:])
 }
 
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
+// fileBaseName returns the base name of the given file without the extension.
+func fileBaseName(p string) string {
+	return strings.TrimSuffix(filepath.Base(p), filepath.Ext(p))
+}
 
-//go:generate go tool yacc thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
+// splitInclude splits the given string at the first ".".
+//
+// If the given string doesn't have a '.', the second returned string contains
+// the entirety of it.
+func splitInclude(s string) (string, string) {
+	if i := strings.IndexRune(s, '.'); i > 0 {
+		return s[:i], s[i+1:]
+	}
+	return "", s
+}

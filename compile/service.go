@@ -18,28 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package compile
 
-import "github.com/uber/thriftrw-go/ast"
-
-func init() {
-	yyErrorVerbose = true
+// Service is a collection of named functions.
+type Service struct {
+	Name      string
+	Functions map[string]Function
+	Parent    *Service
 }
 
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
-	}
-	return nil, lex.err
+// Function is a single function inside a Service.
+type Function struct {
+	Name       string
+	ArgsSpec   ArgsSpec
+	ResultSpec ResultSpec
+	OneWay     bool
 }
 
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
+// ArgsSpec contains information about a Function's arguments.
+type ArgsSpec map[string]FieldSpec
 
-//go:generate go tool yacc thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
+// ResultSpec contains information about a Function's result type.
+type ResultSpec map[string]FieldSpec

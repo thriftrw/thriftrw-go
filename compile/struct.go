@@ -18,28 +18,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package compile
 
 import "github.com/uber/thriftrw-go/ast"
 
-func init() {
-	yyErrorVerbose = true
+// StructSpec represents a structure defined in the Thrift file.
+type StructSpec struct {
+	Name   string
+	Fields map[string]FieldSpec
 }
 
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
-	}
-	return nil, lex.err
+// FieldSpec represents a single field of a struct or parameter list.
+type FieldSpec struct {
+	ID       int16
+	Name     string
+	Type     TypeSpec
+	Required bool
+	Default  ast.ConstantValue
 }
 
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
+// ExceptionSpec represents an exception defined in the Thrift file.
+type ExceptionSpec StructSpec
 
-//go:generate go tool yacc thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
+// UnionSpec represents a union defined in the Thrift file.
+type UnionSpec StructSpec

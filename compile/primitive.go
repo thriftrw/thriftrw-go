@@ -18,28 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package compile
 
-import "github.com/uber/thriftrw-go/ast"
+import "github.com/uber/thriftrw-go/wire"
 
-func init() {
-	yyErrorVerbose = true
+// TypeSpecs for primitive Thrift types.
+var (
+	BoolSpec   = primitiveTypeSpec{wire.TBool}
+	I8Spec     = primitiveTypeSpec{wire.TI8}
+	I16Spec    = primitiveTypeSpec{wire.TI16}
+	I32Spec    = primitiveTypeSpec{wire.TI32}
+	I64Spec    = primitiveTypeSpec{wire.TI64}
+	DoubleSpec = primitiveTypeSpec{wire.TDouble}
+	StringSpec = primitiveTypeSpec{wire.TBinary}
+	BinarySpec = primitiveTypeSpec{wire.TBinary}
+)
+
+type primitiveTypeSpec struct {
+	typeCode wire.Type
 }
 
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
-	}
-	return nil, lex.err
+func (t primitiveTypeSpec) TypeCode() wire.Type {
+	return t.typeCode
 }
 
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
-
-//go:generate go tool yacc thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
+func (primitiveTypeSpec) Compile(Scope) error {
+	return nil
+}

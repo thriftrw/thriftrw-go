@@ -18,28 +18,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package compile
 
-import "github.com/uber/thriftrw-go/ast"
-
-func init() {
-	yyErrorVerbose = true
+// Unit represents a single compilation unit.
+type Unit interface {
+	// Compile this unit or return an error.
+	//
+	// All implementations of Compile MUST be idempotent. It must be okay to
+	// call Compile on an object that's already compiled.
+	Compile(scope Scope) error
 }
-
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
-	}
-	return nil, lex.err
-}
-
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
-
-//go:generate go tool yacc thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh

@@ -18,28 +18,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package compile
 
-import "github.com/uber/thriftrw-go/ast"
+// compileOnce helps ensure that Compile() is called at most once on Units.
+type compileOnce bool
 
-func init() {
-	yyErrorVerbose = true
-}
-
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
+func (c *compileOnce) compiled() bool {
+	if *c {
+		return true
 	}
-	return nil, lex.err
+	*c = true
+	return false
 }
-
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
-
-//go:generate go tool yacc thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
