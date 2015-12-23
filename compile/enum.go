@@ -29,8 +29,8 @@ import (
 type EnumSpec struct {
 	Items []EnumItem
 
-	src      *ast.Enum
-	compiled bool
+	compileOnce
+	src *ast.Enum
 }
 
 // EnumItem is a single item inside an enum.
@@ -59,10 +59,9 @@ func NewEnumSpec(src *ast.Enum) *EnumSpec {
 
 // Compile compiles the EnumSpec.
 func (e *EnumSpec) Compile(scope Scope) error {
-	if e.compiled {
+	if e.compiled() {
 		return nil
 	}
-	e.compiled = true
 
 	enumNS := newNamespace(caseInsensitive)
 	prev := -1

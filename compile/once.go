@@ -20,33 +20,13 @@
 
 package compile
 
-import "github.com/uber/thriftrw-go/ast"
+// compileOnce helps ensure that Compile() is called at most once on Units.
+type compileOnce bool
 
-// Constant represents a single named constant value from the Thrift file.
-type Constant struct {
-	Type  TypeSpec
-	Value ast.ConstantValue
-
-	compileOnce
-	src *ast.Constant
-}
-
-// NewConstant builds a new constant from the AST constant.
-func NewConstant(src *ast.Constant) *Constant {
-	return &Constant{src: src}
-}
-
-// ThriftName is the name of the constant as defined in the Thrift file.
-func (c *Constant) ThriftName() string {
-	return c.src.Name
-}
-
-// Compile compiles the constant.
-func (c *Constant) Compile(scope Scope) error {
-	if c.compiled() {
-		return nil
+func (c *compileOnce) compiled() bool {
+	if *c {
+		return true
 	}
-
-	// TODO(abg)
-	return nil
+	*c = true
+	return false
 }

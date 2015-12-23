@@ -46,11 +46,10 @@ func parseEnum(s string) *ast.Enum {
 	return prog.Definitions[0].(*ast.Enum)
 }
 
-func TestCompileEnum(t *testing.T) {
+func TestCompileSuccess(t *testing.T) {
 	tests := []struct {
-		src   string
-		spec  *EnumSpec
-		scope Scope
+		src  string
+		spec *EnumSpec
 	}{
 		{
 			// Default values
@@ -63,7 +62,6 @@ func TestCompileEnum(t *testing.T) {
 					EnumItem{"Admin", ast.ConstantInteger(3)},
 				},
 			},
-			nil,
 		},
 		{
 			// Explicit values
@@ -74,7 +72,6 @@ func TestCompileEnum(t *testing.T) {
 					EnumItem{"Hidden", ast.ConstantInteger(54321)},
 				},
 			},
-			nil,
 		},
 		{
 			// Mixed
@@ -88,7 +85,19 @@ func TestCompileEnum(t *testing.T) {
 					EnumItem{"E", ast.ConstantInteger(12)},
 				},
 			},
-			nil,
+		},
+		{
+			// Same values
+			"enum Bar { A, B = 0, C, D = 0, E }",
+			&EnumSpec{
+				Items: []EnumItem{
+					EnumItem{"A", ast.ConstantInteger(0)},
+					EnumItem{"B", ast.ConstantInteger(0)},
+					EnumItem{"C", ast.ConstantInteger(1)},
+					EnumItem{"D", ast.ConstantInteger(0)},
+					EnumItem{"E", ast.ConstantInteger(1)},
+				},
+			},
 		},
 	}
 
@@ -98,15 +107,12 @@ func TestCompileEnum(t *testing.T) {
 
 		// so that we don't have to do this in the test table
 		tt.spec.src = src
-		tt.spec.compiled = true
+		tt.spec.compiled()
 
-		scp := tt.scope
-		if scp == nil {
-			scp = scope()
-		}
-
-		if assert.NoError(t, spec.Compile(scp)) {
+		if assert.NoError(t, spec.Compile(scope())) {
 			assert.Equal(t, tt.spec, spec)
 		}
 	}
 }
+
+// TODO(abg): compilation failure errors

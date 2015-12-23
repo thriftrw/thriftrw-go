@@ -29,8 +29,8 @@ import (
 type MapSpec struct {
 	KeySpec, ValueSpec TypeSpec
 
-	compiled bool
-	src      ast.MapType
+	compileOnce
+	src ast.MapType
 }
 
 // NewMapSpec constructs a new MapSpec from the given AST.
@@ -40,10 +40,9 @@ func NewMapSpec(src ast.MapType) *MapSpec {
 
 // Compile resolves the type references in the MapSpec.
 func (m *MapSpec) Compile(scope Scope) error {
-	if m.compiled {
+	if m.compiled() {
 		return nil
 	}
-	m.compiled = true
 
 	var err error
 
@@ -67,8 +66,8 @@ func (m *MapSpec) TypeCode() wire.Type {
 type ListSpec struct {
 	ValueSpec TypeSpec
 
-	compiled bool
-	src      ast.ListType
+	compileOnce
+	src ast.ListType
 }
 
 // NewListSpec constructs a new ListSpec from the given AST.
@@ -78,10 +77,9 @@ func NewListSpec(src ast.ListType) *ListSpec {
 
 // Compile resolves the type references in the ListSpec.
 func (m *ListSpec) Compile(scope Scope) error {
-	if m.compiled {
+	if m.compiled() {
 		return nil
 	}
-	m.compiled = true
 
 	spec, err := ResolveType(m.src.ValueType, scope)
 	m.ValueSpec = spec
@@ -99,8 +97,8 @@ func (m *ListSpec) TypeCode() wire.Type {
 type SetSpec struct {
 	ValueSpec TypeSpec
 
-	compiled bool
-	src      ast.SetType
+	compileOnce
+	src ast.SetType
 }
 
 // NewSetSpec constructs a new SetSpec from the given AST.
@@ -110,10 +108,9 @@ func NewSetSpec(src ast.SetType) *SetSpec {
 
 // Compile resolves the type references in the SetSpec.
 func (m *SetSpec) Compile(scope Scope) error {
-	if m.compiled {
+	if m.compiled() {
 		return nil
 	}
-	m.compiled = true
 
 	spec, err := ResolveType(m.src.ValueType, scope)
 	m.ValueSpec = spec
