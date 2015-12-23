@@ -33,7 +33,7 @@ type Constant struct {
 
 // NewConstant builds a new constant from the AST constant.
 func NewConstant(src *ast.Constant) *Constant {
-	return &Constant{compiled: false, src: src}
+	return &Constant{src: src}
 }
 
 // ThriftName is the name of the constant as defined in the Thrift file.

@@ -35,7 +35,7 @@ type MapSpec struct {
 
 // NewMapSpec constructs a new MapSpec from the given AST.
 func NewMapSpec(src ast.MapType) *MapSpec {
-	return &MapSpec{src: src, compiled: false}
+	return &MapSpec{src: src}
 }
 
 // Compile resolves the type references in the MapSpec.
@@ -73,7 +73,7 @@ type ListSpec struct {
 
 // NewListSpec constructs a new ListSpec from the given AST.
 func NewListSpec(src ast.ListType) *ListSpec {
-	return &ListSpec{src: src, compiled: false}
+	return &ListSpec{src: src}
 }
 
 // Compile resolves the type references in the ListSpec.
@@ -105,7 +105,7 @@ type SetSpec struct {
 
 // NewSetSpec constructs a new SetSpec from the given AST.
 func NewSetSpec(src ast.SetType) *SetSpec {
-	return &SetSpec{src: src, compiled: false}
+	return &SetSpec{src: src}
 }
 
 // Compile resolves the type references in the SetSpec.

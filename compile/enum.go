@@ -54,7 +54,7 @@ func (e *EnumSpec) TypeCode() wire.Type {
 // NewEnumSpec creates a new uncompiled EnumSpec from the given AST
 // definition.
 func NewEnumSpec(src *ast.Enum) *EnumSpec {
-	return &EnumSpec{src: src, compiled: false}
+	return &EnumSpec{src: src}
 }
 
 // Compile compiles the EnumSpec.

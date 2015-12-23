@@ -73,9 +73,13 @@ func (c compiler) compile(p string) (Module, error) {
 // The types aren't actually compiled in this step.
 func (c compiler) load(p string) (Module, error) {
 	p, err := filepath.Abs(p)
-	if _, ok := c.Modules[p]; ok {
+	if err != nil {
+		return Module{}, err
+	}
+
+	if m, ok := c.Modules[p]; ok {
 		// Already loaded.
-		return Module{}, nil
+		return m, nil
 	}
 
 	s, err := ioutil.ReadFile(p)
@@ -125,24 +129,24 @@ func (c compiler) gather(m Module, prog *ast.Program) error {
 
 	// Process all included modules first.
 	for _, h := range prog.Headers {
-		switch header := h.(type) {
-		case *ast.Include:
-			include, err := c.include(m, header)
-			if err != nil {
-				return err
-			}
-
-			if err := thriftNS.claim(include.Name); err != nil {
-				return includeError{
-					Include: header,
-					Reason:  err,
-				}
-			}
-
-			m.Includes[include.Name] = include
-		default:
-			// ignore
+		header, ok := h.(*ast.Include)
+		if !ok {
+			continue
 		}
+
+		include, err := c.include(m, header)
+		if err != nil {
+			return err
+		}
+
+		if err := thriftNS.claim(include.Name); err != nil {
+			return includeError{
+				Include: header,
+				Reason:  err,
+			}
+		}
+
+		m.Includes[include.Name] = include
 	}
 
 	for _, d := range prog.Definitions {
@@ -170,7 +174,7 @@ func (c compiler) gather(m Module, prog *ast.Program) error {
 
 // include loads the file specified by the given include in the given Module.
 //
-// The path to the file is relative to the ThriftPath of the given moduel.
+// The path to the file is relative to the ThriftPath of the given module.
 func (c compiler) include(m Module, include *ast.Include) (IncludedModule, error) {
 	if len(include.Name) > 0 {
 		// TODO(abg): Add support for include-as flag somewhere.
