@@ -24,6 +24,7 @@ package compile
 type Service struct {
 	Name      string
 	Functions map[string]Function
+	Parent    *Service
 }
 
 // Function is a single function inside a Service.
