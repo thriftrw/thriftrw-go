@@ -55,7 +55,7 @@ func TestResolveBaseType(t *testing.T) {
 }
 
 func TestResolveInvalidBaseType(t *testing.T) {
-	assert.Panics(t, assert.PanicTestFunc(func() {
+	assert.Panics(t, func() {
 		compileType(ast.BaseType{ID: ast.BaseTypeID(42)})
-	}))
+	})
 }

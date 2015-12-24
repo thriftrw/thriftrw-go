@@ -43,7 +43,7 @@ func compileMapType(src ast.MapType) *MapSpec {
 // Link resolves the type references in the MapSpec.
 func (m *MapSpec) Link(scope Scope) (TypeSpec, error) {
 	if m.linked() {
-		return nil, nil
+		return m, nil
 	}
 
 	var err error
@@ -82,7 +82,7 @@ func compileListType(src ast.ListType) *ListSpec {
 // Link resolves the type references in the ListSpec.
 func (l *ListSpec) Link(scope Scope) (TypeSpec, error) {
 	if l.linked() {
-		return nil, nil
+		return l, nil
 	}
 
 	var err error
@@ -112,7 +112,7 @@ func compileSetType(src ast.SetType) *SetSpec {
 // Link resolves the type references in the SetSpec.
 func (s *SetSpec) Link(scope Scope) (TypeSpec, error) {
 	if s.linked() {
-		return nil, nil
+		return s, nil
 	}
 
 	var err error
