@@ -27,10 +27,8 @@ import (
 
 // EnumSpec represents an enum defined in the Thrift file.
 type EnumSpec struct {
-	compileOnce
-
+	Name  string
 	Items []EnumItem
-	src   *ast.Enum
 }
 
 // EnumItem is a single item inside an enum.
@@ -39,37 +37,16 @@ type EnumItem struct {
 	Value ast.ConstantValue
 }
 
-// ThriftName for EnumSpec
-func (e *EnumSpec) ThriftName() string {
-	return e.src.Name
-}
-
-// TypeCode for EnumSpec.
-//
-// Enums are represented as i32 over the wire.
-func (e *EnumSpec) TypeCode() wire.Type {
-	return wire.TI32
-}
-
-// NewEnumSpec creates a new uncompiled EnumSpec from the given AST
-// definition.
-func NewEnumSpec(src *ast.Enum) *EnumSpec {
-	return &EnumSpec{src: src}
-}
-
-// Compile compiles the EnumSpec.
-func (e *EnumSpec) Compile(scope Scope) error {
-	if e.compiled() {
-		return nil
-	}
-
+// compileEnum compiles the given Enum AST into an EnumSpec.
+func compileEnum(src *ast.Enum) (*EnumSpec, error) {
 	enumNS := newNamespace(caseInsensitive)
 	prev := -1
+
 	var items []EnumItem
-	for _, astItem := range e.src.Items {
+	for _, astItem := range src.Items {
 		if err := enumNS.claim(astItem.Name, astItem.Line); err != nil {
-			return compileError{
-				Target: e.ThriftName() + "." + astItem.Name,
+			return nil, compileError{
+				Target: src.Name + "." + astItem.Name,
 				Line:   astItem.Line,
 				Reason: err,
 			}
@@ -88,6 +65,22 @@ func (e *EnumSpec) Compile(scope Scope) error {
 		items = append(items, item)
 	}
 
-	e.Items = items
-	return nil
+	return &EnumSpec{Name: src.Name, Items: items}, nil
+}
+
+// Link resolves any references made by the Enum.
+func (e *EnumSpec) Link(scope Scope) (TypeSpec, error) {
+	return e, nil // nothing to do
+}
+
+// ThriftName for EnumSpec
+func (e *EnumSpec) ThriftName() string {
+	return e.Name
+}
+
+// TypeCode for EnumSpec.
+//
+// Enums are represented as i32 over the wire.
+func (e *EnumSpec) TypeCode() wire.Type {
+	return wire.TI32
 }

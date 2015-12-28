@@ -29,7 +29,9 @@ import (
 
 // TypeSpec contains information about Thrift types.
 type TypeSpec interface {
-	Unit
+	// Link resolves references to other types in this TypeSpecs to actual
+	// TypeSpecs from the given Scope.
+	Link(scope Scope) (TypeSpec, error)
 
 	// TypeCode is the wire-level Thrift Type associated with this Type.
 	TypeCode() wire.Type
@@ -45,37 +47,55 @@ type DefinedTypeSpec interface {
 	ThriftName() string
 }
 
-// ResolveType resolves the given AST type to a specific compiled TypeSpec.
-func ResolveType(typ ast.Type, scope Scope) (TypeSpec, error) {
-	var spec TypeSpec
+// typeSpecReference is a dummy TypeSpec that represents a reference to another
+// TypeSpec. These will be replaced with actual TypeSpecs during the Link()
+// step.
+type typeSpecReference struct {
+	Name string
+	Line int
+}
 
+// Link replaces the typeSpecReference with an actual linked TypeSpec.
+func (t *typeSpecReference) Link(scope Scope) (TypeSpec, error) {
+	spec, err := scope.LookupType(t.Name)
+	if err != nil {
+		return nil, referenceError{Target: t.Name, Line: t.Line, Reason: err}
+	}
+	return spec.Link(scope)
+}
+
+// TypeCode on an unresolved typeSpecReference will cause a system panic.
+func (t *typeSpecReference) TypeCode() wire.Type {
+	panic(fmt.Sprintf(
+		"TypeCode() requested for unresolved TypeSpec reference %v."+
+			"Make sure you called Link().", t,
+	))
+}
+
+// ThriftName is the name of the typeSpecReference as it appears in the Thrift
+// file.
+func (t *typeSpecReference) ThriftName() string {
+	return t.Name
+}
+
+// compileType compiles the given AST type reference into a TypeSpec.
+//
+// The returned TypeSpec may need to be linked eventually.
+func compileType(typ ast.Type) TypeSpec {
 	switch t := typ.(type) {
 	case ast.BaseType:
-		spec = resolveBaseType(t)
+		return resolveBaseType(t)
 	case ast.MapType:
-		spec = NewMapSpec(t)
+		return compileMapType(t)
 	case ast.ListType:
-		spec = NewListSpec(t)
+		return compileListType(t)
 	case ast.SetType:
-		spec = NewSetSpec(t)
+		return compileSetType(t)
 	case ast.TypeReference:
-		var err error
-		spec, err = scope.LookupType(t.Name)
-		if err != nil {
-			return nil, referenceError{
-				Target: t.Name,
-				Line:   t.Line,
-				Reason: err,
-			}
-		}
+		return &typeSpecReference{Name: t.Name, Line: t.Line}
 	default:
 		panic(fmt.Sprintf("unknown type %v", typ))
 	}
-
-	if err := spec.Compile(scope); err != nil {
-		return nil, err
-	}
-	return spec, nil
 }
 
 func resolveBaseType(t ast.BaseType) TypeSpec {

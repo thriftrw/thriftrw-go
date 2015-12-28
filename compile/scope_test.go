@@ -44,25 +44,35 @@ func (s fakeScope) LookupService(name string) (*Service, error) {
 }
 
 // Helper to construct Scopes from the given pairs of items.
-func scope(items ...struct {
-	name  string
-	value interface{}
-}) Scope {
+//
+// An even number of items must be given.
+func scope(args ...interface{}) Scope {
+	if len(args)%2 != 0 {
+		panic("scope() expects an even number of arguments.")
+	}
+
 	scope := fakeScope{
 		types:    make(map[string]TypeSpec),
 		services: make(map[string]*Service),
 	}
 
-	for _, item := range items {
-		name := item.name
-		value := item.value
-		switch v := value.(type) {
+	var name string
+
+	flag := false
+	for _, arg := range args {
+		flag = !flag
+		if flag {
+			name = arg.(string)
+			continue
+		}
+
+		switch v := arg.(type) {
 		case TypeSpec:
 			scope.types[name] = v
 		case *Service:
 			scope.services[name] = v
 		default:
-			panic(fmt.Sprintf("unknown type %T of value %v", value, value))
+			panic(fmt.Sprintf("unknown type %T of value %v", arg, arg))
 		}
 	}
 	return scope

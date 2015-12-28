@@ -24,29 +24,28 @@ import "github.com/uber/thriftrw-go/ast"
 
 // Constant represents a single named constant value from the Thrift file.
 type Constant struct {
-	compileOnce
+	linkOnce
 
+	Name  string
 	Type  TypeSpec
 	Value ast.ConstantValue
-	src   *ast.Constant
 }
 
-// NewConstant builds a new constant from the AST constant.
-func NewConstant(src *ast.Constant) *Constant {
-	return &Constant{src: src}
+// compileConstant builds a Constant from the given AST constant.
+func compileConstant(src *ast.Constant) *Constant {
+	return &Constant{
+		Name:  src.Name,
+		Type:  compileType(src.Type),
+		Value: src.Value,
+	}
 }
 
-// ThriftName is the name of the constant as defined in the Thrift file.
-func (c *Constant) ThriftName() string {
-	return c.src.Name
-}
-
-// Compile compiles the constant.
-func (c *Constant) Compile(scope Scope) error {
-	if c.compiled() {
+// Link resolves any references made by the constant.
+func (c *Constant) Link(scope Scope) (err error) {
+	if c.linked() {
 		return nil
 	}
 
-	// TODO(abg)
-	return nil
+	c.Type, err = c.Type.Link(scope)
+	return err
 }

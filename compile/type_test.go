@@ -20,26 +20,42 @@
 
 package compile
 
-import "github.com/uber/thriftrw-go/wire"
+import (
+	"testing"
 
-// TypeSpecs for primitive Thrift types.
-var (
-	BoolSpec   = primitiveTypeSpec(wire.TBool)
-	I8Spec     = primitiveTypeSpec(wire.TI8)
-	I16Spec    = primitiveTypeSpec(wire.TI16)
-	I32Spec    = primitiveTypeSpec(wire.TI32)
-	I64Spec    = primitiveTypeSpec(wire.TI64)
-	DoubleSpec = primitiveTypeSpec(wire.TDouble)
-	StringSpec = primitiveTypeSpec(wire.TBinary)
-	BinarySpec = primitiveTypeSpec(wire.TBinary)
+	"github.com/stretchr/testify/assert"
+
+	"github.com/uber/thriftrw-go/ast"
+	"github.com/uber/thriftrw-go/wire"
 )
 
-type primitiveTypeSpec wire.Type
+func TestResolveBaseType(t *testing.T) {
+	tests := []struct {
+		input    ast.BaseType
+		wireType wire.Type
+	}{
+		{ast.BaseType{ID: ast.BoolTypeID}, wire.TBool},
+		{ast.BaseType{ID: ast.I8TypeID}, wire.TI8},
+		{ast.BaseType{ID: ast.I16TypeID}, wire.TI16},
+		{ast.BaseType{ID: ast.I32TypeID}, wire.TI32},
+		{ast.BaseType{ID: ast.I64TypeID}, wire.TI64},
+		{ast.BaseType{ID: ast.DoubleTypeID}, wire.TDouble},
+		{ast.BaseType{ID: ast.StringTypeID}, wire.TBinary},
+		{ast.BaseType{ID: ast.BinaryTypeID}, wire.TBinary},
+	}
 
-func (t primitiveTypeSpec) TypeCode() wire.Type {
-	return wire.Type(t)
+	for _, tt := range tests {
+		spec := compileType(tt.input)
+		linked, err := spec.Link(scope())
+
+		assert.NoError(t, err)
+		assert.Equal(t, tt.wireType, spec.TypeCode())
+		assert.Equal(t, tt.wireType, linked.TypeCode())
+	}
 }
 
-func (t primitiveTypeSpec) Link(Scope) (TypeSpec, error) {
-	return t, nil
+func TestResolveInvalidBaseType(t *testing.T) {
+	assert.Panics(t, func() {
+		compileType(ast.BaseType{ID: ast.BaseTypeID(42)})
+	})
 }

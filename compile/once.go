@@ -20,10 +20,10 @@
 
 package compile
 
-// compileOnce helps ensure that Compile() is called at most once on Units.
-type compileOnce bool
+// linkOnce helps ensure that Link() is called at most once.
+type linkOnce bool
 
-func (c *compileOnce) compiled() bool {
+func (c *linkOnce) linked() bool {
 	if *c {
 		return true
 	}

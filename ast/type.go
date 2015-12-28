@@ -85,7 +85,7 @@ func (bt BaseType) String() string {
 	case BinaryTypeID:
 		name = "binary"
 	default:
-		panic(fmt.Sprintf("unknown base type %v", bt))
+		panic(fmt.Sprintf("unknown base type %v", bt.ID))
 	}
 
 	return appendAnnotations(name, bt.Annotations)
