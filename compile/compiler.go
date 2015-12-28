@@ -21,7 +21,6 @@
 package compile
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -33,7 +32,15 @@ import (
 // Compile parses and compiles the Thrift file at the given path and any other
 // Thrift file it includes.
 func Compile(path string) (*Module, error) {
-	return newCompiler().compile(path)
+	c := newCompiler()
+
+	m, err := c.load(path)
+	if err != nil {
+		return nil, err
+	}
+
+	err = c.compile(m)
+	return m, err
 }
 
 // compiler is responsible for compiling Thrift files.
@@ -48,30 +55,28 @@ func newCompiler() compiler {
 	}
 }
 
-func (c compiler) compile(p string) (*Module, error) {
-	m, err := c.load(p)
-	if err != nil {
-		return m, err
-	}
-
+func (c compiler) compile(m *Module) error {
 	// TODO(abg): compile includes
 	// TODO(abg): compile constants
 	// TODO(abg): compile services
 	// TODO(abg): might be worth accumulating compile errors with a max count
 
+	// make a copy so that we can modify the list of types as we're iterating
+	// through it.
 	types := make(map[string]TypeSpec)
 	for name, typ := range m.Types {
 		types[name] = typ
 	}
 
+	var err error
 	for name, typ := range types {
 		m.Types[name], err = typ.Link(m)
 		if err != nil {
-			return m, err
+			return err
 		}
 	}
 
-	return m, nil
+	return nil
 }
 
 // load populates the compiler with information from the given Thrift file.
@@ -164,7 +169,8 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 		case *ast.Constant:
 			// TODO
 		case *ast.Typedef:
-			// TODO
+			typedef := compileTypedef(definition)
+			m.Types[typedef.ThriftName()] = typedef
 		case *ast.Enum:
 			enum, err := compileEnum(definition)
 			if err != nil {
@@ -189,7 +195,7 @@ func (c compiler) include(m *Module, include *ast.Include) (*IncludedModule, err
 		// TODO(abg): Add support for include-as flag somewhere.
 		return nil, includeError{
 			Include: include,
-			Reason:  errors.New("include-as syntax is currently disabled"),
+			Reason:  includeAsDisabledError{},
 		}
 	}
 
