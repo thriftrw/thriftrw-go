@@ -36,11 +36,14 @@ func TestCompileList(t *testing.T) {
 		output *ListSpec
 	}{
 		{
+			// list<i32>
 			ast.ListType{ValueType: ast.BaseType{ID: ast.I32TypeID}},
 			nil,
 			&ListSpec{ValueSpec: I32Spec},
 		},
 		{
+			// list<Foo>
+			// typedef list<i32> Foo
 			ast.ListType{ValueType: ast.TypeReference{Name: "Foo"}},
 			scope("Foo", &TypedefSpec{
 				Name:   "Foo",
@@ -62,9 +65,81 @@ func TestCompileList(t *testing.T) {
 			scp = scope()
 		}
 
-		spec, err := compileType(tt.input).Link(scp)
+		spec, err := compileListType(tt.input).Link(scp)
 		if assert.NoError(t, err) {
 			assert.Equal(t, wire.TList, spec.TypeCode())
+			assert.Equal(t, output, spec)
+		}
+	}
+}
+
+func TestCompileMap(t *testing.T) {
+	tests := []struct {
+		input  ast.MapType
+		scope  Scope
+		output *MapSpec
+	}{
+		{
+			// map<Key, Value>
+			// typedef string Key
+			// typedef i64 Value
+			ast.MapType{
+				KeyType:   ast.TypeReference{Name: "Key"},
+				ValueType: ast.TypeReference{Name: "Value"},
+			},
+			scope(
+				"Key", &TypedefSpec{Name: "Key", Target: StringSpec},
+				"Value", &TypedefSpec{Name: "Value", Target: I64Spec},
+			),
+			&MapSpec{
+				KeySpec:   &TypedefSpec{Name: "Key", Target: StringSpec},
+				ValueSpec: &TypedefSpec{Name: "Value", Target: I64Spec},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		output := mustLink(t, tt.output, scope())
+
+		scp := tt.scope
+		if scp == nil {
+			scp = scope()
+		}
+
+		spec, err := compileMapType(tt.input).Link(scp)
+		if assert.NoError(t, err) {
+			assert.Equal(t, wire.TMap, spec.TypeCode())
+			assert.Equal(t, output, spec)
+		}
+	}
+}
+
+func TestCompileSet(t *testing.T) {
+	tests := []struct {
+		input  ast.SetType
+		scope  Scope
+		output *SetSpec
+	}{
+		{
+			// set<Foo>
+			// typedef string Foo
+			ast.SetType{ValueType: ast.TypeReference{Name: "Foo"}},
+			scope("Foo", &TypedefSpec{Name: "Foo", Target: StringSpec}),
+			&SetSpec{ValueSpec: &TypedefSpec{Name: "Foo", Target: StringSpec}},
+		},
+	}
+
+	for _, tt := range tests {
+		output := mustLink(t, tt.output, scope())
+
+		scp := tt.scope
+		if scp == nil {
+			scp = scope()
+		}
+
+		spec, err := compileSetType(tt.input).Link(scp)
+		if assert.NoError(t, err) {
+			assert.Equal(t, wire.TSet, spec.TypeCode())
 			assert.Equal(t, output, spec)
 		}
 	}
