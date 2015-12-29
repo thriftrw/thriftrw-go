@@ -27,10 +27,10 @@ import (
 
 // TypedefSpec represents an alias to another type in the Thrift file.
 type TypedefSpec struct {
+	linkOnce
+
 	Name   string
 	Target TypeSpec
-
-	linkOnce
 }
 
 // compileTypedef compiles the given Typedef AST into a TypedefSpec.

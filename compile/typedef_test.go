@@ -25,8 +25,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
 	"github.com/uber/thriftrw-go/ast"
 	"github.com/uber/thriftrw-go/idl"
+	"github.com/uber/thriftrw-go/wire"
 )
 
 func parseTypedef(s string) *ast.Typedef {
@@ -46,16 +48,19 @@ func TestCompile(t *testing.T) {
 	tests := []struct {
 		src   string
 		scope Scope
+		code  wire.Type
 		spec  *TypedefSpec
 	}{
 		{
 			"typedef i64 timestamp",
 			nil,
+			wire.TI64,
 			&TypedefSpec{Name: "timestamp", Target: I64Spec},
 		},
 		{
 			"typedef Bar Foo",
 			scope("Bar", &TypedefSpec{Name: "Bar", Target: I32Spec}),
+			wire.TI32,
 			&TypedefSpec{
 				Name:   "Foo",
 				Target: &TypedefSpec{Name: "Bar", Target: I32Spec},
@@ -75,6 +80,7 @@ func TestCompile(t *testing.T) {
 		expected := mustLink(t, tt.spec, scope())
 		spec, err := typedefSpec.Link(scp)
 		if assert.NoError(t, err) {
+			assert.Equal(t, tt.code, spec.TypeCode())
 			assert.Equal(t, expected, spec)
 		}
 	}
