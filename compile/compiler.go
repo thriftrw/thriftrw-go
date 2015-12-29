@@ -21,7 +21,6 @@
 package compile
 
 import (
-	"fmt"
 	"io/ioutil"
 	"path/filepath"
 
@@ -95,14 +94,12 @@ func (c compiler) load(p string) (*Module, error) {
 
 	s, err := ioutil.ReadFile(p)
 	if err != nil {
-		// TODO(abg): real error type instead of strings
-		return nil, fmt.Errorf("error reading %s: %s", p, err)
+		return nil, fileReadError{Path: p, Reason: err}
 	}
 
 	prog, err := idl.Parse(s)
 	if err != nil {
-		// TODO(abg): real error type instead of strings
-		return nil, fmt.Errorf("error parsing %s: %s", p, err)
+		return nil, parseError{Path: p, Reason: err}
 	}
 
 	m := &Module{
@@ -118,8 +115,7 @@ func (c compiler) load(p string) (*Module, error) {
 	// cyclic includes.
 
 	if err := c.gather(m, prog); err != nil {
-		// TODO(abg): Real error types intsead of string
-		return nil, fmt.Errorf("failed to compile %s: %s", p, err)
+		return nil, fileCompileError{Path: p, Reason: err}
 	}
 	return m, nil
 }
