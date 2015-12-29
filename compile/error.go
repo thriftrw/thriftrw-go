@@ -112,3 +112,32 @@ func (e lookupError) Error() string {
 	}
 	return msg
 }
+
+// fileReadError is raised when there's an error reading a file.
+type fileReadError struct {
+	Path   string
+	Reason error
+}
+
+func (e fileReadError) Error() string {
+	return fmt.Sprintf("could not read file %q: %v", e.Path, e.Reason)
+}
+
+// parseError is raised when there's an error parsing a Thrift file.
+type parseError struct {
+	Path   string
+	Reason error
+}
+
+func (e parseError) Error() string {
+	return fmt.Sprintf("could not parse file %q: %v", e.Path, e.Reason)
+}
+
+type fileCompileError struct {
+	Path   string
+	Reason error
+}
+
+func (e fileCompileError) Error() string {
+	return fmt.Sprintf("could not compile file %q: %v", e.Path, e.Reason)
+}
