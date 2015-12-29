@@ -20,25 +20,92 @@
 
 package compile
 
-import "github.com/uber/thriftrw-go/ast"
+import (
+	"github.com/uber/thriftrw-go/ast"
+	"github.com/uber/thriftrw-go/wire"
+)
 
 // StructSpec represents a structure defined in the Thrift file.
 type StructSpec struct {
+	linkOnce
+
 	Name   string
-	Fields map[string]FieldSpec
+	Type   ast.StructureType
+	Fields map[string]*FieldSpec
 }
 
-// FieldSpec represents a single field of a struct or parameter list.
-type FieldSpec struct {
-	ID       int16
-	Name     string
-	Type     TypeSpec
-	Required bool
-	Default  ast.ConstantValue
+// compileStruct compiles a struct AST into a StructSpec.
+func compileStruct(src *ast.Struct) (*StructSpec, error) {
+	structNS := newNamespace(caseInsensitive)
+
+	requiredness := explicitRequiredness
+	if src.Type == ast.UnionType {
+		requiredness = noRequiredFields
+	}
+
+	fields := make(map[string]*FieldSpec)
+	usedFieldIDs := make(map[int16]string)
+	for _, astField := range src.Fields {
+		if err := structNS.claim(astField.Name, astField.Line); err != nil {
+			return nil, compileError{
+				Target: src.Name + "." + astField.Name,
+				Line:   astField.Line,
+				Reason: err,
+			}
+		}
+
+		field, err := compileField(astField, requiredness)
+		if err != nil {
+			return nil, compileError{
+				Target: src.Name + "." + astField.Name,
+				Line:   astField.Line,
+				Reason: err,
+			}
+		}
+
+		if conflictName, ok := usedFieldIDs[field.ID]; ok {
+			return nil, compileError{
+				Target: src.Name + "." + astField.Name,
+				Line:   astField.Line,
+				Reason: fieldIDConflictError{
+					ID:   field.ID,
+					Name: conflictName,
+				},
+			}
+		}
+
+		usedFieldIDs[field.ID] = field.Name
+		fields[field.Name] = field
+	}
+
+	return &StructSpec{
+		Name:   src.Name,
+		Type:   src.Type,
+		Fields: fields,
+	}, nil
 }
 
-// ExceptionSpec represents an exception defined in the Thrift file.
-type ExceptionSpec StructSpec
+// Link links together all references in the StructSpec.
+func (s *StructSpec) Link(scope Scope) (TypeSpec, error) {
+	if s.linked() {
+		return s, nil
+	}
 
-// UnionSpec represents a union defined in the Thrift file.
-type UnionSpec StructSpec
+	for _, field := range s.Fields {
+		if err := field.Link(scope); err != nil {
+			return s, err
+		}
+	}
+
+	return s, nil
+}
+
+// TypeCode for structs.
+func (s *StructSpec) TypeCode() wire.Type {
+	return wire.TStruct
+}
+
+// ThriftName of the StructSpec.
+func (s *StructSpec) ThriftName() string {
+	return s.Name
+}

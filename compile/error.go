@@ -141,3 +141,36 @@ type fileCompileError struct {
 func (e fileCompileError) Error() string {
 	return fmt.Sprintf("could not compile file %q: %v", e.Path, e.Reason)
 }
+
+type requirednessRequiredError struct {
+	FieldName string
+	Line      int
+}
+
+func (e requirednessRequiredError) Error() string {
+	return fmt.Sprintf(
+		"field %q on line %d is not marked required or optional",
+		e.FieldName, e.Line,
+	)
+}
+
+type cannotBeRequiredError struct {
+	FieldName string
+	Line      int
+}
+
+func (e cannotBeRequiredError) Error() string {
+	return fmt.Sprintf(
+		"field %q on line %d is marked as required but it cannot be required",
+		e.FieldName, e.Line,
+	)
+}
+
+type fieldIDConflictError struct {
+	ID   int16
+	Name string
+}
+
+func (e fieldIDConflictError) Error() string {
+	return fmt.Sprintf("field %q has already used ID %d", e.Name, e.ID)
+}
