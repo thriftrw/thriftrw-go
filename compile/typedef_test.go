@@ -21,50 +21,67 @@
 package compile
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/uber/thriftrw-go/ast"
+	"github.com/uber/thriftrw-go/idl"
 	"github.com/uber/thriftrw-go/wire"
 )
 
-// mustLink links the given TypeSpec inside the given scope, failing the test
-// if the spec does not link successfully.
-func mustLink(t *testing.T, spec TypeSpec, scope Scope) TypeSpec {
-	result, err := spec.Link(scope)
-	require.NoError(t, err, "failed to link %v inside %v", spec, scope)
-	return result
+func parseTypedef(s string) *ast.Typedef {
+	prog, err := idl.Parse([]byte(s))
+	if err != nil {
+		panic(fmt.Sprintf("failure to parse: %v: %s", err, s))
+	}
+
+	if len(prog.Definitions) != 1 {
+		panic("parseTypedef may be used to parse a single typedef only")
+	}
+
+	return prog.Definitions[0].(*ast.Typedef)
 }
 
-func TestResolveBaseType(t *testing.T) {
+func TestCompileTypedef(t *testing.T) {
 	tests := []struct {
-		input    ast.BaseType
-		wireType wire.Type
+		src   string
+		scope Scope
+		code  wire.Type
+		spec  *TypedefSpec
 	}{
-		{ast.BaseType{ID: ast.BoolTypeID}, wire.TBool},
-		{ast.BaseType{ID: ast.I8TypeID}, wire.TI8},
-		{ast.BaseType{ID: ast.I16TypeID}, wire.TI16},
-		{ast.BaseType{ID: ast.I32TypeID}, wire.TI32},
-		{ast.BaseType{ID: ast.I64TypeID}, wire.TI64},
-		{ast.BaseType{ID: ast.DoubleTypeID}, wire.TDouble},
-		{ast.BaseType{ID: ast.StringTypeID}, wire.TBinary},
-		{ast.BaseType{ID: ast.BinaryTypeID}, wire.TBinary},
+		{
+			"typedef i64 timestamp",
+			nil,
+			wire.TI64,
+			&TypedefSpec{Name: "timestamp", Target: I64Spec},
+		},
+		{
+			"typedef Bar Foo",
+			scope("Bar", &TypedefSpec{Name: "Bar", Target: I32Spec}),
+			wire.TI32,
+			&TypedefSpec{
+				Name:   "Foo",
+				Target: &TypedefSpec{Name: "Bar", Target: I32Spec},
+			},
+		},
 	}
 
 	for _, tt := range tests {
-		spec := compileType(tt.input)
-		linked, err := spec.Link(scope())
+		src := parseTypedef(tt.src)
+		typedefSpec := compileTypedef(src)
 
-		assert.NoError(t, err)
-		assert.Equal(t, tt.wireType, spec.TypeCode())
-		assert.Equal(t, tt.wireType, linked.TypeCode())
+		scp := tt.scope
+		if scp == nil {
+			scp = scope()
+		}
+
+		expected := mustLink(t, tt.spec, scope())
+		spec, err := typedefSpec.Link(scp)
+		if assert.NoError(t, err) {
+			assert.Equal(t, tt.code, spec.TypeCode())
+			assert.Equal(t, expected, spec)
+		}
 	}
-}
-
-func TestResolveInvalidBaseType(t *testing.T) {
-	assert.Panics(t, func() {
-		compileType(ast.BaseType{ID: ast.BaseTypeID(42)})
-	})
 }

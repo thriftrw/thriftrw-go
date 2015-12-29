@@ -26,6 +26,14 @@ import (
 	"github.com/uber/thriftrw-go/ast"
 )
 
+// includeAsDisabledError is raised when the user attempts to use the include-as
+// syntax without explicitly enabling it.
+type includeAsDisabledError struct{}
+
+func (e includeAsDisabledError) Error() string {
+	return "include-as syntax is currently disabled"
+}
+
 // includeError is raised when there is an error including another Thrift
 // file.
 type includeError struct {

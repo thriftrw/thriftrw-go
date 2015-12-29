@@ -21,51 +21,40 @@
 package compile
 
 import (
-	"testing"
-
-	"github.com/stretchr/testify/assert"
-
 	"github.com/uber/thriftrw-go/ast"
 	"github.com/uber/thriftrw-go/wire"
 )
 
-func TestCompileList(t *testing.T) {
-	tests := []struct {
-		input  ast.ListType
-		scope  Scope
-		output *ListSpec
-	}{
-		{
-			ast.ListType{ValueType: ast.BaseType{ID: ast.I32TypeID}},
-			nil,
-			&ListSpec{ValueSpec: I32Spec},
-		},
-		{
-			ast.ListType{ValueType: ast.TypeReference{Name: "Foo"}},
-			scope("Foo", &TypedefSpec{
-				Name:   "Foo",
-				Target: &ListSpec{ValueSpec: I32Spec},
-			}),
-			&ListSpec{
-				ValueSpec: &TypedefSpec{
-					Name:   "Foo",
-					Target: &ListSpec{ValueSpec: I32Spec},
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		output := mustLink(t, tt.output, scope())
+// TypedefSpec represents an alias to another type in the Thrift file.
+type TypedefSpec struct {
+	linkOnce
 
-		scp := tt.scope
-		if scp == nil {
-			scp = scope()
-		}
+	Name   string
+	Target TypeSpec
+}
 
-		spec, err := compileType(tt.input).Link(scp)
-		if assert.NoError(t, err) {
-			assert.Equal(t, wire.TList, spec.TypeCode())
-			assert.Equal(t, output, spec)
-		}
+// compileTypedef compiles the given Typedef AST into a TypedefSpec.
+func compileTypedef(src *ast.Typedef) *TypedefSpec {
+	return &TypedefSpec{Name: src.Name, Target: compileType(src.Type)}
+}
+
+// TypeCode gets the wire type for the typedef.
+func (t *TypedefSpec) TypeCode() wire.Type {
+	return t.Target.TypeCode()
+}
+
+// Link links the Target TypeSpec for this typedef in the given scope.
+func (t *TypedefSpec) Link(scope Scope) (TypeSpec, error) {
+	if t.linked() {
+		return t, nil
 	}
+
+	var err error
+	t.Target, err = t.Target.Link(scope)
+	return t, err
+}
+
+// ThriftName is the name of the typedef as it appears in the Thrift file.
+func (t *TypedefSpec) ThriftName() string {
+	return t.Name
 }
