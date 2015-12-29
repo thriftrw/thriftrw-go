@@ -25,6 +25,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
 	"github.com/uber/thriftrw-go/ast"
 	"github.com/uber/thriftrw-go/idl"
 	"github.com/uber/thriftrw-go/wire"
@@ -130,8 +131,8 @@ func TestCompileEnumFailure(t *testing.T) {
 		{
 			"enum Foo { A, B, C, A, D }",
 			[]string{
-				"cannot compile \"Foo.A\"",
-				"the name \"A\" has already been used",
+				`cannot compile "Foo.A"`,
+				`the name "A" has already been used`,
 			},
 		},
 	}

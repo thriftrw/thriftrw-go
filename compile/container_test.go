@@ -31,19 +31,19 @@ import (
 
 func TestCompileList(t *testing.T) {
 	tests := []struct {
+		desc   string
 		input  ast.ListType
 		scope  Scope
 		output *ListSpec
 	}{
 		{
-			// list<i32>
+			"list<i32>",
 			ast.ListType{ValueType: ast.BaseType{ID: ast.I32TypeID}},
 			nil,
 			&ListSpec{ValueSpec: I32Spec},
 		},
 		{
-			// list<Foo>
-			// typedef list<i32> Foo
+			"typedef list<i32> Foo; list<Foo>",
 			ast.ListType{ValueType: ast.TypeReference{Name: "Foo"}},
 			scope("Foo", &TypedefSpec{
 				Name:   "Foo",
@@ -60,29 +60,24 @@ func TestCompileList(t *testing.T) {
 	for _, tt := range tests {
 		output := mustLink(t, tt.output, scope())
 
-		scp := tt.scope
-		if scp == nil {
-			scp = scope()
-		}
-
-		spec, err := compileListType(tt.input).Link(scp)
-		if assert.NoError(t, err) {
-			assert.Equal(t, wire.TList, spec.TypeCode())
-			assert.Equal(t, output, spec)
+		scope := scopeOrDefault(tt.scope)
+		spec, err := compileListType(tt.input).Link(scope)
+		if assert.NoError(t, err, tt.desc) {
+			assert.Equal(t, wire.TList, spec.TypeCode(), tt.desc)
+			assert.Equal(t, output, spec, tt.desc)
 		}
 	}
 }
 
 func TestCompileMap(t *testing.T) {
 	tests := []struct {
+		desc   string
 		input  ast.MapType
 		scope  Scope
 		output *MapSpec
 	}{
 		{
-			// map<Key, Value>
-			// typedef string Key
-			// typedef i64 Value
+			"typedef string Key; typedef i64 Value; map<Key, Value>",
 			ast.MapType{
 				KeyType:   ast.TypeReference{Name: "Key"},
 				ValueType: ast.TypeReference{Name: "Value"},
@@ -101,28 +96,24 @@ func TestCompileMap(t *testing.T) {
 	for _, tt := range tests {
 		output := mustLink(t, tt.output, scope())
 
-		scp := tt.scope
-		if scp == nil {
-			scp = scope()
-		}
-
-		spec, err := compileMapType(tt.input).Link(scp)
-		if assert.NoError(t, err) {
-			assert.Equal(t, wire.TMap, spec.TypeCode())
-			assert.Equal(t, output, spec)
+		scope := scopeOrDefault(tt.scope)
+		spec, err := compileMapType(tt.input).Link(scope)
+		if assert.NoError(t, err, tt.desc) {
+			assert.Equal(t, wire.TMap, spec.TypeCode(), tt.desc)
+			assert.Equal(t, output, spec, tt.desc)
 		}
 	}
 }
 
 func TestCompileSet(t *testing.T) {
 	tests := []struct {
+		desc   string
 		input  ast.SetType
 		scope  Scope
 		output *SetSpec
 	}{
 		{
-			// set<Foo>
-			// typedef string Foo
+			"typedef string Foo; set<Foo>",
 			ast.SetType{ValueType: ast.TypeReference{Name: "Foo"}},
 			scope("Foo", &TypedefSpec{Name: "Foo", Target: StringSpec}),
 			&SetSpec{ValueSpec: &TypedefSpec{Name: "Foo", Target: StringSpec}},
@@ -132,15 +123,11 @@ func TestCompileSet(t *testing.T) {
 	for _, tt := range tests {
 		output := mustLink(t, tt.output, scope())
 
-		scp := tt.scope
-		if scp == nil {
-			scp = scope()
-		}
-
-		spec, err := compileSetType(tt.input).Link(scp)
-		if assert.NoError(t, err) {
-			assert.Equal(t, wire.TSet, spec.TypeCode())
-			assert.Equal(t, output, spec)
+		scope := scopeOrDefault(tt.scope)
+		spec, err := compileSetType(tt.input).Link(scope)
+		if assert.NoError(t, err, tt.desc) {
+			assert.Equal(t, wire.TSet, spec.TypeCode(), tt.desc)
+			assert.Equal(t, output, spec, tt.desc)
 		}
 	}
 }
