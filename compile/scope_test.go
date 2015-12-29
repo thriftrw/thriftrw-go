@@ -43,6 +43,15 @@ func (s fakeScope) LookupService(name string) (*Service, error) {
 	return nil, fmt.Errorf("unknown service: %s", name)
 }
 
+// scopeOrDefault accepts an optional scope as an argument and returns a default
+// empty scope if the given scope was nil.
+func scopeOrDefault(s Scope) Scope {
+	if s == nil {
+		return scope()
+	}
+	return s
+}
+
 // Helper to construct Scopes from the given pairs of items.
 //
 // An even number of items must be given.

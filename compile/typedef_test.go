@@ -69,16 +69,12 @@ func TestCompileTypedef(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		expected := mustLink(t, tt.spec, scope())
+
 		src := parseTypedef(tt.src)
 		typedefSpec := compileTypedef(src)
-
-		scp := tt.scope
-		if scp == nil {
-			scp = scope()
-		}
-
-		expected := mustLink(t, tt.spec, scope())
-		spec, err := typedefSpec.Link(scp)
+		scope := scopeOrDefault(tt.scope)
+		spec, err := typedefSpec.Link(scope)
 		if assert.NoError(t, err) {
 			assert.Equal(t, tt.code, spec.TypeCode())
 			assert.Equal(t, expected, spec)

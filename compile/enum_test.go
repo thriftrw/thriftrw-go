@@ -25,6 +25,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
 	"github.com/uber/thriftrw-go/ast"
 	"github.com/uber/thriftrw-go/idl"
 	"github.com/uber/thriftrw-go/wire"
@@ -47,7 +48,7 @@ func parseEnum(s string) *ast.Enum {
 	return prog.Definitions[0].(*ast.Enum)
 }
 
-func TestCompileSuccess(t *testing.T) {
+func TestCompileEnumSuccess(t *testing.T) {
 	tests := []struct {
 		src  string
 		spec *EnumSpec
@@ -122,7 +123,7 @@ func TestCompileSuccess(t *testing.T) {
 	}
 }
 
-func TestCompileFailure(t *testing.T) {
+func TestCompileEnumFailure(t *testing.T) {
 	tests := []struct {
 		src      string
 		messages []string
@@ -130,8 +131,8 @@ func TestCompileFailure(t *testing.T) {
 		{
 			"enum Foo { A, B, C, A, D }",
 			[]string{
-				"cannot compile \"Foo.A\"",
-				"the name \"A\" has already been used",
+				`cannot compile "Foo.A"`,
+				`the name "A" has already been used`,
 			},
 		},
 	}
