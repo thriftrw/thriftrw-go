@@ -44,7 +44,7 @@ func parseTypedef(s string) *ast.Typedef {
 	return prog.Definitions[0].(*ast.Typedef)
 }
 
-func TestCompile(t *testing.T) {
+func TestCompileTypedef(t *testing.T) {
 	tests := []struct {
 		src   string
 		scope Scope
