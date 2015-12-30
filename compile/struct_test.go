@@ -1,0 +1,194 @@
+// Copyright (c) 2015 Uber Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+package compile
+
+import (
+	"fmt"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/uber/thriftrw-go/ast"
+	"github.com/uber/thriftrw-go/idl"
+)
+
+func parseStruct(s string) *ast.Struct {
+	prog, err := idl.Parse([]byte(s))
+	if err != nil {
+		panic(fmt.Sprintf("failure to parse: %v: %s", err, s))
+	}
+
+	if len(prog.Definitions) != 1 {
+		panic("parseStruct may be used to parse single structs only")
+	}
+
+	return prog.Definitions[0].(*ast.Struct)
+}
+
+func TestCompileStructSuccess(t *testing.T) {
+	tests := []struct {
+		src   string
+		scope Scope
+		spec  *StructSpec
+	}{
+		{
+			"struct Health { 1: optional bool healthy = true }",
+			nil,
+			&StructSpec{
+				Name: "Health",
+				Type: ast.StructType,
+				Fields: map[string]*FieldSpec{
+					"healthy": {
+						ID:       1,
+						Name:     "healthy",
+						Type:     BoolSpec,
+						Required: false,
+						Default:  ast.ConstantBoolean(true),
+					},
+				},
+			},
+		},
+		{
+			`exception KeyNotFoundError {
+				1: required string message
+				2: optional Key key
+			}`,
+			scope("Key", &TypedefSpec{Name: "Key", Target: StringSpec}),
+			&StructSpec{
+				Name: "KeyNotFoundError",
+				Type: ast.ExceptionType,
+				Fields: map[string]*FieldSpec{
+					"message": {
+						ID:       1,
+						Name:     "message",
+						Type:     StringSpec,
+						Required: true,
+					},
+					"key": {
+						ID:       2,
+						Name:     "key",
+						Type:     &TypedefSpec{Name: "Key", Target: StringSpec},
+						Required: false,
+					},
+				},
+			},
+		},
+		{
+			`union Body {
+				1234: optional string plainText
+				5678: binary richText
+			}`,
+			nil,
+			&StructSpec{
+				Name: "Body",
+				Type: ast.UnionType,
+				Fields: map[string]*FieldSpec{
+					"plainText": {
+						ID:       1234,
+						Name:     "plainText",
+						Type:     StringSpec,
+						Required: false,
+					},
+					"richText": {
+						ID:       5678,
+						Name:     "richText",
+						Type:     BinarySpec,
+						Required: false,
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		expected := mustLink(t, tt.spec, scope())
+
+		src := parseStruct(tt.src)
+		structSpec, err := compileStruct(src)
+		scope := scopeOrDefault(tt.scope)
+		if assert.NoError(t, err) {
+			spec, err := structSpec.Link(scope)
+			assert.NoError(t, err)
+			assert.Equal(t, expected, spec)
+		}
+	}
+}
+
+func TestCompileStructFailure(t *testing.T) {
+	tests := []struct {
+		desc     string
+		src      string
+		messages []string
+	}{
+		{
+			"optional/required is required for structs and exceptions",
+			"struct Foo { 1: string bar }",
+			[]string{
+				`field "bar"`,
+				"not marked required or optional",
+			},
+		},
+		{
+			"optional/required is required for structs and exceptions",
+			"exception Foo { 1: string bar }",
+			[]string{
+				`field "bar"`,
+				"not marked required or optional",
+			},
+		},
+		{
+			"unions cannot have required fields",
+			"union Foo { 1: required string bar }",
+			[]string{
+				`field "bar"`,
+				"marked as required but it cannot be required",
+			},
+		},
+		{
+			"field name conflict",
+			`struct Foo {
+				1: required string bar
+				2: optional string baz
+				3: optional i32 bar
+			}`,
+			[]string{`the name "bar" has already been used`},
+		},
+		{
+			"field ID conflict",
+			`struct Foo {
+				1: optional string foo
+				1: optional string bar
+			}`,
+			[]string{`field "foo" has already used ID 1`},
+		},
+	}
+
+	for _, tt := range tests {
+		src := parseStruct(tt.src)
+		_, err := compileStruct(src)
+
+		if assert.Error(t, err, tt.desc) {
+			for _, msg := range tt.messages {
+				assert.Contains(t, err.Error(), msg, tt.desc)
+			}
+		}
+	}
+}
