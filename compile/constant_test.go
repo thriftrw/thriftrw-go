@@ -1,0 +1,141 @@
+// Copyright (c) 2015 Uber Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+package compile
+
+import (
+	"fmt"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/uber/thriftrw-go/ast"
+	"github.com/uber/thriftrw-go/idl"
+)
+
+func parseConstant(s string) *ast.Constant {
+	prog, err := idl.Parse([]byte(s))
+	if err != nil {
+		panic(fmt.Sprintf("failure to parse: %v: %s", err, s))
+	}
+
+	if len(prog.Definitions) != 1 {
+		panic("parseConstant may be used to parse single constants only")
+	}
+
+	return prog.Definitions[0].(*ast.Constant)
+}
+
+func TestCompileConstant(t *testing.T) {
+	tests := []struct {
+		src      string
+		scope    Scope
+		constant *Constant
+	}{
+		{
+			"const i32 version = 1",
+			nil,
+			&Constant{
+				Name:  "version",
+				Type:  I32Spec,
+				Value: ast.ConstantInteger(1),
+			},
+		},
+		{
+			`const string foo = "hello world"`,
+			nil,
+			&Constant{
+				Name:  "foo",
+				Type:  StringSpec,
+				Value: ast.ConstantString("hello world"),
+			},
+		},
+		{
+			`const list<string> foo = ["hello", "world"]`,
+			nil,
+			&Constant{
+				Name: "foo",
+				Type: &ListSpec{ValueSpec: StringSpec},
+				Value: ast.ConstantList{Items: []ast.ConstantValue{
+					ast.ConstantString("hello"),
+					ast.ConstantString("world"),
+				}},
+			},
+		},
+		{
+			`const list<string> foo = ["x", y]`,
+			scope("y", ast.ConstantString("bar")),
+			&Constant{
+				Name: "foo",
+				Type: &ListSpec{ValueSpec: StringSpec},
+				Value: ast.ConstantList{Items: []ast.ConstantValue{
+					ast.ConstantString("x"),
+					ast.ConstantReference{Name: "y", Line: 1},
+				}},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		scope := scopeOrDefault(tt.scope)
+		src := parseConstant(tt.src)
+		require.NoError(
+			t,
+			tt.constant.Link(scope),
+			"invalid test: expected spec failed to link",
+		)
+
+		constant := compileConstant(src)
+		if assert.NoError(t, constant.Link(scope)) {
+			assert.Equal(t, tt.constant, constant)
+		}
+	}
+}
+
+func TestCompileConstantFailure(t *testing.T) {
+	tests := []struct {
+		src      string
+		scope    Scope
+		messages []string
+	}{
+		{
+			`const list<string> foo = [x]`,
+			scope("y", ast.ConstantString("bar")),
+			[]string{
+				`could not resolve reference "x"`,
+				`unknown constant: x`,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		src := parseConstant(tt.src)
+		scope := scopeOrDefault(tt.scope)
+		constant := compileConstant(src)
+
+		err := constant.Link(scope)
+		if assert.Error(t, err) {
+			for _, msg := range tt.messages {
+				assert.Contains(t, err.Error(), msg)
+			}
+		}
+	}
+}
