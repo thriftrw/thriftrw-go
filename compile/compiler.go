@@ -38,7 +38,7 @@ func Compile(path string) (*Module, error) {
 		return nil, err
 	}
 
-	err = c.compile(m)
+	err = c.link(m)
 	return m, err
 }
 
@@ -54,9 +54,8 @@ func newCompiler() compiler {
 	}
 }
 
-func (c compiler) compile(m *Module) error {
+func (c compiler) link(m *Module) error {
 	// TODO(abg): compile includes
-	// TODO(abg): compile constants
 	// TODO(abg): compile services
 	// TODO(abg): might be worth accumulating compile errors with a max count
 
@@ -67,11 +66,17 @@ func (c compiler) compile(m *Module) error {
 		types[name] = typ
 	}
 
-	var err error
 	for name, typ := range types {
+		var err error
 		m.Types[name], err = typ.Link(m)
 		if err != nil {
-			return err
+			return compileError{Target: name, Reason: err}
+		}
+	}
+
+	for name, constant := range m.Constants {
+		if err := constant.Link(m); err != nil {
+			return compileError{Target: name, Reason: err}
 		}
 	}
 
@@ -106,7 +111,7 @@ func (c compiler) load(p string) (*Module, error) {
 		Name:       fileBaseName(p),
 		ThriftPath: p,
 		Includes:   make(map[string]*IncludedModule),
-		Constants:  make(map[string]Constant),
+		Constants:  make(map[string]*Constant),
 		Types:      make(map[string]TypeSpec),
 		Services:   make(map[string]*Service),
 	}
@@ -163,18 +168,23 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 
 		switch definition := d.(type) {
 		case *ast.Constant:
-			// TODO
+			constant := compileConstant(definition)
+			m.Constants[constant.Name] = constant
 		case *ast.Typedef:
 			typedef := compileTypedef(definition)
 			m.Types[typedef.ThriftName()] = typedef
 		case *ast.Enum:
 			enum, err := compileEnum(definition)
 			if err != nil {
-				return err
+				return definitionError{Definition: d, Reason: err}
 			}
 			m.Types[enum.ThriftName()] = enum
 		case *ast.Struct:
-			// TODO
+			s, err := compileStruct(definition)
+			if err != nil {
+				return definitionError{Definition: d, Reason: err}
+			}
+			m.Types[s.ThriftName()] = s
 		case *ast.Service:
 			// TODO
 		}
