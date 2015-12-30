@@ -20,6 +20,8 @@
 
 package compile
 
+import "github.com/uber/thriftrw-go/ast"
+
 // Scope represents a queryable compilation scope.
 type Scope interface {
 	// Look up information about the given type.
@@ -27,4 +29,7 @@ type Scope interface {
 
 	// Look up information about the given name.
 	LookupService(name string) (*Service, error)
+
+	// Look up a constant by name.
+	LookupConstant(name string) (ast.ConstantValue, error)
 }

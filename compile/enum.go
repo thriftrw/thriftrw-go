@@ -34,7 +34,7 @@ type EnumSpec struct {
 // EnumItem is a single item inside an enum.
 type EnumItem struct {
 	Name  string
-	Value ast.ConstantValue
+	Value int32
 }
 
 // compileEnum compiles the given Enum AST into an EnumSpec.
@@ -58,14 +58,24 @@ func compileEnum(src *ast.Enum) (*EnumSpec, error) {
 		}
 		prev = value
 
-		item := EnumItem{
-			Name:  astItem.Name,
-			Value: ast.ConstantInteger(value),
-		}
+		// TODO bounds check for value
+		item := EnumItem{Name: astItem.Name, Value: int32(value)}
 		items = append(items, item)
 	}
 
 	return &EnumSpec{Name: src.Name, Items: items}, nil
+}
+
+// LookupItem retrieves the item with the given name from the enum.
+//
+// Returns true or false indicating whether the result is valid or not.
+func (e *EnumSpec) LookupItem(name string) (EnumItem, bool) {
+	for _, item := range e.Items {
+		if item.Name == name {
+			return item, true
+		}
+	}
+	return EnumItem{}, false
 }
 
 // Link resolves any references made by the Enum.

@@ -20,6 +20,8 @@
 
 package compile
 
+import "github.com/uber/thriftrw-go/ast"
+
 // Module represents a compiled Thrift module. It contains all information
 // about all known types, constants, services, and includes from the Thrift
 // file.
@@ -36,7 +38,7 @@ type Module struct {
 	// different definitions.
 
 	Includes  map[string]*IncludedModule
-	Constants map[string]Constant
+	Constants map[string]*Constant
 	Types     map[string]TypeSpec
 	Services  map[string]*Service
 }
@@ -64,6 +66,40 @@ func (m *Module) LookupType(name string) (TypeSpec, error) {
 	return nil, lookupError{Name: name}
 }
 
+// LookupConstant TODO
+func (m *Module) LookupConstant(name string) (ast.ConstantValue, error) {
+	if c, ok := m.Constants[name]; ok {
+		return c.Value, nil
+	}
+
+	if mname, iname := splitInclude(name); len(mname) > 0 {
+		// First check if we have an enum that matches
+		if t, err := m.LookupType(mname); err == nil {
+			if enum, ok := t.(*EnumSpec); ok {
+				if item, ok := enum.LookupItem(iname); ok {
+					return ast.ConstantInteger(item.Value), nil
+				}
+			}
+		}
+
+		// Then check includes.
+		if included, ok := m.Includes[mname]; ok {
+			c, err := included.Module.LookupConstant(iname)
+			if err != nil {
+				return nil, lookupError{Name: name, Reason: err}
+			}
+			return c, nil
+		}
+
+		return nil, lookupError{
+			Name:   name,
+			Reason: unrecognizedModuleError{Name: mname},
+		}
+	}
+
+	return nil, lookupError{Name: name}
+}
+
 // LookupService TODO
 func (m *Module) LookupService(name string) (*Service, error) {
 	return nil, nil // TODO
@@ -78,5 +114,3 @@ type IncludedModule struct {
 	Name   string
 	Module *Module
 }
-
-// TODO(abg): Add support for include-as syntax.

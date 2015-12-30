@@ -20,13 +20,18 @@
 
 package compile
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/uber/thriftrw-go/ast"
+)
 
 // fakeScope is an implementation of Scope for testing. Instances may be
 // constructed easily with the scope() function.
 type fakeScope struct {
-	types    map[string]TypeSpec
-	services map[string]*Service
+	types     map[string]TypeSpec
+	services  map[string]*Service
+	constants map[string]ast.ConstantValue
 }
 
 func (s fakeScope) LookupType(name string) (TypeSpec, error) {
@@ -41,6 +46,13 @@ func (s fakeScope) LookupService(name string) (*Service, error) {
 		return svc, nil
 	}
 	return nil, fmt.Errorf("unknown service: %s", name)
+}
+
+func (s fakeScope) LookupConstant(name string) (ast.ConstantValue, error) {
+	if c, ok := s.constants[name]; ok {
+		return c, nil
+	}
+	return nil, fmt.Errorf("unknown constant: %s", name)
 }
 
 // scopeOrDefault accepts an optional scope as an argument and returns a default
@@ -61,8 +73,9 @@ func scope(args ...interface{}) Scope {
 	}
 
 	scope := fakeScope{
-		types:    make(map[string]TypeSpec),
-		services: make(map[string]*Service),
+		types:     make(map[string]TypeSpec),
+		services:  make(map[string]*Service),
+		constants: make(map[string]ast.ConstantValue),
 	}
 
 	var name string
@@ -78,6 +91,8 @@ func scope(args ...interface{}) Scope {
 		switch v := arg.(type) {
 		case TypeSpec:
 			scope.types[name] = v
+		case ast.ConstantValue:
+			scope.constants[name] = v
 		case *Service:
 			scope.services[name] = v
 		default:

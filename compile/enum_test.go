@@ -59,10 +59,10 @@ func TestCompileEnumSuccess(t *testing.T) {
 			&EnumSpec{
 				Name: "Role",
 				Items: []EnumItem{
-					EnumItem{"Disabled", ast.ConstantInteger(0)},
-					EnumItem{"User", ast.ConstantInteger(1)},
-					EnumItem{"Moderator", ast.ConstantInteger(2)},
-					EnumItem{"Admin", ast.ConstantInteger(3)},
+					EnumItem{"Disabled", 0},
+					EnumItem{"User", 1},
+					EnumItem{"Moderator", 2},
+					EnumItem{"Admin", 3},
 				},
 			},
 		},
@@ -72,8 +72,8 @@ func TestCompileEnumSuccess(t *testing.T) {
 			&EnumSpec{
 				Name: "CommentStatus",
 				Items: []EnumItem{
-					EnumItem{"Visible", ast.ConstantInteger(12345)},
-					EnumItem{"Hidden", ast.ConstantInteger(54321)},
+					EnumItem{"Visible", 12345},
+					EnumItem{"Hidden", 54321},
 				},
 			},
 		},
@@ -83,11 +83,11 @@ func TestCompileEnumSuccess(t *testing.T) {
 			&EnumSpec{
 				Name: "foo",
 				Items: []EnumItem{
-					EnumItem{"A", ast.ConstantInteger(0)},
-					EnumItem{"B", ast.ConstantInteger(1)},
-					EnumItem{"C", ast.ConstantInteger(10)},
-					EnumItem{"D", ast.ConstantInteger(11)},
-					EnumItem{"E", ast.ConstantInteger(12)},
+					EnumItem{"A", 0},
+					EnumItem{"B", 1},
+					EnumItem{"C", 10},
+					EnumItem{"D", 11},
+					EnumItem{"E", 12},
 				},
 			},
 		},
@@ -97,11 +97,11 @@ func TestCompileEnumSuccess(t *testing.T) {
 			&EnumSpec{
 				Name: "bar",
 				Items: []EnumItem{
-					EnumItem{"A", ast.ConstantInteger(0)},
-					EnumItem{"B", ast.ConstantInteger(0)},
-					EnumItem{"C", ast.ConstantInteger(1)},
-					EnumItem{"D", ast.ConstantInteger(0)},
-					EnumItem{"E", ast.ConstantInteger(1)},
+					EnumItem{"A", 0},
+					EnumItem{"B", 0},
+					EnumItem{"C", 1},
+					EnumItem{"D", 0},
+					EnumItem{"E", 1},
 				},
 			},
 		},
