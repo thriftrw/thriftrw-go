@@ -31,51 +31,23 @@ type StructSpec struct {
 
 	Name   string
 	Type   ast.StructureType
-	Fields map[string]*FieldSpec
+	Fields FieldGroup
 }
 
 // compileStruct compiles a struct AST into a StructSpec.
 func compileStruct(src *ast.Struct) (*StructSpec, error) {
-	structNS := newNamespace(caseInsensitive)
-
 	requiredness := explicitRequiredness
 	if src.Type == ast.UnionType {
 		requiredness = noRequiredFields
 	}
 
-	fields := make(map[string]*FieldSpec)
-	usedFieldIDs := make(map[int16]string)
-	for _, astField := range src.Fields {
-		if err := structNS.claim(astField.Name, astField.Line); err != nil {
-			return nil, compileError{
-				Target: src.Name + "." + astField.Name,
-				Line:   astField.Line,
-				Reason: err,
-			}
+	fields, err := compileFields(src.Fields, requiredness)
+	if err != nil {
+		return nil, compileError{
+			Target: src.Name,
+			Line:   src.Line,
+			Reason: err,
 		}
-
-		field, err := compileField(astField, requiredness)
-		if err != nil {
-			return nil, compileError{
-				Target: src.Name + "." + astField.Name,
-				Line:   astField.Line,
-				Reason: err,
-			}
-		}
-
-		if conflictName, ok := usedFieldIDs[field.ID]; ok {
-			return nil, compileError{
-				Target: src.Name + "." + astField.Name,
-				Line:   astField.Line,
-				Reason: fieldIDConflictError{
-					ID:   field.ID,
-					Name: conflictName,
-				},
-			}
-		}
-
-		usedFieldIDs[field.ID] = field.Name
-		fields[field.Name] = field
 	}
 
 	return &StructSpec{
@@ -91,13 +63,8 @@ func (s *StructSpec) Link(scope Scope) (TypeSpec, error) {
 		return s, nil
 	}
 
-	for _, field := range s.Fields {
-		if err := field.Link(scope); err != nil {
-			return s, err
-		}
-	}
-
-	return s, nil
+	err := s.Fields.Link(scope)
+	return s, err
 }
 
 // TypeCode for structs.
