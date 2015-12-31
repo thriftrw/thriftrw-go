@@ -192,3 +192,5 @@ func TestCompileStructFailure(t *testing.T) {
 		}
 	}
 }
+
+// TODO(abg) test link failures

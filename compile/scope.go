@@ -28,7 +28,7 @@ type Scope interface {
 	LookupType(name string) (TypeSpec, error)
 
 	// Look up information about the given name.
-	LookupService(name string) (*Service, error)
+	LookupService(name string) (*ServiceSpec, error)
 
 	// Look up a constant by name.
 	LookupConstant(name string) (ast.ConstantValue, error)

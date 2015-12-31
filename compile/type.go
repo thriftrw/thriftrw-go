@@ -82,6 +82,9 @@ func (t *typeSpecReference) ThriftName() string {
 //
 // The returned TypeSpec may need to be linked eventually.
 func compileType(typ ast.Type) TypeSpec {
+	if typ == nil {
+		return nil
+	}
 	switch t := typ.(type) {
 	case ast.BaseType:
 		return resolveBaseType(t)

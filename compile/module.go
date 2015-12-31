@@ -40,7 +40,7 @@ type Module struct {
 	Includes  map[string]*IncludedModule
 	Constants map[string]*Constant
 	Types     map[string]TypeSpec
-	Services  map[string]*Service
+	Services  map[string]*ServiceSpec
 }
 
 // LookupType TODO
@@ -130,7 +130,7 @@ func (m *Module) LookupConstant(name string) (ast.ConstantValue, error) {
 }
 
 // LookupService TODO
-func (m *Module) LookupService(name string) (*Service, error) {
+func (m *Module) LookupService(name string) (*ServiceSpec, error) {
 	return nil, nil // TODO
 }
 
