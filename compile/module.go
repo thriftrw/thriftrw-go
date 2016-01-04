@@ -20,6 +20,8 @@
 
 package compile
 
+import "github.com/uber/thriftrw-go/ast"
+
 // Module represents a compiled Thrift module. It contains all information
 // about all known types, constants, services, and includes from the Thrift
 // file.
@@ -36,7 +38,7 @@ type Module struct {
 	// different definitions.
 
 	Includes  map[string]*IncludedModule
-	Constants map[string]Constant
+	Constants map[string]*Constant
 	Types     map[string]TypeSpec
 	Services  map[string]*Service
 }
@@ -47,21 +49,84 @@ func (m *Module) LookupType(name string) (TypeSpec, error) {
 		return t, nil
 	}
 
-	if mname, iname := splitInclude(name); len(mname) > 0 {
-		if included, ok := m.Includes[mname]; ok {
-			spec, err := included.Module.LookupType(iname)
-			if err != nil {
-				return nil, lookupError{Name: name, Reason: err}
-			}
-			return spec, nil
-		}
+	mname, iname := splitInclude(name)
+	if len(mname) == 0 {
+		return nil, lookupError{Name: name}
+	}
+
+	included, ok := m.Includes[mname]
+	if !ok {
 		return nil, lookupError{
 			Name:   name,
 			Reason: unrecognizedModuleError{Name: mname},
 		}
 	}
 
-	return nil, lookupError{Name: name}
+	spec, err := included.Module.LookupType(iname)
+	if err != nil {
+		return nil, lookupError{Name: name, Reason: err}
+	}
+
+	return spec, nil
+}
+
+// lookupEnum looks up an enum with the given name.
+//
+// Return the enum and true/false indicating whether a matching enum was
+// actually found.
+func (m *Module) lookupEnum(name string) (*EnumSpec, bool) {
+	t, err := m.LookupType(name)
+	if err != nil {
+		return nil, false
+	}
+
+	if enum, ok := t.(*EnumSpec); ok {
+		return enum, true
+	}
+	return nil, false
+}
+
+// LookupConstant TODO
+func (m *Module) LookupConstant(name string) (ast.ConstantValue, error) {
+	if c, ok := m.Constants[name]; ok {
+		return c.Value, nil
+	}
+
+	mname, iname := splitInclude(name)
+	if len(mname) == 0 {
+		return nil, lookupError{Name: name}
+	}
+
+	// First check if we have an enum that matches
+	if enum, ok := m.lookupEnum(mname); ok {
+		if item, ok := enum.LookupItem(iname); ok {
+			return ast.ConstantInteger(item.Value), nil
+		}
+
+		return nil, lookupError{
+			Name: name,
+			Reason: unrecognizedEnumItemError{
+				EnumName: mname,
+				ItemName: iname,
+			},
+		}
+	}
+
+	// Then check includes.
+	included, ok := m.Includes[mname]
+	if !ok {
+		return nil, lookupError{
+			Name:   name,
+			Reason: unrecognizedModuleError{Name: mname},
+		}
+	}
+
+	c, err := included.Module.LookupConstant(iname)
+	if err != nil {
+		return nil, lookupError{Name: name, Reason: err}
+	}
+
+	return c, nil
 }
 
 // LookupService TODO
@@ -78,5 +143,3 @@ type IncludedModule struct {
 	Name   string
 	Module *Module
 }
-
-// TODO(abg): Add support for include-as syntax.
