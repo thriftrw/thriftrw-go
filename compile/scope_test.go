@@ -30,7 +30,7 @@ import (
 // constructed easily with the scope() function.
 type fakeScope struct {
 	types     map[string]TypeSpec
-	services  map[string]*Service
+	services  map[string]*ServiceSpec
 	constants map[string]ast.ConstantValue
 }
 
@@ -41,7 +41,7 @@ func (s fakeScope) LookupType(name string) (TypeSpec, error) {
 	return nil, fmt.Errorf("unknown type: %s", name)
 }
 
-func (s fakeScope) LookupService(name string) (*Service, error) {
+func (s fakeScope) LookupService(name string) (*ServiceSpec, error) {
 	if svc, ok := s.services[name]; ok {
 		return svc, nil
 	}
@@ -74,7 +74,7 @@ func scope(args ...interface{}) Scope {
 
 	scope := fakeScope{
 		types:     make(map[string]TypeSpec),
-		services:  make(map[string]*Service),
+		services:  make(map[string]*ServiceSpec),
 		constants: make(map[string]ast.ConstantValue),
 	}
 
@@ -93,7 +93,7 @@ func scope(args ...interface{}) Scope {
 			scope.types[name] = v
 		case ast.ConstantValue:
 			scope.constants[name] = v
-		case *Service:
+		case *ServiceSpec:
 			scope.services[name] = v
 		default:
 			panic(fmt.Sprintf("unknown type %T of value %v", arg, arg))

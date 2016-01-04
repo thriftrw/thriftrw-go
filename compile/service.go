@@ -20,23 +20,210 @@
 
 package compile
 
-// Service is a collection of named functions.
-type Service struct {
+import "github.com/uber/thriftrw-go/ast"
+
+// ServiceSpec is a collection of named functions.
+type ServiceSpec struct {
+	linkOnce
+
 	Name      string
-	Functions map[string]Function
-	Parent    *Service
+	Parent    *ServiceSpec
+	Functions map[string]*FunctionSpec
+
+	parentSrc *ast.ServiceReference
 }
 
-// Function is a single function inside a Service.
-type Function struct {
+func compileService(src *ast.Service) (*ServiceSpec, error) {
+	serviceNS := newNamespace(caseInsensitive)
+
+	functions := make(map[string]*FunctionSpec)
+	for _, astFunction := range src.Functions {
+		if err := serviceNS.claim(astFunction.Name, astFunction.Line); err != nil {
+			return nil, compileError{
+				Target: src.Name + "." + astFunction.Name,
+				Line:   astFunction.Line,
+				Reason: err,
+			}
+		}
+
+		function, err := compileFunction(astFunction)
+		if err != nil {
+			return nil, compileError{
+				Target: src.Name + "." + astFunction.Name,
+				Line:   astFunction.Line,
+				Reason: err,
+			}
+		}
+
+		functions[function.Name] = function
+	}
+
+	return &ServiceSpec{
+		Name:      src.Name,
+		Functions: functions,
+		parentSrc: src.Parent,
+	}, nil
+}
+
+// Link resolves any references made by the given service.
+func (s *ServiceSpec) Link(scope Scope) error {
+	if s.linked() {
+		return nil
+	}
+
+	if s.parentSrc != nil {
+		parent, err := scope.LookupService(s.parentSrc.Name)
+		if err != nil {
+			return referenceError{
+				Target: s.parentSrc.Name,
+				Line:   s.parentSrc.Line,
+				Reason: err,
+			}
+		}
+
+		if err := parent.Link(scope); err != nil {
+			return compileError{Target: s.Name, Reason: err}
+		}
+
+		s.Parent = parent
+		s.parentSrc = nil
+	}
+
+	for _, function := range s.Functions {
+		if err := function.Link(scope); err != nil {
+			return compileError{
+				Target: s.Name + "." + function.Name,
+				Reason: err,
+			}
+		}
+	}
+
+	return nil
+}
+
+// FunctionSpec is a single function inside a Service.
+type FunctionSpec struct {
+	linkOnce
+
 	Name       string
 	ArgsSpec   ArgsSpec
-	ResultSpec ResultSpec
+	ResultSpec *ResultSpec
 	OneWay     bool
 }
 
+func compileFunction(src *ast.Function) (*FunctionSpec, error) {
+	args, err := compileArgSpec(src.Parameters)
+	if err != nil {
+		return nil, compileError{
+			Target: src.Name,
+			Line:   src.Line,
+			Reason: err,
+		}
+	}
+
+	var result *ResultSpec
+	if src.OneWay {
+		// oneway can't have a return type or exceptions
+		if src.ReturnType != nil || len(src.Exceptions) > 0 {
+			return nil, oneWayCannotReturnError{Name: src.Name}
+		}
+	} else {
+		result, err = compileResultSpec(src.ReturnType, src.Exceptions)
+		if err != nil {
+			return nil, compileError{
+				Target: src.Name,
+				Line:   src.Line,
+				Reason: err,
+			}
+		}
+	}
+
+	return &FunctionSpec{
+		Name:       src.Name,
+		ArgsSpec:   args,
+		ResultSpec: result,
+		OneWay:     src.OneWay,
+	}, nil
+}
+
+// Link resolves any references made by the given function.
+func (f *FunctionSpec) Link(scope Scope) error {
+	if f.linked() {
+		return nil
+	}
+
+	if err := f.ArgsSpec.Link(scope); err != nil {
+		return compileError{Target: f.Name, Reason: err}
+	}
+
+	if f.ResultSpec != nil {
+		if err := f.ResultSpec.Link(scope); err != nil {
+			return compileError{Target: f.Name, Reason: err}
+		}
+	}
+
+	return nil
+}
+
 // ArgsSpec contains information about a Function's arguments.
-type ArgsSpec map[string]FieldSpec
+type ArgsSpec FieldGroup
+
+func compileArgSpec(args []*ast.Field) (ArgsSpec, error) {
+	fields, err := compileFields(args, defaultToOptional)
+	return ArgsSpec(fields), err
+}
+
+// Link resolves references made by the ArgsSpec.
+func (as ArgsSpec) Link(scope Scope) error {
+	return FieldGroup(as).Link(scope)
+}
 
 // ResultSpec contains information about a Function's result type.
-type ResultSpec map[string]FieldSpec
+type ResultSpec struct {
+	ReturnType TypeSpec
+	Exceptions FieldGroup
+}
+
+func compileResultSpec(returnType ast.Type, exceptions []*ast.Field) (*ResultSpec, error) {
+	if len(exceptions) == 0 && returnType == nil {
+		// No result
+		return nil, nil
+	}
+
+	excFields, err := compileFields(exceptions, noRequiredFields)
+	if err != nil {
+		return nil, err
+	}
+	return &ResultSpec{
+		ReturnType: compileType(returnType),
+		Exceptions: excFields,
+	}, nil
+}
+
+// Link resolves any references made by the return type or exceptions in the
+// ResultSpec.
+func (rs *ResultSpec) Link(scope Scope) (err error) {
+	if rs.ReturnType != nil {
+		rs.ReturnType, err = rs.ReturnType.Link(scope)
+		if err != nil {
+			return err
+		}
+	}
+
+	if err := rs.Exceptions.Link(scope); err != nil {
+		return err
+	}
+
+	// verify that everything listed under throws is an exception.
+	for name, exception := range rs.Exceptions {
+		spec, ok := exception.Type.(*StructSpec)
+		if !ok || spec.Type != ast.ExceptionType {
+			return notAnExceptionError{
+				TypeName:  exception.ThriftName(),
+				FieldName: name,
+			}
+		}
+	}
+
+	return nil
+}

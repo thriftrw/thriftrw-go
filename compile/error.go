@@ -190,3 +190,25 @@ type fieldIDConflictError struct {
 func (e fieldIDConflictError) Error() string {
 	return fmt.Sprintf("field %q has already used ID %d", e.Name, e.ID)
 }
+
+type oneWayCannotReturnError struct {
+	Name string
+}
+
+func (e oneWayCannotReturnError) Error() string {
+	return fmt.Sprintf(
+		"function %q cannot return values or raise exceptions: %q is oneway",
+		e.Name, e.Name,
+	)
+}
+
+type notAnExceptionError struct {
+	TypeName  string
+	FieldName string
+}
+
+func (e notAnExceptionError) Error() string {
+	return fmt.Sprintf(
+		"field %q of type %q is not an exception", e.FieldName, e.TypeName,
+	)
+}

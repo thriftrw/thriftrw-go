@@ -56,7 +56,6 @@ func newCompiler() compiler {
 
 func (c compiler) link(m *Module) error {
 	// TODO(abg): compile includes
-	// TODO(abg): compile services
 	// TODO(abg): might be worth accumulating compile errors with a max count
 
 	// make a copy so that we can modify the list of types as we're iterating
@@ -76,6 +75,12 @@ func (c compiler) link(m *Module) error {
 
 	for name, constant := range m.Constants {
 		if err := constant.Link(m); err != nil {
+			return compileError{Target: name, Reason: err}
+		}
+	}
+
+	for name, service := range m.Services {
+		if err := service.Link(m); err != nil {
 			return compileError{Target: name, Reason: err}
 		}
 	}
@@ -113,7 +118,7 @@ func (c compiler) load(p string) (*Module, error) {
 		Includes:   make(map[string]*IncludedModule),
 		Constants:  make(map[string]*Constant),
 		Types:      make(map[string]TypeSpec),
-		Services:   make(map[string]*Service),
+		Services:   make(map[string]*ServiceSpec),
 	}
 	c.Modules[p] = m
 	// the module is added to the map before processing includes to break
@@ -186,7 +191,11 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 			}
 			m.Types[s.ThriftName()] = s
 		case *ast.Service:
-			// TODO
+			service, err := compileService(definition)
+			if err != nil {
+				return definitionError{Definition: d, Reason: err}
+			}
+			m.Services[service.Name] = service
 		}
 	}
 
