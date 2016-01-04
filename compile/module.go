@@ -49,21 +49,41 @@ func (m *Module) LookupType(name string) (TypeSpec, error) {
 		return t, nil
 	}
 
-	if mname, iname := splitInclude(name); len(mname) > 0 {
-		if included, ok := m.Includes[mname]; ok {
-			spec, err := included.Module.LookupType(iname)
-			if err != nil {
-				return nil, lookupError{Name: name, Reason: err}
-			}
-			return spec, nil
-		}
+	mname, iname := splitInclude(name)
+	if len(mname) == 0 {
+		return nil, lookupError{Name: name}
+	}
+
+	included, ok := m.Includes[mname]
+	if !ok {
 		return nil, lookupError{
 			Name:   name,
 			Reason: unrecognizedModuleError{Name: mname},
 		}
 	}
 
-	return nil, lookupError{Name: name}
+	spec, err := included.Module.LookupType(iname)
+	if err != nil {
+		return nil, lookupError{Name: name, Reason: err}
+	}
+
+	return spec, nil
+}
+
+// lookupEnum looks up an enum with the given name.
+//
+// Return the enum and true/false indicating whether a matching enum was
+// actually found.
+func (m *Module) lookupEnum(name string) (*EnumSpec, bool) {
+	t, err := m.LookupType(name)
+	if err != nil {
+		return nil, false
+	}
+
+	if enum, ok := t.(*EnumSpec); ok {
+		return enum, true
+	}
+	return nil, false
 }
 
 // LookupConstant TODO
@@ -72,32 +92,33 @@ func (m *Module) LookupConstant(name string) (ast.ConstantValue, error) {
 		return c.Value, nil
 	}
 
-	if mname, iname := splitInclude(name); len(mname) > 0 {
-		// First check if we have an enum that matches
-		if t, err := m.LookupType(mname); err == nil {
-			if enum, ok := t.(*EnumSpec); ok {
-				if item, ok := enum.LookupItem(iname); ok {
-					return ast.ConstantInteger(item.Value), nil
-				}
-			}
-		}
+	mname, iname := splitInclude(name)
+	if len(mname) == 0 {
+		return nil, lookupError{Name: name}
+	}
 
-		// Then check includes.
-		if included, ok := m.Includes[mname]; ok {
-			c, err := included.Module.LookupConstant(iname)
-			if err != nil {
-				return nil, lookupError{Name: name, Reason: err}
-			}
-			return c, nil
+	// First check if we have an enum that matches
+	if enum, ok := m.lookupEnum(mname); ok {
+		if item, ok := enum.LookupItem(iname); ok {
+			return ast.ConstantInteger(item.Value), nil
 		}
+	}
 
+	// Then check includes.
+	included, ok := m.Includes[mname]
+	if !ok {
 		return nil, lookupError{
 			Name:   name,
 			Reason: unrecognizedModuleError{Name: mname},
 		}
 	}
 
-	return nil, lookupError{Name: name}
+	c, err := included.Module.LookupConstant(iname)
+	if err != nil {
+		return nil, lookupError{Name: name, Reason: err}
+	}
+
+	return c, nil
 }
 
 // LookupService TODO
