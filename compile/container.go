@@ -21,6 +21,8 @@
 package compile
 
 import (
+	"fmt"
+
 	"github.com/uber/thriftrw-go/ast"
 	"github.com/uber/thriftrw-go/wire"
 )
@@ -60,6 +62,13 @@ func (m *MapSpec) Link(scope Scope) (TypeSpec, error) {
 	return m, nil
 }
 
+// ThriftName for MapSpec
+func (m *MapSpec) ThriftName() string {
+	return fmt.Sprintf(
+		"map<%s, %s>", m.KeySpec.ThriftName(), m.ValueSpec.ThriftName(),
+	)
+}
+
 // TypeCode for MapSpec
 func (m *MapSpec) TypeCode() wire.Type {
 	return wire.TMap
@@ -95,6 +104,11 @@ func (l *ListSpec) TypeCode() wire.Type {
 	return wire.TList
 }
 
+// ThriftName for ListSpec
+func (l *ListSpec) ThriftName() string {
+	return fmt.Sprintf("list<%s>", l.ValueSpec.ThriftName())
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // SetSpec represents sets of values of the same type.
@@ -123,4 +137,9 @@ func (s *SetSpec) Link(scope Scope) (TypeSpec, error) {
 // TypeCode for SetSpec
 func (s *SetSpec) TypeCode() wire.Type {
 	return wire.TSet
+}
+
+// ThriftName for SetSpec.
+func (s *SetSpec) ThriftName() string {
+	return fmt.Sprintf("set<%s>", s.ValueSpec.ThriftName())
 }
