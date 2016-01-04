@@ -45,6 +45,18 @@ const (
 	noRequiredFields
 )
 
+// fieldOptions controls the behavior of field compilation.
+//
+// requiredness may be used to control how fields treat required/optional
+// specifiers and how it behaves when it is absent.
+//
+// disallowDefaultValue specifies whether the field is allowed to have a default
+// value.
+type fieldOptions struct {
+	requiredness         fieldRequiredness
+	disallowDefaultValue bool
+}
+
 // FieldSpec represents a single field of a struct or parameter list.
 type FieldSpec struct {
 	ID       int16
@@ -55,12 +67,8 @@ type FieldSpec struct {
 }
 
 // compileField compiles the given Field source into a FieldSpec.
-//
-// requireRequiredness specifies whether the field must explicitly specify
-// whether it's required or optional. If this is false and the field is not
-// explicitly marked required, it will be treated as optional.
-func compileField(src *ast.Field, req fieldRequiredness) (*FieldSpec, error) {
-	switch req {
+func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
+	switch options.requiredness {
 	case explicitRequiredness:
 		if src.Requiredness == ast.Unspecified {
 			return nil, requirednessRequiredError{
@@ -77,6 +85,13 @@ func compileField(src *ast.Field, req fieldRequiredness) (*FieldSpec, error) {
 		}
 	default:
 		// do nothing
+	}
+
+	if options.disallowDefaultValue && src.Default != nil {
+		return nil, defaultValueNotAllowedError{
+			FieldName: src.Name,
+			Line:      src.Line,
+		}
 	}
 
 	return &FieldSpec{
@@ -109,7 +124,7 @@ func (f *FieldSpec) Link(scope Scope) (err error) {
 type FieldGroup map[string]*FieldSpec
 
 // compileFields compiles a collection of AST fields into a FieldGroup.
-func compileFields(src []*ast.Field, req fieldRequiredness) (FieldGroup, error) {
+func compileFields(src []*ast.Field, options fieldOptions) (FieldGroup, error) {
 	fieldsNS := newNamespace(caseInsensitive)
 	usedIDs := make(map[int16]string)
 
@@ -123,7 +138,7 @@ func compileFields(src []*ast.Field, req fieldRequiredness) (FieldGroup, error) 
 			}
 		}
 
-		field, err := compileField(astField, req)
+		field, err := compileField(astField, options)
 		if err != nil {
 			return nil, compileError{
 				Target: astField.Name,

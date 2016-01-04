@@ -182,6 +182,17 @@ func (e cannotBeRequiredError) Error() string {
 	)
 }
 
+type defaultValueNotAllowedError struct {
+	FieldName string
+	Line      int
+}
+
+func (e defaultValueNotAllowedError) Error() string {
+	return fmt.Sprintf(
+		"field %q on line %d cannot have a default value", e.FieldName, e.Line,
+	)
+}
+
 type fieldIDConflictError struct {
 	ID   int16
 	Name string

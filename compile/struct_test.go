@@ -163,6 +163,17 @@ func TestCompileStructFailure(t *testing.T) {
 			},
 		},
 		{
+			"unions cannot have default values",
+			`
+				union Foo {
+					1: string a
+					2: binary b
+					3: i32 c = 42
+				}
+			`,
+			[]string{`field "c"`, "cannot have a default value"},
+		},
+		{
 			"field name conflict",
 			`struct Foo {
 				1: required string bar
