@@ -46,6 +46,50 @@ func (c *Constant) Link(scope Scope) (err error) {
 		return nil
 	}
 
-	c.Type, err = c.Type.Link(scope)
+	if c.Type, err = c.Type.Link(scope); err != nil {
+		return err
+	}
+	err = verifyConstantValue(c.Value, scope)
+	// TODO(abg): validate that the constant matches the TypeSpec
 	return err
+}
+
+// LinkConstantValue ensures that all references made by the given constant
+// value are valid.
+func verifyConstantValue(v ast.ConstantValue, scope Scope) error {
+	// TODO(abg): We'll need a separate ConstantValue type that tracks whether
+	// that constant has already been linked/verified to break cycles.
+
+	switch c := v.(type) {
+	case ast.ConstantReference:
+		// Note that ConstantReferences are not resolved to their target values.
+		// We only verify that the references are valid. We do this because we
+		// may want constant references to be actual references in the generated
+		// code.
+		if _, err := scope.LookupConstant(c.Name); err != nil {
+			return referenceError{
+				Target: c.Name,
+				Line:   c.Line,
+				Reason: err,
+			}
+		}
+	case ast.ConstantMap:
+		for _, item := range c.Items {
+			if err := verifyConstantValue(item.Key, scope); err != nil {
+				return err
+			}
+			if err := verifyConstantValue(item.Value, scope); err != nil {
+				return err
+			}
+		}
+	case ast.ConstantList:
+		for _, item := range c.Items {
+			if err := verifyConstantValue(item, scope); err != nil {
+				return err
+			}
+		}
+	default:
+		// primitive constant. do nothing.
+	}
+	return nil
 }

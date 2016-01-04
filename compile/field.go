@@ -95,8 +95,12 @@ func (f *FieldSpec) ThriftName() string {
 }
 
 // Link links together any references made by the FieldSpec.
-func (f *FieldSpec) Link(scope Scope) error {
-	var err error
-	f.Type, err = f.Type.Link(scope)
+func (f *FieldSpec) Link(scope Scope) (err error) {
+	if f.Type, err = f.Type.Link(scope); err != nil {
+		return err
+	}
+	if f.Default != nil {
+		err = verifyConstantValue(f.Default, scope)
+	}
 	return err
 }

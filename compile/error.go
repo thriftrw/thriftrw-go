@@ -26,6 +26,35 @@ import (
 	"github.com/uber/thriftrw-go/ast"
 )
 
+// fileReadError is raised when there's an error reading a file.
+type fileReadError struct {
+	Path   string
+	Reason error
+}
+
+func (e fileReadError) Error() string {
+	return fmt.Sprintf("could not read file %q: %v", e.Path, e.Reason)
+}
+
+// parseError is raised when there's an error parsing a Thrift file.
+type parseError struct {
+	Path   string
+	Reason error
+}
+
+func (e parseError) Error() string {
+	return fmt.Sprintf("could not parse file %q: %v", e.Path, e.Reason)
+}
+
+type fileCompileError struct {
+	Path   string
+	Reason error
+}
+
+func (e fileCompileError) Error() string {
+	return fmt.Sprintf("could not compile file %q: %v", e.Path, e.Reason)
+}
+
 // includeAsDisabledError is raised when the user attempts to use the include-as
 // syntax without explicitly enabling it.
 type includeAsDisabledError struct{}
@@ -71,9 +100,14 @@ type compileError struct {
 }
 
 func (e compileError) Error() string {
-	return fmt.Sprintf(
-		"cannot compile %q on line %d: %v", e.Target, e.Line, e.Reason,
-	)
+	msg := fmt.Sprintf("cannot compile %q", e.Target)
+	if e.Line > 0 {
+		msg += fmt.Sprintf(" on line %d", e.Line)
+	}
+	if e.Reason != nil {
+		msg += fmt.Sprintf(": %v", e.Reason)
+	}
+	return msg
 }
 
 // referenceError is raised when there's an error resolving a reference.
@@ -108,38 +142,9 @@ type lookupError struct {
 func (e lookupError) Error() string {
 	msg := fmt.Sprintf("unknown identifier %q", e.Name)
 	if e.Reason != nil {
-		msg = fmt.Sprintf("%s: %v", msg, e.Reason)
+		msg += fmt.Sprintf(": %v", e.Reason)
 	}
 	return msg
-}
-
-// fileReadError is raised when there's an error reading a file.
-type fileReadError struct {
-	Path   string
-	Reason error
-}
-
-func (e fileReadError) Error() string {
-	return fmt.Sprintf("could not read file %q: %v", e.Path, e.Reason)
-}
-
-// parseError is raised when there's an error parsing a Thrift file.
-type parseError struct {
-	Path   string
-	Reason error
-}
-
-func (e parseError) Error() string {
-	return fmt.Sprintf("could not parse file %q: %v", e.Path, e.Reason)
-}
-
-type fileCompileError struct {
-	Path   string
-	Reason error
-}
-
-func (e fileCompileError) Error() string {
-	return fmt.Sprintf("could not compile file %q: %v", e.Path, e.Reason)
 }
 
 type requirednessRequiredError struct {
