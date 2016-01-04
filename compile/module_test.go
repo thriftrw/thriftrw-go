@@ -232,6 +232,23 @@ func TestLookupConstantFailure(t *testing.T) {
 				`unknown identifier "DEFAULT_UUID"`,
 			},
 		},
+		{
+			"unknown item in enum",
+			&Module{Types: map[string]TypeSpec{
+				"Foo": &EnumSpec{
+					Name: "Foo",
+					Items: []EnumItem{
+						{Name: "A", Value: 1},
+						{Name: "B", Value: 2},
+					},
+				},
+			}},
+			"Foo.C",
+			[]string{
+				`unknown identifier "Foo.C"`,
+				`enum "Foo" does not have an item named "C"`,
+			},
+		},
 	}
 
 	for _, tt := range tests {

@@ -132,6 +132,17 @@ func (e unrecognizedModuleError) Error() string {
 	return fmt.Sprintf("unknown module %q", e.Name)
 }
 
+type unrecognizedEnumItemError struct {
+	EnumName string
+	ItemName string
+}
+
+func (e unrecognizedEnumItemError) Error() string {
+	return fmt.Sprintf(
+		"enum %q does not have an item named %q", e.EnumName, e.ItemName,
+	)
+}
+
 // lookupError is raised when an unknown identifier is requested via the
 // Lookup* methods.
 type lookupError struct {

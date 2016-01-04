@@ -102,6 +102,14 @@ func (m *Module) LookupConstant(name string) (ast.ConstantValue, error) {
 		if item, ok := enum.LookupItem(iname); ok {
 			return ast.ConstantInteger(item.Value), nil
 		}
+
+		return nil, lookupError{
+			Name: name,
+			Reason: unrecognizedEnumItemError{
+				EnumName: mname,
+				ItemName: iname,
+			},
+		}
 	}
 
 	// Then check includes.
