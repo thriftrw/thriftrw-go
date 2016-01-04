@@ -232,6 +232,20 @@ func TestCompileServiceFailure(t *testing.T) {
 				`the name "error" has already been used`,
 			},
 		},
+		{
+			"exceptions cannot have default values",
+			`
+				service Foo {
+					void bar() throws (
+						1: KeyDoesNotExist doesNotExist,
+						2: InternalServiceError internalError = {
+							'message': 'An internal error occurred'
+						}
+					)
+				}
+			`,
+			[]string{`field "internalError"`, "cannot have a default value"},
+		},
 	}
 
 	for _, tt := range tests {
