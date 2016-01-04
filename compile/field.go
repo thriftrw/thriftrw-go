@@ -45,6 +45,32 @@ const (
 	noRequiredFields
 )
 
+// isRequired checks if a field should be required based on the
+// fieldRequiredness setting. An error is returned if the specified requiredness
+// is disallowed by this configuration.
+func (r fieldRequiredness) isRequired(src *ast.Field) (bool, error) {
+	switch r {
+	case explicitRequiredness:
+		if src.Requiredness == ast.Unspecified {
+			return false, requirednessRequiredError{
+				FieldName: src.Name,
+				Line:      src.Line,
+			}
+		}
+	case noRequiredFields:
+		if src.Requiredness == ast.Required {
+			return false, cannotBeRequiredError{
+				FieldName: src.Name,
+				Line:      src.Line,
+			}
+		}
+	default:
+		// do nothing
+	}
+
+	return src.Requiredness == ast.Required, nil
+}
+
 // fieldOptions controls the behavior of field compilation.
 //
 // requiredness may be used to control how fields treat required/optional
@@ -68,23 +94,9 @@ type FieldSpec struct {
 
 // compileField compiles the given Field source into a FieldSpec.
 func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
-	switch options.requiredness {
-	case explicitRequiredness:
-		if src.Requiredness == ast.Unspecified {
-			return nil, requirednessRequiredError{
-				FieldName: src.Name,
-				Line:      src.Line,
-			}
-		}
-	case noRequiredFields:
-		if src.Requiredness == ast.Required {
-			return nil, cannotBeRequiredError{
-				FieldName: src.Name,
-				Line:      src.Line,
-			}
-		}
-	default:
-		// do nothing
+	required, err := options.requiredness.isRequired(src)
+	if err != nil {
+		return nil, err
 	}
 
 	if options.disallowDefaultValue && src.Default != nil {
@@ -99,7 +111,7 @@ func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
 		ID:       int16(src.ID),
 		Name:     src.Name,
 		Type:     compileType(src.Type),
-		Required: src.Requiredness == ast.Required,
+		Required: required,
 		Default:  src.Default,
 	}, nil
 }
