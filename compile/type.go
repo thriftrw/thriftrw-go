@@ -35,15 +35,8 @@ type TypeSpec interface {
 
 	// TypeCode is the wire-level Thrift Type associated with this Type.
 	TypeCode() wire.Type
-}
 
-// DefinedTypeSpec contains information about types that map directly to types
-// defined in the Thrift file.
-type DefinedTypeSpec interface {
-	TypeSpec
-
-	// ThriftName is the name of the given object as it appears in the Thrift
-	// file.
+	// ThriftName is the name of the type as it appears in the Thrift file.
 	ThriftName() string
 }
 
@@ -87,7 +80,7 @@ func compileType(typ ast.Type) TypeSpec {
 	}
 	switch t := typ.(type) {
 	case ast.BaseType:
-		return resolveBaseType(t)
+		return compileBaseType(t)
 	case ast.MapType:
 		return compileMapType(t)
 	case ast.ListType:
@@ -98,28 +91,5 @@ func compileType(typ ast.Type) TypeSpec {
 		return &typeSpecReference{Name: t.Name, Line: t.Line}
 	default:
 		panic(fmt.Sprintf("unknown type %v", typ))
-	}
-}
-
-func resolveBaseType(t ast.BaseType) TypeSpec {
-	switch t.ID {
-	case ast.BoolTypeID:
-		return BoolSpec
-	case ast.I8TypeID:
-		return I8Spec
-	case ast.I16TypeID:
-		return I16Spec
-	case ast.I32TypeID:
-		return I32Spec
-	case ast.I64TypeID:
-		return I64Spec
-	case ast.DoubleTypeID:
-		return DoubleSpec
-	case ast.StringTypeID:
-		return StringSpec
-	case ast.BinaryTypeID:
-		return BinarySpec
-	default:
-		panic(fmt.Sprintf("unknown base type %v", t))
 	}
 }
