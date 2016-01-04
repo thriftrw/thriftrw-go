@@ -169,7 +169,10 @@ func (f *FunctionSpec) Link(scope Scope) error {
 type ArgsSpec FieldGroup
 
 func compileArgSpec(args []*ast.Field) (ArgsSpec, error) {
-	fields, err := compileFields(args, defaultToOptional)
+	fields, err := compileFields(
+		args,
+		fieldOptions{requiredness: defaultToOptional},
+	)
 	return ArgsSpec(fields), err
 }
 
@@ -190,7 +193,13 @@ func compileResultSpec(returnType ast.Type, exceptions []*ast.Field) (*ResultSpe
 		return nil, nil
 	}
 
-	excFields, err := compileFields(exceptions, noRequiredFields)
+	excFields, err := compileFields(
+		exceptions,
+		fieldOptions{
+			requiredness:         noRequiredFields,
+			disallowDefaultValue: true,
+		},
+	)
 	if err != nil {
 		return nil, err
 	}

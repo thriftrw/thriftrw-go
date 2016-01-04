@@ -36,12 +36,14 @@ type StructSpec struct {
 
 // compileStruct compiles a struct AST into a StructSpec.
 func compileStruct(src *ast.Struct) (*StructSpec, error) {
-	requiredness := explicitRequiredness
+	opts := fieldOptions{requiredness: explicitRequiredness}
+
 	if src.Type == ast.UnionType {
-		requiredness = noRequiredFields
+		opts.requiredness = noRequiredFields
+		opts.disallowDefaultValue = true
 	}
 
-	fields, err := compileFields(src.Fields, requiredness)
+	fields, err := compileFields(src.Fields, opts)
 	if err != nil {
 		return nil, compileError{
 			Target: src.Name,

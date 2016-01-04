@@ -45,6 +45,44 @@ const (
 	noRequiredFields
 )
 
+// isRequired checks if a field should be required based on the
+// fieldRequiredness setting. An error is returned if the specified requiredness
+// is disallowed by this configuration.
+func (r fieldRequiredness) isRequired(src *ast.Field) (bool, error) {
+	switch r {
+	case explicitRequiredness:
+		if src.Requiredness == ast.Unspecified {
+			return false, requirednessRequiredError{
+				FieldName: src.Name,
+				Line:      src.Line,
+			}
+		}
+	case noRequiredFields:
+		if src.Requiredness == ast.Required {
+			return false, cannotBeRequiredError{
+				FieldName: src.Name,
+				Line:      src.Line,
+			}
+		}
+	default:
+		// do nothing
+	}
+
+	return src.Requiredness == ast.Required, nil
+}
+
+// fieldOptions controls the behavior of field compilation.
+//
+// requiredness may be used to control how fields treat required/optional
+// specifiers and how it behaves when it is absent.
+//
+// disallowDefaultValue specifies whether the field is allowed to have a default
+// value.
+type fieldOptions struct {
+	requiredness         fieldRequiredness
+	disallowDefaultValue bool
+}
+
 // FieldSpec represents a single field of a struct or parameter list.
 type FieldSpec struct {
 	ID       int16
@@ -55,28 +93,17 @@ type FieldSpec struct {
 }
 
 // compileField compiles the given Field source into a FieldSpec.
-//
-// requireRequiredness specifies whether the field must explicitly specify
-// whether it's required or optional. If this is false and the field is not
-// explicitly marked required, it will be treated as optional.
-func compileField(src *ast.Field, req fieldRequiredness) (*FieldSpec, error) {
-	switch req {
-	case explicitRequiredness:
-		if src.Requiredness == ast.Unspecified {
-			return nil, requirednessRequiredError{
-				FieldName: src.Name,
-				Line:      src.Line,
-			}
+func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
+	required, err := options.requiredness.isRequired(src)
+	if err != nil {
+		return nil, err
+	}
+
+	if options.disallowDefaultValue && src.Default != nil {
+		return nil, defaultValueNotAllowedError{
+			FieldName: src.Name,
+			Line:      src.Line,
 		}
-	case noRequiredFields:
-		if src.Requiredness == ast.Required {
-			return nil, cannotBeRequiredError{
-				FieldName: src.Name,
-				Line:      src.Line,
-			}
-		}
-	default:
-		// do nothing
 	}
 
 	return &FieldSpec{
@@ -84,7 +111,7 @@ func compileField(src *ast.Field, req fieldRequiredness) (*FieldSpec, error) {
 		ID:       int16(src.ID),
 		Name:     src.Name,
 		Type:     compileType(src.Type),
-		Required: src.Requiredness == ast.Required,
+		Required: required,
 		Default:  src.Default,
 	}, nil
 }
@@ -109,7 +136,7 @@ func (f *FieldSpec) Link(scope Scope) (err error) {
 type FieldGroup map[string]*FieldSpec
 
 // compileFields compiles a collection of AST fields into a FieldGroup.
-func compileFields(src []*ast.Field, req fieldRequiredness) (FieldGroup, error) {
+func compileFields(src []*ast.Field, options fieldOptions) (FieldGroup, error) {
 	fieldsNS := newNamespace(caseInsensitive)
 	usedIDs := make(map[int16]string)
 
@@ -123,7 +150,7 @@ func compileFields(src []*ast.Field, req fieldRequiredness) (FieldGroup, error) 
 			}
 		}
 
-		field, err := compileField(astField, req)
+		field, err := compileField(astField, options)
 		if err != nil {
 			return nil, compileError{
 				Target: astField.Name,
