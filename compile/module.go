@@ -43,7 +43,7 @@ type Module struct {
 	Services  map[string]*ServiceSpec
 }
 
-// LookupType TODO
+// LookupType for Module.
 func (m *Module) LookupType(name string) (TypeSpec, error) {
 	if t, ok := m.Types[name]; ok {
 		return t, nil
@@ -51,20 +51,25 @@ func (m *Module) LookupType(name string) (TypeSpec, error) {
 
 	mname, iname := splitInclude(name)
 	if len(mname) == 0 {
-		return nil, lookupError{Name: name}
+		return nil, lookupError{Name: name, ModuleName: m.Name}
 	}
 
 	included, ok := m.Includes[mname]
 	if !ok {
 		return nil, lookupError{
-			Name:   name,
-			Reason: unrecognizedModuleError{Name: mname},
+			Name:       name,
+			ModuleName: m.Name,
+			Reason:     unrecognizedModuleError{Name: mname},
 		}
 	}
 
 	spec, err := included.Module.LookupType(iname)
 	if err != nil {
-		return nil, lookupError{Name: name, Reason: err}
+		return nil, lookupError{
+			Name:       name,
+			ModuleName: m.Name,
+			Reason:     err,
+		}
 	}
 
 	return spec, nil
@@ -86,7 +91,7 @@ func (m *Module) lookupEnum(name string) (*EnumSpec, bool) {
 	return nil, false
 }
 
-// LookupConstant TODO
+// LookupConstant for Module.
 func (m *Module) LookupConstant(name string) (ast.ConstantValue, error) {
 	if c, ok := m.Constants[name]; ok {
 		return c.Value, nil
@@ -94,7 +99,7 @@ func (m *Module) LookupConstant(name string) (ast.ConstantValue, error) {
 
 	mname, iname := splitInclude(name)
 	if len(mname) == 0 {
-		return nil, lookupError{Name: name}
+		return nil, lookupError{Name: name, ModuleName: m.Name}
 	}
 
 	// First check if we have an enum that matches
@@ -104,7 +109,8 @@ func (m *Module) LookupConstant(name string) (ast.ConstantValue, error) {
 		}
 
 		return nil, lookupError{
-			Name: name,
+			Name:       name,
+			ModuleName: m.Name,
 			Reason: unrecognizedEnumItemError{
 				EnumName: mname,
 				ItemName: iname,
@@ -116,22 +122,54 @@ func (m *Module) LookupConstant(name string) (ast.ConstantValue, error) {
 	included, ok := m.Includes[mname]
 	if !ok {
 		return nil, lookupError{
-			Name:   name,
-			Reason: unrecognizedModuleError{Name: mname},
+			Name:       name,
+			ModuleName: m.Name,
+			Reason:     unrecognizedModuleError{Name: mname},
 		}
 	}
 
 	c, err := included.Module.LookupConstant(iname)
 	if err != nil {
-		return nil, lookupError{Name: name, Reason: err}
+		return nil, lookupError{
+			Name:       name,
+			ModuleName: m.Name,
+			Reason:     err,
+		}
 	}
 
 	return c, nil
 }
 
-// LookupService TODO
+// LookupService for Module.
 func (m *Module) LookupService(name string) (*ServiceSpec, error) {
-	return nil, nil // TODO
+	if s, ok := m.Services[name]; ok {
+		return s, nil
+	}
+
+	mname, iname := splitInclude(name)
+	if len(mname) == 0 {
+		return nil, lookupError{Name: name, ModuleName: m.Name}
+	}
+
+	included, ok := m.Includes[mname]
+	if !ok {
+		return nil, lookupError{
+			Name:       name,
+			ModuleName: m.Name,
+			Reason:     unrecognizedModuleError{Name: mname},
+		}
+	}
+
+	s, err := included.Module.LookupService(iname)
+	if err != nil {
+		return nil, lookupError{
+			Name:       name,
+			ModuleName: m.Name,
+			Reason:     err,
+		}
+	}
+
+	return s, nil
 }
 
 // IncludedModule represents an included module in the Thrift file.

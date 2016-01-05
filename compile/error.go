@@ -146,12 +146,16 @@ func (e unrecognizedEnumItemError) Error() string {
 // lookupError is raised when an unknown identifier is requested via the
 // Lookup* methods.
 type lookupError struct {
-	Name   string
-	Reason error
+	Name       string
+	ModuleName string
+	Reason     error
 }
 
 func (e lookupError) Error() string {
 	msg := fmt.Sprintf("unknown identifier %q", e.Name)
+	if len(e.ModuleName) > 0 {
+		msg += fmt.Sprintf(" in %q", e.ModuleName)
+	}
 	if e.Reason != nil {
 		msg += fmt.Sprintf(": %v", e.Reason)
 	}
