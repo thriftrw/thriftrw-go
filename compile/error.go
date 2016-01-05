@@ -224,6 +224,6 @@ type notAnExceptionError struct {
 
 func (e notAnExceptionError) Error() string {
 	return fmt.Sprintf(
-		"field %q of type %q is not an exception", e.FieldName, e.TypeName,
+		"field %q with type %q is not an exception", e.FieldName, e.TypeName,
 	)
 }

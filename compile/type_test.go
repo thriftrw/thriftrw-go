@@ -38,6 +38,11 @@ func mustLink(t *testing.T, spec TypeSpec, scope Scope) TypeSpec {
 	return result
 }
 
+func TestCompileTypeWithNil(t *testing.T) {
+	// make sure compileType(nil) doesn't explode.
+	assert.Nil(t, compileType(nil))
+}
+
 func TestResolveBaseType(t *testing.T) {
 	tests := []struct {
 		input    ast.BaseType

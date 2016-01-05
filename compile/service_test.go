@@ -246,6 +246,21 @@ func TestCompileServiceFailure(t *testing.T) {
 			`,
 			[]string{`field "internalError"`, "cannot have a default value"},
 		},
+		{
+			"oneway cannot return",
+			"service Foo { oneway i32 bar() }",
+			[]string{`function "bar" cannot return values`},
+		},
+		{
+			"oneway cannot raise",
+			`
+				service Foo {
+					oneway void bar()
+						throws (1: KeyDoesNotExistError err)
+				}
+			`,
+			[]string{`function "bar" cannot`, "raise exceptions"},
+		},
 	}
 
 	for _, tt := range tests {
@@ -259,4 +274,103 @@ func TestCompileServiceFailure(t *testing.T) {
 	}
 }
 
-// TODO(abg) test link failures
+func TestLinkServiceFailure(t *testing.T) {
+	tests := []struct {
+		desc     string
+		src      string
+		scope    Scope
+		messages []string
+	}{
+		{
+			"inherit unknown service",
+			"service Foo extends Bar {}",
+			nil,
+			[]string{
+				`cannot compile "Foo"`,
+				`could not resolve reference "Bar"`,
+			},
+		},
+		{
+			"unknown reference from inherited service",
+			"service Foo extends Bar {}",
+			scope(
+				"Bar", &ServiceSpec{
+					Name:      "Bar",
+					Functions: make(map[string]*FunctionSpec),
+					parentSrc: &ast.ServiceReference{Name: "Baz"},
+				},
+			),
+			[]string{
+				`cannot compile "Foo"`,
+				`cannot compile "Bar"`,
+				`could not resolve reference "Baz"`,
+			},
+		},
+		{
+			"can throw exceptions only",
+			`
+				service Foo {
+					void foo()
+						throws (
+							1: SomeException a
+							2: NotAnException b
+						)
+				}
+			`,
+			scope(
+				"SomeException", &StructSpec{
+					Name:   "SomeException",
+					Type:   ast.ExceptionType,
+					Fields: make(FieldGroup),
+				},
+				"NotAnException", &StructSpec{
+					Name:   "NotAnException",
+					Type:   ast.StructType,
+					Fields: make(FieldGroup),
+				},
+			),
+			[]string{
+				`field "b" with type "NotAnException" is not an exception`,
+			},
+		},
+		{
+			"unknown return type",
+			"service Foo { Baz bar() }",
+			nil,
+			[]string{
+				`cannot compile "Foo.bar"`,
+				`cannot compile "bar"`,
+				`could not resolve reference "Baz"`,
+			},
+		},
+		{
+			"unknown exception type",
+			`
+				service Foo {
+					i32 bar()
+						throws (1: UnknownExceptionError error)
+				}
+			`,
+			nil,
+			[]string{
+				`cannot compile "Foo.bar"`,
+				`cannot compile "bar"`,
+				`could not resolve reference "UnknownExceptionError"`,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		src := parseService(tt.src)
+		scope := scopeOrDefault(tt.scope)
+
+		spec, err := compileService(src)
+		if assert.NoError(t, err, tt.desc) {
+			if err := spec.Link(scope); assert.Error(t, err) {
+				for _, msg := range tt.messages {
+					assert.Contains(t, err.Error(), msg, tt.desc)
+				}
+			}
+		}
+	}
+}

@@ -28,6 +28,7 @@ import (
 
 	"github.com/uber/thriftrw-go/ast"
 	"github.com/uber/thriftrw-go/idl"
+	"github.com/uber/thriftrw-go/wire"
 )
 
 func parseStruct(s string) *ast.Struct {
@@ -128,6 +129,7 @@ func TestCompileStructSuccess(t *testing.T) {
 			spec, err := structSpec.Link(scope)
 			assert.NoError(t, err)
 			assert.Equal(t, expected, spec)
+			assert.Equal(t, wire.TStruct, spec.TypeCode())
 		}
 	}
 }
@@ -204,4 +206,45 @@ func TestCompileStructFailure(t *testing.T) {
 	}
 }
 
-// TODO(abg) test link failures
+func TestLinkStructFailure(t *testing.T) {
+	tests := []struct {
+		desc     string
+		src      string
+		scope    Scope
+		messages []string
+	}{
+		{
+			"unknown field type",
+			"struct Foo { 1: optional Bar bar }",
+			nil,
+			[]string{`could not resolve reference "Bar"`},
+		},
+		{
+			"unknown constant as default value",
+			`
+				struct Foo {
+					1: optional string foo = DEFAULT_FOO
+				}
+			`,
+			nil,
+			[]string{
+				`could not resolve reference "DEFAULT_FOO"`,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		src := parseStruct(tt.src)
+		scope := scopeOrDefault(tt.scope)
+
+		spec, err := compileStruct(src)
+		if assert.NoError(t, err, tt.desc) {
+			_, err := spec.Link(scope)
+			if assert.Error(t, err, tt.desc) {
+				for _, msg := range tt.messages {
+					assert.Contains(t, err.Error(), msg, tt.desc)
+				}
+			}
+		}
+	}
+}

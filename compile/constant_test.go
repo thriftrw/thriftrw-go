@@ -120,8 +120,32 @@ func TestCompileConstantFailure(t *testing.T) {
 			`const list<string> foo = [x]`,
 			scope("y", ast.ConstantString("bar")),
 			[]string{
+				`cannot compile "foo"`,
 				`could not resolve reference "x"`,
-				`unknown constant: x`,
+			},
+		},
+		{
+			`const Foo foo = {"bar": "baz"}`,
+			nil,
+			[]string{
+				`cannot compile "foo"`,
+				`could not resolve reference "Foo"`,
+			},
+		},
+		{
+			`const map<string, string> something = {foo: "bar"}`,
+			nil,
+			[]string{
+				`cannot compile "something"`,
+				`could not resolve reference "foo"`,
+			},
+		},
+		{
+			`const map<string, string> something = {"foo": bar}`,
+			nil,
+			[]string{
+				`cannot compile "something"`,
+				`could not resolve reference "bar"`,
 			},
 		},
 	}
