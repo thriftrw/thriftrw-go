@@ -46,9 +46,5 @@ func (binaryProtocol) Encode(v wire.Value, w io.Writer) error {
 func (binaryProtocol) Decode(r io.ReaderAt, t wire.Type) (wire.Value, error) {
 	reader := binary.NewReader(r)
 	value, _, err := reader.ReadValue(t, 0)
-	if err == io.EOF {
-		// All EOFs are unexpected for the decoder
-		err = io.ErrUnexpectedEOF
-	}
 	return value, err
 }
