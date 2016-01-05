@@ -24,6 +24,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/uber/thriftrw-go/ast"
 )
@@ -253,6 +254,119 @@ func TestLookupConstantFailure(t *testing.T) {
 
 	for _, tt := range tests {
 		_, err := tt.module.LookupConstant(tt.name)
+		if assert.Error(t, err, tt.desc) {
+			for _, msg := range tt.messages {
+				assert.Contains(t, err.Error(), msg, tt.desc)
+			}
+		}
+	}
+}
+
+func TestLookupService(t *testing.T) {
+	someService := &ServiceSpec{
+		Name: "SomeService",
+		Functions: map[string]*FunctionSpec{
+			"someMethod": {
+				Name: "someMethod",
+				ArgsSpec: map[string]*FieldSpec{
+					"someArg": {
+						ID:       1,
+						Name:     "someArg",
+						Type:     I32Spec,
+						Required: true,
+					},
+				},
+			},
+		},
+	}
+
+	tests := []struct {
+		desc     string
+		module   *Module
+		name     string
+		expected *ServiceSpec
+	}{
+		{
+			"simple service lookup",
+			&Module{
+				Services: map[string]*ServiceSpec{"SomeService": someService},
+			},
+			"SomeService",
+			someService,
+		},
+		{
+			"included service lookup",
+			&Module{
+				Includes: map[string]*IncludedModule{
+					"bar": {
+						Name: "bar",
+						Module: &Module{
+							Services: map[string]*ServiceSpec{
+								"SomeService": someService,
+							},
+						},
+					},
+				},
+			},
+			"bar.SomeService",
+			someService,
+		},
+	}
+
+	for _, tt := range tests {
+		// invalid test if the sample doesn't link with an empty scope
+		require.NoError(
+			t,
+			tt.expected.Link(scope()),
+			"test service must link with an empty scope",
+		)
+
+		spec, err := tt.module.LookupService(tt.name)
+		if assert.NoError(t, err, tt.desc) {
+			assert.Equal(t, tt.expected, spec, tt.desc)
+		}
+	}
+}
+
+func TestLookupServiceFailure(t *testing.T) {
+	tests := []struct {
+		desc     string
+		module   *Module
+		name     string
+		messages []string
+	}{
+		{
+			"unknown service",
+			&Module{},
+			"Foo",
+			[]string{`unknown identifier "Foo"`},
+		},
+		{
+			"unknown module",
+			&Module{},
+			"foo.Bar",
+			[]string{
+				`unknown identifier "foo.Bar"`,
+				`unknown module "foo"`,
+			},
+		},
+		{
+			"unknown service in included module",
+			&Module{
+				Includes: map[string]*IncludedModule{
+					"foo": {Name: "foo", Module: &Module{}},
+				},
+			},
+			"foo.Bar",
+			[]string{
+				`unknown identifier "foo.Bar"`,
+				`unknown identifier "Bar"`,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		_, err := tt.module.LookupService(tt.name)
 		if assert.Error(t, err, tt.desc) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg, tt.desc)

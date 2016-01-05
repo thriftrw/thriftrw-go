@@ -131,7 +131,29 @@ func (m *Module) LookupConstant(name string) (ast.ConstantValue, error) {
 
 // LookupService TODO
 func (m *Module) LookupService(name string) (*ServiceSpec, error) {
-	return nil, nil // TODO
+	if s, ok := m.Services[name]; ok {
+		return s, nil
+	}
+
+	mname, iname := splitInclude(name)
+	if len(mname) == 0 {
+		return nil, lookupError{Name: name}
+	}
+
+	included, ok := m.Includes[mname]
+	if !ok {
+		return nil, lookupError{
+			Name:   name,
+			Reason: unrecognizedModuleError{Name: mname},
+		}
+	}
+
+	s, err := included.Module.LookupService(iname)
+	if err != nil {
+		return nil, lookupError{Name: name, Reason: err}
+	}
+
+	return s, nil
 }
 
 // IncludedModule represents an included module in the Thrift file.
