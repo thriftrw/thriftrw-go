@@ -47,11 +47,15 @@ func (c *Constant) Link(scope Scope) (err error) {
 	}
 
 	if c.Type, err = c.Type.Link(scope); err != nil {
-		return err
+		return compileError{Target: c.Name, Reason: err}
 	}
-	err = verifyConstantValue(c.Value, scope)
+
+	if err := verifyConstantValue(c.Value, scope); err != nil {
+		return compileError{Target: c.Name, Reason: err}
+	}
+
 	// TODO(abg): validate that the constant matches the TypeSpec
-	return err
+	return nil
 }
 
 // LinkConstantValue ensures that all references made by the given constant

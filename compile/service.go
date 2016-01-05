@@ -74,10 +74,13 @@ func (s *ServiceSpec) Link(scope Scope) error {
 	if s.parentSrc != nil {
 		parent, err := scope.LookupService(s.parentSrc.Name)
 		if err != nil {
-			return referenceError{
-				Target: s.parentSrc.Name,
-				Line:   s.parentSrc.Line,
-				Reason: err,
+			return compileError{
+				Target: s.Name,
+				Reason: referenceError{
+					Target: s.parentSrc.Name,
+					Line:   s.parentSrc.Line,
+					Reason: err,
+				},
 			}
 		}
 

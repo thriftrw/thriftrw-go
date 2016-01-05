@@ -61,10 +61,31 @@ func TestCompileList(t *testing.T) {
 		output := mustLink(t, tt.output, scope())
 
 		scope := scopeOrDefault(tt.scope)
-		spec, err := compileListType(tt.input).Link(scope)
+		spec, err := compileType(tt.input).Link(scope)
 		if assert.NoError(t, err, tt.desc) {
 			assert.Equal(t, wire.TList, spec.TypeCode(), tt.desc)
 			assert.Equal(t, output, spec, tt.desc)
+		}
+	}
+}
+
+func TestLinkListFailure(t *testing.T) {
+	tests := []struct {
+		input    ast.ListType
+		messages []string
+	}{
+		{
+			ast.ListType{ValueType: ast.TypeReference{Name: "Foo"}},
+			[]string{`could not resolve reference "Foo"`},
+		},
+	}
+
+	for _, tt := range tests {
+		_, err := compileType(tt.input).Link(scope())
+		if assert.Error(t, err) {
+			for _, msg := range tt.messages {
+				assert.Contains(t, err.Error(), msg)
+			}
 		}
 	}
 }
@@ -97,10 +118,41 @@ func TestCompileMap(t *testing.T) {
 		output := mustLink(t, tt.output, scope())
 
 		scope := scopeOrDefault(tt.scope)
-		spec, err := compileMapType(tt.input).Link(scope)
+		spec, err := compileType(tt.input).Link(scope)
 		if assert.NoError(t, err, tt.desc) {
 			assert.Equal(t, wire.TMap, spec.TypeCode(), tt.desc)
 			assert.Equal(t, output, spec, tt.desc)
+		}
+	}
+}
+
+func TestLinkMapFailure(t *testing.T) {
+	tests := []struct {
+		input    ast.MapType
+		messages []string
+	}{
+		{
+			ast.MapType{
+				KeyType:   ast.BaseType{ID: ast.I8TypeID},
+				ValueType: ast.TypeReference{Name: "Foo"},
+			},
+			[]string{`could not resolve reference "Foo"`},
+		},
+		{
+			ast.MapType{
+				KeyType:   ast.TypeReference{Name: "Foo"},
+				ValueType: ast.BaseType{ID: ast.I8TypeID},
+			},
+			[]string{`could not resolve reference "Foo"`},
+		},
+	}
+
+	for _, tt := range tests {
+		_, err := compileType(tt.input).Link(scope())
+		if assert.Error(t, err) {
+			for _, msg := range tt.messages {
+				assert.Contains(t, err.Error(), msg)
+			}
 		}
 	}
 }
@@ -124,10 +176,31 @@ func TestCompileSet(t *testing.T) {
 		output := mustLink(t, tt.output, scope())
 
 		scope := scopeOrDefault(tt.scope)
-		spec, err := compileSetType(tt.input).Link(scope)
+		spec, err := compileType(tt.input).Link(scope)
 		if assert.NoError(t, err, tt.desc) {
 			assert.Equal(t, wire.TSet, spec.TypeCode(), tt.desc)
 			assert.Equal(t, output, spec, tt.desc)
+		}
+	}
+}
+
+func TestLinkSetFailure(t *testing.T) {
+	tests := []struct {
+		input    ast.SetType
+		messages []string
+	}{
+		{
+			ast.SetType{ValueType: ast.TypeReference{Name: "Foo"}},
+			[]string{`could not resolve reference "Foo"`},
+		},
+	}
+
+	for _, tt := range tests {
+		_, err := compileType(tt.input).Link(scope())
+		if assert.Error(t, err) {
+			for _, msg := range tt.messages {
+				assert.Contains(t, err.Error(), msg)
+			}
 		}
 	}
 }

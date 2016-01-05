@@ -81,3 +81,33 @@ func TestCompileTypedef(t *testing.T) {
 		}
 	}
 }
+
+func TestCompileTypedefFailure(t *testing.T) {
+	tests := []struct {
+		desc     string
+		src      string
+		scope    Scope
+		messages []string
+	}{
+		{
+			"unknown type",
+			"typedef foo bar",
+			nil,
+			[]string{
+				`could not resolve reference "foo"`,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		src := parseTypedef(tt.src)
+		scope := scopeOrDefault(tt.scope)
+
+		_, err := compileTypedef(src).Link(scope)
+		if assert.Error(t, err, tt.desc) {
+			for _, msg := range tt.messages {
+				assert.Contains(t, err.Error(), msg, tt.desc)
+			}
+		}
+	}
+}
