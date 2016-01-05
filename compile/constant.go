@@ -28,7 +28,7 @@ type Constant struct {
 
 	Name  string
 	Type  TypeSpec
-	Value ast.ConstantValue
+	Value ConstantValue
 }
 
 // compileConstant builds a Constant from the given AST constant.
@@ -36,7 +36,7 @@ func compileConstant(src *ast.Constant) *Constant {
 	return &Constant{
 		Name:  src.Name,
 		Type:  compileType(src.Type),
-		Value: src.Value,
+		Value: compileConstantValue(src.Value),
 	}
 }
 
@@ -50,50 +50,10 @@ func (c *Constant) Link(scope Scope) (err error) {
 		return compileError{Target: c.Name, Reason: err}
 	}
 
-	if err := verifyConstantValue(c.Value, scope); err != nil {
+	if c.Value, err = c.Value.Link(scope); err != nil {
 		return compileError{Target: c.Name, Reason: err}
 	}
 
 	// TODO(abg): validate that the constant matches the TypeSpec
-	return nil
-}
-
-// LinkConstantValue ensures that all references made by the given constant
-// value are valid.
-func verifyConstantValue(v ast.ConstantValue, scope Scope) error {
-	// TODO(abg): We'll need a separate ConstantValue type that tracks whether
-	// that constant has already been linked/verified to break cycles.
-
-	switch c := v.(type) {
-	case ast.ConstantReference:
-		// Note that ConstantReferences are not resolved to their target values.
-		// We only verify that the references are valid. We do this because we
-		// may want constant references to be actual references in the generated
-		// code.
-		if _, err := scope.LookupConstant(c.Name); err != nil {
-			return referenceError{
-				Target: c.Name,
-				Line:   c.Line,
-				Reason: err,
-			}
-		}
-	case ast.ConstantMap:
-		for _, item := range c.Items {
-			if err := verifyConstantValue(item.Key, scope); err != nil {
-				return err
-			}
-			if err := verifyConstantValue(item.Value, scope); err != nil {
-				return err
-			}
-		}
-	case ast.ConstantList:
-		for _, item := range c.Items {
-			if err := verifyConstantValue(item, scope); err != nil {
-				return err
-			}
-		}
-	default:
-		// primitive constant. do nothing.
-	}
 	return nil
 }

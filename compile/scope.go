@@ -20,16 +20,23 @@
 
 package compile
 
-import "github.com/uber/thriftrw-go/ast"
-
 // Scope represents a queryable compilation scope.
+//
+// All Lookup methods must only return types defined in this scope. References
+// to items defined in included modules will be resolved by the caller.
 type Scope interface {
-	// Look up information about the given type.
+	// GetName retrieves gets this scope.
+	GetName() string
+
+	// Retrieve a type defined in this scope.
 	LookupType(name string) (TypeSpec, error)
 
-	// Look up information about the given name.
+	// Retrieve a service defined in this scope.
 	LookupService(name string) (*ServiceSpec, error)
 
-	// Look up a constant by name.
-	LookupConstant(name string) (ast.ConstantValue, error)
+	// Retrieve a constant defined in this scope.
+	LookupConstant(name string) (*Constant, error)
+
+	// Retrieve an included scope.
+	LookupInclude(name string) (Scope, error)
 }

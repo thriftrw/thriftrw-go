@@ -65,6 +65,37 @@ func compileService(src *ast.Service) (*ServiceSpec, error) {
 	}, nil
 }
 
+// resolveService resolves a ServiceReference in the given scope.
+func resolveService(src ast.ServiceReference, scope Scope) (*ServiceSpec, error) {
+	s, err := scope.LookupService(src.Name)
+	if err == nil {
+		err = s.Link(scope)
+		return s, err
+	}
+
+	mname, iname := splitInclude(src.Name)
+	if len(mname) == 0 {
+		return nil, referenceError{
+			Target:    src.Name,
+			Line:      src.Line,
+			ScopeName: scope.GetName(),
+			Reason:    err,
+		}
+	}
+
+	includedScope, err := scope.LookupInclude(mname)
+	if err != nil {
+		return nil, referenceError{
+			Target:    src.Name,
+			Line:      src.Line,
+			ScopeName: scope.GetName(),
+			Reason:    unrecognizedModuleError{Name: mname, Reason: err},
+		}
+	}
+
+	return resolveService(ast.ServiceReference{Name: iname}, includedScope)
+}
+
 // Link resolves any references made by the given service.
 func (s *ServiceSpec) Link(scope Scope) error {
 	if s.linked() {
@@ -72,14 +103,15 @@ func (s *ServiceSpec) Link(scope Scope) error {
 	}
 
 	if s.parentSrc != nil {
-		parent, err := scope.LookupService(s.parentSrc.Name)
+		parent, err := resolveService(*s.parentSrc, scope)
 		if err != nil {
 			return compileError{
 				Target: s.Name,
 				Reason: referenceError{
-					Target: s.parentSrc.Name,
-					Line:   s.parentSrc.Line,
-					Reason: err,
+					Target:    s.parentSrc.Name,
+					Line:      s.parentSrc.Line,
+					ScopeName: scope.GetName(),
+					Reason:    err,
 				},
 			}
 		}

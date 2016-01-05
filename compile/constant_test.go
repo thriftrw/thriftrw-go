@@ -45,6 +45,12 @@ func parseConstant(s string) *ast.Constant {
 }
 
 func TestCompileConstant(t *testing.T) {
+	y := &Constant{
+		Name:  "y",
+		Type:  StringSpec,
+		Value: ConstantString("bar"),
+	}
+
 	tests := []struct {
 		src      string
 		scope    Scope
@@ -56,7 +62,7 @@ func TestCompileConstant(t *testing.T) {
 			&Constant{
 				Name:  "version",
 				Type:  I32Spec,
-				Value: ast.ConstantInteger(1),
+				Value: ConstantInt(1),
 			},
 		},
 		{
@@ -65,7 +71,7 @@ func TestCompileConstant(t *testing.T) {
 			&Constant{
 				Name:  "foo",
 				Type:  StringSpec,
-				Value: ast.ConstantString("hello world"),
+				Value: ConstantString("hello world"),
 			},
 		},
 		{
@@ -74,22 +80,22 @@ func TestCompileConstant(t *testing.T) {
 			&Constant{
 				Name: "foo",
 				Type: &ListSpec{ValueSpec: StringSpec},
-				Value: ast.ConstantList{Items: []ast.ConstantValue{
-					ast.ConstantString("hello"),
-					ast.ConstantString("world"),
-				}},
+				Value: ConstantList([]ConstantValue{
+					ConstantString("hello"),
+					ConstantString("world"),
+				}),
 			},
 		},
 		{
 			`const list<string> foo = ["x", y]`,
-			scope("y", ast.ConstantString("bar")),
+			scope("y", y),
 			&Constant{
 				Name: "foo",
 				Type: &ListSpec{ValueSpec: StringSpec},
-				Value: ast.ConstantList{Items: []ast.ConstantValue{
-					ast.ConstantString("x"),
-					ast.ConstantReference{Name: "y", Line: 1},
-				}},
+				Value: ConstantList([]ConstantValue{
+					ConstantString("x"),
+					ConstReference{Target: y},
+				}),
 			},
 		},
 	}
@@ -111,6 +117,12 @@ func TestCompileConstant(t *testing.T) {
 }
 
 func TestCompileConstantFailure(t *testing.T) {
+	y := &Constant{
+		Name:  "y",
+		Type:  StringSpec,
+		Value: ConstantString("bar"),
+	}
+
 	tests := []struct {
 		src      string
 		scope    Scope
@@ -118,7 +130,7 @@ func TestCompileConstantFailure(t *testing.T) {
 	}{
 		{
 			`const list<string> foo = [x]`,
-			scope("y", ast.ConstantString("bar")),
+			scope("y", y),
 			[]string{
 				`cannot compile "foo"`,
 				`could not resolve reference "x"`,

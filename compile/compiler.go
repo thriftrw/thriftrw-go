@@ -55,7 +55,6 @@ func newCompiler() compiler {
 }
 
 func (c compiler) link(m *Module) error {
-	// TODO(abg): compile includes
 	// TODO(abg): might be worth accumulating compile errors with a max count
 
 	// make a copy so that we can modify the list of types as we're iterating
