@@ -195,6 +195,10 @@ func (br *Reader) skipValue(t wire.Type, off int64) (int64, error) {
 func (br *Reader) read(bs []byte, off int64) (int64, error) {
 	n, err := br.reader.ReadAt(bs, off)
 	off += int64(n)
+	if err == io.EOF {
+		// All EOFs are unexpected for the decoder
+		err = io.ErrUnexpectedEOF
+	}
 	return off, err
 }
 

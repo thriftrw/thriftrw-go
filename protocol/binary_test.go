@@ -23,6 +23,7 @@ package protocol
 import (
 	"bytes"
 	"fmt"
+	"io"
 	"math"
 	"testing"
 
@@ -108,25 +109,40 @@ func checkEncodeDecode(t *testing.T, typ wire.Type, tests []encodeDecodeTest) {
 	}
 }
 
-type decodeFailureTest struct {
-	data []byte
-}
+type failureTest []byte
 
-func checkDecodeFailure(t *testing.T, typ wire.Type, tests []decodeFailureTest) {
+func checkDecodeFailure(t *testing.T, typ wire.Type, tests []failureTest) {
 	for _, tt := range tests {
-		value, err := Binary.Decode(bytes.NewReader(tt.data), typ)
+		value, err := Binary.Decode(bytes.NewReader(tt), typ)
 		if err == nil {
 			// lazy collections need to be fully evaluated for the failure to
 			// propagate
 			err = evaluate(value)
 		}
-		if assert.Error(t, err, "Expected failure parsing %#v, got %s", tt.data, value) {
+		if assert.Error(t, err, "Expected failure parsing %x, got %s", tt, value) {
 			assert.True(
 				t,
 				binary.IsDecodeError(err),
-				"Expected decode error while parsing %#v, got %s",
-				tt.data,
+				"Expected decode error while parsing %x, got %s",
+				tt,
 				err,
+			)
+		}
+	}
+}
+
+func checkEOFError(t *testing.T, typ wire.Type, tests []failureTest) {
+	for _, tt := range tests {
+		value, err := Binary.Decode(bytes.NewReader(tt), typ)
+		if err == nil {
+			// lazy collections need to be fully evaluated for the failure to
+			// propagate
+			err = evaluate(value)
+		}
+		if assert.Error(t, err, "Expected failure parsing %x, got %s", tt, value) {
+			assert.Equal(
+				t, io.ErrUnexpectedEOF, err,
+				"Expected EOF error while parsing %x, got %s", tt, err,
 			)
 		}
 	}
@@ -142,11 +158,19 @@ func TestBool(t *testing.T) {
 }
 
 func TestBoolDecodeFailure(t *testing.T) {
-	tests := []decodeFailureTest{
-		{data: []byte{0x02}}, // values outside 0 and 1
+	tests := []failureTest{
+		{0x02}, // values outside 0 and 1
 	}
 
 	checkDecodeFailure(t, wire.TBool, tests)
+}
+
+func TestBoolEOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{}, // empty
+	}
+
+	checkEOFError(t, wire.TBool, tests)
 }
 
 func TestI8(t *testing.T) {
@@ -159,6 +183,14 @@ func TestI8(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TI8, tests)
+}
+
+func TestI8EOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{}, // empty
+	}
+
+	checkEOFError(t, wire.TI8, tests)
 }
 
 func TestI16(t *testing.T) {
@@ -178,6 +210,15 @@ func TestI16(t *testing.T) {
 	checkEncodeDecode(t, wire.TI16, tests)
 }
 
+func TestI16EOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{},     // empty
+		{0x00}, // one byte too short
+	}
+
+	checkEOFError(t, wire.TI16, tests)
+}
+
 func TestI32(t *testing.T) {
 	tests := []encodeDecodeTest{
 		{vi32(1), []byte{0x00, 0x00, 0x00, 0x01}},
@@ -193,6 +234,15 @@ func TestI32(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TI32, tests)
+}
+
+func TestI32EOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{},                 // empty
+		{0x01, 0x02, 0x03}, // one byte too short
+	}
+
+	checkEOFError(t, wire.TI32, tests)
 }
 
 func TestI64(t *testing.T) {
@@ -214,6 +264,15 @@ func TestI64(t *testing.T) {
 	checkEncodeDecode(t, wire.TI64, tests)
 }
 
+func TestI64EOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{}, // empty
+		{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}, // one byte too short
+	}
+
+	checkEOFError(t, wire.TI64, tests)
+}
+
 func TestDouble(t *testing.T) {
 	tests := []encodeDecodeTest{
 		{vdouble(0.0), []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
@@ -228,6 +287,15 @@ func TestDouble(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TDouble, tests)
+}
+
+func TestDoubleEOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{}, // empty
+		{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}, // one byte too short
+	}
+
+	checkEOFError(t, wire.TDouble, tests)
 }
 
 func TestDoubleNaN(t *testing.T) {
@@ -260,11 +328,21 @@ func TestBinary(t *testing.T) {
 }
 
 func TestBinaryDecodeFailure(t *testing.T) {
-	tests := []decodeFailureTest{
-		{data: []byte{0xff, 0x30, 0x30, 0x30}}, // negative length
+	tests := []failureTest{
+		{0xff, 0x30, 0x30, 0x30}, // negative length
 	}
 
 	checkDecodeFailure(t, wire.TBinary, tests)
+}
+
+func TestBinaryEOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{},
+		{0x00}, // incomplete length
+		{0x00, 0x00, 0x00, 0x01}, // length mismatch
+	}
+
+	checkEOFError(t, wire.TBinary, tests)
 }
 
 func TestStruct(t *testing.T) {
@@ -326,6 +404,16 @@ func TestStruct(t *testing.T) {
 	checkEncodeDecode(t, wire.TStruct, tests)
 }
 
+func TestStructEOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{},
+		{0x0B, 0x00},       // incompte field ID
+		{0x02, 0x00, 0x01}, // no value
+	}
+
+	checkEOFError(t, wire.TStruct, tests)
+}
+
 func TestMap(t *testing.T) {
 	tests := []encodeDecodeTest{
 		{vmap(wire.TI64, wire.TBinary), []byte{0x0A, 0x0B, 0x00, 0x00, 0x00, 0x00}},
@@ -371,14 +459,23 @@ func TestMap(t *testing.T) {
 }
 
 func TestMapDecodeFailure(t *testing.T) {
-	tests := []decodeFailureTest{
-		{data: []byte{
+	tests := []failureTest{
+		{
 			0x08, 0x0B, // key: i32, value: binary
 			0xff, 0x00, 0x00, 0x30, // negative length
-		}},
+		},
 	}
 
 	checkDecodeFailure(t, wire.TMap, tests)
+}
+
+func TestMapEOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{}, // empty
+		{0x08, 0x0B, 0x00, 0x00, 0x00, 0x01}, // no values
+	}
+
+	checkEOFError(t, wire.TMap, tests)
 }
 
 func TestSet(t *testing.T) {
@@ -394,14 +491,23 @@ func TestSet(t *testing.T) {
 }
 
 func TestSetDecodeFailure(t *testing.T) {
-	tests := []decodeFailureTest{
-		{data: []byte{
+	tests := []failureTest{
+		{
 			0x08,                   // type: i32
 			0xff, 0x00, 0x30, 0x30, // negative length
-		}},
+		},
 	}
 
 	checkDecodeFailure(t, wire.TSet, tests)
+}
+
+func TestSetEOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{}, // empty
+		{0x08, 0x00, 0x00, 0x00, 0x01}, // no values
+	}
+
+	checkEOFError(t, wire.TSet, tests)
 }
 
 func TestList(t *testing.T) {
@@ -454,19 +560,28 @@ func TestList(t *testing.T) {
 }
 
 func TestListDecodeFailure(t *testing.T) {
-	tests := []decodeFailureTest{
-		{data: []byte{
+	tests := []failureTest{
+		{
 			0x0B,                   // type: i32
 			0xff, 0x00, 0x30, 0x00, // negative length
-		}},
-		{data: []byte{
+		},
+		{
 			0x02, // type: bool
 			0x00, 0x00, 0x00, 0x01,
 			0x10, // invalid bool
-		}},
+		},
 	}
 
 	checkDecodeFailure(t, wire.TList, tests)
+}
+
+func TestListEOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{}, // empty
+		{0x08, 0x00, 0x00, 0x00, 0x01}, // no values
+	}
+
+	checkEOFError(t, wire.TList, tests)
 }
 
 func TestStructOfContainers(t *testing.T) {
@@ -554,5 +669,3 @@ func TestStructOfContainers(t *testing.T) {
 
 	checkEncodeDecode(t, wire.TStruct, tests)
 }
-
-// TODO test input too short errors
