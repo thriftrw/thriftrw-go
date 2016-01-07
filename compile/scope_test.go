@@ -80,13 +80,10 @@ func scopeOrDefault(s Scope) Scope {
 // An odd number of arguments may be given if the first one is the scope name.
 // Otherwise a default scope name of "fake" will be used.
 func scope(args ...interface{}) Scope {
-	var scopeName string
-
+	scopeName := "fake"
 	if len(args)%2 == 1 {
 		scopeName = args[0].(string)
 		args = args[1:]
-	} else {
-		scopeName = "fake"
 	}
 
 	if len(args)%2 != 0 {
@@ -121,7 +118,9 @@ func scope(args ...interface{}) Scope {
 		case Scope:
 			scope.includes[name] = v
 		default:
-			panic(fmt.Sprintf("value %v of unknown type %T", arg, arg))
+			panic(fmt.Sprintf(
+				"value %v of unknown type %T with name %s", arg, arg, name,
+			))
 		}
 	}
 	return scope
