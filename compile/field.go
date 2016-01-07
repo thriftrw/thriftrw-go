@@ -89,7 +89,7 @@ type FieldSpec struct {
 	Name     string
 	Type     TypeSpec
 	Required bool
-	Default  ast.ConstantValue
+	Default  ConstantValue
 }
 
 // compileField compiles the given Field source into a FieldSpec.
@@ -112,7 +112,7 @@ func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
 		Name:     src.Name,
 		Type:     compileType(src.Type),
 		Required: required,
-		Default:  src.Default,
+		Default:  compileConstantValue(src.Default),
 	}, nil
 }
 
@@ -127,7 +127,7 @@ func (f *FieldSpec) Link(scope Scope) (err error) {
 		return err
 	}
 	if f.Default != nil {
-		err = verifyConstantValue(f.Default, scope)
+		f.Default, err = f.Default.Link(scope)
 	}
 	return err
 }

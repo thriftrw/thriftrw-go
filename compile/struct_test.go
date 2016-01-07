@@ -62,7 +62,7 @@ func TestCompileStructSuccess(t *testing.T) {
 						Name:     "healthy",
 						Type:     BoolSpec,
 						Required: false,
-						Default:  ast.ConstantBoolean(true),
+						Default:  ConstantBool(true),
 					},
 				},
 			},

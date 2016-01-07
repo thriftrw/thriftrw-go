@@ -164,6 +164,16 @@ func TestCompileService(t *testing.T) {
 				},
 			},
 		},
+		{
+			"included service inheritance",
+			"service AnotherKeyValue extends shared.KeyValue {}",
+			scope("shared", scope("KeyValue", keyValueSpec)),
+			&ServiceSpec{
+				Name:      "AnotherKeyValue",
+				Parent:    keyValueSpec,
+				Functions: make(map[string]*FunctionSpec),
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -288,6 +298,24 @@ func TestLinkServiceFailure(t *testing.T) {
 			[]string{
 				`cannot compile "Foo"`,
 				`could not resolve reference "Bar"`,
+			},
+		},
+		{
+			"inherit service from unknown module",
+			"service SomeService extends foo.Bar {}",
+			scope("bar"),
+			[]string{
+				`could not resolve reference "foo.Bar"`, `in "bar"`,
+				`unknown module "foo"`,
+			},
+		},
+		{
+			"unknown service inherited from included module",
+			"service SomeService extends foo.Bar {}",
+			scope("bar", "foo", scope("foo")),
+			[]string{
+				`could not resolve reference "foo.Bar"`, `in "bar"`,
+				`could not resolve reference "Bar" in "foo"`,
 			},
 		},
 		{

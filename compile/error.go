@@ -112,24 +112,37 @@ func (e compileError) Error() string {
 
 // referenceError is raised when there's an error resolving a reference.
 type referenceError struct {
-	Target string
-	Line   int
-	Reason error
+	Target    string
+	Line      int
+	ScopeName string
+	Reason    error
 }
 
 func (e referenceError) Error() string {
-	return fmt.Sprintf(
-		"could not resolve reference %q on line %d: %v",
-		e.Target, e.Line, e.Reason,
-	)
+	msg := fmt.Sprintf("could not resolve reference %q", e.Target)
+	if e.Line > 0 {
+		msg += fmt.Sprintf(" on line %d", e.Line)
+	}
+	if len(e.ScopeName) > 0 {
+		msg += fmt.Sprintf(" in %q", e.ScopeName)
+	}
+	if e.Reason != nil {
+		msg += fmt.Sprintf(": %v", e.Reason)
+	}
+	return msg
 }
 
 type unrecognizedModuleError struct {
-	Name string
+	Name   string
+	Reason error
 }
 
 func (e unrecognizedModuleError) Error() string {
-	return fmt.Sprintf("unknown module %q", e.Name)
+	msg := fmt.Sprintf("unknown module %q", e.Name)
+	if e.Reason != nil {
+		msg += fmt.Sprintf(": %v", e.Reason)
+	}
+	return msg
 }
 
 type unrecognizedEnumItemError struct {
@@ -143,23 +156,14 @@ func (e unrecognizedEnumItemError) Error() string {
 	)
 }
 
-// lookupError is raised when an unknown identifier is requested via the
-// Lookup* methods.
+// lookupError is raised by Module if the Lookup* functions are called with
+// unknown values.
 type lookupError struct {
-	Name       string
-	ModuleName string
-	Reason     error
+	Name string
 }
 
 func (e lookupError) Error() string {
-	msg := fmt.Sprintf("unknown identifier %q", e.Name)
-	if len(e.ModuleName) > 0 {
-		msg += fmt.Sprintf(" in %q", e.ModuleName)
-	}
-	if e.Reason != nil {
-		msg += fmt.Sprintf(": %v", e.Reason)
-	}
-	return msg
+	return fmt.Sprintf("unknown identifier %q", e.Name)
 }
 
 type requirednessRequiredError struct {

@@ -20,8 +20,6 @@
 
 package compile
 
-import "github.com/uber/thriftrw-go/ast"
-
 // Module represents a compiled Thrift module. It contains all information
 // about all known types, constants, services, and includes from the Thrift
 // file.
@@ -43,101 +41,27 @@ type Module struct {
 	Services  map[string]*ServiceSpec
 }
 
+// GetName for Module
+func (m *Module) GetName() string {
+	return m.Name
+}
+
 // LookupType for Module.
 func (m *Module) LookupType(name string) (TypeSpec, error) {
 	if t, ok := m.Types[name]; ok {
 		return t, nil
 	}
 
-	mname, iname := splitInclude(name)
-	if len(mname) == 0 {
-		return nil, lookupError{Name: name, ModuleName: m.Name}
-	}
-
-	included, ok := m.Includes[mname]
-	if !ok {
-		return nil, lookupError{
-			Name:       name,
-			ModuleName: m.Name,
-			Reason:     unrecognizedModuleError{Name: mname},
-		}
-	}
-
-	spec, err := included.Module.LookupType(iname)
-	if err != nil {
-		return nil, lookupError{
-			Name:       name,
-			ModuleName: m.Name,
-			Reason:     err,
-		}
-	}
-
-	return spec, nil
-}
-
-// lookupEnum looks up an enum with the given name.
-//
-// Return the enum and true/false indicating whether a matching enum was
-// actually found.
-func (m *Module) lookupEnum(name string) (*EnumSpec, bool) {
-	t, err := m.LookupType(name)
-	if err != nil {
-		return nil, false
-	}
-
-	if enum, ok := t.(*EnumSpec); ok {
-		return enum, true
-	}
-	return nil, false
+	return nil, lookupError{Name: name}
 }
 
 // LookupConstant for Module.
-func (m *Module) LookupConstant(name string) (ast.ConstantValue, error) {
+func (m *Module) LookupConstant(name string) (*Constant, error) {
 	if c, ok := m.Constants[name]; ok {
-		return c.Value, nil
+		return c, nil
 	}
 
-	mname, iname := splitInclude(name)
-	if len(mname) == 0 {
-		return nil, lookupError{Name: name, ModuleName: m.Name}
-	}
-
-	// First check if we have an enum that matches
-	if enum, ok := m.lookupEnum(mname); ok {
-		if item, ok := enum.LookupItem(iname); ok {
-			return ast.ConstantInteger(item.Value), nil
-		}
-
-		return nil, lookupError{
-			Name:       name,
-			ModuleName: m.Name,
-			Reason: unrecognizedEnumItemError{
-				EnumName: mname,
-				ItemName: iname,
-			},
-		}
-	}
-
-	// Then check includes.
-	included, ok := m.Includes[mname]
-	if !ok {
-		return nil, lookupError{
-			Name:       name,
-			ModuleName: m.Name,
-			Reason:     unrecognizedModuleError{Name: mname},
-		}
-	}
-
-	c, err := included.Module.LookupConstant(iname)
-	if err != nil {
-		return nil, lookupError{
-			Name:       name,
-			ModuleName: m.Name,
-			Reason:     err,
-		}
-	}
-
-	return c, nil
+	return nil, lookupError{Name: name}
 }
 
 // LookupService for Module.
@@ -146,30 +70,16 @@ func (m *Module) LookupService(name string) (*ServiceSpec, error) {
 		return s, nil
 	}
 
-	mname, iname := splitInclude(name)
-	if len(mname) == 0 {
-		return nil, lookupError{Name: name, ModuleName: m.Name}
+	return nil, lookupError{Name: name}
+}
+
+// LookupInclude for Module.
+func (m *Module) LookupInclude(name string) (Scope, error) {
+	if s, ok := m.Includes[name]; ok {
+		return s.Module, nil
 	}
 
-	included, ok := m.Includes[mname]
-	if !ok {
-		return nil, lookupError{
-			Name:       name,
-			ModuleName: m.Name,
-			Reason:     unrecognizedModuleError{Name: mname},
-		}
-	}
-
-	s, err := included.Module.LookupService(iname)
-	if err != nil {
-		return nil, lookupError{
-			Name:       name,
-			ModuleName: m.Name,
-			Reason:     err,
-		}
-	}
-
-	return s, nil
+	return nil, lookupError{Name: name}
 }
 
 // IncludedModule represents an included module in the Thrift file.

@@ -73,3 +73,92 @@ func TestResolveInvalidBaseType(t *testing.T) {
 		compileType(ast.BaseType{ID: ast.BaseTypeID(42)})
 	})
 }
+
+func TestLinkTypeReference(t *testing.T) {
+	foo := &StructSpec{
+		Name: "Foo",
+		Type: ast.StructType,
+		Fields: map[string]*FieldSpec{
+			"value": {ID: 1, Name: "value", Type: I32Spec},
+		},
+	}
+
+	tests := []struct {
+		desc     string
+		scope    Scope
+		name     string
+		expected TypeSpec
+	}{
+		{"simple type lookup", scope("Foo", foo), "Foo", foo},
+		{
+			"included type lookup",
+			scope("bar", scope("Foo", foo)),
+			"bar.Foo",
+			foo,
+		},
+	}
+
+	for _, tt := range tests {
+		expected := mustLink(t, tt.expected, scope())
+		scope := scopeOrDefault(tt.scope)
+
+		spec, err := typeSpecReference(ast.TypeReference{Name: tt.name}).Link(scope)
+		if assert.NoError(t, err, tt.desc) {
+			assert.Equal(t, expected, spec, tt.desc)
+		}
+	}
+}
+
+func TestLinkTypeReferenceFailure(t *testing.T) {
+	tests := []struct {
+		desc     string
+		scope    Scope
+		name     string
+		messages []string
+	}{
+		{
+			"unknown identifier",
+			scope("some_module"),
+			"foo",
+			[]string{`could not resolve reference "foo" in "some_module"`},
+		},
+		{
+			"unknown module",
+			scope("some_module"),
+			"shared.UUID",
+			[]string{
+				`could not resolve reference "shared.UUID" in "some_module"`,
+				`unknown module "shared"`,
+			},
+		},
+		{
+			"unknown identifier in included module",
+			scope("foo", "shared", scope("shared")),
+			"shared.UUID",
+			[]string{
+				`could not resolve reference "shared.UUID" in "foo"`,
+				`could not resolve reference "UUID" in "shared"`,
+			},
+		},
+		{
+			"unknown identifier in included module of included module",
+			scope("foo", "bar", scope("bar", "baz", scope("baz"))),
+			"bar.baz.Qux",
+			[]string{
+				`could not resolve reference "bar.baz.Qux" in "foo"`,
+				`could not resolve reference "baz.Qux" in "bar"`,
+				`could not resolve reference "Qux" in "baz"`,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		scope := scopeOrDefault(tt.scope)
+		_, err := typeSpecReference(ast.TypeReference{Name: tt.name}).Link(scope)
+		if assert.Error(t, err, tt.desc) {
+			for _, msg := range tt.messages {
+				assert.Contains(t, err.Error(), msg, tt.desc)
+			}
+		}
+	}
+}

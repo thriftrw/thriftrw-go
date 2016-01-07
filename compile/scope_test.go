@@ -20,18 +20,20 @@
 
 package compile
 
-import (
-	"fmt"
-
-	"github.com/uber/thriftrw-go/ast"
-)
+import "fmt"
 
 // fakeScope is an implementation of Scope for testing. Instances may be
 // constructed easily with the scope() function.
 type fakeScope struct {
+	name      string
 	types     map[string]TypeSpec
 	services  map[string]*ServiceSpec
-	constants map[string]ast.ConstantValue
+	constants map[string]*Constant
+	includes  map[string]Scope
+}
+
+func (s fakeScope) GetName() string {
+	return s.name
 }
 
 func (s fakeScope) LookupType(name string) (TypeSpec, error) {
@@ -48,18 +50,25 @@ func (s fakeScope) LookupService(name string) (*ServiceSpec, error) {
 	return nil, fmt.Errorf("unknown service: %s", name)
 }
 
-func (s fakeScope) LookupConstant(name string) (ast.ConstantValue, error) {
+func (s fakeScope) LookupConstant(name string) (*Constant, error) {
 	if c, ok := s.constants[name]; ok {
 		return c, nil
 	}
 	return nil, fmt.Errorf("unknown constant: %s", name)
 }
 
+func (s fakeScope) LookupInclude(name string) (Scope, error) {
+	if i, ok := s.includes[name]; ok {
+		return i, nil
+	}
+	return nil, fmt.Errorf("unknown include: %s", name)
+}
+
 // scopeOrDefault accepts an optional scope as an argument and returns a default
 // empty scope if the given scope was nil.
 func scopeOrDefault(s Scope) Scope {
 	if s == nil {
-		return scope()
+		s = scope()
 	}
 	return s
 }
@@ -67,15 +76,26 @@ func scopeOrDefault(s Scope) Scope {
 // Helper to construct Scopes from the given pairs of items.
 //
 // An even number of items must be given.
+//
+// An odd number of arguments may be given if the first one is the scope name.
+// Otherwise a default scope name of "fake" will be used.
 func scope(args ...interface{}) Scope {
+	scopeName := "fake"
+	if len(args)%2 == 1 {
+		scopeName = args[0].(string)
+		args = args[1:]
+	}
+
 	if len(args)%2 != 0 {
-		panic("scope() expects an even number of arguments.")
+		panic("scope() expects an even number of arguments after the name")
 	}
 
 	scope := fakeScope{
+		name:      scopeName,
 		types:     make(map[string]TypeSpec),
 		services:  make(map[string]*ServiceSpec),
-		constants: make(map[string]ast.ConstantValue),
+		constants: make(map[string]*Constant),
+		includes:  make(map[string]Scope),
 	}
 
 	var name string
@@ -91,12 +111,16 @@ func scope(args ...interface{}) Scope {
 		switch v := arg.(type) {
 		case TypeSpec:
 			scope.types[name] = v
-		case ast.ConstantValue:
+		case *Constant:
 			scope.constants[name] = v
 		case *ServiceSpec:
 			scope.services[name] = v
+		case Scope:
+			scope.includes[name] = v
 		default:
-			panic(fmt.Sprintf("unknown type %T of value %v", arg, arg))
+			panic(fmt.Sprintf(
+				"value %v of unknown type %T with name %s", arg, arg, name,
+			))
 		}
 	}
 	return scope

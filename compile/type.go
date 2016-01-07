@@ -43,32 +43,61 @@ type TypeSpec interface {
 // typeSpecReference is a dummy TypeSpec that represents a reference to another
 // TypeSpec. These will be replaced with actual TypeSpecs during the Link()
 // step.
-type typeSpecReference struct {
-	Name string
-	Line int
-}
+type typeSpecReference ast.TypeReference
 
 // Link replaces the typeSpecReference with an actual linked TypeSpec.
-func (t *typeSpecReference) Link(scope Scope) (TypeSpec, error) {
-	spec, err := scope.LookupType(t.Name)
-	if err != nil {
-		return nil, referenceError{Target: t.Name, Line: t.Line, Reason: err}
+func (r typeSpecReference) Link(scope Scope) (TypeSpec, error) {
+	src := ast.TypeReference(r)
+	t, err := scope.LookupType(src.Name)
+	if err == nil {
+		return t.Link(scope)
 	}
-	return spec.Link(scope)
+
+	mname, iname := splitInclude(src.Name)
+	if len(mname) == 0 {
+		return nil, referenceError{
+			Target:    src.Name,
+			Line:      src.Line,
+			ScopeName: scope.GetName(),
+			Reason:    err,
+		}
+	}
+
+	includedScope, err := getIncludedScope(scope, mname)
+	if err != nil {
+		return nil, referenceError{
+			Target:    src.Name,
+			Line:      src.Line,
+			ScopeName: scope.GetName(),
+			Reason:    err,
+		}
+	}
+
+	t, err = typeSpecReference{Name: iname}.Link(includedScope)
+	if err != nil {
+		return nil, referenceError{
+			Target:    src.Name,
+			Line:      src.Line,
+			ScopeName: scope.GetName(),
+			Reason:    err,
+		}
+	}
+
+	return t, nil
 }
 
 // TypeCode on an unresolved typeSpecReference will cause a system panic.
-func (t *typeSpecReference) TypeCode() wire.Type {
+func (r typeSpecReference) TypeCode() wire.Type {
 	panic(fmt.Sprintf(
 		"TypeCode() requested for unresolved TypeSpec reference %v."+
-			"Make sure you called Link().", t,
+			"Make sure you called Link().", r,
 	))
 }
 
 // ThriftName is the name of the typeSpecReference as it appears in the Thrift
 // file.
-func (t *typeSpecReference) ThriftName() string {
-	return t.Name
+func (r typeSpecReference) ThriftName() string {
+	return r.Name
 }
 
 // compileType compiles the given AST type reference into a TypeSpec.
@@ -88,7 +117,7 @@ func compileType(typ ast.Type) TypeSpec {
 	case ast.SetType:
 		return compileSetType(t)
 	case ast.TypeReference:
-		return &typeSpecReference{Name: t.Name, Line: t.Line}
+		return typeSpecReference(t)
 	default:
 		panic(fmt.Sprintf("unknown type %v", typ))
 	}
