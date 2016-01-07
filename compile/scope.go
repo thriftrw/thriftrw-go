@@ -40,3 +40,12 @@ type Scope interface {
 	// Retrieve an included scope.
 	LookupInclude(name string) (Scope, error)
 }
+
+// getIncludedScope retrieves an included scope from the given scope.
+func getIncludedScope(scope Scope, name string) (Scope, error) {
+	included, err := scope.LookupInclude(name)
+	if err != nil {
+		return nil, unrecognizedModuleError{Name: name, Reason: err}
+	}
+	return included, nil
+}

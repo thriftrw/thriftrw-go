@@ -83,13 +83,13 @@ func resolveService(src ast.ServiceReference, scope Scope) (*ServiceSpec, error)
 		}
 	}
 
-	includedScope, err := scope.LookupInclude(mname)
+	includedScope, err := getIncludedScope(scope, mname)
 	if err != nil {
 		return nil, referenceError{
 			Target:    src.Name,
 			Line:      src.Line,
 			ScopeName: scope.GetName(),
-			Reason:    unrecognizedModuleError{Name: mname, Reason: err},
+			Reason:    err,
 		}
 	}
 
