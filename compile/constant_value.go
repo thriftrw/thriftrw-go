@@ -136,6 +136,7 @@ func (c ConstantMap) Link(scope Scope) (ConstantValue, error) {
 			return nil, err
 		}
 
+		// TODO(abg): Duplicate key check
 		items[i] = ConstantValuePair{Key: key, Value: value}
 	}
 
@@ -253,7 +254,7 @@ func (r constantReference) Link(scope Scope) (ConstantValue, error) {
 		}
 	}
 
-	value, err := constantReference(ast.ConstantReference{Name: iname}).Link(includedScope)
+	value, err := constantReference{Name: iname}.Link(includedScope)
 	if err != nil {
 		return nil, referenceError{
 			Target:    src.Name,

@@ -73,7 +73,7 @@ func (r typeSpecReference) Link(scope Scope) (TypeSpec, error) {
 		}
 	}
 
-	t, err = typeSpecReference(ast.TypeReference{Name: iname}).Link(includedScope)
+	t, err = typeSpecReference{Name: iname}.Link(includedScope)
 	if err != nil {
 		return nil, referenceError{
 			Target:    src.Name,
