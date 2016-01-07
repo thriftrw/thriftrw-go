@@ -101,12 +101,12 @@ func (c ConstantDouble) Link(scope Scope) (ConstantValue, error) {
 type ConstantMap []ConstantValuePair
 
 func compileConstantMap(src ast.ConstantMap) ConstantMap {
-	var items []ConstantValuePair
-	for _, item := range src.Items {
-		items = append(items, ConstantValuePair{
+	items := make([]ConstantValuePair, len(src.Items))
+	for i, item := range src.Items {
+		items[i] = ConstantValuePair{
 			Key:   compileConstantValue(item.Key),
 			Value: compileConstantValue(item.Value),
-		})
+		}
 	}
 	return ConstantMap(items)
 }
@@ -119,13 +119,13 @@ type ConstantValuePair struct {
 
 // Link for ConstantMap.
 func (c ConstantMap) Link(scope Scope) (ConstantValue, error) {
-	var items []ConstantValuePair
+	items := make([]ConstantValuePair, len(c))
 
 	// TODO ConstantMap can resolve into a constant struct if the type it is
 	// being cast to is a struct. Otherwise, all keys and values must be the
 	// same type.
 
-	for _, item := range c {
+	for i, item := range c {
 		key, err := item.Key.Link(scope)
 		if err != nil {
 			return nil, err
@@ -136,7 +136,7 @@ func (c ConstantMap) Link(scope Scope) (ConstantValue, error) {
 			return nil, err
 		}
 
-		items = append(items, ConstantValuePair{Key: key, Value: value})
+		items[i] = ConstantValuePair{Key: key, Value: value}
 	}
 
 	return ConstantMap(items), nil
@@ -146,28 +146,26 @@ func (c ConstantMap) Link(scope Scope) (ConstantValue, error) {
 type ConstantList []ConstantValue
 
 func compileConstantList(src ast.ConstantList) ConstantList {
-	var values []ConstantValue
-	for _, v := range src.Items {
-		values = append(values, compileConstantValue(v))
+	values := make([]ConstantValue, len(src.Items))
+	for i, v := range src.Items {
+		values[i] = compileConstantValue(v)
 	}
-
 	return ConstantList(values)
 }
 
 // Link for ConstantList.
 func (c ConstantList) Link(scope Scope) (ConstantValue, error) {
-	var values []ConstantValue
+	values := make([]ConstantValue, len(c))
 
 	// TODO ConstantList can resolve to a constant set if it's being treated as
 	// such.
 
-	for _, v := range c {
+	for i, v := range c {
 		value, err := v.Link(scope)
 		if err != nil {
 			return nil, err
 		}
-
-		values = append(values, value)
+		values[i] = value
 	}
 
 	return ConstantList(values), nil
