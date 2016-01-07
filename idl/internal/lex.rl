@@ -61,7 +61,7 @@ func (lex *lexer) Lex(out *yySymType) int {
         __ = (ws | newline)*;
 
         # Comments
-        line_comment = ('#'|'//') [^\n]+;
+        line_comment = ('#'|'//') [^\n]*;
         multiline_comment = '/*' (newline | any)* :>> '*/';
 
         # Symbols are sent to the parser as-is.
