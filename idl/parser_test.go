@@ -58,6 +58,12 @@ func TestParseEmpty(t *testing.T) {
 	}
 }
 
+func TestParseComments(t *testing.T) {
+	s := "// foo\n//\n//bar"
+	_, err := Parse([]byte(s))
+	assert.NoError(t, err, "Failed to parse:\n%s", s)
+}
+
 func TestParseErrors(t *testing.T) {
 	tests := []string{
 		"namespace foo \x00",
