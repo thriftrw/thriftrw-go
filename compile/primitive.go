@@ -29,14 +29,14 @@ import (
 
 // TypeSpecs for primitive Thrift types.
 var (
-	BoolSpec   = primitiveTypeSpec{"bool", wire.TBool}
-	I8Spec     = primitiveTypeSpec{"byte", wire.TI8}
-	I16Spec    = primitiveTypeSpec{"i16", wire.TI16}
-	I32Spec    = primitiveTypeSpec{"i32", wire.TI32}
-	I64Spec    = primitiveTypeSpec{"i64", wire.TI64}
-	DoubleSpec = primitiveTypeSpec{"double", wire.TDouble}
-	StringSpec = primitiveTypeSpec{"string", wire.TBinary}
-	BinarySpec = primitiveTypeSpec{"binary", wire.TBinary}
+	BoolSpec   TypeSpec = primitiveTypeSpec{"bool", wire.TBool}
+	I8Spec     TypeSpec = primitiveTypeSpec{"byte", wire.TI8}
+	I16Spec    TypeSpec = primitiveTypeSpec{"i16", wire.TI16}
+	I32Spec    TypeSpec = primitiveTypeSpec{"i32", wire.TI32}
+	I64Spec    TypeSpec = primitiveTypeSpec{"i64", wire.TI64}
+	DoubleSpec TypeSpec = primitiveTypeSpec{"double", wire.TDouble}
+	StringSpec TypeSpec = primitiveTypeSpec{"string", wire.TBinary}
+	BinarySpec TypeSpec = primitiveTypeSpec{"binary", wire.TBinary}
 )
 
 type primitiveTypeSpec struct {
@@ -63,7 +63,7 @@ func (t primitiveTypeSpec) Link(Scope) (TypeSpec, error) {
 
 // compileBaseType compiles a base type reference in the AST to a primitive
 // TypeSpec.
-func compileBaseType(t ast.BaseType) primitiveTypeSpec {
+func compileBaseType(t ast.BaseType) TypeSpec {
 	switch t.ID {
 	case ast.BoolTypeID:
 		return BoolSpec
