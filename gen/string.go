@@ -21,15 +21,39 @@
 package gen
 
 import (
-	"unicode"
-	"unicode/utf8"
+	"regexp"
+	"strings"
 )
 
-// capitalize changes the first letter of a string to upper case.
-func capitalize(s string) string {
+var (
+	// boundary matches word boundaries for camel case expressions.
+	//
+	// 	FooBar => Fo(o)(Bar)
+	// 	HTTPRequest => HTT(P)(Request)
+	//
+	// We use this to detect if an object is already camel case.
+	boundary = regexp.MustCompile(`([^_])([A-Z][a-z]+)`)
+)
+
+// goCase converts strings into standard camel case with the first letter being
+// upper case.
+func goCase(s string) string {
 	if len(s) == 0 {
 		return s
 	}
-	x, i := utf8.DecodeRuneInString(s)
-	return string(unicode.ToUpper(x)) + string(s[i:])
+
+	if boundary.MatchString(s) {
+		// Already camelCase. Just ensure that the first letter is upper case.
+		return strings.Title(s)
+	}
+
+	chunks := strings.Split(s, "_")
+	for i, c := range chunks {
+		chunks[i] = strings.Title(strings.ToLower(c))
+	}
+
+	// TODO(abg): If the string ends with "Id", this should replace that with
+	// "ID".
+
+	return strings.Join(chunks, "")
 }

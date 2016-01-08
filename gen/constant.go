@@ -20,20 +20,19 @@
 
 package gen
 
-import (
-	"go/ast"
-
-	"github.com/uber/thriftrw-go/compile"
-)
+import "github.com/uber/thriftrw-go/compile"
 
 // Constant TODO
 func (g *Generator) Constant(c *compile.Constant) {
-	// const $name $type = $value
-	g.declareConstant(
-		c.Name, typeReference(c.Type, false), constantValue(c.Value),
+	err := g.DeclareFromTemplate(
+		`
+		const {{.Name | goCase}} {{defName .Type}} = {{constantValue .Value}}
+		`,
+		c,
 	)
-}
-
-func constantValue(v compile.ConstantValue) ast.Expr {
-	return nil // TODO
+	if err != nil {
+		// TODO better error hanlding
+		panic(err)
+	}
+	// TODO(abg): Implement constantValue
 }

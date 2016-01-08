@@ -22,12 +22,11 @@ package gen
 
 import (
 	"fmt"
-	"go/ast"
 
 	"github.com/uber/thriftrw-go/compile"
 )
 
-// TypeDefinition TODO
+// TypeDefinition generates code for the given TypeSpec.
 func (g *Generator) TypeDefinition(spec compile.TypeSpec) {
 	switch s := spec.(type) {
 	case *compile.EnumSpec:
@@ -41,6 +40,9 @@ func (g *Generator) TypeDefinition(spec compile.TypeSpec) {
 	}
 }
 
+// isReferenceType checks if the given TypeSpec represents a reference type.
+//
+// Sets, maps, lists, and slices are reference types.
 func isReferenceType(spec compile.TypeSpec) bool {
 	if spec == compile.BinarySpec {
 		return true
@@ -58,62 +60,71 @@ func isReferenceType(spec compile.TypeSpec) bool {
 	return false
 }
 
-func typeReference(spec compile.TypeSpec, ptr bool) (result ast.Expr) {
+// typeReference returns a string representation of a reference to the given
+// type.
+//
+// ptr specifies whether the reference should be a pointer. It will not be a
+// pointer for types that are already reference types.
+func typeReference(spec compile.TypeSpec, ptr bool) (result string) {
 	if ptr && !isReferenceType(spec) {
+		// If requested, prepend "*" to the result if the type isn't a reference
+		// type.
 		defer func() {
-			result = &ast.StarExpr{X: result}
+			result = "*" + result
 		}()
 	}
 
 	switch spec {
 	case compile.BoolSpec:
-		return ast.NewIdent("bool")
+		return "bool"
 	case compile.I8Spec:
-		return ast.NewIdent("int8")
+		return "int8"
 	case compile.I16Spec:
-		return ast.NewIdent("int16")
+		return "int16"
 	case compile.I32Spec:
-		return ast.NewIdent("int32")
+		return "int32"
 	case compile.I64Spec:
-		return ast.NewIdent("int64")
+		return "int64"
 	case compile.DoubleSpec:
-		return ast.NewIdent("double64")
+		return "double64"
 	case compile.StringSpec:
-		return ast.NewIdent("string")
+		return "string"
 	case compile.BinarySpec:
-		return &ast.ArrayType{Elt: ast.NewIdent("byte")}
+		return "[]byte"
 	default:
-		// Try matching type
+		// Not a primitive type. Try checking if it's a container.
 	}
 
 	switch s := spec.(type) {
 	case *compile.MapSpec:
 		// TODO unhashable types
-		return &ast.MapType{
-			Key:   typeReference(s.KeySpec, false),
-			Value: typeReference(s.ValueSpec, false),
-		}
+		return fmt.Sprintf(
+			"map[%s]%s",
+			typeReference(s.KeySpec, false),
+			typeReference(s.ValueSpec, false),
+		)
 	case *compile.ListSpec:
-		return &ast.ArrayType{Elt: typeReference(s.ValueSpec, false)}
+		return "[]" + typeReference(s.ValueSpec, false)
 	case *compile.SetSpec:
 		// TODO unhashable types
-		return &ast.MapType{
-			Key:   typeReference(s.ValueSpec, false),
-			Value: &ast.StructType{},
-		}
+		return fmt.Sprintf("map[%s]struct{}", typeReference(s.ValueSpec, false))
 	default:
-		return ast.NewIdent(typeDeclName(spec))
+		// Custom defined type. The reference is just the name of the type then.
+		return typeDeclName(spec)
 	}
 }
 
+// typeDeclName returns the name that should be used to define the given type.
+//
+// This panics if the given TypeSpec is not a custom user-defined type.
 func typeDeclName(spec compile.TypeSpec) string {
 	switch s := spec.(type) {
 	case *compile.EnumSpec:
-		return capitalize(s.Name)
+		return goCase(s.Name)
 	case *compile.StructSpec:
-		return capitalize(s.Name)
+		return goCase(s.Name)
 	case *compile.TypedefSpec:
-		return capitalize(s.Name)
+		return goCase(s.Name)
 	default:
 		panic(fmt.Sprintf(
 			"Type %q doesn't can't have a declaration name", spec.ThriftName(),

@@ -20,28 +20,27 @@
 
 package gen
 
-import (
-	"go/ast"
-
-	"github.com/uber/thriftrw-go/compile"
-)
-
-func field(spec *compile.FieldSpec) *ast.Field {
-	return &ast.Field{
-		Names: []*ast.Ident{ast.NewIdent(capitalize(spec.Name))},
-		Type:  typeReference(spec.Type, !spec.Required),
-	}
-	// TODO(abg): JSON tags for generated structs
-	// TODO(abg): Convert from snake case
-	// TODO(abg): Need to record somewhere
-}
+import "github.com/uber/thriftrw-go/compile"
 
 func (g *Generator) structure(spec *compile.StructSpec) {
-	fields := &ast.FieldList{}
-	for _, f := range spec.Fields {
-		fields.List = append(fields.List, field(f))
+	err := g.DeclareFromTemplate(
+		`
+		{{ $structName := defName . }}
+
+		type {{$structName}} struct {
+		{{ range .Fields }}
+			{{.Name | goCase}} {{ typeReference .Type (not .Required) }}
+		{{ end }}
+		}
+		`,
+		spec,
+	)
+	// TODO(abg): JSON tags for generated structs
+	// TODO(abg): ToWire/FromWire for all fields
+
+	if err != nil {
+		panic(err) // TODO error handling
 	}
 
-	g.defineType(typeDeclName(spec), &ast.StructType{Fields: fields})
 	// TODO methods
 }

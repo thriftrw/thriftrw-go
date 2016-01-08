@@ -27,54 +27,44 @@ import (
 	"path/filepath"
 )
 
-// Expr helps build complex expressions.
-type Expr struct {
-	E ast.Expr
-}
-
-func ident(name string) Expr {
-	return Expr{ast.NewIdent(name)}
-}
-
-// Select can be used to select an item on an imported module.
-func (e Expr) Select(name string) Expr {
-	return Expr{&ast.SelectorExpr{X: e.E, Sel: ast.NewIdent(name)}}
-}
-
-func (e Expr) call(args ...ast.Expr) Expr {
-	return Expr{&ast.CallExpr{Fun: e.E, Args: args}}
-}
-
-// Call TODO
-func (e Expr) Call(args ...Expr) Expr {
-	exprs := make([]ast.Expr, len(args))
-	for i, expr := range args {
-		exprs[i] = expr.E
-	}
-	return e.call(exprs...)
-}
-
+// importer is responsible for managing imports for the code generator and
+// ensuring that we don't end up with naming conflicts in imports.
 type importer struct {
-	usedImpNames map[string]struct{}
-	imps         map[string]*ast.ImportSpec
+	usedNames map[string]struct{}
+	imports   map[string]*ast.ImportSpec
 }
 
+// newImporter builds a new importer.
 func newImporter() importer {
 	return importer{
-		usedImpNames: make(map[string]struct{}),
-		imps:         make(map[string]*ast.ImportSpec),
+		usedNames: make(map[string]struct{}),
+		imports:   make(map[string]*ast.ImportSpec),
 	}
+}
+
+// addImportSpec adds an ImportSpec to the importer.
+//
+// No conflict resolution is performed.
+func (i importer) addImportSpec(spec *ast.ImportSpec) {
+	path := spec.Path.Value
+	name := filepath.Base(path)
+	if spec.Name != nil {
+		name = spec.Name.Name
+	}
+
+	i.usedNames[name] = struct{}{}
+	i.imports[path] = spec
 }
 
 // Import ensures that the generated module has the given module imported and
 // returns the name that should be used by the generated code to reference items
 // defined in the module.
-func (i importer) Import(path string) Expr {
-	if imp, ok := i.imps[path]; ok {
+func (i importer) Import(path string) string {
+	if imp, ok := i.imports[path]; ok {
 		if imp.Name != nil {
-			return Expr{imp.Name}
+			return imp.Name.Name
 		}
-		return ident(filepath.Base(path))
+		return filepath.Base(path)
 	}
 
 	baseName := filepath.Base(path)
@@ -82,35 +72,33 @@ func (i importer) Import(path string) Expr {
 
 	// If there's a name collision, use the format _$baseName$counter to find
 	// a non-conflicting name.
-	if _, conflict := i.usedImpNames[name]; conflict {
+	if _, conflict := i.usedNames[name]; conflict {
 		counter := 0
 		for conflict {
 			counter++
 			name = fmt.Sprintf("_%s%d", baseName, counter)
-			_, conflict = i.usedImpNames[name]
+			_, conflict = i.usedNames[name]
 		}
 	}
 
-	astName := ast.NewIdent(name)
 	astImport := &ast.ImportSpec{Path: stringLiteral(path)}
 	if name != baseName {
-		astImport.Name = astName
+		astImport.Name = ast.NewIdent(name)
 	}
+	i.addImportSpec(astImport)
 
-	i.usedImpNames[name] = struct{}{}
-	i.imps[path] = astImport
-	return Expr{astName}
+	return name
 }
 
 // importDecl builds an import declation from the given list of imports.
 func (i importer) importDecl() ast.Decl {
-	imps := i.imps
-	if imps == nil || len(imps) == 0 {
+	imports := i.imports
+	if imports == nil || len(imports) == 0 {
 		return nil
 	}
 
-	specs := make([]ast.Spec, 0, len(imps))
-	for _, imp := range imps {
+	specs := make([]ast.Spec, 0, len(imports))
+	for _, imp := range imports {
 		specs = append(specs, imp)
 	}
 

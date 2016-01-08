@@ -20,8 +20,25 @@
 
 package gen
 
-import "go/ast"
+import (
+	"testing"
 
-func callFunction(name string, args ...ast.Expr) ast.Expr {
-	return &ast.CallExpr{Fun: ast.NewIdent(name), Args: args}
+	"github.com/stretchr/testify/assert"
+)
+
+func TestGoCase(t *testing.T) {
+	tests := []struct {
+		input  string
+		output string
+	}{
+		{"snake_case", "SnakeCase"},
+		{"alreadyCamelCase", "AlreadyCamelCase"},
+		{"get500Error", "Get500Error"},
+		{"HTTPRequest", "HTTPRequest"},
+		{"ALL_CAPS_WITH_UNDERSCORE", "AllCapsWithUnderscore"},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.output, goCase(tt.input))
+	}
 }

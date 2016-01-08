@@ -22,9 +22,14 @@ package gen
 
 import "github.com/uber/thriftrw-go/compile"
 
+// typedef generates code for the given typedef.
 func (g *Generator) typedef(spec *compile.TypedefSpec) {
-	g.defineType(
-		typeDeclName(spec),
-		typeReference(spec.Target, false),
+	err := g.DeclareFromTemplate(
+		"type {{.Name}} {{ typeReference .Target false }}",
+		spec,
 	)
+	// TODO(abg): To/FromWire.
+	if err != nil {
+		panic(err) // TODO(abg): Error handling
+	}
 }
