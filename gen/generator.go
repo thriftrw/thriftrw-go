@@ -49,10 +49,19 @@ func NewGenerator() *Generator {
 
 func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
 	templateFuncs := template.FuncMap{
-		"goCase":        goCase,
-		"import":        g.Import,
-		"defName":       typeDeclName,
+		"goCase":  goCase,
+		"import":  g.Import,
+		"defName": typeDeclName,
+
 		"typeReference": typeReference,
+		"Required":      func() fieldRequired { return Required },
+		"Optional":      func() fieldRequired { return Optional },
+		"required": func(b bool) fieldRequired {
+			if b {
+				return Required
+			}
+			return Optional
+		},
 	}
 	// TODO(abg): Add functions like "newVar" so that templates don't have to.
 
@@ -102,10 +111,14 @@ func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
 // defName(TypeSpec): Takes a TypeSpec representing a **user declared type** and
 // returns the name that should be used in the Go code to define that type.
 //
-// typeReference(TypeSpec, bool): Takes any TypeSpec and a boolean indicating
-// whether this reference should be a pointer/reference or not. Returns a string
-// representing a reference to that type, incuding the "*" for pointers if a
-// pointer was requested and the type was not already a reference type.
+// typeReference(TypeSpec, fieldRequired): Takes any TypeSpec and a a value
+// indicating whether this reference expects the type to always be present (use
+// the "required" function on a boolean, or the "Required" and "Optional"
+// functions inside the template to get the corresponding fieldRequired value).
+// Returns a string representing a reference to that type, wrapped in a pointer
+// if the value was optional.
+//
+// 	{{ typeReference $someType Required }}
 func (g *Generator) DeclareFromTemplate(s string, data interface{}) error {
 	bs, err := g.renderTemplate(s, data)
 	if err != nil {

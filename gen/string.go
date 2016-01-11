@@ -21,6 +21,7 @@
 package gen
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 )
@@ -39,7 +40,7 @@ var (
 // upper case.
 func goCase(s string) string {
 	if len(s) == 0 {
-		return s
+		panic(fmt.Sprintf("%q is not a valid identifier", s))
 	}
 
 	if boundary.MatchString(s) {

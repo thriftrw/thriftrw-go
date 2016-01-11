@@ -25,7 +25,7 @@ import "github.com/uber/thriftrw-go/compile"
 // typedef generates code for the given typedef.
 func (g *Generator) typedef(spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
-		"type {{.Name}} {{typeReference .Target false}}",
+		"type {{.Name}} {{typeReference .Target Required}}",
 		spec,
 	)
 	// TODO(abg): To/FromWire.

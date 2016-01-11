@@ -29,7 +29,7 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 
 		type {{$structName}} struct {
 		{{ range .Fields }}
-			{{goCase .Name}} {{typeReference .Type (not .Required)}}
+			{{goCase .Name}} {{typeReference .Type (required .Required)}}
 		{{ end }}
 		}
 		`,

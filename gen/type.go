@@ -26,6 +26,15 @@ import (
 	"github.com/uber/thriftrw-go/compile"
 )
 
+// fieldRequired indicates whether a field is required or not.
+type fieldRequired int
+
+// Whether the field is required or not.
+const (
+	Optional fieldRequired = iota // default
+	Required
+)
+
 // TypeDefinition generates code for the given TypeSpec.
 func (g *Generator) TypeDefinition(spec compile.TypeSpec) error {
 	switch s := spec.(type) {
@@ -65,10 +74,10 @@ func isReferenceType(spec compile.TypeSpec) bool {
 //
 // ptr specifies whether the reference should be a pointer. It will not be a
 // pointer for types that are already reference types.
-func typeReference(spec compile.TypeSpec, ptr bool) (result string) {
-	if ptr && !isReferenceType(spec) {
-		// If requested, prepend "*" to the result if the type isn't a reference
-		// type.
+func typeReference(spec compile.TypeSpec, req fieldRequired) (result string) {
+	// Prepend "*" to the result if the field is required and the type isn't a
+	// reference type.
+	if req != Optional && !isReferenceType(spec) {
 		defer func() {
 			result = "*" + result
 		}()
@@ -100,14 +109,14 @@ func typeReference(spec compile.TypeSpec, ptr bool) (result string) {
 		// TODO unhashable types
 		return fmt.Sprintf(
 			"map[%s]%s",
-			typeReference(s.KeySpec, false),
-			typeReference(s.ValueSpec, false),
+			typeReference(s.KeySpec, Required),
+			typeReference(s.ValueSpec, Required),
 		)
 	case *compile.ListSpec:
-		return "[]" + typeReference(s.ValueSpec, false)
+		return "[]" + typeReference(s.ValueSpec, Required)
 	case *compile.SetSpec:
 		// TODO unhashable types
-		return fmt.Sprintf("map[%s]struct{}", typeReference(s.ValueSpec, false))
+		return fmt.Sprintf("map[%s]struct{}", typeReference(s.ValueSpec, Required))
 	default:
 		// Custom defined type. The reference is just the name of the type then.
 		return typeDeclName(spec)

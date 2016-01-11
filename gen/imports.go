@@ -73,9 +73,7 @@ func (i importer) Import(path string) string {
 	// If there's a name collision, use the format _$baseName$counter to find
 	// a non-conflicting name.
 	if _, conflict := i.usedNames[name]; conflict {
-		counter := 0
-		for conflict {
-			counter++
+		for counter := 0; conflict; counter++ {
 			name = fmt.Sprintf("_%s%d", baseName, counter)
 			_, conflict = i.usedNames[name]
 		}
