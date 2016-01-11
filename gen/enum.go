@@ -34,7 +34,7 @@ func (g *Generator) enum(spec *compile.EnumSpec) error {
 
 		const (
 		{{ range .Items }}
-			{{$enumName}}{{.Name | goCase}} {{$enumName}} = {{.Value}}
+			{{$enumName}}{{goCase .Name}} {{$enumName}} = {{.Value}}
 		{{ end }}
 		)
 
@@ -46,7 +46,7 @@ func (g *Generator) enum(spec *compile.EnumSpec) error {
 			switch w.GetI32() {
 			{{ range .Items }}
 			case {{.Value}}:
-				*v = {{$enumName}}{{.Name | goCase}}
+				*v = {{$enumName}}{{goCase .Name}}
 			{{ end }}
 			default:
 				return {{$fmt}}.Errorf("Unknown {{$enumName}}: %d", w.GetI32())

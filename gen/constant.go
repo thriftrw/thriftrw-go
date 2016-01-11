@@ -26,7 +26,7 @@ import "github.com/uber/thriftrw-go/compile"
 func (g *Generator) Constant(c *compile.Constant) error {
 	err := g.DeclareFromTemplate(
 		`
-		const {{.Name | goCase}} {{defName .Type}} = {{constantValue .Value}}
+		const {{goCase .Name}} {{defName .Type}} = {{constantValue .Value}}
 		`,
 		c,
 	)
