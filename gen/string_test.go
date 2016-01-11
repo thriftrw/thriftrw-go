@@ -32,10 +32,15 @@ func TestGoCase(t *testing.T) {
 		output string
 	}{
 		{"snake_case", "SnakeCase"},
+		{"foo__bar", "FooBar"},
+		{"get_FooBar", "GetFooBar"},
 		{"alreadyCamelCase", "AlreadyCamelCase"},
 		{"get500Error", "Get500Error"},
+		{"http_request", "HTTPRequest"},
 		{"HTTPRequest", "HTTPRequest"},
 		{"ALL_CAPS_WITH_UNDERSCORE", "AllCapsWithUnderscore"},
+		{"get_user_id", "GetUserID"},
+		{"GET_USER_ID", "GetUserID"},
 	}
 
 	for _, tt := range tests {
