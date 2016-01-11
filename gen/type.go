@@ -58,15 +58,11 @@ func isReferenceType(spec compile.TypeSpec) bool {
 	}
 
 	switch spec.(type) {
-	case *compile.MapSpec:
+	case *compile.MapSpec, *compile.ListSpec, *compile.SetSpec:
 		return true
-	case *compile.ListSpec:
-		return true
-	case *compile.SetSpec:
-		return true
+	default:
+		return false
 	}
-
-	return false
 }
 
 // typeReference returns a string representation of a reference to the given
@@ -75,9 +71,9 @@ func isReferenceType(spec compile.TypeSpec) bool {
 // ptr specifies whether the reference should be a pointer. It will not be a
 // pointer for types that are already reference types.
 func typeReference(spec compile.TypeSpec, req fieldRequired) (result string) {
-	// Prepend "*" to the result if the field is required and the type isn't a
-	// reference type.
-	if req != Optional && !isReferenceType(spec) {
+	// Prepend "*" to the result if the field is not required and the type isn't
+	// a reference type.
+	if req != Required && !isReferenceType(spec) {
 		defer func() {
 			result = "*" + result
 		}()
@@ -127,13 +123,9 @@ func typeReference(spec compile.TypeSpec, req fieldRequired) (result string) {
 //
 // This panics if the given TypeSpec is not a custom user-defined type.
 func typeDeclName(spec compile.TypeSpec) string {
-	switch s := spec.(type) {
-	case *compile.EnumSpec:
-		return goCase(s.Name)
-	case *compile.StructSpec:
-		return goCase(s.Name)
-	case *compile.TypedefSpec:
-		return goCase(s.Name)
+	switch spec.(type) {
+	case *compile.EnumSpec, *compile.StructSpec, *compile.TypedefSpec:
+		return goCase(spec.ThriftName())
 	default:
 		panic(fmt.Sprintf(
 			"Type %q doesn't can't have a declaration name", spec.ThriftName(),

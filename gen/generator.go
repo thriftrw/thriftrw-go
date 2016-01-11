@@ -150,7 +150,7 @@ func (g *Generator) DeclareFromTemplate(s string, data interface{}) error {
 	return nil
 }
 
-// TODO mutliple modules
+// TODO multiple modules
 
 func (g *Generator) Write(w io.Writer, fs *token.FileSet) error {
 	// TODO newlines between decls
