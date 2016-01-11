@@ -29,8 +29,5 @@ func (g *Generator) typedef(spec *compile.TypedefSpec) error {
 		spec,
 	)
 	// TODO(abg): To/FromWire.
-	if err != nil {
-		return generateError{Name: spec.Name, Reason: err}
-	}
-	return nil
+	return wrapGenerateError(spec.Name, err)
 }

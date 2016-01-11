@@ -30,9 +30,6 @@ func (g *Generator) Constant(c *compile.Constant) error {
 		`,
 		c,
 	)
-	if err != nil {
-		return generateError{Name: c.Name, Reason: err}
-	}
-	return nil
 	// TODO(abg): Implement constantValue
+	return wrapGenerateError(c.Name, err)
 }

@@ -38,10 +38,6 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 	// TODO(abg): JSON tags for generated structs
 	// TODO(abg): ToWire/FromWire for all fields
 
-	if err != nil {
-		return generateError{Name: spec.Name, Reason: err}
-	}
-	return nil
-
+	return wrapGenerateError(spec.Name, err)
 	// TODO methods
 }

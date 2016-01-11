@@ -57,8 +57,5 @@ func (g *Generator) enum(spec *compile.EnumSpec) error {
 		spec,
 	)
 
-	if err != nil {
-		return generateError{Name: spec.Name, Reason: err}
-	}
-	return nil
+	return wrapGenerateError(spec.Name, err)
 }

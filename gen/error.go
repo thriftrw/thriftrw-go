@@ -30,3 +30,11 @@ type generateError struct {
 func (e generateError) Error() string {
 	return fmt.Sprintf("failed to generate code for '%s': %v", e.Name, e.Reason)
 }
+
+func wrapGenerateError(name string, reason error) error {
+	if reason == nil {
+		return nil
+	}
+
+	return generateError{Name: name, Reason: reason}
+}
