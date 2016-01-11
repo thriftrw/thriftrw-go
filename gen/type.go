@@ -27,14 +27,14 @@ import (
 )
 
 // TypeDefinition generates code for the given TypeSpec.
-func (g *Generator) TypeDefinition(spec compile.TypeSpec) {
+func (g *Generator) TypeDefinition(spec compile.TypeSpec) error {
 	switch s := spec.(type) {
 	case *compile.EnumSpec:
-		g.enum(s)
+		return g.enum(s)
 	case *compile.StructSpec:
-		g.structure(s)
+		return g.structure(s)
 	case *compile.TypedefSpec:
-		g.typedef(s)
+		return g.typedef(s)
 	default:
 		panic(fmt.Sprintf("%q is not a defined type", spec.ThriftName()))
 	}

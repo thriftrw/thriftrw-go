@@ -43,7 +43,9 @@ func main() {
 	// }
 
 	for _, t := range module.Types {
-		g.TypeDefinition(t)
+		if err := g.TypeDefinition(t); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	if err := g.Write(os.Stdout, token.NewFileSet()); err != nil {

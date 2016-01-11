@@ -20,28 +20,13 @@
 
 package gen
 
-import "github.com/uber/thriftrw-go/compile"
+import "fmt"
 
-func (g *Generator) structure(spec *compile.StructSpec) error {
-	err := g.DeclareFromTemplate(
-		`
-		{{ $structName := defName . }}
+type generateError struct {
+	Name   string
+	Reason error
+}
 
-		type {{$structName}} struct {
-		{{ range .Fields }}
-			{{.Name | goCase}} {{ typeReference .Type (not .Required) }}
-		{{ end }}
-		}
-		`,
-		spec,
-	)
-	// TODO(abg): JSON tags for generated structs
-	// TODO(abg): ToWire/FromWire for all fields
-
-	if err != nil {
-		return generateError{Name: spec.Name, Reason: err}
-	}
-	return nil
-
-	// TODO methods
+func (e generateError) Error() string {
+	return fmt.Sprintf("failed to generate code for '%s': %v", e.Name, e.Reason)
 }

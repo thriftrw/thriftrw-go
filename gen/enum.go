@@ -22,7 +22,7 @@ package gen
 
 import "github.com/uber/thriftrw-go/compile"
 
-func (g *Generator) enum(spec *compile.EnumSpec) {
+func (g *Generator) enum(spec *compile.EnumSpec) error {
 	// TODO(abg) define an error type in the library for unrecognized enums.
 	err := g.DeclareFromTemplate(
 		`
@@ -58,6 +58,7 @@ func (g *Generator) enum(spec *compile.EnumSpec) {
 	)
 
 	if err != nil {
-		panic(err)
+		return generateError{Name: spec.Name, Reason: err}
 	}
+	return nil
 }

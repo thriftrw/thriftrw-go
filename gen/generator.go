@@ -98,13 +98,7 @@ func (g *Generator) DeclareFromTemplate(s string, data interface{}) error {
 		return err
 	}
 
-	buff := &bytes.Buffer{}
-
-	// The user template
-	if _, err := buff.WriteString("package thriftrw\n\n"); err != nil {
-		panic("could not write to internal buffer")
-	}
-
+	buff := bytes.NewBufferString("package thriftrw\n\n")
 	if err := tmpl.Execute(buff, data); err != nil {
 		return err
 	}

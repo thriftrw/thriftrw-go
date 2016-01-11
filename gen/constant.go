@@ -23,7 +23,7 @@ package gen
 import "github.com/uber/thriftrw-go/compile"
 
 // Constant TODO
-func (g *Generator) Constant(c *compile.Constant) {
+func (g *Generator) Constant(c *compile.Constant) error {
 	err := g.DeclareFromTemplate(
 		`
 		const {{.Name | goCase}} {{defName .Type}} = {{constantValue .Value}}
@@ -31,8 +31,8 @@ func (g *Generator) Constant(c *compile.Constant) {
 		c,
 	)
 	if err != nil {
-		// TODO better error hanlding
-		panic(err)
+		return generateError{Name: c.Name, Reason: err}
 	}
+	return nil
 	// TODO(abg): Implement constantValue
 }
