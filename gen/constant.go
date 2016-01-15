@@ -26,10 +26,11 @@ import "github.com/uber/thriftrw-go/compile"
 func (g *Generator) Constant(c *compile.Constant) error {
 	err := g.DeclareFromTemplate(
 		`
-		const {{goCase .Name}} {{defName .Type}} = {{constantValue .Value}}
+		const {{goCase .Name}} {{typeReference .Type Required}} = nil // TODO
 		`,
 		c,
 	)
 	// TODO(abg): Implement constantValue
+	// TODO(abg): Complex types will need to use var rather than const
 	return wrapGenerateError(c.Name, err)
 }

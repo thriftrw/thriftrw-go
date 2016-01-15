@@ -24,6 +24,7 @@ import (
 	"go/token"
 	"log"
 	"os"
+	"sort"
 
 	"github.com/uber/thriftrw-go/compile"
 	"github.com/uber/thriftrw-go/gen"
@@ -38,11 +39,27 @@ func main() {
 
 	g := gen.NewGenerator()
 
-	// for _, c := range module.Constants {
-	//  g.Constant(c)
-	// }
+	constantNames := make([]string, 0, len(module.Constants))
+	for name := range module.Constants {
+		constantNames = append(constantNames, name)
+	}
+	sort.Strings(constantNames)
 
-	for _, t := range module.Types {
+	for _, constantName := range constantNames {
+		c := module.Constants[constantName]
+		if err := g.Constant(c); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	typeNames := make([]string, 0, len(module.Types))
+	for name := range module.Types {
+		typeNames = append(typeNames, name)
+	}
+	sort.Strings(typeNames)
+
+	for _, typeName := range typeNames {
+		t := module.Types[typeName]
 		if err := g.TypeDefinition(t); err != nil {
 			log.Fatal(err)
 		}
