@@ -30,6 +30,24 @@ import (
 	"github.com/uber/thriftrw-go/gen"
 )
 
+func constantNames(constants map[string]*compile.Constant) []string {
+	names := make([]string, 0, len(constants))
+	for name := range constants {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
+}
+
+func typeNames(types map[string]compile.TypeSpec) []string {
+	names := make([]string, 0, len(types))
+	for name := range types {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
+}
+
 func main() {
 	file := os.Args[1]
 	module, err := compile.Compile(file)
@@ -39,26 +57,14 @@ func main() {
 
 	g := gen.NewGenerator()
 
-	constantNames := make([]string, 0, len(module.Constants))
-	for name := range module.Constants {
-		constantNames = append(constantNames, name)
-	}
-	sort.Strings(constantNames)
-
-	for _, constantName := range constantNames {
+	for _, constantName := range constantNames(module.Constants) {
 		c := module.Constants[constantName]
 		if err := g.Constant(c); err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	typeNames := make([]string, 0, len(module.Types))
-	for name := range module.Types {
-		typeNames = append(typeNames, name)
-	}
-	sort.Strings(typeNames)
-
-	for _, typeName := range typeNames {
+	for _, typeName := range typeNames(module.Types) {
 		t := module.Types[typeName]
 		if err := g.TypeDefinition(t); err != nil {
 			log.Fatal(err)
