@@ -18,32 +18,22 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package gen
+package wire
 
-import "github.com/uber/thriftrw-go/compile"
+import (
+	"reflect"
+	"unsafe"
+)
 
-// typedef generates code for the given typedef.
-func (g *Generator) typedef(spec *compile.TypedefSpec) error {
-	err := g.DeclareFromTemplate(
-		`
-		<$wire := import "github.com/uber/thriftrw-go/wire">
-
-		type <.Name> <typeReference .Target Required>
-
-		<$v := newName "v">
-		func (<$v> <.Name>) ToWire() <$wire>.Value {
-			return <toWire .Target $v>
-		}
-
-		<$w := newName "w">
-		func (<$v> *<.Name>) FromWire(<$w> <$wire>.Value) error {
-			// TODO: Implement some sort of fromValue template function that
-			// will tell us what to put here.
-			return nil
-		}
-		`,
-		spec,
-	)
-	// TODO(abg): To/FromWire.
-	return wrapGenerateError(spec.Name, err)
+// unsafeStringToBytes converts a string into a byte slice without allocating
+// new memory for it with the assumption that the resulting byte slice will not
+// be mutated.
+func unsafeStringToBytes(s string) []byte {
+	sh := (*reflect.StringHeader)(unsafe.Pointer(&s))
+	sliceHeader := reflect.SliceHeader{
+		Data: sh.Data,
+		Len:  sh.Len,
+		Cap:  sh.Len,
+	}
+	return *(*[]byte)(unsafe.Pointer(&sliceHeader))
 }

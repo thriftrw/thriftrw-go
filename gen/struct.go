@@ -41,7 +41,9 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 				<$wire>.Struct{
 					[]<$wire>.Field{
 					<range .Fields>
-						<$wire>.Field{ID: <.ID>, Value: nil},  // TODO
+						// TODO handle optional fields and nil values
+						<$f := printf "%s.%s" $v (goCase .Name)>
+						{ID: <.ID>, Value: <toWire .Type $f>},
 					<end>
 					},
 				},
