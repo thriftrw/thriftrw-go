@@ -22,6 +22,7 @@ package gen
 
 import (
 	"bytes"
+	"fmt"
 	"go/ast"
 	"go/format"
 	"go/parser"
@@ -33,6 +34,7 @@ import (
 // Generator tracks code generation state as we generate the output.
 type Generator struct {
 	importer
+	*namespace
 
 	decls []ast.Decl
 
@@ -44,7 +46,11 @@ type Generator struct {
 
 // NewGenerator sets up a new generator for Go code.
 func NewGenerator() *Generator {
-	return &Generator{importer: newImporter()}
+	namespace := newNamespace()
+	return &Generator{
+		namespace: namespace,
+		importer:  newImporter(namespace),
+	}
 }
 
 func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
@@ -52,6 +58,7 @@ func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
 		"goCase":  goCase,
 		"import":  g.Import,
 		"defName": typeDeclName,
+		"newName": g.namespace.Child().NewName,
 
 		"typeReference": typeReference,
 		"Required":      func() fieldRequired { return Required },
@@ -63,7 +70,6 @@ func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
 			return Optional
 		},
 	}
-	// TODO(abg): Add functions like "newVar" so that templates don't have to.
 
 	tmpl, err := template.New("thriftrw").Funcs(templateFuncs).Parse(s)
 	if err != nil {
@@ -76,6 +82,49 @@ func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
 	}
 
 	return buff.Bytes(), nil
+}
+
+func (g *Generator) recordGenDeclNames(d *ast.GenDecl) error {
+	switch d.Tok {
+	case token.IMPORT:
+		for _, spec := range d.Specs {
+			if err := g.AddImportSpec(spec.(*ast.ImportSpec)); err != nil {
+				return fmt.Errorf(
+					"could not add explicit import %s: %v", spec, err,
+				)
+			}
+		}
+	case token.CONST:
+		for _, spec := range d.Specs {
+			for _, name := range spec.(*ast.ValueSpec).Names {
+				if err := g.Reserve(name.Name); err != nil {
+					return fmt.Errorf(
+						"could not declare constant %q: %v", name.Name, err,
+					)
+				}
+			}
+		}
+	case token.TYPE:
+		for _, spec := range d.Specs {
+			name := spec.(*ast.TypeSpec).Name.Name
+			if err := g.Reserve(name); err != nil {
+				return fmt.Errorf("could not declare type %q: %v", name, err)
+			}
+		}
+	case token.VAR:
+		for _, spec := range d.Specs {
+			for _, name := range spec.(*ast.ValueSpec).Names {
+				if err := g.Reserve(name.Name); err != nil {
+					return fmt.Errorf(
+						"could not declare var %q: %v", name.Name, err,
+					)
+				}
+			}
+		}
+	default:
+		return fmt.Errorf("unknown declaration: %v", d)
+	}
+	return nil
 }
 
 // DeclareFromTemplate renders a template (in the text/template format) that
@@ -108,6 +157,11 @@ func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
 // 	{{ $fmt := import "fmt" }}
 // 	{{ $fmt }}.Println("hello world")
 //
+// newName(s): Gets a new name that the template can use for a variable without
+// worrying about shadowing any globals. Prefers the given string.
+//
+// 	{{ $x := newName "x" }}
+//
 // defName(TypeSpec): Takes a TypeSpec representing a **user declared type** and
 // returns the name that should be used in the Go code to define that type.
 //
@@ -131,20 +185,22 @@ func (g *Generator) DeclareFromTemplate(s string, data interface{}) error {
 	}
 
 	for _, decl := range f.Decls {
-		d, ok := decl.(*ast.GenDecl)
-		if !ok || d.Tok != token.IMPORT {
-			g.appendDecl(decl)
-			continue
+		switch d := decl.(type) {
+		case *ast.FuncDecl:
+			if d.Recv == nil {
+				// top-level function
+				if err := g.Reserve(d.Name.Name); err != nil {
+					return err
+				}
+			}
+		case *ast.GenDecl:
+			if err := g.recordGenDeclNames(d); err != nil {
+				return err
+			}
+		default:
+			// No special behavior. Move along.
 		}
-
-		imports := d.Specs
-		for _, imp := range imports {
-			// TODO: May have to rewrite imports in the other decls of the
-			// parsed AST if there are collisions here.
-			//
-			// Although we should just use the {{ import }} function instead.
-			g.addImportSpec(imp.(*ast.ImportSpec))
-		}
+		g.appendDecl(decl)
 	}
 
 	return nil
