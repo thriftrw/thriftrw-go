@@ -44,8 +44,9 @@ func (n *namespace) isTaken(name string) bool {
 	return false
 }
 
-// New generates a new name based no the given name.
+// New generates a new name based on the given name.
 func (n *namespace) NewName(base string) string {
+	// TODO(abg): Avoid clashing with Go keywords.
 	name := base
 	for i := 2; n.isTaken(name); i++ {
 		name = fmt.Sprintf("%s%d", base, i)
