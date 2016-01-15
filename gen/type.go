@@ -128,7 +128,7 @@ func typeDeclName(spec compile.TypeSpec) string {
 		return goCase(spec.ThriftName())
 	default:
 		panic(fmt.Sprintf(
-			"Type %q doesn't can't have a declaration name", spec.ThriftName(),
+			"Type %q can't have a declaration name", spec.ThriftName(),
 		))
 	}
 }
