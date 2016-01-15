@@ -38,18 +38,20 @@ func (g *Generator) enum(spec *compile.EnumSpec) error {
 		{{ end }}
 		)
 
-		func (v {{$enumName}}) ToWire() {{$wire}}.Value {
-			return {{$wire}}.NewI32Value(int32(v))
+		{{ $v := newName "v" }}
+		func ({{$v}} {{$enumName}}) ToWire() {{$wire}}.Value {
+			return {{$wire}}.NewI32Value(int32({{$v}}))
 		}
 
-		func (v *{{$enumName}}) FromWire(w {{$wire}}.Value) error {
-			switch w.GetI32() {
+		{{ $w := newName "w" }}
+		func ({{$v}} *{{$enumName}}) FromWire({{$w}} {{$wire}}.Value) error {
+			switch {{$w}}.GetI32() {
 			{{ range .Items }}
 			case {{.Value}}:
-				*v = {{$enumName}}{{goCase .Name}}
+				*{{$v}} = {{$enumName}}{{goCase .Name}}
 			{{ end }}
 			default:
-				return {{$fmt}}.Errorf("Unknown {{$enumName}}: %d", w.GetI32())
+				return {{$fmt}}.Errorf("Unknown {{$enumName}}: %d", {{$w}}.GetI32())
 			}
 			return nil
 		}
