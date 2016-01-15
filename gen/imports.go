@@ -21,7 +21,6 @@
 package gen
 
 import (
-	"fmt"
 	"go/ast"
 	"go/token"
 	"path/filepath"
@@ -30,30 +29,34 @@ import (
 // importer is responsible for managing imports for the code generator and
 // ensuring that we don't end up with naming conflicts in imports.
 type importer struct {
-	usedNames map[string]struct{}
-	imports   map[string]*ast.ImportSpec
+	ns      *namespace
+	imports map[string]*ast.ImportSpec
 }
 
 // newImporter builds a new importer.
-func newImporter() importer {
+func newImporter(ns *namespace) importer {
 	return importer{
-		usedNames: make(map[string]struct{}),
-		imports:   make(map[string]*ast.ImportSpec),
+		ns:      ns,
+		imports: make(map[string]*ast.ImportSpec),
 	}
 }
 
-// addImportSpec adds an ImportSpec to the importer.
+// AddImportSpec allows adding existing import specs to the importer.
 //
-// No conflict resolution is performed.
-func (i importer) addImportSpec(spec *ast.ImportSpec) {
+// An error is returned if there's a naming conflict.
+func (i importer) AddImportSpec(spec *ast.ImportSpec) error {
 	path := spec.Path.Value
 	name := filepath.Base(path)
 	if spec.Name != nil {
 		name = spec.Name.Name
 	}
 
-	i.usedNames[name] = struct{}{}
+	if err := i.ns.Reserve(name); err != nil {
+		return err
+	}
+
 	i.imports[path] = spec
+	return nil
 }
 
 // Import ensures that the generated module has the given module imported and
@@ -67,24 +70,15 @@ func (i importer) Import(path string) string {
 		return filepath.Base(path)
 	}
 
+	// Find a name, preferring the base name
 	baseName := filepath.Base(path)
-	name := baseName
-
-	// If there's a name collision, use the format _$baseName$counter to find
-	// a non-conflicting name.
-	if _, conflict := i.usedNames[name]; conflict {
-		for counter := 0; conflict; counter++ {
-			name = fmt.Sprintf("_%s%d", baseName, counter)
-			_, conflict = i.usedNames[name]
-		}
-	}
-
+	name := i.ns.NewName(baseName)
 	astImport := &ast.ImportSpec{Path: stringLiteral(path)}
 	if name != baseName {
 		astImport.Name = ast.NewIdent(name)
 	}
-	i.addImportSpec(astImport)
 
+	i.imports[path] = astImport
 	return name
 }
 
