@@ -178,6 +178,11 @@ func (v *Value) GetBinary() []byte {
 	return v.tbinary
 }
 
+// GetString gets a string value from a Value.
+func (v *Value) GetString() string {
+	return unsafeBytesToString(v.tbinary)
+}
+
 // NewValueStruct constructs a new Value that contains a struct.
 func NewValueStruct(v Struct) Value {
 	return Value{

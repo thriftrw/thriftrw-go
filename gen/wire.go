@@ -47,7 +47,7 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 	case compile.BinarySpec:
 		return fmt.Sprintf("%s.NewValueBinary(%s)", wire, varName), nil
 	default:
-		// Not a primitive type. Try checking if it's a container.
+		// Not a primitive type. It's probably a container or a custom type.
 	}
 
 	switch spec.(type) {
@@ -94,5 +94,40 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 	default:
 		// Custom defined type
 		return fmt.Sprintf("%s.ToWire()", varName), nil
+	}
+}
+
+func (g *Generator) fromWire(spec compile.TypeSpec, target string, value string) (string, error) {
+	switch spec {
+	case compile.BoolSpec:
+		return fmt.Sprintf("%s = %s.GetBool()", target, value), nil
+	case compile.I8Spec:
+		return fmt.Sprintf("%s = %s.GetI8()", target, value), nil
+	case compile.I16Spec:
+		return fmt.Sprintf("%s = %s.GetI16()", target, value), nil
+	case compile.I32Spec:
+		return fmt.Sprintf("%s = %s.GetI32()", target, value), nil
+	case compile.I64Spec:
+		return fmt.Sprintf("%s = %s.GetI64()", target, value), nil
+	case compile.DoubleSpec:
+		return fmt.Sprintf("%s = %s.GetDouble()", target, value), nil
+	case compile.StringSpec:
+		return fmt.Sprintf("%s = %s.GetString()", target, value), nil
+	case compile.BinarySpec:
+		return fmt.Sprintf("%s = %s.GetBinary()", target, value), nil
+	default:
+		// Not a primitive type. It's probably a container or a custom type.
+	}
+
+	switch spec.(type) {
+	case *compile.MapSpec:
+		return fmt.Sprintf("%s = %s.GetList().TODO()", target, value), nil
+	case *compile.ListSpec:
+		return fmt.Sprintf("%s = %s.GetMap().TODO()", target, value), nil
+	case *compile.SetSpec:
+		return fmt.Sprintf("%s = %s.GetSet().TODO()", target, value), nil
+	default:
+		// TODO read errors
+		return fmt.Sprintf("%s.FromWire(%s)", target, value), nil
 	}
 }

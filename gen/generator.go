@@ -56,11 +56,12 @@ func NewGenerator() *Generator {
 // TextTemplate renders the given template with the given template context.
 func (g *Generator) TextTemplate(s string, data interface{}) (string, error) {
 	templateFuncs := template.FuncMap{
-		"goCase":  goCase,
-		"import":  g.Import,
-		"defName": typeDeclName,
-		"newName": g.namespace.Child().NewName,
-		"toWire":  g.toWire,
+		"goCase":   goCase,
+		"import":   g.Import,
+		"defName":  typeDeclName,
+		"newName":  g.namespace.Child().NewName,
+		"toWire":   g.toWire,
+		"fromWire": g.fromWire,
 
 		"typeReference": typeReference,
 		"Required":      func() fieldRequired { return Required },

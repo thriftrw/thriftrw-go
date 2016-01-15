@@ -28,6 +28,7 @@ func (g *Generator) typedef(spec *compile.TypedefSpec) error {
 		`
 		<$wire := import "github.com/uber/thriftrw-go/wire">
 
+		// TODO add * to ToWire if target is not a reference type
 		type <.Name> <typeReference .Target Required>
 
 		<$v := newName "v">

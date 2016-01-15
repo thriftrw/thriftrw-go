@@ -36,7 +36,7 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 
 
 		<$v := newName "v">
-		func (<$v> <$structName>) ToWire() <$wire>.Value {
+		func (<$v> *<$structName>) ToWire() <$wire>.Value {
 			return <$wire>.NewValueStruct(
 				<$wire>.Struct{
 					[]<$wire>.Field{
@@ -58,7 +58,9 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 				<range .Fields>
 				case <.ID>:
 					if <$f>.Value.Type() == nil { // TODO
-						<$v>.<goCase .Name> = nil // TODO
+						<$t := printf "%s.%s" $v (goCase .Name)>
+						<fromWire .Type $t (printf "%s.Value" $f)>
+						// TODO read errors
 					}
 				<end>
 				}

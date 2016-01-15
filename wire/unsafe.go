@@ -37,3 +37,10 @@ func unsafeStringToBytes(s string) []byte {
 	}
 	return *(*[]byte)(unsafe.Pointer(&sliceHeader))
 }
+
+// unsafeBytesToString converts a byte slice into a string without allocating
+// new memory with the assumption that the source byte slice will not be mutated
+// after this.
+func unsafeBytesToString(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
+}
