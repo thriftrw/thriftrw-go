@@ -25,40 +25,40 @@ import "github.com/uber/thriftrw-go/compile"
 func (g *Generator) structure(spec *compile.StructSpec) error {
 	err := g.DeclareFromTemplate(
 		`
-		{{ $wire := import "github.com/uber/thriftrw-go/wire" }}
-		{{ $structName := defName . }}
+		<$wire := import "github.com/uber/thriftrw-go/wire">
+		<$structName := defName .>
 
-		type {{$structName}} struct {
-		{{ range .Fields }}
-			{{goCase .Name}} {{typeReference .Type (required .Required)}}
-		{{ end }}
+		type <$structName> struct {
+		<range .Fields>
+			<goCase .Name> <typeReference .Type (required .Required)>
+		<end>
 		}
 
 
-		{{ $v := newName "v" }}
-		func ({{$v}} {{$structName}}) ToWire() {{$wire}}.Value {
-			return {{$wire}}.NewValueStruct(
-				{{$wire}}.Struct{
-					[]{{$wire}}.Field{
-					{{ range .Fields }}
-						{{$wire}}.Field{ID: {{.ID}}, Value: nil},  // TODO
-					{{ end }}
+		<$v := newName "v">
+		func (<$v> <$structName>) ToWire() <$wire>.Value {
+			return <$wire>.NewValueStruct(
+				<$wire>.Struct{
+					[]<$wire>.Field{
+					<range .Fields>
+						<$wire>.Field{ID: <.ID>, Value: nil},  // TODO
+					<end>
 					},
 				},
 			)
 		}
 
-		{{ $w := newName "w" }}
-		func ({{$v}} *{{$structName}}) FromWire({{$w}} {{$wire}}.Value) error {
-			{{ $f := newName "f" }}
-			for _, {{$f}} := range {{$w}}.GetStruct().Fields {
-				switch {{$f}}.ID {
-				{{ range .Fields }}
-				case {{.ID}}:
-					if {{$f}}.Value.Type() == nil { // TODO
-						{{$v}}.{{goCase .Name}} = nil // TODO
+		<$w := newName "w">
+		func (<$v> *<$structName>) FromWire(<$w> <$wire>.Value) error {
+			<$f := newName "f">
+			for _, <$f> := range <$w>.GetStruct().Fields {
+				switch <$f>.ID {
+				<range .Fields>
+				case <.ID>:
+					if <$f>.Value.Type() == nil { // TODO
+						<$v>.<goCase .Name> = nil // TODO
 					}
-				{{ end }}
+				<end>
 				}
 			}
 		}

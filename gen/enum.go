@@ -26,32 +26,32 @@ func (g *Generator) enum(spec *compile.EnumSpec) error {
 	// TODO(abg) define an error type in the library for unrecognized enums.
 	err := g.DeclareFromTemplate(
 		`
-		{{ $fmt := import "fmt" }}
-		{{ $wire := import "github.com/uber/thriftrw-go/wire" }}
+		<$fmt := import "fmt">
+		<$wire := import "github.com/uber/thriftrw-go/wire">
 
-		{{ $enumName := defName . }}
-		type {{$enumName}} int32
+		<$enumName := defName .>
+		type <$enumName> int32
 
 		const (
-		{{ range .Items }}
-			{{$enumName}}{{goCase .Name}} {{$enumName}} = {{.Value}}
-		{{ end }}
+		<range .Items>
+			<$enumName><goCase .Name> <$enumName> = <.Value>
+		<end>
 		)
 
-		{{ $v := newName "v" }}
-		func ({{$v}} {{$enumName}}) ToWire() {{$wire}}.Value {
-			return {{$wire}}.NewI32Value(int32({{$v}}))
+		<$v := newName "v">
+		func (<$v> <$enumName>) ToWire() <$wire>.Value {
+			return <$wire>.NewI32Value(int32(<$v>))
 		}
 
-		{{ $w := newName "w" }}
-		func ({{$v}} *{{$enumName}}) FromWire({{$w}} {{$wire}}.Value) error {
-			switch {{$w}}.GetI32() {
-			{{ range .Items }}
-			case {{.Value}}:
-				*{{$v}} = {{$enumName}}{{goCase .Name}}
-			{{ end }}
+		<$w := newName "w">
+		func (<$v> *<$enumName>) FromWire(<$w> <$wire>.Value) error {
+			switch <$w>.GetI32() {
+			<range .Items>
+			case <.Value>:
+				*<$v> = <$enumName><goCase .Name>
+			<end>
 			default:
-				return {{$fmt}}.Errorf("Unknown {{$enumName}}: %d", {{$w}}.GetI32())
+				return <$fmt>.Errorf("Unknown <$enumName>: %d", <$w>.GetI32())
 			}
 			return nil
 		}

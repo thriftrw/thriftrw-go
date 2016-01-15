@@ -26,19 +26,19 @@ import "github.com/uber/thriftrw-go/compile"
 func (g *Generator) typedef(spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
-		{{ $wire := import "github.com/uber/thriftrw-go/wire" }}
+		<$wire := import "github.com/uber/thriftrw-go/wire">
 
-		type {{.Name}} {{typeReference .Target Required}}
+		type <.Name> <typeReference .Target Required>
 
-		{{ $v := newName "v" }}
-		func ({{$v}} {{.Name}}) ToWire() {{$wire}}.Value {
+		<$v := newName "v">
+		func (<$v> <.Name>) ToWire() <$wire>.Value {
 			// TODO: Implement some sort of toValue template function that will
 			// tell us what to put here.
-			return {{$wire}}.Value{}
+			return <$wire>.Value{}
 		}
 
-		{{ $w := newName "w" }}
-		func ({{$v}} *{{.Name}}) FromWire({{$w}} {{$wire}}.Value) error {
+		<$w := newName "w">
+		func (<$v> *<.Name>) FromWire(<$w> <$wire>.Value) error {
 			// TODO: Implement some sort of fromValue template function that
 			// will tell us what to put here.
 			return nil

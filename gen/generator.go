@@ -71,7 +71,8 @@ func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
 		},
 	}
 
-	tmpl, err := template.New("thriftrw").Funcs(templateFuncs).Parse(s)
+	tmpl, err := template.New("thriftrw").
+		Delims("<", ">").Funcs(templateFuncs).Parse(s)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +137,7 @@ func (g *Generator) recordGenDeclNames(d *ast.GenDecl) error {
 // For example,
 //
 // 	g.DeclareFromTemplate(
-// 		'type {{ .Name }} int32',
+// 		'type <.Name> int32',
 // 		struct{Name string}{Name: "myType"}
 // 	)
 //
@@ -154,13 +155,13 @@ func (g *Generator) recordGenDeclNames(d *ast.GenDecl) error {
 // template to refer to that imported module. This helps avoid naming conflicts
 // with imports.
 //
-// 	{{ $fmt := import "fmt" }}
-// 	{{ $fmt }}.Println("hello world")
+// 	<$fmt := import "fmt">
+// 	<$fmt>.Println("hello world")
 //
 // newName(s): Gets a new name that the template can use for a variable without
 // worrying about shadowing any globals. Prefers the given string.
 //
-// 	{{ $x := newName "x" }}
+// 	<$x := newName "x">
 //
 // defName(TypeSpec): Takes a TypeSpec representing a **user declared type** and
 // returns the name that should be used in the Go code to define that type.
@@ -172,7 +173,7 @@ func (g *Generator) recordGenDeclNames(d *ast.GenDecl) error {
 // Returns a string representing a reference to that type, wrapped in a pointer
 // if the value was optional.
 //
-// 	{{ typeReference $someType Required }}
+// 	<typeReference $someType Required>
 func (g *Generator) DeclareFromTemplate(s string, data interface{}) error {
 	bs, err := g.renderTemplate(s, data)
 	if err != nil {
