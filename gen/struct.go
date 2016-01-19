@@ -57,7 +57,7 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 				switch <$f>.ID {
 				<range .Fields>
 				case <.ID>:
-					if <$f>.Value.Type() == nil { // TODO
+					if <$f>.Value.Type() == <typeCode .Type> {
 						<$t := printf "%s.%s" $v (goCase .Name)>
 						<fromWire .Type $t (printf "%s.Value" $f)>
 						// TODO read errors
