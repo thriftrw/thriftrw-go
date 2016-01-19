@@ -53,46 +53,63 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 	switch s := spec.(type) {
 	case *compile.MapSpec:
 		// TODO unhashable types
-		// TODO generate MapItemList alias if necessary
+		mapItemList, err := g.mapItemList(s)
+		if err != nil {
+			return "", err
+		}
+
 		return g.TextTemplate(
 			`<.Wire>.NewValueMap(<.Wire>.Map{
 				KeyType: <typeCode .Spec.KeySpec>,
 				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
-				Items: TODO(<.Name>),
+				Items: <.MapItemList>(<.Name>),
 			})`,
 			struct {
-				Wire string
-				Name string
-				Spec *compile.MapSpec
-			}{Wire: wire, Name: varName, Spec: s},
+				Wire        string
+				Name        string
+				Spec        *compile.MapSpec
+				MapItemList string
+			}{Wire: wire, Name: varName, Spec: s, MapItemList: mapItemList},
 		)
 	case *compile.ListSpec:
+		valueList, err := g.listValueList(s)
+		if err != nil {
+			return "", err
+		}
+
 		return g.TextTemplate(
 			`<.Wire>.NewValueList(<.Wire>.List{
 				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
-				Items: TODO(<.Name>),
+				Items: <.ValueList>(<.Name>),
 			})`,
 			struct {
-				Wire string
-				Name string
-				Spec *compile.ListSpec
-			}{Wire: wire, Name: varName, Spec: s},
+				Wire      string
+				Name      string
+				Spec      *compile.ListSpec
+				ValueList string
+			}{Wire: wire, Name: varName, Spec: s, ValueList: valueList},
 		)
 	case *compile.SetSpec:
+		valueList, err := g.setValueList(s)
+		if err != nil {
+			return "", err
+		}
+
 		// TODO unhashable types
 		return g.TextTemplate(
 			`<.Wire>.NewValueSet(<.Wire>.Set{
 				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
-				Items: TODO(<.Name>),
+				Items: <.ValueList>(<.Name>),
 			})`,
 			struct {
-				Wire string
-				Name string
-				Spec *compile.SetSpec
-			}{Wire: wire, Name: varName, Spec: s},
+				Wire      string
+				Name      string
+				Spec      *compile.SetSpec
+				ValueList string
+			}{Wire: wire, Name: varName, Spec: s, ValueList: valueList},
 		)
 	default:
 		// Custom defined type
