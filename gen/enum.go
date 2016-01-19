@@ -38,12 +38,12 @@ func (g *Generator) enum(spec *compile.EnumSpec) error {
 		<end>
 		)
 
-		<$v := newName "v">
+		<$v := newVar "v">
 		func (<$v> <$enumName>) ToWire() <$wire>.Value {
 			return <$wire>.NewI32Value(int32(<$v>))
 		}
 
-		<$w := newName "w">
+		<$w := newVar "w">
 		func (<$v> *<$enumName>) FromWire(<$w> <$wire>.Value) error {
 			switch <$w>.GetI32() {
 			<range .Items>

@@ -59,7 +59,7 @@ func (g *Generator) TextTemplate(s string, data interface{}) (string, error) {
 		"goCase":   goCase,
 		"import":   g.Import,
 		"defName":  typeDeclName,
-		"newName":  g.namespace.Child().NewName,
+		"newVar":   g.namespace.Child().NewName,
 		"toWire":   g.toWire,
 		"fromWire": g.fromWire,
 
@@ -175,10 +175,10 @@ func (g *Generator) recordGenDeclNames(d *ast.GenDecl) error {
 // 	<$fmt := import "fmt">
 // 	<$fmt>.Println("hello world")
 //
-// newName(s): Gets a new name that the template can use for a variable without
+// newVar(s): Gets a new name that the template can use for a variable without
 // worrying about shadowing any globals. Prefers the given string.
 //
-// 	<$x := newName "x">
+// 	<$x := newVar "x">
 //
 // defName(TypeSpec): Takes a TypeSpec representing a **user declared type** and
 // returns the name that should be used in the Go code to define that type.

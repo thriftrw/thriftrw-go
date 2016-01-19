@@ -35,7 +35,7 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 		}
 
 
-		<$v := newName "v">
+		<$v := newVar "v">
 		func (<$v> *<$structName>) ToWire() <$wire>.Value {
 			return <$wire>.NewValueStruct(
 				<$wire>.Struct{
@@ -50,9 +50,9 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 			)
 		}
 
-		<$w := newName "w">
+		<$w := newVar "w">
 		func (<$v> *<$structName>) FromWire(<$w> <$wire>.Value) error {
-			<$f := newName "f">
+			<$f := newVar "f">
 			for _, <$f> := range <$w>.GetStruct().Fields {
 				switch <$f>.ID {
 				<range .Fields>

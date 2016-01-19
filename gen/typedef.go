@@ -31,12 +31,12 @@ func (g *Generator) typedef(spec *compile.TypedefSpec) error {
 		// TODO add * to ToWire if target is not a reference type
 		type <.Name> <typeReference .Target Required>
 
-		<$v := newName "v">
+		<$v := newVar "v">
 		func (<$v> <.Name>) ToWire() <$wire>.Value {
 			return <toWire .Target $v>
 		}
 
-		<$w := newName "w">
+		<$w := newVar "w">
 		func (<$v> *<.Name>) FromWire(<$w> <$wire>.Value) error {
 			// TODO: Implement some sort of fromValue template function that
 			// will tell us what to put here.
