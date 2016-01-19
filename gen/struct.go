@@ -36,17 +36,27 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 
 
 		<$v := newVar "v">
+		<$i := newVar "i">
+		<$fields := newVar "fs">
 		func (<$v> *<$structName>) ToWire() <$wire>.Value {
+			var <$fields> [<len .Fields>]<$wire>.Field
+			<$i> := 0
+
+			<range .Fields>
+				<$f := printf "%s.%s" $v (goCase .Name)>
+				<if .Required>
+					<$fields>[<$i>] = <toWire .Type $f>
+					<$i>++
+				<else>
+					if <$f> != nil {
+						<$fields>[<$i>] = <toWire .Type $f>
+						<$i>++
+					}
+				<end>
+			<end>
+
 			return <$wire>.NewValueStruct(
-				<$wire>.Struct{
-					[]<$wire>.Field{
-					<range .Fields>
-						// TODO handle optional fields and nil values
-						<$f := printf "%s.%s" $v (goCase .Name)>
-						{ID: <.ID>, Value: <toWire .Type $f>},
-					<end>
-					},
-				},
+				<$wire>.Struct{Fields: <$fields>[:<$i>]},
 			)
 		}
 
@@ -65,13 +75,15 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 				<end>
 				}
 			}
+
+			// TODO(abg): Check that all required fields were set.
 		}
+
+		// TODO(abg): Generate Error() if exception.
 		`,
 		spec,
 	)
 	// TODO(abg): JSON tags for generated structs
-	// TODO(abg): ToWire/FromWire for all fields
 
 	return wrapGenerateError(spec.Name, err)
-	// TODO methods
 }
