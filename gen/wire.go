@@ -50,46 +50,49 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 		// Not a primitive type. It's probably a container or a custom type.
 	}
 
-	switch spec.(type) {
+	switch s := spec.(type) {
 	case *compile.MapSpec:
 		// TODO unhashable types
 		// TODO generate MapItemList alias if necessary
 		return g.TextTemplate(
 			`<.Wire>.NewValueMap(<.Wire>.Map{
-				KeyType: TODO,
-				ValueType: TODO,
+				KeyType: <typeCode .Spec.KeySpec>,
+				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
 				Items: TODO(<.Name>),
 			})`,
 			struct {
 				Wire string
 				Name string
-			}{Wire: wire, Name: varName},
+				Spec *compile.MapSpec
+			}{Wire: wire, Name: varName, Spec: s},
 		)
 	case *compile.ListSpec:
 		return g.TextTemplate(
 			`<.Wire>.NewValueList(<.Wire>.List{
-				ValueType: TODO,
+				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
 				Items: TODO(<.Name>),
 			})`,
 			struct {
 				Wire string
 				Name string
-			}{Wire: wire, Name: varName},
+				Spec *compile.ListSpec
+			}{Wire: wire, Name: varName, Spec: s},
 		)
 	case *compile.SetSpec:
 		// TODO unhashable types
 		return g.TextTemplate(
 			`<.Wire>.NewValueSet(<.Wire>.Set{
-				ValueType: TODO,
+				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
 				Items: TODO(<.Name>),
 			})`,
 			struct {
 				Wire string
 				Name string
-			}{Wire: wire, Name: varName},
+				Spec *compile.SetSpec
+			}{Wire: wire, Name: varName, Spec: s},
 		)
 	default:
 		// Custom defined type
@@ -129,5 +132,47 @@ func (g *Generator) fromWire(spec compile.TypeSpec, target string, value string)
 	default:
 		// TODO read errors
 		return fmt.Sprintf("%s.FromWire(%s)", target, value), nil
+	}
+}
+
+// typeCode gets a value of type 'wire.Type' that represents the over-the-wire
+// type code for the given TypeSpec.
+func (g *Generator) typeCode(spec compile.TypeSpec) string {
+	wire := g.Import("github.com/uber/thriftrw-go/wire")
+
+	switch spec {
+	case compile.BoolSpec:
+		return fmt.Sprintf("%s.TBool", wire)
+	case compile.I8Spec:
+		return fmt.Sprintf("%s.TI8", wire)
+	case compile.I16Spec:
+		return fmt.Sprintf("%s.TI16", wire)
+	case compile.I32Spec:
+		return fmt.Sprintf("%s.TI32", wire)
+	case compile.I64Spec:
+		return fmt.Sprintf("%s.TI64", wire)
+	case compile.DoubleSpec:
+		return fmt.Sprintf("%s.TDouble", wire)
+	case compile.StringSpec, compile.BinarySpec:
+		return fmt.Sprintf("%s.TBinary", wire)
+	default:
+		// Not a primitive type
+	}
+
+	switch s := spec.(type) {
+	case *compile.MapSpec:
+		return fmt.Sprintf("%s.TMap", wire)
+	case *compile.ListSpec:
+		return fmt.Sprintf("%s.TList", wire)
+	case *compile.SetSpec:
+		return fmt.Sprintf("%s.TSet", wire)
+	case *compile.TypedefSpec:
+		return g.typeCode(s.Target)
+	case *compile.EnumSpec:
+		return fmt.Sprintf("%s.TI32", wire)
+	case *compile.StructSpec:
+		return fmt.Sprintf("%s.TStruct", wire)
+	default:
+		panic(fmt.Sprintf("unknown type spec %v (type %T)", spec, spec))
 	}
 }

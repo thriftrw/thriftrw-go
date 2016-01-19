@@ -56,16 +56,17 @@ func NewGenerator() *Generator {
 // TextTemplate renders the given template with the given template context.
 func (g *Generator) TextTemplate(s string, data interface{}) (string, error) {
 	templateFuncs := template.FuncMap{
-		"goCase":   goCase,
-		"import":   g.Import,
-		"defName":  typeDeclName,
-		"newVar":   g.namespace.Child().NewName,
-		"toWire":   g.toWire,
-		"fromWire": g.fromWire,
-
+		"goCase":        goCase,
+		"import":        g.Import,
+		"defName":       typeDeclName,
+		"newVar":        g.namespace.Child().NewName,
+		"toWire":        g.toWire,
+		"fromWire":      g.fromWire,
+		"typeCode":      g.typeCode,
 		"typeReference": typeReference,
-		"Required":      func() fieldRequired { return Required },
-		"Optional":      func() fieldRequired { return Optional },
+
+		"Required": func() fieldRequired { return Required },
+		"Optional": func() fieldRequired { return Optional },
 		"required": func(b bool) fieldRequired {
 			if b {
 				return Required
@@ -191,6 +192,9 @@ func (g *Generator) recordGenDeclNames(d *ast.GenDecl) error {
 // if the value was optional.
 //
 // 	<typeReference $someType Required>
+//
+// typeCode(TypeSpec): Gets the wire.Type for the given TypeSpec, importing
+// the wire module if necessary.
 func (g *Generator) DeclareFromTemplate(s string, data interface{}) error {
 	bs, err := g.renderTemplate(s, data)
 	if err != nil {
