@@ -18,46 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package gen
+package wire
 
-import "github.com/uber/thriftrw-go/compile"
+import (
+	"reflect"
+	"unsafe"
+)
 
-func (g *Generator) enum(spec *compile.EnumSpec) error {
-	// TODO(abg) define an error type in the library for unrecognized enums.
-	err := g.DeclareFromTemplate(
-		`
-		<$fmt := import "fmt">
-		<$wire := import "github.com/uber/thriftrw-go/wire">
+// unsafeStringToBytes converts a string into a byte slice without allocating
+// new memory for it with the assumption that the resulting byte slice will not
+// be mutated.
+func unsafeStringToBytes(s string) []byte {
+	sh := (*reflect.StringHeader)(unsafe.Pointer(&s))
+	sliceHeader := reflect.SliceHeader{
+		Data: sh.Data,
+		Len:  sh.Len,
+		Cap:  sh.Len,
+	}
+	return *(*[]byte)(unsafe.Pointer(&sliceHeader))
+}
 
-		<$enumName := defName .>
-		type <$enumName> int32
-
-		const (
-		<range .Items>
-			<$enumName><goCase .Name> <$enumName> = <.Value>
-		<end>
-		)
-
-		<$v := newVar "v">
-		func (<$v> <$enumName>) ToWire() <$wire>.Value {
-			return <$wire>.NewI32Value(int32(<$v>))
-		}
-
-		<$w := newVar "w">
-		func (<$v> *<$enumName>) FromWire(<$w> <$wire>.Value) error {
-			switch <$w>.GetI32() {
-			<range .Items>
-			case <.Value>:
-				*<$v> = <$enumName><goCase .Name>
-			<end>
-			default:
-				return <$fmt>.Errorf("Unknown <$enumName>: %d", <$w>.GetI32())
-			}
-			return nil
-		}
-		`,
-		spec,
-	)
-
-	return wrapGenerateError(spec.Name, err)
+// unsafeBytesToString converts a byte slice into a string without allocating
+// new memory with the assumption that the source byte slice will not be mutated
+// after this.
+func unsafeBytesToString(b []byte) string {
+	return *(*string)(unsafe.Pointer(&b))
 }

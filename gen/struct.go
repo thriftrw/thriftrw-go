@@ -35,28 +35,32 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 		}
 
 
-		<$v := newName "v">
-		func (<$v> <$structName>) ToWire() <$wire>.Value {
+		<$v := newVar "v">
+		func (<$v> *<$structName>) ToWire() <$wire>.Value {
 			return <$wire>.NewValueStruct(
 				<$wire>.Struct{
 					[]<$wire>.Field{
 					<range .Fields>
-						<$wire>.Field{ID: <.ID>, Value: nil},  // TODO
+						// TODO handle optional fields and nil values
+						<$f := printf "%s.%s" $v (goCase .Name)>
+						{ID: <.ID>, Value: <toWire .Type $f>},
 					<end>
 					},
 				},
 			)
 		}
 
-		<$w := newName "w">
+		<$w := newVar "w">
 		func (<$v> *<$structName>) FromWire(<$w> <$wire>.Value) error {
-			<$f := newName "f">
+			<$f := newVar "f">
 			for _, <$f> := range <$w>.GetStruct().Fields {
 				switch <$f>.ID {
 				<range .Fields>
 				case <.ID>:
 					if <$f>.Value.Type() == nil { // TODO
-						<$v>.<goCase .Name> = nil // TODO
+						<$t := printf "%s.%s" $v (goCase .Name)>
+						<fromWire .Type $t (printf "%s.Value" $f)>
+						// TODO read errors
 					}
 				<end>
 				}

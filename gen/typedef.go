@@ -28,16 +28,15 @@ func (g *Generator) typedef(spec *compile.TypedefSpec) error {
 		`
 		<$wire := import "github.com/uber/thriftrw-go/wire">
 
+		// TODO add * to ToWire if target is not a reference type
 		type <.Name> <typeReference .Target Required>
 
-		<$v := newName "v">
+		<$v := newVar "v">
 		func (<$v> <.Name>) ToWire() <$wire>.Value {
-			// TODO: Implement some sort of toValue template function that will
-			// tell us what to put here.
-			return <$wire>.Value{}
+			return <toWire .Target $v>
 		}
 
-		<$w := newName "w">
+		<$w := newVar "w">
 		func (<$v> *<.Name>) FromWire(<$w> <$wire>.Value) error {
 			// TODO: Implement some sort of fromValue template function that
 			// will tell us what to put here.

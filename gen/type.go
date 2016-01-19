@@ -58,7 +58,10 @@ func isReferenceType(spec compile.TypeSpec) bool {
 	}
 
 	switch spec.(type) {
-	case *compile.MapSpec, *compile.ListSpec, *compile.SetSpec:
+	case *compile.MapSpec,
+		*compile.ListSpec,
+		*compile.SetSpec,
+		*compile.StructSpec:
 		return true
 	default:
 		return false
@@ -113,6 +116,8 @@ func typeReference(spec compile.TypeSpec, req fieldRequired) (result string) {
 	case *compile.SetSpec:
 		// TODO unhashable types
 		return fmt.Sprintf("map[%s]struct{}", typeReference(s.ValueSpec, Required))
+	case *compile.StructSpec:
+		return "*" + typeDeclName(spec)
 	default:
 		// Custom defined type. The reference is just the name of the type then.
 		return typeDeclName(spec)

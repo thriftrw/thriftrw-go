@@ -53,12 +53,15 @@ func NewGenerator() *Generator {
 	}
 }
 
-func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
+// TextTemplate renders the given template with the given template context.
+func (g *Generator) TextTemplate(s string, data interface{}) (string, error) {
 	templateFuncs := template.FuncMap{
-		"goCase":  goCase,
-		"import":  g.Import,
-		"defName": typeDeclName,
-		"newName": g.namespace.Child().NewName,
+		"goCase":   goCase,
+		"import":   g.Import,
+		"defName":  typeDeclName,
+		"newVar":   g.namespace.Child().NewName,
+		"toWire":   g.toWire,
+		"fromWire": g.fromWire,
 
 		"typeReference": typeReference,
 		"Required":      func() fieldRequired { return Required },
@@ -74,11 +77,25 @@ func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
 	tmpl, err := template.New("thriftrw").
 		Delims("<", ">").Funcs(templateFuncs).Parse(s)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
+	buff := bytes.Buffer{}
+	if err := tmpl.Execute(&buff, data); err != nil {
+		return "", err
+	}
+
+	return buff.String(), nil
+
+}
+
+func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
 	buff := bytes.NewBufferString("package thriftrw\n\n")
-	if err := tmpl.Execute(buff, data); err != nil {
+	out, err := g.TextTemplate(s, data)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := buff.WriteString(out); err != nil {
 		return nil, err
 	}
 
@@ -158,10 +175,10 @@ func (g *Generator) recordGenDeclNames(d *ast.GenDecl) error {
 // 	<$fmt := import "fmt">
 // 	<$fmt>.Println("hello world")
 //
-// newName(s): Gets a new name that the template can use for a variable without
+// newVar(s): Gets a new name that the template can use for a variable without
 // worrying about shadowing any globals. Prefers the given string.
 //
-// 	<$x := newName "x">
+// 	<$x := newVar "x">
 //
 // defName(TypeSpec): Takes a TypeSpec representing a **user declared type** and
 // returns the name that should be used in the Go code to define that type.
@@ -182,7 +199,7 @@ func (g *Generator) DeclareFromTemplate(s string, data interface{}) error {
 
 	f, err := parser.ParseFile(token.NewFileSet(), "thriftrw.go", bs, 0)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not parse generated code: %v:\n%s", err, bs)
 	}
 
 	for _, decl := range f.Decls {

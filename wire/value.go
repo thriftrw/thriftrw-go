@@ -165,9 +165,22 @@ func NewValueBinary(v []byte) Value {
 	}
 }
 
+// NewValueString constructs a new Value that contains a string.
+func NewValueString(v string) Value {
+	return Value{
+		typ:     TBinary,
+		tbinary: unsafeStringToBytes(v),
+	}
+}
+
 // GetBinary gets the Binary value from a Value.
 func (v *Value) GetBinary() []byte {
 	return v.tbinary
+}
+
+// GetString gets a string value from a Value.
+func (v *Value) GetString() string {
+	return unsafeBytesToString(v.tbinary)
 }
 
 // NewValueStruct constructs a new Value that contains a struct.
