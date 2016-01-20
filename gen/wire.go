@@ -118,6 +118,8 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 }
 
 func (g *Generator) fromWire(spec compile.TypeSpec, target string, value string) (string, error) {
+	// TODO different behaviors based on whether the value is a reference or
+	// not.
 	switch spec {
 	case compile.BoolSpec:
 		return fmt.Sprintf("%s = %s.GetBool()", target, value), nil
@@ -139,13 +141,25 @@ func (g *Generator) fromWire(spec compile.TypeSpec, target string, value string)
 		// Not a primitive type. It's probably a container or a custom type.
 	}
 
-	switch spec.(type) {
+	switch s := spec.(type) {
 	case *compile.MapSpec:
-		return fmt.Sprintf("%s = %s.GetList().TODO()", target, value), nil
+		reader, err := g.mapReader(s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s = %s(%s.GetMap())", target, reader, value), nil
 	case *compile.ListSpec:
-		return fmt.Sprintf("%s = %s.GetMap().TODO()", target, value), nil
+		reader, err := g.listReader(s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s = %s(%s.GetList())", target, reader, value), nil
 	case *compile.SetSpec:
-		return fmt.Sprintf("%s = %s.GetSet().TODO()", target, value), nil
+		reader, err := g.setReader(s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s = %s(%s.GetSet())", target, reader, value), nil
 	default:
 		// TODO read errors
 		return fmt.Sprintf("%s.FromWire(%s)", target, value), nil
