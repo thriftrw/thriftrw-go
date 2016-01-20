@@ -42,6 +42,10 @@ type Generator struct {
 	setValueLists  map[string]struct{}
 	mapItemLists   map[string]struct{}
 
+	listReaders map[string]struct{}
+	setReaders  map[string]struct{}
+	mapReaders  map[string]struct{}
+
 	// TODO use something to group related decls together
 }
 
@@ -52,8 +56,11 @@ func NewGenerator() *Generator {
 		namespace:      namespace,
 		importer:       newImporter(namespace),
 		listValueLists: make(map[string]struct{}),
+		listReaders:    make(map[string]struct{}),
 		setValueLists:  make(map[string]struct{}),
+		setReaders:     make(map[string]struct{}),
 		mapItemLists:   make(map[string]struct{}),
+		mapReaders:     make(map[string]struct{}),
 	}
 }
 
