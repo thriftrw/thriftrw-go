@@ -349,27 +349,6 @@ func (g *Generator) mapReader(spec *compile.MapSpec) (string, error) {
 }
 
 func valueName(spec compile.TypeSpec) string {
-	switch spec {
-	case compile.BoolSpec:
-		return "Bool"
-	case compile.I8Spec:
-		return "I8"
-	case compile.I16Spec:
-		return "I16"
-	case compile.I32Spec:
-		return "I32"
-	case compile.I64Spec:
-		return "I64"
-	case compile.DoubleSpec:
-		return "Double"
-	case compile.StringSpec:
-		return "String"
-	case compile.BinarySpec:
-		return "Binary"
-	default:
-		// Not a primitive type
-	}
-
 	switch s := spec.(type) {
 	case *compile.MapSpec:
 		return fmt.Sprintf(
@@ -380,6 +359,6 @@ func valueName(spec compile.TypeSpec) string {
 	case *compile.SetSpec:
 		return fmt.Sprintf("Set_%s", valueName(s.ValueSpec))
 	default:
-		return typeDeclName(spec)
+		return goCase(spec.ThriftName())
 	}
 }
