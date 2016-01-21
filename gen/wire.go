@@ -53,46 +53,63 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 	switch s := spec.(type) {
 	case *compile.MapSpec:
 		// TODO unhashable types
-		// TODO generate MapItemList alias if necessary
+		mapItemList, err := g.mapItemList(s)
+		if err != nil {
+			return "", err
+		}
+
 		return g.TextTemplate(
 			`<.Wire>.NewValueMap(<.Wire>.Map{
 				KeyType: <typeCode .Spec.KeySpec>,
 				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
-				Items: TODO(<.Name>),
+				Items: <.MapItemList>(<.Name>),
 			})`,
 			struct {
-				Wire string
-				Name string
-				Spec *compile.MapSpec
-			}{Wire: wire, Name: varName, Spec: s},
+				Wire        string
+				Name        string
+				Spec        *compile.MapSpec
+				MapItemList string
+			}{Wire: wire, Name: varName, Spec: s, MapItemList: mapItemList},
 		)
 	case *compile.ListSpec:
+		valueList, err := g.listValueList(s)
+		if err != nil {
+			return "", err
+		}
+
 		return g.TextTemplate(
 			`<.Wire>.NewValueList(<.Wire>.List{
 				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
-				Items: TODO(<.Name>),
+				Items: <.ValueList>(<.Name>),
 			})`,
 			struct {
-				Wire string
-				Name string
-				Spec *compile.ListSpec
-			}{Wire: wire, Name: varName, Spec: s},
+				Wire      string
+				Name      string
+				Spec      *compile.ListSpec
+				ValueList string
+			}{Wire: wire, Name: varName, Spec: s, ValueList: valueList},
 		)
 	case *compile.SetSpec:
+		valueList, err := g.setValueList(s)
+		if err != nil {
+			return "", err
+		}
+
 		// TODO unhashable types
 		return g.TextTemplate(
 			`<.Wire>.NewValueSet(<.Wire>.Set{
 				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
-				Items: TODO(<.Name>),
+				Items: <.ValueList>(<.Name>),
 			})`,
 			struct {
-				Wire string
-				Name string
-				Spec *compile.SetSpec
-			}{Wire: wire, Name: varName, Spec: s},
+				Wire      string
+				Name      string
+				Spec      *compile.SetSpec
+				ValueList string
+			}{Wire: wire, Name: varName, Spec: s, ValueList: valueList},
 		)
 	default:
 		// Custom defined type
@@ -101,6 +118,8 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 }
 
 func (g *Generator) fromWire(spec compile.TypeSpec, target string, value string) (string, error) {
+	// TODO different behaviors based on whether the value is a reference or
+	// not.
 	switch spec {
 	case compile.BoolSpec:
 		return fmt.Sprintf("%s = %s.GetBool()", target, value), nil
@@ -122,13 +141,25 @@ func (g *Generator) fromWire(spec compile.TypeSpec, target string, value string)
 		// Not a primitive type. It's probably a container or a custom type.
 	}
 
-	switch spec.(type) {
+	switch s := spec.(type) {
 	case *compile.MapSpec:
-		return fmt.Sprintf("%s = %s.GetList().TODO()", target, value), nil
+		reader, err := g.mapReader(s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s = %s(%s.GetMap())", target, reader, value), nil
 	case *compile.ListSpec:
-		return fmt.Sprintf("%s = %s.GetMap().TODO()", target, value), nil
+		reader, err := g.listReader(s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s = %s(%s.GetList())", target, reader, value), nil
 	case *compile.SetSpec:
-		return fmt.Sprintf("%s = %s.GetSet().TODO()", target, value), nil
+		reader, err := g.setReader(s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s = %s(%s.GetSet())", target, reader, value), nil
 	default:
 		// TODO read errors
 		return fmt.Sprintf("%s.FromWire(%s)", target, value), nil

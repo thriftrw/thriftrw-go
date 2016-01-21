@@ -38,18 +38,29 @@ type Generator struct {
 
 	decls []ast.Decl
 
-	// TODO use something to group related decls together
+	listValueLists map[string]struct{}
+	setValueLists  map[string]struct{}
+	mapItemLists   map[string]struct{}
 
-	// TODO(abg) We will keep track of needed map/list/set types and their
-	// to/from value implementations here
+	listReaders map[string]struct{}
+	setReaders  map[string]struct{}
+	mapReaders  map[string]struct{}
+
+	// TODO use something to group related decls together
 }
 
 // NewGenerator sets up a new generator for Go code.
 func NewGenerator() *Generator {
 	namespace := newNamespace()
 	return &Generator{
-		namespace: namespace,
-		importer:  newImporter(namespace),
+		namespace:      namespace,
+		importer:       newImporter(namespace),
+		listValueLists: make(map[string]struct{}),
+		listReaders:    make(map[string]struct{}),
+		setValueLists:  make(map[string]struct{}),
+		setReaders:     make(map[string]struct{}),
+		mapItemLists:   make(map[string]struct{}),
+		mapReaders:     make(map[string]struct{}),
 	}
 }
 
