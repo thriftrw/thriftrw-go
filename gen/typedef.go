@@ -27,23 +27,46 @@ func (g *Generator) typedef(spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$typedefType := typeReference .Spec Required>
 
-		// TODO add * to ToWire if target is not a reference type
-		type <.Name> <typeReference .Target Required>
+		type <defName .Spec> <typeName .Spec.Target>
 
 		<$v := newVar "v">
-		func (<$v> <.Name>) ToWire() <$wire>.Value {
-			return <toWire .Target $v>
+		<$x := newVar "x">
+		func (<$v> <$typedefType>) ToWire() <$wire>.Value {
+			<$x> := (<typeReference .Spec.Target Required>)(<$v>)
+			return <toWire .Spec.Target $x>
 		}
 
 		<$w := newVar "w">
-		func (<$v> *<.Name>) FromWire(<$w> <$wire>.Value) error {
-			// TODO: Implement some sort of fromValue template function that
-			// will tell us what to put here.
-			return nil
+		<if isStructType .Spec>
+			func (<$v> <$typedefType>) FromWire(<$w> <$wire>.Value) error {
+				return (<typeReference .Spec.Target Required>)(<$v>).FromWire(<$w>)
+			}
+		<else>
+			func (<$v> *<$typedefType>) FromWire(<$w> <$wire>.Value) error {
+				var err error
+				<$x>, err := <fromWire .Spec.Target $w>
+				*<$v> = (<$typedefType>)(<$x>)
+				return err
+			}
+		<end>
+
+		func <.Reader>(<$w> <$wire>.Value) (<$typedefType>, error) {
+			<if isStructType .Spec>
+				<$x>, err := <fromWire .Spec.Target $w>
+				return (<$typedefType>)(<$x>), err
+			<else>
+				var <$x> <$typedefType>
+				err := <$x>.FromWire(<$w>)
+				return <$x>, err
+			<end>
 		}
 		`,
-		spec,
+		struct {
+			Spec   *compile.TypedefSpec
+			Reader string
+		}{Spec: spec, Reader: typeReader(spec)},
 	)
 	// TODO(abg): To/FromWire.
 	return wrapGenerateError(spec.Name, err)

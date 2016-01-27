@@ -95,21 +95,23 @@ func (g *Generator) listReader(spec *compile.ListSpec) (string, error) {
 			<$i := newVar "i">
 			<$o := newVar "o">
 			<$x := newVar "x">
-			func <.Name>(<$l> <$wire>.List) <$listType> {
+			func <.Name>(<$l> <$wire>.List) (<$listType>, error) {
 				if <$l>.ValueType != <typeCode .Spec.ValueSpec> {
-					return nil
+					return nil, nil
 				}
 
 				<$o> := make(<$listType>, 0, <$l>.Size)
-				<$l>.Items.ForEach(func(<$x> <$wire>.Value) error {
-					var <$i> <typeReference .Spec.ValueSpec Required>
-					<fromWire .Spec.ValueSpec $i $x>
-					// TODO error handling
+				err := <$l>.Items.ForEach(func(<$x> <$wire>.Value) error {
+					var err error
+					<$i>, err := <fromWire .Spec.ValueSpec $x>
+					if err != nil {
+						return err
+					}
 					<$o> = append(<$o>, <$i>)
 					return nil
 				})
 				<$l>.Items.Close()
-				return <$o>
+				return <$o>, err
 			}
 		`,
 		struct {
@@ -199,21 +201,23 @@ func (g *Generator) setReader(spec *compile.SetSpec) (string, error) {
 			<$i := newVar "i">
 			<$o := newVar "o">
 			<$x := newVar "x">
-			func <.Name>(<$s> <$wire>.Set) <$setType> {
+			func <.Name>(<$s> <$wire>.Set) (<$setType>, error) {
 				if <$s>.ValueType != <typeCode .Spec.ValueSpec> {
-					return nil
+					return nil, nil
 				}
 
 				<$o> := make(<$setType>, <$s>.Size)
-				<$s>.Items.ForEach(func(<$x> <$wire>.Value) error {
-					var <$i> <typeReference .Spec.ValueSpec Required>
-					<fromWire .Spec.ValueSpec $i $x>
-					// TODO error handling
+				err := <$s>.Items.ForEach(func(<$x> <$wire>.Value) error {
+					var err error
+					<$i>, err := <fromWire .Spec.ValueSpec $x>
+					if err != nil {
+						return err
+					}
 					<$o>[<$i>] = struct{}{}
 					return nil
 				})
 				<$s>.Items.Close()
-				return <$o>
+				return <$o>, err
 			}
 		`,
 		struct {
@@ -308,27 +312,33 @@ func (g *Generator) mapReader(spec *compile.MapSpec) (string, error) {
 			<$x := newVar "x">
 			<$k := newVar "k">
 			<$v := newVar "v">
-			func <.Name>(<$m> <$wire>.Map) <$mapType> {
+			func <.Name>(<$m> <$wire>.Map) (<$mapType>, error) {
 				if <$m>.KeyType != <typeCode .Spec.KeySpec> {
-					return nil
+					return nil, nil
 				}
 
 				if <$m>.ValueType != <typeCode .Spec.ValueSpec> {
-					return nil
+					return nil, nil
 				}
 
 				<$o> := make(<$mapType>, <$m>.Size)
-				<$m>.Items.ForEach(func(<$x> <$wire>.MapItem) error {
-					var <$k> <typeReference .Spec.KeySpec Required>
-					var <$v> <typeReference .Spec.ValueSpec Required>
-					<fromWire .Spec.KeySpec $k (printf "%s.Key" $x)>
-					<fromWire .Spec.ValueSpec $v (printf "%s.Value" $x)>
-					// TODO error handling
+				err := <$m>.Items.ForEach(func(<$x> <$wire>.MapItem) error {
+					var err error
+					<$k>, err := <fromWire .Spec.KeySpec (printf "%s.Key" $x)>
+					if err != nil {
+						return err
+					}
+
+					<$v>, err := <fromWire .Spec.ValueSpec (printf "%s.Value" $x)>
+					if err != nil {
+						return err
+					}
+
 					<$o>[<$k>] = <$v>
 					return nil
 				})
 				<$m>.Items.Close()
-				return <$o>
+				return <$o>, err
 			}
 		`,
 		struct {

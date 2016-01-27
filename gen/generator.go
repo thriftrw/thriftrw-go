@@ -67,14 +67,17 @@ func NewGenerator() *Generator {
 // TextTemplate renders the given template with the given template context.
 func (g *Generator) TextTemplate(s string, data interface{}) (string, error) {
 	templateFuncs := template.FuncMap{
-		"goCase":        goCase,
-		"import":        g.Import,
-		"defName":       typeDeclName,
-		"newVar":        g.namespace.Child().NewName,
-		"toWire":        g.toWire,
-		"fromWire":      g.fromWire,
-		"typeCode":      g.typeCode,
-		"typeReference": typeReference,
+		"goCase":          goCase,
+		"import":          g.Import,
+		"defName":         typeDeclName,
+		"newVar":          g.namespace.Child().NewName,
+		"toWire":          g.toWire,
+		"fromWire":        g.fromWire,
+		"typeName":        typeName,
+		"typeCode":        g.typeCode,
+		"typeReference":   typeReference,
+		"isStructType":    isStructType,
+		"isReferenceType": isReferenceType,
 
 		"Required": func() fieldRequired { return Required },
 		"Optional": func() fieldRequired { return Optional },
@@ -206,6 +209,15 @@ func (g *Generator) recordGenDeclNames(d *ast.GenDecl) error {
 //
 // typeCode(TypeSpec): Gets the wire.Type for the given TypeSpec, importing
 // the wire module if necessary.
+//
+// isReferenceType(TypeSpec): Returns true if the given TypeSpec is for a
+// reference type.
+//
+// toWire(TypeSpec, v): Returns an expression of type Value that contains the
+// wire representation of the item "v" of type TypeSpec.
+//
+// fromWire(TypeSpec, v): Returns an expression of type (T, error) where T is
+// the type represented by TypeSpec, read from the given Value v.
 func (g *Generator) DeclareFromTemplate(s string, data interface{}) error {
 	bs, err := g.renderTemplate(s, data)
 	if err != nil {
