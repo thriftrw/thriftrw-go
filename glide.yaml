@@ -4,3 +4,4 @@ import:
   subpackages:
   - /assert
   - /require
+- package: github.com/kr/pretty
