@@ -21,8 +21,8 @@
 package compile
 
 import (
-	"github.com/uber/thriftrw-go/ast"
-	"github.com/uber/thriftrw-go/wire"
+	"github.com/thriftrw/thriftrw-go/ast"
+	"github.com/thriftrw/thriftrw-go/wire"
 )
 
 // EnumSpec represents an enum defined in the Thrift file.

@@ -8,5 +8,5 @@ Related Projects
 -   [thriftrw-python]
 -   [thriftrw-node]
 
-  [thriftrw-python]: https://github.com/uber/thriftrw-python
-  [thriftrw-node]: https://github.com/uber/thriftrw-node
+  [thriftrw-python]: https://github.com/thriftrw/thriftrw-python
+  [thriftrw-node]: https://github.com/thriftrw/thriftrw-node

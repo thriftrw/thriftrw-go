@@ -20,14 +20,14 @@
 
 package gen
 
-import "github.com/uber/thriftrw-go/compile"
+import "github.com/thriftrw/thriftrw-go/compile"
 
 func (g *Generator) enum(spec *compile.EnumSpec) error {
 	// TODO(abg) define an error type in the library for unrecognized enums.
 	err := g.DeclareFromTemplate(
 		`
 		<$fmt := import "fmt">
-		<$wire := import "github.com/uber/thriftrw-go/wire">
+		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 
 		<$enumName := defName .>
 		type <$enumName> int32

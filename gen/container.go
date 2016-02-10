@@ -23,7 +23,7 @@ package gen
 import (
 	"fmt"
 
-	"github.com/uber/thriftrw-go/compile"
+	"github.com/thriftrw/thriftrw-go/compile"
 )
 
 // listValueList generates a new ValueList type alias for the given list.
@@ -46,7 +46,7 @@ func (g *Generator) listValueList(spec *compile.ListSpec) (string, error) {
 
 	err := g.DeclareFromTemplate(
 		`
-			<$wire := import "github.com/uber/thriftrw-go/wire">
+			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 			type <.Name> <typeReference .Spec Required>
 
 			<$v := newVar "v">
@@ -88,7 +88,7 @@ func (g *Generator) listReader(spec *compile.ListSpec) (string, error) {
 
 	err := g.DeclareFromTemplate(
 		`
-			<$wire := import "github.com/uber/thriftrw-go/wire">
+			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 			<$listType := typeReference .Spec Required>
 
 			<$l := newVar "l">
@@ -150,7 +150,7 @@ func (g *Generator) setValueList(spec *compile.SetSpec) (string, error) {
 
 	err := g.DeclareFromTemplate(
 		`
-			<$wire := import "github.com/uber/thriftrw-go/wire">
+			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 			type <.Name> <typeReference .Spec Required>
 
 			<$v := newVar "v">
@@ -192,7 +192,7 @@ func (g *Generator) setReader(spec *compile.SetSpec) (string, error) {
 
 	err := g.DeclareFromTemplate(
 		`
-			<$wire := import "github.com/uber/thriftrw-go/wire">
+			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 			<$setType := typeReference .Spec Required>
 
 			<$s := newVar "s">
@@ -254,7 +254,7 @@ func (g *Generator) mapItemList(spec *compile.MapSpec) (string, error) {
 
 	err := g.DeclareFromTemplate(
 		`
-			<$wire := import "github.com/uber/thriftrw-go/wire">
+			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 			type <.Name> <typeReference .Spec Required>
 
 			<$m := newVar "m">
@@ -300,7 +300,7 @@ func (g *Generator) mapReader(spec *compile.MapSpec) (string, error) {
 
 	err := g.DeclareFromTemplate(
 		`
-			<$wire := import "github.com/uber/thriftrw-go/wire">
+			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 			<$mapType := typeReference .Spec Required>
 
 			<$m := newVar "m">

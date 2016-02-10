@@ -23,7 +23,7 @@ package compile
 import (
 	"fmt"
 
-	"github.com/uber/thriftrw-go/ast"
+	"github.com/thriftrw/thriftrw-go/ast"
 )
 
 // fileReadError is raised when there's an error reading a file.

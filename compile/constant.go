@@ -20,7 +20,7 @@
 
 package compile
 
-import "github.com/uber/thriftrw-go/ast"
+import "github.com/thriftrw/thriftrw-go/ast"
 
 // Constant represents a single named constant value from the Thrift file.
 type Constant struct {

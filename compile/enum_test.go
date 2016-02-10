@@ -26,9 +26,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/uber/thriftrw-go/ast"
-	"github.com/uber/thriftrw-go/idl"
-	"github.com/uber/thriftrw-go/wire"
+	"github.com/thriftrw/thriftrw-go/ast"
+	"github.com/thriftrw/thriftrw-go/idl"
+	"github.com/thriftrw/thriftrw-go/wire"
 )
 
 func i(x int) *int {

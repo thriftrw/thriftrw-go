@@ -27,8 +27,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/uber/thriftrw-go/ast"
-	"github.com/uber/thriftrw-go/idl"
+	"github.com/thriftrw/thriftrw-go/ast"
+	"github.com/thriftrw/thriftrw-go/idl"
 )
 
 func parseConstant(s string) *ast.Constant {

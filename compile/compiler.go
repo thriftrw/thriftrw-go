@@ -24,8 +24,8 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/uber/thriftrw-go/ast"
-	"github.com/uber/thriftrw-go/idl"
+	"github.com/thriftrw/thriftrw-go/ast"
+	"github.com/thriftrw/thriftrw-go/idl"
 )
 
 // Compile parses and compiles the Thrift file at the given path and any other

@@ -20,7 +20,7 @@
 
 package internal
 
-import "github.com/uber/thriftrw-go/ast"
+import "github.com/thriftrw/thriftrw-go/ast"
 
 func init() {
 	yyErrorVerbose = true

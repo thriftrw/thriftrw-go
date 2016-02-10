@@ -20,7 +20,7 @@
 
 package compile
 
-import "github.com/uber/thriftrw-go/ast"
+import "github.com/thriftrw/thriftrw-go/ast"
 
 // fieldRequiredness controls how fields treat required/optional specifiers.
 type fieldRequiredness int

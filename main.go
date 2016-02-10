@@ -26,8 +26,8 @@ import (
 	"os"
 	"sort"
 
-	"github.com/uber/thriftrw-go/compile"
-	"github.com/uber/thriftrw-go/gen"
+	"github.com/thriftrw/thriftrw-go/compile"
+	"github.com/thriftrw/thriftrw-go/gen"
 )
 
 func constantNames(constants map[string]*compile.Constant) []string {
