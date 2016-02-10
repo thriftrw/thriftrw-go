@@ -1,0 +1,16 @@
+sudo: false
+language: go
+
+go:
+    - 1.5
+
+env:
+    global:
+        - GO15VENDOREXPERIMENT=1
+
+install:
+    - make install
+
+script:
+    - make test
+    - rm -rf vendor/*
