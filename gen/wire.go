@@ -23,12 +23,12 @@ package gen
 import (
 	"fmt"
 
-	"github.com/uber/thriftrw-go/compile"
+	"github.com/thriftrw/thriftrw-go/compile"
 )
 
 // toWire generates a call to the given variable of the given type.
 func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error) {
-	wire := g.Import("github.com/uber/thriftrw-go/wire")
+	wire := g.Import("github.com/thriftrw/thriftrw-go/wire")
 	switch spec {
 	case compile.BoolSpec:
 		return fmt.Sprintf("%s.NewValueBool(%s)", wire, varName), nil
@@ -169,7 +169,7 @@ func (g *Generator) fromWire(spec compile.TypeSpec, target string, value string)
 // typeCode gets a value of type 'wire.Type' that represents the over-the-wire
 // type code for the given TypeSpec.
 func (g *Generator) typeCode(spec compile.TypeSpec) string {
-	wire := g.Import("github.com/uber/thriftrw-go/wire")
+	wire := g.Import("github.com/thriftrw/thriftrw-go/wire")
 
 	switch spec {
 	case compile.BoolSpec:

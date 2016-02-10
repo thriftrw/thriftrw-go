@@ -23,7 +23,7 @@ package compile
 import (
 	"fmt"
 
-	"github.com/uber/thriftrw-go/ast"
+	"github.com/thriftrw/thriftrw-go/ast"
 )
 
 // ConstantValue represents a compiled constant value or a reference to one.

@@ -21,8 +21,8 @@
 // Package idl provides a parser for Thrift IDL files.
 package idl
 
-import "github.com/uber/thriftrw-go/ast"
-import "github.com/uber/thriftrw-go/idl/internal"
+import "github.com/thriftrw/thriftrw-go/ast"
+import "github.com/thriftrw/thriftrw-go/idl/internal"
 
 // Parse parses a Thrift document.
 func Parse(s []byte) (*ast.Program, error) {

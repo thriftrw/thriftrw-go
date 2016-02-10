@@ -23,7 +23,7 @@ package gen
 import (
 	"fmt"
 
-	"github.com/uber/thriftrw-go/compile"
+	"github.com/thriftrw/thriftrw-go/compile"
 )
 
 // fieldRequired indicates whether a field is required or not.

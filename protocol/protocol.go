@@ -24,7 +24,7 @@ package protocol
 import (
 	"io"
 
-	"github.com/uber/thriftrw-go/wire"
+	"github.com/thriftrw/thriftrw-go/wire"
 )
 
 // Protocol defines a specific way for a Thrift value to be encoded or

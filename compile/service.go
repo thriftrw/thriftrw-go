@@ -20,7 +20,7 @@
 
 package compile
 
-import "github.com/uber/thriftrw-go/ast"
+import "github.com/thriftrw/thriftrw-go/ast"
 
 // ServiceSpec is a collection of named functions.
 type ServiceSpec struct {

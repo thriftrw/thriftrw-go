@@ -27,8 +27,8 @@ import (
 	"math"
 	"testing"
 
-	"github.com/uber/thriftrw-go/protocol/binary"
-	"github.com/uber/thriftrw-go/wire"
+	"github.com/thriftrw/thriftrw-go/protocol/binary"
+	"github.com/thriftrw/thriftrw-go/wire"
 
 	"github.com/stretchr/testify/assert"
 )

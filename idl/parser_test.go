@@ -24,7 +24,7 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/uber/thriftrw-go/ast"
+	. "github.com/thriftrw/thriftrw-go/ast"
 
 	"github.com/kr/pretty"
 	"github.com/stretchr/testify/assert"

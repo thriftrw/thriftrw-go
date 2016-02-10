@@ -26,7 +26,7 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/uber/thriftrw-go/wire"
+	"github.com/thriftrw/thriftrw-go/wire"
 )
 
 func Fuzz(data []byte) int {

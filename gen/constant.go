@@ -20,7 +20,7 @@
 
 package gen
 
-import "github.com/uber/thriftrw-go/compile"
+import "github.com/thriftrw/thriftrw-go/compile"
 
 // Constant TODO
 func (g *Generator) Constant(c *compile.Constant) error {

@@ -20,13 +20,13 @@
 
 package gen
 
-import "github.com/uber/thriftrw-go/compile"
+import "github.com/thriftrw/thriftrw-go/compile"
 
 // typedef generates code for the given typedef.
 func (g *Generator) typedef(spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
-		<$wire := import "github.com/uber/thriftrw-go/wire">
+		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 
 		// TODO add * to ToWire if target is not a reference type
 		type <.Name> <typeReference .Target Required>
