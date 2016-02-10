@@ -45,7 +45,6 @@ func (g *Generator) typedef(spec *compile.TypedefSpec) error {
 			}
 		<else>
 			func (<$v> *<$typedefType>) FromWire(<$w> <$wire>.Value) error {
-				var err error
 				<$x>, err := <fromWire .Spec.Target $w>
 				*<$v> = (<$typedefType>)(<$x>)
 				return err

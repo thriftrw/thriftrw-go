@@ -67,20 +67,22 @@ func NewGenerator() *Generator {
 // TextTemplate renders the given template with the given template context.
 func (g *Generator) TextTemplate(s string, data interface{}) (string, error) {
 	templateFuncs := template.FuncMap{
+		"defName":         typeDeclName,
+		"fromWire":        g.fromWire,
 		"goCase":          goCase,
 		"import":          g.Import,
-		"defName":         typeDeclName,
+		"isReferenceType": isReferenceType,
+		"isStructType":    isStructType,
 		"newVar":          g.namespace.Child().NewName,
 		"toWire":          g.toWire,
-		"fromWire":        g.fromWire,
-		"typeName":        typeName,
 		"typeCode":        g.typeCode,
+		"typeName":        typeName,
 		"typeReference":   typeReference,
-		"isStructType":    isStructType,
-		"isReferenceType": isReferenceType,
 
-		"Required": func() fieldRequired { return Required },
+		// Inline functions:
+
 		"Optional": func() fieldRequired { return Optional },
+		"Required": func() fieldRequired { return Required },
 		"required": func(b bool) fieldRequired {
 			if b {
 				return Required
@@ -179,45 +181,58 @@ func (g *Generator) recordGenDeclNames(d *ast.GenDecl) error {
 //
 // The following functions are available to templates:
 //
-// goCase(str): Accepts a string and returns it in CamelCase form and the first
-// character upper-cased. The string may be ALLCAPS, snake_case, or already
-// camelCase.
+// defName(TypeSpec): Takes a TypeSpec representing a **user declared type**
+// and returns the name that should be used in the Go code to define that
+// type.
 //
-// import(str): Accepts a string and returns the name that should be used in the
-// template to refer to that imported module. This helps avoid naming conflicts
-// with imports.
+// fromWire(TypeSpec, v): Returns an expression of type (T, error) where T is
+// the type represented by TypeSpec, read from the given Value v.
+//
+// goCase(str): Accepts a string and returns it in CamelCase form and the
+// first character upper-cased. The string may be ALLCAPS, snake_case, or
+// already camelCase.
+//
+// import(str): Accepts a string and returns the name that should be used in
+// the template to refer to that imported module. This helps avoid naming
+// conflicts with imports.
 //
 // 	<$fmt := import "fmt">
 // 	<$fmt>.Println("hello world")
+//
+// isReferenceType(TypeSpec): Returns true if the given TypeSpec is for a
+// reference type.
+//
+// isStructType(TypeSpec): Returns true if the given TypeSpec is a StructSpec.
 //
 // newVar(s): Gets a new name that the template can use for a variable without
 // worrying about shadowing any globals. Prefers the given string.
 //
 // 	<$x := newVar "x">
 //
-// defName(TypeSpec): Takes a TypeSpec representing a **user declared type** and
-// returns the name that should be used in the Go code to define that type.
+// Optional: Returns the value Optional where a fieldRequired is expected.
 //
-// typeReference(TypeSpec, fieldRequired): Takes any TypeSpec and a a value
-// indicating whether this reference expects the type to always be present (use
-// the "required" function on a boolean, or the "Required" and "Optional"
-// functions inside the template to get the corresponding fieldRequired value).
-// Returns a string representing a reference to that type, wrapped in a pointer
-// if the value was optional.
+// Required: Returns the value Required where a fieldRequired is expected.
 //
-// 	<typeReference $someType Required>
-//
-// typeCode(TypeSpec): Gets the wire.Type for the given TypeSpec, importing
-// the wire module if necessary.
-//
-// isReferenceType(TypeSpec): Returns true if the given TypeSpec is for a
-// reference type.
+// required(bool): Returns Optional or Required based on the boolean where a
+// fieldRequired is expected.
 //
 // toWire(TypeSpec, v): Returns an expression of type Value that contains the
 // wire representation of the item "v" of type TypeSpec.
 //
-// fromWire(TypeSpec, v): Returns an expression of type (T, error) where T is
-// the type represented by TypeSpec, read from the given Value v.
+// typeCode(TypeSpec): Gets the wire.Type for the given TypeSpec, importing
+// the wire module if necessary.
+//
+// typeName(TypeSpec): Returns the Go name of the given type, regardless of
+// whether it's native or custom.
+//
+// typeReference(TypeSpec, fieldRequired): Takes any TypeSpec and a a value
+// indicating whether this reference expects the type to always be present
+// (use the "required" function on a boolean, or the "Required" and "Optional"
+// functions inside the template to get the corresponding fieldRequired
+// value).  Returns a string representing a reference to that type, wrapped in
+// a pointer if the value was optional.
+//
+// 	<typeReference $someType Required>
 func (g *Generator) DeclareFromTemplate(s string, data interface{}) error {
 	bs, err := g.renderTemplate(s, data)
 	if err != nil {
