@@ -9,8 +9,8 @@ env:
         - GO15VENDOREXPERIMENT=1
 
 install:
-    - make install
+    - make install_ci
 
 script:
-    - make test
+    - make test_ci
     - rm -rf vendor/*

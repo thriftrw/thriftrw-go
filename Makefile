@@ -2,7 +2,6 @@ export GO15VENDOREXPERIMENT=1
 
 BUILD := ./build
 PACKAGES := $(shell glide novendor)
-TEST_ARGS ?= -race -v
 
 .PHONY: clean
 clean:
@@ -24,4 +23,25 @@ install:
 
 .PHONY: test
 test:
-	go test $(PACKAGES) $(TEST_ARGS)
+	go test $(PACKAGES) -v
+
+.PHONY: cover
+cover:
+	@$(foreach pkg, $(shell go list $(PACKAGES) | cut -d/ -f4-), \
+		go test ./$(pkg) -v -cover &&) echo "success"
+
+##############################################################################
+# CI
+
+.PHONY: install_ci
+install_ci: install
+	go get github.com/axw/gocov/gocov
+	go get github.com/mattn/goveralls
+	go get golang.org/x/tools/cmd/cover
+
+# Tests don't need to be run separately because goveralls takes care of
+# running them.
+
+.PHONY: test_ci
+test_ci:
+	goveralls -service=travis-ci -v $(PACKAGES)
