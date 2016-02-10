@@ -1,4 +1,9 @@
-[![Build Status](https://travis-ci.org/thriftrw/thriftrw-go.svg?branch=master)](https://travis-ci.org/thriftrw/thriftrw-go)
+[![Build Status][ci-img]][ci] [![Coverage Status][cov-img]][cov]
+
+  [ci-img]: https://travis-ci.org/thriftrw/thriftrw-go.svg?branch=master
+  [cov-img]: https://coveralls.io/repos/github/thriftrw/thriftrw-go/badge.svg?branch=master
+  [ci]: https://travis-ci.org/thriftrw/thriftrw-go
+  [cov]: https://coveralls.io/github/thriftrw/thriftrw-go?branch=master
 
 `thriftrw` is a Thrift encoding code generator and library for Go.
 
