@@ -21,9 +21,11 @@
 package main
 
 import (
+	"flag"
 	"go/token"
 	"log"
 	"os"
+	"path/filepath"
 	"sort"
 
 	"github.com/thriftrw/thriftrw-go/compile"
@@ -49,13 +51,32 @@ func typeNames(types map[string]compile.TypeSpec) []string {
 }
 
 func main() {
-	file := os.Args[1]
+	// TODO proper command line argument parsing
+
+	output := flag.String("o", "", "Output file")
+	flag.Parse()
+	file := flag.Arg(0)
+
+	outDir, err := os.Getwd()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if len(*output) > 0 {
+		var err error
+		if *output, err = filepath.Abs(*output); err != nil {
+			log.Fatal(err)
+		}
+		outDir = filepath.Dir(*output)
+	}
+
 	module, err := compile.Compile(file)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	g := gen.NewGenerator()
+	packageName := filepath.Base(outDir)
+	g := gen.NewGenerator(packageName)
 
 	for _, constantName := range constantNames(module.Constants) {
 		c := module.Constants[constantName]
@@ -71,7 +92,16 @@ func main() {
 		}
 	}
 
-	if err := g.Write(os.Stdout, token.NewFileSet()); err != nil {
+	outFile := os.Stdout
+	if len(*output) > 0 {
+		outFile, err = os.Create(*output)
+		defer outFile.Close()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	if err := g.Write(outFile, token.NewFileSet()); err != nil {
 		log.Fatal(err)
 	}
 }
