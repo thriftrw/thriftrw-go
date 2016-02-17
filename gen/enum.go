@@ -26,7 +26,6 @@ func (g *Generator) enum(spec *compile.EnumSpec) error {
 	// TODO(abg) define an error type in the library for unrecognized enums.
 	err := g.DeclareFromTemplate(
 		`
-		<$fmt := import "fmt">
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 
 		<$enumName := defName .Spec>
@@ -45,14 +44,7 @@ func (g *Generator) enum(spec *compile.EnumSpec) error {
 
 		<$w := newVar "w">
 		func (<$v> *<$enumName>) FromWire(<$w> <$wire>.Value) error {
-			switch <$w>.GetI32() {
-			<range .Spec.Items>
-			case <.Value>:
-				*<$v> = <$enumName><goCase .Name>
-			<end>
-			default:
-				return <$fmt>.Errorf("Unknown <$enumName>: %d", <$w>.GetI32())
-			}
+			*<$v> = (<$enumName>)(<$w>.GetI32());
 			return nil
 		}
 
