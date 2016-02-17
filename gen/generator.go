@@ -53,6 +53,16 @@ type Generator struct {
 	// TODO use something to group related decls together
 }
 
+// TemplateOption customizes templates.
+type TemplateOption func(*template.Template) *template.Template
+
+// TemplateFunc adds a function to the template.
+func TemplateFunc(name string, f interface{}) TemplateOption {
+	return func(t *template.Template) *template.Template {
+		return t.Funcs(template.FuncMap{name: f})
+	}
+}
+
 // NewGenerator sets up a new generator for Go code.
 func NewGenerator(pkgName string) *Generator {
 	namespace := newNamespace()
@@ -70,7 +80,7 @@ func NewGenerator(pkgName string) *Generator {
 }
 
 // TextTemplate renders the given template with the given template context.
-func (g *Generator) TextTemplate(s string, data interface{}) (string, error) {
+func (g *Generator) TextTemplate(s string, data interface{}, opts ...TemplateOption) (string, error) {
 	templateFuncs := template.FuncMap{
 		"defName":         typeDeclName,
 		"fromWire":        g.fromWire,
@@ -96,8 +106,12 @@ func (g *Generator) TextTemplate(s string, data interface{}) (string, error) {
 		},
 	}
 
-	tmpl, err := template.New("thriftrw").
-		Delims("<", ">").Funcs(templateFuncs).Parse(s)
+	tmpl := template.New("thriftrw").Delims("<", ">").Funcs(templateFuncs)
+	for _, opt := range opts {
+		tmpl = opt(tmpl)
+	}
+
+	tmpl, err := tmpl.Parse(s)
 	if err != nil {
 		return "", err
 	}
@@ -111,9 +125,9 @@ func (g *Generator) TextTemplate(s string, data interface{}) (string, error) {
 
 }
 
-func (g *Generator) renderTemplate(s string, data interface{}) ([]byte, error) {
+func (g *Generator) renderTemplate(s string, data interface{}, opts ...TemplateOption) ([]byte, error) {
 	buff := bytes.NewBufferString("package thriftrw\n\n")
-	out, err := g.TextTemplate(s, data)
+	out, err := g.TextTemplate(s, data, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -238,8 +252,8 @@ func (g *Generator) recordGenDeclNames(d *ast.GenDecl) error {
 // a pointer if the value was optional.
 //
 // 	<typeReference $someType Required>
-func (g *Generator) DeclareFromTemplate(s string, data interface{}) error {
-	bs, err := g.renderTemplate(s, data)
+func (g *Generator) DeclareFromTemplate(s string, data interface{}, opts ...TemplateOption) error {
+	bs, err := g.renderTemplate(s, data, opts...)
 	if err != nil {
 		return err
 	}
