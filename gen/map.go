@@ -55,7 +55,7 @@ func newMapGenerator() mapGenerator {
 //
 // And $mapItemListName is returned. This may be used where a MapItemList of the
 // given type is expected.
-func (m mapGenerator) ItemList(g TemplateGenerator, spec *compile.MapSpec) (string, error) {
+func (m mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, error) {
 	// TODO(abg): Unhashable types
 	name := "_" + valueName(spec) + "_MapItemList"
 	if _, ok := m.itemLists[name]; ok {
@@ -102,7 +102,7 @@ func (m mapGenerator) ItemList(g TemplateGenerator, spec *compile.MapSpec) (stri
 	return name, nil
 }
 
-func (m mapGenerator) Reader(g TemplateGenerator, spec *compile.MapSpec) (string, error) {
+func (m mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error) {
 	name := "_" + valueName(spec) + "_Read"
 	if _, ok := m.readers[name]; ok {
 		return name, nil

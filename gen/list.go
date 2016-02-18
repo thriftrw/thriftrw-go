@@ -51,7 +51,7 @@ func newListGenerator() listGenerator {
 //
 // And $valueListName is returned. This may be used where a ValueList of the
 // given type is expected.
-func (l listGenerator) ValueList(g TemplateGenerator, spec *compile.ListSpec) (string, error) {
+func (l listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, error) {
 	name := "_" + valueName(spec) + "_ValueList"
 	if _, ok := l.valueLists[name]; ok {
 		return name, nil
@@ -101,7 +101,7 @@ func (l listGenerator) ValueList(g TemplateGenerator, spec *compile.ListSpec) (s
 // 	}
 //
 // And returns its name.
-func (l listGenerator) Reader(g TemplateGenerator, spec *compile.ListSpec) (string, error) {
+func (l listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, error) {
 	name := "_" + valueName(spec) + "_Read"
 	if _, ok := l.readers[name]; ok {
 		return name, nil

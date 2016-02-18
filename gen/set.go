@@ -51,7 +51,7 @@ func newSetGenerator() setGenerator {
 //
 // And $valueListName is returned. This may be used where a ValueList of the
 // given type is expected.
-func (s setGenerator) ValueList(g TemplateGenerator, spec *compile.SetSpec) (string, error) {
+func (s setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, error) {
 	// TODO(abg): Unhashable types
 	name := "_" + valueName(spec) + "_ValueList"
 	if _, ok := s.valueLists[name]; ok {
@@ -94,7 +94,7 @@ func (s setGenerator) ValueList(g TemplateGenerator, spec *compile.SetSpec) (str
 	return name, nil
 }
 
-func (s setGenerator) Reader(g TemplateGenerator, spec *compile.SetSpec) (string, error) {
+func (s setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error) {
 	name := "_" + valueName(spec) + "_Read"
 	if _, ok := s.readers[name]; ok {
 		return name, nil

@@ -23,7 +23,7 @@ package gen
 import "github.com/thriftrw/thriftrw-go/compile"
 
 // typedef generates code for the given typedef.
-func (g *Generator) typedef(spec *compile.TypedefSpec) error {
+func typedef(g Generator, spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">

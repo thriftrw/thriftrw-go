@@ -80,14 +80,14 @@ func main() {
 
 	for _, constantName := range constantNames(module.Constants) {
 		c := module.Constants[constantName]
-		if err := g.Constant(c); err != nil {
+		if err := gen.Constant(g, c); err != nil {
 			log.Fatal(err)
 		}
 	}
 
 	for _, typeName := range typeNames(module.Types) {
 		t := module.Types[typeName]
-		if err := g.TypeDefinition(t); err != nil {
+		if err := gen.TypeDefinition(g, t); err != nil {
 			log.Fatal(err)
 		}
 	}

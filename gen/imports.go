@@ -29,12 +29,12 @@ import (
 // importer is responsible for managing imports for the code generator and
 // ensuring that we don't end up with naming conflicts in imports.
 type importer struct {
-	ns      *namespace
+	ns      Namespace
 	imports map[string]*ast.ImportSpec
 }
 
 // newImporter builds a new importer.
-func newImporter(ns *namespace) importer {
+func newImporter(ns Namespace) importer {
 	return importer{
 		ns:      ns,
 		imports: make(map[string]*ast.ImportSpec),
@@ -71,6 +71,7 @@ func (i importer) Import(path string) string {
 	}
 
 	// Find a name, preferring the base name
+	// TODO what if the package name is not the base name?
 	baseName := filepath.Base(path)
 	name := i.ns.NewName(baseName)
 	astImport := &ast.ImportSpec{Path: stringLiteral(path)}
