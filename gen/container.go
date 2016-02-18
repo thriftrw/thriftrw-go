@@ -102,6 +102,7 @@ func (g *Generator) listReader(spec *compile.ListSpec) (string, error) {
 
 				<$o> := make(<$listType>, 0, <$l>.Size)
 				err := <$l>.Items.ForEach(func(<$x> <$wire>.Value) error {
+					var err error
 					<$i>, err := <fromWire .Spec.ValueSpec $x>
 					if err != nil {
 						return err
@@ -207,6 +208,7 @@ func (g *Generator) setReader(spec *compile.SetSpec) (string, error) {
 
 				<$o> := make(<$setType>, <$s>.Size)
 				err := <$s>.Items.ForEach(func(<$x> <$wire>.Value) error {
+					var err error
 					<$i>, err := <fromWire .Spec.ValueSpec $x>
 					if err != nil {
 						return err
@@ -321,6 +323,7 @@ func (g *Generator) mapReader(spec *compile.MapSpec) (string, error) {
 
 				<$o> := make(<$mapType>, <$m>.Size)
 				err := <$m>.Items.ForEach(func(<$x> <$wire>.MapItem) error {
+					var err error
 					<$k>, err := <fromWire .Spec.KeySpec (printf "%s.Key" $x)>
 					if err != nil {
 						return err
