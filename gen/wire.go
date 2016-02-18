@@ -53,7 +53,7 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 	switch s := spec.(type) {
 	case *compile.MapSpec:
 		// TODO unhashable types
-		mapItemList, err := g.mapItemList(s)
+		mapItemList, err := g.mapGen.ItemList(g, s)
 		if err != nil {
 			return "", err
 		}
@@ -73,7 +73,7 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 			}{Wire: wire, Name: varName, Spec: s, MapItemList: mapItemList},
 		)
 	case *compile.ListSpec:
-		valueList, err := g.listValueList(s)
+		valueList, err := g.listGen.ValueList(g, s)
 		if err != nil {
 			return "", err
 		}
@@ -92,7 +92,7 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 			}{Wire: wire, Name: varName, Spec: s, ValueList: valueList},
 		)
 	case *compile.SetSpec:
-		valueList, err := g.setValueList(s)
+		valueList, err := g.setGen.ValueList(g, s)
 		if err != nil {
 			return "", err
 		}
@@ -141,19 +141,19 @@ func (g *Generator) fromWire(spec compile.TypeSpec, value string) (string, error
 
 	switch s := spec.(type) {
 	case *compile.MapSpec:
-		reader, err := g.mapReader(s)
+		reader, err := g.mapGen.Reader(g, s)
 		if err != nil {
 			return "", err
 		}
 		return fmt.Sprintf("%s(%s.GetMap())", reader, value), nil
 	case *compile.ListSpec:
-		reader, err := g.listReader(s)
+		reader, err := g.listGen.Reader(g, s)
 		if err != nil {
 			return "", err
 		}
 		return fmt.Sprintf("%s(%s.GetList())", reader, value), nil
 	case *compile.SetSpec:
-		reader, err := g.setReader(s)
+		reader, err := g.setGen.Reader(g, s)
 		if err != nil {
 			return "", err
 		}
