@@ -129,7 +129,6 @@ func (m mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error)
 
 				<$o> := make(<$mapType>, <$m>.Size)
 				err := <$m>.Items.ForEach(func(<$x> <$wire>.MapItem) error {
-					var err error
 					<$k>, err := <fromWire .Spec.KeySpec (printf "%s.Key" $x)>
 					if err != nil {
 						return err

@@ -116,7 +116,6 @@ func (s setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error)
 
 				<$o> := make(<$setType>, <$s>.Size)
 				err := <$s>.Items.ForEach(func(<$x> <$wire>.Value) error {
-					var err error
 					<$i>, err := <fromWire .Spec.ValueSpec $x>
 					if err != nil {
 						return err

@@ -4,80 +4,40 @@ package testdata
 
 import "github.com/thriftrw/thriftrw-go/wire"
 
-type _List_Binary_ValueList [][]byte
+type ContactInfo struct{ EmailAddress string }
 
-func (v _List_Binary_ValueList) ForEach(f func(wire.Value) error) error {
+func (v *ContactInfo) ToWire() wire.Value {
+	var fs [1]wire.Field
+	i := 0
+	fs[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.EmailAddress)}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *ContactInfo) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 1:
+			if f.Value.Type() == wire.TBinary {
+				v.EmailAddress, err = f.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
+	var v ContactInfo
+	err := v.FromWire(w)
+	return &v, err
+}
+
+type _List_String_ValueList []string
+
+func (v _List_String_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
-		err := f(wire.NewValueBinary(x))
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-func (v _List_Binary_ValueList) Close() {
-}
-
-type _List_I64_ValueList []int64
-
-func (v _List_I64_ValueList) ForEach(f func(wire.Value) error) error {
-	for _, x := range v {
-		err := f(wire.NewValueI64(x))
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-func (v _List_I64_ValueList) Close() {
-}
-
-type _Map_I32_String_MapItemList map[int32]string
-
-func (m _Map_I32_String_MapItemList) ForEach(f func(wire.MapItem) error) error {
-	for k, v := range m {
-		err := f(wire.MapItem{Key: wire.NewValueI32(k), Value: wire.NewValueString(v)})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-func (m _Map_I32_String_MapItemList) Close() {
-}
-
-type _Map_String_Bool_MapItemList map[string]bool
-
-func (m _Map_String_Bool_MapItemList) ForEach(f func(wire.MapItem) error) error {
-	for k, v := range m {
-		err := f(wire.MapItem{Key: wire.NewValueString(k), Value: wire.NewValueBool(v)})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-func (m _Map_String_Bool_MapItemList) Close() {
-}
-
-type _Set_Byte_ValueList map[int8]struct{}
-
-func (v _Set_Byte_ValueList) ForEach(f func(wire.Value) error) error {
-	for x := range v {
-		err := f(wire.NewValueI8(x))
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-func (v _Set_Byte_ValueList) Close() {
-}
-
-type _Set_String_ValueList map[string]struct{}
-
-func (v _Set_String_ValueList) ForEach(f func(wire.Value) error) error {
-	for x := range v {
 		err := f(wire.NewValueString(x))
 		if err != nil {
 			return err
@@ -85,16 +45,43 @@ func (v _Set_String_ValueList) ForEach(f func(wire.Value) error) error {
 	}
 	return nil
 }
-func (v _Set_String_ValueList) Close() {
+func (v _List_String_ValueList) Close() {
 }
-func _List_Binary_Read(l wire.List) ([][]byte, error) {
+
+type _Map_I64_Double_MapItemList map[int64]float64
+
+func (m _Map_I64_Double_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for k, v := range m {
+		err := f(wire.MapItem{Key: wire.NewValueI64(k), Value: wire.NewValueDouble(v)})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (m _Map_I64_Double_MapItemList) Close() {
+}
+
+type _Set_I32_ValueList map[int32]struct{}
+
+func (v _Set_I32_ValueList) ForEach(f func(wire.Value) error) error {
+	for x := range v {
+		err := f(wire.NewValueI32(x))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (v _Set_I32_ValueList) Close() {
+}
+func _List_String_Read(l wire.List) ([]string, error) {
 	if l.ValueType != wire.TBinary {
 		return nil, nil
 	}
-	o := make([][]byte, 0, l.Size)
+	o := make([]string, 0, l.Size)
 	err := l.Items.ForEach(func(x wire.Value) error {
-		var err error
-		i, err := x.GetBinary(), nil
+		i, err := x.GetString(), error(nil)
 		if err != nil {
 			return err
 		}
@@ -104,38 +91,20 @@ func _List_Binary_Read(l wire.List) ([][]byte, error) {
 	l.Items.Close()
 	return o, err
 }
-func _List_I64_Read(l wire.List) ([]int64, error) {
-	if l.ValueType != wire.TI64 {
+func _Map_I64_Double_Read(m wire.Map) (map[int64]float64, error) {
+	if m.KeyType != wire.TI64 {
 		return nil, nil
 	}
-	o := make([]int64, 0, l.Size)
-	err := l.Items.ForEach(func(x wire.Value) error {
-		var err error
-		i, err := x.GetI64(), nil
-		if err != nil {
-			return err
-		}
-		o = append(o, i)
-		return nil
-	})
-	l.Items.Close()
-	return o, err
-}
-func _Map_I32_String_Read(m wire.Map) (map[int32]string, error) {
-	if m.KeyType != wire.TI32 {
+	if m.ValueType != wire.TDouble {
 		return nil, nil
 	}
-	if m.ValueType != wire.TBinary {
-		return nil, nil
-	}
-	o := make(map[int32]string, m.Size)
+	o := make(map[int64]float64, m.Size)
 	err := m.Items.ForEach(func(x wire.MapItem) error {
-		var err error
-		k, err := x.Key.GetI32(), nil
+		k, err := x.Key.GetI64(), error(nil)
 		if err != nil {
 			return err
 		}
-		v, err := x.Value.GetString(), nil
+		v, err := x.Value.GetDouble(), error(nil)
 		if err != nil {
 			return err
 		}
@@ -145,55 +114,13 @@ func _Map_I32_String_Read(m wire.Map) (map[int32]string, error) {
 	m.Items.Close()
 	return o, err
 }
-func _Map_String_Bool_Read(m wire.Map) (map[string]bool, error) {
-	if m.KeyType != wire.TBinary {
+func _Set_I32_Read(s wire.Set) (map[int32]struct{}, error) {
+	if s.ValueType != wire.TI32 {
 		return nil, nil
 	}
-	if m.ValueType != wire.TBool {
-		return nil, nil
-	}
-	o := make(map[string]bool, m.Size)
-	err := m.Items.ForEach(func(x wire.MapItem) error {
-		var err error
-		k, err := x.Key.GetString(), nil
-		if err != nil {
-			return err
-		}
-		v, err := x.Value.GetBool(), nil
-		if err != nil {
-			return err
-		}
-		o[k] = v
-		return nil
-	})
-	m.Items.Close()
-	return o, err
-}
-func _Set_Byte_Read(s wire.Set) (map[int8]struct{}, error) {
-	if s.ValueType != wire.TI8 {
-		return nil, nil
-	}
-	o := make(map[int8]struct{}, s.Size)
+	o := make(map[int32]struct{}, s.Size)
 	err := s.Items.ForEach(func(x wire.Value) error {
-		var err error
-		i, err := x.GetI8(), nil
-		if err != nil {
-			return err
-		}
-		o[i] = struct{}{}
-		return nil
-	})
-	s.Items.Close()
-	return o, err
-}
-func _Set_String_Read(s wire.Set) (map[string]struct{}, error) {
-	if s.ValueType != wire.TBinary {
-		return nil, nil
-	}
-	o := make(map[string]struct{}, s.Size)
-	err := s.Items.ForEach(func(x wire.Value) error {
-		var err error
-		i, err := x.GetString(), nil
+		i, err := x.GetI32(), error(nil)
 		if err != nil {
 			return err
 		}
@@ -204,86 +131,44 @@ func _Set_String_Read(s wire.Set) (map[string]struct{}, error) {
 	return o, err
 }
 
-type PrimitiveContainers struct {
-	ListOfBinary      [][]byte
-	ListOfInts        []int64
-	MapOfIntToString  map[int32]string
-	MapOfStringToBool map[string]bool
-	SetOfBytes        map[int8]struct{}
-	SetOfStrings      map[string]struct{}
+type ContainersRequiredStruct struct {
+	ListOfStrings      []string
+	MapOfIntsToDoubles map[int64]float64
+	SetOfInts          map[int32]struct{}
 }
 
-func (v *PrimitiveContainers) ToWire() wire.Value {
-	var fs [6]wire.Field
+func (v *ContainersRequiredStruct) ToWire() wire.Value {
+	var fs [3]wire.Field
 	i := 0
-	if v.ListOfBinary != nil {
-		fs[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.ListOfBinary), Items: _List_Binary_ValueList(v.ListOfBinary)})}
-		i++
-	}
-	if v.ListOfInts != nil {
-		fs[i] = wire.Field{ID: 2, Value: wire.NewValueList(wire.List{ValueType: wire.TI64, Size: len(v.ListOfInts), Items: _List_I64_ValueList(v.ListOfInts)})}
-		i++
-	}
-	if v.MapOfIntToString != nil {
-		fs[i] = wire.Field{ID: 5, Value: wire.NewValueMap(wire.Map{KeyType: wire.TI32, ValueType: wire.TBinary, Size: len(v.MapOfIntToString), Items: _Map_I32_String_MapItemList(v.MapOfIntToString)})}
-		i++
-	}
-	if v.MapOfStringToBool != nil {
-		fs[i] = wire.Field{ID: 6, Value: wire.NewValueMap(wire.Map{KeyType: wire.TBinary, ValueType: wire.TBool, Size: len(v.MapOfStringToBool), Items: _Map_String_Bool_MapItemList(v.MapOfStringToBool)})}
-		i++
-	}
-	if v.SetOfBytes != nil {
-		fs[i] = wire.Field{ID: 4, Value: wire.NewValueSet(wire.Set{ValueType: wire.TI8, Size: len(v.SetOfBytes), Items: _Set_Byte_ValueList(v.SetOfBytes)})}
-		i++
-	}
-	if v.SetOfStrings != nil {
-		fs[i] = wire.Field{ID: 3, Value: wire.NewValueSet(wire.Set{ValueType: wire.TBinary, Size: len(v.SetOfStrings), Items: _Set_String_ValueList(v.SetOfStrings)})}
-		i++
-	}
+	fs[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.ListOfStrings), Items: _List_String_ValueList(v.ListOfStrings)})}
+	i++
+	fs[i] = wire.Field{ID: 3, Value: wire.NewValueMap(wire.Map{KeyType: wire.TI64, ValueType: wire.TDouble, Size: len(v.MapOfIntsToDoubles), Items: _Map_I64_Double_MapItemList(v.MapOfIntsToDoubles)})}
+	i++
+	fs[i] = wire.Field{ID: 2, Value: wire.NewValueSet(wire.Set{ValueType: wire.TI32, Size: len(v.SetOfInts), Items: _Set_I32_ValueList(v.SetOfInts)})}
+	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
 }
-func (v *PrimitiveContainers) FromWire(w wire.Value) error {
+func (v *ContainersRequiredStruct) FromWire(w wire.Value) error {
 	var err error
 	for _, f := range w.GetStruct().Fields {
 		switch f.ID {
 		case 1:
 			if f.Value.Type() == wire.TList {
-				v.ListOfBinary, err = _List_Binary_Read(f.Value.GetList())
-				if err != nil {
-					return err
-				}
-			}
-		case 2:
-			if f.Value.Type() == wire.TList {
-				v.ListOfInts, err = _List_I64_Read(f.Value.GetList())
-				if err != nil {
-					return err
-				}
-			}
-		case 5:
-			if f.Value.Type() == wire.TMap {
-				v.MapOfIntToString, err = _Map_I32_String_Read(f.Value.GetMap())
-				if err != nil {
-					return err
-				}
-			}
-		case 6:
-			if f.Value.Type() == wire.TMap {
-				v.MapOfStringToBool, err = _Map_String_Bool_Read(f.Value.GetMap())
-				if err != nil {
-					return err
-				}
-			}
-		case 4:
-			if f.Value.Type() == wire.TSet {
-				v.SetOfBytes, err = _Set_Byte_Read(f.Value.GetSet())
+				v.ListOfStrings, err = _List_String_Read(f.Value.GetList())
 				if err != nil {
 					return err
 				}
 			}
 		case 3:
+			if f.Value.Type() == wire.TMap {
+				v.MapOfIntsToDoubles, err = _Map_I64_Double_Read(f.Value.GetMap())
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
 			if f.Value.Type() == wire.TSet {
-				v.SetOfStrings, err = _Set_String_Read(f.Value.GetSet())
+				v.SetOfInts, err = _Set_I32_Read(f.Value.GetSet())
 				if err != nil {
 					return err
 				}
@@ -292,8 +177,405 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _PrimitiveContainers_Read(w wire.Value) (*PrimitiveContainers, error) {
-	var v PrimitiveContainers
+func _ContainersRequiredStruct_Read(w wire.Value) (*ContainersRequiredStruct, error) {
+	var v ContainersRequiredStruct
+	err := v.FromWire(w)
+	return &v, err
+}
+
+type Frame struct {
+	Size    *Size
+	TopLeft *Point
+}
+
+func (v *Frame) ToWire() wire.Value {
+	var fs [2]wire.Field
+	i := 0
+	fs[i] = wire.Field{ID: 2, Value: v.Size.ToWire()}
+	i++
+	fs[i] = wire.Field{ID: 1, Value: v.TopLeft.ToWire()}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *Frame) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 2:
+			if f.Value.Type() == wire.TStruct {
+				v.Size, err = _Size_Read(f.Value)
+				if err != nil {
+					return err
+				}
+			}
+		case 1:
+			if f.Value.Type() == wire.TStruct {
+				v.TopLeft, err = _Point_Read(f.Value)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _Frame_Read(w wire.Value) (*Frame, error) {
+	var v Frame
+	err := v.FromWire(w)
+	return &v, err
+}
+
+type Point struct {
+	X float64
+	Y float64
+}
+
+func (v *Point) ToWire() wire.Value {
+	var fs [2]wire.Field
+	i := 0
+	fs[i] = wire.Field{ID: 1, Value: wire.NewValueDouble(v.X)}
+	i++
+	fs[i] = wire.Field{ID: 2, Value: wire.NewValueDouble(v.Y)}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *Point) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 1:
+			if f.Value.Type() == wire.TDouble {
+				v.X, err = f.Value.GetDouble(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
+			if f.Value.Type() == wire.TDouble {
+				v.Y, err = f.Value.GetDouble(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _Point_Read(w wire.Value) (*Point, error) {
+	var v Point
+	err := v.FromWire(w)
+	return &v, err
+}
+
+type PrimitiveOptionalStruct struct {
+	BinaryField []byte
+	BoolField   *bool
+	ByteField   *int8
+	DoubleField *float64
+	Int16Field  *int16
+	Int32Field  *int32
+	Int64Field  *int64
+	StringField *string
+}
+
+func (v *PrimitiveOptionalStruct) ToWire() wire.Value {
+	var fs [8]wire.Field
+	i := 0
+	if v.BinaryField != nil {
+		fs[i] = wire.Field{ID: 8, Value: wire.NewValueBinary(v.BinaryField)}
+		i++
+	}
+	if v.BoolField != nil {
+		fs[i] = wire.Field{ID: 1, Value: wire.NewValueBool(*v.BoolField)}
+		i++
+	}
+	if v.ByteField != nil {
+		fs[i] = wire.Field{ID: 2, Value: wire.NewValueI8(*v.ByteField)}
+		i++
+	}
+	if v.DoubleField != nil {
+		fs[i] = wire.Field{ID: 6, Value: wire.NewValueDouble(*v.DoubleField)}
+		i++
+	}
+	if v.Int16Field != nil {
+		fs[i] = wire.Field{ID: 3, Value: wire.NewValueI16(*v.Int16Field)}
+		i++
+	}
+	if v.Int32Field != nil {
+		fs[i] = wire.Field{ID: 4, Value: wire.NewValueI32(*v.Int32Field)}
+		i++
+	}
+	if v.Int64Field != nil {
+		fs[i] = wire.Field{ID: 5, Value: wire.NewValueI64(*v.Int64Field)}
+		i++
+	}
+	if v.StringField != nil {
+		fs[i] = wire.Field{ID: 7, Value: wire.NewValueString(*v.StringField)}
+		i++
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 8:
+			if f.Value.Type() == wire.TBinary {
+				v.BinaryField, err = f.Value.GetBinary(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 1:
+			if f.Value.Type() == wire.TBool {
+				x, err := f.Value.GetBool(), error(nil)
+				v.BoolField = &x
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
+			if f.Value.Type() == wire.TI8 {
+				x2, err := f.Value.GetI8(), error(nil)
+				v.ByteField = &x2
+				if err != nil {
+					return err
+				}
+			}
+		case 6:
+			if f.Value.Type() == wire.TDouble {
+				x3, err := f.Value.GetDouble(), error(nil)
+				v.DoubleField = &x3
+				if err != nil {
+					return err
+				}
+			}
+		case 3:
+			if f.Value.Type() == wire.TI16 {
+				x4, err := f.Value.GetI16(), error(nil)
+				v.Int16Field = &x4
+				if err != nil {
+					return err
+				}
+			}
+		case 4:
+			if f.Value.Type() == wire.TI32 {
+				x5, err := f.Value.GetI32(), error(nil)
+				v.Int32Field = &x5
+				if err != nil {
+					return err
+				}
+			}
+		case 5:
+			if f.Value.Type() == wire.TI64 {
+				x6, err := f.Value.GetI64(), error(nil)
+				v.Int64Field = &x6
+				if err != nil {
+					return err
+				}
+			}
+		case 7:
+			if f.Value.Type() == wire.TBinary {
+				x7, err := f.Value.GetString(), error(nil)
+				v.StringField = &x7
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _PrimitiveOptionalStruct_Read(w wire.Value) (*PrimitiveOptionalStruct, error) {
+	var v PrimitiveOptionalStruct
+	err := v.FromWire(w)
+	return &v, err
+}
+
+type PrimitiveRequiredStruct struct {
+	BinaryField []byte
+	BoolField   bool
+	ByteField   int8
+	DoubleField float64
+	Int16Field  int16
+	Int32Field  int32
+	Int64Field  int64
+	StringField string
+}
+
+func (v *PrimitiveRequiredStruct) ToWire() wire.Value {
+	var fs [8]wire.Field
+	i := 0
+	fs[i] = wire.Field{ID: 8, Value: wire.NewValueBinary(v.BinaryField)}
+	i++
+	fs[i] = wire.Field{ID: 1, Value: wire.NewValueBool(v.BoolField)}
+	i++
+	fs[i] = wire.Field{ID: 2, Value: wire.NewValueI8(v.ByteField)}
+	i++
+	fs[i] = wire.Field{ID: 6, Value: wire.NewValueDouble(v.DoubleField)}
+	i++
+	fs[i] = wire.Field{ID: 3, Value: wire.NewValueI16(v.Int16Field)}
+	i++
+	fs[i] = wire.Field{ID: 4, Value: wire.NewValueI32(v.Int32Field)}
+	i++
+	fs[i] = wire.Field{ID: 5, Value: wire.NewValueI64(v.Int64Field)}
+	i++
+	fs[i] = wire.Field{ID: 7, Value: wire.NewValueString(v.StringField)}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 8:
+			if f.Value.Type() == wire.TBinary {
+				v.BinaryField, err = f.Value.GetBinary(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 1:
+			if f.Value.Type() == wire.TBool {
+				v.BoolField, err = f.Value.GetBool(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
+			if f.Value.Type() == wire.TI8 {
+				v.ByteField, err = f.Value.GetI8(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 6:
+			if f.Value.Type() == wire.TDouble {
+				v.DoubleField, err = f.Value.GetDouble(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 3:
+			if f.Value.Type() == wire.TI16 {
+				v.Int16Field, err = f.Value.GetI16(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 4:
+			if f.Value.Type() == wire.TI32 {
+				v.Int32Field, err = f.Value.GetI32(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 5:
+			if f.Value.Type() == wire.TI64 {
+				v.Int64Field, err = f.Value.GetI64(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 7:
+			if f.Value.Type() == wire.TBinary {
+				v.StringField, err = f.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _PrimitiveRequiredStruct_Read(w wire.Value) (*PrimitiveRequiredStruct, error) {
+	var v PrimitiveRequiredStruct
+	err := v.FromWire(w)
+	return &v, err
+}
+
+type Size struct {
+	Height float64
+	Width  float64
+}
+
+func (v *Size) ToWire() wire.Value {
+	var fs [2]wire.Field
+	i := 0
+	fs[i] = wire.Field{ID: 2, Value: wire.NewValueDouble(v.Height)}
+	i++
+	fs[i] = wire.Field{ID: 1, Value: wire.NewValueDouble(v.Width)}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *Size) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 2:
+			if f.Value.Type() == wire.TDouble {
+				v.Height, err = f.Value.GetDouble(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 1:
+			if f.Value.Type() == wire.TDouble {
+				v.Width, err = f.Value.GetDouble(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _Size_Read(w wire.Value) (*Size, error) {
+	var v Size
+	err := v.FromWire(w)
+	return &v, err
+}
+
+type User struct {
+	Contact *ContactInfo
+	Name    string
+}
+
+func (v *User) ToWire() wire.Value {
+	var fs [2]wire.Field
+	i := 0
+	if v.Contact != nil {
+		fs[i] = wire.Field{ID: 2, Value: v.Contact.ToWire()}
+		i++
+	}
+	fs[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.Name)}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *User) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 2:
+			if f.Value.Type() == wire.TStruct {
+				v.Contact, err = _ContactInfo_Read(f.Value)
+				if err != nil {
+					return err
+				}
+			}
+		case 1:
+			if f.Value.Type() == wire.TBinary {
+				v.Name, err = f.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _User_Read(w wire.Value) (*User, error) {
+	var v User
 	err := v.FromWire(w)
 	return &v, err
 }
