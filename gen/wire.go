@@ -140,21 +140,21 @@ func (w WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName string
 func (w WireGenerator) FromWire(g Generator, spec compile.TypeSpec, value string) (string, error) {
 	switch spec {
 	case compile.BoolSpec:
-		return fmt.Sprintf("%s.GetBool(), nil", value), nil
+		return fmt.Sprintf("%s.GetBool(), error(nil)", value), nil
 	case compile.I8Spec:
-		return fmt.Sprintf("%s.GetI8(), nil", value), nil
+		return fmt.Sprintf("%s.GetI8(), error(nil)", value), nil
 	case compile.I16Spec:
-		return fmt.Sprintf("%s.GetI16(), nil", value), nil
+		return fmt.Sprintf("%s.GetI16(), error(nil)", value), nil
 	case compile.I32Spec:
-		return fmt.Sprintf("%s.GetI32(), nil", value), nil
+		return fmt.Sprintf("%s.GetI32(), error(nil)", value), nil
 	case compile.I64Spec:
-		return fmt.Sprintf("%s.GetI64(), nil", value), nil
+		return fmt.Sprintf("%s.GetI64(), error(nil)", value), nil
 	case compile.DoubleSpec:
-		return fmt.Sprintf("%s.GetDouble(), nil", value), nil
+		return fmt.Sprintf("%s.GetDouble(), error(nil)", value), nil
 	case compile.StringSpec:
-		return fmt.Sprintf("%s.GetString(), nil", value), nil
+		return fmt.Sprintf("%s.GetString(), error(nil)", value), nil
 	case compile.BinarySpec:
-		return fmt.Sprintf("%s.GetBinary(), nil", value), nil
+		return fmt.Sprintf("%s.GetBinary(), error(nil)", value), nil
 	default:
 		// Not a primitive type. It's probably a container or a custom type.
 	}

@@ -40,6 +40,7 @@ func structure(g Generator, spec *compile.StructSpec) error {
 		<$i := newVar "i">
 		<$fields := newVar "fs">
 		func (<$v> <$structRef>) ToWire() <$wire>.Value {
+			// TODO check if required fields that are reference types are nil
 			var <$fields> [<len .Spec.Fields>]<$wire>.Field
 			<$i> := 0
 
@@ -86,7 +87,9 @@ func structure(g Generator, spec *compile.StructSpec) error {
 						<if or .Required (or (isReferenceType .Type) (isStructType .Type))>
 							<$v>.<goCase .Name>, err = <$valueErr>
 						<else>
-							*<$v>.<goCase .Name>, err = <$valueErr>
+							<$value := newVar "x">
+							<$value>, err := <$valueErr>
+							<$v>.<goCase .Name> = &<$value>
 						<end>
 
 						if err != nil {

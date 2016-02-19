@@ -123,7 +123,6 @@ func (l listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, erro
 
 				<$o> := make(<$listType>, 0, <$l>.Size)
 				err := <$l>.Items.ForEach(func(<$x> <$wire>.Value) error {
-					var err error
 					<$i>, err := <fromWire .Spec.ValueSpec $x>
 					if err != nil {
 						return err
