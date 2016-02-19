@@ -209,3 +209,98 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		}
 	}
 }
+
+func TestEnumContainers(t *testing.T) {
+	singleFieldStruct := func(id int16, value wire.Value) wire.Value {
+		return wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			{ID: id, Value: value},
+		}})
+	}
+
+	tests := []struct {
+		s testdata.EnumContainers
+		v wire.Value
+	}{
+		{
+			testdata.EnumContainers{
+				ListOfEnums: []testdata.EnumDefault{
+					testdata.EnumDefaultFoo,
+					testdata.EnumDefaultBar,
+				},
+			},
+			singleFieldStruct(1, wire.NewValueList(wire.List{
+				ValueType: wire.TI32,
+				Size:      2,
+				Items: wire.ValueListFromSlice([]wire.Value{
+					wire.NewValueI32(0),
+					wire.NewValueI32(1),
+				}),
+			})),
+		},
+		{
+			testdata.EnumContainers{
+				SetOfEnums: map[testdata.EnumWithValues]struct{}{
+					testdata.EnumWithValuesX: struct{}{},
+					testdata.EnumWithValuesZ: struct{}{},
+				},
+			},
+			singleFieldStruct(2, wire.NewValueSet(wire.Set{
+				ValueType: wire.TI32,
+				Size:      2,
+				Items: wire.ValueListFromSlice([]wire.Value{
+					wire.NewValueI32(123),
+					wire.NewValueI32(789),
+				}),
+			})),
+		},
+		{
+			testdata.EnumContainers{
+				MapOfEnums: map[testdata.EnumWithDuplicateValues]int32{
+					testdata.EnumWithDuplicateValuesP: 123,
+					testdata.EnumWithDuplicateValuesQ: 456,
+				},
+			},
+			singleFieldStruct(3, wire.NewValueMap(wire.Map{
+				KeyType:   wire.TI32,
+				ValueType: wire.TI32,
+				Size:      2,
+				Items: wire.MapItemListFromSlice([]wire.MapItem{
+					wire.MapItem{Key: wire.NewValueI32(0), Value: wire.NewValueI32(123)},
+					wire.MapItem{Key: wire.NewValueI32(-1), Value: wire.NewValueI32(456)},
+				}),
+			})),
+		},
+		{
+			// this is the same as the one above except we're using "R" intsead
+			// of "P" (they both have the same value)
+			testdata.EnumContainers{
+				MapOfEnums: map[testdata.EnumWithDuplicateValues]int32{
+					testdata.EnumWithDuplicateValuesR: 123,
+					testdata.EnumWithDuplicateValuesQ: 456,
+				},
+			},
+			singleFieldStruct(3, wire.NewValueMap(wire.Map{
+				KeyType:   wire.TI32,
+				ValueType: wire.TI32,
+				Size:      2,
+				Items: wire.MapItemListFromSlice([]wire.MapItem{
+					wire.MapItem{Key: wire.NewValueI32(0), Value: wire.NewValueI32(123)},
+					wire.MapItem{Key: wire.NewValueI32(-1), Value: wire.NewValueI32(456)},
+				}),
+			})),
+		},
+	}
+
+	for _, tt := range tests {
+		assert.True(
+			t,
+			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
+			"%v.ToWire() != %v", tt.s, tt.v,
+		)
+
+		var s testdata.EnumContainers
+		if assert.NoError(t, s.FromWire(tt.v)) {
+			assert.Equal(t, tt.s, s)
+		}
+	}
+}

@@ -39,11 +39,11 @@ func stringp(x string) *string   { return &x }
 
 func TestPrimitiveRequiredStructWire(t *testing.T) {
 	tests := []struct {
-		s *testdata.PrimitiveRequiredStruct
+		s testdata.PrimitiveRequiredStruct
 		v wire.Value
 	}{
 		{
-			&testdata.PrimitiveRequiredStruct{
+			testdata.PrimitiveRequiredStruct{
 				BoolField:   true,
 				ByteField:   1,
 				Int16Field:  2,
@@ -75,7 +75,7 @@ func TestPrimitiveRequiredStructWire(t *testing.T) {
 
 		var s testdata.PrimitiveRequiredStruct
 		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, &s)
+			assert.Equal(t, tt.s, s)
 		}
 	}
 }
@@ -107,11 +107,11 @@ func TestPrimitiveOptionalStructWire(t *testing.T) {
 	}
 
 	tests := []struct {
-		s *testdata.PrimitiveOptionalStruct
+		s testdata.PrimitiveOptionalStruct
 		v wire.Value
 	}{
 		{
-			&testdata.PrimitiveOptionalStruct{
+			testdata.PrimitiveOptionalStruct{
 				BoolField:   boolp(true),
 				ByteField:   bytep(1),
 				Int16Field:  int16p(2),
@@ -133,35 +133,35 @@ func TestPrimitiveOptionalStructWire(t *testing.T) {
 			}}),
 		},
 		{
-			&testdata.PrimitiveOptionalStruct{BoolField: boolp(true)},
+			testdata.PrimitiveOptionalStruct{BoolField: boolp(true)},
 			singleFieldStruct(1, wire.NewValueBool(true)),
 		},
 		{
-			&testdata.PrimitiveOptionalStruct{ByteField: bytep(1)},
+			testdata.PrimitiveOptionalStruct{ByteField: bytep(1)},
 			singleFieldStruct(2, wire.NewValueI8(1)),
 		},
 		{
-			&testdata.PrimitiveOptionalStruct{Int16Field: int16p(2)},
+			testdata.PrimitiveOptionalStruct{Int16Field: int16p(2)},
 			singleFieldStruct(3, wire.NewValueI16(2)),
 		},
 		{
-			&testdata.PrimitiveOptionalStruct{Int32Field: int32p(3)},
+			testdata.PrimitiveOptionalStruct{Int32Field: int32p(3)},
 			singleFieldStruct(4, wire.NewValueI32(3)),
 		},
 		{
-			&testdata.PrimitiveOptionalStruct{Int64Field: int64p(4)},
+			testdata.PrimitiveOptionalStruct{Int64Field: int64p(4)},
 			singleFieldStruct(5, wire.NewValueI64(4)),
 		},
 		{
-			&testdata.PrimitiveOptionalStruct{DoubleField: doublep(5.0)},
+			testdata.PrimitiveOptionalStruct{DoubleField: doublep(5.0)},
 			singleFieldStruct(6, wire.NewValueDouble(5.0)),
 		},
 		{
-			&testdata.PrimitiveOptionalStruct{StringField: stringp("foo")},
+			testdata.PrimitiveOptionalStruct{StringField: stringp("foo")},
 			singleFieldStruct(7, wire.NewValueString("foo")),
 		},
 		{
-			&testdata.PrimitiveOptionalStruct{BinaryField: []byte("bar")},
+			testdata.PrimitiveOptionalStruct{BinaryField: []byte("bar")},
 			singleFieldStruct(8, wire.NewValueBinary([]byte("bar"))),
 		},
 	}
@@ -175,18 +175,18 @@ func TestPrimitiveOptionalStructWire(t *testing.T) {
 
 		var s testdata.PrimitiveOptionalStruct
 		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, &s)
+			assert.Equal(t, tt.s, s)
 		}
 	}
 }
 
-func TestContainersRequiredStruct(t *testing.T) {
+func TestPrimitiveContainersRequired(t *testing.T) {
 	tests := []struct {
-		s *testdata.ContainersRequiredStruct
+		s testdata.PrimitiveContainersRequired
 		v wire.Value
 	}{
 		{
-			&testdata.ContainersRequiredStruct{
+			testdata.PrimitiveContainersRequired{
 				ListOfStrings:      []string{"foo", "bar", "baz"},
 				SetOfInts:          map[int32]struct{}{1: struct{}{}, 2: struct{}{}},
 				MapOfIntsToDoubles: map[int64]float64{1: 2.0, 3: 4.0},
@@ -244,20 +244,20 @@ func TestContainersRequiredStruct(t *testing.T) {
 			"%v.ToWire() != %v", tt.s, tt.v,
 		)
 
-		var s testdata.ContainersRequiredStruct
+		var s testdata.PrimitiveContainersRequired
 		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, &s)
+			assert.Equal(t, tt.s, s)
 		}
 	}
 }
 
 func TestNestedStructsRequired(t *testing.T) {
 	tests := []struct {
-		s *testdata.Frame
+		s testdata.Frame
 		v wire.Value
 	}{
 		{
-			&testdata.Frame{
+			testdata.Frame{
 				TopLeft: &testdata.Point{X: 1, Y: 2},
 				Size:    &testdata.Size{Width: 100, Height: 200},
 			},
@@ -289,24 +289,24 @@ func TestNestedStructsRequired(t *testing.T) {
 
 		var s testdata.Frame
 		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, &s)
+			assert.Equal(t, tt.s, s)
 		}
 	}
 }
 
 func TestNestedStructsOptional(t *testing.T) {
 	tests := []struct {
-		s *testdata.User
+		s testdata.User
 		v wire.Value
 	}{
 		{
-			&testdata.User{Name: "Foo Bar"},
+			testdata.User{Name: "Foo Bar"},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("Foo Bar")},
 			}}),
 		},
 		{
-			&testdata.User{
+			testdata.User{
 				Name:    "Foo Bar",
 				Contact: &testdata.ContactInfo{EmailAddress: "foo@example.com"},
 			},
@@ -328,7 +328,7 @@ func TestNestedStructsOptional(t *testing.T) {
 
 		var s testdata.User
 		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, &s)
+			assert.Equal(t, tt.s, s)
 		}
 	}
 }
