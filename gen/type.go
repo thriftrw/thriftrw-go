@@ -36,14 +36,14 @@ const (
 )
 
 // TypeDefinition generates code for the given TypeSpec.
-func (g *Generator) TypeDefinition(spec compile.TypeSpec) error {
+func TypeDefinition(g Generator, spec compile.TypeSpec) error {
 	switch s := spec.(type) {
 	case *compile.EnumSpec:
-		return g.enum(s)
+		return enum(g, s)
 	case *compile.StructSpec:
-		return g.structure(s)
+		return structure(g, s)
 	case *compile.TypedefSpec:
-		return g.typedef(s)
+		return typedef(g, s)
 	default:
 		panic(fmt.Sprintf("%q is not a defined type", spec.ThriftName()))
 	}

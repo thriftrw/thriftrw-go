@@ -22,7 +22,7 @@ package gen
 
 import "github.com/thriftrw/thriftrw-go/compile"
 
-func (g *Generator) structure(spec *compile.StructSpec) error {
+func structure(g Generator, spec *compile.StructSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">

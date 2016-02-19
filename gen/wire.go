@@ -26,8 +26,26 @@ import (
 	"github.com/thriftrw/thriftrw-go/compile"
 )
 
-// toWire generates a call to the given variable of the given type.
-func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error) {
+// WireGenerator is responsible for generating code that knows how to convert
+// between Thrift types and their Value representations.
+type WireGenerator struct {
+	mapG  mapGenerator
+	setG  setGenerator
+	listG listGenerator
+}
+
+// NewWireGenerator builds a new WireGenerator.
+func NewWireGenerator() WireGenerator {
+	return WireGenerator{
+		listG: newListGenerator(),
+		setG:  newSetGenerator(),
+		mapG:  newMapGenerator(),
+	}
+}
+
+// ToWire generates an expression which evaluates to a Value object containing
+// the wire representation of the variable $varName of type $spec.
+func (w WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName string) (string, error) {
 	wire := g.Import("github.com/thriftrw/thriftrw-go/wire")
 	switch spec {
 	case compile.BoolSpec:
@@ -53,7 +71,7 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 	switch s := spec.(type) {
 	case *compile.MapSpec:
 		// TODO unhashable types
-		mapItemList, err := g.mapItemList(s)
+		mapItemList, err := w.mapG.ItemList(g, s)
 		if err != nil {
 			return "", err
 		}
@@ -73,7 +91,7 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 			}{Wire: wire, Name: varName, Spec: s, MapItemList: mapItemList},
 		)
 	case *compile.ListSpec:
-		valueList, err := g.listValueList(s)
+		valueList, err := w.listG.ValueList(g, s)
 		if err != nil {
 			return "", err
 		}
@@ -92,7 +110,7 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 			}{Wire: wire, Name: varName, Spec: s, ValueList: valueList},
 		)
 	case *compile.SetSpec:
-		valueList, err := g.setValueList(s)
+		valueList, err := w.setG.ValueList(g, s)
 		if err != nil {
 			return "", err
 		}
@@ -117,7 +135,9 @@ func (g *Generator) toWire(spec compile.TypeSpec, varName string) (string, error
 	}
 }
 
-func (g *Generator) fromWire(spec compile.TypeSpec, value string) (string, error) {
+// FromWire generates an expression of type ($spec, error) which reads the Value
+// at $value into a $spec.
+func (w WireGenerator) FromWire(g Generator, spec compile.TypeSpec, value string) (string, error) {
 	switch spec {
 	case compile.BoolSpec:
 		return fmt.Sprintf("%s.GetBool(), nil", value), nil
@@ -141,19 +161,19 @@ func (g *Generator) fromWire(spec compile.TypeSpec, value string) (string, error
 
 	switch s := spec.(type) {
 	case *compile.MapSpec:
-		reader, err := g.mapReader(s)
+		reader, err := w.mapG.Reader(g, s)
 		if err != nil {
 			return "", err
 		}
 		return fmt.Sprintf("%s(%s.GetMap())", reader, value), nil
 	case *compile.ListSpec:
-		reader, err := g.listReader(s)
+		reader, err := w.listG.Reader(g, s)
 		if err != nil {
 			return "", err
 		}
 		return fmt.Sprintf("%s(%s.GetList())", reader, value), nil
 	case *compile.SetSpec:
-		reader, err := g.setReader(s)
+		reader, err := w.setG.Reader(g, s)
 		if err != nil {
 			return "", err
 		}
@@ -168,9 +188,9 @@ func typeReader(spec compile.TypeSpec) string {
 	return "_" + goCase(spec.ThriftName()) + "_Read"
 }
 
-// typeCode gets a value of type 'wire.Type' that represents the over-the-wire
-// type code for the given TypeSpec.
-func (g *Generator) typeCode(spec compile.TypeSpec) string {
+// TypeCode gets an expression of type 'wire.Type' that represents the
+// over-the-wire type code for the given TypeSpec.
+func TypeCode(g Generator, spec compile.TypeSpec) string {
 	wire := g.Import("github.com/thriftrw/thriftrw-go/wire")
 
 	switch spec {
@@ -200,7 +220,7 @@ func (g *Generator) typeCode(spec compile.TypeSpec) string {
 	case *compile.SetSpec:
 		return fmt.Sprintf("%s.TSet", wire)
 	case *compile.TypedefSpec:
-		return g.typeCode(s.Target)
+		return TypeCode(g, s.Target)
 	case *compile.EnumSpec:
 		return fmt.Sprintf("%s.TI32", wire)
 	case *compile.StructSpec:
