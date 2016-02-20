@@ -54,6 +54,9 @@ func TestCodeIsUpToDate(t *testing.T) {
 
 		newPath := filepath.Join(outputDir, filepath.Base(file)+".go")
 		require.NoError(t, run("../thriftrw-go", "-o", newPath, file))
+		// TODO use some top-level Generate function from the gen module
+		// instead. That way, the code generation still happens in the same
+		// process as the test and we get some level of coverage.
 
 		if hash(t, newPath) != currentHash {
 			run("diff", "-u", currentPath, newPath)
