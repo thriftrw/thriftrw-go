@@ -34,6 +34,48 @@ func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
 	return &v, err
 }
 
+type Edge struct {
+	End   *Point
+	Start *Point
+}
+
+func (v *Edge) ToWire() wire.Value {
+	var fs [2]wire.Field
+	i := 0
+	fs[i] = wire.Field{ID: 2, Value: v.End.ToWire()}
+	i++
+	fs[i] = wire.Field{ID: 1, Value: v.Start.ToWire()}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *Edge) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 2:
+			if f.Value.Type() == wire.TStruct {
+				v.End, err = _Point_Read(f.Value)
+				if err != nil {
+					return err
+				}
+			}
+		case 1:
+			if f.Value.Type() == wire.TStruct {
+				v.Start, err = _Point_Read(f.Value)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _Edge_Read(w wire.Value) (*Edge, error) {
+	var v Edge
+	err := v.FromWire(w)
+	return &v, err
+}
+
 type _List_EnumDefault_ValueList []EnumDefault
 
 func (v _List_EnumDefault_ValueList) ForEach(f func(wire.Value) error) error {
@@ -317,6 +359,66 @@ func (v *Frame) FromWire(w wire.Value) error {
 }
 func _Frame_Read(w wire.Value) (*Frame, error) {
 	var v Frame
+	err := v.FromWire(w)
+	return &v, err
+}
+
+type _List_Edge_ValueList []*Edge
+
+func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(x.ToWire())
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (v _List_Edge_ValueList) Close() {
+}
+func _List_Edge_Read(l wire.List) ([]*Edge, error) {
+	if l.ValueType != wire.TStruct {
+		return nil, nil
+	}
+	o := make([]*Edge, 0, l.Size)
+	err := l.Items.ForEach(func(x wire.Value) error {
+		i, err := _Edge_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Items.Close()
+	return o, err
+}
+
+type Graph struct{ Edges []*Edge }
+
+func (v *Graph) ToWire() wire.Value {
+	var fs [1]wire.Field
+	i := 0
+	fs[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.Edges), Items: _List_Edge_ValueList(v.Edges)})}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *Graph) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 1:
+			if f.Value.Type() == wire.TList {
+				v.Edges, err = _List_Edge_Read(f.Value.GetList())
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _Graph_Read(w wire.Value) (*Graph, error) {
+	var v Graph
 	err := v.FromWire(w)
 	return &v, err
 }

@@ -211,12 +211,6 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 }
 
 func TestEnumContainers(t *testing.T) {
-	singleFieldStruct := func(id int16, value wire.Value) wire.Value {
-		return wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-			{ID: id, Value: value},
-		}})
-	}
-
 	tests := []struct {
 		s testdata.EnumContainers
 		v wire.Value
@@ -299,6 +293,105 @@ func TestEnumContainers(t *testing.T) {
 		)
 
 		var s testdata.EnumContainers
+		if assert.NoError(t, s.FromWire(tt.v)) {
+			assert.Equal(t, tt.s, s)
+		}
+	}
+}
+
+func TestListOfStructs(t *testing.T) {
+	tests := []struct {
+		s testdata.Graph
+		v wire.Value
+	}{
+		{
+			testdata.Graph{Edges: []*testdata.Edge{}},
+			singleFieldStruct(1, wire.NewValueList(wire.List{
+				ValueType: wire.TStruct,
+				Size:      0,
+				Items:     wire.ValueListFromSlice(nil),
+			})),
+		},
+		{
+			testdata.Graph{Edges: []*testdata.Edge{
+				{
+					Start: &testdata.Point{X: 1.0, Y: 2.0},
+					End:   &testdata.Point{X: 3.0, Y: 4.0},
+				},
+				{
+					Start: &testdata.Point{X: 5.0, Y: 6.0},
+					End:   &testdata.Point{X: 7.0, Y: 8.0},
+				},
+				{
+					Start: &testdata.Point{X: 9.0, Y: 10.0},
+					End:   &testdata.Point{X: 11.0, Y: 12.0},
+				},
+			}},
+			singleFieldStruct(1, wire.NewValueList(wire.List{
+				ValueType: wire.TStruct,
+				Size:      3,
+				Items: wire.ValueListFromSlice([]wire.Value{
+					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{
+							ID: 1,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(1.0)},
+								{ID: 2, Value: wire.NewValueDouble(2.0)},
+							}}),
+						},
+						{
+							ID: 2,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(3.0)},
+								{ID: 2, Value: wire.NewValueDouble(4.0)},
+							}}),
+						},
+					}}),
+					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{
+							ID: 1,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(5.0)},
+								{ID: 2, Value: wire.NewValueDouble(6.0)},
+							}}),
+						},
+						{
+							ID: 2,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(7.0)},
+								{ID: 2, Value: wire.NewValueDouble(8.0)},
+							}}),
+						},
+					}}),
+					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{
+							ID: 1,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(9.0)},
+								{ID: 2, Value: wire.NewValueDouble(10.0)},
+							}}),
+						},
+						{
+							ID: 2,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(11.0)},
+								{ID: 2, Value: wire.NewValueDouble(12.0)},
+							}}),
+						},
+					}}),
+				}),
+			})),
+		},
+	}
+
+	for _, tt := range tests {
+		assert.True(
+			t,
+			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
+			"%v.ToWire() != %v", tt.s, tt.v,
+		)
+
+		var s testdata.Graph
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}

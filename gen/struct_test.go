@@ -100,12 +100,6 @@ func TestPrimitiveRequiredMissingFields(t *testing.T) {
 }
 
 func TestPrimitiveOptionalStructWire(t *testing.T) {
-	singleFieldStruct := func(id int16, value wire.Value) wire.Value {
-		return wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-			{ID: id, Value: value},
-		}})
-	}
-
 	tests := []struct {
 		s testdata.PrimitiveOptionalStruct
 		v wire.Value

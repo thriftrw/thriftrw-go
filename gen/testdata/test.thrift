@@ -89,6 +89,15 @@ struct Frame {
     2: required Size size
 }
 
+struct Edge {
+    1: required Point start
+    2: required Point end
+}
+
+struct Graph {
+    1: required list<Edge> edges
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // Nested structs (Optional)
 
