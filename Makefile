@@ -2,18 +2,9 @@ export GO15VENDOREXPERIMENT=1
 
 PACKAGES := $(shell glide novendor)
 
-.PHONY: clean
-clean:
-	go clean
-
 .PHONY: build
 build:
 	go build
-
-.PHONY: install
-install:
-	glide --version || go get github.com/Masterminds/glide
-	glide install
 
 .PHONY: test
 test: build
@@ -23,6 +14,15 @@ test: build
 cover:
 	@$(foreach pkg, $(shell go list $(PACKAGES) | cut -d/ -f4-), \
 		go test ./$(pkg) -v -cover &&) echo "success"
+
+.PHONY: clean
+clean:
+	go clean
+
+.PHONY: install
+install:
+	glide --version || go get github.com/Masterminds/glide
+	glide install
 
 ##############################################################################
 # CI
