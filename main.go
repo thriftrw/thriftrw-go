@@ -22,33 +22,13 @@ package main
 
 import (
 	"flag"
-	"go/token"
 	"log"
 	"os"
 	"path/filepath"
-	"sort"
 
 	"github.com/thriftrw/thriftrw-go/compile"
 	"github.com/thriftrw/thriftrw-go/gen"
 )
-
-func constantNames(constants map[string]*compile.Constant) []string {
-	names := make([]string, 0, len(constants))
-	for name := range constants {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	return names
-}
-
-func typeNames(types map[string]compile.TypeSpec) []string {
-	names := make([]string, 0, len(types))
-	for name := range types {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	return names
-}
 
 func main() {
 	// TODO proper command line argument parsing
@@ -75,23 +55,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	packageName := filepath.Base(outDir)
-	g := gen.NewGenerator(packageName)
-
-	for _, constantName := range constantNames(module.Constants) {
-		c := module.Constants[constantName]
-		if err := gen.Constant(g, c); err != nil {
-			log.Fatal(err)
-		}
-	}
-
-	for _, typeName := range typeNames(module.Types) {
-		t := module.Types[typeName]
-		if err := gen.TypeDefinition(g, t); err != nil {
-			log.Fatal(err)
-		}
-	}
-
 	outFile := os.Stdout
 	if len(*output) > 0 {
 		outFile, err = os.Create(*output)
@@ -101,7 +64,11 @@ func main() {
 		}
 	}
 
-	if err := g.Write(outFile, token.NewFileSet()); err != nil {
+	opts := gen.Options{
+		PackageName: filepath.Base(outDir), // TODO: customize using flags
+		Output:      outFile,
+	}
+	if err := gen.Generate(module, &opts); err != nil {
 		log.Fatal(err)
 	}
 }
