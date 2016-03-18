@@ -1,3 +1,6 @@
 node_modules
 /vendor
 /build
+/cover
+cover.out
+cover.html
