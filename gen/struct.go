@@ -22,14 +22,15 @@ package gen
 
 import "github.com/thriftrw/thriftrw-go/compile"
 
-func (g *Generator) structure(spec *compile.StructSpec) error {
+func structure(g Generator, spec *compile.StructSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
-		<$structName := defName .>
+		<$structName := defName .Spec>
+		<$structRef := typeReference .Spec Required>
 
 		type <$structName> struct {
-		<range .Fields>
+		<range .Spec.Fields>
 			<goCase .Name> <typeReference .Type (required .Required)>
 		<end>
 		}
@@ -38,18 +39,31 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 		<$v := newVar "v">
 		<$i := newVar "i">
 		<$fields := newVar "fs">
-		func (<$v> *<$structName>) ToWire() <$wire>.Value {
-			var <$fields> [<len .Fields>]<$wire>.Field
+		func (<$v> <$structRef>) ToWire() <$wire>.Value {
+			// TODO check if required fields that are reference types are nil
+			var <$fields> [<len .Spec.Fields>]<$wire>.Field
 			<$i> := 0
 
-			<range .Fields>
+			<range .Spec.Fields>
 				<$f := printf "%s.%s" $v (goCase .Name)>
+
 				<if .Required>
-					<$fields>[<$i>] = <toWire .Type $f>
+					<$wVal := toWire .Type $f>
+					<$fields>[<$i>] = <$wire>.Field{ID: <.ID>, Value: <$wVal>}
 					<$i>++
 				<else>
 					if <$f> != nil {
-						<$fields>[<$i>] = <toWire .Type $f>
+						<if or (isReferenceType .Type) (isStructType .Type)>
+							<$fields>[<$i>] = <$wire>.Field{
+								ID: <.ID>,
+								Value: <toWire .Type $f>,
+							}
+						<else>
+							<$fields>[<$i>] = <$wire>.Field{
+								ID: <.ID>,
+								Value: <toWire .Type (printf "*%s" $f)>,
+							}
+						<end>
 						<$i>++
 					}
 				<end>
@@ -61,27 +75,47 @@ func (g *Generator) structure(spec *compile.StructSpec) error {
 		}
 
 		<$w := newVar "w">
-		func (<$v> *<$structName>) FromWire(<$w> <$wire>.Value) error {
+		func (<$v> <$structRef>) FromWire(<$w> <$wire>.Value) error {
+			var err error
 			<$f := newVar "f">
 			for _, <$f> := range <$w>.GetStruct().Fields {
 				switch <$f>.ID {
-				<range .Fields>
+				<range .Spec.Fields>
 				case <.ID>:
 					if <$f>.Value.Type() == <typeCode .Type> {
-						<$t := printf "%s.%s" $v (goCase .Name)>
-						<fromWire .Type $t (printf "%s.Value" $f)>
-						// TODO read errors
+						<$valueErr := fromWire .Type (printf "%s.Value" $f)>
+						<if or .Required (or (isReferenceType .Type) (isStructType .Type))>
+							<$v>.<goCase .Name>, err = <$valueErr>
+						<else>
+							<$value := newVar "x">
+							<$value>, err := <$valueErr>
+							<$v>.<goCase .Name> = &<$value>
+						<end>
+
+						if err != nil {
+							return err
+						}
 					}
 				<end>
 				}
 			}
 
 			// TODO(abg): Check that all required fields were set.
+			return nil
+		}
+
+		func <.Reader>(<$w> <$wire>.Value) (<$structRef>, error) {
+			var <$v> <$structName>
+			err := <$v>.FromWire(<$w>)
+			return &<$v>, err
 		}
 
 		// TODO(abg): Generate Error() if exception.
 		`,
-		spec,
+		struct {
+			Spec   *compile.StructSpec
+			Reader string
+		}{Spec: spec, Reader: typeReader(spec)},
 	)
 	// TODO(abg): JSON tags for generated structs
 

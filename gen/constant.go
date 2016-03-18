@@ -23,7 +23,7 @@ package gen
 import "github.com/thriftrw/thriftrw-go/compile"
 
 // Constant TODO
-func (g *Generator) Constant(c *compile.Constant) error {
+func Constant(g Generator, c *compile.Constant) error {
 	err := g.DeclareFromTemplate(
 		`
 		const <goCase .Name> <typeReference .Type Required> = nil // TODO

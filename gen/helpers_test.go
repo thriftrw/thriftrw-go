@@ -20,45 +20,12 @@
 
 package gen
 
-import "github.com/thriftrw/thriftrw-go/compile"
+import "github.com/thriftrw/thriftrw-go/wire"
 
-func enum(g Generator, spec *compile.EnumSpec) error {
-	// TODO(abg) define an error type in the library for unrecognized enums.
-	err := g.DeclareFromTemplate(
-		`
-		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+// This file contains helpers for the different test cases in this module.
 
-		<$enumName := defName .Spec>
-		type <$enumName> int32
-
-		const (
-		<range .Spec.Items>
-			<$enumName><goCase .Name> <$enumName> = <.Value>
-		<end>
-		)
-
-		<$v := newVar "v">
-		func (<$v> <$enumName>) ToWire() <$wire>.Value {
-			return <$wire>.NewValueI32(int32(<$v>))
-		}
-
-		<$w := newVar "w">
-		func (<$v> *<$enumName>) FromWire(<$w> <$wire>.Value) error {
-			*<$v> = (<$enumName>)(<$w>.GetI32());
-			return nil
-		}
-
-		func <.Reader>(<$w> <$wire>.Value) (<$enumName>, error) {
-			var <$v> <$enumName>
-			err := <$v>.FromWire(<$w>)
-			return <$v>, err
-		}
-		`,
-		struct {
-			Spec   *compile.EnumSpec
-			Reader string
-		}{Spec: spec, Reader: typeReader(spec)},
-	)
-
-	return wrapGenerateError(spec.Name, err)
+func singleFieldStruct(id int16, value wire.Value) wire.Value {
+	return wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+		{ID: id, Value: value},
+	}})
 }

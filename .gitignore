@@ -1,6 +1,7 @@
 node_modules
 /vendor
 /build
+/thriftrw-go
 /cover
 cover.out
 cover.html

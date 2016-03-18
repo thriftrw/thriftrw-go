@@ -22,6 +22,26 @@ package gen
 
 import "fmt"
 
+// Namespace allows finding names that don't conflict with other names in
+// certain scopes.
+type Namespace interface {
+	// Generates a new name based on the given name. Prefers the provided name
+	// but the name may be altered if it conflicts with another name in the
+	// current scope.
+	//
+	// The returned name is also reserved so that future names cannot conflict
+	// with it.
+	NewName(name string) string
+
+	// Reserve the given name in this namespace. Fails with an error if the name
+	// is already taken.
+	Reserve(name string) error
+
+	// Create a new Child namespace. The child namespace cannot use any names
+	// defined in this namespace or any of its parent namespaces.
+	Child() Namespace
+}
+
 // namespace helps reserve names within a scope with support for child
 // namespaces that do not attempt to shadow names from the parent namespace.
 type namespace struct {
@@ -29,7 +49,8 @@ type namespace struct {
 	taken  map[string]struct{}
 }
 
-func newNamespace() *namespace {
+// NewNamespace creates a new namespace.
+func NewNamespace() Namespace {
 	return &namespace{taken: make(map[string]struct{})}
 }
 
@@ -44,7 +65,6 @@ func (n *namespace) isTaken(name string) bool {
 	return false
 }
 
-// New generates a new name based on the given name.
 func (n *namespace) NewName(base string) string {
 	// TODO(abg): Avoid clashing with Go keywords.
 	name := base
@@ -55,9 +75,6 @@ func (n *namespace) NewName(base string) string {
 	return name
 }
 
-// Reserve reserves the given name with the namespace.
-//
-// An error is returned if the name was already taken.
 func (n *namespace) Reserve(name string) error {
 	if n.isTaken(name) {
 		return namespaceError{name}
@@ -66,10 +83,7 @@ func (n *namespace) Reserve(name string) error {
 	return nil
 }
 
-// Child creates a new child namespace from the given namespace. The child
-// namespace will not be allowed to use names that area already taken by this
-// namespace or any of its parents.
-func (n *namespace) Child() *namespace {
+func (n *namespace) Child() Namespace {
 	return &namespace{parent: n, taken: make(map[string]struct{})}
 }
 

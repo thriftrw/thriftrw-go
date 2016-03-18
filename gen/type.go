@@ -36,14 +36,14 @@ const (
 )
 
 // TypeDefinition generates code for the given TypeSpec.
-func (g *Generator) TypeDefinition(spec compile.TypeSpec) error {
+func TypeDefinition(g Generator, spec compile.TypeSpec) error {
 	switch s := spec.(type) {
 	case *compile.EnumSpec:
-		return g.enum(s)
+		return enum(g, s)
 	case *compile.StructSpec:
-		return g.structure(s)
+		return structure(g, s)
 	case *compile.TypedefSpec:
-		return g.typedef(s)
+		return typedef(g, s)
 	default:
 		panic(fmt.Sprintf("%q is not a defined type", spec.ThriftName()))
 	}
@@ -57,12 +57,24 @@ func isReferenceType(spec compile.TypeSpec) bool {
 		return true
 	}
 
-	switch spec.(type) {
+	switch s := spec.(type) {
 	case *compile.MapSpec,
 		*compile.ListSpec,
-		*compile.SetSpec,
-		*compile.StructSpec:
+		*compile.SetSpec:
 		return true
+	case *compile.TypedefSpec:
+		return isReferenceType(s.Target)
+	default:
+		return false
+	}
+}
+
+func isStructType(spec compile.TypeSpec) bool {
+	switch s := spec.(type) {
+	case *compile.StructSpec:
+		return true
+	case *compile.TypedefSpec:
+		return isStructType(s.Target)
 	default:
 		return false
 	}
@@ -71,17 +83,22 @@ func isReferenceType(spec compile.TypeSpec) bool {
 // typeReference returns a string representation of a reference to the given
 // type.
 //
-// ptr specifies whether the reference should be a pointer. It will not be a
-// pointer for types that are already reference types.
-func typeReference(spec compile.TypeSpec, req fieldRequired) (result string) {
-	// Prepend "*" to the result if the field is not required and the type isn't
-	// a reference type.
-	if req != Required && !isReferenceType(spec) {
-		defer func() {
-			result = "*" + result
-		}()
+// req specifies whether the reference expects the type to be always present. If
+// not required, the returned type will be a reference type so that it can be
+// nil.
+func typeReference(spec compile.TypeSpec, req fieldRequired) string {
+	name := typeName(spec)
+	if (req != Required && !isReferenceType(spec)) || isStructType(spec) {
+		// Prepend "*" to the result if the field is not required and the type
+		// isn't a reference type.
+		name = "*" + name
 	}
+	return name
+}
 
+// typeName returns the name of the given type, whether it's a custom type or
+// native.
+func typeName(spec compile.TypeSpec) string {
 	switch spec {
 	case compile.BoolSpec:
 		return "bool"
@@ -94,7 +111,7 @@ func typeReference(spec compile.TypeSpec, req fieldRequired) (result string) {
 	case compile.I64Spec:
 		return "int64"
 	case compile.DoubleSpec:
-		return "double64"
+		return "float64"
 	case compile.StringSpec:
 		return "string"
 	case compile.BinarySpec:
@@ -116,8 +133,6 @@ func typeReference(spec compile.TypeSpec, req fieldRequired) (result string) {
 	case *compile.SetSpec:
 		// TODO unhashable types
 		return fmt.Sprintf("map[%s]struct{}", typeReference(s.ValueSpec, Required))
-	case *compile.StructSpec:
-		return "*" + typeDeclName(spec)
 	default:
 		// Custom defined type. The reference is just the name of the type then.
 		return typeDeclName(spec)
