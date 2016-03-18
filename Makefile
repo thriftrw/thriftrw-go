@@ -12,8 +12,8 @@ test: build
 
 .PHONY: cover
 cover:
-	@$(foreach pkg, $(shell go list $(PACKAGES) | cut -d/ -f4-), \
-		go test ./$(pkg) -v -cover &&) echo "success"
+	./scripts/cover.sh $(shell go list $(PACKAGES))
+	go tool cover -html=cover.out -o cover.html
 
 .PHONY: clean
 clean:
@@ -29,7 +29,7 @@ install:
 
 .PHONY: install_ci
 install_ci: install
-	go get github.com/axw/gocov/gocov
+	go get github.com/wadey/gocovmerge
 	go get github.com/mattn/goveralls
 	go get golang.org/x/tools/cmd/cover
 
@@ -40,4 +40,5 @@ build_ci: build
 
 .PHONY: test_ci
 test_ci: build_ci
-	goveralls -service=travis-ci -v $(PACKAGES)
+	./scripts/cover.sh $(shell go list $(PACKAGES))
+	goveralls -coverprofile=cover.out -service=travis-ci
