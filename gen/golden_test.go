@@ -1,3 +1,23 @@
+// Copyright (c) 2015 Uber Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 package gen
 
 import (
@@ -11,6 +31,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/thriftrw/thriftrw-go/compile"
 )
 
 func hash(t *testing.T, name string) string {
@@ -33,6 +54,19 @@ func run(name string, args ...string) error {
 	return cmd.Run()
 }
 
+func generate(t *testing.T, inPath, outPath string) {
+	module, err := compile.Compile(inPath)
+	require.NoError(t, err, "failed to compile %v", inPath)
+
+	outFile, err := os.Create(outPath)
+	require.NoError(t, err, "could not create %v", outPath)
+	defer outFile.Close()
+
+	opts := Options{PackageName: "testdata", Output: outFile}
+	require.NoError(
+		t, Generate(module, &opts), "could not generate code for %v", inPath)
+}
+
 func TestCodeIsUpToDate(t *testing.T) {
 	// This test just verifies that the generated code in testdata/ is up to
 	// date. If this test failed, run 'make generate' in the testdata/ directory
@@ -41,22 +75,15 @@ func TestCodeIsUpToDate(t *testing.T) {
 	files, err := filepath.Glob("testdata/*.thrift")
 	require.NoError(t, err)
 
-	tmpDir, err := ioutil.TempDir("", "thriftrw-golden-test")
+	outputDir, err := ioutil.TempDir("", "thriftrw-golden-test")
 	require.NoError(t, err)
-	defer os.RemoveAll(tmpDir)
-
-	outputDir := filepath.Join(tmpDir, "testdata")
-	require.NoError(t, os.Mkdir(outputDir, 755))
+	defer os.RemoveAll(outputDir)
 
 	for _, file := range files {
 		currentPath := file + ".go"
 		currentHash := hash(t, currentPath)
-
 		newPath := filepath.Join(outputDir, filepath.Base(file)+".go")
-		require.NoError(t, run("../thriftrw-go", "-o", newPath, file))
-		// TODO use some top-level Generate function from the gen module
-		// instead. That way, the code generation still happens in the same
-		// process as the test and we get some level of coverage.
+		generate(t, file, newPath)
 
 		if hash(t, newPath) != currentHash {
 			run("diff", "-u", currentPath, newPath)
