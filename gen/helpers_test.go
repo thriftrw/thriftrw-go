@@ -29,3 +29,11 @@ func singleFieldStruct(id int16, value wire.Value) wire.Value {
 		{ID: id, Value: value},
 	}})
 }
+
+func boolp(x bool) *bool         { return &x }
+func bytep(x int8) *int8         { return &x }
+func int16p(x int16) *int16      { return &x }
+func int32p(x int32) *int32      { return &x }
+func int64p(x int64) *int64      { return &x }
+func doublep(x float64) *float64 { return &x }
+func stringp(x string) *string   { return &x }

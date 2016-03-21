@@ -103,9 +103,10 @@ func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOpt
 
 		// Inline functions:
 
-		"fromWire": func(s compile.TypeSpec, n string) (string, error) { return g.w.FromWire(g, s, n) },
-		"toWire":   func(s compile.TypeSpec, n string) (string, error) { return g.w.ToWire(g, s, n) },
-		"typeCode": func(s compile.TypeSpec) string { return TypeCode(g, s) },
+		"fromWire":  func(s compile.TypeSpec, n string) (string, error) { return g.w.FromWire(g, s, n) },
+		"toWire":    func(s compile.TypeSpec, n string) (string, error) { return g.w.ToWire(g, s, n) },
+		"toWireRef": func(s compile.TypeSpec, n string) (string, error) { return g.w.ToWireRef(g, s, n) },
+		"typeCode":  func(s compile.TypeSpec) string { return TypeCode(g, s) },
 
 		"Optional": func() fieldRequired { return Optional },
 		"Required": func() fieldRequired { return Required },
@@ -248,6 +249,10 @@ func (g *generator) recordGenDeclNames(d *ast.GenDecl) error {
 //
 // toWire(TypeSpec, v): Returns an expression of type Value that contains the
 // wire representation of the item "v" of type TypeSpec.
+
+// toWireRef(TypeSpec, v): Returns an expression of type Value that contains
+// the wire representation of the item "v" which is a reference to a value of
+// type TypeSpec.
 //
 // typeCode(TypeSpec): Gets the wire.Type for the given TypeSpec, importing
 // the wire module if necessary.
