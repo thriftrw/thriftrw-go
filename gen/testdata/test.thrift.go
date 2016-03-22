@@ -45,6 +45,46 @@ func (v *ContactInfo) String() string {
 	return fmt.Sprintf("ContactInfo{%v}", strings.Join(fs[:i], ", "))
 }
 
+type DoesNotExistException struct{ Key string }
+
+func (v *DoesNotExistException) ToWire() wire.Value {
+	var fs [1]wire.Field
+	i := 0
+	fs[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.Key)}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *DoesNotExistException) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 1:
+			if f.Value.Type() == wire.TBinary {
+				v.Key, err = f.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _DoesNotExistException_Read(w wire.Value) (*DoesNotExistException, error) {
+	var v DoesNotExistException
+	err := v.FromWire(w)
+	return &v, err
+}
+func (v *DoesNotExistException) String() string {
+	var fs [1]string
+	i := 0
+	fs[i] = fmt.Sprintf("Key: %v", v.Key)
+	i++
+	return fmt.Sprintf("DoesNotExistException{%v}", strings.Join(fs[:i], ", "))
+}
+func (v *DoesNotExistException) Error() string {
+	return v.String()
+}
+
 type Edge struct {
 	End   *Point
 	Start *Point

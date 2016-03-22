@@ -111,9 +111,7 @@ struct User {
 }
 
 // TODO: Default values
-
 // TODO: unions
-// TODO: exceptions
 
 //////////////////////////////////////////////////////////////////////////////
 // Typedefs
@@ -142,3 +140,10 @@ struct Transition {
 }
 
 typedef binary PDF  // alias of []byte
+
+//////////////////////////////////////////////////////////////////////////////
+// Exceptions
+
+exception DoesNotExistException {
+    1: required string key
+}

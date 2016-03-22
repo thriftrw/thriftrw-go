@@ -78,3 +78,9 @@ func (s *StructSpec) TypeCode() wire.Type {
 func (s *StructSpec) ThriftName() string {
 	return s.Name
 }
+
+// IsExceptionType returns true if the StructSpec represents an exception
+// declaration.
+func (s *StructSpec) IsExceptionType() bool {
+	return s.Type == ast.ExceptionType
+}

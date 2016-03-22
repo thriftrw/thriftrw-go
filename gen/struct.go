@@ -127,6 +127,12 @@ func structure(g Generator, spec *compile.StructSpec) error {
 				<$strings>.Join(<$fields>[:<$i>], ", "),
 			)
 		}
+
+		<if .Spec.IsExceptionType>
+			func (<$v> <$structRef>) Error() string {
+				return <$v>.String()
+			}
+		<end>
 		`,
 		struct {
 			Spec   *compile.StructSpec
