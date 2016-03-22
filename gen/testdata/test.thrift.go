@@ -2,7 +2,11 @@
 
 package testdata
 
-import "github.com/thriftrw/thriftrw-go/wire"
+import (
+	"fmt"
+	"github.com/thriftrw/thriftrw-go/wire"
+	"strings"
+)
 
 type ContactInfo struct{ EmailAddress string }
 
@@ -32,6 +36,13 @@ func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
 	var v ContactInfo
 	err := v.FromWire(w)
 	return &v, err
+}
+func (v *ContactInfo) String() string {
+	var fs [1]string
+	i := 0
+	fs[i] = fmt.Sprintf("EmailAddress: %v", v.EmailAddress)
+	i++
+	return fmt.Sprintf("ContactInfo{%v}", strings.Join(fs[:i], ", "))
 }
 
 type Edge struct {
@@ -74,6 +85,15 @@ func _Edge_Read(w wire.Value) (*Edge, error) {
 	var v Edge
 	err := v.FromWire(w)
 	return &v, err
+}
+func (v *Edge) String() string {
+	var fs [2]string
+	i := 0
+	fs[i] = fmt.Sprintf("End: %v", v.End)
+	i++
+	fs[i] = fmt.Sprintf("Start: %v", v.Start)
+	i++
+	return fmt.Sprintf("Edge{%v}", strings.Join(fs[:i], ", "))
 }
 
 type _List_EnumDefault_ValueList []EnumDefault
@@ -230,6 +250,17 @@ func _EnumContainers_Read(w wire.Value) (*EnumContainers, error) {
 	err := v.FromWire(w)
 	return &v, err
 }
+func (v *EnumContainers) String() string {
+	var fs [3]string
+	i := 0
+	fs[i] = fmt.Sprintf("ListOfEnums: %v", v.ListOfEnums)
+	i++
+	fs[i] = fmt.Sprintf("MapOfEnums: %v", v.MapOfEnums)
+	i++
+	fs[i] = fmt.Sprintf("SetOfEnums: %v", v.SetOfEnums)
+	i++
+	return fmt.Sprintf("EnumContainers{%v}", strings.Join(fs[:i], ", "))
+}
 
 type EnumDefault int32
 
@@ -365,6 +396,17 @@ func _Event_Read(w wire.Value) (*Event, error) {
 	err := v.FromWire(w)
 	return &v, err
 }
+func (v *Event) String() string {
+	var fs [2]string
+	i := 0
+	if v.Time != nil {
+		fs[i] = fmt.Sprintf("Time: %v", *(v.Time))
+		i++
+	}
+	fs[i] = fmt.Sprintf("UUID: %v", v.UUID)
+	i++
+	return fmt.Sprintf("Event{%v}", strings.Join(fs[:i], ", "))
+}
 
 type _List_Event_ValueList []*Event
 
@@ -454,6 +496,15 @@ func _Frame_Read(w wire.Value) (*Frame, error) {
 	err := v.FromWire(w)
 	return &v, err
 }
+func (v *Frame) String() string {
+	var fs [2]string
+	i := 0
+	fs[i] = fmt.Sprintf("Size: %v", v.Size)
+	i++
+	fs[i] = fmt.Sprintf("TopLeft: %v", v.TopLeft)
+	i++
+	return fmt.Sprintf("Frame{%v}", strings.Join(fs[:i], ", "))
+}
 
 type _List_Edge_ValueList []*Edge
 
@@ -514,6 +565,13 @@ func _Graph_Read(w wire.Value) (*Graph, error) {
 	err := v.FromWire(w)
 	return &v, err
 }
+func (v *Graph) String() string {
+	var fs [1]string
+	i := 0
+	fs[i] = fmt.Sprintf("Edges: %v", v.Edges)
+	i++
+	return fmt.Sprintf("Graph{%v}", strings.Join(fs[:i], ", "))
+}
 
 type Pdf []byte
 
@@ -572,6 +630,15 @@ func _Point_Read(w wire.Value) (*Point, error) {
 	var v Point
 	err := v.FromWire(w)
 	return &v, err
+}
+func (v *Point) String() string {
+	var fs [2]string
+	i := 0
+	fs[i] = fmt.Sprintf("X: %v", v.X)
+	i++
+	fs[i] = fmt.Sprintf("Y: %v", v.Y)
+	i++
+	return fmt.Sprintf("Point{%v}", strings.Join(fs[:i], ", "))
 }
 
 type _List_Binary_ValueList [][]byte
@@ -861,6 +928,23 @@ func _PrimitiveContainers_Read(w wire.Value) (*PrimitiveContainers, error) {
 	err := v.FromWire(w)
 	return &v, err
 }
+func (v *PrimitiveContainers) String() string {
+	var fs [6]string
+	i := 0
+	fs[i] = fmt.Sprintf("ListOfBinary: %v", v.ListOfBinary)
+	i++
+	fs[i] = fmt.Sprintf("ListOfInts: %v", v.ListOfInts)
+	i++
+	fs[i] = fmt.Sprintf("MapOfIntToString: %v", v.MapOfIntToString)
+	i++
+	fs[i] = fmt.Sprintf("MapOfStringToBool: %v", v.MapOfStringToBool)
+	i++
+	fs[i] = fmt.Sprintf("SetOfBytes: %v", v.SetOfBytes)
+	i++
+	fs[i] = fmt.Sprintf("SetOfStrings: %v", v.SetOfStrings)
+	i++
+	return fmt.Sprintf("PrimitiveContainers{%v}", strings.Join(fs[:i], ", "))
+}
 
 type _List_String_ValueList []string
 
@@ -1010,6 +1094,17 @@ func _PrimitiveContainersRequired_Read(w wire.Value) (*PrimitiveContainersRequir
 	err := v.FromWire(w)
 	return &v, err
 }
+func (v *PrimitiveContainersRequired) String() string {
+	var fs [3]string
+	i := 0
+	fs[i] = fmt.Sprintf("ListOfStrings: %v", v.ListOfStrings)
+	i++
+	fs[i] = fmt.Sprintf("MapOfIntsToDoubles: %v", v.MapOfIntsToDoubles)
+	i++
+	fs[i] = fmt.Sprintf("SetOfInts: %v", v.SetOfInts)
+	i++
+	return fmt.Sprintf("PrimitiveContainersRequired{%v}", strings.Join(fs[:i], ", "))
+}
 
 type PrimitiveOptionalStruct struct {
 	BinaryField []byte
@@ -1135,6 +1230,41 @@ func _PrimitiveOptionalStruct_Read(w wire.Value) (*PrimitiveOptionalStruct, erro
 	err := v.FromWire(w)
 	return &v, err
 }
+func (v *PrimitiveOptionalStruct) String() string {
+	var fs [8]string
+	i := 0
+	fs[i] = fmt.Sprintf("BinaryField: %v", v.BinaryField)
+	i++
+	if v.BoolField != nil {
+		fs[i] = fmt.Sprintf("BoolField: %v", *(v.BoolField))
+		i++
+	}
+	if v.ByteField != nil {
+		fs[i] = fmt.Sprintf("ByteField: %v", *(v.ByteField))
+		i++
+	}
+	if v.DoubleField != nil {
+		fs[i] = fmt.Sprintf("DoubleField: %v", *(v.DoubleField))
+		i++
+	}
+	if v.Int16Field != nil {
+		fs[i] = fmt.Sprintf("Int16Field: %v", *(v.Int16Field))
+		i++
+	}
+	if v.Int32Field != nil {
+		fs[i] = fmt.Sprintf("Int32Field: %v", *(v.Int32Field))
+		i++
+	}
+	if v.Int64Field != nil {
+		fs[i] = fmt.Sprintf("Int64Field: %v", *(v.Int64Field))
+		i++
+	}
+	if v.StringField != nil {
+		fs[i] = fmt.Sprintf("StringField: %v", *(v.StringField))
+		i++
+	}
+	return fmt.Sprintf("PrimitiveOptionalStruct{%v}", strings.Join(fs[:i], ", "))
+}
 
 type PrimitiveRequiredStruct struct {
 	BinaryField []byte
@@ -1237,6 +1367,27 @@ func _PrimitiveRequiredStruct_Read(w wire.Value) (*PrimitiveRequiredStruct, erro
 	err := v.FromWire(w)
 	return &v, err
 }
+func (v *PrimitiveRequiredStruct) String() string {
+	var fs [8]string
+	i := 0
+	fs[i] = fmt.Sprintf("BinaryField: %v", v.BinaryField)
+	i++
+	fs[i] = fmt.Sprintf("BoolField: %v", v.BoolField)
+	i++
+	fs[i] = fmt.Sprintf("ByteField: %v", v.ByteField)
+	i++
+	fs[i] = fmt.Sprintf("DoubleField: %v", v.DoubleField)
+	i++
+	fs[i] = fmt.Sprintf("Int16Field: %v", v.Int16Field)
+	i++
+	fs[i] = fmt.Sprintf("Int32Field: %v", v.Int32Field)
+	i++
+	fs[i] = fmt.Sprintf("Int64Field: %v", v.Int64Field)
+	i++
+	fs[i] = fmt.Sprintf("StringField: %v", v.StringField)
+	i++
+	return fmt.Sprintf("PrimitiveRequiredStruct{%v}", strings.Join(fs[:i], ", "))
+}
 
 type Size struct {
 	Height float64
@@ -1278,6 +1429,15 @@ func _Size_Read(w wire.Value) (*Size, error) {
 	var v Size
 	err := v.FromWire(w)
 	return &v, err
+}
+func (v *Size) String() string {
+	var fs [2]string
+	i := 0
+	fs[i] = fmt.Sprintf("Height: %v", v.Height)
+	i++
+	fs[i] = fmt.Sprintf("Width: %v", v.Width)
+	i++
+	return fmt.Sprintf("Size{%v}", strings.Join(fs[:i], ", "))
 }
 
 type State string
@@ -1367,6 +1527,17 @@ func _Transition_Read(w wire.Value) (*Transition, error) {
 	err := v.FromWire(w)
 	return &v, err
 }
+func (v *Transition) String() string {
+	var fs [3]string
+	i := 0
+	fs[i] = fmt.Sprintf("Events: %v", v.Events)
+	i++
+	fs[i] = fmt.Sprintf("From: %v", v.From)
+	i++
+	fs[i] = fmt.Sprintf("To: %v", v.To)
+	i++
+	return fmt.Sprintf("Transition{%v}", strings.Join(fs[:i], ", "))
+}
 
 type UUID I128
 
@@ -1425,6 +1596,15 @@ func _User_Read(w wire.Value) (*User, error) {
 	err := v.FromWire(w)
 	return &v, err
 }
+func (v *User) String() string {
+	var fs [2]string
+	i := 0
+	fs[i] = fmt.Sprintf("Contact: %v", v.Contact)
+	i++
+	fs[i] = fmt.Sprintf("Name: %v", v.Name)
+	i++
+	return fmt.Sprintf("User{%v}", strings.Join(fs[:i], ", "))
+}
 
 type I128 struct {
 	High int64
@@ -1466,4 +1646,13 @@ func _I128_Read(w wire.Value) (*I128, error) {
 	var v I128
 	err := v.FromWire(w)
 	return &v, err
+}
+func (v *I128) String() string {
+	var fs [2]string
+	i := 0
+	fs[i] = fmt.Sprintf("High: %v", v.High)
+	i++
+	fs[i] = fmt.Sprintf("Low: %v", v.Low)
+	i++
+	return fmt.Sprintf("I128{%v}", strings.Join(fs[:i], ", "))
 }

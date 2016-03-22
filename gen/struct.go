@@ -25,6 +25,8 @@ import "github.com/thriftrw/thriftrw-go/compile"
 func structure(g Generator, spec *compile.StructSpec) error {
 	err := g.DeclareFromTemplate(
 		`
+		<$fmt := import "fmt">
+		<$strings := import "strings">
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 		<$structName := defName .Spec>
 		<$structRef := typeReference .Spec Required>
@@ -103,7 +105,28 @@ func structure(g Generator, spec *compile.StructSpec) error {
 			return &<$v>, err
 		}
 
-		// TODO(abg): Generate Error() if exception.
+		func (<$v> <$structRef>) String() string {
+			var <$fields> [<len .Spec.Fields>]string
+			<$i> := 0
+			<range .Spec.Fields>
+				<$f := printf "%s.%s" $v (goCase .Name)>
+
+				<if or .Required (or (isReferenceType .Type) (isStructType .Type))>
+					<$fields>[<$i>] = <$fmt>.Sprintf("<goCase .Name>: %v", <$f>)
+					<$i>++
+				<else>
+					if <$f> != nil {
+						<$fields>[<$i>] = <$fmt>.Sprintf("<goCase .Name>: %v", *(<$f>))
+						<$i>++
+					}
+				<end>
+			<end>
+
+			return <$fmt>.Sprintf(
+				"<$structName>{%v}",
+				<$strings>.Join(<$fields>[:<$i>], ", "),
+			)
+		}
 		`,
 		struct {
 			Spec   *compile.StructSpec
@@ -111,6 +134,10 @@ func structure(g Generator, spec *compile.StructSpec) error {
 		}{Spec: spec, Reader: typeReader(spec)},
 	)
 	// TODO(abg): JSON tags for generated structs
+	// TODO(abg): For all struct types, handle the case where fields are named
+	// ToWire or FromWire.
+	// TODO(abg): For exceptions, handle the case where a field is named
+	// Error.
 
 	return wrapGenerateError(spec.Name, err)
 }
