@@ -400,3 +400,231 @@ func TestBasicException(t *testing.T) {
 		assert.Equal(t, "DoesNotExistException{Key: foo}", err.Error())
 	}
 }
+
+func TestUnionSimple(t *testing.T) {
+	tests := []struct {
+		s testdata.Document
+		v wire.Value
+	}{
+		{
+			testdata.Document{Pdf: []byte{1, 2, 3}},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
+			}}),
+		},
+		{
+			testdata.Document{PlainText: stringp("hello")},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 2, Value: wire.NewValueString("hello")},
+			}}),
+		},
+	}
+
+	for _, tt := range tests {
+		assert.True(
+			t,
+			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
+			"%v.ToWire() != %v", tt.s, tt.v,
+		)
+
+		var s testdata.Document
+		if assert.NoError(t, s.FromWire(tt.v)) {
+			assert.Equal(t, tt.s, s)
+		}
+	}
+}
+
+func TestUnionComplex(t *testing.T) {
+	tests := []struct {
+		s testdata.ArbitraryValue
+		v wire.Value
+	}{
+		{
+			testdata.ArbitraryValue{BoolValue: boolp(true)},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBool(true)},
+			}}),
+		},
+		{
+			testdata.ArbitraryValue{Int64Value: int64p(42)},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 2, Value: wire.NewValueI64(42)},
+			}}),
+		},
+		{
+			testdata.ArbitraryValue{StringValue: stringp("hello")},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 3, Value: wire.NewValueString("hello")},
+			}}),
+		},
+		{
+			testdata.ArbitraryValue{ListValue: []*testdata.ArbitraryValue{
+				{BoolValue: boolp(true)},
+				{Int64Value: int64p(42)},
+				{StringValue: stringp("hello")},
+			}},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 4, Value: wire.NewValueList(wire.List{
+					ValueType: wire.TStruct,
+					Size:      3,
+					Items: wire.ValueListFromSlice([]wire.Value{
+						wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueBool(true)},
+						}}),
+						wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 2, Value: wire.NewValueI64(42)},
+						}}),
+						wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 3, Value: wire.NewValueString("hello")},
+						}}),
+					}),
+				})},
+			}}),
+		},
+		{
+			testdata.ArbitraryValue{MapValue: map[string]*testdata.ArbitraryValue{
+				"bool":   {BoolValue: boolp(true)},
+				"int64":  {Int64Value: int64p(42)},
+				"string": {StringValue: stringp("hello")},
+			}},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 5, Value: wire.NewValueMap(wire.Map{
+					KeyType:   wire.TBinary,
+					ValueType: wire.TStruct,
+					Size:      3,
+					Items: wire.MapItemListFromSlice([]wire.MapItem{
+						{
+							Key: wire.NewValueString("bool"),
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueBool(true)},
+							}}),
+						},
+						{
+							Key: wire.NewValueString("int64"),
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 2, Value: wire.NewValueI64(42)},
+							}}),
+						},
+						{
+							Key: wire.NewValueString("string"),
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 3, Value: wire.NewValueString("hello")},
+							}}),
+						},
+					}),
+				})},
+			}}),
+		},
+	}
+
+	for _, tt := range tests {
+		assert.True(
+			t,
+			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
+			"%v.ToWire() != %v", tt.s, tt.v,
+		)
+
+		var s testdata.ArbitraryValue
+		if assert.NoError(t, s.FromWire(tt.v)) {
+			assert.Equal(t, tt.s, s)
+		}
+	}
+}
+
+func TestStructFromWireUnrecognizedField(t *testing.T) {
+	tests := []struct {
+		desc string
+		i    wire.Value
+		o    testdata.ContactInfo
+	}{
+		{
+			"unknown field",
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("foo")},
+				{ID: 2, Value: wire.NewValueI32(42)},
+			}}),
+			testdata.ContactInfo{EmailAddress: "foo"},
+		},
+		{
+			"only unknown field",
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 2, Value: wire.NewValueString("bar")},
+			}}),
+			testdata.ContactInfo{},
+		},
+		{
+			"wrong type for recognized field",
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueI32(42)},
+			}}),
+			testdata.ContactInfo{},
+		},
+	}
+
+	for _, tt := range tests {
+		var o testdata.ContactInfo
+		if assert.NoError(t, o.FromWire(tt.i)) {
+			assert.Equal(t, tt.o, o)
+		}
+	}
+}
+
+func TestUnionFromWireInconsistencies(t *testing.T) {
+	tests := []struct {
+		desc    string
+		input   wire.Value
+		success *testdata.Document
+		failure string
+	}{
+		{
+			desc: "multiple recognized fields",
+			input: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
+				{ID: 2, Value: wire.NewValueString("hello")},
+			}}),
+			success: &testdata.Document{
+				Pdf:       []byte{1, 2, 3},
+				PlainText: stringp("hello"),
+			},
+			// TODO(abg): Once we're validating, this will become a failure
+			// case. We want to fail if mutliple fields are set on a union.
+		},
+		{
+			desc: "recognized and unrecognized fields",
+			input: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
+				{ID: 3, Value: wire.NewValueString("hello")},
+			}}),
+			success: &testdata.Document{Pdf: []byte{1, 2, 3}},
+		},
+		{
+			desc: "only unrecognized fields",
+			input: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 2, Value: wire.NewValueI32(42)}, // also a type mismatch
+				{ID: 3, Value: wire.NewValueString("hello")},
+			}}),
+			success: &testdata.Document{},
+			// TODO(abg): If the union is empty, we need to fail the request
+		},
+		{
+			desc:    "no fields",
+			input:   wire.NewValueStruct(wire.Struct{}),
+			success: &testdata.Document{},
+			// TODO(abg): If the union is empty, we need to fail the request
+		},
+	}
+
+	for _, tt := range tests {
+		var o testdata.Document
+		err := o.FromWire(tt.input)
+		if tt.success != nil {
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.success, &o, tt.desc)
+			}
+		} else {
+			if assert.Error(t, err) {
+				assert.Contains(t, err.Error(), tt.failure, tt.desc)
+			}
+		}
+	}
+}
