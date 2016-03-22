@@ -370,3 +370,33 @@ func TestStructStringWithMissingRequiredFields(t *testing.T) {
 		assert.Equal(t, tt.o, tt.i.String())
 	}
 }
+
+func TestBasicException(t *testing.T) {
+	tests := []struct {
+		s testdata.DoesNotExistException
+		v wire.Value
+	}{
+		{
+			testdata.DoesNotExistException{Key: "foo"},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("foo")},
+			}}),
+		},
+	}
+
+	for _, tt := range tests {
+		assert.True(
+			t,
+			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
+			"%v.ToWire() != %v", tt.s, tt.v,
+		)
+
+		var s testdata.DoesNotExistException
+		if assert.NoError(t, s.FromWire(tt.v)) {
+			assert.Equal(t, tt.s, s)
+		}
+
+		err := error(&s) // should implement the error interface
+		assert.Equal(t, "DoesNotExistException{Key: foo}", err.Error())
+	}
+}
