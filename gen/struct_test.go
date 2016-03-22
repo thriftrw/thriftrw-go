@@ -21,6 +21,7 @@
 package gen
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/thriftrw/thriftrw-go/gen/testdata"
@@ -64,6 +65,8 @@ func TestPrimitiveRequiredStructWire(t *testing.T) {
 			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
 			"%v.ToWire() != %v", tt.s, tt.v,
 		)
+
+		assert.NotPanics(t, func() { tt.s.String() })
 
 		var s testdata.PrimitiveRequiredStruct
 		if assert.NoError(t, s.FromWire(tt.v)) {
@@ -159,6 +162,8 @@ func TestPrimitiveOptionalStructWire(t *testing.T) {
 			"%v.ToWire() != %v", tt.s, tt.v,
 		)
 
+		assert.NotPanics(t, func() { tt.s.String() })
+
 		var s testdata.PrimitiveOptionalStruct
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
@@ -230,6 +235,8 @@ func TestPrimitiveContainersRequired(t *testing.T) {
 			"%v.ToWire() != %v", tt.s, tt.v,
 		)
 
+		assert.NotPanics(t, func() { tt.s.String() })
+
 		var s testdata.PrimitiveContainersRequired
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
@@ -241,6 +248,7 @@ func TestNestedStructsRequired(t *testing.T) {
 	tests := []struct {
 		s testdata.Frame
 		v wire.Value
+		o string
 	}{
 		{
 			testdata.Frame{
@@ -263,6 +271,7 @@ func TestNestedStructsRequired(t *testing.T) {
 					}}),
 				},
 			}}),
+			"Frame{Size: Size{Height: 200, Width: 100}, TopLeft: Point{X: 1, Y: 2}}",
 		},
 	}
 
@@ -277,6 +286,8 @@ func TestNestedStructsRequired(t *testing.T) {
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
+
+		assert.Equal(t, tt.o, tt.s.String())
 	}
 }
 
@@ -284,12 +295,14 @@ func TestNestedStructsOptional(t *testing.T) {
 	tests := []struct {
 		s testdata.User
 		v wire.Value
+		o string
 	}{
 		{
 			testdata.User{Name: "Foo Bar"},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("Foo Bar")},
 			}}),
+			"User{Contact: <nil>, Name: Foo Bar}",
 		},
 		{
 			testdata.User{
@@ -302,6 +315,7 @@ func TestNestedStructsOptional(t *testing.T) {
 					{ID: 1, Value: wire.NewValueString("foo@example.com")},
 				}})},
 			}}),
+			"User{Contact: ContactInfo{EmailAddress: foo@example.com}, Name: Foo Bar}",
 		},
 	}
 
@@ -316,5 +330,43 @@ func TestNestedStructsOptional(t *testing.T) {
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
+
+		assert.Equal(t, tt.o, tt.s.String())
+	}
+}
+
+func TestStructStringWithMissingRequiredFields(t *testing.T) {
+	tests := []struct {
+		i fmt.Stringer
+		o string
+	}{
+		{
+			&testdata.Frame{TopLeft: &testdata.Point{}},
+			"Frame{Size: <nil>, TopLeft: Point{X: 0, Y: 0}}",
+		},
+		{
+			&testdata.Frame{Size: &testdata.Size{}},
+			"Frame{Size: Size{Height: 0, Width: 0}, TopLeft: <nil>}",
+		},
+		{
+			&testdata.Edge{Start: &testdata.Point{X: 1, Y: 2}},
+			"Edge{End: <nil>, Start: Point{X: 1, Y: 2}}",
+		},
+		{
+			&testdata.Edge{End: &testdata.Point{X: 3, Y: 4}},
+			"Edge{End: Point{X: 3, Y: 4}, Start: <nil>}",
+		},
+		{
+			&testdata.Graph{},
+			"Graph{Edges: []}",
+		},
+		{
+			&testdata.Event{},
+			"Event{UUID: <nil>}",
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.o, tt.i.String())
 	}
 }
