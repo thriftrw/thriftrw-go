@@ -42,4 +42,3 @@ build_ci: build
 .PHONY: test_ci
 test_ci: build_ci
 	./scripts/cover.sh $(shell go list $(PACKAGES))
-	goveralls -coverprofile=cover.out -service=travis-ci
