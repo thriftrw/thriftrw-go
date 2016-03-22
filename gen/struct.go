@@ -53,17 +53,10 @@ func structure(g Generator, spec *compile.StructSpec) error {
 					<$i>++
 				<else>
 					if <$f> != nil {
-						<if or (isReferenceType .Type) (isStructType .Type)>
-							<$fields>[<$i>] = <$wire>.Field{
-								ID: <.ID>,
-								Value: <toWire .Type $f>,
-							}
-						<else>
-							<$fields>[<$i>] = <$wire>.Field{
-								ID: <.ID>,
-								Value: <toWire .Type (printf "*%s" $f)>,
-							}
-						<end>
+						<$fields>[<$i>] = <$wire>.Field{
+							ID: <.ID>,
+							Value: <toWireRef .Type $f>,
+						}
 						<$i>++
 					}
 				<end>

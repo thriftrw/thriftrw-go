@@ -135,6 +135,20 @@ func (w WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName string
 	}
 }
 
+// ToWireRef is the same as ToWire expect `varName` is expected to be a
+// reference to a value of the given type.
+func (w WireGenerator) ToWireRef(g Generator, spec compile.TypeSpec, varName string) (string, error) {
+	switch spec {
+	case compile.BoolSpec, compile.I8Spec, compile.I16Spec, compile.I32Spec,
+		compile.I64Spec, compile.DoubleSpec, compile.StringSpec:
+		return w.ToWire(g, spec, fmt.Sprintf("*(%s)", varName))
+	default:
+		// Everything else is either a reference type or has a ToWire method
+		// on it that does automatic dereferencing.
+		return w.ToWire(g, spec, varName)
+	}
+}
+
 // FromWire generates an expression of type ($spec, error) which reads the Value
 // at $value into a $spec.
 func (w WireGenerator) FromWire(g Generator, spec compile.TypeSpec, value string) (string, error) {

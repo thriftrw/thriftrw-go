@@ -18,6 +18,7 @@ cover:
 .PHONY: clean
 clean:
 	go clean
+	rm -rf cover/cover*.out cover.html cover.out
 
 .PHONY: install
 install:

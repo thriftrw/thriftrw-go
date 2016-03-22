@@ -321,6 +321,98 @@ func _EnumWithValues_Read(w wire.Value) (EnumWithValues, error) {
 	return v, err
 }
 
+type Event struct {
+	Time *Timestamp
+	UUID *UUID
+}
+
+func (v *Event) ToWire() wire.Value {
+	var fs [2]wire.Field
+	i := 0
+	if v.Time != nil {
+		fs[i] = wire.Field{ID: 2, Value: v.Time.ToWire()}
+		i++
+	}
+	fs[i] = wire.Field{ID: 1, Value: v.UUID.ToWire()}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *Event) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 2:
+			if f.Value.Type() == wire.TI64 {
+				x, err := _Timestamp_Read(f.Value)
+				v.Time = &x
+				if err != nil {
+					return err
+				}
+			}
+		case 1:
+			if f.Value.Type() == wire.TStruct {
+				v.UUID, err = _UUID_Read(f.Value)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _Event_Read(w wire.Value) (*Event, error) {
+	var v Event
+	err := v.FromWire(w)
+	return &v, err
+}
+
+type _List_Event_ValueList []*Event
+
+func (v _List_Event_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(x.ToWire())
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (v _List_Event_ValueList) Close() {
+}
+func _List_Event_Read(l wire.List) ([]*Event, error) {
+	if l.ValueType != wire.TStruct {
+		return nil, nil
+	}
+	o := make([]*Event, 0, l.Size)
+	err := l.Items.ForEach(func(x wire.Value) error {
+		i, err := _Event_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Items.Close()
+	return o, err
+}
+
+type EventGroup []*Event
+
+func (v EventGroup) ToWire() wire.Value {
+	x := ([]*Event)(v)
+	return wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(x), Items: _List_Event_ValueList(x)})
+}
+func (v *EventGroup) FromWire(w wire.Value) error {
+	x, err := _List_Event_Read(w.GetList())
+	*v = (EventGroup)(x)
+	return err
+}
+func _EventGroup_Read(w wire.Value) (EventGroup, error) {
+	var x EventGroup
+	err := x.FromWire(w)
+	return x, err
+}
+
 type Frame struct {
 	Size    *Size
 	TopLeft *Point
@@ -421,6 +513,23 @@ func _Graph_Read(w wire.Value) (*Graph, error) {
 	var v Graph
 	err := v.FromWire(w)
 	return &v, err
+}
+
+type Pdf []byte
+
+func (v Pdf) ToWire() wire.Value {
+	x := ([]byte)(v)
+	return wire.NewValueBinary(x)
+}
+func (v *Pdf) FromWire(w wire.Value) error {
+	x, err := w.GetBinary(), error(nil)
+	*v = (Pdf)(x)
+	return err
+}
+func _Pdf_Read(w wire.Value) (Pdf, error) {
+	var x Pdf
+	err := x.FromWire(w)
+	return x, err
 }
 
 type Point struct {
@@ -921,31 +1030,31 @@ func (v *PrimitiveOptionalStruct) ToWire() wire.Value {
 		i++
 	}
 	if v.BoolField != nil {
-		fs[i] = wire.Field{ID: 1, Value: wire.NewValueBool(*v.BoolField)}
+		fs[i] = wire.Field{ID: 1, Value: wire.NewValueBool(*(v.BoolField))}
 		i++
 	}
 	if v.ByteField != nil {
-		fs[i] = wire.Field{ID: 2, Value: wire.NewValueI8(*v.ByteField)}
+		fs[i] = wire.Field{ID: 2, Value: wire.NewValueI8(*(v.ByteField))}
 		i++
 	}
 	if v.DoubleField != nil {
-		fs[i] = wire.Field{ID: 6, Value: wire.NewValueDouble(*v.DoubleField)}
+		fs[i] = wire.Field{ID: 6, Value: wire.NewValueDouble(*(v.DoubleField))}
 		i++
 	}
 	if v.Int16Field != nil {
-		fs[i] = wire.Field{ID: 3, Value: wire.NewValueI16(*v.Int16Field)}
+		fs[i] = wire.Field{ID: 3, Value: wire.NewValueI16(*(v.Int16Field))}
 		i++
 	}
 	if v.Int32Field != nil {
-		fs[i] = wire.Field{ID: 4, Value: wire.NewValueI32(*v.Int32Field)}
+		fs[i] = wire.Field{ID: 4, Value: wire.NewValueI32(*(v.Int32Field))}
 		i++
 	}
 	if v.Int64Field != nil {
-		fs[i] = wire.Field{ID: 5, Value: wire.NewValueI64(*v.Int64Field)}
+		fs[i] = wire.Field{ID: 5, Value: wire.NewValueI64(*(v.Int64Field))}
 		i++
 	}
 	if v.StringField != nil {
-		fs[i] = wire.Field{ID: 7, Value: wire.NewValueString(*v.StringField)}
+		fs[i] = wire.Field{ID: 7, Value: wire.NewValueString(*(v.StringField))}
 		i++
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
@@ -1171,6 +1280,108 @@ func _Size_Read(w wire.Value) (*Size, error) {
 	return &v, err
 }
 
+type State string
+
+func (v State) ToWire() wire.Value {
+	x := (string)(v)
+	return wire.NewValueString(x)
+}
+func (v *State) FromWire(w wire.Value) error {
+	x, err := w.GetString(), error(nil)
+	*v = (State)(x)
+	return err
+}
+func _State_Read(w wire.Value) (State, error) {
+	var x State
+	err := x.FromWire(w)
+	return x, err
+}
+
+type Timestamp int64
+
+func (v Timestamp) ToWire() wire.Value {
+	x := (int64)(v)
+	return wire.NewValueI64(x)
+}
+func (v *Timestamp) FromWire(w wire.Value) error {
+	x, err := w.GetI64(), error(nil)
+	*v = (Timestamp)(x)
+	return err
+}
+func _Timestamp_Read(w wire.Value) (Timestamp, error) {
+	var x Timestamp
+	err := x.FromWire(w)
+	return x, err
+}
+
+type Transition struct {
+	Events EventGroup
+	From   State
+	To     State
+}
+
+func (v *Transition) ToWire() wire.Value {
+	var fs [3]wire.Field
+	i := 0
+	if v.Events != nil {
+		fs[i] = wire.Field{ID: 3, Value: v.Events.ToWire()}
+		i++
+	}
+	fs[i] = wire.Field{ID: 1, Value: v.From.ToWire()}
+	i++
+	fs[i] = wire.Field{ID: 2, Value: v.To.ToWire()}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *Transition) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 3:
+			if f.Value.Type() == wire.TList {
+				v.Events, err = _EventGroup_Read(f.Value)
+				if err != nil {
+					return err
+				}
+			}
+		case 1:
+			if f.Value.Type() == wire.TBinary {
+				v.From, err = _State_Read(f.Value)
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
+			if f.Value.Type() == wire.TBinary {
+				v.To, err = _State_Read(f.Value)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _Transition_Read(w wire.Value) (*Transition, error) {
+	var v Transition
+	err := v.FromWire(w)
+	return &v, err
+}
+
+type UUID I128
+
+func (v *UUID) ToWire() wire.Value {
+	x := (*I128)(v)
+	return x.ToWire()
+}
+func (v *UUID) FromWire(w wire.Value) error {
+	return (*I128)(v).FromWire(w)
+}
+func _UUID_Read(w wire.Value) (*UUID, error) {
+	x, err := _I128_Read(w)
+	return (*UUID)(x), err
+}
+
 type User struct {
 	Contact *ContactInfo
 	Name    string
@@ -1211,6 +1422,48 @@ func (v *User) FromWire(w wire.Value) error {
 }
 func _User_Read(w wire.Value) (*User, error) {
 	var v User
+	err := v.FromWire(w)
+	return &v, err
+}
+
+type I128 struct {
+	High int64
+	Low  int64
+}
+
+func (v *I128) ToWire() wire.Value {
+	var fs [2]wire.Field
+	i := 0
+	fs[i] = wire.Field{ID: 1, Value: wire.NewValueI64(v.High)}
+	i++
+	fs[i] = wire.Field{ID: 2, Value: wire.NewValueI64(v.Low)}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+}
+func (v *I128) FromWire(w wire.Value) error {
+	var err error
+	for _, f := range w.GetStruct().Fields {
+		switch f.ID {
+		case 1:
+			if f.Value.Type() == wire.TI64 {
+				v.High, err = f.Value.GetI64(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
+			if f.Value.Type() == wire.TI64 {
+				v.Low, err = f.Value.GetI64(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func _I128_Read(w wire.Value) (*I128, error) {
+	var v I128
 	err := v.FromWire(w)
 	return &v, err
 }
