@@ -235,7 +235,7 @@ func (v *Value) GetList() List {
 	return v.tlist
 }
 
-func (v *Value) String() string {
+func (v Value) String() string {
 	switch v.typ {
 	case TBool:
 		return fmt.Sprintf("TBool(%v)", v.tbool)
