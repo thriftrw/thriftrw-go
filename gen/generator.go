@@ -92,30 +92,32 @@ func NewGenerator(pkgName string) Generator {
 // TextTemplate renders the given template with the given template context.
 func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOption) (string, error) {
 	templateFuncs := template.FuncMap{
-		"defName":         typeDeclName,
-		"goCase":          goCase,
-		"import":          g.Import,
-		"isReferenceType": isReferenceType,
-		"isStructType":    isStructType,
-		"newVar":          g.Namespace.Child().NewName,
-		"typeName":        typeName,
-		"typeReference":   typeReference,
+		"goCase":           goCase,
+		"import":           g.Import,
+		"isPrimitiveType":  isPrimitiveType,
+		"isStructType":     isStructType,
+		"newVar":           g.Namespace.Child().NewName,
+		"typeName":         typeName,
+		"typeReference":    typeReference,
+		"typeReferencePtr": typeReferencePtr,
 
 		// Inline functions:
 
-		"fromWire":  func(s compile.TypeSpec, n string) (string, error) { return g.w.FromWire(g, s, n) },
-		"toWire":    func(s compile.TypeSpec, n string) (string, error) { return g.w.ToWire(g, s, n) },
-		"toWireRef": func(s compile.TypeSpec, n string) (string, error) { return g.w.ToWireRef(g, s, n) },
-		"typeCode":  func(s compile.TypeSpec) string { return TypeCode(g, s) },
-
-		"Optional": func() fieldRequired { return Optional },
-		"Required": func() fieldRequired { return Required },
-		"required": func(b bool) fieldRequired {
-			if b {
-				return Required
-			}
-			return Optional
+		"fromWire": func(s compile.TypeSpec, n string) (string, error) {
+			return g.w.FromWire(g, s, n)
 		},
+		"fromWirePtr": func(s compile.TypeSpec, lhs string, v string) (string, error) {
+			return g.w.FromWirePtr(g, s, lhs, v)
+		},
+
+		"toWire": func(s compile.TypeSpec, n string) (string, error) {
+			return g.w.ToWire(g, s, n)
+		},
+		"toWirePtr": func(s compile.TypeSpec, n string) (string, error) {
+			return g.w.ToWirePtr(g, s, n)
+		},
+
+		"typeCode": func(s compile.TypeSpec) string { return TypeCode(g, s) },
 	}
 
 	tmpl := template.New("thriftrw").Delims("<", ">").Funcs(templateFuncs)
@@ -212,10 +214,6 @@ func (g *generator) recordGenDeclNames(d *ast.GenDecl) error {
 //
 // The following functions are available to templates:
 //
-// defName(TypeSpec): Takes a TypeSpec representing a **user declared type**
-// and returns the name that should be used in the Go code to define that
-// type.
-//
 // fromWire(TypeSpec, v): Returns an expression of type (T, error) where T is
 // the type represented by TypeSpec, read from the given Value v.
 //
@@ -230,8 +228,8 @@ func (g *generator) recordGenDeclNames(d *ast.GenDecl) error {
 // 	<$fmt := import "fmt">
 // 	<$fmt>.Println("hello world")
 //
-// isReferenceType(TypeSpec): Returns true if the given TypeSpec is for a
-// reference type.
+// isPrimitiveType(TypeSpec): Returns true if the given TypeSpec is for a
+// primitive type.
 //
 // isStructType(TypeSpec): Returns true if the given TypeSpec is a StructSpec.
 //
@@ -240,17 +238,10 @@ func (g *generator) recordGenDeclNames(d *ast.GenDecl) error {
 //
 // 	<$x := newVar "x">
 //
-// Optional: Returns the value Optional where a fieldRequired is expected.
-//
-// Required: Returns the value Required where a fieldRequired is expected.
-//
-// required(bool): Returns Optional or Required based on the boolean where a
-// fieldRequired is expected.
-//
 // toWire(TypeSpec, v): Returns an expression of type Value that contains the
 // wire representation of the item "v" of type TypeSpec.
 
-// toWireRef(TypeSpec, v): Returns an expression of type Value that contains
+// toWirePtr(TypeSpec, v): Returns an expression of type Value that contains
 // the wire representation of the item "v" which is a reference to a value of
 // type TypeSpec.
 //
@@ -260,14 +251,16 @@ func (g *generator) recordGenDeclNames(d *ast.GenDecl) error {
 // typeName(TypeSpec): Returns the Go name of the given type, regardless of
 // whether it's native or custom.
 //
-// typeReference(TypeSpec, fieldRequired): Takes any TypeSpec and a a value
-// indicating whether this reference expects the type to always be present
-// (use the "required" function on a boolean, or the "Required" and "Optional"
-// functions inside the template to get the corresponding fieldRequired
-// value).  Returns a string representing a reference to that type, wrapped in
-// a pointer if the value was optional.
+// typeReference(TypeSpec): Takes any TypeSpec. Returns a string representing
+// a reference to that type.
 //
-// 	<typeReference $someType Required>
+// 	<typeReference $someType>
+//
+// typeReferencePtr(TypeSpec): Takes any TypeSpec. Returns a string
+// representing a reference to a pointer of that type, provided that the type
+// itself is not a reference type.
+//
+// 	<typeReferencePtr $someType>
 func (g *generator) DeclareFromTemplate(s string, data interface{}, opts ...TemplateOption) error {
 	bs, err := g.renderTemplate(s, data, opts...)
 	if err != nil {

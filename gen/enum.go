@@ -28,7 +28,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 
-		<$enumName := defName .Spec>
+		<$enumName := typeName .Spec>
 		type <$enumName> int32
 
 		const (

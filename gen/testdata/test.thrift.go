@@ -114,7 +114,8 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 		switch f.ID {
 		case 1:
 			if f.Value.Type() == wire.TBool {
-				x, err := f.Value.GetBool(), error(nil)
+				var x bool
+				x, err = f.Value.GetBool(), error(nil)
 				v.BoolValue = &x
 				if err != nil {
 					return err
@@ -122,8 +123,9 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if f.Value.Type() == wire.TI64 {
-				x2, err := f.Value.GetI64(), error(nil)
-				v.Int64Value = &x2
+				var x int64
+				x, err = f.Value.GetI64(), error(nil)
+				v.Int64Value = &x
 				if err != nil {
 					return err
 				}
@@ -144,8 +146,9 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 			}
 		case 3:
 			if f.Value.Type() == wire.TBinary {
-				x3, err := f.Value.GetString(), error(nil)
-				v.StringValue = &x3
+				var x string
+				x, err = f.Value.GetString(), error(nil)
+				v.StringValue = &x
 				if err != nil {
 					return err
 				}
@@ -170,10 +173,14 @@ func (v *ArbitraryValue) String() string {
 		fs[i] = fmt.Sprintf("Int64Value: %v", *(v.Int64Value))
 		i++
 	}
-	fs[i] = fmt.Sprintf("ListValue: %v", v.ListValue)
-	i++
-	fs[i] = fmt.Sprintf("MapValue: %v", v.MapValue)
-	i++
+	if v.ListValue != nil {
+		fs[i] = fmt.Sprintf("ListValue: %v", v.ListValue)
+		i++
+	}
+	if v.MapValue != nil {
+		fs[i] = fmt.Sprintf("MapValue: %v", v.MapValue)
+		i++
+	}
 	if v.StringValue != nil {
 		fs[i] = fmt.Sprintf("StringValue: %v", *(v.StringValue))
 		i++
@@ -249,7 +256,8 @@ func (v *Document) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if f.Value.Type() == wire.TBinary {
-				x, err := f.Value.GetString(), error(nil)
+				var x string
+				x, err = f.Value.GetString(), error(nil)
 				v.PlainText = &x
 				if err != nil {
 					return err
@@ -267,8 +275,10 @@ func _Document_Read(w wire.Value) (*Document, error) {
 func (v *Document) String() string {
 	var fs [2]string
 	i := 0
-	fs[i] = fmt.Sprintf("Pdf: %v", v.Pdf)
-	i++
+	if v.Pdf != nil {
+		fs[i] = fmt.Sprintf("Pdf: %v", v.Pdf)
+		i++
+	}
 	if v.PlainText != nil {
 		fs[i] = fmt.Sprintf("PlainText: %v", *(v.PlainText))
 		i++
@@ -524,12 +534,18 @@ func _EnumContainers_Read(w wire.Value) (*EnumContainers, error) {
 func (v *EnumContainers) String() string {
 	var fs [3]string
 	i := 0
-	fs[i] = fmt.Sprintf("ListOfEnums: %v", v.ListOfEnums)
-	i++
-	fs[i] = fmt.Sprintf("MapOfEnums: %v", v.MapOfEnums)
-	i++
-	fs[i] = fmt.Sprintf("SetOfEnums: %v", v.SetOfEnums)
-	i++
+	if v.ListOfEnums != nil {
+		fs[i] = fmt.Sprintf("ListOfEnums: %v", v.ListOfEnums)
+		i++
+	}
+	if v.MapOfEnums != nil {
+		fs[i] = fmt.Sprintf("MapOfEnums: %v", v.MapOfEnums)
+		i++
+	}
+	if v.SetOfEnums != nil {
+		fs[i] = fmt.Sprintf("SetOfEnums: %v", v.SetOfEnums)
+		i++
+	}
 	return fmt.Sprintf("EnumContainers{%v}", strings.Join(fs[:i], ", "))
 }
 
@@ -645,7 +661,8 @@ func (v *Event) FromWire(w wire.Value) error {
 		switch f.ID {
 		case 2:
 			if f.Value.Type() == wire.TI64 {
-				x, err := _Timestamp_Read(f.Value)
+				var x Timestamp
+				x, err = _Timestamp_Read(f.Value)
 				v.Time = &x
 				if err != nil {
 					return err
@@ -1202,18 +1219,30 @@ func _PrimitiveContainers_Read(w wire.Value) (*PrimitiveContainers, error) {
 func (v *PrimitiveContainers) String() string {
 	var fs [6]string
 	i := 0
-	fs[i] = fmt.Sprintf("ListOfBinary: %v", v.ListOfBinary)
-	i++
-	fs[i] = fmt.Sprintf("ListOfInts: %v", v.ListOfInts)
-	i++
-	fs[i] = fmt.Sprintf("MapOfIntToString: %v", v.MapOfIntToString)
-	i++
-	fs[i] = fmt.Sprintf("MapOfStringToBool: %v", v.MapOfStringToBool)
-	i++
-	fs[i] = fmt.Sprintf("SetOfBytes: %v", v.SetOfBytes)
-	i++
-	fs[i] = fmt.Sprintf("SetOfStrings: %v", v.SetOfStrings)
-	i++
+	if v.ListOfBinary != nil {
+		fs[i] = fmt.Sprintf("ListOfBinary: %v", v.ListOfBinary)
+		i++
+	}
+	if v.ListOfInts != nil {
+		fs[i] = fmt.Sprintf("ListOfInts: %v", v.ListOfInts)
+		i++
+	}
+	if v.MapOfIntToString != nil {
+		fs[i] = fmt.Sprintf("MapOfIntToString: %v", v.MapOfIntToString)
+		i++
+	}
+	if v.MapOfStringToBool != nil {
+		fs[i] = fmt.Sprintf("MapOfStringToBool: %v", v.MapOfStringToBool)
+		i++
+	}
+	if v.SetOfBytes != nil {
+		fs[i] = fmt.Sprintf("SetOfBytes: %v", v.SetOfBytes)
+		i++
+	}
+	if v.SetOfStrings != nil {
+		fs[i] = fmt.Sprintf("SetOfStrings: %v", v.SetOfStrings)
+		i++
+	}
 	return fmt.Sprintf("PrimitiveContainers{%v}", strings.Join(fs[:i], ", "))
 }
 
@@ -1438,7 +1467,8 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 			}
 		case 1:
 			if f.Value.Type() == wire.TBool {
-				x, err := f.Value.GetBool(), error(nil)
+				var x bool
+				x, err = f.Value.GetBool(), error(nil)
 				v.BoolField = &x
 				if err != nil {
 					return err
@@ -1446,48 +1476,54 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if f.Value.Type() == wire.TI8 {
-				x2, err := f.Value.GetI8(), error(nil)
-				v.ByteField = &x2
+				var x int8
+				x, err = f.Value.GetI8(), error(nil)
+				v.ByteField = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 6:
 			if f.Value.Type() == wire.TDouble {
-				x3, err := f.Value.GetDouble(), error(nil)
-				v.DoubleField = &x3
+				var x float64
+				x, err = f.Value.GetDouble(), error(nil)
+				v.DoubleField = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 3:
 			if f.Value.Type() == wire.TI16 {
-				x4, err := f.Value.GetI16(), error(nil)
-				v.Int16Field = &x4
+				var x int16
+				x, err = f.Value.GetI16(), error(nil)
+				v.Int16Field = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 4:
 			if f.Value.Type() == wire.TI32 {
-				x5, err := f.Value.GetI32(), error(nil)
-				v.Int32Field = &x5
+				var x int32
+				x, err = f.Value.GetI32(), error(nil)
+				v.Int32Field = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 5:
 			if f.Value.Type() == wire.TI64 {
-				x6, err := f.Value.GetI64(), error(nil)
-				v.Int64Field = &x6
+				var x int64
+				x, err = f.Value.GetI64(), error(nil)
+				v.Int64Field = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 7:
 			if f.Value.Type() == wire.TBinary {
-				x7, err := f.Value.GetString(), error(nil)
-				v.StringField = &x7
+				var x string
+				x, err = f.Value.GetString(), error(nil)
+				v.StringField = &x
 				if err != nil {
 					return err
 				}
@@ -1504,8 +1540,10 @@ func _PrimitiveOptionalStruct_Read(w wire.Value) (*PrimitiveOptionalStruct, erro
 func (v *PrimitiveOptionalStruct) String() string {
 	var fs [8]string
 	i := 0
-	fs[i] = fmt.Sprintf("BinaryField: %v", v.BinaryField)
-	i++
+	if v.BinaryField != nil {
+		fs[i] = fmt.Sprintf("BinaryField: %v", v.BinaryField)
+		i++
+	}
 	if v.BoolField != nil {
 		fs[i] = fmt.Sprintf("BoolField: %v", *(v.BoolField))
 		i++
@@ -1801,8 +1839,10 @@ func _Transition_Read(w wire.Value) (*Transition, error) {
 func (v *Transition) String() string {
 	var fs [3]string
 	i := 0
-	fs[i] = fmt.Sprintf("Events: %v", v.Events)
-	i++
+	if v.Events != nil {
+		fs[i] = fmt.Sprintf("Events: %v", v.Events)
+		i++
+	}
 	fs[i] = fmt.Sprintf("From: %v", v.From)
 	i++
 	fs[i] = fmt.Sprintf("To: %v", v.To)
@@ -1870,8 +1910,10 @@ func _User_Read(w wire.Value) (*User, error) {
 func (v *User) String() string {
 	var fs [2]string
 	i := 0
-	fs[i] = fmt.Sprintf("Contact: %v", v.Contact)
-	i++
+	if v.Contact != nil {
+		fs[i] = fmt.Sprintf("Contact: %v", v.Contact)
+		i++
+	}
 	fs[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
 	return fmt.Sprintf("User{%v}", strings.Join(fs[:i], ", "))

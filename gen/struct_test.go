@@ -302,7 +302,7 @@ func TestNestedStructsOptional(t *testing.T) {
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("Foo Bar")},
 			}}),
-			"User{Contact: <nil>, Name: Foo Bar}",
+			"User{Name: Foo Bar}",
 		},
 		{
 			testdata.User{
@@ -405,18 +405,21 @@ func TestUnionSimple(t *testing.T) {
 	tests := []struct {
 		s testdata.Document
 		v wire.Value
+		o string
 	}{
 		{
 			testdata.Document{Pdf: []byte{1, 2, 3}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
 			}}),
+			"Document{Pdf: [1 2 3]}",
 		},
 		{
 			testdata.Document{PlainText: stringp("hello")},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 2, Value: wire.NewValueString("hello")},
 			}}),
+			"Document{PlainText: hello}",
 		},
 	}
 
@@ -431,6 +434,8 @@ func TestUnionSimple(t *testing.T) {
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
+
+		assert.Equal(t, tt.o, tt.s.String())
 	}
 }
 
@@ -438,24 +443,28 @@ func TestUnionComplex(t *testing.T) {
 	tests := []struct {
 		s testdata.ArbitraryValue
 		v wire.Value
+		o string
 	}{
 		{
 			testdata.ArbitraryValue{BoolValue: boolp(true)},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueBool(true)},
 			}}),
+			"ArbitraryValue{BoolValue: true}",
 		},
 		{
 			testdata.ArbitraryValue{Int64Value: int64p(42)},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 2, Value: wire.NewValueI64(42)},
 			}}),
+			"ArbitraryValue{Int64Value: 42}",
 		},
 		{
 			testdata.ArbitraryValue{StringValue: stringp("hello")},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 3, Value: wire.NewValueString("hello")},
 			}}),
+			"ArbitraryValue{StringValue: hello}",
 		},
 		{
 			testdata.ArbitraryValue{ListValue: []*testdata.ArbitraryValue{
@@ -480,6 +489,7 @@ func TestUnionComplex(t *testing.T) {
 					}),
 				})},
 			}}),
+			"ArbitraryValue{ListValue: [ArbitraryValue{BoolValue: true} ArbitraryValue{Int64Value: 42} ArbitraryValue{StringValue: hello}]}",
 		},
 		{
 			testdata.ArbitraryValue{MapValue: map[string]*testdata.ArbitraryValue{
@@ -514,6 +524,7 @@ func TestUnionComplex(t *testing.T) {
 					}),
 				})},
 			}}),
+			"",
 		},
 	}
 
@@ -527,6 +538,10 @@ func TestUnionComplex(t *testing.T) {
 		var s testdata.ArbitraryValue
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
+		}
+
+		if tt.o != "" {
+			assert.Equal(t, tt.o, tt.s.String())
 		}
 	}
 }

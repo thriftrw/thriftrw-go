@@ -65,7 +65,7 @@ func (m mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, erro
 	err := g.DeclareFromTemplate(
 		`
 			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
-			type <.Name> <typeReference .Spec Required>
+			type <.Name> <typeReference .Spec>
 
 			<$m := newVar "m">
 			<$f := newVar "f">
@@ -93,7 +93,7 @@ func (m mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, erro
 	)
 	if err != nil {
 		return "", generateError{
-			Name:   typeReference(spec, Required),
+			Name:   typeReference(spec),
 			Reason: err,
 		}
 	}
@@ -111,7 +111,7 @@ func (m mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error)
 	err := g.DeclareFromTemplate(
 		`
 			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
-			<$mapType := typeReference .Spec Required>
+			<$mapType := typeReference .Spec>
 
 			<$m := newVar "m">
 			<$o := newVar "o">
@@ -154,7 +154,7 @@ func (m mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error)
 
 	if err != nil {
 		return "", generateError{
-			Name:   typeReference(spec, Required),
+			Name:   typeReference(spec),
 			Reason: err,
 		}
 	}

@@ -61,7 +61,7 @@ func (s setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, err
 	err := g.DeclareFromTemplate(
 		`
 			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
-			type <.Name> <typeReference .Spec Required>
+			type <.Name> <typeReference .Spec>
 
 			<$v := newVar "v">
 			<$x := newVar "x">
@@ -85,7 +85,7 @@ func (s setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, err
 	)
 	if err != nil {
 		return "", generateError{
-			Name:   typeReference(spec, Required),
+			Name:   typeReference(spec),
 			Reason: err,
 		}
 	}
@@ -103,7 +103,7 @@ func (s setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error)
 	err := g.DeclareFromTemplate(
 		`
 			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
-			<$setType := typeReference .Spec Required>
+			<$setType := typeReference .Spec>
 
 			<$s := newVar "s">
 			<$i := newVar "i">
@@ -135,7 +135,7 @@ func (s setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error)
 
 	if err != nil {
 		return "", generateError{
-			Name:   typeReference(spec, Required),
+			Name:   typeReference(spec),
 			Reason: err,
 		}
 	}

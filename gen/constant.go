@@ -26,7 +26,7 @@ import "github.com/thriftrw/thriftrw-go/compile"
 func Constant(g Generator, c *compile.Constant) error {
 	err := g.DeclareFromTemplate(
 		`
-		const <goCase .Name> <typeReference .Type Required> = nil // TODO
+		const <goCase .Name> <typeReference .Type> = nil // TODO
 		`,
 		c,
 	)

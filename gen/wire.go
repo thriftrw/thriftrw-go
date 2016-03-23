@@ -135,9 +135,9 @@ func (w WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName string
 	}
 }
 
-// ToWireRef is the same as ToWire expect `varName` is expected to be a
+// ToWirePtr is the same as ToWire expect `varName` is expected to be a
 // reference to a value of the given type.
-func (w WireGenerator) ToWireRef(g Generator, spec compile.TypeSpec, varName string) (string, error) {
+func (w WireGenerator) ToWirePtr(g Generator, spec compile.TypeSpec, varName string) (string, error) {
 	switch spec {
 	case compile.BoolSpec, compile.I8Spec, compile.I16Spec, compile.I32Spec,
 		compile.I64Spec, compile.DoubleSpec, compile.StringSpec:
@@ -195,6 +195,35 @@ func (w WireGenerator) FromWire(g Generator, spec compile.TypeSpec, value string
 	default:
 		return fmt.Sprintf("%s(%s)", typeReader(spec), value), nil
 	}
+}
+
+// FromWirePtr generates a string assigning the given Value to the given lhs,
+// which is a pointer to a value of the given type.
+//
+// A variable err of type error MUST be in scope and will be assigned the
+// parse error, if any.
+func (w WireGenerator) FromWirePtr(g Generator, spec compile.TypeSpec, lhs string, value string) (string, error) {
+	if !isPrimitiveType(spec) {
+		// Everything else can be assigned to directly.
+		out, err := w.FromWire(g, spec, value)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s, err = %s", lhs, out), err
+	}
+	return g.TextTemplate(
+		`
+			<$x := newVar "x">
+			var <$x> <typeReference .Spec>
+			<$x>, err = <fromWire .Spec .Value>
+			<.LHS> = &<$x>
+			`,
+		struct {
+			Spec  compile.TypeSpec
+			LHS   string
+			Value string
+		}{Spec: spec, LHS: lhs, Value: value},
+	)
 }
 
 // typeReader gets the name of the reader function for the given type.
