@@ -27,21 +27,21 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
-		<$typedefType := typeReference .Spec Required>
+		<$typedefType := typeReference .Spec>
 
-		type <defName .Spec> <typeName .Spec.Target>
+		type <typeName .Spec> <typeName .Spec.Target>
 
 		<$v := newVar "v">
 		<$x := newVar "x">
 		func (<$v> <$typedefType>) ToWire() <$wire>.Value {
-			<$x> := (<typeReference .Spec.Target Required>)(<$v>)
+			<$x> := (<typeReference .Spec.Target>)(<$v>)
 			return <toWire .Spec.Target $x>
 		}
 
 		<$w := newVar "w">
 		<if isStructType .Spec>
 			func (<$v> <$typedefType>) FromWire(<$w> <$wire>.Value) error {
-				return (<typeReference .Spec.Target Required>)(<$v>).FromWire(<$w>)
+				return (<typeReference .Spec.Target>)(<$v>).FromWire(<$w>)
 			}
 		<else>
 			func (<$v> *<$typedefType>) FromWire(<$w> <$wire>.Value) error {
@@ -67,6 +67,5 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 			Reader string
 		}{Spec: spec, Reader: typeReader(spec)},
 	)
-	// TODO(abg): To/FromWire.
 	return wrapGenerateError(spec.Name, err)
 }

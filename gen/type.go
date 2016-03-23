@@ -26,15 +26,6 @@ import (
 	"github.com/thriftrw/thriftrw-go/compile"
 )
 
-// fieldRequired indicates whether a field is required or not.
-type fieldRequired int
-
-// Whether the field is required or not.
-const (
-	Optional fieldRequired = iota // default
-	Required
-)
-
 // TypeDefinition generates code for the given TypeSpec.
 func TypeDefinition(g Generator, spec compile.TypeSpec) error {
 	switch s := spec.(type) {
@@ -47,6 +38,25 @@ func TypeDefinition(g Generator, spec compile.TypeSpec) error {
 	default:
 		panic(fmt.Sprintf("%q is not a defined type", spec.ThriftName()))
 	}
+}
+
+// isPrimitiveType returns true if the given type is a primitive type.
+//
+// Note that binary is not considered a primitive type because it is
+// represented as []byte in Go.
+func isPrimitiveType(spec compile.TypeSpec) bool {
+	switch spec {
+	case compile.BoolSpec, compile.I8Spec, compile.I16Spec, compile.I32Spec,
+		compile.I64Spec, compile.DoubleSpec, compile.StringSpec:
+		return true
+	}
+
+	switch s := spec.(type) {
+	case *compile.TypedefSpec:
+		return isPrimitiveType(s.Target)
+	}
+
+	return false
 }
 
 // isReferenceType checks if the given TypeSpec represents a reference type.
@@ -82,18 +92,26 @@ func isStructType(spec compile.TypeSpec) bool {
 
 // typeReference returns a string representation of a reference to the given
 // type.
-//
-// req specifies whether the reference expects the type to be always present. If
-// not required, the returned type will be a reference type so that it can be
-// nil.
-func typeReference(spec compile.TypeSpec, req fieldRequired) string {
+func typeReference(spec compile.TypeSpec) string {
 	name := typeName(spec)
-	if (req != Required && !isReferenceType(spec)) || isStructType(spec) {
+	if isStructType(spec) {
 		// Prepend "*" to the result if the field is not required and the type
 		// isn't a reference type.
 		name = "*" + name
 	}
 	return name
+}
+
+// typeReferencePtr returns a strung representing a reference to a pointer of
+// the given type. The pointer prefix is not added for types that are already
+// reference types.
+func typeReferencePtr(spec compile.TypeSpec) string {
+	ref := typeName(spec)
+	if !isReferenceType(spec) {
+		// need * prefix for everything but map, string, and list.
+		return "*" + ref
+	}
+	return ref
 }
 
 // typeName returns the name of the given type, whether it's a custom type or
@@ -125,30 +143,15 @@ func typeName(spec compile.TypeSpec) string {
 		// TODO unhashable types
 		return fmt.Sprintf(
 			"map[%s]%s",
-			typeReference(s.KeySpec, Required),
-			typeReference(s.ValueSpec, Required),
-		)
+			typeReference(s.KeySpec), typeReference(s.ValueSpec))
 	case *compile.ListSpec:
-		return "[]" + typeReference(s.ValueSpec, Required)
+		return "[]" + typeReference(s.ValueSpec)
 	case *compile.SetSpec:
 		// TODO unhashable types
-		return fmt.Sprintf("map[%s]struct{}", typeReference(s.ValueSpec, Required))
-	default:
-		// Custom defined type. The reference is just the name of the type then.
-		return typeDeclName(spec)
-	}
-}
-
-// typeDeclName returns the name that should be used to define the given type.
-//
-// This panics if the given TypeSpec is not a custom user-defined type.
-func typeDeclName(spec compile.TypeSpec) string {
-	switch spec.(type) {
+		return fmt.Sprintf("map[%s]struct{}", typeReference(s.ValueSpec))
 	case *compile.EnumSpec, *compile.StructSpec, *compile.TypedefSpec:
 		return goCase(spec.ThriftName())
 	default:
-		panic(fmt.Sprintf(
-			"Type %q can't have a declaration name", spec.ThriftName(),
-		))
+		panic(fmt.Sprintf("Unknown type %v", spec))
 	}
 }

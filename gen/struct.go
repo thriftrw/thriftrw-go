@@ -28,12 +28,16 @@ func structure(g Generator, spec *compile.StructSpec) error {
 		<$fmt := import "fmt">
 		<$strings := import "strings">
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
-		<$structName := defName .Spec>
-		<$structRef := typeReference .Spec Required>
+		<$structName := typeName .Spec>
+		<$structRef := typeReference .Spec>
 
 		type <$structName> struct {
 		<range .Spec.Fields>
-			<goCase .Name> <typeReference .Type (required .Required)>
+			<if .Required>
+				<goCase .Name> <typeReference .Type>
+			<else>
+				<goCase .Name> <typeReferencePtr .Type>
+			<end>
 		<end>
 		}
 
@@ -57,7 +61,7 @@ func structure(g Generator, spec *compile.StructSpec) error {
 					if <$f> != nil {
 						<$fields>[<$i>] = <$wire>.Field{
 							ID: <.ID>,
-							Value: <toWireRef .Type $f>,
+							Value: <toWirePtr .Type $f>,
 						}
 						<$i>++
 					}
@@ -78,15 +82,13 @@ func structure(g Generator, spec *compile.StructSpec) error {
 				<range .Spec.Fields>
 				case <.ID>:
 					if <$f>.Value.Type() == <typeCode .Type> {
-						<$valueErr := fromWire .Type (printf "%s.Value" $f)>
-						<if or .Required (or (isReferenceType .Type) (isStructType .Type))>
-							<$v>.<goCase .Name>, err = <$valueErr>
+						<$lhs := printf "%s.%s" $v (goCase .Name)>
+						<$value := printf "%s.Value" $f>
+						<if .Required>
+							<$lhs>, err = <fromWire .Type $value>
 						<else>
-							<$value := newVar "x">
-							<$value>, err := <$valueErr>
-							<$v>.<goCase .Name> = &<$value>
+							<fromWirePtr .Type $lhs $value>
 						<end>
-
 						if err != nil {
 							return err
 						}
@@ -111,14 +113,14 @@ func structure(g Generator, spec *compile.StructSpec) error {
 			<range .Spec.Fields>
 				<$f := printf "%s.%s" $v (goCase .Name)>
 
-				<if or .Required (or (isReferenceType .Type) (isStructType .Type))>
-					<$fields>[<$i>] = <$fmt>.Sprintf("<goCase .Name>: %v", <$f>)
-					<$i>++
-				<else>
+				<if and (not .Required) (isPrimitiveType .Type)>
 					if <$f> != nil {
 						<$fields>[<$i>] = <$fmt>.Sprintf("<goCase .Name>: %v", *(<$f>))
 						<$i>++
 					}
+				<else>
+					<$fields>[<$i>] = <$fmt>.Sprintf("<goCase .Name>: %v", <$f>)
+					<$i>++
 				<end>
 			<end>
 

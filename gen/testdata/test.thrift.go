@@ -114,7 +114,8 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 		switch f.ID {
 		case 1:
 			if f.Value.Type() == wire.TBool {
-				x, err := f.Value.GetBool(), error(nil)
+				var x bool
+				x, err = f.Value.GetBool(), error(nil)
 				v.BoolValue = &x
 				if err != nil {
 					return err
@@ -122,8 +123,9 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if f.Value.Type() == wire.TI64 {
-				x2, err := f.Value.GetI64(), error(nil)
-				v.Int64Value = &x2
+				var x int64
+				x, err = f.Value.GetI64(), error(nil)
+				v.Int64Value = &x
 				if err != nil {
 					return err
 				}
@@ -144,8 +146,9 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 			}
 		case 3:
 			if f.Value.Type() == wire.TBinary {
-				x3, err := f.Value.GetString(), error(nil)
-				v.StringValue = &x3
+				var x string
+				x, err = f.Value.GetString(), error(nil)
+				v.StringValue = &x
 				if err != nil {
 					return err
 				}
@@ -249,7 +252,8 @@ func (v *Document) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if f.Value.Type() == wire.TBinary {
-				x, err := f.Value.GetString(), error(nil)
+				var x string
+				x, err = f.Value.GetString(), error(nil)
 				v.PlainText = &x
 				if err != nil {
 					return err
@@ -645,7 +649,8 @@ func (v *Event) FromWire(w wire.Value) error {
 		switch f.ID {
 		case 2:
 			if f.Value.Type() == wire.TI64 {
-				x, err := _Timestamp_Read(f.Value)
+				var x Timestamp
+				x, err = _Timestamp_Read(f.Value)
 				v.Time = &x
 				if err != nil {
 					return err
@@ -1438,7 +1443,8 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 			}
 		case 1:
 			if f.Value.Type() == wire.TBool {
-				x, err := f.Value.GetBool(), error(nil)
+				var x bool
+				x, err = f.Value.GetBool(), error(nil)
 				v.BoolField = &x
 				if err != nil {
 					return err
@@ -1446,48 +1452,54 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if f.Value.Type() == wire.TI8 {
-				x2, err := f.Value.GetI8(), error(nil)
-				v.ByteField = &x2
+				var x int8
+				x, err = f.Value.GetI8(), error(nil)
+				v.ByteField = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 6:
 			if f.Value.Type() == wire.TDouble {
-				x3, err := f.Value.GetDouble(), error(nil)
-				v.DoubleField = &x3
+				var x float64
+				x, err = f.Value.GetDouble(), error(nil)
+				v.DoubleField = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 3:
 			if f.Value.Type() == wire.TI16 {
-				x4, err := f.Value.GetI16(), error(nil)
-				v.Int16Field = &x4
+				var x int16
+				x, err = f.Value.GetI16(), error(nil)
+				v.Int16Field = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 4:
 			if f.Value.Type() == wire.TI32 {
-				x5, err := f.Value.GetI32(), error(nil)
-				v.Int32Field = &x5
+				var x int32
+				x, err = f.Value.GetI32(), error(nil)
+				v.Int32Field = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 5:
 			if f.Value.Type() == wire.TI64 {
-				x6, err := f.Value.GetI64(), error(nil)
-				v.Int64Field = &x6
+				var x int64
+				x, err = f.Value.GetI64(), error(nil)
+				v.Int64Field = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 7:
 			if f.Value.Type() == wire.TBinary {
-				x7, err := f.Value.GetString(), error(nil)
-				v.StringField = &x7
+				var x string
+				x, err = f.Value.GetString(), error(nil)
+				v.StringField = &x
 				if err != nil {
 					return err
 				}

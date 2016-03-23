@@ -21,15 +21,10 @@
 package gen
 
 import (
-	"fmt"
 	"go/ast"
 	"go/token"
 	"strconv"
 )
-
-func intLiteral(i int64) *ast.BasicLit {
-	return &ast.BasicLit{Kind: token.INT, Value: fmt.Sprint(i)}
-}
 
 func stringLiteral(s string) *ast.BasicLit {
 	return &ast.BasicLit{
