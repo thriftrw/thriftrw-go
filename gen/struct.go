@@ -113,9 +113,13 @@ func structure(g Generator, spec *compile.StructSpec) error {
 			<range .Spec.Fields>
 				<$f := printf "%s.%s" $v (goCase .Name)>
 
-				<if and (not .Required) (isPrimitiveType .Type)>
+				<if not .Required>
 					if <$f> != nil {
-						<$fields>[<$i>] = <$fmt>.Sprintf("<goCase .Name>: %v", *(<$f>))
+						<if isPrimitiveType .Type>
+							<$fields>[<$i>] = <$fmt>.Sprintf("<goCase .Name>: %v", *(<$f>))
+						<else>
+							<$fields>[<$i>] = <$fmt>.Sprintf("<goCase .Name>: %v", <$f>)
+						<end>
 						<$i>++
 					}
 				<else>
