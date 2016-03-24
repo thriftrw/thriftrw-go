@@ -30,6 +30,7 @@ import (
 // MapSpec represents a key-value mapping between two types.
 type MapSpec struct {
 	linkOnce
+	nativeThriftType
 
 	KeySpec, ValueSpec TypeSpec
 }
@@ -37,8 +38,8 @@ type MapSpec struct {
 // compileMapType compiles the given MapType AST into a MapSpec.
 func compileMapType(src ast.MapType) *MapSpec {
 	return &MapSpec{
-		KeySpec:   compileType(src.KeyType),
-		ValueSpec: compileType(src.ValueType),
+		KeySpec:   compileTypeReference(src.KeyType),
+		ValueSpec: compileTypeReference(src.ValueType),
 	}
 }
 
@@ -79,13 +80,14 @@ func (m *MapSpec) TypeCode() wire.Type {
 // ListSpec represents lists of values of the same type.
 type ListSpec struct {
 	linkOnce
+	nativeThriftType
 
 	ValueSpec TypeSpec
 }
 
 // compileListSpec compiles the given ListType AST into a ListSpec.
 func compileListType(src ast.ListType) *ListSpec {
-	return &ListSpec{ValueSpec: compileType(src.ValueType)}
+	return &ListSpec{ValueSpec: compileTypeReference(src.ValueType)}
 }
 
 // Link resolves the type references in the ListSpec.
@@ -114,13 +116,14 @@ func (l *ListSpec) ThriftName() string {
 // SetSpec represents sets of values of the same type.
 type SetSpec struct {
 	linkOnce
+	nativeThriftType
 
 	ValueSpec TypeSpec
 }
 
 // compileSetSpec compiles the given SetType AST into a SetSpec.
 func compileSetType(src ast.SetType) *SetSpec {
-	return &SetSpec{ValueSpec: compileType(src.ValueType)}
+	return &SetSpec{ValueSpec: compileTypeReference(src.ValueType)}
 }
 
 // Link resolves the type references in the SetSpec.

@@ -30,12 +30,17 @@ type TypedefSpec struct {
 	linkOnce
 
 	Name   string
+	File   string
 	Target TypeSpec
 }
 
 // compileTypedef compiles the given Typedef AST into a TypedefSpec.
-func compileTypedef(src *ast.Typedef) *TypedefSpec {
-	return &TypedefSpec{Name: src.Name, Target: compileType(src.Type)}
+func compileTypedef(file string, src *ast.Typedef) *TypedefSpec {
+	return &TypedefSpec{
+		Name:   src.Name,
+		File:   file,
+		Target: compileTypeReference(src.Type),
+	}
 }
 
 // TypeCode gets the wire type for the typedef.
@@ -57,4 +62,9 @@ func (t *TypedefSpec) Link(scope Scope) (TypeSpec, error) {
 // ThriftName is the name of the typedef as it appears in the Thrift file.
 func (t *TypedefSpec) ThriftName() string {
 	return t.Name
+}
+
+// ThriftFile for TypedefSpec.
+func (t *TypedefSpec) ThriftFile() string {
+	return t.File
 }

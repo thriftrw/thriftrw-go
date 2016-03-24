@@ -38,7 +38,18 @@ type TypeSpec interface {
 
 	// ThriftName is the name of the type as it appears in the Thrift file.
 	ThriftName() string
+
+	// ThriftFile is the path to the Thrift file in which this TypeSpec was
+	// defined. This may be an empty string if this type is a native Thrift
+	// type.
+	ThriftFile() string
 }
+
+// nativeThriftType is the common parent for all TypeSpecs that are native
+// Thrift types.
+type nativeThriftType struct{}
+
+func (nativeThriftType) ThriftFile() string { return "" }
 
 // typeSpecReference is a dummy TypeSpec that represents a reference to another
 // TypeSpec. These will be replaced with actual TypeSpecs during the Link()
@@ -94,16 +105,24 @@ func (r typeSpecReference) TypeCode() wire.Type {
 	))
 }
 
+// ThriftFile on an unresolved typeSpecReference will cause a system panic.
+func (r typeSpecReference) ThriftFile() string {
+	panic(fmt.Sprintf(
+		"ThriftFile() requested for unresolved TypeSpec reference %v."+
+			"Make sure you called Link().", r,
+	))
+}
+
 // ThriftName is the name of the typeSpecReference as it appears in the Thrift
 // file.
 func (r typeSpecReference) ThriftName() string {
 	return r.Name
 }
 
-// compileType compiles the given AST type reference into a TypeSpec.
+// compileTypeReference compiles the given AST type reference into a TypeSpec.
 //
 // The returned TypeSpec may need to be linked eventually.
-func compileType(typ ast.Type) TypeSpec {
+func compileTypeReference(typ ast.Type) TypeSpec {
 	if typ == nil {
 		return nil
 	}

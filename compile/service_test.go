@@ -47,18 +47,21 @@ func parseService(s string) *ast.Service {
 func TestCompileService(t *testing.T) {
 	keyDoesNotExistSpec := &StructSpec{
 		Name:   "KeyDoesNotExist",
+		File:   "test.thrift",
 		Type:   ast.ExceptionType,
 		Fields: make(FieldGroup),
 	}
 
 	internalErrorSpec := &StructSpec{
 		Name:   "InternalServiceError",
+		File:   "test.thrift",
 		Type:   ast.ExceptionType,
 		Fields: make(FieldGroup),
 	}
 
 	keyValueSpec := &ServiceSpec{
 		Name: "KeyValue",
+		File: "test.thrift",
 		Functions: map[string]*FunctionSpec{
 			"setValue": {
 				Name: "setValue",
@@ -115,6 +118,7 @@ func TestCompileService(t *testing.T) {
 			nil,
 			&ServiceSpec{
 				Name:      "Foo",
+				File:      "test.thrift",
 				Functions: make(map[string]*FunctionSpec),
 			},
 		},
@@ -146,6 +150,7 @@ func TestCompileService(t *testing.T) {
 			scope("KeyValue", keyValueSpec),
 			&ServiceSpec{
 				Name:   "BulkKeyValue",
+				File:   "test.thrift",
 				Parent: keyValueSpec,
 				Functions: map[string]*FunctionSpec{
 					"setValues": {
@@ -170,6 +175,7 @@ func TestCompileService(t *testing.T) {
 			scope("shared", scope("KeyValue", keyValueSpec)),
 			&ServiceSpec{
 				Name:      "AnotherKeyValue",
+				File:      "test.thrift",
 				Parent:    keyValueSpec,
 				Functions: make(map[string]*FunctionSpec),
 			},
@@ -184,7 +190,8 @@ func TestCompileService(t *testing.T) {
 		scope := scopeOrDefault(tt.scope)
 
 		src := parseService(tt.src)
-		if spec, err := compileService(src); assert.NoError(t, err, tt.desc) {
+		spec, err := compileService("test.thrift", src)
+		if assert.NoError(t, err, tt.desc) {
 			if assert.NoError(t, spec.Link(scope), tt.desc) {
 				assert.Equal(t, tt.spec, spec, tt.desc)
 			}
@@ -275,7 +282,7 @@ func TestCompileServiceFailure(t *testing.T) {
 
 	for _, tt := range tests {
 		src := parseService(tt.src)
-		_, err := compileService(src)
+		_, err := compileService("test.thrift", src)
 		if assert.Error(t, err, tt.desc) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg, tt.desc)
@@ -392,7 +399,7 @@ func TestLinkServiceFailure(t *testing.T) {
 		src := parseService(tt.src)
 		scope := scopeOrDefault(tt.scope)
 
-		spec, err := compileService(src)
+		spec, err := compileService("test.thrift", src)
 		if assert.NoError(t, err, tt.desc) {
 			if err := spec.Link(scope); assert.Error(t, err) {
 				for _, msg := range tt.messages {

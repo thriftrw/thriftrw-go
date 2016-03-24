@@ -30,12 +30,13 @@ type StructSpec struct {
 	linkOnce
 
 	Name   string
+	File   string
 	Type   ast.StructureType
 	Fields FieldGroup
 }
 
 // compileStruct compiles a struct AST into a StructSpec.
-func compileStruct(src *ast.Struct) (*StructSpec, error) {
+func compileStruct(file string, src *ast.Struct) (*StructSpec, error) {
 	opts := fieldOptions{requiredness: explicitRequiredness}
 
 	if src.Type == ast.UnionType {
@@ -54,6 +55,7 @@ func compileStruct(src *ast.Struct) (*StructSpec, error) {
 
 	return &StructSpec{
 		Name:   src.Name,
+		File:   file,
 		Type:   src.Type,
 		Fields: fields,
 	}, nil
@@ -77,6 +79,11 @@ func (s *StructSpec) TypeCode() wire.Type {
 // ThriftName of the StructSpec.
 func (s *StructSpec) ThriftName() string {
 	return s.Name
+}
+
+// ThriftFile of the StructSpec.
+func (s *StructSpec) ThriftFile() string {
+	return s.File
 }
 
 // IsExceptionType returns true if the StructSpec represents an exception

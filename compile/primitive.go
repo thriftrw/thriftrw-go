@@ -29,17 +29,19 @@ import (
 
 // TypeSpecs for primitive Thrift types.
 var (
-	BoolSpec   TypeSpec = primitiveTypeSpec{"bool", wire.TBool}
-	I8Spec     TypeSpec = primitiveTypeSpec{"byte", wire.TI8}
-	I16Spec    TypeSpec = primitiveTypeSpec{"i16", wire.TI16}
-	I32Spec    TypeSpec = primitiveTypeSpec{"i32", wire.TI32}
-	I64Spec    TypeSpec = primitiveTypeSpec{"i64", wire.TI64}
-	DoubleSpec TypeSpec = primitiveTypeSpec{"double", wire.TDouble}
-	StringSpec TypeSpec = primitiveTypeSpec{"string", wire.TBinary}
-	BinarySpec TypeSpec = primitiveTypeSpec{"binary", wire.TBinary}
+	BoolSpec   TypeSpec = primitiveTypeSpec{Name: "bool", Code: wire.TBool}
+	I8Spec     TypeSpec = primitiveTypeSpec{Name: "byte", Code: wire.TI8}
+	I16Spec    TypeSpec = primitiveTypeSpec{Name: "i16", Code: wire.TI16}
+	I32Spec    TypeSpec = primitiveTypeSpec{Name: "i32", Code: wire.TI32}
+	I64Spec    TypeSpec = primitiveTypeSpec{Name: "i64", Code: wire.TI64}
+	DoubleSpec TypeSpec = primitiveTypeSpec{Name: "double", Code: wire.TDouble}
+	StringSpec TypeSpec = primitiveTypeSpec{Name: "string", Code: wire.TBinary}
+	BinarySpec TypeSpec = primitiveTypeSpec{Name: "binary", Code: wire.TBinary}
 )
 
 type primitiveTypeSpec struct {
+	nativeThriftType
+
 	Name string
 	Code wire.Type
 	// TODO(abg): We'll want to expose type annotations here

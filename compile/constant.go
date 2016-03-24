@@ -27,15 +27,17 @@ type Constant struct {
 	linkOnce
 
 	Name  string
+	File  string
 	Type  TypeSpec
 	Value ConstantValue
 }
 
 // compileConstant builds a Constant from the given AST constant.
-func compileConstant(src *ast.Constant) *Constant {
+func compileConstant(file string, src *ast.Constant) *Constant {
 	return &Constant{
 		Name:  src.Name,
-		Type:  compileType(src.Type),
+		File:  file,
+		Type:  compileTypeReference(src.Type),
 		Value: compileConstantValue(src.Value),
 	}
 }

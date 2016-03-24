@@ -40,7 +40,7 @@ func mustLink(t *testing.T, spec TypeSpec, scope Scope) TypeSpec {
 
 func TestCompileTypeWithNil(t *testing.T) {
 	// make sure compileType(nil) doesn't explode.
-	assert.Nil(t, compileType(nil))
+	assert.Nil(t, compileTypeReference(nil))
 }
 
 func TestResolveBaseType(t *testing.T) {
@@ -59,7 +59,7 @@ func TestResolveBaseType(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		spec := compileType(tt.input)
+		spec := compileTypeReference(tt.input)
 		linked, err := spec.Link(scope())
 
 		assert.NoError(t, err)
@@ -70,7 +70,7 @@ func TestResolveBaseType(t *testing.T) {
 
 func TestResolveInvalidBaseType(t *testing.T) {
 	assert.Panics(t, func() {
-		compileType(ast.BaseType{ID: ast.BaseTypeID(42)})
+		compileTypeReference(ast.BaseType{ID: ast.BaseTypeID(42)})
 	})
 }
 

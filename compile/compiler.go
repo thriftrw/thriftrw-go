@@ -172,25 +172,25 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 
 		switch definition := d.(type) {
 		case *ast.Constant:
-			constant := compileConstant(definition)
+			constant := compileConstant(m.ThriftPath, definition)
 			m.Constants[constant.Name] = constant
 		case *ast.Typedef:
-			typedef := compileTypedef(definition)
+			typedef := compileTypedef(m.ThriftPath, definition)
 			m.Types[typedef.ThriftName()] = typedef
 		case *ast.Enum:
-			enum, err := compileEnum(definition)
+			enum, err := compileEnum(m.ThriftPath, definition)
 			if err != nil {
 				return definitionError{Definition: d, Reason: err}
 			}
 			m.Types[enum.ThriftName()] = enum
 		case *ast.Struct:
-			s, err := compileStruct(definition)
+			s, err := compileStruct(m.ThriftPath, definition)
 			if err != nil {
 				return definitionError{Definition: d, Reason: err}
 			}
 			m.Types[s.ThriftName()] = s
 		case *ast.Service:
-			service, err := compileService(definition)
+			service, err := compileService(m.ThriftPath, definition)
 			if err != nil {
 				return definitionError{Definition: d, Reason: err}
 			}

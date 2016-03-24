@@ -55,15 +55,28 @@ func TestCompileTypedef(t *testing.T) {
 			"typedef i64 timestamp",
 			nil,
 			wire.TI64,
-			&TypedefSpec{Name: "timestamp", Target: I64Spec},
+			&TypedefSpec{
+				Name:   "timestamp",
+				File:   "test.thrift",
+				Target: I64Spec,
+			},
 		},
 		{
 			"typedef Bar Foo",
-			scope("Bar", &TypedefSpec{Name: "Bar", Target: I32Spec}),
+			scope("Bar", &TypedefSpec{
+				Name:   "Bar",
+				File:   "test.thrift",
+				Target: I32Spec,
+			}),
 			wire.TI32,
 			&TypedefSpec{
-				Name:   "Foo",
-				Target: &TypedefSpec{Name: "Bar", Target: I32Spec},
+				Name: "Foo",
+				File: "test.thrift",
+				Target: &TypedefSpec{
+					Name:   "Bar",
+					File:   "test.thrift",
+					Target: I32Spec,
+				},
 			},
 		},
 	}
@@ -72,7 +85,7 @@ func TestCompileTypedef(t *testing.T) {
 		expected := mustLink(t, tt.spec, scope())
 
 		src := parseTypedef(tt.src)
-		typedefSpec := compileTypedef(src)
+		typedefSpec := compileTypedef("test.thrift", src)
 		scope := scopeOrDefault(tt.scope)
 		spec, err := typedefSpec.Link(scope)
 		if assert.NoError(t, err) {
@@ -103,7 +116,7 @@ func TestCompileTypedefFailure(t *testing.T) {
 		src := parseTypedef(tt.src)
 		scope := scopeOrDefault(tt.scope)
 
-		_, err := compileTypedef(src).Link(scope)
+		_, err := compileTypedef("test.thrift", src).Link(scope)
 		if assert.Error(t, err, tt.desc) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg, tt.desc)
