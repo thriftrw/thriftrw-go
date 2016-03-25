@@ -22,50 +22,70 @@ package gen
 
 import "github.com/thriftrw/thriftrw-go/compile"
 
-// typedef generates code for the given typedef.
-func typedef(g Generator, spec *compile.TypedefSpec) error {
+// typedefGenerator generates code to serialize and deserialize typedefs.
+type typedefGenerator struct {
+	hasReaders
+}
+
+func (t *typedefGenerator) Reader(g Generator, spec *compile.TypedefSpec) (string, error) {
+	name := "_" + goCase(spec.ThriftName()) + "_Read"
+	if t.HasReader(name) {
+		return name, nil
+	}
+
 	err := g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
-		<$typedefType := typeReference .Spec>
 
-		type <typeName .Spec> <typeName .Spec.Target>
-
-		<$v := newVar "v">
 		<$x := newVar "x">
-		func (<$v> <$typedefType>) ToWire() <$wire>.Value {
-			<$x> := (<typeReference .Spec.Target>)(<$v>)
-			return <toWire .Spec.Target $x>
-		}
-
 		<$w := newVar "w">
-		<if isStructType .Spec>
-			func (<$v> <$typedefType>) FromWire(<$w> <$wire>.Value) error {
-				return (<typeReference .Spec.Target>)(<$v>).FromWire(<$w>)
-			}
-		<else>
-			func (<$v> *<$typedefType>) FromWire(<$w> <$wire>.Value) error {
-				<$x>, err := <fromWire .Spec.Target $w>
-				*<$v> = (<$typedefType>)(<$x>)
-				return err
-			}
-		<end>
-
-		func <.Reader>(<$w> <$wire>.Value) (<$typedefType>, error) {
-			<if isStructType .Spec>
-				<$x>, err := <fromWire .Spec.Target $w>
-				return (<$typedefType>)(<$x>), err
+		func <.Name>(<$w> <$wire>.Value) (<typeReference .Spec>, error) {
+			var <$x> <typeName .Spec>
+			err := <$x>.FromWire(<$w>)
+			<if isStructType .Spec.Target>
+				return &<$x>, err
 			<else>
-				var <$x> <$typedefType>
-				err := <$x>.FromWire(<$w>)
 				return <$x>, err
 			<end>
 		}
 		`,
 		struct {
-			Spec   *compile.TypedefSpec
-			Reader string
-		}{Spec: spec, Reader: typeReader(spec)},
+			Name string
+			Spec *compile.TypedefSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
+// typedef generates code for the given typedef.
+func typedef(g Generator, spec *compile.TypedefSpec) error {
+	err := g.DeclareFromTemplate(
+		`
+		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$typedefType := typeReference .>
+
+		type <typeName .> <typeName .Target>
+
+		<$v := newVar "v">
+		<$x := newVar "x">
+		func (<$v> <$typedefType>) ToWire() <$wire>.Value {
+			<$x> := (<typeReference .Target>)(<$v>)
+			return <toWire .Target $x>
+		}
+
+		<$w := newVar "w">
+		func (<$v> *<typeName .>) FromWire(<$w> <$wire>.Value) error {
+			<if isStructType .>
+				return (<typeReference .Target>)(<$v>).FromWire(<$w>)
+			<else>
+				<$x>, err := <fromWire .Target $w>
+				*<$v> = (<$typedefType>)(<$x>)
+				return err
+			<end>
+		}
+		`,
+		spec,
 	)
 	return wrapGenerateError(spec.Name, err)
 }

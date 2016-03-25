@@ -32,20 +32,15 @@ type WireGenerator struct {
 	mapG  mapGenerator
 	setG  setGenerator
 	listG listGenerator
-}
 
-// NewWireGenerator builds a new WireGenerator.
-func NewWireGenerator() WireGenerator {
-	return WireGenerator{
-		listG: newListGenerator(),
-		setG:  newSetGenerator(),
-		mapG:  newMapGenerator(),
-	}
+	enumG    enumGenerator
+	structG  structGenerator
+	typedefG typedefGenerator
 }
 
 // ToWire generates an expression which evaluates to a Value object containing
 // the wire representation of the variable $varName of type $spec.
-func (w WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName string) (string, error) {
+func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName string) (string, error) {
 	wire := g.Import("github.com/thriftrw/thriftrw-go/wire")
 	switch spec {
 	case compile.BoolSpec:
@@ -137,7 +132,7 @@ func (w WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName string
 
 // ToWirePtr is the same as ToWire expect `varName` is expected to be a
 // reference to a value of the given type.
-func (w WireGenerator) ToWirePtr(g Generator, spec compile.TypeSpec, varName string) (string, error) {
+func (w *WireGenerator) ToWirePtr(g Generator, spec compile.TypeSpec, varName string) (string, error) {
 	switch spec {
 	case compile.BoolSpec, compile.I8Spec, compile.I16Spec, compile.I32Spec,
 		compile.I64Spec, compile.DoubleSpec, compile.StringSpec:
@@ -151,7 +146,7 @@ func (w WireGenerator) ToWirePtr(g Generator, spec compile.TypeSpec, varName str
 
 // FromWire generates an expression of type ($spec, error) which reads the Value
 // at $value into a $spec.
-func (w WireGenerator) FromWire(g Generator, spec compile.TypeSpec, value string) (string, error) {
+func (w *WireGenerator) FromWire(g Generator, spec compile.TypeSpec, value string) (string, error) {
 	switch spec {
 	case compile.BoolSpec:
 		return fmt.Sprintf("%s.GetBool(), error(nil)", value), nil
@@ -192,8 +187,26 @@ func (w WireGenerator) FromWire(g Generator, spec compile.TypeSpec, value string
 			return "", err
 		}
 		return fmt.Sprintf("%s(%s.GetSet())", reader, value), nil
+	case *compile.TypedefSpec:
+		reader, err := w.typedefG.Reader(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s)", reader, value), nil
+	case *compile.EnumSpec:
+		reader, err := w.enumG.Reader(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s)", reader, value), nil
+	case *compile.StructSpec:
+		reader, err := w.structG.Reader(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s)", reader, value), nil
 	default:
-		return fmt.Sprintf("%s(%s)", typeReader(spec), value), nil
+		panic(fmt.Sprintf("Unknown TypeSpec (%T) %v", spec, spec))
 	}
 }
 
@@ -202,7 +215,7 @@ func (w WireGenerator) FromWire(g Generator, spec compile.TypeSpec, value string
 //
 // A variable err of type error MUST be in scope and will be assigned the
 // parse error, if any.
-func (w WireGenerator) FromWirePtr(g Generator, spec compile.TypeSpec, lhs string, value string) (string, error) {
+func (w *WireGenerator) FromWirePtr(g Generator, spec compile.TypeSpec, lhs string, value string) (string, error) {
 	if !isPrimitiveType(spec) {
 		// Everything else can be assigned to directly.
 		out, err := w.FromWire(g, spec, value)
@@ -224,11 +237,6 @@ func (w WireGenerator) FromWirePtr(g Generator, spec compile.TypeSpec, lhs strin
 			Value string
 		}{Spec: spec, LHS: lhs, Value: value},
 	)
-}
-
-// typeReader gets the name of the reader function for the given type.
-func typeReader(spec compile.TypeSpec) string {
-	return "_" + goCase(spec.ThriftName()) + "_Read"
 }
 
 // TypeCode gets an expression of type 'wire.Type' that represents the

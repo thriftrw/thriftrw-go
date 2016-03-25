@@ -35,6 +35,11 @@ func (m _Map_String_ArbitraryValue_MapItemList) ForEach(f func(wire.MapItem) err
 }
 func (m _Map_String_ArbitraryValue_MapItemList) Close() {
 }
+func _ArbitraryValue_Read(w wire.Value) (*ArbitraryValue, error) {
+	var v ArbitraryValue
+	err := v.FromWire(w)
+	return &v, err
+}
 func _List_ArbitraryValue_Read(l wire.List) ([]*ArbitraryValue, error) {
 	if l.ValueType != wire.TStruct {
 		return nil, nil
@@ -157,11 +162,6 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _ArbitraryValue_Read(w wire.Value) (*ArbitraryValue, error) {
-	var v ArbitraryValue
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *ArbitraryValue) String() string {
 	var fs [5]string
 	i := 0
@@ -212,17 +212,17 @@ func (v *ContactInfo) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
-	var v ContactInfo
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *ContactInfo) String() string {
 	var fs [1]string
 	i := 0
 	fs[i] = fmt.Sprintf("EmailAddress: %v", v.EmailAddress)
 	i++
 	return fmt.Sprintf("ContactInfo{%v}", strings.Join(fs[:i], ", "))
+}
+func _Pdf_Read(w wire.Value) (Pdf, error) {
+	var x Pdf
+	err := x.FromWire(w)
+	return x, err
 }
 
 type Document struct {
@@ -267,11 +267,6 @@ func (v *Document) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _Document_Read(w wire.Value) (*Document, error) {
-	var v Document
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *Document) String() string {
 	var fs [2]string
 	i := 0
@@ -310,11 +305,6 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _DoesNotExistException_Read(w wire.Value) (*DoesNotExistException, error) {
-	var v DoesNotExistException
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *DoesNotExistException) String() string {
 	var fs [1]string
 	i := 0
@@ -324,6 +314,11 @@ func (v *DoesNotExistException) String() string {
 }
 func (v *DoesNotExistException) Error() string {
 	return v.String()
+}
+func _Point_Read(w wire.Value) (*Point, error) {
+	var v Point
+	err := v.FromWire(w)
+	return &v, err
 }
 
 type Edge struct {
@@ -361,11 +356,6 @@ func (v *Edge) FromWire(w wire.Value) error {
 		}
 	}
 	return nil
-}
-func _Edge_Read(w wire.Value) (*Edge, error) {
-	var v Edge
-	err := v.FromWire(w)
-	return &v, err
 }
 func (v *Edge) String() string {
 	var fs [2]string
@@ -418,6 +408,11 @@ func (v _Set_EnumWithValues_ValueList) ForEach(f func(wire.Value) error) error {
 }
 func (v _Set_EnumWithValues_ValueList) Close() {
 }
+func _EnumDefault_Read(w wire.Value) (EnumDefault, error) {
+	var v EnumDefault
+	err := v.FromWire(w)
+	return v, err
+}
 func _List_EnumDefault_Read(l wire.List) ([]EnumDefault, error) {
 	if l.ValueType != wire.TI32 {
 		return nil, nil
@@ -433,6 +428,11 @@ func _List_EnumDefault_Read(l wire.List) ([]EnumDefault, error) {
 	})
 	l.Items.Close()
 	return o, err
+}
+func _EnumWithDuplicateValues_Read(w wire.Value) (EnumWithDuplicateValues, error) {
+	var v EnumWithDuplicateValues
+	err := v.FromWire(w)
+	return v, err
 }
 func _Map_EnumWithDuplicateValues_I32_Read(m wire.Map) (map[EnumWithDuplicateValues]int32, error) {
 	if m.KeyType != wire.TI32 {
@@ -456,6 +456,11 @@ func _Map_EnumWithDuplicateValues_I32_Read(m wire.Map) (map[EnumWithDuplicateVal
 	})
 	m.Items.Close()
 	return o, err
+}
+func _EnumWithValues_Read(w wire.Value) (EnumWithValues, error) {
+	var v EnumWithValues
+	err := v.FromWire(w)
+	return v, err
 }
 func _Set_EnumWithValues_Read(s wire.Set) (map[EnumWithValues]struct{}, error) {
 	if s.ValueType != wire.TI32 {
@@ -526,11 +531,6 @@ func (v *EnumContainers) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _EnumContainers_Read(w wire.Value) (*EnumContainers, error) {
-	var v EnumContainers
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *EnumContainers) String() string {
 	var fs [3]string
 	i := 0
@@ -564,11 +564,6 @@ func (v *EnumDefault) FromWire(w wire.Value) error {
 	*v = (EnumDefault)(w.GetI32())
 	return nil
 }
-func _EnumDefault_Read(w wire.Value) (EnumDefault, error) {
-	var v EnumDefault
-	err := v.FromWire(w)
-	return v, err
-}
 
 type EnumWithDuplicateName int32
 
@@ -591,11 +586,6 @@ func (v *EnumWithDuplicateName) FromWire(w wire.Value) error {
 	*v = (EnumWithDuplicateName)(w.GetI32())
 	return nil
 }
-func _EnumWithDuplicateName_Read(w wire.Value) (EnumWithDuplicateName, error) {
-	var v EnumWithDuplicateName
-	err := v.FromWire(w)
-	return v, err
-}
 
 type EnumWithDuplicateValues int32
 
@@ -611,11 +601,6 @@ func (v EnumWithDuplicateValues) ToWire() wire.Value {
 func (v *EnumWithDuplicateValues) FromWire(w wire.Value) error {
 	*v = (EnumWithDuplicateValues)(w.GetI32())
 	return nil
-}
-func _EnumWithDuplicateValues_Read(w wire.Value) (EnumWithDuplicateValues, error) {
-	var v EnumWithDuplicateValues
-	err := v.FromWire(w)
-	return v, err
 }
 
 type EnumWithValues int32
@@ -633,10 +618,15 @@ func (v *EnumWithValues) FromWire(w wire.Value) error {
 	*v = (EnumWithValues)(w.GetI32())
 	return nil
 }
-func _EnumWithValues_Read(w wire.Value) (EnumWithValues, error) {
-	var v EnumWithValues
-	err := v.FromWire(w)
-	return v, err
+func _Timestamp_Read(w wire.Value) (Timestamp, error) {
+	var x Timestamp
+	err := x.FromWire(w)
+	return x, err
+}
+func _UUID_Read(w wire.Value) (*UUID, error) {
+	var x UUID
+	err := x.FromWire(w)
+	return &x, err
 }
 
 type Event struct {
@@ -679,11 +669,6 @@ func (v *Event) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _Event_Read(w wire.Value) (*Event, error) {
-	var v Event
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *Event) String() string {
 	var fs [2]string
 	i := 0
@@ -708,6 +693,11 @@ func (v _List_Event_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 func (v _List_Event_ValueList) Close() {
+}
+func _Event_Read(w wire.Value) (*Event, error) {
+	var v Event
+	err := v.FromWire(w)
+	return &v, err
 }
 func _List_Event_Read(l wire.List) ([]*Event, error) {
 	if l.ValueType != wire.TStruct {
@@ -737,10 +727,10 @@ func (v *EventGroup) FromWire(w wire.Value) error {
 	*v = (EventGroup)(x)
 	return err
 }
-func _EventGroup_Read(w wire.Value) (EventGroup, error) {
-	var x EventGroup
-	err := x.FromWire(w)
-	return x, err
+func _Size_Read(w wire.Value) (*Size, error) {
+	var v Size
+	err := v.FromWire(w)
+	return &v, err
 }
 
 type Frame struct {
@@ -779,11 +769,6 @@ func (v *Frame) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _Frame_Read(w wire.Value) (*Frame, error) {
-	var v Frame
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *Frame) String() string {
 	var fs [2]string
 	i := 0
@@ -806,6 +791,11 @@ func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 func (v _List_Edge_ValueList) Close() {
+}
+func _Edge_Read(w wire.Value) (*Edge, error) {
+	var v Edge
+	err := v.FromWire(w)
+	return &v, err
 }
 func _List_Edge_Read(l wire.List) ([]*Edge, error) {
 	if l.ValueType != wire.TStruct {
@@ -848,11 +838,6 @@ func (v *Graph) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _Graph_Read(w wire.Value) (*Graph, error) {
-	var v Graph
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *Graph) String() string {
 	var fs [1]string
 	i := 0
@@ -871,11 +856,6 @@ func (v *Pdf) FromWire(w wire.Value) error {
 	x, err := w.GetBinary(), error(nil)
 	*v = (Pdf)(x)
 	return err
-}
-func _Pdf_Read(w wire.Value) (Pdf, error) {
-	var x Pdf
-	err := x.FromWire(w)
-	return x, err
 }
 
 type Point struct {
@@ -913,11 +893,6 @@ func (v *Point) FromWire(w wire.Value) error {
 		}
 	}
 	return nil
-}
-func _Point_Read(w wire.Value) (*Point, error) {
-	var v Point
-	err := v.FromWire(w)
-	return &v, err
 }
 func (v *Point) String() string {
 	var fs [2]string
@@ -1211,11 +1186,6 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _PrimitiveContainers_Read(w wire.Value) (*PrimitiveContainers, error) {
-	var v PrimitiveContainers
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *PrimitiveContainers) String() string {
 	var fs [6]string
 	i := 0
@@ -1389,11 +1359,6 @@ func (v *PrimitiveContainersRequired) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _PrimitiveContainersRequired_Read(w wire.Value) (*PrimitiveContainersRequired, error) {
-	var v PrimitiveContainersRequired
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *PrimitiveContainersRequired) String() string {
 	var fs [3]string
 	i := 0
@@ -1532,11 +1497,6 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _PrimitiveOptionalStruct_Read(w wire.Value) (*PrimitiveOptionalStruct, error) {
-	var v PrimitiveOptionalStruct
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *PrimitiveOptionalStruct) String() string {
 	var fs [8]string
 	i := 0
@@ -1671,11 +1631,6 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _PrimitiveRequiredStruct_Read(w wire.Value) (*PrimitiveRequiredStruct, error) {
-	var v PrimitiveRequiredStruct
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *PrimitiveRequiredStruct) String() string {
 	var fs [8]string
 	i := 0
@@ -1734,11 +1689,6 @@ func (v *Size) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _Size_Read(w wire.Value) (*Size, error) {
-	var v Size
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *Size) String() string {
 	var fs [2]string
 	i := 0
@@ -1760,11 +1710,6 @@ func (v *State) FromWire(w wire.Value) error {
 	*v = (State)(x)
 	return err
 }
-func _State_Read(w wire.Value) (State, error) {
-	var x State
-	err := x.FromWire(w)
-	return x, err
-}
 
 type Timestamp int64
 
@@ -1777,8 +1722,13 @@ func (v *Timestamp) FromWire(w wire.Value) error {
 	*v = (Timestamp)(x)
 	return err
 }
-func _Timestamp_Read(w wire.Value) (Timestamp, error) {
-	var x Timestamp
+func _EventGroup_Read(w wire.Value) (EventGroup, error) {
+	var x EventGroup
+	err := x.FromWire(w)
+	return x, err
+}
+func _State_Read(w wire.Value) (State, error) {
+	var x State
 	err := x.FromWire(w)
 	return x, err
 }
@@ -1831,11 +1781,6 @@ func (v *Transition) FromWire(w wire.Value) error {
 	}
 	return nil
 }
-func _Transition_Read(w wire.Value) (*Transition, error) {
-	var v Transition
-	err := v.FromWire(w)
-	return &v, err
-}
 func (v *Transition) String() string {
 	var fs [3]string
 	i := 0
@@ -1859,9 +1804,10 @@ func (v *UUID) ToWire() wire.Value {
 func (v *UUID) FromWire(w wire.Value) error {
 	return (*I128)(v).FromWire(w)
 }
-func _UUID_Read(w wire.Value) (*UUID, error) {
-	x, err := _I128_Read(w)
-	return (*UUID)(x), err
+func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
+	var v ContactInfo
+	err := v.FromWire(w)
+	return &v, err
 }
 
 type User struct {
@@ -1901,11 +1847,6 @@ func (v *User) FromWire(w wire.Value) error {
 		}
 	}
 	return nil
-}
-func _User_Read(w wire.Value) (*User, error) {
-	var v User
-	err := v.FromWire(w)
-	return &v, err
 }
 func (v *User) String() string {
 	var fs [2]string
@@ -1954,11 +1895,6 @@ func (v *I128) FromWire(w wire.Value) error {
 		}
 	}
 	return nil
-}
-func _I128_Read(w wire.Value) (*I128, error) {
-	var v I128
-	err := v.FromWire(w)
-	return &v, err
 }
 func (v *I128) String() string {
 	var fs [2]string

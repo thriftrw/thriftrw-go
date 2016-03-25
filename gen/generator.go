@@ -85,7 +85,6 @@ func NewGenerator(pkgName string) Generator {
 		PackageName: pkgName,
 		Namespace:   namespace,
 		importer:    newImporter(namespace),
-		w:           NewWireGenerator(),
 	}
 }
 

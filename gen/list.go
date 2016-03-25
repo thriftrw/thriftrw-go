@@ -25,18 +25,8 @@ import "github.com/thriftrw/thriftrw-go/compile"
 // listGenerator generates logic to convert lists of arbitrary Thrift types to
 // and from ValueLists.
 type listGenerator struct {
-	// Set of ValueLists that have already been generated.
-	valueLists map[string]struct{}
-
-	// Set of readers that have already been generated.
-	readers map[string]struct{}
-}
-
-func newListGenerator() listGenerator {
-	return listGenerator{
-		valueLists: make(map[string]struct{}),
-		readers:    make(map[string]struct{}),
-	}
+	hasReaders
+	hasLazyLists
 }
 
 // ValueList generates a new ValueList type alias for the given list.
@@ -51,9 +41,9 @@ func newListGenerator() listGenerator {
 //
 // And $valueListName is returned. This may be used where a ValueList of the
 // given type is expected.
-func (l listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, error) {
+func (l *listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, error) {
 	name := "_" + valueName(spec) + "_ValueList"
-	if _, ok := l.valueLists[name]; ok {
+	if l.HasLazyList(name) {
 		return name, nil
 	}
 
@@ -82,15 +72,8 @@ func (l listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, e
 			Spec *compile.ListSpec
 		}{Name: name, Spec: spec},
 	)
-	if err != nil {
-		return "", generateError{
-			Name:   typeReference(spec),
-			Reason: err,
-		}
-	}
 
-	l.valueLists[name] = struct{}{}
-	return name, nil
+	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
 // Reader generates a function to read a list of the given type from a
@@ -101,9 +84,9 @@ func (l listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, e
 // 	}
 //
 // And returns its name.
-func (l listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, error) {
+func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, error) {
 	name := "_" + valueName(spec) + "_Read"
-	if _, ok := l.readers[name]; ok {
+	if l.HasReader(name) {
 		return name, nil
 	}
 
@@ -140,13 +123,5 @@ func (l listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, erro
 		}{Name: name, Spec: spec},
 	)
 
-	if err != nil {
-		return "", generateError{
-			Name:   typeReference(spec),
-			Reason: err,
-		}
-	}
-
-	l.readers[name] = struct{}{}
-	return name, nil
+	return name, wrapGenerateError(spec.ThriftName(), err)
 }
