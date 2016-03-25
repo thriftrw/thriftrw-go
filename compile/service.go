@@ -27,13 +27,14 @@ type ServiceSpec struct {
 	linkOnce
 
 	Name      string
+	File      string
 	Parent    *ServiceSpec
 	Functions map[string]*FunctionSpec
 
 	parentSrc *ast.ServiceReference
 }
 
-func compileService(src *ast.Service) (*ServiceSpec, error) {
+func compileService(file string, src *ast.Service) (*ServiceSpec, error) {
 	serviceNS := newNamespace(caseInsensitive)
 
 	functions := make(map[string]*FunctionSpec)
@@ -60,6 +61,7 @@ func compileService(src *ast.Service) (*ServiceSpec, error) {
 
 	return &ServiceSpec{
 		Name:      src.Name,
+		File:      file,
 		Functions: functions,
 		parentSrc: src.Parent,
 	}, nil
@@ -134,6 +136,11 @@ func (s *ServiceSpec) Link(scope Scope) error {
 	}
 
 	return nil
+}
+
+// ThriftFile is the Thrift file in which this service was defined.
+func (s *ServiceSpec) ThriftFile() string {
+	return s.File
 }
 
 // FunctionSpec is a single function inside a Service.
@@ -239,7 +246,7 @@ func compileResultSpec(returnType ast.Type, exceptions []*ast.Field) (*ResultSpe
 		return nil, err
 	}
 	return &ResultSpec{
-		ReturnType: compileType(returnType),
+		ReturnType: compileTypeReference(returnType),
 		Exceptions: excFields,
 	}, nil
 }

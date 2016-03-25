@@ -61,7 +61,7 @@ func TestCompileList(t *testing.T) {
 		output := mustLink(t, tt.output, scope())
 
 		scope := scopeOrDefault(tt.scope)
-		spec, err := compileType(tt.input).Link(scope)
+		spec, err := compileTypeReference(tt.input).Link(scope)
 		if assert.NoError(t, err, tt.desc) {
 			assert.Equal(t, wire.TList, spec.TypeCode(), tt.desc)
 			assert.Equal(t, output, spec, tt.desc)
@@ -81,7 +81,7 @@ func TestLinkListFailure(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		_, err := compileType(tt.input).Link(scope())
+		_, err := compileTypeReference(tt.input).Link(scope())
 		if assert.Error(t, err) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg)
@@ -118,7 +118,7 @@ func TestCompileMap(t *testing.T) {
 		output := mustLink(t, tt.output, scope())
 
 		scope := scopeOrDefault(tt.scope)
-		spec, err := compileType(tt.input).Link(scope)
+		spec, err := compileTypeReference(tt.input).Link(scope)
 		if assert.NoError(t, err, tt.desc) {
 			assert.Equal(t, wire.TMap, spec.TypeCode(), tt.desc)
 			assert.Equal(t, output, spec, tt.desc)
@@ -148,7 +148,7 @@ func TestLinkMapFailure(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		_, err := compileType(tt.input).Link(scope())
+		_, err := compileTypeReference(tt.input).Link(scope())
 		if assert.Error(t, err) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg)
@@ -176,7 +176,7 @@ func TestCompileSet(t *testing.T) {
 		output := mustLink(t, tt.output, scope())
 
 		scope := scopeOrDefault(tt.scope)
-		spec, err := compileType(tt.input).Link(scope)
+		spec, err := compileTypeReference(tt.input).Link(scope)
 		if assert.NoError(t, err, tt.desc) {
 			assert.Equal(t, wire.TSet, spec.TypeCode(), tt.desc)
 			assert.Equal(t, output, spec, tt.desc)
@@ -196,7 +196,7 @@ func TestLinkSetFailure(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		_, err := compileType(tt.input).Link(scope())
+		_, err := compileTypeReference(tt.input).Link(scope())
 		if assert.Error(t, err) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg)

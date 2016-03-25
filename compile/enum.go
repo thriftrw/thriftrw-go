@@ -28,6 +28,7 @@ import (
 // EnumSpec represents an enum defined in the Thrift file.
 type EnumSpec struct {
 	Name  string
+	File  string
 	Items []EnumItem
 }
 
@@ -38,7 +39,7 @@ type EnumItem struct {
 }
 
 // compileEnum compiles the given Enum AST into an EnumSpec.
-func compileEnum(src *ast.Enum) (*EnumSpec, error) {
+func compileEnum(file string, src *ast.Enum) (*EnumSpec, error) {
 	enumNS := newNamespace(caseInsensitive)
 	prev := -1
 
@@ -63,7 +64,7 @@ func compileEnum(src *ast.Enum) (*EnumSpec, error) {
 		items = append(items, item)
 	}
 
-	return &EnumSpec{Name: src.Name, Items: items}, nil
+	return &EnumSpec{Name: src.Name, File: file, Items: items}, nil
 }
 
 // LookupItem retrieves the item with the given name from the enum.
@@ -86,6 +87,11 @@ func (e *EnumSpec) Link(scope Scope) (TypeSpec, error) {
 // ThriftName for EnumSpec
 func (e *EnumSpec) ThriftName() string {
 	return e.Name
+}
+
+// ThriftFile for EnumSpec
+func (e *EnumSpec) ThriftFile() string {
+	return e.File
 }
 
 // TypeCode for EnumSpec.

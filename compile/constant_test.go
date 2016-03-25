@@ -61,6 +61,7 @@ func TestCompileConstant(t *testing.T) {
 			nil,
 			&Constant{
 				Name:  "version",
+				File:  "test.thrift",
 				Type:  I32Spec,
 				Value: ConstantInt(1),
 			},
@@ -70,6 +71,7 @@ func TestCompileConstant(t *testing.T) {
 			nil,
 			&Constant{
 				Name:  "foo",
+				File:  "test.thrift",
 				Type:  StringSpec,
 				Value: ConstantString("hello world"),
 			},
@@ -79,6 +81,7 @@ func TestCompileConstant(t *testing.T) {
 			nil,
 			&Constant{
 				Name: "foo",
+				File: "test.thrift",
 				Type: &ListSpec{ValueSpec: StringSpec},
 				Value: ConstantList([]ConstantValue{
 					ConstantString("hello"),
@@ -91,6 +94,7 @@ func TestCompileConstant(t *testing.T) {
 			scope("y", y),
 			&Constant{
 				Name: "foo",
+				File: "test.thrift",
 				Type: &ListSpec{ValueSpec: StringSpec},
 				Value: ConstantList([]ConstantValue{
 					ConstantString("x"),
@@ -109,7 +113,7 @@ func TestCompileConstant(t *testing.T) {
 			"invalid test: expected spec failed to link",
 		)
 
-		constant := compileConstant(src)
+		constant := compileConstant("test.thrift", src)
 		if assert.NoError(t, constant.Link(scope)) {
 			assert.Equal(t, tt.constant, constant)
 		}
@@ -165,7 +169,7 @@ func TestCompileConstantFailure(t *testing.T) {
 	for _, tt := range tests {
 		src := parseConstant(tt.src)
 		scope := scopeOrDefault(tt.scope)
-		constant := compileConstant(src)
+		constant := compileConstant("test.thrift", src)
 
 		err := constant.Link(scope)
 		if assert.Error(t, err) {

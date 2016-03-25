@@ -55,6 +55,7 @@ func TestCompileStructSuccess(t *testing.T) {
 			nil,
 			&StructSpec{
 				Name: "Health",
+				File: "test.thrift",
 				Type: ast.StructType,
 				Fields: map[string]*FieldSpec{
 					"healthy": {
@@ -75,6 +76,7 @@ func TestCompileStructSuccess(t *testing.T) {
 			scope("Key", &TypedefSpec{Name: "Key", Target: StringSpec}),
 			&StructSpec{
 				Name: "KeyNotFoundError",
+				File: "test.thrift",
 				Type: ast.ExceptionType,
 				Fields: map[string]*FieldSpec{
 					"message": {
@@ -100,6 +102,7 @@ func TestCompileStructSuccess(t *testing.T) {
 			nil,
 			&StructSpec{
 				Name: "Body",
+				File: "test.thrift",
 				Type: ast.UnionType,
 				Fields: map[string]*FieldSpec{
 					"plainText": {
@@ -123,7 +126,7 @@ func TestCompileStructSuccess(t *testing.T) {
 		expected := mustLink(t, tt.spec, scope())
 
 		src := parseStruct(tt.src)
-		structSpec, err := compileStruct(src)
+		structSpec, err := compileStruct("test.thrift", src)
 		scope := scopeOrDefault(tt.scope)
 		if assert.NoError(t, err) {
 			spec, err := structSpec.Link(scope)
@@ -196,7 +199,7 @@ func TestCompileStructFailure(t *testing.T) {
 
 	for _, tt := range tests {
 		src := parseStruct(tt.src)
-		_, err := compileStruct(src)
+		_, err := compileStruct("test.thrift", src)
 
 		if assert.Error(t, err, tt.desc) {
 			for _, msg := range tt.messages {
@@ -237,7 +240,7 @@ func TestLinkStructFailure(t *testing.T) {
 		src := parseStruct(tt.src)
 		scope := scopeOrDefault(tt.scope)
 
-		spec, err := compileStruct(src)
+		spec, err := compileStruct("test.thrift", src)
 		if assert.NoError(t, err, tt.desc) {
 			_, err := spec.Link(scope)
 			if assert.Error(t, err, tt.desc) {

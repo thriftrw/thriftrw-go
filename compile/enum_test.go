@@ -58,6 +58,7 @@ func TestCompileEnumSuccess(t *testing.T) {
 			"enum Role { Disabled, User, Moderator, Admin }",
 			&EnumSpec{
 				Name: "Role",
+				File: "test.thrift",
 				Items: []EnumItem{
 					EnumItem{"Disabled", 0},
 					EnumItem{"User", 1},
@@ -71,6 +72,7 @@ func TestCompileEnumSuccess(t *testing.T) {
 			"enum CommentStatus { Visible = 12345, Hidden = 54321 }",
 			&EnumSpec{
 				Name: "CommentStatus",
+				File: "test.thrift",
 				Items: []EnumItem{
 					EnumItem{"Visible", 12345},
 					EnumItem{"Hidden", 54321},
@@ -82,6 +84,7 @@ func TestCompileEnumSuccess(t *testing.T) {
 			"enum foo { A, B, C = 10, D, E }",
 			&EnumSpec{
 				Name: "foo",
+				File: "test.thrift",
 				Items: []EnumItem{
 					EnumItem{"A", 0},
 					EnumItem{"B", 1},
@@ -96,6 +99,7 @@ func TestCompileEnumSuccess(t *testing.T) {
 			"enum bar { A, B = 0, C, D = 0, E }",
 			&EnumSpec{
 				Name: "bar",
+				File: "test.thrift",
 				Items: []EnumItem{
 					EnumItem{"A", 0},
 					EnumItem{"B", 0},
@@ -109,7 +113,7 @@ func TestCompileEnumSuccess(t *testing.T) {
 
 	for _, tt := range tests {
 		src := parseEnum(tt.src)
-		enumspec, err := compileEnum(src)
+		enumspec, err := compileEnum("test.thrift", src)
 		if assert.NoError(t, err) {
 			spec, err := enumspec.Link(scope())
 			assert.NoError(t, err)
@@ -139,7 +143,7 @@ func TestCompileEnumFailure(t *testing.T) {
 
 	for _, tt := range tests {
 		src := parseEnum(tt.src)
-		_, err := compileEnum(src)
+		_, err := compileEnum("test.thrift", src)
 
 		if assert.Error(t, err) {
 			for _, msg := range tt.messages {

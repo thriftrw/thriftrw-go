@@ -110,7 +110,7 @@ func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
 		// TODO(abg): perform bounds check on field ID
 		ID:       int16(src.ID),
 		Name:     src.Name,
-		Type:     compileType(src.Type),
+		Type:     compileTypeReference(src.Type),
 		Required: required,
 		Default:  compileConstantValue(src.Default),
 	}, nil
