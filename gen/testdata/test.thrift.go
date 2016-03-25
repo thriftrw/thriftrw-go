@@ -8,6 +8,13 @@ import (
 	"strings"
 )
 
+type ArbitraryValue struct {
+	BoolValue   *bool
+	Int64Value  *int64
+	ListValue   []*ArbitraryValue
+	MapValue    map[string]*ArbitraryValue
+	StringValue *string
+}
 type _List_ArbitraryValue_ValueList []*ArbitraryValue
 
 func (v _List_ArbitraryValue_ValueList) ForEach(f func(wire.Value) error) error {
@@ -34,6 +41,31 @@ func (m _Map_String_ArbitraryValue_MapItemList) ForEach(f func(wire.MapItem) err
 	return nil
 }
 func (m _Map_String_ArbitraryValue_MapItemList) Close() {
+}
+func (v *ArbitraryValue) ToWire() wire.Value {
+	var fields [5]wire.Field
+	i := 0
+	if v.BoolValue != nil {
+		fields[i] = wire.Field{ID: 1, Value: wire.NewValueBool(*(v.BoolValue))}
+		i++
+	}
+	if v.Int64Value != nil {
+		fields[i] = wire.Field{ID: 2, Value: wire.NewValueI64(*(v.Int64Value))}
+		i++
+	}
+	if v.ListValue != nil {
+		fields[i] = wire.Field{ID: 4, Value: wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.ListValue), Items: _List_ArbitraryValue_ValueList(v.ListValue)})}
+		i++
+	}
+	if v.MapValue != nil {
+		fields[i] = wire.Field{ID: 5, Value: wire.NewValueMap(wire.Map{KeyType: wire.TBinary, ValueType: wire.TStruct, Size: len(v.MapValue), Items: _Map_String_ArbitraryValue_MapItemList(v.MapValue)})}
+		i++
+	}
+	if v.StringValue != nil {
+		fields[i] = wire.Field{ID: 3, Value: wire.NewValueString(*(v.StringValue))}
+		i++
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func _ArbitraryValue_Read(w wire.Value) (*ArbitraryValue, error) {
 	var v ArbitraryValue
@@ -79,80 +111,46 @@ func _Map_String_ArbitraryValue_Read(m wire.Map) (map[string]*ArbitraryValue, er
 	m.Items.Close()
 	return o, err
 }
-
-type ArbitraryValue struct {
-	BoolValue   *bool
-	Int64Value  *int64
-	ListValue   []*ArbitraryValue
-	MapValue    map[string]*ArbitraryValue
-	StringValue *string
-}
-
-func (v *ArbitraryValue) ToWire() wire.Value {
-	var fs [5]wire.Field
-	i := 0
-	if v.BoolValue != nil {
-		fs[i] = wire.Field{ID: 1, Value: wire.NewValueBool(*(v.BoolValue))}
-		i++
-	}
-	if v.Int64Value != nil {
-		fs[i] = wire.Field{ID: 2, Value: wire.NewValueI64(*(v.Int64Value))}
-		i++
-	}
-	if v.ListValue != nil {
-		fs[i] = wire.Field{ID: 4, Value: wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.ListValue), Items: _List_ArbitraryValue_ValueList(v.ListValue)})}
-		i++
-	}
-	if v.MapValue != nil {
-		fs[i] = wire.Field{ID: 5, Value: wire.NewValueMap(wire.Map{KeyType: wire.TBinary, ValueType: wire.TStruct, Size: len(v.MapValue), Items: _Map_String_ArbitraryValue_MapItemList(v.MapValue)})}
-		i++
-	}
-	if v.StringValue != nil {
-		fs[i] = wire.Field{ID: 3, Value: wire.NewValueString(*(v.StringValue))}
-		i++
-	}
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
-}
 func (v *ArbitraryValue) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 1:
-			if f.Value.Type() == wire.TBool {
+			if field.Value.Type() == wire.TBool {
 				var x bool
-				x, err = f.Value.GetBool(), error(nil)
+				x, err = field.Value.GetBool(), error(nil)
 				v.BoolValue = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 2:
-			if f.Value.Type() == wire.TI64 {
+			if field.Value.Type() == wire.TI64 {
 				var x int64
-				x, err = f.Value.GetI64(), error(nil)
+				x, err = field.Value.GetI64(), error(nil)
 				v.Int64Value = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 4:
-			if f.Value.Type() == wire.TList {
-				v.ListValue, err = _List_ArbitraryValue_Read(f.Value.GetList())
+			if field.Value.Type() == wire.TList {
+				v.ListValue, err = _List_ArbitraryValue_Read(field.Value.GetList())
 				if err != nil {
 					return err
 				}
 			}
 		case 5:
-			if f.Value.Type() == wire.TMap {
-				v.MapValue, err = _Map_String_ArbitraryValue_Read(f.Value.GetMap())
+			if field.Value.Type() == wire.TMap {
+				v.MapValue, err = _Map_String_ArbitraryValue_Read(field.Value.GetMap())
 				if err != nil {
 					return err
 				}
 			}
 		case 3:
-			if f.Value.Type() == wire.TBinary {
+			if field.Value.Type() == wire.TBinary {
 				var x string
-				x, err = f.Value.GetString(), error(nil)
+				x, err = field.Value.GetString(), error(nil)
 				v.StringValue = &x
 				if err != nil {
 					return err
@@ -163,47 +161,47 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *ArbitraryValue) String() string {
-	var fs [5]string
+	var fields [5]string
 	i := 0
 	if v.BoolValue != nil {
-		fs[i] = fmt.Sprintf("BoolValue: %v", *(v.BoolValue))
+		fields[i] = fmt.Sprintf("BoolValue: %v", *(v.BoolValue))
 		i++
 	}
 	if v.Int64Value != nil {
-		fs[i] = fmt.Sprintf("Int64Value: %v", *(v.Int64Value))
+		fields[i] = fmt.Sprintf("Int64Value: %v", *(v.Int64Value))
 		i++
 	}
 	if v.ListValue != nil {
-		fs[i] = fmt.Sprintf("ListValue: %v", v.ListValue)
+		fields[i] = fmt.Sprintf("ListValue: %v", v.ListValue)
 		i++
 	}
 	if v.MapValue != nil {
-		fs[i] = fmt.Sprintf("MapValue: %v", v.MapValue)
+		fields[i] = fmt.Sprintf("MapValue: %v", v.MapValue)
 		i++
 	}
 	if v.StringValue != nil {
-		fs[i] = fmt.Sprintf("StringValue: %v", *(v.StringValue))
+		fields[i] = fmt.Sprintf("StringValue: %v", *(v.StringValue))
 		i++
 	}
-	return fmt.Sprintf("ArbitraryValue{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("ArbitraryValue{%v}", strings.Join(fields[:i], ", "))
 }
 
 type ContactInfo struct{ EmailAddress string }
 
 func (v *ContactInfo) ToWire() wire.Value {
-	var fs [1]wire.Field
+	var fields [1]wire.Field
 	i := 0
-	fs[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.EmailAddress)}
+	fields[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.EmailAddress)}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func (v *ContactInfo) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 1:
-			if f.Value.Type() == wire.TBinary {
-				v.EmailAddress, err = f.Value.GetString(), error(nil)
+			if field.Value.Type() == wire.TBinary {
+				v.EmailAddress, err = field.Value.GetString(), error(nil)
 				if err != nil {
 					return err
 				}
@@ -213,16 +211,11 @@ func (v *ContactInfo) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *ContactInfo) String() string {
-	var fs [1]string
+	var fields [1]string
 	i := 0
-	fs[i] = fmt.Sprintf("EmailAddress: %v", v.EmailAddress)
+	fields[i] = fmt.Sprintf("EmailAddress: %v", v.EmailAddress)
 	i++
-	return fmt.Sprintf("ContactInfo{%v}", strings.Join(fs[:i], ", "))
-}
-func _Pdf_Read(w wire.Value) (Pdf, error) {
-	var x Pdf
-	err := x.FromWire(w)
-	return x, err
+	return fmt.Sprintf("ContactInfo{%v}", strings.Join(fields[:i], ", "))
 }
 
 type Document struct {
@@ -231,33 +224,38 @@ type Document struct {
 }
 
 func (v *Document) ToWire() wire.Value {
-	var fs [2]wire.Field
+	var fields [2]wire.Field
 	i := 0
 	if v.Pdf != nil {
-		fs[i] = wire.Field{ID: 1, Value: v.Pdf.ToWire()}
+		fields[i] = wire.Field{ID: 1, Value: v.Pdf.ToWire()}
 		i++
 	}
 	if v.PlainText != nil {
-		fs[i] = wire.Field{ID: 2, Value: wire.NewValueString(*(v.PlainText))}
+		fields[i] = wire.Field{ID: 2, Value: wire.NewValueString(*(v.PlainText))}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+}
+func _Pdf_Read(w wire.Value) (Pdf, error) {
+	var x Pdf
+	err := x.FromWire(w)
+	return x, err
 }
 func (v *Document) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 1:
-			if f.Value.Type() == wire.TBinary {
-				v.Pdf, err = _Pdf_Read(f.Value)
+			if field.Value.Type() == wire.TBinary {
+				v.Pdf, err = _Pdf_Read(field.Value)
 				if err != nil {
 					return err
 				}
 			}
 		case 2:
-			if f.Value.Type() == wire.TBinary {
+			if field.Value.Type() == wire.TBinary {
 				var x string
-				x, err = f.Value.GetString(), error(nil)
+				x, err = field.Value.GetString(), error(nil)
 				v.PlainText = &x
 				if err != nil {
 					return err
@@ -268,35 +266,35 @@ func (v *Document) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *Document) String() string {
-	var fs [2]string
+	var fields [2]string
 	i := 0
 	if v.Pdf != nil {
-		fs[i] = fmt.Sprintf("Pdf: %v", v.Pdf)
+		fields[i] = fmt.Sprintf("Pdf: %v", v.Pdf)
 		i++
 	}
 	if v.PlainText != nil {
-		fs[i] = fmt.Sprintf("PlainText: %v", *(v.PlainText))
+		fields[i] = fmt.Sprintf("PlainText: %v", *(v.PlainText))
 		i++
 	}
-	return fmt.Sprintf("Document{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("Document{%v}", strings.Join(fields[:i], ", "))
 }
 
 type DoesNotExistException struct{ Key string }
 
 func (v *DoesNotExistException) ToWire() wire.Value {
-	var fs [1]wire.Field
+	var fields [1]wire.Field
 	i := 0
-	fs[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.Key)}
+	fields[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.Key)}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func (v *DoesNotExistException) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 1:
-			if f.Value.Type() == wire.TBinary {
-				v.Key, err = f.Value.GetString(), error(nil)
+			if field.Value.Type() == wire.TBinary {
+				v.Key, err = field.Value.GetString(), error(nil)
 				if err != nil {
 					return err
 				}
@@ -306,19 +304,14 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *DoesNotExistException) String() string {
-	var fs [1]string
+	var fields [1]string
 	i := 0
-	fs[i] = fmt.Sprintf("Key: %v", v.Key)
+	fields[i] = fmt.Sprintf("Key: %v", v.Key)
 	i++
-	return fmt.Sprintf("DoesNotExistException{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("DoesNotExistException{%v}", strings.Join(fields[:i], ", "))
 }
 func (v *DoesNotExistException) Error() string {
 	return v.String()
-}
-func _Point_Read(w wire.Value) (*Point, error) {
-	var v Point
-	err := v.FromWire(w)
-	return &v, err
 }
 
 type Edge struct {
@@ -327,28 +320,33 @@ type Edge struct {
 }
 
 func (v *Edge) ToWire() wire.Value {
-	var fs [2]wire.Field
+	var fields [2]wire.Field
 	i := 0
-	fs[i] = wire.Field{ID: 2, Value: v.End.ToWire()}
+	fields[i] = wire.Field{ID: 2, Value: v.End.ToWire()}
 	i++
-	fs[i] = wire.Field{ID: 1, Value: v.Start.ToWire()}
+	fields[i] = wire.Field{ID: 1, Value: v.Start.ToWire()}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+}
+func _Point_Read(w wire.Value) (*Point, error) {
+	var v Point
+	err := v.FromWire(w)
+	return &v, err
 }
 func (v *Edge) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 2:
-			if f.Value.Type() == wire.TStruct {
-				v.End, err = _Point_Read(f.Value)
+			if field.Value.Type() == wire.TStruct {
+				v.End, err = _Point_Read(field.Value)
 				if err != nil {
 					return err
 				}
 			}
 		case 1:
-			if f.Value.Type() == wire.TStruct {
-				v.Start, err = _Point_Read(f.Value)
+			if field.Value.Type() == wire.TStruct {
+				v.Start, err = _Point_Read(field.Value)
 				if err != nil {
 					return err
 				}
@@ -358,15 +356,20 @@ func (v *Edge) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *Edge) String() string {
-	var fs [2]string
+	var fields [2]string
 	i := 0
-	fs[i] = fmt.Sprintf("End: %v", v.End)
+	fields[i] = fmt.Sprintf("End: %v", v.End)
 	i++
-	fs[i] = fmt.Sprintf("Start: %v", v.Start)
+	fields[i] = fmt.Sprintf("Start: %v", v.Start)
 	i++
-	return fmt.Sprintf("Edge{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("Edge{%v}", strings.Join(fields[:i], ", "))
 }
 
+type EnumContainers struct {
+	ListOfEnums []EnumDefault
+	MapOfEnums  map[EnumWithDuplicateValues]int32
+	SetOfEnums  map[EnumWithValues]struct{}
+}
 type _List_EnumDefault_ValueList []EnumDefault
 
 func (v _List_EnumDefault_ValueList) ForEach(f func(wire.Value) error) error {
@@ -407,6 +410,23 @@ func (v _Set_EnumWithValues_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 func (v _Set_EnumWithValues_ValueList) Close() {
+}
+func (v *EnumContainers) ToWire() wire.Value {
+	var fields [3]wire.Field
+	i := 0
+	if v.ListOfEnums != nil {
+		fields[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TI32, Size: len(v.ListOfEnums), Items: _List_EnumDefault_ValueList(v.ListOfEnums)})}
+		i++
+	}
+	if v.MapOfEnums != nil {
+		fields[i] = wire.Field{ID: 3, Value: wire.NewValueMap(wire.Map{KeyType: wire.TI32, ValueType: wire.TI32, Size: len(v.MapOfEnums), Items: _Map_EnumWithDuplicateValues_I32_MapItemList(v.MapOfEnums)})}
+		i++
+	}
+	if v.SetOfEnums != nil {
+		fields[i] = wire.Field{ID: 2, Value: wire.NewValueSet(wire.Set{ValueType: wire.TI32, Size: len(v.SetOfEnums), Items: _Set_EnumWithValues_ValueList(v.SetOfEnums)})}
+		i++
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func _EnumDefault_Read(w wire.Value) (EnumDefault, error) {
 	var v EnumDefault
@@ -478,51 +498,27 @@ func _Set_EnumWithValues_Read(s wire.Set) (map[EnumWithValues]struct{}, error) {
 	s.Items.Close()
 	return o, err
 }
-
-type EnumContainers struct {
-	ListOfEnums []EnumDefault
-	MapOfEnums  map[EnumWithDuplicateValues]int32
-	SetOfEnums  map[EnumWithValues]struct{}
-}
-
-func (v *EnumContainers) ToWire() wire.Value {
-	var fs [3]wire.Field
-	i := 0
-	if v.ListOfEnums != nil {
-		fs[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TI32, Size: len(v.ListOfEnums), Items: _List_EnumDefault_ValueList(v.ListOfEnums)})}
-		i++
-	}
-	if v.MapOfEnums != nil {
-		fs[i] = wire.Field{ID: 3, Value: wire.NewValueMap(wire.Map{KeyType: wire.TI32, ValueType: wire.TI32, Size: len(v.MapOfEnums), Items: _Map_EnumWithDuplicateValues_I32_MapItemList(v.MapOfEnums)})}
-		i++
-	}
-	if v.SetOfEnums != nil {
-		fs[i] = wire.Field{ID: 2, Value: wire.NewValueSet(wire.Set{ValueType: wire.TI32, Size: len(v.SetOfEnums), Items: _Set_EnumWithValues_ValueList(v.SetOfEnums)})}
-		i++
-	}
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
-}
 func (v *EnumContainers) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 1:
-			if f.Value.Type() == wire.TList {
-				v.ListOfEnums, err = _List_EnumDefault_Read(f.Value.GetList())
+			if field.Value.Type() == wire.TList {
+				v.ListOfEnums, err = _List_EnumDefault_Read(field.Value.GetList())
 				if err != nil {
 					return err
 				}
 			}
 		case 3:
-			if f.Value.Type() == wire.TMap {
-				v.MapOfEnums, err = _Map_EnumWithDuplicateValues_I32_Read(f.Value.GetMap())
+			if field.Value.Type() == wire.TMap {
+				v.MapOfEnums, err = _Map_EnumWithDuplicateValues_I32_Read(field.Value.GetMap())
 				if err != nil {
 					return err
 				}
 			}
 		case 2:
-			if f.Value.Type() == wire.TSet {
-				v.SetOfEnums, err = _Set_EnumWithValues_Read(f.Value.GetSet())
+			if field.Value.Type() == wire.TSet {
+				v.SetOfEnums, err = _Set_EnumWithValues_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
@@ -532,21 +528,21 @@ func (v *EnumContainers) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *EnumContainers) String() string {
-	var fs [3]string
+	var fields [3]string
 	i := 0
 	if v.ListOfEnums != nil {
-		fs[i] = fmt.Sprintf("ListOfEnums: %v", v.ListOfEnums)
+		fields[i] = fmt.Sprintf("ListOfEnums: %v", v.ListOfEnums)
 		i++
 	}
 	if v.MapOfEnums != nil {
-		fs[i] = fmt.Sprintf("MapOfEnums: %v", v.MapOfEnums)
+		fields[i] = fmt.Sprintf("MapOfEnums: %v", v.MapOfEnums)
 		i++
 	}
 	if v.SetOfEnums != nil {
-		fs[i] = fmt.Sprintf("SetOfEnums: %v", v.SetOfEnums)
+		fields[i] = fmt.Sprintf("SetOfEnums: %v", v.SetOfEnums)
 		i++
 	}
-	return fmt.Sprintf("EnumContainers{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("EnumContainers{%v}", strings.Join(fields[:i], ", "))
 }
 
 type EnumDefault int32
@@ -618,6 +614,23 @@ func (v *EnumWithValues) FromWire(w wire.Value) error {
 	*v = (EnumWithValues)(w.GetI32())
 	return nil
 }
+
+type Event struct {
+	Time *Timestamp
+	UUID *UUID
+}
+
+func (v *Event) ToWire() wire.Value {
+	var fields [2]wire.Field
+	i := 0
+	if v.Time != nil {
+		fields[i] = wire.Field{ID: 2, Value: v.Time.ToWire()}
+		i++
+	}
+	fields[i] = wire.Field{ID: 1, Value: v.UUID.ToWire()}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+}
 func _Timestamp_Read(w wire.Value) (Timestamp, error) {
 	var x Timestamp
 	err := x.FromWire(w)
@@ -628,39 +641,22 @@ func _UUID_Read(w wire.Value) (*UUID, error) {
 	err := x.FromWire(w)
 	return &x, err
 }
-
-type Event struct {
-	Time *Timestamp
-	UUID *UUID
-}
-
-func (v *Event) ToWire() wire.Value {
-	var fs [2]wire.Field
-	i := 0
-	if v.Time != nil {
-		fs[i] = wire.Field{ID: 2, Value: v.Time.ToWire()}
-		i++
-	}
-	fs[i] = wire.Field{ID: 1, Value: v.UUID.ToWire()}
-	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
-}
 func (v *Event) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 2:
-			if f.Value.Type() == wire.TI64 {
+			if field.Value.Type() == wire.TI64 {
 				var x Timestamp
-				x, err = _Timestamp_Read(f.Value)
+				x, err = _Timestamp_Read(field.Value)
 				v.Time = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 1:
-			if f.Value.Type() == wire.TStruct {
-				v.UUID, err = _UUID_Read(f.Value)
+			if field.Value.Type() == wire.TStruct {
+				v.UUID, err = _UUID_Read(field.Value)
 				if err != nil {
 					return err
 				}
@@ -670,15 +666,15 @@ func (v *Event) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *Event) String() string {
-	var fs [2]string
+	var fields [2]string
 	i := 0
 	if v.Time != nil {
-		fs[i] = fmt.Sprintf("Time: %v", *(v.Time))
+		fields[i] = fmt.Sprintf("Time: %v", *(v.Time))
 		i++
 	}
-	fs[i] = fmt.Sprintf("UUID: %v", v.UUID)
+	fields[i] = fmt.Sprintf("UUID: %v", v.UUID)
 	i++
-	return fmt.Sprintf("Event{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("Event{%v}", strings.Join(fields[:i], ", "))
 }
 
 type _List_Event_ValueList []*Event
@@ -727,11 +723,6 @@ func (v *EventGroup) FromWire(w wire.Value) error {
 	*v = (EventGroup)(x)
 	return err
 }
-func _Size_Read(w wire.Value) (*Size, error) {
-	var v Size
-	err := v.FromWire(w)
-	return &v, err
-}
 
 type Frame struct {
 	Size    *Size
@@ -739,28 +730,33 @@ type Frame struct {
 }
 
 func (v *Frame) ToWire() wire.Value {
-	var fs [2]wire.Field
+	var fields [2]wire.Field
 	i := 0
-	fs[i] = wire.Field{ID: 2, Value: v.Size.ToWire()}
+	fields[i] = wire.Field{ID: 2, Value: v.Size.ToWire()}
 	i++
-	fs[i] = wire.Field{ID: 1, Value: v.TopLeft.ToWire()}
+	fields[i] = wire.Field{ID: 1, Value: v.TopLeft.ToWire()}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+}
+func _Size_Read(w wire.Value) (*Size, error) {
+	var v Size
+	err := v.FromWire(w)
+	return &v, err
 }
 func (v *Frame) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 2:
-			if f.Value.Type() == wire.TStruct {
-				v.Size, err = _Size_Read(f.Value)
+			if field.Value.Type() == wire.TStruct {
+				v.Size, err = _Size_Read(field.Value)
 				if err != nil {
 					return err
 				}
 			}
 		case 1:
-			if f.Value.Type() == wire.TStruct {
-				v.TopLeft, err = _Point_Read(f.Value)
+			if field.Value.Type() == wire.TStruct {
+				v.TopLeft, err = _Point_Read(field.Value)
 				if err != nil {
 					return err
 				}
@@ -770,15 +766,16 @@ func (v *Frame) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *Frame) String() string {
-	var fs [2]string
+	var fields [2]string
 	i := 0
-	fs[i] = fmt.Sprintf("Size: %v", v.Size)
+	fields[i] = fmt.Sprintf("Size: %v", v.Size)
 	i++
-	fs[i] = fmt.Sprintf("TopLeft: %v", v.TopLeft)
+	fields[i] = fmt.Sprintf("TopLeft: %v", v.TopLeft)
 	i++
-	return fmt.Sprintf("Frame{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("Frame{%v}", strings.Join(fields[:i], ", "))
 }
 
+type Graph struct{ Edges []*Edge }
 type _List_Edge_ValueList []*Edge
 
 func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
@@ -791,6 +788,13 @@ func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 func (v _List_Edge_ValueList) Close() {
+}
+func (v *Graph) ToWire() wire.Value {
+	var fields [1]wire.Field
+	i := 0
+	fields[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.Edges), Items: _List_Edge_ValueList(v.Edges)})}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func _Edge_Read(w wire.Value) (*Edge, error) {
 	var v Edge
@@ -813,23 +817,13 @@ func _List_Edge_Read(l wire.List) ([]*Edge, error) {
 	l.Items.Close()
 	return o, err
 }
-
-type Graph struct{ Edges []*Edge }
-
-func (v *Graph) ToWire() wire.Value {
-	var fs [1]wire.Field
-	i := 0
-	fs[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.Edges), Items: _List_Edge_ValueList(v.Edges)})}
-	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
-}
 func (v *Graph) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 1:
-			if f.Value.Type() == wire.TList {
-				v.Edges, err = _List_Edge_Read(f.Value.GetList())
+			if field.Value.Type() == wire.TList {
+				v.Edges, err = _List_Edge_Read(field.Value.GetList())
 				if err != nil {
 					return err
 				}
@@ -839,11 +833,11 @@ func (v *Graph) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *Graph) String() string {
-	var fs [1]string
+	var fields [1]string
 	i := 0
-	fs[i] = fmt.Sprintf("Edges: %v", v.Edges)
+	fields[i] = fmt.Sprintf("Edges: %v", v.Edges)
 	i++
-	return fmt.Sprintf("Graph{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("Graph{%v}", strings.Join(fields[:i], ", "))
 }
 
 type Pdf []byte
@@ -864,28 +858,28 @@ type Point struct {
 }
 
 func (v *Point) ToWire() wire.Value {
-	var fs [2]wire.Field
+	var fields [2]wire.Field
 	i := 0
-	fs[i] = wire.Field{ID: 1, Value: wire.NewValueDouble(v.X)}
+	fields[i] = wire.Field{ID: 1, Value: wire.NewValueDouble(v.X)}
 	i++
-	fs[i] = wire.Field{ID: 2, Value: wire.NewValueDouble(v.Y)}
+	fields[i] = wire.Field{ID: 2, Value: wire.NewValueDouble(v.Y)}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func (v *Point) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 1:
-			if f.Value.Type() == wire.TDouble {
-				v.X, err = f.Value.GetDouble(), error(nil)
+			if field.Value.Type() == wire.TDouble {
+				v.X, err = field.Value.GetDouble(), error(nil)
 				if err != nil {
 					return err
 				}
 			}
 		case 2:
-			if f.Value.Type() == wire.TDouble {
-				v.Y, err = f.Value.GetDouble(), error(nil)
+			if field.Value.Type() == wire.TDouble {
+				v.Y, err = field.Value.GetDouble(), error(nil)
 				if err != nil {
 					return err
 				}
@@ -895,15 +889,23 @@ func (v *Point) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *Point) String() string {
-	var fs [2]string
+	var fields [2]string
 	i := 0
-	fs[i] = fmt.Sprintf("X: %v", v.X)
+	fields[i] = fmt.Sprintf("X: %v", v.X)
 	i++
-	fs[i] = fmt.Sprintf("Y: %v", v.Y)
+	fields[i] = fmt.Sprintf("Y: %v", v.Y)
 	i++
-	return fmt.Sprintf("Point{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("Point{%v}", strings.Join(fields[:i], ", "))
 }
 
+type PrimitiveContainers struct {
+	ListOfBinary      [][]byte
+	ListOfInts        []int64
+	MapOfIntToString  map[int32]string
+	MapOfStringToBool map[string]bool
+	SetOfBytes        map[int8]struct{}
+	SetOfStrings      map[string]struct{}
+}
 type _List_Binary_ValueList [][]byte
 
 func (v _List_Binary_ValueList) ForEach(f func(wire.Value) error) error {
@@ -986,6 +988,35 @@ func (v _Set_String_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 func (v _Set_String_ValueList) Close() {
+}
+func (v *PrimitiveContainers) ToWire() wire.Value {
+	var fields [6]wire.Field
+	i := 0
+	if v.ListOfBinary != nil {
+		fields[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.ListOfBinary), Items: _List_Binary_ValueList(v.ListOfBinary)})}
+		i++
+	}
+	if v.ListOfInts != nil {
+		fields[i] = wire.Field{ID: 2, Value: wire.NewValueList(wire.List{ValueType: wire.TI64, Size: len(v.ListOfInts), Items: _List_I64_ValueList(v.ListOfInts)})}
+		i++
+	}
+	if v.MapOfIntToString != nil {
+		fields[i] = wire.Field{ID: 5, Value: wire.NewValueMap(wire.Map{KeyType: wire.TI32, ValueType: wire.TBinary, Size: len(v.MapOfIntToString), Items: _Map_I32_String_MapItemList(v.MapOfIntToString)})}
+		i++
+	}
+	if v.MapOfStringToBool != nil {
+		fields[i] = wire.Field{ID: 6, Value: wire.NewValueMap(wire.Map{KeyType: wire.TBinary, ValueType: wire.TBool, Size: len(v.MapOfStringToBool), Items: _Map_String_Bool_MapItemList(v.MapOfStringToBool)})}
+		i++
+	}
+	if v.SetOfBytes != nil {
+		fields[i] = wire.Field{ID: 4, Value: wire.NewValueSet(wire.Set{ValueType: wire.TI8, Size: len(v.SetOfBytes), Items: _Set_Byte_ValueList(v.SetOfBytes)})}
+		i++
+	}
+	if v.SetOfStrings != nil {
+		fields[i] = wire.Field{ID: 3, Value: wire.NewValueSet(wire.Set{ValueType: wire.TBinary, Size: len(v.SetOfStrings), Items: _Set_String_ValueList(v.SetOfStrings)})}
+		i++
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func _List_Binary_Read(l wire.List) ([][]byte, error) {
 	if l.ValueType != wire.TBinary {
@@ -1097,87 +1128,48 @@ func _Set_String_Read(s wire.Set) (map[string]struct{}, error) {
 	s.Items.Close()
 	return o, err
 }
-
-type PrimitiveContainers struct {
-	ListOfBinary      [][]byte
-	ListOfInts        []int64
-	MapOfIntToString  map[int32]string
-	MapOfStringToBool map[string]bool
-	SetOfBytes        map[int8]struct{}
-	SetOfStrings      map[string]struct{}
-}
-
-func (v *PrimitiveContainers) ToWire() wire.Value {
-	var fs [6]wire.Field
-	i := 0
-	if v.ListOfBinary != nil {
-		fs[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.ListOfBinary), Items: _List_Binary_ValueList(v.ListOfBinary)})}
-		i++
-	}
-	if v.ListOfInts != nil {
-		fs[i] = wire.Field{ID: 2, Value: wire.NewValueList(wire.List{ValueType: wire.TI64, Size: len(v.ListOfInts), Items: _List_I64_ValueList(v.ListOfInts)})}
-		i++
-	}
-	if v.MapOfIntToString != nil {
-		fs[i] = wire.Field{ID: 5, Value: wire.NewValueMap(wire.Map{KeyType: wire.TI32, ValueType: wire.TBinary, Size: len(v.MapOfIntToString), Items: _Map_I32_String_MapItemList(v.MapOfIntToString)})}
-		i++
-	}
-	if v.MapOfStringToBool != nil {
-		fs[i] = wire.Field{ID: 6, Value: wire.NewValueMap(wire.Map{KeyType: wire.TBinary, ValueType: wire.TBool, Size: len(v.MapOfStringToBool), Items: _Map_String_Bool_MapItemList(v.MapOfStringToBool)})}
-		i++
-	}
-	if v.SetOfBytes != nil {
-		fs[i] = wire.Field{ID: 4, Value: wire.NewValueSet(wire.Set{ValueType: wire.TI8, Size: len(v.SetOfBytes), Items: _Set_Byte_ValueList(v.SetOfBytes)})}
-		i++
-	}
-	if v.SetOfStrings != nil {
-		fs[i] = wire.Field{ID: 3, Value: wire.NewValueSet(wire.Set{ValueType: wire.TBinary, Size: len(v.SetOfStrings), Items: _Set_String_ValueList(v.SetOfStrings)})}
-		i++
-	}
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
-}
 func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 1:
-			if f.Value.Type() == wire.TList {
-				v.ListOfBinary, err = _List_Binary_Read(f.Value.GetList())
+			if field.Value.Type() == wire.TList {
+				v.ListOfBinary, err = _List_Binary_Read(field.Value.GetList())
 				if err != nil {
 					return err
 				}
 			}
 		case 2:
-			if f.Value.Type() == wire.TList {
-				v.ListOfInts, err = _List_I64_Read(f.Value.GetList())
+			if field.Value.Type() == wire.TList {
+				v.ListOfInts, err = _List_I64_Read(field.Value.GetList())
 				if err != nil {
 					return err
 				}
 			}
 		case 5:
-			if f.Value.Type() == wire.TMap {
-				v.MapOfIntToString, err = _Map_I32_String_Read(f.Value.GetMap())
+			if field.Value.Type() == wire.TMap {
+				v.MapOfIntToString, err = _Map_I32_String_Read(field.Value.GetMap())
 				if err != nil {
 					return err
 				}
 			}
 		case 6:
-			if f.Value.Type() == wire.TMap {
-				v.MapOfStringToBool, err = _Map_String_Bool_Read(f.Value.GetMap())
+			if field.Value.Type() == wire.TMap {
+				v.MapOfStringToBool, err = _Map_String_Bool_Read(field.Value.GetMap())
 				if err != nil {
 					return err
 				}
 			}
 		case 4:
-			if f.Value.Type() == wire.TSet {
-				v.SetOfBytes, err = _Set_Byte_Read(f.Value.GetSet())
+			if field.Value.Type() == wire.TSet {
+				v.SetOfBytes, err = _Set_Byte_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
 			}
 		case 3:
-			if f.Value.Type() == wire.TSet {
-				v.SetOfStrings, err = _Set_String_Read(f.Value.GetSet())
+			if field.Value.Type() == wire.TSet {
+				v.SetOfStrings, err = _Set_String_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
@@ -1187,35 +1179,40 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *PrimitiveContainers) String() string {
-	var fs [6]string
+	var fields [6]string
 	i := 0
 	if v.ListOfBinary != nil {
-		fs[i] = fmt.Sprintf("ListOfBinary: %v", v.ListOfBinary)
+		fields[i] = fmt.Sprintf("ListOfBinary: %v", v.ListOfBinary)
 		i++
 	}
 	if v.ListOfInts != nil {
-		fs[i] = fmt.Sprintf("ListOfInts: %v", v.ListOfInts)
+		fields[i] = fmt.Sprintf("ListOfInts: %v", v.ListOfInts)
 		i++
 	}
 	if v.MapOfIntToString != nil {
-		fs[i] = fmt.Sprintf("MapOfIntToString: %v", v.MapOfIntToString)
+		fields[i] = fmt.Sprintf("MapOfIntToString: %v", v.MapOfIntToString)
 		i++
 	}
 	if v.MapOfStringToBool != nil {
-		fs[i] = fmt.Sprintf("MapOfStringToBool: %v", v.MapOfStringToBool)
+		fields[i] = fmt.Sprintf("MapOfStringToBool: %v", v.MapOfStringToBool)
 		i++
 	}
 	if v.SetOfBytes != nil {
-		fs[i] = fmt.Sprintf("SetOfBytes: %v", v.SetOfBytes)
+		fields[i] = fmt.Sprintf("SetOfBytes: %v", v.SetOfBytes)
 		i++
 	}
 	if v.SetOfStrings != nil {
-		fs[i] = fmt.Sprintf("SetOfStrings: %v", v.SetOfStrings)
+		fields[i] = fmt.Sprintf("SetOfStrings: %v", v.SetOfStrings)
 		i++
 	}
-	return fmt.Sprintf("PrimitiveContainers{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("PrimitiveContainers{%v}", strings.Join(fields[:i], ", "))
 }
 
+type PrimitiveContainersRequired struct {
+	ListOfStrings      []string
+	MapOfIntsToDoubles map[int64]float64
+	SetOfInts          map[int32]struct{}
+}
 type _List_String_ValueList []string
 
 func (v _List_String_ValueList) ForEach(f func(wire.Value) error) error {
@@ -1256,6 +1253,17 @@ func (v _Set_I32_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 func (v _Set_I32_ValueList) Close() {
+}
+func (v *PrimitiveContainersRequired) ToWire() wire.Value {
+	var fields [3]wire.Field
+	i := 0
+	fields[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.ListOfStrings), Items: _List_String_ValueList(v.ListOfStrings)})}
+	i++
+	fields[i] = wire.Field{ID: 3, Value: wire.NewValueMap(wire.Map{KeyType: wire.TI64, ValueType: wire.TDouble, Size: len(v.MapOfIntsToDoubles), Items: _Map_I64_Double_MapItemList(v.MapOfIntsToDoubles)})}
+	i++
+	fields[i] = wire.Field{ID: 2, Value: wire.NewValueSet(wire.Set{ValueType: wire.TI32, Size: len(v.SetOfInts), Items: _Set_I32_ValueList(v.SetOfInts)})}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func _List_String_Read(l wire.List) ([]string, error) {
 	if l.ValueType != wire.TBinary {
@@ -1312,45 +1320,27 @@ func _Set_I32_Read(s wire.Set) (map[int32]struct{}, error) {
 	s.Items.Close()
 	return o, err
 }
-
-type PrimitiveContainersRequired struct {
-	ListOfStrings      []string
-	MapOfIntsToDoubles map[int64]float64
-	SetOfInts          map[int32]struct{}
-}
-
-func (v *PrimitiveContainersRequired) ToWire() wire.Value {
-	var fs [3]wire.Field
-	i := 0
-	fs[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.ListOfStrings), Items: _List_String_ValueList(v.ListOfStrings)})}
-	i++
-	fs[i] = wire.Field{ID: 3, Value: wire.NewValueMap(wire.Map{KeyType: wire.TI64, ValueType: wire.TDouble, Size: len(v.MapOfIntsToDoubles), Items: _Map_I64_Double_MapItemList(v.MapOfIntsToDoubles)})}
-	i++
-	fs[i] = wire.Field{ID: 2, Value: wire.NewValueSet(wire.Set{ValueType: wire.TI32, Size: len(v.SetOfInts), Items: _Set_I32_ValueList(v.SetOfInts)})}
-	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
-}
 func (v *PrimitiveContainersRequired) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 1:
-			if f.Value.Type() == wire.TList {
-				v.ListOfStrings, err = _List_String_Read(f.Value.GetList())
+			if field.Value.Type() == wire.TList {
+				v.ListOfStrings, err = _List_String_Read(field.Value.GetList())
 				if err != nil {
 					return err
 				}
 			}
 		case 3:
-			if f.Value.Type() == wire.TMap {
-				v.MapOfIntsToDoubles, err = _Map_I64_Double_Read(f.Value.GetMap())
+			if field.Value.Type() == wire.TMap {
+				v.MapOfIntsToDoubles, err = _Map_I64_Double_Read(field.Value.GetMap())
 				if err != nil {
 					return err
 				}
 			}
 		case 2:
-			if f.Value.Type() == wire.TSet {
-				v.SetOfInts, err = _Set_I32_Read(f.Value.GetSet())
+			if field.Value.Type() == wire.TSet {
+				v.SetOfInts, err = _Set_I32_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
@@ -1360,15 +1350,15 @@ func (v *PrimitiveContainersRequired) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *PrimitiveContainersRequired) String() string {
-	var fs [3]string
+	var fields [3]string
 	i := 0
-	fs[i] = fmt.Sprintf("ListOfStrings: %v", v.ListOfStrings)
+	fields[i] = fmt.Sprintf("ListOfStrings: %v", v.ListOfStrings)
 	i++
-	fs[i] = fmt.Sprintf("MapOfIntsToDoubles: %v", v.MapOfIntsToDoubles)
+	fields[i] = fmt.Sprintf("MapOfIntsToDoubles: %v", v.MapOfIntsToDoubles)
 	i++
-	fs[i] = fmt.Sprintf("SetOfInts: %v", v.SetOfInts)
+	fields[i] = fmt.Sprintf("SetOfInts: %v", v.SetOfInts)
 	i++
-	return fmt.Sprintf("PrimitiveContainersRequired{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("PrimitiveContainersRequired{%v}", strings.Join(fields[:i], ", "))
 }
 
 type PrimitiveOptionalStruct struct {
@@ -1383,111 +1373,111 @@ type PrimitiveOptionalStruct struct {
 }
 
 func (v *PrimitiveOptionalStruct) ToWire() wire.Value {
-	var fs [8]wire.Field
+	var fields [8]wire.Field
 	i := 0
 	if v.BinaryField != nil {
-		fs[i] = wire.Field{ID: 8, Value: wire.NewValueBinary(v.BinaryField)}
+		fields[i] = wire.Field{ID: 8, Value: wire.NewValueBinary(v.BinaryField)}
 		i++
 	}
 	if v.BoolField != nil {
-		fs[i] = wire.Field{ID: 1, Value: wire.NewValueBool(*(v.BoolField))}
+		fields[i] = wire.Field{ID: 1, Value: wire.NewValueBool(*(v.BoolField))}
 		i++
 	}
 	if v.ByteField != nil {
-		fs[i] = wire.Field{ID: 2, Value: wire.NewValueI8(*(v.ByteField))}
+		fields[i] = wire.Field{ID: 2, Value: wire.NewValueI8(*(v.ByteField))}
 		i++
 	}
 	if v.DoubleField != nil {
-		fs[i] = wire.Field{ID: 6, Value: wire.NewValueDouble(*(v.DoubleField))}
+		fields[i] = wire.Field{ID: 6, Value: wire.NewValueDouble(*(v.DoubleField))}
 		i++
 	}
 	if v.Int16Field != nil {
-		fs[i] = wire.Field{ID: 3, Value: wire.NewValueI16(*(v.Int16Field))}
+		fields[i] = wire.Field{ID: 3, Value: wire.NewValueI16(*(v.Int16Field))}
 		i++
 	}
 	if v.Int32Field != nil {
-		fs[i] = wire.Field{ID: 4, Value: wire.NewValueI32(*(v.Int32Field))}
+		fields[i] = wire.Field{ID: 4, Value: wire.NewValueI32(*(v.Int32Field))}
 		i++
 	}
 	if v.Int64Field != nil {
-		fs[i] = wire.Field{ID: 5, Value: wire.NewValueI64(*(v.Int64Field))}
+		fields[i] = wire.Field{ID: 5, Value: wire.NewValueI64(*(v.Int64Field))}
 		i++
 	}
 	if v.StringField != nil {
-		fs[i] = wire.Field{ID: 7, Value: wire.NewValueString(*(v.StringField))}
+		fields[i] = wire.Field{ID: 7, Value: wire.NewValueString(*(v.StringField))}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 8:
-			if f.Value.Type() == wire.TBinary {
-				v.BinaryField, err = f.Value.GetBinary(), error(nil)
+			if field.Value.Type() == wire.TBinary {
+				v.BinaryField, err = field.Value.GetBinary(), error(nil)
 				if err != nil {
 					return err
 				}
 			}
 		case 1:
-			if f.Value.Type() == wire.TBool {
+			if field.Value.Type() == wire.TBool {
 				var x bool
-				x, err = f.Value.GetBool(), error(nil)
+				x, err = field.Value.GetBool(), error(nil)
 				v.BoolField = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 2:
-			if f.Value.Type() == wire.TI8 {
+			if field.Value.Type() == wire.TI8 {
 				var x int8
-				x, err = f.Value.GetI8(), error(nil)
+				x, err = field.Value.GetI8(), error(nil)
 				v.ByteField = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 6:
-			if f.Value.Type() == wire.TDouble {
+			if field.Value.Type() == wire.TDouble {
 				var x float64
-				x, err = f.Value.GetDouble(), error(nil)
+				x, err = field.Value.GetDouble(), error(nil)
 				v.DoubleField = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 3:
-			if f.Value.Type() == wire.TI16 {
+			if field.Value.Type() == wire.TI16 {
 				var x int16
-				x, err = f.Value.GetI16(), error(nil)
+				x, err = field.Value.GetI16(), error(nil)
 				v.Int16Field = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 4:
-			if f.Value.Type() == wire.TI32 {
+			if field.Value.Type() == wire.TI32 {
 				var x int32
-				x, err = f.Value.GetI32(), error(nil)
+				x, err = field.Value.GetI32(), error(nil)
 				v.Int32Field = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 5:
-			if f.Value.Type() == wire.TI64 {
+			if field.Value.Type() == wire.TI64 {
 				var x int64
-				x, err = f.Value.GetI64(), error(nil)
+				x, err = field.Value.GetI64(), error(nil)
 				v.Int64Field = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 7:
-			if f.Value.Type() == wire.TBinary {
+			if field.Value.Type() == wire.TBinary {
 				var x string
-				x, err = f.Value.GetString(), error(nil)
+				x, err = field.Value.GetString(), error(nil)
 				v.StringField = &x
 				if err != nil {
 					return err
@@ -1498,41 +1488,41 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *PrimitiveOptionalStruct) String() string {
-	var fs [8]string
+	var fields [8]string
 	i := 0
 	if v.BinaryField != nil {
-		fs[i] = fmt.Sprintf("BinaryField: %v", v.BinaryField)
+		fields[i] = fmt.Sprintf("BinaryField: %v", v.BinaryField)
 		i++
 	}
 	if v.BoolField != nil {
-		fs[i] = fmt.Sprintf("BoolField: %v", *(v.BoolField))
+		fields[i] = fmt.Sprintf("BoolField: %v", *(v.BoolField))
 		i++
 	}
 	if v.ByteField != nil {
-		fs[i] = fmt.Sprintf("ByteField: %v", *(v.ByteField))
+		fields[i] = fmt.Sprintf("ByteField: %v", *(v.ByteField))
 		i++
 	}
 	if v.DoubleField != nil {
-		fs[i] = fmt.Sprintf("DoubleField: %v", *(v.DoubleField))
+		fields[i] = fmt.Sprintf("DoubleField: %v", *(v.DoubleField))
 		i++
 	}
 	if v.Int16Field != nil {
-		fs[i] = fmt.Sprintf("Int16Field: %v", *(v.Int16Field))
+		fields[i] = fmt.Sprintf("Int16Field: %v", *(v.Int16Field))
 		i++
 	}
 	if v.Int32Field != nil {
-		fs[i] = fmt.Sprintf("Int32Field: %v", *(v.Int32Field))
+		fields[i] = fmt.Sprintf("Int32Field: %v", *(v.Int32Field))
 		i++
 	}
 	if v.Int64Field != nil {
-		fs[i] = fmt.Sprintf("Int64Field: %v", *(v.Int64Field))
+		fields[i] = fmt.Sprintf("Int64Field: %v", *(v.Int64Field))
 		i++
 	}
 	if v.StringField != nil {
-		fs[i] = fmt.Sprintf("StringField: %v", *(v.StringField))
+		fields[i] = fmt.Sprintf("StringField: %v", *(v.StringField))
 		i++
 	}
-	return fmt.Sprintf("PrimitiveOptionalStruct{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("PrimitiveOptionalStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
 type PrimitiveRequiredStruct struct {
@@ -1547,82 +1537,82 @@ type PrimitiveRequiredStruct struct {
 }
 
 func (v *PrimitiveRequiredStruct) ToWire() wire.Value {
-	var fs [8]wire.Field
+	var fields [8]wire.Field
 	i := 0
-	fs[i] = wire.Field{ID: 8, Value: wire.NewValueBinary(v.BinaryField)}
+	fields[i] = wire.Field{ID: 8, Value: wire.NewValueBinary(v.BinaryField)}
 	i++
-	fs[i] = wire.Field{ID: 1, Value: wire.NewValueBool(v.BoolField)}
+	fields[i] = wire.Field{ID: 1, Value: wire.NewValueBool(v.BoolField)}
 	i++
-	fs[i] = wire.Field{ID: 2, Value: wire.NewValueI8(v.ByteField)}
+	fields[i] = wire.Field{ID: 2, Value: wire.NewValueI8(v.ByteField)}
 	i++
-	fs[i] = wire.Field{ID: 6, Value: wire.NewValueDouble(v.DoubleField)}
+	fields[i] = wire.Field{ID: 6, Value: wire.NewValueDouble(v.DoubleField)}
 	i++
-	fs[i] = wire.Field{ID: 3, Value: wire.NewValueI16(v.Int16Field)}
+	fields[i] = wire.Field{ID: 3, Value: wire.NewValueI16(v.Int16Field)}
 	i++
-	fs[i] = wire.Field{ID: 4, Value: wire.NewValueI32(v.Int32Field)}
+	fields[i] = wire.Field{ID: 4, Value: wire.NewValueI32(v.Int32Field)}
 	i++
-	fs[i] = wire.Field{ID: 5, Value: wire.NewValueI64(v.Int64Field)}
+	fields[i] = wire.Field{ID: 5, Value: wire.NewValueI64(v.Int64Field)}
 	i++
-	fs[i] = wire.Field{ID: 7, Value: wire.NewValueString(v.StringField)}
+	fields[i] = wire.Field{ID: 7, Value: wire.NewValueString(v.StringField)}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 8:
-			if f.Value.Type() == wire.TBinary {
-				v.BinaryField, err = f.Value.GetBinary(), error(nil)
+			if field.Value.Type() == wire.TBinary {
+				v.BinaryField, err = field.Value.GetBinary(), error(nil)
 				if err != nil {
 					return err
 				}
 			}
 		case 1:
-			if f.Value.Type() == wire.TBool {
-				v.BoolField, err = f.Value.GetBool(), error(nil)
+			if field.Value.Type() == wire.TBool {
+				v.BoolField, err = field.Value.GetBool(), error(nil)
 				if err != nil {
 					return err
 				}
 			}
 		case 2:
-			if f.Value.Type() == wire.TI8 {
-				v.ByteField, err = f.Value.GetI8(), error(nil)
+			if field.Value.Type() == wire.TI8 {
+				v.ByteField, err = field.Value.GetI8(), error(nil)
 				if err != nil {
 					return err
 				}
 			}
 		case 6:
-			if f.Value.Type() == wire.TDouble {
-				v.DoubleField, err = f.Value.GetDouble(), error(nil)
+			if field.Value.Type() == wire.TDouble {
+				v.DoubleField, err = field.Value.GetDouble(), error(nil)
 				if err != nil {
 					return err
 				}
 			}
 		case 3:
-			if f.Value.Type() == wire.TI16 {
-				v.Int16Field, err = f.Value.GetI16(), error(nil)
+			if field.Value.Type() == wire.TI16 {
+				v.Int16Field, err = field.Value.GetI16(), error(nil)
 				if err != nil {
 					return err
 				}
 			}
 		case 4:
-			if f.Value.Type() == wire.TI32 {
-				v.Int32Field, err = f.Value.GetI32(), error(nil)
+			if field.Value.Type() == wire.TI32 {
+				v.Int32Field, err = field.Value.GetI32(), error(nil)
 				if err != nil {
 					return err
 				}
 			}
 		case 5:
-			if f.Value.Type() == wire.TI64 {
-				v.Int64Field, err = f.Value.GetI64(), error(nil)
+			if field.Value.Type() == wire.TI64 {
+				v.Int64Field, err = field.Value.GetI64(), error(nil)
 				if err != nil {
 					return err
 				}
 			}
 		case 7:
-			if f.Value.Type() == wire.TBinary {
-				v.StringField, err = f.Value.GetString(), error(nil)
+			if field.Value.Type() == wire.TBinary {
+				v.StringField, err = field.Value.GetString(), error(nil)
 				if err != nil {
 					return err
 				}
@@ -1632,25 +1622,25 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *PrimitiveRequiredStruct) String() string {
-	var fs [8]string
+	var fields [8]string
 	i := 0
-	fs[i] = fmt.Sprintf("BinaryField: %v", v.BinaryField)
+	fields[i] = fmt.Sprintf("BinaryField: %v", v.BinaryField)
 	i++
-	fs[i] = fmt.Sprintf("BoolField: %v", v.BoolField)
+	fields[i] = fmt.Sprintf("BoolField: %v", v.BoolField)
 	i++
-	fs[i] = fmt.Sprintf("ByteField: %v", v.ByteField)
+	fields[i] = fmt.Sprintf("ByteField: %v", v.ByteField)
 	i++
-	fs[i] = fmt.Sprintf("DoubleField: %v", v.DoubleField)
+	fields[i] = fmt.Sprintf("DoubleField: %v", v.DoubleField)
 	i++
-	fs[i] = fmt.Sprintf("Int16Field: %v", v.Int16Field)
+	fields[i] = fmt.Sprintf("Int16Field: %v", v.Int16Field)
 	i++
-	fs[i] = fmt.Sprintf("Int32Field: %v", v.Int32Field)
+	fields[i] = fmt.Sprintf("Int32Field: %v", v.Int32Field)
 	i++
-	fs[i] = fmt.Sprintf("Int64Field: %v", v.Int64Field)
+	fields[i] = fmt.Sprintf("Int64Field: %v", v.Int64Field)
 	i++
-	fs[i] = fmt.Sprintf("StringField: %v", v.StringField)
+	fields[i] = fmt.Sprintf("StringField: %v", v.StringField)
 	i++
-	return fmt.Sprintf("PrimitiveRequiredStruct{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("PrimitiveRequiredStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
 type Size struct {
@@ -1659,28 +1649,28 @@ type Size struct {
 }
 
 func (v *Size) ToWire() wire.Value {
-	var fs [2]wire.Field
+	var fields [2]wire.Field
 	i := 0
-	fs[i] = wire.Field{ID: 2, Value: wire.NewValueDouble(v.Height)}
+	fields[i] = wire.Field{ID: 2, Value: wire.NewValueDouble(v.Height)}
 	i++
-	fs[i] = wire.Field{ID: 1, Value: wire.NewValueDouble(v.Width)}
+	fields[i] = wire.Field{ID: 1, Value: wire.NewValueDouble(v.Width)}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func (v *Size) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 2:
-			if f.Value.Type() == wire.TDouble {
-				v.Height, err = f.Value.GetDouble(), error(nil)
+			if field.Value.Type() == wire.TDouble {
+				v.Height, err = field.Value.GetDouble(), error(nil)
 				if err != nil {
 					return err
 				}
 			}
 		case 1:
-			if f.Value.Type() == wire.TDouble {
-				v.Width, err = f.Value.GetDouble(), error(nil)
+			if field.Value.Type() == wire.TDouble {
+				v.Width, err = field.Value.GetDouble(), error(nil)
 				if err != nil {
 					return err
 				}
@@ -1690,13 +1680,13 @@ func (v *Size) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *Size) String() string {
-	var fs [2]string
+	var fields [2]string
 	i := 0
-	fs[i] = fmt.Sprintf("Height: %v", v.Height)
+	fields[i] = fmt.Sprintf("Height: %v", v.Height)
 	i++
-	fs[i] = fmt.Sprintf("Width: %v", v.Width)
+	fields[i] = fmt.Sprintf("Width: %v", v.Width)
 	i++
-	return fmt.Sprintf("Size{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("Size{%v}", strings.Join(fields[:i], ", "))
 }
 
 type State string
@@ -1722,6 +1712,26 @@ func (v *Timestamp) FromWire(w wire.Value) error {
 	*v = (Timestamp)(x)
 	return err
 }
+
+type Transition struct {
+	Events EventGroup
+	From   State
+	To     State
+}
+
+func (v *Transition) ToWire() wire.Value {
+	var fields [3]wire.Field
+	i := 0
+	if v.Events != nil {
+		fields[i] = wire.Field{ID: 3, Value: v.Events.ToWire()}
+		i++
+	}
+	fields[i] = wire.Field{ID: 1, Value: v.From.ToWire()}
+	i++
+	fields[i] = wire.Field{ID: 2, Value: v.To.ToWire()}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+}
 func _EventGroup_Read(w wire.Value) (EventGroup, error) {
 	var x EventGroup
 	err := x.FromWire(w)
@@ -1732,47 +1742,27 @@ func _State_Read(w wire.Value) (State, error) {
 	err := x.FromWire(w)
 	return x, err
 }
-
-type Transition struct {
-	Events EventGroup
-	From   State
-	To     State
-}
-
-func (v *Transition) ToWire() wire.Value {
-	var fs [3]wire.Field
-	i := 0
-	if v.Events != nil {
-		fs[i] = wire.Field{ID: 3, Value: v.Events.ToWire()}
-		i++
-	}
-	fs[i] = wire.Field{ID: 1, Value: v.From.ToWire()}
-	i++
-	fs[i] = wire.Field{ID: 2, Value: v.To.ToWire()}
-	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
-}
 func (v *Transition) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 3:
-			if f.Value.Type() == wire.TList {
-				v.Events, err = _EventGroup_Read(f.Value)
+			if field.Value.Type() == wire.TList {
+				v.Events, err = _EventGroup_Read(field.Value)
 				if err != nil {
 					return err
 				}
 			}
 		case 1:
-			if f.Value.Type() == wire.TBinary {
-				v.From, err = _State_Read(f.Value)
+			if field.Value.Type() == wire.TBinary {
+				v.From, err = _State_Read(field.Value)
 				if err != nil {
 					return err
 				}
 			}
 		case 2:
-			if f.Value.Type() == wire.TBinary {
-				v.To, err = _State_Read(f.Value)
+			if field.Value.Type() == wire.TBinary {
+				v.To, err = _State_Read(field.Value)
 				if err != nil {
 					return err
 				}
@@ -1782,17 +1772,17 @@ func (v *Transition) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *Transition) String() string {
-	var fs [3]string
+	var fields [3]string
 	i := 0
 	if v.Events != nil {
-		fs[i] = fmt.Sprintf("Events: %v", v.Events)
+		fields[i] = fmt.Sprintf("Events: %v", v.Events)
 		i++
 	}
-	fs[i] = fmt.Sprintf("From: %v", v.From)
+	fields[i] = fmt.Sprintf("From: %v", v.From)
 	i++
-	fs[i] = fmt.Sprintf("To: %v", v.To)
+	fields[i] = fmt.Sprintf("To: %v", v.To)
 	i++
-	return fmt.Sprintf("Transition{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("Transition{%v}", strings.Join(fields[:i], ", "))
 }
 
 type UUID I128
@@ -1804,11 +1794,6 @@ func (v *UUID) ToWire() wire.Value {
 func (v *UUID) FromWire(w wire.Value) error {
 	return (*I128)(v).FromWire(w)
 }
-func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
-	var v ContactInfo
-	err := v.FromWire(w)
-	return &v, err
-}
 
 type User struct {
 	Contact *ContactInfo
@@ -1816,30 +1801,35 @@ type User struct {
 }
 
 func (v *User) ToWire() wire.Value {
-	var fs [2]wire.Field
+	var fields [2]wire.Field
 	i := 0
 	if v.Contact != nil {
-		fs[i] = wire.Field{ID: 2, Value: v.Contact.ToWire()}
+		fields[i] = wire.Field{ID: 2, Value: v.Contact.ToWire()}
 		i++
 	}
-	fs[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.Name)}
+	fields[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.Name)}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+}
+func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
+	var v ContactInfo
+	err := v.FromWire(w)
+	return &v, err
 }
 func (v *User) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 2:
-			if f.Value.Type() == wire.TStruct {
-				v.Contact, err = _ContactInfo_Read(f.Value)
+			if field.Value.Type() == wire.TStruct {
+				v.Contact, err = _ContactInfo_Read(field.Value)
 				if err != nil {
 					return err
 				}
 			}
 		case 1:
-			if f.Value.Type() == wire.TBinary {
-				v.Name, err = f.Value.GetString(), error(nil)
+			if field.Value.Type() == wire.TBinary {
+				v.Name, err = field.Value.GetString(), error(nil)
 				if err != nil {
 					return err
 				}
@@ -1849,15 +1839,15 @@ func (v *User) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *User) String() string {
-	var fs [2]string
+	var fields [2]string
 	i := 0
 	if v.Contact != nil {
-		fs[i] = fmt.Sprintf("Contact: %v", v.Contact)
+		fields[i] = fmt.Sprintf("Contact: %v", v.Contact)
 		i++
 	}
-	fs[i] = fmt.Sprintf("Name: %v", v.Name)
+	fields[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
-	return fmt.Sprintf("User{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("User{%v}", strings.Join(fields[:i], ", "))
 }
 
 type I128 struct {
@@ -1866,28 +1856,28 @@ type I128 struct {
 }
 
 func (v *I128) ToWire() wire.Value {
-	var fs [2]wire.Field
+	var fields [2]wire.Field
 	i := 0
-	fs[i] = wire.Field{ID: 1, Value: wire.NewValueI64(v.High)}
+	fields[i] = wire.Field{ID: 1, Value: wire.NewValueI64(v.High)}
 	i++
-	fs[i] = wire.Field{ID: 2, Value: wire.NewValueI64(v.Low)}
+	fields[i] = wire.Field{ID: 2, Value: wire.NewValueI64(v.Low)}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fs[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 func (v *I128) FromWire(w wire.Value) error {
 	var err error
-	for _, f := range w.GetStruct().Fields {
-		switch f.ID {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
 		case 1:
-			if f.Value.Type() == wire.TI64 {
-				v.High, err = f.Value.GetI64(), error(nil)
+			if field.Value.Type() == wire.TI64 {
+				v.High, err = field.Value.GetI64(), error(nil)
 				if err != nil {
 					return err
 				}
 			}
 		case 2:
-			if f.Value.Type() == wire.TI64 {
-				v.Low, err = f.Value.GetI64(), error(nil)
+			if field.Value.Type() == wire.TI64 {
+				v.Low, err = field.Value.GetI64(), error(nil)
 				if err != nil {
 					return err
 				}
@@ -1897,11 +1887,11 @@ func (v *I128) FromWire(w wire.Value) error {
 	return nil
 }
 func (v *I128) String() string {
-	var fs [2]string
+	var fields [2]string
 	i := 0
-	fs[i] = fmt.Sprintf("High: %v", v.High)
+	fields[i] = fmt.Sprintf("High: %v", v.High)
 	i++
-	fs[i] = fmt.Sprintf("Low: %v", v.Low)
+	fields[i] = fmt.Sprintf("Low: %v", v.Low)
 	i++
-	return fmt.Sprintf("I128{%v}", strings.Join(fs[:i], ", "))
+	return fmt.Sprintf("I128{%v}", strings.Join(fields[:i], ", "))
 }
