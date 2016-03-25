@@ -77,33 +77,33 @@ func TestDeterminePackagePrefix(t *testing.T) {
 	}
 
 	realGoPath := os.Getenv("GOPATH")
+	defer os.Setenv("GOPATH", realGoPath)
+
 	for _, tt := range tests {
-		func() {
-			if tt.overrideGoPath != nil {
-				fakeGoPath := tt.overrideGoPath(realGoPath)
-				if fakeGoPath == "" {
-					require.NoError(t, os.Unsetenv("GOPATH"))
-				} else {
-					require.NoError(t, os.Setenv("GOPATH", fakeGoPath))
-				}
+		require.NoError(t, os.Setenv("GOPATH", realGoPath))
 
-				defer os.Setenv("GOPATH", realGoPath)
+		if tt.overrideGoPath != nil {
+			fakeGoPath := tt.overrideGoPath(realGoPath)
+			if fakeGoPath == "" {
+				require.NoError(t, os.Unsetenv("GOPATH"))
+			} else {
+				require.NoError(t, os.Setenv("GOPATH", fakeGoPath))
 			}
+		}
 
-			result, err := determinePackagePrefix(tt.dir)
+		result, err := determinePackagePrefix(tt.dir)
 
-			if tt.result != "" {
-				if assert.NoError(t, err) {
-					assert.Equal(t, tt.result, result)
-				}
+		if tt.result != "" {
+			if assert.NoError(t, err) {
+				assert.Equal(t, tt.result, result)
 			}
+		}
 
-			if tt.errMsg != "" {
-				if assert.Error(t, err, "determinePackagePrefix(%q) should fail", tt.dir) {
-					assert.Contains(t, err.Error(), tt.errMsg)
-				}
+		if tt.errMsg != "" {
+			if assert.Error(t, err, "determinePackagePrefix(%q) should fail", tt.dir) {
+				assert.Contains(t, err.Error(), tt.errMsg)
 			}
-		}()
+		}
 	}
 }
 

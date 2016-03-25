@@ -39,7 +39,7 @@ func TestGenerateWithRelativePaths(t *testing.T) {
 	thriftRoot, err := os.Getwd()
 	require.NoError(t, err)
 
-	module, err := compile.Compile("testdata/test.thrift")
+	module, err := compile.Compile("testdata/thrift/structs.thrift")
 	require.NoError(t, err)
 
 	opts := []*Options{

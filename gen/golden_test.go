@@ -36,7 +36,7 @@ func TestCodeIsUpToDate(t *testing.T) {
 	// date. If this test failed, run 'make' in the testdata/ directory and
 	// commit the changes.
 
-	thriftRoot, err := filepath.Abs("testdata")
+	thriftRoot, err := filepath.Abs("testdata/thrift")
 	require.NoError(t, err, "could not resolve absolute path to testdata/thrift")
 
 	thriftFiles, err := filepath.Glob(thriftRoot + "/*.thrift")

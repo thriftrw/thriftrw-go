@@ -23,7 +23,7 @@ package gen
 import (
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/gen/testdata/test"
+	td "github.com/thriftrw/thriftrw-go/gen/testdata/typedefs"
 	"github.com/thriftrw/thriftrw-go/wire"
 
 	"github.com/stretchr/testify/assert"
@@ -31,15 +31,15 @@ import (
 
 func TestTypedefI64(t *testing.T) {
 	tests := []struct {
-		x test.Timestamp
+		x td.Timestamp
 		v wire.Value
 	}{
 		{
-			test.Timestamp(1),
+			td.Timestamp(1),
 			wire.NewValueI64(1),
 		},
 		{
-			test.Timestamp(-1),
+			td.Timestamp(-1),
 			wire.NewValueI64(-1),
 		},
 	}
@@ -50,7 +50,7 @@ func TestTypedefI64(t *testing.T) {
 			wire.ValuesAreEqual(tt.v, tt.x.ToWire()),
 			"%v.ToWire() != %v", tt.x, tt.v)
 
-		var x test.Timestamp
+		var x td.Timestamp
 		if assert.NoError(t, x.FromWire(tt.v)) {
 			assert.Equal(t, tt.x, x)
 		}
@@ -59,15 +59,15 @@ func TestTypedefI64(t *testing.T) {
 
 func TestTypedefString(t *testing.T) {
 	tests := []struct {
-		x test.State
+		x td.State
 		v wire.Value
 	}{
 		{
-			test.State("hello"),
+			td.State("hello"),
 			wire.NewValueString("hello"),
 		},
 		{
-			test.State("world"),
+			td.State("world"),
 			wire.NewValueString("world"),
 		},
 	}
@@ -78,7 +78,7 @@ func TestTypedefString(t *testing.T) {
 			wire.ValuesAreEqual(tt.v, tt.x.ToWire()),
 			"%v.ToWire() != %v", tt.x, tt.v)
 
-		var x test.State
+		var x td.State
 		if assert.NoError(t, x.FromWire(tt.v)) {
 			assert.Equal(t, tt.x, x)
 		}
@@ -87,11 +87,11 @@ func TestTypedefString(t *testing.T) {
 
 func TestTypedefBinary(t *testing.T) {
 	tests := []struct {
-		x test.Pdf
+		x td.Pdf
 		v wire.Value
 	}{
 		{
-			test.Pdf{1, 2, 3},
+			td.Pdf{1, 2, 3},
 			wire.NewValueBinary([]byte{1, 2, 3}),
 		},
 	}
@@ -102,7 +102,7 @@ func TestTypedefBinary(t *testing.T) {
 			wire.ValuesAreEqual(tt.v, tt.x.ToWire()),
 			"%v.ToWire() != %v", tt.x, tt.v)
 
-		var x test.Pdf
+		var x td.Pdf
 		if assert.NoError(t, x.FromWire(tt.v)) {
 			assert.Equal(t, tt.x, x)
 		}
@@ -111,11 +111,11 @@ func TestTypedefBinary(t *testing.T) {
 
 func TestTypedefStruct(t *testing.T) {
 	tests := []struct {
-		x *test.UUID
+		x *td.UUID
 		v wire.Value
 	}{
 		{
-			(*test.UUID)(&test.I128{1, 2}),
+			(*td.UUID)(&td.I128{1, 2}),
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueI64(1)},
 				{ID: 2, Value: wire.NewValueI64(2)},
@@ -129,7 +129,7 @@ func TestTypedefStruct(t *testing.T) {
 			wire.ValuesAreEqual(tt.v, tt.x.ToWire()),
 			"%v.ToWire() != %v", tt.x, tt.v)
 
-		var x test.UUID
+		var x td.UUID
 		if assert.NoError(t, x.FromWire(tt.v)) {
 			assert.Equal(t, tt.x, &x)
 		}
@@ -138,18 +138,18 @@ func TestTypedefStruct(t *testing.T) {
 
 func TestTypedefContainer(t *testing.T) {
 	tests := []struct {
-		x test.EventGroup
+		x td.EventGroup
 		v wire.Value
 	}{
 		{
-			test.EventGroup{
-				&test.Event{
-					UUID: &test.UUID{High: 100, Low: 200},
-					Time: (*test.Timestamp)(int64p(42)),
+			td.EventGroup{
+				&td.Event{
+					UUID: &td.UUID{High: 100, Low: 200},
+					Time: (*td.Timestamp)(int64p(42)),
 				},
-				&test.Event{
-					UUID: &test.UUID{High: 0, Low: 42},
-					Time: (*test.Timestamp)(int64p(100)),
+				&td.Event{
+					UUID: &td.UUID{High: 0, Low: 42},
+					Time: (*td.Timestamp)(int64p(100)),
 				},
 			},
 			wire.NewValueList(wire.List{
@@ -181,7 +181,7 @@ func TestTypedefContainer(t *testing.T) {
 			wire.ValuesAreEqual(tt.v, tt.x.ToWire()),
 			"%v.ToWire() != %v", tt.x, tt.v)
 
-		var x test.EventGroup
+		var x td.EventGroup
 		if assert.NoError(t, x.FromWire(tt.v)) {
 			assert.Equal(t, tt.x, x)
 		}

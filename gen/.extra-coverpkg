@@ -1,1 +1,6 @@
-testdata
+testdata/containers
+testdata/enums
+testdata/exceptions
+testdata/structs
+testdata/typedefs
+testdata/unions

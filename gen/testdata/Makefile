@@ -1,6 +1,6 @@
 ROOT = ../..
 THRIFTRW = $(ROOT)/thriftrw-go
-THRIFT_FILES = $(wildcard *.thrift)
+THRIFT_FILES = $(wildcard thrift/*.thrift)
 PACKAGES = $(patsubst %.thrift, %, $(THRIFT_FILES))
 
 .PHONY: all
