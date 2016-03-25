@@ -21,77 +21,58 @@
 package gen
 
 import (
-	"crypto/sha1"
-	"fmt"
-	"io"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/thriftrw/thriftrw-go/compile"
 )
 
-func hash(t *testing.T, name string) string {
-	f, err := os.Open(name)
-	require.NoError(t, err)
-	defer f.Close()
-
-	h := sha1.New()
-	_, err = io.Copy(h, f)
-	require.NoError(t, err)
-
-	return fmt.Sprintf("%x", h.Sum(nil))
-}
-
-func run(name string, args ...string) error {
-	cmd := exec.Command(name, args...)
-	cmd.Stdin = os.Stdin
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
-}
-
-func generate(t *testing.T, inPath, outPath string) {
-	module, err := compile.Compile(inPath)
-	require.NoError(t, err, "failed to compile %v", inPath)
-
-	outFile, err := os.Create(outPath)
-	require.NoError(t, err, "could not create %v", outPath)
-	defer outFile.Close()
-
-	opts := Options{PackageName: "testdata", Output: outFile}
-	require.NoError(
-		t, Generate(module, &opts), "could not generate code for %v", inPath)
-}
-
 func TestCodeIsUpToDate(t *testing.T) {
 	// This test just verifies that the generated code in testdata/ is up to
-	// date. If this test failed, run 'make generate' in the testdata/ directory
-	// and commit the changes.
+	// date. If this test failed, run 'make' in the testdata/ directory and
+	// commit the changes.
 
-	files, err := filepath.Glob("testdata/*.thrift")
+	thriftRoot, err := filepath.Abs("testdata")
+	require.NoError(t, err, "could not resolve absolute path to testdata/thrift")
+
+	thriftFiles, err := filepath.Glob(thriftRoot + "/*.thrift")
 	require.NoError(t, err)
 
 	outputDir, err := ioutil.TempDir("", "thriftrw-golden-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(outputDir)
 
-	for _, file := range files {
-		currentPath := file + ".go"
-		currentHash := hash(t, currentPath)
-		newPath := filepath.Join(outputDir, filepath.Base(file)+".go")
-		generate(t, file, newPath)
+	for _, thriftFile := range thriftFiles {
+		pkgRelPath := strings.TrimSuffix(filepath.Base(thriftFile), ".thrift")
+		currentPackageDir := filepath.Join("testdata", pkgRelPath)
+		newPackageDir := filepath.Join(outputDir, pkgRelPath)
 
-		if hash(t, newPath) != currentHash {
-			run("diff", "-u", currentPath, newPath)
+		currentHash, err := dirhash(currentPackageDir)
+		require.NoError(t, err, "could not hash %q", currentPackageDir)
+
+		module, err := compile.Compile(thriftFile)
+		require.NoError(t, err, "failed to compile %q", thriftFile)
+
+		err = Generate(module, &Options{
+			OutputDir:     outputDir,
+			PackagePrefix: "github.com/thriftrw/thriftrw-go/gen/testdata",
+			ThriftRoot:    thriftRoot,
+			NoRecurse:     true,
+		})
+		require.NoError(t, err, "failed to generate code for %q", thriftFile)
+
+		newHash, err := dirhash(newPackageDir)
+		require.NoError(t, err, "could not hash %q", newPackageDir)
+
+		if newHash != currentHash {
+			// TODO(abg): Diff the two directories?
 			t.Fatalf(
-				"Generated code for %s is out of date. "+
-					"Please run 'make generate' in gen/testdata.",
-				file,
-			)
+				"Generated code for %q is out of date. "+
+					"Please run 'make' in gen/testdata.", thriftFile)
 		}
 	}
 }

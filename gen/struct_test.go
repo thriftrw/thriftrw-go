@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/gen/testdata"
+	"github.com/thriftrw/thriftrw-go/gen/testdata/test"
 	"github.com/thriftrw/thriftrw-go/wire"
 
 	"github.com/stretchr/testify/assert"
@@ -32,11 +32,11 @@ import (
 
 func TestPrimitiveRequiredStructWire(t *testing.T) {
 	tests := []struct {
-		s testdata.PrimitiveRequiredStruct
+		s test.PrimitiveRequiredStruct
 		v wire.Value
 	}{
 		{
-			testdata.PrimitiveRequiredStruct{
+			test.PrimitiveRequiredStruct{
 				BoolField:   true,
 				ByteField:   1,
 				Int16Field:  2,
@@ -68,7 +68,7 @@ func TestPrimitiveRequiredStructWire(t *testing.T) {
 
 		assert.NotPanics(t, func() { tt.s.String() })
 
-		var s testdata.PrimitiveRequiredStruct
+		var s test.PrimitiveRequiredStruct
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
@@ -84,7 +84,7 @@ func TestPrimitiveRequiredMissingFields(t *testing.T) {
 	// present.
 
 	for _, tt := range tests {
-		var s testdata.PrimitiveRequiredStruct
+		var s test.PrimitiveRequiredStruct
 		err := s.FromWire(tt.v)
 		if assert.Error(t, err) {
 			for _, m := range tt.msgs {
@@ -96,11 +96,11 @@ func TestPrimitiveRequiredMissingFields(t *testing.T) {
 
 func TestPrimitiveOptionalStructWire(t *testing.T) {
 	tests := []struct {
-		s testdata.PrimitiveOptionalStruct
+		s test.PrimitiveOptionalStruct
 		v wire.Value
 	}{
 		{
-			testdata.PrimitiveOptionalStruct{
+			test.PrimitiveOptionalStruct{
 				BoolField:   boolp(true),
 				ByteField:   bytep(1),
 				Int16Field:  int16p(2),
@@ -122,35 +122,35 @@ func TestPrimitiveOptionalStructWire(t *testing.T) {
 			}}),
 		},
 		{
-			testdata.PrimitiveOptionalStruct{BoolField: boolp(true)},
+			test.PrimitiveOptionalStruct{BoolField: boolp(true)},
 			singleFieldStruct(1, wire.NewValueBool(true)),
 		},
 		{
-			testdata.PrimitiveOptionalStruct{ByteField: bytep(1)},
+			test.PrimitiveOptionalStruct{ByteField: bytep(1)},
 			singleFieldStruct(2, wire.NewValueI8(1)),
 		},
 		{
-			testdata.PrimitiveOptionalStruct{Int16Field: int16p(2)},
+			test.PrimitiveOptionalStruct{Int16Field: int16p(2)},
 			singleFieldStruct(3, wire.NewValueI16(2)),
 		},
 		{
-			testdata.PrimitiveOptionalStruct{Int32Field: int32p(3)},
+			test.PrimitiveOptionalStruct{Int32Field: int32p(3)},
 			singleFieldStruct(4, wire.NewValueI32(3)),
 		},
 		{
-			testdata.PrimitiveOptionalStruct{Int64Field: int64p(4)},
+			test.PrimitiveOptionalStruct{Int64Field: int64p(4)},
 			singleFieldStruct(5, wire.NewValueI64(4)),
 		},
 		{
-			testdata.PrimitiveOptionalStruct{DoubleField: doublep(5.0)},
+			test.PrimitiveOptionalStruct{DoubleField: doublep(5.0)},
 			singleFieldStruct(6, wire.NewValueDouble(5.0)),
 		},
 		{
-			testdata.PrimitiveOptionalStruct{StringField: stringp("foo")},
+			test.PrimitiveOptionalStruct{StringField: stringp("foo")},
 			singleFieldStruct(7, wire.NewValueString("foo")),
 		},
 		{
-			testdata.PrimitiveOptionalStruct{BinaryField: []byte("bar")},
+			test.PrimitiveOptionalStruct{BinaryField: []byte("bar")},
 			singleFieldStruct(8, wire.NewValueBinary([]byte("bar"))),
 		},
 	}
@@ -164,7 +164,7 @@ func TestPrimitiveOptionalStructWire(t *testing.T) {
 
 		assert.NotPanics(t, func() { tt.s.String() })
 
-		var s testdata.PrimitiveOptionalStruct
+		var s test.PrimitiveOptionalStruct
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
@@ -173,11 +173,11 @@ func TestPrimitiveOptionalStructWire(t *testing.T) {
 
 func TestPrimitiveContainersRequired(t *testing.T) {
 	tests := []struct {
-		s testdata.PrimitiveContainersRequired
+		s test.PrimitiveContainersRequired
 		v wire.Value
 	}{
 		{
-			testdata.PrimitiveContainersRequired{
+			test.PrimitiveContainersRequired{
 				ListOfStrings:      []string{"foo", "bar", "baz"},
 				SetOfInts:          map[int32]struct{}{1: struct{}{}, 2: struct{}{}},
 				MapOfIntsToDoubles: map[int64]float64{1: 2.0, 3: 4.0},
@@ -237,7 +237,7 @@ func TestPrimitiveContainersRequired(t *testing.T) {
 
 		assert.NotPanics(t, func() { tt.s.String() })
 
-		var s testdata.PrimitiveContainersRequired
+		var s test.PrimitiveContainersRequired
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
@@ -246,14 +246,14 @@ func TestPrimitiveContainersRequired(t *testing.T) {
 
 func TestNestedStructsRequired(t *testing.T) {
 	tests := []struct {
-		s testdata.Frame
+		s test.Frame
 		v wire.Value
 		o string
 	}{
 		{
-			testdata.Frame{
-				TopLeft: &testdata.Point{X: 1, Y: 2},
-				Size:    &testdata.Size{Width: 100, Height: 200},
+			test.Frame{
+				TopLeft: &test.Point{X: 1, Y: 2},
+				Size:    &test.Size{Width: 100, Height: 200},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
@@ -282,7 +282,7 @@ func TestNestedStructsRequired(t *testing.T) {
 			"%v.ToWire() != %v", tt.s, tt.v,
 		)
 
-		var s testdata.Frame
+		var s test.Frame
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
@@ -293,21 +293,21 @@ func TestNestedStructsRequired(t *testing.T) {
 
 func TestNestedStructsOptional(t *testing.T) {
 	tests := []struct {
-		s testdata.User
+		s test.User
 		v wire.Value
 		o string
 	}{
 		{
-			testdata.User{Name: "Foo Bar"},
+			test.User{Name: "Foo Bar"},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("Foo Bar")},
 			}}),
 			"User{Name: Foo Bar}",
 		},
 		{
-			testdata.User{
+			test.User{
 				Name:    "Foo Bar",
-				Contact: &testdata.ContactInfo{EmailAddress: "foo@example.com"},
+				Contact: &test.ContactInfo{EmailAddress: "foo@example.com"},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("Foo Bar")},
@@ -326,7 +326,7 @@ func TestNestedStructsOptional(t *testing.T) {
 			"%v.ToWire() != %v", tt.s, tt.v,
 		)
 
-		var s testdata.User
+		var s test.User
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
@@ -341,27 +341,27 @@ func TestStructStringWithMissingRequiredFields(t *testing.T) {
 		o string
 	}{
 		{
-			&testdata.Frame{TopLeft: &testdata.Point{}},
+			&test.Frame{TopLeft: &test.Point{}},
 			"Frame{Size: <nil>, TopLeft: Point{X: 0, Y: 0}}",
 		},
 		{
-			&testdata.Frame{Size: &testdata.Size{}},
+			&test.Frame{Size: &test.Size{}},
 			"Frame{Size: Size{Height: 0, Width: 0}, TopLeft: <nil>}",
 		},
 		{
-			&testdata.Edge{Start: &testdata.Point{X: 1, Y: 2}},
+			&test.Edge{Start: &test.Point{X: 1, Y: 2}},
 			"Edge{End: <nil>, Start: Point{X: 1, Y: 2}}",
 		},
 		{
-			&testdata.Edge{End: &testdata.Point{X: 3, Y: 4}},
+			&test.Edge{End: &test.Point{X: 3, Y: 4}},
 			"Edge{End: Point{X: 3, Y: 4}, Start: <nil>}",
 		},
 		{
-			&testdata.Graph{},
+			&test.Graph{},
 			"Graph{Edges: []}",
 		},
 		{
-			&testdata.Event{},
+			&test.Event{},
 			"Event{UUID: <nil>}",
 		},
 	}
@@ -373,11 +373,11 @@ func TestStructStringWithMissingRequiredFields(t *testing.T) {
 
 func TestBasicException(t *testing.T) {
 	tests := []struct {
-		s testdata.DoesNotExistException
+		s test.DoesNotExistException
 		v wire.Value
 	}{
 		{
-			testdata.DoesNotExistException{Key: "foo"},
+			test.DoesNotExistException{Key: "foo"},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("foo")},
 			}}),
@@ -391,7 +391,7 @@ func TestBasicException(t *testing.T) {
 			"%v.ToWire() != %v", tt.s, tt.v,
 		)
 
-		var s testdata.DoesNotExistException
+		var s test.DoesNotExistException
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
@@ -403,19 +403,19 @@ func TestBasicException(t *testing.T) {
 
 func TestUnionSimple(t *testing.T) {
 	tests := []struct {
-		s testdata.Document
+		s test.Document
 		v wire.Value
 		o string
 	}{
 		{
-			testdata.Document{Pdf: []byte{1, 2, 3}},
+			test.Document{Pdf: []byte{1, 2, 3}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
 			}}),
 			"Document{Pdf: [1 2 3]}",
 		},
 		{
-			testdata.Document{PlainText: stringp("hello")},
+			test.Document{PlainText: stringp("hello")},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 2, Value: wire.NewValueString("hello")},
 			}}),
@@ -430,7 +430,7 @@ func TestUnionSimple(t *testing.T) {
 			"%v.ToWire() != %v", tt.s, tt.v,
 		)
 
-		var s testdata.Document
+		var s test.Document
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
@@ -441,33 +441,33 @@ func TestUnionSimple(t *testing.T) {
 
 func TestUnionComplex(t *testing.T) {
 	tests := []struct {
-		s testdata.ArbitraryValue
+		s test.ArbitraryValue
 		v wire.Value
 		o string
 	}{
 		{
-			testdata.ArbitraryValue{BoolValue: boolp(true)},
+			test.ArbitraryValue{BoolValue: boolp(true)},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueBool(true)},
 			}}),
 			"ArbitraryValue{BoolValue: true}",
 		},
 		{
-			testdata.ArbitraryValue{Int64Value: int64p(42)},
+			test.ArbitraryValue{Int64Value: int64p(42)},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 2, Value: wire.NewValueI64(42)},
 			}}),
 			"ArbitraryValue{Int64Value: 42}",
 		},
 		{
-			testdata.ArbitraryValue{StringValue: stringp("hello")},
+			test.ArbitraryValue{StringValue: stringp("hello")},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 3, Value: wire.NewValueString("hello")},
 			}}),
 			"ArbitraryValue{StringValue: hello}",
 		},
 		{
-			testdata.ArbitraryValue{ListValue: []*testdata.ArbitraryValue{
+			test.ArbitraryValue{ListValue: []*test.ArbitraryValue{
 				{BoolValue: boolp(true)},
 				{Int64Value: int64p(42)},
 				{StringValue: stringp("hello")},
@@ -492,7 +492,7 @@ func TestUnionComplex(t *testing.T) {
 			"ArbitraryValue{ListValue: [ArbitraryValue{BoolValue: true} ArbitraryValue{Int64Value: 42} ArbitraryValue{StringValue: hello}]}",
 		},
 		{
-			testdata.ArbitraryValue{MapValue: map[string]*testdata.ArbitraryValue{
+			test.ArbitraryValue{MapValue: map[string]*test.ArbitraryValue{
 				"bool":   {BoolValue: boolp(true)},
 				"int64":  {Int64Value: int64p(42)},
 				"string": {StringValue: stringp("hello")},
@@ -535,7 +535,7 @@ func TestUnionComplex(t *testing.T) {
 			"%v.ToWire() != %v", tt.s, tt.v,
 		)
 
-		var s testdata.ArbitraryValue
+		var s test.ArbitraryValue
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
@@ -550,7 +550,7 @@ func TestStructFromWireUnrecognizedField(t *testing.T) {
 	tests := []struct {
 		desc string
 		i    wire.Value
-		o    testdata.ContactInfo
+		o    test.ContactInfo
 	}{
 		{
 			"unknown field",
@@ -558,26 +558,26 @@ func TestStructFromWireUnrecognizedField(t *testing.T) {
 				{ID: 1, Value: wire.NewValueString("foo")},
 				{ID: 2, Value: wire.NewValueI32(42)},
 			}}),
-			testdata.ContactInfo{EmailAddress: "foo"},
+			test.ContactInfo{EmailAddress: "foo"},
 		},
 		{
 			"only unknown field",
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 2, Value: wire.NewValueString("bar")},
 			}}),
-			testdata.ContactInfo{},
+			test.ContactInfo{},
 		},
 		{
 			"wrong type for recognized field",
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueI32(42)},
 			}}),
-			testdata.ContactInfo{},
+			test.ContactInfo{},
 		},
 	}
 
 	for _, tt := range tests {
-		var o testdata.ContactInfo
+		var o test.ContactInfo
 		if assert.NoError(t, o.FromWire(tt.i)) {
 			assert.Equal(t, tt.o, o)
 		}
@@ -588,7 +588,7 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 	tests := []struct {
 		desc    string
 		input   wire.Value
-		success *testdata.Document
+		success *test.Document
 		failure string
 	}{
 		{
@@ -597,7 +597,7 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
 				{ID: 2, Value: wire.NewValueString("hello")},
 			}}),
-			success: &testdata.Document{
+			success: &test.Document{
 				Pdf:       []byte{1, 2, 3},
 				PlainText: stringp("hello"),
 			},
@@ -610,7 +610,7 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
 				{ID: 3, Value: wire.NewValueString("hello")},
 			}}),
-			success: &testdata.Document{Pdf: []byte{1, 2, 3}},
+			success: &test.Document{Pdf: []byte{1, 2, 3}},
 		},
 		{
 			desc: "only unrecognized fields",
@@ -618,19 +618,19 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 				{ID: 2, Value: wire.NewValueI32(42)}, // also a type mismatch
 				{ID: 3, Value: wire.NewValueString("hello")},
 			}}),
-			success: &testdata.Document{},
+			success: &test.Document{},
 			// TODO(abg): If the union is empty, we need to fail the request
 		},
 		{
 			desc:    "no fields",
 			input:   wire.NewValueStruct(wire.Struct{}),
-			success: &testdata.Document{},
+			success: &test.Document{},
 			// TODO(abg): If the union is empty, we need to fail the request
 		},
 	}
 
 	for _, tt := range tests {
-		var o testdata.Document
+		var o test.Document
 		err := o.FromWire(tt.input)
 		if tt.success != nil {
 			if assert.NoError(t, err) {

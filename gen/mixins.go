@@ -40,7 +40,8 @@ func (r *hasReaders) HasReader(name string) bool {
 	return false
 }
 
-// hasLazyLists
+// hasLazyLists helps generators track whether a lazy list for the given name
+// was already generated.
 type hasLazyLists struct{ have map[string]struct{} }
 
 // HasLazyList returns true if a lazy list with the given name was already generated,
