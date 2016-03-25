@@ -22,17 +22,49 @@ package gen
 
 import "github.com/thriftrw/thriftrw-go/compile"
 
+// enumGenerator generates code to serialize and deserialize enums.
+type enumGenerator struct {
+	hasReaders
+}
+
+func (e *enumGenerator) Reader(g Generator, spec *compile.EnumSpec) (string, error) {
+	name := "_" + goCase(spec.ThriftName()) + "_Read"
+	if e.HasReader(name) {
+		return name, nil
+	}
+
+	err := g.DeclareFromTemplate(
+		`
+		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+
+		<$v := newVar "v">
+		<$w := newVar "w">
+		func <.Name>(<$w> <$wire>.Value) (<typeName .Spec>, error) {
+			var <$v> <typeName .Spec>
+			err := <$v>.FromWire(<$w>)
+			return <$v>, err
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.EnumSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
 func enum(g Generator, spec *compile.EnumSpec) error {
 	// TODO(abg) define an error type in the library for unrecognized enums.
 	err := g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 
-		<$enumName := typeName .Spec>
+		<$enumName := typeName .>
 		type <$enumName> int32
 
 		const (
-		<range .Spec.Items>
+		<range .Items>
 			<$enumName><goCase .Name> <$enumName> = <.Value>
 		<end>
 		)
@@ -47,17 +79,8 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			*<$v> = (<$enumName>)(<$w>.GetI32());
 			return nil
 		}
-
-		func <.Reader>(<$w> <$wire>.Value) (<$enumName>, error) {
-			var <$v> <$enumName>
-			err := <$v>.FromWire(<$w>)
-			return <$v>, err
-		}
 		`,
-		struct {
-			Spec   *compile.EnumSpec
-			Reader string
-		}{Spec: spec, Reader: typeReader(spec)},
+		spec,
 	)
 
 	return wrapGenerateError(spec.Name, err)

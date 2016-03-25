@@ -25,18 +25,8 @@ import "github.com/thriftrw/thriftrw-go/compile"
 // setGenerator generates logic to convert lists of arbitrary Thrift types to
 // and from ValueLists.
 type setGenerator struct {
-	// Set of ValueLists that have already been generated.
-	valueLists map[string]struct{}
-
-	// Set of readers that have already been generated.
-	readers map[string]struct{}
-}
-
-func newSetGenerator() setGenerator {
-	return setGenerator{
-		valueLists: make(map[string]struct{}),
-		readers:    make(map[string]struct{}),
-	}
+	hasReaders
+	hasLazyLists
 }
 
 // ValueList generates a new ValueList type alias for the given set.
@@ -51,10 +41,10 @@ func newSetGenerator() setGenerator {
 //
 // And $valueListName is returned. This may be used where a ValueList of the
 // given type is expected.
-func (s setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, error) {
+func (s *setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, error) {
 	// TODO(abg): Unhashable types
 	name := "_" + valueName(spec) + "_ValueList"
-	if _, ok := s.valueLists[name]; ok {
+	if s.HasLazyList(name) {
 		return name, nil
 	}
 
@@ -83,20 +73,13 @@ func (s setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, err
 			Spec *compile.SetSpec
 		}{Name: name, Spec: spec},
 	)
-	if err != nil {
-		return "", generateError{
-			Name:   typeReference(spec),
-			Reason: err,
-		}
-	}
 
-	s.valueLists[name] = struct{}{}
-	return name, nil
+	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
-func (s setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error) {
+func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error) {
 	name := "_" + valueName(spec) + "_Read"
-	if _, ok := s.readers[name]; ok {
+	if s.HasReader(name) {
 		return name, nil
 	}
 
@@ -133,13 +116,5 @@ func (s setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error)
 		}{Name: name, Spec: spec},
 	)
 
-	if err != nil {
-		return "", generateError{
-			Name:   typeReference(spec),
-			Reason: err,
-		}
-	}
-
-	s.readers[name] = struct{}{}
-	return name, nil
+	return name, wrapGenerateError(spec.ThriftName(), err)
 }

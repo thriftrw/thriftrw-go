@@ -29,18 +29,8 @@ import (
 // mapGenerator generates logic to convert lists of arbitrary Thrift types to
 // and from MapItemLists.
 type mapGenerator struct {
-	// Set of MapItemLIsts that have already been generated.
-	itemLists map[string]struct{}
-
-	// Set of readers that have already been generated.
-	readers map[string]struct{}
-}
-
-func newMapGenerator() mapGenerator {
-	return mapGenerator{
-		itemLists: make(map[string]struct{}),
-		readers:   make(map[string]struct{}),
-	}
+	hasReaders
+	hasLazyLists
 }
 
 // MapItemList generates a new MapItemList type alias for the given map.
@@ -55,10 +45,10 @@ func newMapGenerator() mapGenerator {
 //
 // And $mapItemListName is returned. This may be used where a MapItemList of the
 // given type is expected.
-func (m mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, error) {
+func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, error) {
 	// TODO(abg): Unhashable types
 	name := "_" + valueName(spec) + "_MapItemList"
-	if _, ok := m.itemLists[name]; ok {
+	if m.HasLazyList(name) {
 		return name, nil
 	}
 
@@ -91,20 +81,13 @@ func (m mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, erro
 			Spec *compile.MapSpec
 		}{Name: name, Spec: spec},
 	)
-	if err != nil {
-		return "", generateError{
-			Name:   typeReference(spec),
-			Reason: err,
-		}
-	}
 
-	m.itemLists[name] = struct{}{}
-	return name, nil
+	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
-func (m mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error) {
+func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error) {
 	name := "_" + valueName(spec) + "_Read"
-	if _, ok := m.readers[name]; ok {
+	if m.HasReader(name) {
 		return name, nil
 	}
 
@@ -152,15 +135,7 @@ func (m mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error)
 		}{Name: name, Spec: spec},
 	)
 
-	if err != nil {
-		return "", generateError{
-			Name:   typeReference(spec),
-			Reason: err,
-		}
-	}
-
-	m.readers[name] = struct{}{}
-	return name, nil
+	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
 func valueName(spec compile.TypeSpec) string {

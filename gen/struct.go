@@ -22,17 +22,49 @@ package gen
 
 import "github.com/thriftrw/thriftrw-go/compile"
 
+// structGenerator generates code to serialize and deserialize structs.
+type structGenerator struct {
+	hasReaders
+}
+
+func (s *structGenerator) Reader(g Generator, spec *compile.StructSpec) (string, error) {
+	name := "_" + goCase(spec.ThriftName()) + "_Read"
+	if s.HasReader(name) {
+		return name, nil
+	}
+
+	err := g.DeclareFromTemplate(
+		`
+		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+
+		<$v := newVar "v">
+		<$w := newVar "w">
+		func <.Name>(<$w> <$wire>.Value) (<typeReference .Spec>, error) {
+			var <$v> <typeName .Spec>
+			err := <$v>.FromWire(<$w>)
+			return &<$v>, err
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.StructSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
 func structure(g Generator, spec *compile.StructSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$fmt := import "fmt">
 		<$strings := import "strings">
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
-		<$structName := typeName .Spec>
-		<$structRef := typeReference .Spec>
+		<$structName := typeName .>
+		<$structRef := typeReference .>
 
 		type <$structName> struct {
-		<range .Spec.Fields>
+		<range .Fields>
 			<if .Required>
 				<goCase .Name> <typeReference .Type>
 			<else>
@@ -47,10 +79,10 @@ func structure(g Generator, spec *compile.StructSpec) error {
 		<$fields := newVar "fs">
 		func (<$v> <$structRef>) ToWire() <$wire>.Value {
 			// TODO check if required fields that are reference types are nil
-			var <$fields> [<len .Spec.Fields>]<$wire>.Field
+			var <$fields> [<len .Fields>]<$wire>.Field
 			<$i> := 0
 
-			<range .Spec.Fields>
+			<range .Fields>
 				<$f := printf "%s.%s" $v (goCase .Name)>
 
 				<if .Required>
@@ -79,7 +111,7 @@ func structure(g Generator, spec *compile.StructSpec) error {
 			<$f := newVar "f">
 			for _, <$f> := range <$w>.GetStruct().Fields {
 				switch <$f>.ID {
-				<range .Spec.Fields>
+				<range .Fields>
 				case <.ID>:
 					if <$f>.Value.Type() == <typeCode .Type> {
 						<$lhs := printf "%s.%s" $v (goCase .Name)>
@@ -101,16 +133,10 @@ func structure(g Generator, spec *compile.StructSpec) error {
 			return nil
 		}
 
-		func <.Reader>(<$w> <$wire>.Value) (<$structRef>, error) {
-			var <$v> <$structName>
-			err := <$v>.FromWire(<$w>)
-			return &<$v>, err
-		}
-
 		func (<$v> <$structRef>) String() string {
-			var <$fields> [<len .Spec.Fields>]string
+			var <$fields> [<len .Fields>]string
 			<$i> := 0
-			<range .Spec.Fields>
+			<range .Fields>
 				<$f := printf "%s.%s" $v (goCase .Name)>
 
 				<if not .Required>
@@ -134,16 +160,13 @@ func structure(g Generator, spec *compile.StructSpec) error {
 			)
 		}
 
-		<if .Spec.IsExceptionType>
+		<if .IsExceptionType>
 			func (<$v> <$structRef>) Error() string {
 				return <$v>.String()
 			}
 		<end>
 		`,
-		struct {
-			Spec   *compile.StructSpec
-			Reader string
-		}{Spec: spec, Reader: typeReader(spec)},
+		spec,
 	)
 	// TODO(abg): JSON tags for generated structs
 	// TODO(abg): For all struct types, handle the case where fields are named
