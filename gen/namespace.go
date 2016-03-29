@@ -37,6 +37,11 @@ type Namespace interface {
 	// is already taken.
 	Reserve(name string) error
 
+	// Forget the given name. Nothing happens if this name wasn't already
+	// taken in this namespace. The name will NOT be removed from parent
+	// namespaces.
+	Forget(name string)
+
 	// Create a new Child namespace. The child namespace cannot use any names
 	// defined in this namespace or any of its parent namespaces.
 	Child() Namespace
@@ -81,6 +86,10 @@ func (n *namespace) Reserve(name string) error {
 	}
 	n.taken[name] = struct{}{}
 	return nil
+}
+
+func (n *namespace) Forget(name string) {
+	delete(n.taken, name)
 }
 
 func (n *namespace) Child() Namespace {

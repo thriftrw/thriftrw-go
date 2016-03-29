@@ -1,0 +1,402 @@
+// Copyright (c) 2015 Uber Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+package gen
+
+import (
+	"errors"
+	"reflect"
+	"testing"
+
+	tx "github.com/thriftrw/thriftrw-go/gen/testdata/exceptions"
+	tv "github.com/thriftrw/thriftrw-go/gen/testdata/services"
+	"github.com/thriftrw/thriftrw-go/gen/testdata/services/keyvalue"
+	tu "github.com/thriftrw/thriftrw-go/gen/testdata/unions"
+	"github.com/thriftrw/thriftrw-go/wire"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestServiceArgsAndResult(t *testing.T) {
+	tests := []struct {
+		desc string
+		x    interface {
+			ToWire() wire.Value
+			FromWire(wire.Value) error
+		}
+		v wire.Value
+	}{
+		{
+			desc: "setValue args",
+			x: &keyvalue.SetValueArgs{
+				Key:   (*tv.Key)(stringp("foo")),
+				Value: &tu.ArbitraryValue{BoolValue: boolp(true)},
+			},
+			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("foo")},
+				{
+					ID: 2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueBool(true)},
+					}}),
+				},
+			}}),
+		},
+		{
+			desc: "setValue result",
+			x:    &keyvalue.SetValueResult{},
+			v:    wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+		},
+		{
+			desc: "getValue args",
+			x:    &keyvalue.GetValueArgs{Key: (*tv.Key)(stringp("foo"))},
+			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("foo")},
+			}}),
+		},
+		{
+			desc: "getValue result success",
+			x: &keyvalue.GetValueResult{
+				Success: &tu.ArbitraryValue{Int64Value: int64p(42)},
+			},
+			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 0,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 2, Value: wire.NewValueI64(42)},
+					}}),
+				},
+			}}),
+		},
+		{
+			desc: "getValue result failure",
+			x: &keyvalue.GetValueResult{
+				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
+			},
+			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 1,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueString("foo")},
+					}}),
+				},
+			}}),
+		},
+		{
+			desc: "deleteValue args",
+			x:    &keyvalue.DeleteValueArgs{Key: (*tv.Key)(stringp("foo"))},
+			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("foo")},
+			}}),
+		},
+		{
+			desc: "deleteValue result success",
+			x:    &keyvalue.DeleteValueResult{},
+			v:    wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+		},
+		{
+			desc: "deleteValue result failure",
+			x: &keyvalue.DeleteValueResult{
+				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
+			},
+			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 1,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueString("foo")},
+					}}),
+				},
+			}}),
+		},
+		{
+			desc: "deleteValue result failure 2",
+			x: &keyvalue.DeleteValueResult{
+				InternalError: &tv.InternalError{Message: stringp("foo")},
+			},
+			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueString("foo")},
+					}}),
+				},
+			}}),
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.v, tt.x.ToWire(), tt.desc)
+
+		x := reflect.New(reflect.TypeOf(tt.x).Elem())
+		err := x.MethodByName("FromWire").
+			Call([]reflect.Value{reflect.ValueOf(tt.v)})[0].
+			Interface()
+
+		if assert.Nil(t, err, tt.desc) {
+			assert.Equal(t, tt.x, x.Interface(), tt.desc)
+		}
+	}
+}
+
+func TestServiceArgs(t *testing.T) {
+	tests := []struct {
+		input  interface{}
+		output interface{}
+	}{
+		{
+			input: keyvalue.SetValue.Args(
+				(*tv.Key)(stringp("foo")),
+				&tu.ArbitraryValue{BoolValue: boolp(true)},
+			),
+			output: &keyvalue.SetValueArgs{
+				Key:   (*tv.Key)(stringp("foo")),
+				Value: &tu.ArbitraryValue{BoolValue: boolp(true)},
+			},
+		},
+		{
+			input:  keyvalue.GetValue.Args((*tv.Key)(stringp("foo"))),
+			output: &keyvalue.GetValueArgs{Key: (*tv.Key)(stringp("foo"))},
+		},
+		{
+			input:  keyvalue.DeleteValue.Args((*tv.Key)(stringp("foo"))),
+			output: &keyvalue.DeleteValueArgs{Key: (*tv.Key)(stringp("foo"))},
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.output, tt.input)
+	}
+}
+
+func TestServiceIsException(t *testing.T) {
+	tests := []struct {
+		isException func(error) bool
+		err         error
+		expected    bool
+	}{
+		{
+			isException: keyvalue.SetValue.IsException,
+			err:         &tx.DoesNotExistException{Key: "foo"},
+			expected:    false,
+		},
+		{
+			isException: keyvalue.SetValue.IsException,
+			err:         errors.New("some error"),
+			expected:    false,
+		},
+		{
+			isException: keyvalue.GetValue.IsException,
+			err:         &tx.DoesNotExistException{Key: "foo"},
+			expected:    true,
+		},
+		{
+			isException: keyvalue.GetValue.IsException,
+			err:         errors.New("some error"),
+			expected:    false,
+		},
+		{
+			isException: keyvalue.DeleteValue.IsException,
+			err:         &tv.InternalError{},
+			expected:    true,
+		},
+		{
+			isException: keyvalue.DeleteValue.IsException,
+			err:         &tv.InternalError{Message: stringp("foo")},
+			expected:    true,
+		},
+		{
+			isException: keyvalue.DeleteValue.IsException,
+			err:         &tx.DoesNotExistException{Key: "foo"},
+			expected:    true,
+		},
+		{
+			isException: keyvalue.DeleteValue.IsException,
+			err:         errors.New("some error"),
+			expected:    false,
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.expected, tt.isException(tt.err))
+	}
+}
+
+func TestWrapResponse(t *testing.T) {
+	tests := []struct {
+		desc           string
+		run            func() (interface{}, error)
+		expectedResult interface{}
+		expectedError  error
+	}{
+		{
+			desc: "setValue success",
+			run: func() (interface{}, error) {
+				return keyvalue.SetValue.WrapResponse(nil)
+			},
+			expectedResult: &keyvalue.SetValueResult{},
+		},
+		{
+			desc: "setValue failure",
+			run: func() (interface{}, error) {
+				return keyvalue.SetValue.WrapResponse(errors.New("foo"))
+			},
+			expectedError: errors.New("foo"),
+		},
+		{
+			desc: "getValue success",
+			run: func() (interface{}, error) {
+				return keyvalue.GetValue.WrapResponse(&tu.ArbitraryValue{BoolValue: boolp(true)}, nil)
+			},
+			expectedResult: &keyvalue.GetValueResult{
+				Success: &tu.ArbitraryValue{BoolValue: boolp(true)},
+			},
+		},
+		{
+			desc: "getValue application error",
+			run: func() (interface{}, error) {
+				return keyvalue.GetValue.WrapResponse(nil, &tx.DoesNotExistException{Key: "foo"})
+			},
+			expectedResult: &keyvalue.GetValueResult{
+				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
+			},
+		},
+		{
+			desc: "getValue failure",
+			run: func() (interface{}, error) {
+				return keyvalue.GetValue.WrapResponse(nil, errors.New("foo"))
+			},
+			expectedError: errors.New("foo"),
+		},
+		{
+			desc: "deleteValue success",
+			run: func() (interface{}, error) {
+				return keyvalue.DeleteValue.WrapResponse(nil)
+			},
+			expectedResult: &keyvalue.DeleteValueResult{},
+		},
+		{
+			desc: "deleteValue application error (1)",
+			run: func() (interface{}, error) {
+				return keyvalue.DeleteValue.WrapResponse(&tx.DoesNotExistException{Key: "foo"})
+			},
+			expectedResult: &keyvalue.DeleteValueResult{
+				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
+			},
+		},
+		{
+			desc: "deleteValue application error (2)",
+			run: func() (interface{}, error) {
+				return keyvalue.DeleteValue.WrapResponse(&tv.InternalError{})
+			},
+			expectedResult: &keyvalue.DeleteValueResult{
+				InternalError: &tv.InternalError{},
+			},
+		},
+		{
+			desc: "deleteValue failure",
+			run: func() (interface{}, error) {
+				return keyvalue.DeleteValue.WrapResponse(errors.New("foo"))
+			},
+			expectedError: errors.New("foo"),
+		},
+	}
+
+	for _, tt := range tests {
+		result, err := tt.run()
+		if tt.expectedError != nil {
+			assert.Equal(t, tt.expectedError, err, tt.desc)
+		} else {
+			assert.Equal(t, tt.expectedResult, result, tt.desc)
+		}
+	}
+}
+
+func TestUnwrapResponse(t *testing.T) {
+	tests := []struct {
+		desc           string
+		unwrapResponse interface{}
+		resultArg      interface{}
+
+		expectedReturn interface{}
+		expectedError  error
+	}{
+		{
+			desc:           "setValue success",
+			unwrapResponse: keyvalue.SetValue.UnwrapResponse,
+			resultArg:      &keyvalue.SetValueResult{},
+		},
+		{
+			desc:           "getValue success",
+			unwrapResponse: keyvalue.GetValue.UnwrapResponse,
+			resultArg: &keyvalue.GetValueResult{
+				Success: &tu.ArbitraryValue{BoolValue: boolp(true)},
+			},
+			expectedReturn: &tu.ArbitraryValue{BoolValue: boolp(true)},
+		},
+		{
+			desc:           "getValue failure",
+			unwrapResponse: keyvalue.GetValue.UnwrapResponse,
+			resultArg: &keyvalue.GetValueResult{
+				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
+			},
+			expectedError: &tx.DoesNotExistException{Key: "foo"},
+		},
+		{
+			desc:           "deleteValue success",
+			unwrapResponse: keyvalue.DeleteValue.UnwrapResponse,
+			resultArg:      &keyvalue.DeleteValueResult{},
+		},
+		{
+			desc:           "deleteValue failure (1)",
+			unwrapResponse: keyvalue.DeleteValue.UnwrapResponse,
+			resultArg: &keyvalue.DeleteValueResult{
+				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
+			},
+			expectedError: &tx.DoesNotExistException{Key: "foo"},
+		},
+		{
+			desc:           "deleteValue failure (2)",
+			unwrapResponse: keyvalue.DeleteValue.UnwrapResponse,
+			resultArg: &keyvalue.DeleteValueResult{
+				InternalError: &tv.InternalError{},
+			},
+			expectedError: &tv.InternalError{},
+		},
+	}
+
+	for _, tt := range tests {
+		unwrapResponse := reflect.ValueOf(tt.unwrapResponse)
+		out := unwrapResponse.Call([]reflect.Value{reflect.ValueOf(tt.resultArg)})
+
+		var returnValue, err interface{}
+		if len(out) == 1 {
+			err = out[0].Interface()
+		} else {
+			returnValue = out[0].Interface()
+			err = out[1].Interface()
+		}
+
+		if tt.expectedError != nil {
+			assert.Equal(t, tt.expectedError, err, tt.desc)
+		} else {
+			assert.Equal(t, tt.expectedReturn, returnValue, tt.desc)
+		}
+	}
+}

@@ -27,8 +27,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"reflect"
-	"sort"
 	"strings"
 
 	"github.com/thriftrw/thriftrw-go/compile"
@@ -188,7 +186,29 @@ func generateModule(m *compile.Module, i thriftPackageImporter, outDir string) e
 		files["types.go"] = buff
 	}
 
-	// TODO(abg): Services
+	if len(m.Services) > 0 {
+		for _, serviceName := range sortStringKeys(m.Services) {
+			service := m.Services[serviceName]
+			importPath, err := i.ServicePackage(service.ThriftFile(), service.Name)
+			if err != nil {
+				return err
+			}
+			packageName := filepath.Base(importPath)
+
+			// TODO inherited service functions
+
+			g := NewGenerator(i, importPath, packageName)
+			serviceFiles, err := Service(g, service)
+			if err != nil {
+				return fmt.Errorf("could not code for %s: %v", serviceName, err)
+			}
+
+			for name, buff := range serviceFiles {
+				filename := filepath.Join(packageName, name)
+				files[filename] = buff
+			}
+		}
+	}
 
 	for relPath, contents := range files {
 		fullPath := filepath.Join(packageOutDir, relPath)
@@ -203,25 +223,4 @@ func generateModule(m *compile.Module, i thriftPackageImporter, outDir string) e
 		}
 	}
 	return nil
-}
-
-// sortStringKeys returns a sorted list of strings given a map[string]*.
-func sortStringKeys(m interface{}) []string {
-	v := reflect.ValueOf(m)
-	t := v.Type()
-	if t.Kind() != reflect.Map || t.Key().Kind() != reflect.String {
-		panic(fmt.Sprintf(
-			"sortStringKeys may be called with a map[string]* only"))
-	}
-
-	keys := v.MapKeys()
-	sortedKeys := make([]string, 0, len(keys))
-
-	for _, k := range keys {
-		key := k.Interface().(string)
-		sortedKeys = append(sortedKeys, key)
-	}
-
-	sort.Strings(sortedKeys)
-	return sortedKeys
 }
