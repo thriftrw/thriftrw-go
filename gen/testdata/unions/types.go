@@ -247,3 +247,23 @@ func (v *Document) String() string {
 	}
 	return fmt.Sprintf("Document{%v}", strings.Join(fields[:i], ", "))
 }
+
+type EmptyUnion struct{}
+
+func (v *EmptyUnion) ToWire() wire.Value {
+	var fields [0]wire.Field
+	i := 0
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+}
+func (v *EmptyUnion) FromWire(w wire.Value) error {
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		}
+	}
+	return nil
+}
+func (v *EmptyUnion) String() string {
+	var fields [0]string
+	i := 0
+	return fmt.Sprintf("EmptyUnion{%v}", strings.Join(fields[:i], ", "))
+}

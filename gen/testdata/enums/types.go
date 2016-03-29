@@ -4,6 +4,18 @@ package enums
 
 import "github.com/thriftrw/thriftrw-go/wire"
 
+type EmptyEnum int32
+
+const ()
+
+func (v EmptyEnum) ToWire() wire.Value {
+	return wire.NewValueI32(int32(v))
+}
+func (v *EmptyEnum) FromWire(w wire.Value) error {
+	*v = (EmptyEnum)(w.GetI32())
+	return nil
+}
+
 type EnumDefault int32
 
 const (

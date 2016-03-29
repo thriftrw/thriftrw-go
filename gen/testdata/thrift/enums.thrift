@@ -1,3 +1,5 @@
+enum EmptyEnum {}
+
 enum EnumDefault {
     Foo, Bar, Baz
 }
