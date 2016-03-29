@@ -18,3 +18,8 @@ enum EnumWithDuplicateValues {
 enum EnumWithDuplicateName {
     A, B, C, P, Q, R, X, Y, Z
 }
+
+// Enum treated as optional inside a struct
+struct StructWithOptionalEnum {
+    1: optional EnumDefault e
+}

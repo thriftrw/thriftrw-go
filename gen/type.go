@@ -52,6 +52,8 @@ func isPrimitiveType(spec compile.TypeSpec) bool {
 	}
 
 	switch s := spec.(type) {
+	case *compile.EnumSpec:
+		return true
 	case *compile.TypedefSpec:
 		return isPrimitiveType(s.Target)
 	}
