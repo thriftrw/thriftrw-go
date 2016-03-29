@@ -23,7 +23,7 @@ package gen
 import (
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/gen/testdata"
+	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
 	"github.com/thriftrw/thriftrw-go/wire"
 
 	"github.com/stretchr/testify/assert"
@@ -31,12 +31,12 @@ import (
 
 func TestValueOfEnumDefault(t *testing.T) {
 	tests := []struct {
-		e testdata.EnumDefault
+		e te.EnumDefault
 		i int32
 	}{
-		{testdata.EnumDefaultFoo, 0},
-		{testdata.EnumDefaultBar, 1},
-		{testdata.EnumDefaultBaz, 2},
+		{te.EnumDefaultFoo, 0},
+		{te.EnumDefaultBar, 1},
+		{te.EnumDefaultBaz, 2},
 	}
 	for _, tt := range tests {
 		assert.Equal(t, int32(tt.e), tt.i, "Value for %v does not match", tt.e)
@@ -45,12 +45,12 @@ func TestValueOfEnumDefault(t *testing.T) {
 
 func TestValueOfEnumWithValues(t *testing.T) {
 	tests := []struct {
-		e testdata.EnumWithValues
+		e te.EnumWithValues
 		i int32
 	}{
-		{testdata.EnumWithValuesX, 123},
-		{testdata.EnumWithValuesY, 456},
-		{testdata.EnumWithValuesZ, 789},
+		{te.EnumWithValuesX, 123},
+		{te.EnumWithValuesY, 456},
+		{te.EnumWithValuesZ, 789},
 	}
 	for _, tt := range tests {
 		assert.Equal(t, int32(tt.e), tt.i, "Value for %v does not match", tt.e)
@@ -59,18 +59,18 @@ func TestValueOfEnumWithValues(t *testing.T) {
 
 func TestEnumDefaultWire(t *testing.T) {
 	tests := []struct {
-		e testdata.EnumDefault
+		e te.EnumDefault
 		v wire.Value
 	}{
-		{testdata.EnumDefaultFoo, wire.NewValueI32(0)},
-		{testdata.EnumDefaultBar, wire.NewValueI32(1)},
-		{testdata.EnumDefaultBaz, wire.NewValueI32(2)},
+		{te.EnumDefaultFoo, wire.NewValueI32(0)},
+		{te.EnumDefaultBar, wire.NewValueI32(1)},
+		{te.EnumDefaultBaz, wire.NewValueI32(2)},
 	}
 
 	for _, tt := range tests {
 		assert.Equal(t, tt.v, tt.e.ToWire())
 
-		var e testdata.EnumDefault
+		var e te.EnumDefault
 		if assert.NoError(t, e.FromWire(tt.v)) {
 			assert.Equal(t, tt.e, e)
 		}
@@ -79,12 +79,12 @@ func TestEnumDefaultWire(t *testing.T) {
 
 func TestValueOfEnumWithDuplicateValues(t *testing.T) {
 	tests := []struct {
-		e testdata.EnumWithDuplicateValues
+		e te.EnumWithDuplicateValues
 		i int32
 	}{
-		{testdata.EnumWithDuplicateValuesP, 0},
-		{testdata.EnumWithDuplicateValuesQ, -1},
-		{testdata.EnumWithDuplicateValuesR, 0},
+		{te.EnumWithDuplicateValuesP, 0},
+		{te.EnumWithDuplicateValuesQ, -1},
+		{te.EnumWithDuplicateValuesR, 0},
 	}
 	for _, tt := range tests {
 		assert.Equal(t, int32(tt.e), tt.i, "Value for %v does not match", tt.e)
@@ -93,18 +93,18 @@ func TestValueOfEnumWithDuplicateValues(t *testing.T) {
 
 func TestEnumWithDuplicateValuesWire(t *testing.T) {
 	tests := []struct {
-		e testdata.EnumWithDuplicateValues
+		e te.EnumWithDuplicateValues
 		v wire.Value
 	}{
-		{testdata.EnumWithDuplicateValuesP, wire.NewValueI32(0)},
-		{testdata.EnumWithDuplicateValuesQ, wire.NewValueI32(-1)},
-		{testdata.EnumWithDuplicateValuesR, wire.NewValueI32(0)},
+		{te.EnumWithDuplicateValuesP, wire.NewValueI32(0)},
+		{te.EnumWithDuplicateValuesQ, wire.NewValueI32(-1)},
+		{te.EnumWithDuplicateValuesR, wire.NewValueI32(0)},
 	}
 
 	for _, tt := range tests {
 		assert.Equal(t, tt.v, tt.e.ToWire())
 
-		var e testdata.EnumWithDuplicateValues
+		var e te.EnumWithDuplicateValues
 		if assert.NoError(t, e.FromWire(tt.v)) {
 			assert.Equal(t, tt.e, e)
 		}
@@ -112,8 +112,8 @@ func TestEnumWithDuplicateValuesWire(t *testing.T) {
 }
 
 func TestUnknownEnumValue(t *testing.T) {
-	var e testdata.EnumDefault
+	var e te.EnumDefault
 	if assert.NoError(t, e.FromWire(wire.NewValueI32(42))) {
-		assert.Equal(t, testdata.EnumDefault(42), e)
+		assert.Equal(t, te.EnumDefault(42), e)
 	}
 }

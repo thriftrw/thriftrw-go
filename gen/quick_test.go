@@ -27,26 +27,27 @@ import (
 	"testing/quick"
 	"time"
 
-	"github.com/thriftrw/thriftrw-go/gen/testdata"
+	tc "github.com/thriftrw/thriftrw-go/gen/testdata/containers"
+	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestQuickRoundTrip(t *testing.T) {
 	tests := []reflect.Type{
-		reflect.TypeOf(testdata.PrimitiveContainers{}),
-		reflect.TypeOf(testdata.PrimitiveContainersRequired{}),
-		reflect.TypeOf(testdata.EnumContainers{}),
-		reflect.TypeOf(testdata.PrimitiveRequiredStruct{}),
-		reflect.TypeOf(testdata.PrimitiveOptionalStruct{}),
-		reflect.TypeOf(testdata.Point{}),
-		reflect.TypeOf(testdata.Size{}),
+		reflect.TypeOf(tc.PrimitiveContainers{}),
+		reflect.TypeOf(tc.PrimitiveContainersRequired{}),
+		reflect.TypeOf(tc.EnumContainers{}),
+		reflect.TypeOf(ts.PrimitiveRequiredStruct{}),
+		reflect.TypeOf(ts.PrimitiveOptionalStruct{}),
+		reflect.TypeOf(ts.Point{}),
+		reflect.TypeOf(ts.Size{}),
 		// TODO Uncomment once we validate required fields
 		// reflect.TypeOf(testdata.Frame{}),
 		// reflect.TypeOf(testdata.Edge{}),
 		// reflect.TypeOf(testdata.Graph{}),
-		reflect.TypeOf(testdata.ContactInfo{}),
-		reflect.TypeOf(testdata.User{}),
+		reflect.TypeOf(ts.ContactInfo{}),
+		reflect.TypeOf(ts.User{}),
 	}
 
 	rand := rand.New(rand.NewSource(time.Now().UnixNano()))

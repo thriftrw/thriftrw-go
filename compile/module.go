@@ -24,8 +24,9 @@ package compile
 // about all known types, constants, services, and includes from the Thrift
 // file.
 //
-// ThriftPath is the path to the Thrift file from which this module was
-// compiled. All includes made by the Thrift file are relative to that path.
+// ThriftPath is the absolute path to the Thrift file from which this module
+// was compiled. All includes made by the Thrift file are relative to that
+// path.
 //
 // The module name is usually just the basename of the ThriftPath.
 type Module struct {
@@ -80,6 +81,36 @@ func (m *Module) LookupInclude(name string) (Scope, error) {
 	}
 
 	return nil, lookupError{Name: name}
+}
+
+// Walk the module tree starting at the given module. This module and all its
+// direct and transitive dependencies will be visited exactly once in an
+// unspecified order. The walk will stop on the first error returned by `f`.
+func (m *Module) Walk(f func(*Module) error) error {
+	visited := make(map[string]struct{})
+
+	toVisit := make([]*Module, 0, 100)
+	toVisit = append(toVisit, m)
+
+	for len(toVisit) > 0 {
+		m := toVisit[0]
+		toVisit = toVisit[1:]
+
+		if _, ok := visited[m.ThriftPath]; ok {
+			continue
+		}
+
+		visited[m.ThriftPath] = struct{}{}
+		for _, inc := range m.Includes {
+			toVisit = append(toVisit, inc.Module)
+		}
+
+		if err := f(m); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // IncludedModule represents an included module in the Thrift file.

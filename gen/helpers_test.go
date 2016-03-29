@@ -20,7 +20,16 @@
 
 package gen
 
-import "github.com/thriftrw/thriftrw-go/wire"
+import (
+	"crypto/sha1"
+	"fmt"
+	"io"
+	"os"
+	"path/filepath"
+	"sort"
+
+	"github.com/thriftrw/thriftrw-go/wire"
+)
 
 // This file contains helpers for the different test cases in this module.
 
@@ -37,3 +46,64 @@ func int32p(x int32) *int32      { return &x }
 func int64p(x int64) *int64      { return &x }
 func doublep(x float64) *float64 { return &x }
 func stringp(x string) *string   { return &x }
+
+func hash(name string) (string, error) {
+	f, err := os.Open(name)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	h := sha1.New()
+	if _, err := io.Copy(h, f); err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%x", h.Sum(nil)), nil
+}
+
+func dirhash(dir string) (string, error) {
+	fileHashes := make(map[string]string)
+
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		fileHash, err := hash(path)
+		if err != nil {
+			return fmt.Errorf("failed to hash %q: %v", path, err)
+		}
+
+		// We only care about the path relative to the directory being
+		// hashed.
+		path, err = filepath.Rel(dir, path)
+		if err != nil {
+			return err
+		}
+		fileHashes[path] = fileHash
+		return nil
+	})
+	if err != nil {
+		return "", err
+	}
+
+	fileNames := make([]string, 0, len(fileHashes))
+	for name := range fileHashes {
+		fileNames = append(fileNames, name)
+	}
+	sort.Strings(fileNames)
+
+	h := sha1.New()
+	for _, name := range fileNames {
+		if _, err := fmt.Fprintf(h, "%v\t%v\n", name, fileHashes[name]); err != nil {
+			return "", err
+		}
+	}
+
+	return fmt.Sprintf("%x", h.Sum(nil)), nil
+}

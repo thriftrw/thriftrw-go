@@ -23,7 +23,9 @@ package gen
 import (
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/gen/testdata"
+	tc "github.com/thriftrw/thriftrw-go/gen/testdata/containers"
+	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
+	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
 	"github.com/thriftrw/thriftrw-go/wire"
 
 	"github.com/stretchr/testify/assert"
@@ -32,13 +34,13 @@ import (
 func TestCollectionsOfPrimitives(t *testing.T) {
 	tests := []struct {
 		desc string
-		p    testdata.PrimitiveContainers
+		p    tc.PrimitiveContainers
 		v    wire.Value
 	}{
 		// Lists /////////////////////////////////////////////////////////////
 		{
 			"empty list",
-			testdata.PrimitiveContainers{ListOfInts: []int64{}},
+			tc.PrimitiveContainers{ListOfInts: []int64{}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 2,
 				Value: wire.NewValueList(wire.List{
@@ -50,7 +52,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		},
 		{
 			"list of ints",
-			testdata.PrimitiveContainers{ListOfInts: []int64{1, 2, 3}},
+			tc.PrimitiveContainers{ListOfInts: []int64{1, 2, 3}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 2,
 				Value: wire.NewValueList(wire.List{
@@ -66,7 +68,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		},
 		{
 			"list of binary",
-			testdata.PrimitiveContainers{
+			tc.PrimitiveContainers{
 				ListOfBinary: [][]byte{
 					[]byte("foo"), []byte("bar"), []byte("baz"),
 				},
@@ -87,7 +89,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		// Sets //////////////////////////////////////////////////////////////
 		{
 			"empty set",
-			testdata.PrimitiveContainers{SetOfStrings: map[string]struct{}{}},
+			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 3,
 				Value: wire.NewValueSet(wire.Set{
@@ -99,7 +101,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		},
 		{
 			"set of strings",
-			testdata.PrimitiveContainers{SetOfStrings: map[string]struct{}{
+			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{
 				"foo": struct{}{},
 				"bar": struct{}{},
 				"baz": struct{}{},
@@ -119,7 +121,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		},
 		{
 			"set of bytes",
-			testdata.PrimitiveContainers{SetOfBytes: map[int8]struct{}{
+			tc.PrimitiveContainers{SetOfBytes: map[int8]struct{}{
 				-1:  struct{}{},
 				1:   struct{}{},
 				125: struct{}{},
@@ -140,7 +142,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		// Maps //////////////////////////////////////////////////////////////
 		{
 			"empty map",
-			testdata.PrimitiveContainers{MapOfStringToBool: map[string]bool{}},
+			tc.PrimitiveContainers{MapOfStringToBool: map[string]bool{}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 6,
 				Value: wire.NewValueMap(wire.Map{
@@ -153,7 +155,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		},
 		{
 			"map of int to string",
-			testdata.PrimitiveContainers{MapOfIntToString: map[int32]string{
+			tc.PrimitiveContainers{MapOfIntToString: map[int32]string{
 				-1:    "foo",
 				1234:  "bar",
 				-9876: "baz",
@@ -174,7 +176,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		},
 		{
 			"map of string to bool",
-			testdata.PrimitiveContainers{MapOfStringToBool: map[string]bool{
+			tc.PrimitiveContainers{MapOfStringToBool: map[string]bool{
 				"foo": true,
 				"bar": false,
 				"baz": true,
@@ -203,7 +205,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 			tt.desc, tt.p, tt.v,
 		)
 
-		var p testdata.PrimitiveContainers
+		var p tc.PrimitiveContainers
 		if assert.NoError(t, p.FromWire(tt.v)) {
 			assert.Equal(t, tt.p, p)
 		}
@@ -212,14 +214,14 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 
 func TestEnumContainers(t *testing.T) {
 	tests := []struct {
-		s testdata.EnumContainers
+		s tc.EnumContainers
 		v wire.Value
 	}{
 		{
-			testdata.EnumContainers{
-				ListOfEnums: []testdata.EnumDefault{
-					testdata.EnumDefaultFoo,
-					testdata.EnumDefaultBar,
+			tc.EnumContainers{
+				ListOfEnums: []te.EnumDefault{
+					te.EnumDefaultFoo,
+					te.EnumDefaultBar,
 				},
 			},
 			singleFieldStruct(1, wire.NewValueList(wire.List{
@@ -232,10 +234,10 @@ func TestEnumContainers(t *testing.T) {
 			})),
 		},
 		{
-			testdata.EnumContainers{
-				SetOfEnums: map[testdata.EnumWithValues]struct{}{
-					testdata.EnumWithValuesX: struct{}{},
-					testdata.EnumWithValuesZ: struct{}{},
+			tc.EnumContainers{
+				SetOfEnums: map[te.EnumWithValues]struct{}{
+					te.EnumWithValuesX: struct{}{},
+					te.EnumWithValuesZ: struct{}{},
 				},
 			},
 			singleFieldStruct(2, wire.NewValueSet(wire.Set{
@@ -248,10 +250,10 @@ func TestEnumContainers(t *testing.T) {
 			})),
 		},
 		{
-			testdata.EnumContainers{
-				MapOfEnums: map[testdata.EnumWithDuplicateValues]int32{
-					testdata.EnumWithDuplicateValuesP: 123,
-					testdata.EnumWithDuplicateValuesQ: 456,
+			tc.EnumContainers{
+				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
+					te.EnumWithDuplicateValuesP: 123,
+					te.EnumWithDuplicateValuesQ: 456,
 				},
 			},
 			singleFieldStruct(3, wire.NewValueMap(wire.Map{
@@ -267,10 +269,10 @@ func TestEnumContainers(t *testing.T) {
 		{
 			// this is the same as the one above except we're using "R" intsead
 			// of "P" (they both have the same value)
-			testdata.EnumContainers{
-				MapOfEnums: map[testdata.EnumWithDuplicateValues]int32{
-					testdata.EnumWithDuplicateValuesR: 123,
-					testdata.EnumWithDuplicateValuesQ: 456,
+			tc.EnumContainers{
+				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
+					te.EnumWithDuplicateValuesR: 123,
+					te.EnumWithDuplicateValuesQ: 456,
 				},
 			},
 			singleFieldStruct(3, wire.NewValueMap(wire.Map{
@@ -292,7 +294,7 @@ func TestEnumContainers(t *testing.T) {
 			"%v.ToWire() != %v", tt.s, tt.v,
 		)
 
-		var s testdata.EnumContainers
+		var s tc.EnumContainers
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}
@@ -301,11 +303,11 @@ func TestEnumContainers(t *testing.T) {
 
 func TestListOfStructs(t *testing.T) {
 	tests := []struct {
-		s testdata.Graph
+		s ts.Graph
 		v wire.Value
 	}{
 		{
-			testdata.Graph{Edges: []*testdata.Edge{}},
+			ts.Graph{Edges: []*ts.Edge{}},
 			singleFieldStruct(1, wire.NewValueList(wire.List{
 				ValueType: wire.TStruct,
 				Size:      0,
@@ -313,18 +315,18 @@ func TestListOfStructs(t *testing.T) {
 			})),
 		},
 		{
-			testdata.Graph{Edges: []*testdata.Edge{
+			ts.Graph{Edges: []*ts.Edge{
 				{
-					Start: &testdata.Point{X: 1.0, Y: 2.0},
-					End:   &testdata.Point{X: 3.0, Y: 4.0},
+					Start: &ts.Point{X: 1.0, Y: 2.0},
+					End:   &ts.Point{X: 3.0, Y: 4.0},
 				},
 				{
-					Start: &testdata.Point{X: 5.0, Y: 6.0},
-					End:   &testdata.Point{X: 7.0, Y: 8.0},
+					Start: &ts.Point{X: 5.0, Y: 6.0},
+					End:   &ts.Point{X: 7.0, Y: 8.0},
 				},
 				{
-					Start: &testdata.Point{X: 9.0, Y: 10.0},
-					End:   &testdata.Point{X: 11.0, Y: 12.0},
+					Start: &ts.Point{X: 9.0, Y: 10.0},
+					End:   &ts.Point{X: 11.0, Y: 12.0},
 				},
 			}},
 			singleFieldStruct(1, wire.NewValueList(wire.List{
@@ -391,7 +393,7 @@ func TestListOfStructs(t *testing.T) {
 			"%v.ToWire() != %v", tt.s, tt.v,
 		)
 
-		var s testdata.Graph
+		var s ts.Graph
 		if assert.NoError(t, s.FromWire(tt.v)) {
 			assert.Equal(t, tt.s, s)
 		}

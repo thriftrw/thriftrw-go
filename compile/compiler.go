@@ -38,7 +38,7 @@ func Compile(path string) (*Module, error) {
 		return nil, err
 	}
 
-	err = c.link(m)
+	err = m.Walk(c.link)
 	return m, err
 }
 

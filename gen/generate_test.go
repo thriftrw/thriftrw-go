@@ -20,21 +20,45 @@
 
 package gen
 
-import "fmt"
+import (
+	"io/ioutil"
+	"os"
+	"testing"
 
-type generateError struct {
-	Name   string
-	Reason error
-}
+	"github.com/thriftrw/thriftrw-go/compile"
 
-func (e generateError) Error() string {
-	return fmt.Sprintf("failed to generate code for %q: %v", e.Name, e.Reason)
-}
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
 
-func wrapGenerateError(name string, reason error) error {
-	if reason == nil {
-		return nil
+func TestGenerateWithRelativePaths(t *testing.T) {
+	outputDir, err := ioutil.TempDir("", "thriftrw-generate-test")
+	require.NoError(t, err)
+	defer os.RemoveAll(outputDir)
+
+	thriftRoot, err := os.Getwd()
+	require.NoError(t, err)
+
+	module, err := compile.Compile("testdata/thrift/structs.thrift")
+	require.NoError(t, err)
+
+	opts := []*Options{
+		&Options{
+			OutputDir:     outputDir,
+			PackagePrefix: "github.com/thriftrw/thriftrw-go/gen",
+			ThriftRoot:    "testdata",
+		},
+		&Options{
+			OutputDir:     "testdata",
+			PackagePrefix: "github.com/thriftrw/thriftrw-go/gen",
+			ThriftRoot:    thriftRoot,
+		},
 	}
 
-	return generateError{Name: name, Reason: reason}
+	for _, opt := range opts {
+		err := Generate(module, opt)
+		if assert.Error(t, err, "expected code generation with %v to fail", opt) {
+			assert.Contains(t, err.Error(), "must be an absolute path")
+		}
+	}
 }

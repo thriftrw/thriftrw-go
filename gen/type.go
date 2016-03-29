@@ -92,48 +92,54 @@ func isStructType(spec compile.TypeSpec) bool {
 
 // typeReference returns a string representation of a reference to the given
 // type.
-func typeReference(spec compile.TypeSpec) string {
-	name := typeName(spec)
+func typeReference(g Generator, spec compile.TypeSpec) (string, error) {
+	name, err := typeName(g, spec)
+	if err != nil {
+		return "", err
+	}
 	if isStructType(spec) {
 		// Prepend "*" to the result if the field is not required and the type
 		// isn't a reference type.
 		name = "*" + name
 	}
-	return name
+	return name, nil
 }
 
 // typeReferencePtr returns a strung representing a reference to a pointer of
 // the given type. The pointer prefix is not added for types that are already
 // reference types.
-func typeReferencePtr(spec compile.TypeSpec) string {
-	ref := typeName(spec)
+func typeReferencePtr(g Generator, spec compile.TypeSpec) (string, error) {
+	ref, err := typeName(g, spec)
+	if err != nil {
+		return "", err
+	}
 	if !isReferenceType(spec) {
 		// need * prefix for everything but map, string, and list.
-		return "*" + ref
+		return "*" + ref, nil
 	}
-	return ref
+	return ref, nil
 }
 
 // typeName returns the name of the given type, whether it's a custom type or
 // native.
-func typeName(spec compile.TypeSpec) string {
+func typeName(g Generator, spec compile.TypeSpec) (string, error) {
 	switch spec {
 	case compile.BoolSpec:
-		return "bool"
+		return "bool", nil
 	case compile.I8Spec:
-		return "int8"
+		return "int8", nil
 	case compile.I16Spec:
-		return "int16"
+		return "int16", nil
 	case compile.I32Spec:
-		return "int32"
+		return "int32", nil
 	case compile.I64Spec:
-		return "int64"
+		return "int64", nil
 	case compile.DoubleSpec:
-		return "float64"
+		return "float64", nil
 	case compile.StringSpec:
-		return "string"
+		return "string", nil
 	case compile.BinarySpec:
-		return "[]byte"
+		return "[]byte", nil
 	default:
 		// Not a primitive type. Try checking if it's a container.
 	}
@@ -141,17 +147,31 @@ func typeName(spec compile.TypeSpec) string {
 	switch s := spec.(type) {
 	case *compile.MapSpec:
 		// TODO unhashable types
-		return fmt.Sprintf(
-			"map[%s]%s",
-			typeReference(s.KeySpec), typeReference(s.ValueSpec))
+		k, err := typeReference(g, s.KeySpec)
+		if err != nil {
+			return "", err
+		}
+		v, err := typeReference(g, s.ValueSpec)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("map[%s]%s", k, v), nil
 	case *compile.ListSpec:
-		return "[]" + typeReference(s.ValueSpec)
+		v, err := typeReference(g, s.ValueSpec)
+		if err != nil {
+			return "", err
+		}
+		return "[]" + v, nil
 	case *compile.SetSpec:
 		// TODO unhashable types
-		return fmt.Sprintf("map[%s]struct{}", typeReference(s.ValueSpec))
+		v, err := typeReference(g, s.ValueSpec)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("map[%s]struct{}", v), nil
 	case *compile.EnumSpec, *compile.StructSpec, *compile.TypedefSpec:
-		return goCase(spec.ThriftName())
+		return g.LookupTypeName(spec)
 	default:
-		panic(fmt.Sprintf("Unknown type %v", spec))
+		panic(fmt.Sprintf("Unknown type (%T) %v", spec, spec))
 	}
 }
