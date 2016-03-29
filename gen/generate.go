@@ -71,41 +71,87 @@ func Generate(m *compile.Module, o *Options) error {
 			o.OutputDir)
 	}
 
+	importer := thriftPackageImporter{
+		ImportPrefix: o.PackagePrefix,
+		ThriftRoot:   o.ThriftRoot,
+	}
+
 	if o.NoRecurse {
-		return generateModule(m, o)
+		return generateModule(m, importer, o.OutputDir)
 	}
 
 	return m.Walk(func(m *compile.Module) error {
-		if err := generateModule(m, o); err != nil {
+		if err := generateModule(m, importer, o.OutputDir); err != nil {
 			return generateError{Name: m.ThriftPath, Reason: err}
 		}
 		return nil
 	})
 }
 
+type thriftPackageImporter struct {
+	ImportPrefix string
+	ThriftRoot   string
+}
+
+// RelativePackage returns the import path for the top-level package of the
+// given Thrift file relative to the ImportPrefix.
+func (i thriftPackageImporter) RelativePackage(file string) (string, error) {
+	return filepath.Rel(i.ThriftRoot, strings.TrimSuffix(file, ".thrift"))
+}
+
+// Package returns the import path for the top-level package of the given Thrift
+// file.
+func (i thriftPackageImporter) Package(file string) (string, error) {
+	pkg, err := i.RelativePackage(file)
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(i.ImportPrefix, pkg), nil
+}
+
+// ServicePackage returns the import path for the package for the Thrift service
+// with the given name defined in the given file.
+func (i thriftPackageImporter) ServicePackage(file, name string) (string, error) {
+	topPackage, err := i.Package(file)
+	if err != nil {
+		return "", err
+	}
+
+	return filepath.Join(topPackage, strings.ToLower(name)), nil
+}
+
 // generates code for only the given module, assuming that code for included
 // modules has already been generated.
-func generateModule(m *compile.Module, o *Options) error {
-	packagePath, err := filepath.Rel(o.ThriftRoot, m.ThriftPath)
+func generateModule(m *compile.Module, i thriftPackageImporter, outDir string) error {
+	// packageRelPath is the path relative to outputDir into which we'll be
+	// writing the package for this Thrift file. For $thriftRoot/foo/bar.thrift,
+	// packageRelPath is foo/bar, and packageDir is $outputDir/foo/bar. All
+	// files for bar.thrift will be written to the $outputDir/foo/bar/ tree. The
+	// package will be importable via $importPrefix/foo/bar.
+	packageRelPath, err := i.RelativePackage(m.ThriftPath)
 	if err != nil {
 		return err
 	}
 
-	// packagePath is the path relative to outputDir into which we'll be
-	// writing the package for this Thrift file. For
-	// $thriftRoot/foo/bar.thrift, packagePath is foo/bar, and packageDir is
-	// $outputDir/foo/bar. All files for bar.thrift will be written to
-	// $outputDir/foo/bar/. The package will be importable via
-	// $packagePrefix/foo/bar.
-	packagePath = strings.TrimSuffix(packagePath, ".thrift")
-	packageDir := filepath.Join(o.OutputDir, packagePath)
+	// TODO(abg): Prefer top-level package name from `namespace go` directive.
+	packageName := filepath.Base(packageRelPath)
 
-	// files contains a collection of files relative to packageDir and their
-	// contents.
+	// importPath is the full import path for the top-level package generated
+	// for this Thrift file.
+	importPath, err := i.Package(m.ThriftPath)
+	if err != nil {
+		return err
+	}
+
+	// packageOutDir is the directory whithin which all files and folders for
+	// this Thrift file will be written.
+	packageOutDir := filepath.Join(outDir, packageRelPath)
+
+	// Mapping of file names relative to $packageOutDir and their contents.
 	files := make(map[string]*bytes.Buffer)
 
 	if len(m.Constants) > 0 {
-		g := NewGenerator(o.PackagePrefix, o.ThriftRoot, m.ThriftPath)
+		g := NewGenerator(i, importPath, packageName)
 
 		for _, constantName := range sortStringKeys(m.Constants) {
 			if err := Constant(g, m.Constants[constantName]); err != nil {
@@ -124,7 +170,7 @@ func generateModule(m *compile.Module, o *Options) error {
 	}
 
 	if len(m.Types) > 0 {
-		g := NewGenerator(o.PackagePrefix, o.ThriftRoot, m.ThriftPath)
+		g := NewGenerator(i, importPath, packageName)
 
 		for _, typeName := range sortStringKeys(m.Types) {
 			if err := TypeDefinition(g, m.Types[typeName]); err != nil {
@@ -138,13 +184,14 @@ func generateModule(m *compile.Module, o *Options) error {
 				"could not generate types for %q: %v", m.ThriftPath, err)
 		}
 
+		// TODO(abg): Verify no file collisions
 		files["types.go"] = buff
 	}
 
 	// TODO(abg): Services
 
 	for relPath, contents := range files {
-		fullPath := filepath.Join(packageDir, relPath)
+		fullPath := filepath.Join(packageOutDir, relPath)
 		directory := filepath.Dir(fullPath)
 
 		if err := os.MkdirAll(directory, 0755); err != nil {
