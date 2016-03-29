@@ -117,3 +117,32 @@ func TestUnknownEnumValue(t *testing.T) {
 		assert.Equal(t, te.EnumDefault(42), e)
 	}
 }
+
+func TestOptionalEnum(t *testing.T) {
+	foo := te.EnumDefaultFoo
+
+	tests := []struct {
+		s te.StructWithOptionalEnum
+		v wire.Value
+	}{
+		{
+			te.StructWithOptionalEnum{E: &foo},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueI32(0)},
+			}}),
+		},
+		{
+			te.StructWithOptionalEnum{},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.v, tt.s.ToWire())
+
+		var s te.StructWithOptionalEnum
+		if assert.NoError(t, s.FromWire(tt.v)) {
+			assert.Equal(t, tt.s, s)
+		}
+	}
+}

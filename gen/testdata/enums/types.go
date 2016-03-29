@@ -2,7 +2,11 @@
 
 package enums
 
-import "github.com/thriftrw/thriftrw-go/wire"
+import (
+	"fmt"
+	"github.com/thriftrw/thriftrw-go/wire"
+	"strings"
+)
 
 type EmptyEnum int32
 
@@ -84,4 +88,47 @@ func (v EnumWithValues) ToWire() wire.Value {
 func (v *EnumWithValues) FromWire(w wire.Value) error {
 	*v = (EnumWithValues)(w.GetI32())
 	return nil
+}
+
+type StructWithOptionalEnum struct{ E *EnumDefault }
+
+func (v *StructWithOptionalEnum) ToWire() wire.Value {
+	var fields [1]wire.Field
+	i := 0
+	if v.E != nil {
+		fields[i] = wire.Field{ID: 1, Value: v.E.ToWire()}
+		i++
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+}
+func _EnumDefault_Read(w wire.Value) (EnumDefault, error) {
+	var v EnumDefault
+	err := v.FromWire(w)
+	return v, err
+}
+func (v *StructWithOptionalEnum) FromWire(w wire.Value) error {
+	var err error
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TI32 {
+				var x EnumDefault
+				x, err = _EnumDefault_Read(field.Value)
+				v.E = &x
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+func (v *StructWithOptionalEnum) String() string {
+	var fields [1]string
+	i := 0
+	if v.E != nil {
+		fields[i] = fmt.Sprintf("E: %v", *(v.E))
+		i++
+	}
+	return fmt.Sprintf("StructWithOptionalEnum{%v}", strings.Join(fields[:i], ", "))
 }
