@@ -60,7 +60,7 @@ type Generator interface {
 	// module.
 	Import(path string) string
 
-	// Write the generated code to the given Writer.
+	// Write the generated code to the given Writer and end this file.
 	Write(w io.Writer, fs *token.FileSet) error
 }
 
@@ -106,14 +106,13 @@ type generator struct {
 
 // NewGenerator sets up a new generator for Go code.
 func NewGenerator(timport thriftPackageImporter, importPath string, packageName string) Generator {
-	// pkgName := strings.TrimSuffix(filepath.Base(thriftFile), ".thrift")
 	// TODO(abg): Determine package name from `namespace go` directive.
 	namespace := NewNamespace()
 	return &generator{
 		PackageName:    packageName,
 		ImportPath:     importPath,
 		Namespace:      namespace,
-		importer:       newImporter(namespace),
+		importer:       newImporter(namespace.Child()),
 		thriftImporter: timport,
 	}
 }
@@ -330,8 +329,6 @@ func (g *generator) DeclareFromTemplate(s string, data interface{}, opts ...Temp
 	return nil
 }
 
-// TODO multiple modules
-
 func (g *generator) Write(w io.Writer, fs *token.FileSet) error {
 	// TODO constants first, types next, and functions after that
 
@@ -372,6 +369,12 @@ func (g *generator) Write(w io.Writer, fs *token.FileSet) error {
 		}
 	}
 
+	g.decls = nil
+	g.importer = newImporter(g.Namespace.Child())
+
+	// init can appear multiple times in the same package across different
+	// files
+	g.Namespace.Forget("init")
 	return nil
 }
 
