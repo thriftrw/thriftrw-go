@@ -88,7 +88,9 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 		<$v := newVar "v">
 		<$w := newVar "w">
 		func (<$v> *<.Name>) FromWire(<$w> <$wire>.Value) error {
-			var err error
+			<if len .Fields>
+				var err error
+			<end>
 			<$f := newVar "field">
 			for _, <$f> := range <$w>.GetStruct().Fields {
 				switch <$f>.ID {

@@ -1,5 +1,7 @@
 include "./typedefs.thrift"
 
+union EmptyUnion {}
+
 union Document {
     1: typedefs.PDF pdf
     2: string plainText

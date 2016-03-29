@@ -647,3 +647,33 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 		}
 	}
 }
+
+func TestEmptyStruct(t *testing.T) {
+	var x, y ts.EmptyStruct
+	v := wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}})
+
+	assert.Equal(t, x.ToWire(), v)
+	if assert.NoError(t, y.FromWire(v)) {
+		assert.Equal(t, x, y)
+	}
+}
+
+func TestEmptyUnion(t *testing.T) {
+	var x, y tu.EmptyUnion
+	v := wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}})
+
+	assert.Equal(t, x.ToWire(), v)
+	if assert.NoError(t, y.FromWire(v)) {
+		assert.Equal(t, x, y)
+	}
+}
+
+func TestEmptyException(t *testing.T) {
+	var x, y tx.EmptyException
+	v := wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}})
+
+	assert.Equal(t, x.ToWire(), v)
+	if assert.NoError(t, y.FromWire(v)) {
+		assert.Equal(t, x, y)
+	}
+}
