@@ -38,7 +38,15 @@ func Compile(path string) (*Module, error) {
 		return nil, err
 	}
 
-	err = m.Walk(c.link)
+	err = m.Walk(func(m *Module) error {
+		if err := c.link(m); err != nil {
+			return compileError{
+				Target: m.ThriftPath,
+				Reason: err,
+			}
+		}
+		return nil
+	})
 	return m, err
 }
 
@@ -80,6 +88,17 @@ func (c compiler) link(m *Module) error {
 
 	for name, service := range m.Services {
 		if err := service.Link(m); err != nil {
+			return compileError{Target: name, Reason: err}
+		}
+	}
+
+	// Find cycles in typedefs
+	for name, t := range types {
+		if _, ok := t.(*TypedefSpec); !ok {
+			continue
+		}
+
+		if err := findTypeCycles(t); err != nil {
 			return compileError{Target: name, Reason: err}
 		}
 	}

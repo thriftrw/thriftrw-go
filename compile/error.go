@@ -22,6 +22,7 @@ package compile
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/thriftrw/thriftrw-go/ast"
 )
@@ -230,4 +231,48 @@ func (e notAnExceptionError) Error() string {
 	return fmt.Sprintf(
 		"field %q with type %q is not an exception", e.FieldName, e.TypeName,
 	)
+}
+
+type typeReferenceCycleError struct {
+	Nodes []TypeSpec
+}
+
+func (e typeReferenceCycleError) Error() string {
+	// Outputs:
+	//
+	// 	found a type reference cycle:
+	// 	    foo (a.thrift)
+	// 	 -> bar (b.thrift)
+	// 	 -> foo (a.thrift)
+	//
+	// File names are omitted if all types are from the same file.
+
+	files := make(map[string]struct{})
+	for _, t := range e.Nodes {
+		file := t.ThriftFile()
+		if file != "" {
+			files[t.ThriftFile()] = struct{}{}
+		}
+	}
+	includeFileName := len(files) > 1
+
+	lines := make([]string, 0, len(e.Nodes)+1)
+	lines = append(lines, "found a type reference cycle:")
+	for i, t := range e.Nodes {
+		line := " "
+		if i == 0 {
+			line += "   "
+		} else {
+			line += "-> "
+		}
+
+		file := t.ThriftFile()
+		if file != "" && includeFileName {
+			line += fmt.Sprintf("%v (%v)", t.ThriftName(), file)
+		} else {
+			line += t.ThriftName()
+		}
+		lines = append(lines, line)
+	}
+	return strings.Join(lines, "\n")
 }

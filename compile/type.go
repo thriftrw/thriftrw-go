@@ -43,6 +43,14 @@ type TypeSpec interface {
 	// defined. This may be an empty string if this type is a native Thrift
 	// type.
 	ThriftFile() string
+
+	// Applies the given function to each TypeSpec referenced by this
+	// TypeSpec. This function MUST NOT be automatically called recursively on
+	// the TypeSpecs referenced by the child TypeSpecs. The decision to make
+	// that call is up to the caller of this function.
+	//
+	// Returns the first error returned by the function call or nil.
+	ForEachTypeReference(func(TypeSpec) error) error
 }
 
 // nativeThriftType is the common parent for all TypeSpecs that are native
@@ -109,6 +117,15 @@ func (r typeSpecReference) TypeCode() wire.Type {
 func (r typeSpecReference) ThriftFile() string {
 	panic(fmt.Sprintf(
 		"ThriftFile() requested for unresolved TypeSpec reference %v."+
+			"Make sure you called Link().", r,
+	))
+}
+
+// ForEachTypeReference on an unresolved typeSpecReference will cause a system
+// panic.
+func (r typeSpecReference) ForEachTypeReference(func(TypeSpec) error) error {
+	panic(fmt.Sprintf(
+		"ForEachTypeReference() called on unresolved TypeSpec reference %v."+
 			"Make sure you called Link().", r,
 	))
 }

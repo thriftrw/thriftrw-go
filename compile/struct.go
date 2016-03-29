@@ -91,3 +91,8 @@ func (s *StructSpec) ThriftFile() string {
 func (s *StructSpec) IsExceptionType() bool {
 	return s.Type == ast.ExceptionType
 }
+
+// ForEachTypeReference for StructSpec
+func (s *StructSpec) ForEachTypeReference(f func(TypeSpec) error) error {
+	return s.Fields.ForEachTypeReference(f)
+}

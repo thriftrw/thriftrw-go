@@ -68,3 +68,8 @@ func (t *TypedefSpec) ThriftName() string {
 func (t *TypedefSpec) ThriftFile() string {
 	return t.File
 }
+
+// ForEachTypeReference for TypedefSpec
+func (t *TypedefSpec) ForEachTypeReference(f func(TypeSpec) error) error {
+	return f(t.Target)
+}

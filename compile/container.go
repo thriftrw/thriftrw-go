@@ -75,6 +75,17 @@ func (m *MapSpec) TypeCode() wire.Type {
 	return wire.TMap
 }
 
+// ForEachTypeReference for MapSpec
+func (m *MapSpec) ForEachTypeReference(f func(TypeSpec) error) error {
+	if err := f(m.KeySpec); err != nil {
+		return err
+	}
+	if err := f(m.ValueSpec); err != nil {
+		return err
+	}
+	return nil
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // ListSpec represents lists of values of the same type.
@@ -111,6 +122,11 @@ func (l *ListSpec) ThriftName() string {
 	return fmt.Sprintf("list<%s>", l.ValueSpec.ThriftName())
 }
 
+// ForEachTypeReference for ListSpec
+func (l *ListSpec) ForEachTypeReference(f func(TypeSpec) error) error {
+	return f(l.ValueSpec)
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // SetSpec represents sets of values of the same type.
@@ -145,4 +161,9 @@ func (s *SetSpec) TypeCode() wire.Type {
 // ThriftName for SetSpec.
 func (s *SetSpec) ThriftName() string {
 	return fmt.Sprintf("set<%s>", s.ValueSpec.ThriftName())
+}
+
+// ForEachTypeReference for SetSpec
+func (s *SetSpec) ForEachTypeReference(f func(TypeSpec) error) error {
+	return f(s.ValueSpec)
 }
