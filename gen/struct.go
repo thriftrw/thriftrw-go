@@ -63,19 +63,7 @@ func structure(g Generator, spec *compile.StructSpec) error {
 		Fields: spec.Fields,
 	}
 
-	if err := fg.DefineStruct(g); err != nil {
-		return wrapGenerateError(spec.ThriftName(), err)
-	}
-
-	if err := fg.ToWire(g); err != nil {
-		return wrapGenerateError(spec.ThriftName(), err)
-	}
-
-	if err := fg.FromWire(g); err != nil {
-		return wrapGenerateError(spec.ThriftName(), err)
-	}
-
-	if err := fg.String(g); err != nil {
+	if err := fg.Generate(g); err != nil {
 		return wrapGenerateError(spec.ThriftName(), err)
 	}
 

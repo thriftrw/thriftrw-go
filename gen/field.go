@@ -28,6 +28,26 @@ type fieldGroupGenerator struct {
 	Fields compile.FieldGroup
 }
 
+func (f fieldGroupGenerator) Generate(g Generator) error {
+	if err := f.DefineStruct(g); err != nil {
+		return err
+	}
+
+	if err := f.ToWire(g); err != nil {
+		return err
+	}
+
+	if err := f.FromWire(g); err != nil {
+		return err
+	}
+
+	if err := f.String(g); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 	return g.DeclareFromTemplate(
 		`type <.Name> struct {
