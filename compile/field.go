@@ -187,3 +187,14 @@ func (fg FieldGroup) Link(scope Scope) error {
 
 	return nil
 }
+
+// ForEachTypeReference applies the given function on each TypeSpec in the
+// FieldGroup.
+func (fg FieldGroup) ForEachTypeReference(f func(TypeSpec) error) error {
+	for _, field := range fg {
+		if err := f(field.Type); err != nil {
+			return err
+		}
+	}
+	return nil
+}

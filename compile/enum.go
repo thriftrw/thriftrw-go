@@ -94,6 +94,11 @@ func (e *EnumSpec) ThriftFile() string {
 	return e.File
 }
 
+// ForEachTypeReference for EnumSpec
+func (e *EnumSpec) ForEachTypeReference(func(TypeSpec) error) error {
+	return nil
+}
+
 // TypeCode for EnumSpec.
 //
 // Enums are represented as i32 over the wire.

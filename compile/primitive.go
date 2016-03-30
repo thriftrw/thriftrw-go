@@ -57,6 +57,11 @@ func (t primitiveTypeSpec) ThriftName() string {
 	return t.Name
 }
 
+// ForEachTypeReference of the primitive type.
+func (t primitiveTypeSpec) ForEachTypeReference(func(TypeSpec) error) error {
+	return nil
+}
+
 // Link for primitive types is a no-op because primitive types don't make any
 // references.
 func (t primitiveTypeSpec) Link(Scope) (TypeSpec, error) {
