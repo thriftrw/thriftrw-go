@@ -28,8 +28,6 @@ import (
 	"go/parser"
 	"go/token"
 	"io"
-	"path/filepath"
-	"strings"
 	"text/template"
 
 	"github.com/thriftrw/thriftrw-go/compile"
@@ -79,30 +77,27 @@ type generator struct {
 	importer
 	Namespace
 
-	ThriftFile  string
 	PackageName string
+	ImportPath  string
 
-	importPrefix string
-	thriftRoot   string
-
-	w     WireGenerator
-	decls []ast.Decl
+	w              WireGenerator
+	decls          []ast.Decl
+	thriftImporter thriftPackageImporter
 
 	// TODO use something to group related decls together
 }
 
 // NewGenerator sets up a new generator for Go code.
-func NewGenerator(importPrefix, thriftRoot, thriftFile string) Generator {
-	pkgName := strings.TrimSuffix(filepath.Base(thriftFile), ".thrift")
+func NewGenerator(timport thriftPackageImporter, importPath string, packageName string) Generator {
+	// pkgName := strings.TrimSuffix(filepath.Base(thriftFile), ".thrift")
 	// TODO(abg): Determine package name from `namespace go` directive.
 	namespace := NewNamespace()
 	return &generator{
-		PackageName:  pkgName,
-		ThriftFile:   thriftFile,
-		Namespace:    namespace,
-		importPrefix: importPrefix,
-		thriftRoot:   thriftRoot,
-		importer:     newImporter(namespace),
+		PackageName:    packageName,
+		ImportPath:     importPath,
+		Namespace:      namespace,
+		importer:       newImporter(namespace),
+		thriftImporter: timport,
 	}
 }
 
@@ -112,19 +107,17 @@ func (g *generator) LookupTypeName(t compile.TypeSpec) (string, error) {
 			"LookupTypeName called with native type (%T) %v", t, t)
 	}
 
-	if t.ThriftFile() == g.ThriftFile {
-		return goCase(t.ThriftName()), nil
-	}
-
-	pkg, err := filepath.Rel(g.thriftRoot, t.ThriftFile())
+	importPath, err := g.thriftImporter.Package(t.ThriftFile())
 	if err != nil {
 		return "", err
 	}
-	pkg = g.Import(filepath.Join(g.importPrefix, strings.TrimSuffix(pkg, ".thrift")))
-	// TODO(abg): Refactor. Generator shouldn't know any of this crap.
 
-	n := pkg + "." + goCase(t.ThriftName())
-	return n, nil
+	name := goCase(t.ThriftName())
+	if importPath != g.ImportPath {
+		pkg := g.Import(importPath)
+		name = pkg + "." + name
+	}
+	return name, nil
 }
 
 // TextTemplate renders the given template with the given template context.

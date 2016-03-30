@@ -62,3 +62,55 @@ func TestGenerateWithRelativePaths(t *testing.T) {
 		}
 	}
 }
+
+func TestThriftPackageImporter(t *testing.T) {
+	importer := thriftPackageImporter{
+		ImportPrefix: "github.com/myteam/myservice",
+		ThriftRoot:   "/src/thrift",
+	}
+
+	tests := []struct {
+		File, ServiceName string // Inputs
+
+		// If non-empty, these are the expected outputs for RelativePackage,
+		// Package, and ServicePackage.
+		Relative, Package, ServicePackage string
+	}{
+		{
+			File:           "/src/thrift/foo.thrift",
+			Relative:       "foo",
+			Package:        "github.com/myteam/myservice/foo",
+			ServiceName:    "MyService",
+			ServicePackage: "github.com/myteam/myservice/foo/myservice",
+		},
+		{
+			File:     "/src/thrift/shared/common.thrift",
+			Relative: "shared/common",
+			Package:  "github.com/myteam/myservice/shared/common",
+		},
+	}
+
+	for _, tt := range tests {
+		if tt.Relative != "" {
+			got, err := importer.RelativePackage(tt.File)
+			if assert.NoError(t, err, "RelativePackage(%q)", tt.File) {
+				assert.Equal(t, tt.Relative, got, "RelativePackage(%q)", tt.File)
+			}
+		}
+
+		if tt.Package != "" {
+			got, err := importer.Package(tt.File)
+			if assert.NoError(t, err, "Package(%q)", tt.File) {
+				assert.Equal(t, tt.Package, got, "Package(%q)", tt.File)
+			}
+		}
+
+		if tt.ServicePackage != "" {
+			got, err := importer.ServicePackage(tt.File, tt.ServiceName)
+			if assert.NoError(t, err, "ServicePackage(%q, %q)", tt.File, tt.ServiceName) {
+				assert.Equal(t, tt.ServicePackage, got,
+					"ServicePackage(%q, %q)", tt.File, tt.ServiceName)
+			}
+		}
+	}
+}
