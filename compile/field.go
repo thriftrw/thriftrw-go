@@ -133,14 +133,14 @@ func (f *FieldSpec) Link(scope Scope) (err error) {
 }
 
 // FieldGroup represents a collection of fields for struct-like types.
-type FieldGroup map[string]*FieldSpec
+type FieldGroup []*FieldSpec
 
 // compileFields compiles a collection of AST fields into a FieldGroup.
 func compileFields(src []*ast.Field, options fieldOptions) (FieldGroup, error) {
 	fieldsNS := newNamespace(caseInsensitive)
 	usedIDs := make(map[int16]string)
 
-	fields := make(map[string]*FieldSpec)
+	fields := make([]*FieldSpec, 0, len(src))
 	for _, astField := range src {
 		if err := fieldsNS.claim(astField.Name, astField.Line); err != nil {
 			return nil, compileError{
@@ -170,7 +170,7 @@ func compileFields(src []*ast.Field, options fieldOptions) (FieldGroup, error) {
 			}
 		}
 
-		fields[field.Name] = field
+		fields = append(fields, field)
 		usedIDs[field.ID] = field.Name
 	}
 

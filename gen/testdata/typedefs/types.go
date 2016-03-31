@@ -9,47 +9,47 @@ import (
 )
 
 type Event struct {
-	Time *Timestamp
 	UUID *UUID
+	Time *Timestamp
 }
 
 func (v *Event) ToWire() wire.Value {
 	var fields [2]wire.Field
 	i := 0
+	fields[i] = wire.Field{ID: 1, Value: v.UUID.ToWire()}
+	i++
 	if v.Time != nil {
 		fields[i] = wire.Field{ID: 2, Value: v.Time.ToWire()}
 		i++
 	}
-	fields[i] = wire.Field{ID: 1, Value: v.UUID.ToWire()}
-	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
-}
-func _Timestamp_Read(w wire.Value) (Timestamp, error) {
-	var x Timestamp
-	err := x.FromWire(w)
-	return x, err
 }
 func _UUID_Read(w wire.Value) (*UUID, error) {
 	var x UUID
 	err := x.FromWire(w)
 	return &x, err
 }
+func _Timestamp_Read(w wire.Value) (Timestamp, error) {
+	var x Timestamp
+	err := x.FromWire(w)
+	return x, err
+}
 func (v *Event) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TStruct {
+				v.UUID, err = _UUID_Read(field.Value)
+				if err != nil {
+					return err
+				}
+			}
 		case 2:
 			if field.Value.Type() == wire.TI64 {
 				var x Timestamp
 				x, err = _Timestamp_Read(field.Value)
 				v.Time = &x
-				if err != nil {
-					return err
-				}
-			}
-		case 1:
-			if field.Value.Type() == wire.TStruct {
-				v.UUID, err = _UUID_Read(field.Value)
 				if err != nil {
 					return err
 				}
@@ -61,12 +61,12 @@ func (v *Event) FromWire(w wire.Value) error {
 func (v *Event) String() string {
 	var fields [2]string
 	i := 0
+	fields[i] = fmt.Sprintf("UUID: %v", v.UUID)
+	i++
 	if v.Time != nil {
 		fields[i] = fmt.Sprintf("Time: %v", *(v.Time))
 		i++
 	}
-	fields[i] = fmt.Sprintf("UUID: %v", v.UUID)
-	i++
 	return fmt.Sprintf("Event{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -154,31 +154,31 @@ func (v *Timestamp) FromWire(w wire.Value) error {
 }
 
 type Transition struct {
-	Events EventGroup
 	From   State
 	To     State
+	Events EventGroup
 }
 
 func (v *Transition) ToWire() wire.Value {
 	var fields [3]wire.Field
 	i := 0
-	if v.Events != nil {
-		fields[i] = wire.Field{ID: 3, Value: v.Events.ToWire()}
-		i++
-	}
 	fields[i] = wire.Field{ID: 1, Value: v.From.ToWire()}
 	i++
 	fields[i] = wire.Field{ID: 2, Value: v.To.ToWire()}
 	i++
+	if v.Events != nil {
+		fields[i] = wire.Field{ID: 3, Value: v.Events.ToWire()}
+		i++
+	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
-}
-func _EventGroup_Read(w wire.Value) (EventGroup, error) {
-	var x EventGroup
-	err := x.FromWire(w)
-	return x, err
 }
 func _State_Read(w wire.Value) (State, error) {
 	var x State
+	err := x.FromWire(w)
+	return x, err
+}
+func _EventGroup_Read(w wire.Value) (EventGroup, error) {
+	var x EventGroup
 	err := x.FromWire(w)
 	return x, err
 }
@@ -186,13 +186,6 @@ func (v *Transition) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
-		case 3:
-			if field.Value.Type() == wire.TList {
-				v.Events, err = _EventGroup_Read(field.Value)
-				if err != nil {
-					return err
-				}
-			}
 		case 1:
 			if field.Value.Type() == wire.TBinary {
 				v.From, err = _State_Read(field.Value)
@@ -207,6 +200,13 @@ func (v *Transition) FromWire(w wire.Value) error {
 					return err
 				}
 			}
+		case 3:
+			if field.Value.Type() == wire.TList {
+				v.Events, err = _EventGroup_Read(field.Value)
+				if err != nil {
+					return err
+				}
+			}
 		}
 	}
 	return nil
@@ -214,14 +214,14 @@ func (v *Transition) FromWire(w wire.Value) error {
 func (v *Transition) String() string {
 	var fields [3]string
 	i := 0
-	if v.Events != nil {
-		fields[i] = fmt.Sprintf("Events: %v", v.Events)
-		i++
-	}
 	fields[i] = fmt.Sprintf("From: %v", v.From)
 	i++
 	fields[i] = fmt.Sprintf("To: %v", v.To)
 	i++
+	if v.Events != nil {
+		fields[i] = fmt.Sprintf("Events: %v", v.Events)
+		i++
+	}
 	return fmt.Sprintf("Transition{%v}", strings.Join(fields[:i], ", "))
 }
 

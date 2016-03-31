@@ -121,7 +121,7 @@ func TestFindTypeCycles(t *testing.T) {
 					File: "test.thrift",
 					Type: ast.StructType,
 					Fields: FieldGroup{
-						"foo": {
+						{
 							ID:       1,
 							Name:     "foo",
 							Type:     t,

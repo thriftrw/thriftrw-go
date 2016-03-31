@@ -266,11 +266,11 @@ func (rs *ResultSpec) Link(scope Scope) (err error) {
 	}
 
 	// verify that everything listed under throws is an exception.
-	for name, exception := range rs.Exceptions {
+	for _, exception := range rs.Exceptions {
 		spec, ok := exception.Type.(*StructSpec)
 		if !ok || spec.Type != ast.ExceptionType {
 			return notAnExceptionError{
-				FieldName: name,
+				FieldName: exception.ThriftName(),
 				TypeName:  spec.ThriftName(),
 			}
 		}

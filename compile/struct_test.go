@@ -57,8 +57,8 @@ func TestCompileStructSuccess(t *testing.T) {
 				Name: "Health",
 				File: "test.thrift",
 				Type: ast.StructType,
-				Fields: map[string]*FieldSpec{
-					"healthy": {
+				Fields: FieldGroup{
+					{
 						ID:       1,
 						Name:     "healthy",
 						Type:     BoolSpec,
@@ -78,14 +78,14 @@ func TestCompileStructSuccess(t *testing.T) {
 				Name: "KeyNotFoundError",
 				File: "test.thrift",
 				Type: ast.ExceptionType,
-				Fields: map[string]*FieldSpec{
-					"message": {
+				Fields: FieldGroup{
+					{
 						ID:       1,
 						Name:     "message",
 						Type:     StringSpec,
 						Required: true,
 					},
-					"key": {
+					{
 						ID:       2,
 						Name:     "key",
 						Type:     &TypedefSpec{Name: "Key", Target: StringSpec},
@@ -104,14 +104,14 @@ func TestCompileStructSuccess(t *testing.T) {
 				Name: "Body",
 				File: "test.thrift",
 				Type: ast.UnionType,
-				Fields: map[string]*FieldSpec{
-					"plainText": {
+				Fields: FieldGroup{
+					{
 						ID:       1234,
 						Name:     "plainText",
 						Type:     StringSpec,
 						Required: false,
 					},
-					"richText": {
+					{
 						ID:       5678,
 						Name:     "richText",
 						Type:     BinarySpec,

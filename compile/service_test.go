@@ -49,14 +49,14 @@ func TestCompileService(t *testing.T) {
 		Name:   "KeyDoesNotExist",
 		File:   "test.thrift",
 		Type:   ast.ExceptionType,
-		Fields: make(FieldGroup),
+		Fields: make(FieldGroup, 0),
 	}
 
 	internalErrorSpec := &StructSpec{
 		Name:   "InternalServiceError",
 		File:   "test.thrift",
 		Type:   ast.ExceptionType,
-		Fields: make(FieldGroup),
+		Fields: make(FieldGroup, 0),
 	}
 
 	keyValueSpec := &ServiceSpec{
@@ -65,13 +65,13 @@ func TestCompileService(t *testing.T) {
 		Functions: map[string]*FunctionSpec{
 			"setValue": {
 				Name: "setValue",
-				ArgsSpec: map[string]*FieldSpec{
-					"key": {
+				ArgsSpec: ArgsSpec{
+					{
 						ID:   1,
 						Name: "key",
 						Type: StringSpec,
 					},
-					"value": {
+					{
 						ID:   2,
 						Name: "value",
 						Type: BinarySpec,
@@ -80,8 +80,8 @@ func TestCompileService(t *testing.T) {
 			},
 			"getValue": {
 				Name: "getValue",
-				ArgsSpec: map[string]*FieldSpec{
-					"key": {
+				ArgsSpec: ArgsSpec{
+					{
 						ID:   1,
 						Name: "key",
 						Type: StringSpec,
@@ -89,13 +89,13 @@ func TestCompileService(t *testing.T) {
 				},
 				ResultSpec: &ResultSpec{
 					ReturnType: BinarySpec,
-					Exceptions: map[string]*FieldSpec{
-						"doesNotExist": {
+					Exceptions: FieldGroup{
+						{
 							ID:   1,
 							Name: "doesNotExist",
 							Type: keyDoesNotExistSpec,
 						},
-						"internalError": {
+						{
 							ID:   2,
 							Name: "internalError",
 							Type: internalErrorSpec,
@@ -155,8 +155,8 @@ func TestCompileService(t *testing.T) {
 				Functions: map[string]*FunctionSpec{
 					"setValues": {
 						Name: "setValues",
-						ArgsSpec: map[string]*FieldSpec{
-							"items": {
+						ArgsSpec: ArgsSpec{
+							{
 								ID:   1,
 								Name: "items",
 								Type: &MapSpec{
@@ -356,12 +356,12 @@ func TestLinkServiceFailure(t *testing.T) {
 				"SomeException", &StructSpec{
 					Name:   "SomeException",
 					Type:   ast.ExceptionType,
-					Fields: make(FieldGroup),
+					Fields: make(FieldGroup, 0),
 				},
 				"NotAnException", &StructSpec{
 					Name:   "NotAnException",
 					Type:   ast.StructType,
-					Fields: make(FieldGroup),
+					Fields: make(FieldGroup, 0),
 				},
 			),
 			[]string{

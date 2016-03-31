@@ -275,7 +275,7 @@ func TestNestedStructsRequired(t *testing.T) {
 					}}),
 				},
 			}}),
-			"Frame{Size: Size{Height: 200, Width: 100}, TopLeft: Point{X: 1, Y: 2}}",
+			"Frame{TopLeft: Point{X: 1, Y: 2}, Size: Size{Width: 100, Height: 200}}",
 		},
 	}
 
@@ -319,7 +319,7 @@ func TestNestedStructsOptional(t *testing.T) {
 					{ID: 1, Value: wire.NewValueString("foo@example.com")},
 				}})},
 			}}),
-			"User{Contact: ContactInfo{EmailAddress: foo@example.com}, Name: Foo Bar}",
+			"User{Name: Foo Bar, Contact: ContactInfo{EmailAddress: foo@example.com}}",
 		},
 	}
 
@@ -346,19 +346,19 @@ func TestStructStringWithMissingRequiredFields(t *testing.T) {
 	}{
 		{
 			&ts.Frame{TopLeft: &ts.Point{}},
-			"Frame{Size: <nil>, TopLeft: Point{X: 0, Y: 0}}",
+			"Frame{TopLeft: Point{X: 0, Y: 0}, Size: <nil>}",
 		},
 		{
 			&ts.Frame{Size: &ts.Size{}},
-			"Frame{Size: Size{Height: 0, Width: 0}, TopLeft: <nil>}",
+			"Frame{TopLeft: <nil>, Size: Size{Width: 0, Height: 0}}",
 		},
 		{
 			&ts.Edge{Start: &ts.Point{X: 1, Y: 2}},
-			"Edge{End: <nil>, Start: Point{X: 1, Y: 2}}",
+			"Edge{Start: Point{X: 1, Y: 2}, End: <nil>}",
 		},
 		{
 			&ts.Edge{End: &ts.Point{X: 3, Y: 4}},
-			"Edge{End: Point{X: 3, Y: 4}, Start: <nil>}",
+			"Edge{Start: <nil>, End: Point{X: 3, Y: 4}}",
 		},
 		{
 			&ts.Graph{},
