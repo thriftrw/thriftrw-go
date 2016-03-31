@@ -78,8 +78,8 @@ func TestLinkTypeReference(t *testing.T) {
 	foo := &StructSpec{
 		Name: "Foo",
 		Type: ast.StructType,
-		Fields: map[string]*FieldSpec{
-			"value": {ID: 1, Name: "value", Type: I32Spec},
+		Fields: FieldGroup{
+			{ID: 1, Name: "value", Type: I32Spec},
 		},
 	}
 
