@@ -207,11 +207,6 @@ func (f *FunctionSpec) Link(scope Scope) error {
 	return nil
 }
 
-// HasReturn returns true if this function has a non-void return.
-func (f *FunctionSpec) HasReturn() bool {
-	return f.ResultSpec != nil && f.ResultSpec.ReturnType != nil
-}
-
 // ArgsSpec contains information about a Function's arguments.
 type ArgsSpec FieldGroup
 

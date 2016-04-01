@@ -74,18 +74,16 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
 
-	resultFields := make(compile.FieldGroup, 0)
-	if result := f.ResultSpec; result != nil {
-		if result.ReturnType != nil {
-			resultFields = append(resultFields, &compile.FieldSpec{
-				ID:   0,
-				Name: "success",
-				Type: result.ReturnType,
-			})
-		}
-
-		resultFields = append(resultFields, result.Exceptions...)
+	resultFields := make(compile.FieldGroup, 0, len(f.ResultSpec.Exceptions)+1)
+	if f.ResultSpec.ReturnType != nil {
+		resultFields = append(resultFields, &compile.FieldSpec{
+			ID:   0,
+			Name: "success",
+			Type: f.ResultSpec.ReturnType,
+		})
 	}
+	resultFields = append(resultFields, f.ResultSpec.Exceptions...)
+
 	resultGen := fieldGroupGenerator{
 		Name:   goCase(f.Name) + "Result",
 		Fields: resultFields,
@@ -121,7 +119,7 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 				<end>
 			) *<$name>Args
 
-			<if .HasReturn>
+			<if .ResultSpec.ReturnType>
 				WrapResponse func(<typeReferencePtr .ResultSpec.ReturnType>, error) (*<$name>Result, error)
 				UnwrapResponse func(*<$name>Result) (<typeReferencePtr .ResultSpec.ReturnType>, error)
 			<else>
@@ -133,11 +131,9 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 		func init() {
 			<$name>Helper.IsException = func(err error) bool {
 				switch err.(type) {
-				<if .ResultSpec>
-					<range .ResultSpec.Exceptions>
+				<range .ResultSpec.Exceptions>
 					case <typeReferencePtr .Type>:
 						return true
-					<end>
 				<end>
 				default:
 					return false
@@ -165,7 +161,7 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 			}
 
 			<$name>Helper.WrapResponse =
-			<if .HasReturn>
+			<if .ResultSpec.ReturnType>
 				func(success <typeReferencePtr .ResultSpec.ReturnType>, err error) (*<$name>Result, error) {
 					if err == nil {
 						return &<$name>Result{Success: success}, nil
@@ -176,37 +172,33 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 						return &<$name>Result{}, nil
 					}
 			<end>
-					<if .ResultSpec>
-						<if .ResultSpec.Exceptions>
-							switch e := err.(type) {
-								<range .ResultSpec.Exceptions>
-								case <typeReferencePtr .Type>:
-									return &<$name>Result{<goCase .Name>: e}, nil
-								<end>
-							}
-						<end>
+					<if .ResultSpec.Exceptions>
+						switch e := err.(type) {
+							<range .ResultSpec.Exceptions>
+							case <typeReferencePtr .Type>:
+								return &<$name>Result{<goCase .Name>: e}, nil
+							<end>
+						}
 					<end>
 					return nil, err
 				}
 
 			<$name>Helper.UnwrapResponse =
-			<if .HasReturn>
+			<if .ResultSpec.ReturnType>
 				func(result *<$name>Result) (success <typeReferencePtr .ResultSpec.ReturnType>, err error) {
 			<else>
 				func(result *<$name>Result) (err error) {
 			<end>
-					<if .ResultSpec>
-						<range .ResultSpec.Exceptions>
-							if result.<goCase .Name> != nil {
-								err = result.<goCase .Name>
-								return
-							}
-						<end>
+					<range .ResultSpec.Exceptions>
+						if result.<goCase .Name> != nil {
+							err = result.<goCase .Name>
+							return
+						}
 					<end>
 
 					// TODO unrecognized exceptions
 
-					<if .HasReturn>
+					<if .ResultSpec.ReturnType>
 						if result.Success != nil {
 							success = result.Success
 							return
