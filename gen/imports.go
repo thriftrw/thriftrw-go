@@ -91,7 +91,8 @@ func (i importer) importDecl() ast.Decl {
 	}
 
 	specs := make([]ast.Spec, 0, len(imports))
-	for _, imp := range imports {
+	for _, iname := range sortStringKeys(imports) {
+		imp := imports[iname]
 		specs = append(specs, imp)
 	}
 

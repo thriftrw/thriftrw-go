@@ -24,16 +24,19 @@ func (v *Event) ToWire() wire.Value {
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func _UUID_Read(w wire.Value) (*UUID, error) {
 	var x UUID
 	err := x.FromWire(w)
 	return &x, err
 }
+
 func _Timestamp_Read(w wire.Value) (Timestamp, error) {
 	var x Timestamp
 	err := x.FromWire(w)
 	return x, err
 }
+
 func (v *Event) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -58,6 +61,7 @@ func (v *Event) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *Event) String() string {
 	var fields [2]string
 	i := 0
@@ -81,13 +85,16 @@ func (v _List_Event_ValueList) ForEach(f func(wire.Value) error) error {
 	}
 	return nil
 }
+
 func (v _List_Event_ValueList) Close() {
 }
+
 func _Event_Read(w wire.Value) (*Event, error) {
 	var v Event
 	err := v.FromWire(w)
 	return &v, err
 }
+
 func _List_Event_Read(l wire.List) ([]*Event, error) {
 	if l.ValueType != wire.TStruct {
 		return nil, nil
@@ -111,6 +118,7 @@ func (v EventGroup) ToWire() wire.Value {
 	x := ([]*Event)(v)
 	return wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(x), Items: _List_Event_ValueList(x)})
 }
+
 func (v *EventGroup) FromWire(w wire.Value) error {
 	x, err := _List_Event_Read(w.GetList())
 	*v = (EventGroup)(x)
@@ -123,6 +131,7 @@ func (v Pdf) ToWire() wire.Value {
 	x := ([]byte)(v)
 	return wire.NewValueBinary(x)
 }
+
 func (v *Pdf) FromWire(w wire.Value) error {
 	x, err := w.GetBinary(), error(nil)
 	*v = (Pdf)(x)
@@ -135,6 +144,7 @@ func (v State) ToWire() wire.Value {
 	x := (string)(v)
 	return wire.NewValueString(x)
 }
+
 func (v *State) FromWire(w wire.Value) error {
 	x, err := w.GetString(), error(nil)
 	*v = (State)(x)
@@ -147,6 +157,7 @@ func (v Timestamp) ToWire() wire.Value {
 	x := (int64)(v)
 	return wire.NewValueI64(x)
 }
+
 func (v *Timestamp) FromWire(w wire.Value) error {
 	x, err := w.GetI64(), error(nil)
 	*v = (Timestamp)(x)
@@ -172,16 +183,19 @@ func (v *Transition) ToWire() wire.Value {
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func _State_Read(w wire.Value) (State, error) {
 	var x State
 	err := x.FromWire(w)
 	return x, err
 }
+
 func _EventGroup_Read(w wire.Value) (EventGroup, error) {
 	var x EventGroup
 	err := x.FromWire(w)
 	return x, err
 }
+
 func (v *Transition) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -211,6 +225,7 @@ func (v *Transition) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *Transition) String() string {
 	var fields [3]string
 	i := 0
@@ -231,6 +246,7 @@ func (v *UUID) ToWire() wire.Value {
 	x := (*I128)(v)
 	return x.ToWire()
 }
+
 func (v *UUID) FromWire(w wire.Value) error {
 	return (*I128)(v).FromWire(w)
 }
@@ -249,6 +265,7 @@ func (v *I128) ToWire() wire.Value {
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func (v *I128) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -271,6 +288,7 @@ func (v *I128) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *I128) String() string {
 	var fields [2]string
 	i := 0

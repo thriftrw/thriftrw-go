@@ -15,6 +15,7 @@ const ()
 func (v EmptyEnum) ToWire() wire.Value {
 	return wire.NewValueI32(int32(v))
 }
+
 func (v *EmptyEnum) FromWire(w wire.Value) error {
 	*v = (EmptyEnum)(w.GetI32())
 	return nil
@@ -31,6 +32,7 @@ const (
 func (v EnumDefault) ToWire() wire.Value {
 	return wire.NewValueI32(int32(v))
 }
+
 func (v *EnumDefault) FromWire(w wire.Value) error {
 	*v = (EnumDefault)(w.GetI32())
 	return nil
@@ -53,6 +55,7 @@ const (
 func (v EnumWithDuplicateName) ToWire() wire.Value {
 	return wire.NewValueI32(int32(v))
 }
+
 func (v *EnumWithDuplicateName) FromWire(w wire.Value) error {
 	*v = (EnumWithDuplicateName)(w.GetI32())
 	return nil
@@ -69,6 +72,7 @@ const (
 func (v EnumWithDuplicateValues) ToWire() wire.Value {
 	return wire.NewValueI32(int32(v))
 }
+
 func (v *EnumWithDuplicateValues) FromWire(w wire.Value) error {
 	*v = (EnumWithDuplicateValues)(w.GetI32())
 	return nil
@@ -85,6 +89,7 @@ const (
 func (v EnumWithValues) ToWire() wire.Value {
 	return wire.NewValueI32(int32(v))
 }
+
 func (v *EnumWithValues) FromWire(w wire.Value) error {
 	*v = (EnumWithValues)(w.GetI32())
 	return nil
@@ -101,11 +106,13 @@ func (v *StructWithOptionalEnum) ToWire() wire.Value {
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func _EnumDefault_Read(w wire.Value) (EnumDefault, error) {
 	var v EnumDefault
 	err := v.FromWire(w)
 	return v, err
 }
+
 func (v *StructWithOptionalEnum) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -123,6 +130,7 @@ func (v *StructWithOptionalEnum) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *StructWithOptionalEnum) String() string {
 	var fields [1]string
 	i := 0
