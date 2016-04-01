@@ -124,7 +124,7 @@ func (v *DeleteValueResult) String() string {
 	return fmt.Sprintf("DeleteValueResult{%v}", strings.Join(fields[:i], ", "))
 }
 
-var DeleteValue = struct {
+var DeleteValueHelper = struct {
 	IsException    func(error) bool
 	Args           func(key *services.Key) *DeleteValueArgs
 	WrapResponse   func(error) (*DeleteValueResult, error)
@@ -132,7 +132,7 @@ var DeleteValue = struct {
 }{}
 
 func init() {
-	DeleteValue.IsException = func(err error) bool {
+	DeleteValueHelper.IsException = func(err error) bool {
 		switch err.(type) {
 		case *exceptions.DoesNotExistException:
 			return true
@@ -142,10 +142,10 @@ func init() {
 			return false
 		}
 	}
-	DeleteValue.Args = func(key *services.Key) *DeleteValueArgs {
+	DeleteValueHelper.Args = func(key *services.Key) *DeleteValueArgs {
 		return &DeleteValueArgs{Key: key}
 	}
-	DeleteValue.WrapResponse = func(err error) (*DeleteValueResult, error) {
+	DeleteValueHelper.WrapResponse = func(err error) (*DeleteValueResult, error) {
 		if err == nil {
 			return &DeleteValueResult{}, nil
 		}
@@ -157,7 +157,7 @@ func init() {
 		}
 		return nil, err
 	}
-	DeleteValue.UnwrapResponse = func(result *DeleteValueResult) (err error) {
+	DeleteValueHelper.UnwrapResponse = func(result *DeleteValueResult) (err error) {
 		if result.DoesNotExist != nil {
 			err = result.DoesNotExist
 			return

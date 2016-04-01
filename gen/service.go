@@ -108,7 +108,7 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 		`
 		<$name := goCase .Name>
 
-		var <$name> = struct{
+		var <$name>Helper = struct{
 			IsException func(error) bool
 
 			Args func(
@@ -131,7 +131,7 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 		}{}
 
 		func init() {
-			<$name>.IsException = func(err error) bool {
+			<$name>Helper.IsException = func(err error) bool {
 				switch err.(type) {
 				<if .ResultSpec>
 					<range .ResultSpec.Exceptions>
@@ -144,7 +144,7 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 				}
 			}
 
-			<$name>.Args = func(
+			<$name>Helper.Args = func(
 				<range .ArgsSpec>
 					<if .Required>
 						<.Name> <typeReference .Type>,
@@ -164,7 +164,7 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 				}
 			}
 
-			<$name>.WrapResponse =
+			<$name>Helper.WrapResponse =
 			<if .HasReturn>
 				func(success <typeReferencePtr .ResultSpec.ReturnType>, err error) (*<$name>Result, error) {
 					if err == nil {
@@ -189,7 +189,7 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 					return nil, err
 				}
 
-			<$name>.UnwrapResponse =
+			<$name>Helper.UnwrapResponse =
 			<if .HasReturn>
 				func(result *<$name>Result) (success <typeReferencePtr .ResultSpec.ReturnType>, err error) {
 			<else>

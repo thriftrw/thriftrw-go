@@ -114,7 +114,7 @@ func (v *GetValueResult) String() string {
 	return fmt.Sprintf("GetValueResult{%v}", strings.Join(fields[:i], ", "))
 }
 
-var GetValue = struct {
+var GetValueHelper = struct {
 	IsException    func(error) bool
 	Args           func(key *services.Key) *GetValueArgs
 	WrapResponse   func(*unions.ArbitraryValue, error) (*GetValueResult, error)
@@ -122,7 +122,7 @@ var GetValue = struct {
 }{}
 
 func init() {
-	GetValue.IsException = func(err error) bool {
+	GetValueHelper.IsException = func(err error) bool {
 		switch err.(type) {
 		case *exceptions.DoesNotExistException:
 			return true
@@ -130,10 +130,10 @@ func init() {
 			return false
 		}
 	}
-	GetValue.Args = func(key *services.Key) *GetValueArgs {
+	GetValueHelper.Args = func(key *services.Key) *GetValueArgs {
 		return &GetValueArgs{Key: key}
 	}
-	GetValue.WrapResponse = func(success *unions.ArbitraryValue, err error) (*GetValueResult, error) {
+	GetValueHelper.WrapResponse = func(success *unions.ArbitraryValue, err error) (*GetValueResult, error) {
 		if err == nil {
 			return &GetValueResult{Success: success}, nil
 		}
@@ -143,7 +143,7 @@ func init() {
 		}
 		return nil, err
 	}
-	GetValue.UnwrapResponse = func(result *GetValueResult) (success *unions.ArbitraryValue, err error) {
+	GetValueHelper.UnwrapResponse = func(result *GetValueResult) (success *unions.ArbitraryValue, err error) {
 		if result.DoesNotExist != nil {
 			err = result.DoesNotExist
 			return

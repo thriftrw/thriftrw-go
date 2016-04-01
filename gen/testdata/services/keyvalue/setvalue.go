@@ -90,7 +90,7 @@ func (v *SetValueResult) String() string {
 	return fmt.Sprintf("SetValueResult{%v}", strings.Join(fields[:i], ", "))
 }
 
-var SetValue = struct {
+var SetValueHelper = struct {
 	IsException    func(error) bool
 	Args           func(key *services.Key, value *unions.ArbitraryValue) *SetValueArgs
 	WrapResponse   func(error) (*SetValueResult, error)
@@ -98,22 +98,22 @@ var SetValue = struct {
 }{}
 
 func init() {
-	SetValue.IsException = func(err error) bool {
+	SetValueHelper.IsException = func(err error) bool {
 		switch err.(type) {
 		default:
 			return false
 		}
 	}
-	SetValue.Args = func(key *services.Key, value *unions.ArbitraryValue) *SetValueArgs {
+	SetValueHelper.Args = func(key *services.Key, value *unions.ArbitraryValue) *SetValueArgs {
 		return &SetValueArgs{Key: key, Value: value}
 	}
-	SetValue.WrapResponse = func(err error) (*SetValueResult, error) {
+	SetValueHelper.WrapResponse = func(err error) (*SetValueResult, error) {
 		if err == nil {
 			return &SetValueResult{}, nil
 		}
 		return nil, err
 	}
-	SetValue.UnwrapResponse = func(result *SetValueResult) (err error) {
+	SetValueHelper.UnwrapResponse = func(result *SetValueResult) (err error) {
 		return
 	}
 }

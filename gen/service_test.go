@@ -161,7 +161,7 @@ func TestServiceArgs(t *testing.T) {
 		output interface{}
 	}{
 		{
-			input: keyvalue.SetValue.Args(
+			input: keyvalue.SetValueHelper.Args(
 				(*tv.Key)(stringp("foo")),
 				&tu.ArbitraryValue{BoolValue: boolp(true)},
 			),
@@ -171,11 +171,11 @@ func TestServiceArgs(t *testing.T) {
 			},
 		},
 		{
-			input:  keyvalue.GetValue.Args((*tv.Key)(stringp("foo"))),
+			input:  keyvalue.GetValueHelper.Args((*tv.Key)(stringp("foo"))),
 			output: &keyvalue.GetValueArgs{Key: (*tv.Key)(stringp("foo"))},
 		},
 		{
-			input:  keyvalue.DeleteValue.Args((*tv.Key)(stringp("foo"))),
+			input:  keyvalue.DeleteValueHelper.Args((*tv.Key)(stringp("foo"))),
 			output: &keyvalue.DeleteValueArgs{Key: (*tv.Key)(stringp("foo"))},
 		},
 	}
@@ -192,42 +192,42 @@ func TestServiceIsException(t *testing.T) {
 		expected    bool
 	}{
 		{
-			isException: keyvalue.SetValue.IsException,
+			isException: keyvalue.SetValueHelper.IsException,
 			err:         &tx.DoesNotExistException{Key: "foo"},
 			expected:    false,
 		},
 		{
-			isException: keyvalue.SetValue.IsException,
+			isException: keyvalue.SetValueHelper.IsException,
 			err:         errors.New("some error"),
 			expected:    false,
 		},
 		{
-			isException: keyvalue.GetValue.IsException,
+			isException: keyvalue.GetValueHelper.IsException,
 			err:         &tx.DoesNotExistException{Key: "foo"},
 			expected:    true,
 		},
 		{
-			isException: keyvalue.GetValue.IsException,
+			isException: keyvalue.GetValueHelper.IsException,
 			err:         errors.New("some error"),
 			expected:    false,
 		},
 		{
-			isException: keyvalue.DeleteValue.IsException,
+			isException: keyvalue.DeleteValueHelper.IsException,
 			err:         &tv.InternalError{},
 			expected:    true,
 		},
 		{
-			isException: keyvalue.DeleteValue.IsException,
+			isException: keyvalue.DeleteValueHelper.IsException,
 			err:         &tv.InternalError{Message: stringp("foo")},
 			expected:    true,
 		},
 		{
-			isException: keyvalue.DeleteValue.IsException,
+			isException: keyvalue.DeleteValueHelper.IsException,
 			err:         &tx.DoesNotExistException{Key: "foo"},
 			expected:    true,
 		},
 		{
-			isException: keyvalue.DeleteValue.IsException,
+			isException: keyvalue.DeleteValueHelper.IsException,
 			err:         errors.New("some error"),
 			expected:    false,
 		},
@@ -248,21 +248,21 @@ func TestWrapResponse(t *testing.T) {
 		{
 			desc: "setValue success",
 			run: func() (interface{}, error) {
-				return keyvalue.SetValue.WrapResponse(nil)
+				return keyvalue.SetValueHelper.WrapResponse(nil)
 			},
 			expectedResult: &keyvalue.SetValueResult{},
 		},
 		{
 			desc: "setValue failure",
 			run: func() (interface{}, error) {
-				return keyvalue.SetValue.WrapResponse(errors.New("foo"))
+				return keyvalue.SetValueHelper.WrapResponse(errors.New("foo"))
 			},
 			expectedError: errors.New("foo"),
 		},
 		{
 			desc: "getValue success",
 			run: func() (interface{}, error) {
-				return keyvalue.GetValue.WrapResponse(&tu.ArbitraryValue{BoolValue: boolp(true)}, nil)
+				return keyvalue.GetValueHelper.WrapResponse(&tu.ArbitraryValue{BoolValue: boolp(true)}, nil)
 			},
 			expectedResult: &keyvalue.GetValueResult{
 				Success: &tu.ArbitraryValue{BoolValue: boolp(true)},
@@ -271,7 +271,7 @@ func TestWrapResponse(t *testing.T) {
 		{
 			desc: "getValue application error",
 			run: func() (interface{}, error) {
-				return keyvalue.GetValue.WrapResponse(nil, &tx.DoesNotExistException{Key: "foo"})
+				return keyvalue.GetValueHelper.WrapResponse(nil, &tx.DoesNotExistException{Key: "foo"})
 			},
 			expectedResult: &keyvalue.GetValueResult{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
@@ -280,21 +280,21 @@ func TestWrapResponse(t *testing.T) {
 		{
 			desc: "getValue failure",
 			run: func() (interface{}, error) {
-				return keyvalue.GetValue.WrapResponse(nil, errors.New("foo"))
+				return keyvalue.GetValueHelper.WrapResponse(nil, errors.New("foo"))
 			},
 			expectedError: errors.New("foo"),
 		},
 		{
 			desc: "deleteValue success",
 			run: func() (interface{}, error) {
-				return keyvalue.DeleteValue.WrapResponse(nil)
+				return keyvalue.DeleteValueHelper.WrapResponse(nil)
 			},
 			expectedResult: &keyvalue.DeleteValueResult{},
 		},
 		{
 			desc: "deleteValue application error (1)",
 			run: func() (interface{}, error) {
-				return keyvalue.DeleteValue.WrapResponse(&tx.DoesNotExistException{Key: "foo"})
+				return keyvalue.DeleteValueHelper.WrapResponse(&tx.DoesNotExistException{Key: "foo"})
 			},
 			expectedResult: &keyvalue.DeleteValueResult{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
@@ -303,7 +303,7 @@ func TestWrapResponse(t *testing.T) {
 		{
 			desc: "deleteValue application error (2)",
 			run: func() (interface{}, error) {
-				return keyvalue.DeleteValue.WrapResponse(&tv.InternalError{})
+				return keyvalue.DeleteValueHelper.WrapResponse(&tv.InternalError{})
 			},
 			expectedResult: &keyvalue.DeleteValueResult{
 				InternalError: &tv.InternalError{},
@@ -312,7 +312,7 @@ func TestWrapResponse(t *testing.T) {
 		{
 			desc: "deleteValue failure",
 			run: func() (interface{}, error) {
-				return keyvalue.DeleteValue.WrapResponse(errors.New("foo"))
+				return keyvalue.DeleteValueHelper.WrapResponse(errors.New("foo"))
 			},
 			expectedError: errors.New("foo"),
 		},
@@ -339,12 +339,12 @@ func TestUnwrapResponse(t *testing.T) {
 	}{
 		{
 			desc:           "setValue success",
-			unwrapResponse: keyvalue.SetValue.UnwrapResponse,
+			unwrapResponse: keyvalue.SetValueHelper.UnwrapResponse,
 			resultArg:      &keyvalue.SetValueResult{},
 		},
 		{
 			desc:           "getValue success",
-			unwrapResponse: keyvalue.GetValue.UnwrapResponse,
+			unwrapResponse: keyvalue.GetValueHelper.UnwrapResponse,
 			resultArg: &keyvalue.GetValueResult{
 				Success: &tu.ArbitraryValue{BoolValue: boolp(true)},
 			},
@@ -352,7 +352,7 @@ func TestUnwrapResponse(t *testing.T) {
 		},
 		{
 			desc:           "getValue failure",
-			unwrapResponse: keyvalue.GetValue.UnwrapResponse,
+			unwrapResponse: keyvalue.GetValueHelper.UnwrapResponse,
 			resultArg: &keyvalue.GetValueResult{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 			},
@@ -360,12 +360,12 @@ func TestUnwrapResponse(t *testing.T) {
 		},
 		{
 			desc:           "deleteValue success",
-			unwrapResponse: keyvalue.DeleteValue.UnwrapResponse,
+			unwrapResponse: keyvalue.DeleteValueHelper.UnwrapResponse,
 			resultArg:      &keyvalue.DeleteValueResult{},
 		},
 		{
 			desc:           "deleteValue failure (1)",
-			unwrapResponse: keyvalue.DeleteValue.UnwrapResponse,
+			unwrapResponse: keyvalue.DeleteValueHelper.UnwrapResponse,
 			resultArg: &keyvalue.DeleteValueResult{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 			},
@@ -373,7 +373,7 @@ func TestUnwrapResponse(t *testing.T) {
 		},
 		{
 			desc:           "deleteValue failure (2)",
-			unwrapResponse: keyvalue.DeleteValue.UnwrapResponse,
+			unwrapResponse: keyvalue.DeleteValueHelper.UnwrapResponse,
 			resultArg: &keyvalue.DeleteValueResult{
 				InternalError: &tv.InternalError{},
 			},
