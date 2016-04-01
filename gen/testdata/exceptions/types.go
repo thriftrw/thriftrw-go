@@ -17,6 +17,7 @@ func (v *DoesNotExistException) ToWire() wire.Value {
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func (v *DoesNotExistException) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -32,6 +33,7 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *DoesNotExistException) String() string {
 	var fields [1]string
 	i := 0
@@ -39,6 +41,7 @@ func (v *DoesNotExistException) String() string {
 	i++
 	return fmt.Sprintf("DoesNotExistException{%v}", strings.Join(fields[:i], ", "))
 }
+
 func (v *DoesNotExistException) Error() string {
 	return v.String()
 }
@@ -50,6 +53,7 @@ func (v *EmptyException) ToWire() wire.Value {
 	i := 0
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func (v *EmptyException) FromWire(w wire.Value) error {
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -57,11 +61,13 @@ func (v *EmptyException) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *EmptyException) String() string {
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("EmptyException{%v}", strings.Join(fields[:i], ", "))
 }
+
 func (v *EmptyException) Error() string {
 	return v.String()
 }

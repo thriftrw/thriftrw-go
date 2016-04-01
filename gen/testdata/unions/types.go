@@ -16,6 +16,7 @@ type ArbitraryValue struct {
 	ListValue   []*ArbitraryValue
 	MapValue    map[string]*ArbitraryValue
 }
+
 type _List_ArbitraryValue_ValueList []*ArbitraryValue
 
 func (v _List_ArbitraryValue_ValueList) ForEach(f func(wire.Value) error) error {
@@ -27,6 +28,7 @@ func (v _List_ArbitraryValue_ValueList) ForEach(f func(wire.Value) error) error 
 	}
 	return nil
 }
+
 func (v _List_ArbitraryValue_ValueList) Close() {
 }
 
@@ -41,8 +43,10 @@ func (m _Map_String_ArbitraryValue_MapItemList) ForEach(f func(wire.MapItem) err
 	}
 	return nil
 }
+
 func (m _Map_String_ArbitraryValue_MapItemList) Close() {
 }
+
 func (v *ArbitraryValue) ToWire() wire.Value {
 	var fields [5]wire.Field
 	i := 0
@@ -68,11 +72,13 @@ func (v *ArbitraryValue) ToWire() wire.Value {
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func _ArbitraryValue_Read(w wire.Value) (*ArbitraryValue, error) {
 	var v ArbitraryValue
 	err := v.FromWire(w)
 	return &v, err
 }
+
 func _List_ArbitraryValue_Read(l wire.List) ([]*ArbitraryValue, error) {
 	if l.ValueType != wire.TStruct {
 		return nil, nil
@@ -89,6 +95,7 @@ func _List_ArbitraryValue_Read(l wire.List) ([]*ArbitraryValue, error) {
 	l.Items.Close()
 	return o, err
 }
+
 func _Map_String_ArbitraryValue_Read(m wire.Map) (map[string]*ArbitraryValue, error) {
 	if m.KeyType != wire.TBinary {
 		return nil, nil
@@ -112,6 +119,7 @@ func _Map_String_ArbitraryValue_Read(m wire.Map) (map[string]*ArbitraryValue, er
 	m.Items.Close()
 	return o, err
 }
+
 func (v *ArbitraryValue) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -161,6 +169,7 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *ArbitraryValue) String() string {
 	var fields [5]string
 	i := 0
@@ -205,11 +214,13 @@ func (v *Document) ToWire() wire.Value {
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func _Pdf_Read(w wire.Value) (typedefs.Pdf, error) {
 	var x typedefs.Pdf
 	err := x.FromWire(w)
 	return x, err
 }
+
 func (v *Document) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -234,6 +245,7 @@ func (v *Document) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *Document) String() string {
 	var fields [2]string
 	i := 0
@@ -255,6 +267,7 @@ func (v *EmptyUnion) ToWire() wire.Value {
 	i := 0
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func (v *EmptyUnion) FromWire(w wire.Value) error {
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -262,6 +275,7 @@ func (v *EmptyUnion) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *EmptyUnion) String() string {
 	var fields [0]string
 	i := 0

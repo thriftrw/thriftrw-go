@@ -24,8 +24,8 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
-	"go/format"
 	"go/parser"
+	"go/printer"
 	"go/token"
 	"io"
 	"text/template"
@@ -335,27 +335,46 @@ func (g *generator) DeclareFromTemplate(s string, data interface{}, opts ...Temp
 // TODO multiple modules
 
 func (g *generator) Write(w io.Writer, fs *token.FileSet) error {
-	// TODO newlines between decls
 	// TODO constants first, types next, and functions after that
-	// TODO sorting
-
-	decls := make([]ast.Decl, 0, 1+len(g.decls))
-	importDecl := g.importDecl()
-	if importDecl != nil {
-		decls = append(decls, importDecl)
-	}
-	decls = append(decls, g.decls...)
-
-	file := &ast.File{
-		Decls: decls,
-		Name:  ast.NewIdent(g.PackageName),
-	}
 
 	if _, err := w.Write([]byte(generatedByHeader)); err != nil {
 		return err
 	}
 
-	return format.Node(w, fs, file)
+	if _, err := fmt.Fprintf(w, "package %s\n\n", g.PackageName); err != nil {
+		return err
+	}
+
+	cfg := printer.Config{
+		Mode:     printer.UseSpaces | printer.TabIndent,
+		Tabwidth: 8,
+	}
+
+	if importDecl := g.importDecl(); importDecl != nil {
+		if err := cfg.Fprint(w, fs, importDecl); err != nil {
+			return err
+		}
+	}
+
+	if _, err := io.WriteString(w, "\n"); err != nil {
+		return err
+	}
+
+	for _, decl := range g.decls {
+		if _, err := io.WriteString(w, "\n"); err != nil {
+			return err
+		}
+
+		if err := cfg.Fprint(w, fs, decl); err != nil {
+			return err
+		}
+
+		if _, err := io.WriteString(w, "\n"); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // appendDecl appends a new declaration to the generator.

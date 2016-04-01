@@ -17,6 +17,7 @@ func (v *ContactInfo) ToWire() wire.Value {
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func (v *ContactInfo) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -32,6 +33,7 @@ func (v *ContactInfo) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *ContactInfo) String() string {
 	var fields [1]string
 	i := 0
@@ -54,11 +56,13 @@ func (v *Edge) ToWire() wire.Value {
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func _Point_Read(w wire.Value) (*Point, error) {
 	var v Point
 	err := v.FromWire(w)
 	return &v, err
 }
+
 func (v *Edge) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -81,6 +85,7 @@ func (v *Edge) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *Edge) String() string {
 	var fields [2]string
 	i := 0
@@ -98,6 +103,7 @@ func (v *EmptyStruct) ToWire() wire.Value {
 	i := 0
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func (v *EmptyStruct) FromWire(w wire.Value) error {
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -105,6 +111,7 @@ func (v *EmptyStruct) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *EmptyStruct) String() string {
 	var fields [0]string
 	i := 0
@@ -125,11 +132,13 @@ func (v *Frame) ToWire() wire.Value {
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func _Size_Read(w wire.Value) (*Size, error) {
 	var v Size
 	err := v.FromWire(w)
 	return &v, err
 }
+
 func (v *Frame) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -152,6 +161,7 @@ func (v *Frame) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *Frame) String() string {
 	var fields [2]string
 	i := 0
@@ -163,6 +173,7 @@ func (v *Frame) String() string {
 }
 
 type Graph struct{ Edges []*Edge }
+
 type _List_Edge_ValueList []*Edge
 
 func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
@@ -174,8 +185,10 @@ func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
 	}
 	return nil
 }
+
 func (v _List_Edge_ValueList) Close() {
 }
+
 func (v *Graph) ToWire() wire.Value {
 	var fields [1]wire.Field
 	i := 0
@@ -183,11 +196,13 @@ func (v *Graph) ToWire() wire.Value {
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func _Edge_Read(w wire.Value) (*Edge, error) {
 	var v Edge
 	err := v.FromWire(w)
 	return &v, err
 }
+
 func _List_Edge_Read(l wire.List) ([]*Edge, error) {
 	if l.ValueType != wire.TStruct {
 		return nil, nil
@@ -204,6 +219,7 @@ func _List_Edge_Read(l wire.List) ([]*Edge, error) {
 	l.Items.Close()
 	return o, err
 }
+
 func (v *Graph) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -219,6 +235,7 @@ func (v *Graph) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *Graph) String() string {
 	var fields [1]string
 	i := 0
@@ -241,6 +258,7 @@ func (v *Point) ToWire() wire.Value {
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func (v *Point) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -263,6 +281,7 @@ func (v *Point) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *Point) String() string {
 	var fields [2]string
 	i := 0
@@ -321,6 +340,7 @@ func (v *PrimitiveOptionalStruct) ToWire() wire.Value {
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -399,6 +419,7 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *PrimitiveOptionalStruct) String() string {
 	var fields [8]string
 	i := 0
@@ -469,6 +490,7 @@ func (v *PrimitiveRequiredStruct) ToWire() wire.Value {
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -533,6 +555,7 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *PrimitiveRequiredStruct) String() string {
 	var fields [8]string
 	i := 0
@@ -569,6 +592,7 @@ func (v *Size) ToWire() wire.Value {
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func (v *Size) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -591,6 +615,7 @@ func (v *Size) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *Size) String() string {
 	var fields [2]string
 	i := 0
@@ -617,11 +642,13 @@ func (v *User) ToWire() wire.Value {
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
+
 func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
 	var v ContactInfo
 	err := v.FromWire(w)
 	return &v, err
 }
+
 func (v *User) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
@@ -644,6 +671,7 @@ func (v *User) FromWire(w wire.Value) error {
 	}
 	return nil
 }
+
 func (v *User) String() string {
 	var fields [2]string
 	i := 0
