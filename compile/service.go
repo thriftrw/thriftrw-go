@@ -230,21 +230,22 @@ type ResultSpec struct {
 }
 
 func compileResultSpec(returnType ast.Type, exceptions []*ast.Field) (*ResultSpec, error) {
-	if len(exceptions) == 0 && returnType == nil {
-		// No result
-		return nil, nil
+	var excFields FieldGroup
+
+	if len(exceptions) > 0 {
+		var err error
+		excFields, err = compileFields(
+			exceptions,
+			fieldOptions{
+				requiredness:         noRequiredFields,
+				disallowDefaultValue: true,
+			},
+		)
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	excFields, err := compileFields(
-		exceptions,
-		fieldOptions{
-			requiredness:         noRequiredFields,
-			disallowDefaultValue: true,
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
 	return &ResultSpec{
 		ReturnType: compileTypeReference(returnType),
 		Exceptions: excFields,
