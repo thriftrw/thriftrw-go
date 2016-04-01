@@ -108,46 +108,36 @@ func (v *GetValueResult) String() string {
 	}
 	return fmt.Sprintf("GetValueResult{%v}", strings.Join(fields[:i], ", "))
 }
-
-var GetValue = struct {
-	IsException    func(error) bool
-	Args           func(key *services.Key) *GetValueArgs
-	WrapResponse   func(*unions.ArbitraryValue, error) (*GetValueResult, error)
-	UnwrapResponse func(*GetValueResult) (*unions.ArbitraryValue, error)
-}{}
-
-func init() {
-	GetValue.IsException = func(err error) bool {
-		switch err.(type) {
-		case *exceptions.DoesNotExistException:
-			return true
-		default:
-			return false
-		}
+func IsGetValueException(err error) bool {
+	switch err.(type) {
+	case *exceptions.DoesNotExistException:
+		return true
+	default:
+		return false
 	}
-	GetValue.Args = func(key *services.Key) *GetValueArgs {
-		return &GetValueArgs{Key: key}
+}
+func MakeGetValueArgs(key *services.Key) *GetValueArgs {
+	return &GetValueArgs{Key: key}
+}
+func WrapGetValueResponse(success *unions.ArbitraryValue, err error) (*GetValueResult, error) {
+	if err == nil {
+		return &GetValueResult{Success: success}, nil
 	}
-	GetValue.WrapResponse = func(success *unions.ArbitraryValue, err error) (*GetValueResult, error) {
-		if err == nil {
-			return &GetValueResult{Success: success}, nil
-		}
-		switch e := err.(type) {
-		case *exceptions.DoesNotExistException:
-			return &GetValueResult{DoesNotExist: e}, nil
-		}
-		return nil, err
+	switch e := err.(type) {
+	case *exceptions.DoesNotExistException:
+		return &GetValueResult{DoesNotExist: e}, nil
 	}
-	GetValue.UnwrapResponse = func(result *GetValueResult) (success *unions.ArbitraryValue, err error) {
-		if result.DoesNotExist != nil {
-			err = result.DoesNotExist
-			return
-		}
-		if result.Success != nil {
-			success = result.Success
-			return
-		}
-		err = errors.New("expected a non-void result")
+	return nil, err
+}
+func UnwrapGetValueResponse(result *GetValueResult) (success *unions.ArbitraryValue, err error) {
+	if result.DoesNotExist != nil {
+		err = result.DoesNotExist
 		return
 	}
+	if result.Success != nil {
+		success = result.Success
+		return
+	}
+	err = errors.New("expected a non-void result")
+	return
 }

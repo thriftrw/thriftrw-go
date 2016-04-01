@@ -94,7 +94,19 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
 
-	if err := functionHelper(g, f); err != nil {
+	if err := functionIsException(g, f); err != nil {
+		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
+	}
+
+	if err := functionMakeArgs(g, f); err != nil {
+		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
+	}
+
+	if err := functionWrapResponse(g, f); err != nil {
+		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
+	}
+
+	if err := functionUnwrapResponse(g, f); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
 
@@ -103,123 +115,118 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 	return nil
 }
 
-func functionHelper(g Generator, f *compile.FunctionSpec) error {
+func functionIsException(g Generator, f *compile.FunctionSpec) error {
+	return g.DeclareFromTemplate(
+		`func Is<goCase .Name>Exception(err error) bool {
+			switch err.(type) {
+			<if .ResultSpec>
+				<range .ResultSpec.Exceptions>
+				case <typeReferencePtr .Type>:
+					return true
+				<end>
+			<end>
+			default:
+				return false
+			}
+		}`, f)
+}
+
+func functionMakeArgs(g Generator, f *compile.FunctionSpec) error {
 	return g.DeclareFromTemplate(
 		`
 		<$name := goCase .Name>
 
-		var <$name> = struct{
-			IsException func(error) bool
+		func Make<$name>Args(
+			<range .ArgsSpec>
+				<if .Required>
+					<.Name> <typeReference .Type>,
+				<else>
+					<.Name> <typeReferencePtr .Type>,
+				<end>
+			<end>
+		) *<$name>Args {
+			return &<$name>Args{
+			<range .ArgsSpec>
+				<if .Required>
+					<goCase .Name>: <.Name>,
+				<else>
+					<goCase .Name>: <.Name>,
+				<end>
+			<end>
+			}
+		}
+		`, f)
+}
 
-			Args func(
-				<range .ArgsSpec>
-					<if .Required>
-						<.Name> <typeReference .Type>,
-					<else>
-						<.Name> <typeReferencePtr .Type>,
+func functionWrapResponse(g Generator, f *compile.FunctionSpec) error {
+	return g.DeclareFromTemplate(
+		`
+		<$name := goCase .Name>
+
+		<if .HasReturn>
+			func Wrap<$name>Response(
+				success <typeReferencePtr .ResultSpec.ReturnType>,
+				err error) (*<$name>Result, error) {
+				if err == nil {
+					return &<$name>Result{Success: success}, nil
+				}
+		<else>
+			func Wrap<$name>Response(err error) (*<$name>Result, error) {
+				if err == nil {
+					return &<$name>Result{}, nil
+				}
+		<end>
+				<if .ResultSpec>
+					<if .ResultSpec.Exceptions>
+						switch e := err.(type) {
+							<range .ResultSpec.Exceptions>
+							case <typeReferencePtr .Type>:
+								return &<$name>Result{<goCase .Name>: e}, nil
+							<end>
+						}
 					<end>
 				<end>
-			) *<$name>Args
+				return nil, err
+			}
+		`, f)
+}
 
-			<if .HasReturn>
-				WrapResponse func(<typeReferencePtr .ResultSpec.ReturnType>, error) (*<$name>Result, error)
-				UnwrapResponse func(*<$name>Result) (<typeReferencePtr .ResultSpec.ReturnType>, error)
-			<else>
-				WrapResponse func(error) (*<$name>Result, error)
-				UnwrapResponse func(*<$name>Result) error
-			<end>
-		}{}
+func functionUnwrapResponse(g Generator, f *compile.FunctionSpec) error {
+	return g.DeclareFromTemplate(
+		`
+		<$name := goCase .Name>
 
-		func init() {
-			<$name>.IsException = func(err error) bool {
-				switch err.(type) {
+		<if .HasReturn>
+			func Unwrap<$name>Response(result *<$name>Result) (
+				success <typeReferencePtr .ResultSpec.ReturnType>,
+				err error) {
+		<else>
+			func Unwrap<$name>Response(result *<$name>Result) (err error) {
+		<end>
 				<if .ResultSpec>
 					<range .ResultSpec.Exceptions>
-					case <typeReferencePtr .Type>:
-						return true
-					<end>
-				<end>
-				default:
-					return false
-				}
-			}
-
-			<$name>.Args = func(
-				<range .ArgsSpec>
-					<if .Required>
-						<.Name> <typeReference .Type>,
-					<else>
-						<.Name> <typeReferencePtr .Type>,
-					<end>
-				<end>
-			) *<$name>Args {
-				return &<$name>Args{
-				<range .ArgsSpec>
-					<if .Required>
-						<goCase .Name>: <.Name>,
-					<else>
-						<goCase .Name>: <.Name>,
-					<end>
-				<end>
-				}
-			}
-
-			<$name>.WrapResponse =
-			<if .HasReturn>
-				func(success <typeReferencePtr .ResultSpec.ReturnType>, err error) (*<$name>Result, error) {
-					if err == nil {
-						return &<$name>Result{Success: success}, nil
-					}
-			<else>
-				func(err error) (*<$name>Result, error) {
-					if err == nil {
-						return &<$name>Result{}, nil
-					}
-			<end>
-					<if .ResultSpec>
-						<if .ResultSpec.Exceptions>
-							switch e := err.(type) {
-								<range .ResultSpec.Exceptions>
-								case <typeReferencePtr .Type>:
-									return &<$name>Result{<goCase .Name>: e}, nil
-								<end>
-							}
-						<end>
-					<end>
-					return nil, err
-				}
-
-			<$name>.UnwrapResponse =
-			<if .HasReturn>
-				func(result *<$name>Result) (success <typeReferencePtr .ResultSpec.ReturnType>, err error) {
-			<else>
-				func(result *<$name>Result) (err error) {
-			<end>
-					<if .ResultSpec>
-						<range .ResultSpec.Exceptions>
-							if result.<goCase .Name> != nil {
-								err = result.<goCase .Name>
-								return
-							}
-						<end>
-					<end>
-
-					// TODO unrecognized exceptions
-
-					<if .HasReturn>
-						if result.Success != nil {
-							success = result.Success
+						if result.<goCase .Name> != nil {
+							err = result.<goCase .Name>
 							return
 						}
-
-						// TODO library-level error type
-						err = <import "errors">.New("expected a non-void result")
-						return
-					<else>
-						return
 					<end>
+				<end>
 
-				}
-		}
+				// TODO unrecognized exceptions
+
+				<if .HasReturn>
+					if result.Success != nil {
+						success = result.Success
+						return
+					}
+
+					// TODO library-level error type
+					err = <import "errors">.New("expected a non-void result")
+					return
+				<else>
+					return
+				<end>
+
+			}
 		`, f)
 }

@@ -116,49 +116,39 @@ func (v *DeleteValueResult) String() string {
 	}
 	return fmt.Sprintf("DeleteValueResult{%v}", strings.Join(fields[:i], ", "))
 }
-
-var DeleteValue = struct {
-	IsException    func(error) bool
-	Args           func(key *services.Key) *DeleteValueArgs
-	WrapResponse   func(error) (*DeleteValueResult, error)
-	UnwrapResponse func(*DeleteValueResult) error
-}{}
-
-func init() {
-	DeleteValue.IsException = func(err error) bool {
-		switch err.(type) {
-		case *exceptions.DoesNotExistException:
-			return true
-		case *services.InternalError:
-			return true
-		default:
-			return false
-		}
+func IsDeleteValueException(err error) bool {
+	switch err.(type) {
+	case *exceptions.DoesNotExistException:
+		return true
+	case *services.InternalError:
+		return true
+	default:
+		return false
 	}
-	DeleteValue.Args = func(key *services.Key) *DeleteValueArgs {
-		return &DeleteValueArgs{Key: key}
+}
+func MakeDeleteValueArgs(key *services.Key) *DeleteValueArgs {
+	return &DeleteValueArgs{Key: key}
+}
+func WrapDeleteValueResponse(err error) (*DeleteValueResult, error) {
+	if err == nil {
+		return &DeleteValueResult{}, nil
 	}
-	DeleteValue.WrapResponse = func(err error) (*DeleteValueResult, error) {
-		if err == nil {
-			return &DeleteValueResult{}, nil
-		}
-		switch e := err.(type) {
-		case *exceptions.DoesNotExistException:
-			return &DeleteValueResult{DoesNotExist: e}, nil
-		case *services.InternalError:
-			return &DeleteValueResult{InternalError: e}, nil
-		}
-		return nil, err
+	switch e := err.(type) {
+	case *exceptions.DoesNotExistException:
+		return &DeleteValueResult{DoesNotExist: e}, nil
+	case *services.InternalError:
+		return &DeleteValueResult{InternalError: e}, nil
 	}
-	DeleteValue.UnwrapResponse = func(result *DeleteValueResult) (err error) {
-		if result.DoesNotExist != nil {
-			err = result.DoesNotExist
-			return
-		}
-		if result.InternalError != nil {
-			err = result.InternalError
-			return
-		}
+	return nil, err
+}
+func UnwrapDeleteValueResponse(result *DeleteValueResult) (err error) {
+	if result.DoesNotExist != nil {
+		err = result.DoesNotExist
 		return
 	}
+	if result.InternalError != nil {
+		err = result.InternalError
+		return
+	}
+	return
 }
