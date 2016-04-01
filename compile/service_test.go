@@ -77,6 +77,7 @@ func TestCompileService(t *testing.T) {
 						Type: BinarySpec,
 					},
 				},
+				ResultSpec: &ResultSpec{},
 			},
 			"getValue": {
 				Name: "getValue",
@@ -165,6 +166,7 @@ func TestCompileService(t *testing.T) {
 								},
 							},
 						},
+						ResultSpec: &ResultSpec{},
 					},
 				},
 			},
