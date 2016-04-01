@@ -176,6 +176,10 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 						switch e := err.(type) {
 							<range .ResultSpec.Exceptions>
 							case <typeReferencePtr .Type>:
+								if e == nil {
+									return nil, <import "errors">.New(
+										"WrapResponse received non-nil error type with nil value for <$name>Result.<goCase .Name>")
+								}
 								return &<$name>Result{<goCase .Name>: e}, nil
 							<end>
 						}

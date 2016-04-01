@@ -139,6 +139,9 @@ func init() {
 		}
 		switch e := err.(type) {
 		case *exceptions.DoesNotExistException:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for GetValueResult.DoesNotExist")
+			}
 			return &GetValueResult{DoesNotExist: e}, nil
 		}
 		return nil, err

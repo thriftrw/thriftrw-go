@@ -3,6 +3,7 @@
 package keyvalue
 
 import (
+	"errors"
 	"fmt"
 	"github.com/thriftrw/thriftrw-go/gen/testdata/exceptions"
 	"github.com/thriftrw/thriftrw-go/gen/testdata/services"
@@ -151,8 +152,14 @@ func init() {
 		}
 		switch e := err.(type) {
 		case *exceptions.DoesNotExistException:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for DeleteValueResult.DoesNotExist")
+			}
 			return &DeleteValueResult{DoesNotExist: e}, nil
 		case *services.InternalError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for DeleteValueResult.InternalError")
+			}
 			return &DeleteValueResult{InternalError: e}, nil
 		}
 		return nil, err

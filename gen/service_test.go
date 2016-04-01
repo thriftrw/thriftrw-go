@@ -328,6 +328,14 @@ func TestWrapResponse(t *testing.T) {
 	}
 }
 
+func TestWrapResponseNillError(t *testing.T) {
+	_, err := keyvalue.GetValueHelper.WrapResponse(nil, (*tx.DoesNotExistException)(nil))
+	if assert.Error(t, err) {
+		assert.Contains(t, err.Error(),
+			"received non-nil error type with nil value for GetValueResult.DoesNotExist")
+	}
+}
+
 func TestUnwrapResponse(t *testing.T) {
 	tests := []struct {
 		desc           string
