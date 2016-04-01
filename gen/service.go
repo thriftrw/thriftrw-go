@@ -39,8 +39,8 @@ func Service(g Generator, s *compile.ServiceSpec) (map[string]*bytes.Buffer, err
 	// TODO inherited service functions
 
 	for _, functionName := range sortStringKeys(s.Functions) {
-		err := ServiceFunction(g, s, s.Functions[functionName])
-		if err != nil {
+		function := s.Functions[functionName]
+		if err := ServiceFunction(g, s, function); err != nil {
 			return nil, fmt.Errorf(
 				"could not generate types for %s.%s: %v",
 				s.Name, functionName, err)
