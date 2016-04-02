@@ -129,93 +129,134 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 		}{}
 
 		func init() {
-			<$name>Helper.IsException = func(err error) bool {
-				switch err.(type) {
-				<range .ResultSpec.Exceptions>
-					case <typeReferencePtr .Type>:
-						return true
-				<end>
-				default:
-					return false
-				}
-			}
-
-			<$name>Helper.Args = func(
-				<range .ArgsSpec>
-					<if .Required>
-						<.Name> <typeReference .Type>,
-					<else>
-						<.Name> <typeReferencePtr .Type>,
-					<end>
-				<end>
-			) *<$name>Args {
-				return &<$name>Args{
-				<range .ArgsSpec>
-					<if .Required>
-						<goCase .Name>: <.Name>,
-					<else>
-						<goCase .Name>: <.Name>,
-					<end>
-				<end>
-				}
-			}
-
-			<$name>Helper.WrapResponse =
-			<if .ResultSpec.ReturnType>
-				func(success <typeReferencePtr .ResultSpec.ReturnType>, err error) (*<$name>Result, error) {
-					if err == nil {
-						return &<$name>Result{Success: success}, nil
-					}
-			<else>
-				func(err error) (*<$name>Result, error) {
-					if err == nil {
-						return &<$name>Result{}, nil
-					}
-			<end>
-					<if .ResultSpec.Exceptions>
-						switch e := err.(type) {
-							<range .ResultSpec.Exceptions>
-							case <typeReferencePtr .Type>:
-								if e == nil {
-									return nil, <import "errors">.New(
-										"WrapResponse received non-nil error type with nil value for <$name>Result.<goCase .Name>")
-								}
-								return &<$name>Result{<goCase .Name>: e}, nil
-							<end>
-						}
-					<end>
-					return nil, err
-				}
-
-			<$name>Helper.UnwrapResponse =
-			<if .ResultSpec.ReturnType>
-				func(result *<$name>Result) (success <typeReferencePtr .ResultSpec.ReturnType>, err error) {
-			<else>
-				func(result *<$name>Result) (err error) {
-			<end>
-					<range .ResultSpec.Exceptions>
-						if result.<goCase .Name> != nil {
-							err = result.<goCase .Name>
-							return
-						}
-					<end>
-
-					// TODO unrecognized exceptions
-
-					<if .ResultSpec.ReturnType>
-						if result.Success != nil {
-							success = result.Success
-							return
-						}
-
-						// TODO library-level error type
-						err = <import "errors">.New("expected a non-void result")
-						return
-					<else>
-						return
-					<end>
-
-				}
+			<$name>Helper.IsException = <isException .>
+			<$name>Helper.Args = <newArgs .>
+			<$name>Helper.WrapResponse = <wrapResponse .>
+			<$name>Helper.UnwrapResponse = <unwrapResponse .>
 		}
+		`,
+		f,
+		TemplateFunc("isException", functionIsException),
+		TemplateFunc("newArgs", functionNewArgs),
+		TemplateFunc("wrapResponse", functionWrapResponse),
+		TemplateFunc("unwrapResponse", functionUnwrapResponse),
+	)
+}
+
+// functionIsException generates an expression that provides the IsException
+// function for the given Thrift function.
+func functionIsException(g Generator, f *compile.FunctionSpec) (string, error) {
+	return g.TextTemplate(
+		`
+		func(err error) bool {
+			switch err.(type) {
+			<range .ResultSpec.Exceptions>
+				case <typeReferencePtr .Type>:
+					return true
+			<end>
+			default:
+				return false
+			}
+		}
+		`, f)
+}
+
+// functionNewArgs generates an expression which provides the NewArgs function
+// for the given Thrift function.
+func functionNewArgs(g Generator, f *compile.FunctionSpec) (string, error) {
+	return g.TextTemplate(
+		`
+		func(
+			<range .ArgsSpec>
+				<if .Required>
+					<.Name> <typeReference .Type>,
+				<else>
+					<.Name> <typeReferencePtr .Type>,
+				<end>
+			<end>
+		) *<goCase .Name>Args {
+			return &<goCase .Name>Args{
+			<range .ArgsSpec>
+				<if .Required>
+					<goCase .Name>: <.Name>,
+				<else>
+					<goCase .Name>: <.Name>,
+				<end>
+			<end>
+			}
+		}
+		`, f)
+}
+
+// functionWrapResponse generates an expression that provides the WrapResponse
+// function for the given Thrift function.
+func functionWrapResponse(g Generator, f *compile.FunctionSpec) (string, error) {
+	return g.TextTemplate(
+		`
+		<$name := goCase .Name>
+		<if .ResultSpec.ReturnType>
+			func(success <typeReferencePtr .ResultSpec.ReturnType>,
+				err error) (*<$name>Result, error) {
+				if err == nil {
+					return &<$name>Result{Success: success}, nil
+				}
+		<else>
+			func(err error) (*<$name>Result, error) {
+				if err == nil {
+					return &<$name>Result{}, nil
+				}
+		<end>
+				<if .ResultSpec.Exceptions>
+					switch e := err.(type) {
+						<range .ResultSpec.Exceptions>
+						case <typeReferencePtr .Type>:
+							if e == nil {
+								return nil, <import "errors">.New(
+									"WrapResponse received non-nil error type with nil value for <$name>Result.<goCase .Name>")
+							}
+							return &<$name>Result{<goCase .Name>: e}, nil
+						<end>
+					}
+				<end>
+				return nil, err
+			}
+		`, f)
+}
+
+// functionUnwrapResponse generates an expression that provides the
+// UnwrapResponse function for the given Thrift function.
+func functionUnwrapResponse(g Generator, f *compile.FunctionSpec) (string, error) {
+	return g.TextTemplate(
+		`
+		<if .ResultSpec.ReturnType>
+			func(result *<goCase .Name>Result) (
+				success <typeReferencePtr .ResultSpec.ReturnType>,
+				err error) {
+		<else>
+			func(result *<goCase .Name>Result) (err error) {
+		<end>
+				<range .ResultSpec.Exceptions>
+					if result.<goCase .Name> != nil {
+						err = result.<goCase .Name>
+						return
+					}
+				<end>
+
+				// TODO unrecognized exceptions
+
+				<if .ResultSpec.ReturnType>
+					if result.Success != nil {
+						success = result.Success
+						return
+					}
+
+					// TODO library-level error type
+					err = <import "errors">.New("expected a non-void result")
+					return
+				<else>
+					return
+				<end>
+
+			}
 		`, f)
 }
