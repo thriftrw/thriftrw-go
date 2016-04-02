@@ -112,16 +112,19 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 			Args func(
 				<range .ArgsSpec>
 					<if .Required>
-						<.Name> <typeReference .Type>,
+						<unreserve .Name> <typeReference .Type>,
 					<else>
-						<.Name> <typeReferencePtr .Type>,
+						<unreserve .Name> <typeReferencePtr .Type>,
 					<end>
 				<end>
 			) *<$name>Args
 
 			<if .ResultSpec.ReturnType>
-				WrapResponse func(<typeReferencePtr .ResultSpec.ReturnType>, error) (*<$name>Result, error)
-				UnwrapResponse func(*<$name>Result) (<typeReferencePtr .ResultSpec.ReturnType>, error)
+				WrapResponse func(
+					<typeReferencePtr .ResultSpec.ReturnType>,
+					error) (*<$name>Result, error)
+				UnwrapResponse func(*<$name>Result) (
+					<typeReferencePtr .ResultSpec.ReturnType>, error)
 			<else>
 				WrapResponse func(error) (*<$name>Result, error)
 				UnwrapResponse func(*<$name>Result) error
@@ -140,6 +143,12 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 		TemplateFunc("newArgs", functionNewArgs),
 		TemplateFunc("wrapResponse", functionWrapResponse),
 		TemplateFunc("unwrapResponse", functionUnwrapResponse),
+		TemplateFunc("unreserve", func(n string) string {
+			if isReservedKeyword(n) {
+				n = n + "_"
+			}
+			return n
+		}),
 	)
 }
 
@@ -169,23 +178,30 @@ func functionNewArgs(g Generator, f *compile.FunctionSpec) (string, error) {
 		func(
 			<range .ArgsSpec>
 				<if .Required>
-					<.Name> <typeReference .Type>,
+					<unreserve .Name> <typeReference .Type>,
 				<else>
-					<.Name> <typeReferencePtr .Type>,
+					<unreserve .Name> <typeReferencePtr .Type>,
 				<end>
 			<end>
 		) *<goCase .Name>Args {
 			return &<goCase .Name>Args{
 			<range .ArgsSpec>
 				<if .Required>
-					<goCase .Name>: <.Name>,
+					<goCase .Name>: <unreserve .Name>,
 				<else>
-					<goCase .Name>: <.Name>,
+					<goCase .Name>: <unreserve .Name>,
 				<end>
 			<end>
 			}
 		}
-		`, f)
+		`, f,
+		TemplateFunc("unreserve", func(n string) string {
+			if isReservedKeyword(n) {
+				n = n + "_"
+			}
+			return n
+		}),
+	)
 }
 
 // functionWrapResponse generates an expression that provides the WrapResponse

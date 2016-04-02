@@ -71,12 +71,6 @@ func (v *GetValueResult) ToWire() wire.Value {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
 }
 
-func _ArbitraryValue_Read(w wire.Value) (*unions.ArbitraryValue, error) {
-	var v unions.ArbitraryValue
-	err := v.FromWire(w)
-	return &v, err
-}
-
 func (v *GetValueResult) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {

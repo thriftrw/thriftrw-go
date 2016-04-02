@@ -21,4 +21,10 @@ service KeyValue {
             1: exceptions.DoesNotExistException doesNotExist,
             2: InternalError internalError
         )
+
+    list<unions.ArbitraryValue> getManyValues(
+        1: list<Key> range  // < reserved keyword as an argument
+    ) throws (
+        1: exceptions.DoesNotExistException doesNotExist,
+    )
 }
