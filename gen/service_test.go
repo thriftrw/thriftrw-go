@@ -328,7 +328,7 @@ func TestWrapResponse(t *testing.T) {
 	}
 }
 
-func TestWrapResponseNillError(t *testing.T) {
+func TestWrapResponseTypedNilError(t *testing.T) {
 	_, err := keyvalue.GetValueHelper.WrapResponse(nil, (*tx.DoesNotExistException)(nil))
 	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(),
@@ -367,6 +367,16 @@ func TestUnwrapResponse(t *testing.T) {
 			expectedError: &tx.DoesNotExistException{Key: "foo"},
 		},
 		{
+			desc:           "getValue failure with success set",
+			unwrapResponse: keyvalue.GetValueHelper.UnwrapResponse,
+			resultArg: &keyvalue.GetValueResult{
+				Success:      &tu.ArbitraryValue{BoolValue: boolp(true)},
+				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
+			},
+			// exception takes precedence over success
+			expectedError: &tx.DoesNotExistException{Key: "foo"},
+		},
+		{
 			desc:           "deleteValue success",
 			unwrapResponse: keyvalue.DeleteValueHelper.UnwrapResponse,
 			resultArg:      &keyvalue.DeleteValueResult{},
@@ -386,6 +396,16 @@ func TestUnwrapResponse(t *testing.T) {
 				InternalError: &tv.InternalError{},
 			},
 			expectedError: &tv.InternalError{},
+		},
+		{
+			desc:           "deleteValue failure multiple values set",
+			unwrapResponse: keyvalue.DeleteValueHelper.UnwrapResponse,
+			resultArg: &keyvalue.DeleteValueResult{
+				DoesNotExist:  &tx.DoesNotExistException{Key: "foo"},
+				InternalError: &tv.InternalError{},
+			},
+			// lower field ID takes precedence
+			expectedError: &tx.DoesNotExistException{Key: "foo"},
 		},
 	}
 

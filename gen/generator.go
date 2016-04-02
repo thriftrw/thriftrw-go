@@ -50,7 +50,7 @@ type Generator interface {
 	// DeclareFromTemplate renders the given template, and includes the
 	// declarations from the generated Go code in the package being generated.
 	// The next call to Write will write these declarations and any other
-	// declerations that have not been written so far.
+	// declarations that have not been written so far.
 	DeclareFromTemplate(s string, data interface{}, opts ...TemplateOption) error
 
 	// LookupTypeName returns the fully qualified name that should be used for

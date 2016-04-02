@@ -200,7 +200,9 @@ func generateModule(m *compile.Module, i thriftPackageImporter, outDir string) e
 			g := NewGenerator(i, importPath, packageName)
 			serviceFiles, err := Service(g, service)
 			if err != nil {
-				return fmt.Errorf("could not code for %s: %v", serviceName, err)
+				return fmt.Errorf(
+					"could not generate code for service %q: %v",
+					serviceName, err)
 			}
 
 			for name, buff := range serviceFiles {
