@@ -55,14 +55,13 @@ func NewNamespace() Namespace {
 }
 
 func (n *namespace) isTaken(name string) bool {
-	_, ok := n.taken[name]
-	if ok {
+	if _, ok := n.taken[name]; ok {
 		return true
 	}
 	if n.parent != nil {
 		return n.parent.isTaken(name)
 	}
-	return false
+	return isReservedKeyword(name)
 }
 
 func (n *namespace) NewName(base string) string {
