@@ -206,7 +206,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, outDir string) e
 			}
 
 			for name, buff := range serviceFiles {
-				filename := filepath.Join(packageName, name)
+				filename := filepath.Join("service", packageName, name)
 				files[filename] = buff
 			}
 		}
