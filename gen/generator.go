@@ -175,6 +175,7 @@ func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOpt
 		"toWire":           curryGenerator(g.w.ToWire, g),
 		"toWirePtr":        curryGenerator(g.w.ToWirePtr, g),
 		"typeCode":         curryGenerator(TypeCode, g),
+		"zeroValue":        zeroValue,
 	}
 
 	tmpl := template.New("thriftrw").Delims("<", ">").Funcs(templateFuncs)

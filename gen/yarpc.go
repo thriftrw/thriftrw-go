@@ -202,7 +202,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 				<end>
 			) (
 				<if .ResultSpec.ReturnType>
-					<typeReferencePtr .ResultSpec.ReturnType>,
+					<typeReference .ResultSpec.ReturnType>,
 				<end>
 				*<$thrift>.Response,
 				 error,
@@ -216,13 +216,21 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 				<$res := $params.NewName "res">
 				<$body>, <$res>, err := c.c.Call("<.Name>", <$req>, <$args>.ToWire())
 				if err != nil {
-					return <if .ResultSpec.ReturnType>nil,<end><$res>, err
+					<if .ResultSpec.ReturnType>
+						return <zeroValue .ResultSpec.ReturnType>, <$res>, err
+					<else>
+						return <$res>, err
+					<end>
 				}
 
 				<$result := $params.NewName "result">
 				var <$result> <$Result>
 				if err := <$result>.FromWire(<$body>); err != nil {
-					return <if .ResultSpec.ReturnType>nil,<end> <$res>, err
+					<if .ResultSpec.ReturnType>
+						return <zeroValue .ResultSpec.ReturnType>, <$res>, err
+					<else>
+						return <$res>, err
+					<end>
 				}
 
 				<$succ := $params.NewName "success">
@@ -277,7 +285,7 @@ func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 					<end>
 				) (
 					<if .ResultSpec.ReturnType>
-						<typeReferencePtr .ResultSpec.ReturnType>,
+						<typeReference .ResultSpec.ReturnType>,
 					<end>
 					*<$thrift>.Response,
 					 error,
