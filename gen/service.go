@@ -101,6 +101,28 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 	return nil
 }
 
+// functionParams returns a named parameter list for the given function.
+func functionParams(g Generator, f *compile.FunctionSpec) (string, error) {
+	return g.TextTemplate(
+		`
+				<range .ArgsSpec>
+					<if .Required>
+						<unreserve .Name> <typeReference .Type>,
+					<else>
+						<unreserve .Name> <typeReferencePtr .Type>,
+					<end>
+				<end>
+        `,
+		f,
+		TemplateFunc("unreserve", func(n string) string {
+			if isReservedKeyword(n) {
+				n = n + "_"
+			}
+			return n
+		}),
+	)
+}
+
 func functionHelper(g Generator, f *compile.FunctionSpec) error {
 	return g.DeclareFromTemplate(
 		`
@@ -109,15 +131,7 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 		var <$name>Helper = struct{
 			IsException func(error) bool
 
-			Args func(
-				<range .ArgsSpec>
-					<if .Required>
-						<unreserve .Name> <typeReference .Type>,
-					<else>
-						<unreserve .Name> <typeReferencePtr .Type>,
-					<end>
-				<end>
-			) *<$name>Args
+			Args func(<params .>) *<$name>Args
 
 			<if .ResultSpec.ReturnType>
 				WrapResponse func(
@@ -139,16 +153,11 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 		}
 		`,
 		f,
+		TemplateFunc("params", functionParams),
 		TemplateFunc("isException", functionIsException),
 		TemplateFunc("newArgs", functionNewArgs),
 		TemplateFunc("wrapResponse", functionWrapResponse),
 		TemplateFunc("unwrapResponse", functionUnwrapResponse),
-		TemplateFunc("unreserve", func(n string) string {
-			if isReservedKeyword(n) {
-				n = n + "_"
-			}
-			return n
-		}),
 	)
 }
 

@@ -45,6 +45,14 @@ type Namespace interface {
 	// Create a new Child namespace. The child namespace cannot use any names
 	// defined in this namespace or any of its parent namespaces.
 	Child() Namespace
+
+	// Rotate returns the oldest known name that was used for the given
+	// requested name, and moves it to the end of the list of names used for
+	// that requested name.
+	//
+	// This may be used to access the names used in a template dynamically in a
+	// deterministic order if recording them in local variables is not possible.
+	Rotate(name string) (string, error)
 }
 
 // namespace helps reserve names within a scope with support for child
@@ -52,11 +60,18 @@ type Namespace interface {
 type namespace struct {
 	parent *namespace
 	taken  map[string]struct{}
+
+	// gave is a mapping from the name requested by the user to the names we
+	// returned
+	gave map[string][]string
 }
 
 // NewNamespace creates a new namespace.
 func NewNamespace() Namespace {
-	return &namespace{taken: make(map[string]struct{})}
+	return &namespace{
+		taken: make(map[string]struct{}),
+		gave:  make(map[string][]string),
+	}
 }
 
 func (n *namespace) isTaken(name string) bool {
@@ -76,7 +91,25 @@ func (n *namespace) NewName(base string) string {
 		name = fmt.Sprintf("%s%d", base, i)
 	}
 	n.taken[name] = struct{}{}
+
+	if _, ok := n.gave[base]; !ok {
+		n.gave[base] = []string{}
+	}
+	n.gave[base] = append(n.gave[base], name)
+
 	return name
+}
+
+func (n *namespace) Rotate(base string) (string, error) {
+	names, ok := n.gave[base]
+	if !ok || len(names) == 0 {
+		return "", fmt.Errorf("%q is not a known name", base)
+	}
+
+	name := names[0]
+	names = names[1:]
+	n.gave[base] = append(names, name)
+	return name, nil
 }
 
 func (n *namespace) Reserve(name string) error {
@@ -92,7 +125,11 @@ func (n *namespace) Forget(name string) {
 }
 
 func (n *namespace) Child() Namespace {
-	return &namespace{parent: n, taken: make(map[string]struct{})}
+	return &namespace{
+		parent: n,
+		taken:  make(map[string]struct{}),
+		gave:   make(map[string][]string),
+	}
 }
 
 type namespaceError struct {

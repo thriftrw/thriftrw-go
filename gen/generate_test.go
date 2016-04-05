@@ -81,7 +81,7 @@ func TestThriftPackageImporter(t *testing.T) {
 			Relative:       "foo",
 			Package:        "github.com/myteam/myservice/foo",
 			ServiceName:    "MyService",
-			ServicePackage: "github.com/myteam/myservice/foo/myservice",
+			ServicePackage: "github.com/myteam/myservice/foo/service/myservice",
 		},
 		{
 			File:     "/src/thrift/shared/common.thrift",
