@@ -1,7 +1,7 @@
 ROOT = ../..
 THRIFTRW = $(ROOT)/thriftrw-go
 THRIFT_FILES = $(wildcard thrift/*.thrift)
-PACKAGES = $(patsubst %.thrift, %, $(THRIFT_FILES))
+PACKAGES = $(patsubst %.thrift, %, $(notdir $(THRIFT_FILES)))
 
 .PHONY: all
 all: $(PACKAGES)
@@ -14,5 +14,5 @@ clean:
 $(THRIFTRW):
 	make -C $(ROOT) build
 
-%: %.thrift $(THRIFTRW)
+%: thrift/%.thrift $(THRIFTRW)
 	$(THRIFTRW) -no-recurse $<

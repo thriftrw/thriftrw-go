@@ -27,7 +27,7 @@ import (
 
 	tx "github.com/thriftrw/thriftrw-go/gen/testdata/exceptions"
 	tv "github.com/thriftrw/thriftrw-go/gen/testdata/services"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/services/keyvalue"
+	"github.com/thriftrw/thriftrw-go/gen/testdata/services/service/keyvalue"
 	tu "github.com/thriftrw/thriftrw-go/gen/testdata/unions"
 	"github.com/thriftrw/thriftrw-go/wire"
 
