@@ -21,7 +21,6 @@
 package compile
 
 import (
-	"io/ioutil"
 	"path/filepath"
 
 	"github.com/thriftrw/thriftrw-go/ast"
@@ -30,8 +29,11 @@ import (
 
 // Compile parses and compiles the Thrift file at the given path and any other
 // Thrift file it includes.
-func Compile(path string) (*Module, error) {
+func Compile(path string, opts ...Option) (*Module, error) {
 	c := newCompiler()
+	for _, opt := range opts {
+		opt(&c)
+	}
 
 	m, err := c.load(path)
 	if err != nil {
@@ -52,12 +54,15 @@ func Compile(path string) (*Module, error) {
 
 // compiler is responsible for compiling Thrift files.
 type compiler struct {
+	// fs is the interface used to interact with the filesystem.
+	fs FS
 	// Map from file path to Module representing that file.
 	Modules map[string]*Module
 }
 
 func newCompiler() compiler {
 	return compiler{
+		fs:      realFS{},
 		Modules: make(map[string]*Module),
 	}
 }
@@ -110,7 +115,7 @@ func (c compiler) link(m *Module) error {
 //
 // The types aren't actually compiled in this step.
 func (c compiler) load(p string) (*Module, error) {
-	p, err := filepath.Abs(p)
+	p, err := c.fs.Abs(p)
 	if err != nil {
 		return nil, err
 	}
@@ -120,7 +125,7 @@ func (c compiler) load(p string) (*Module, error) {
 		return m, nil
 	}
 
-	s, err := ioutil.ReadFile(p)
+	s, err := c.fs.Read(p)
 	if err != nil {
 		return nil, fileReadError{Path: p, Reason: err}
 	}
