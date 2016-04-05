@@ -4,7 +4,7 @@ PACKAGES := $(shell glide novendor)
 
 .PHONY: build
 build:
-	go build
+	go build -i
 
 .PHONY: test
 test: build
