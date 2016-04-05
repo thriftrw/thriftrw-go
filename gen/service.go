@@ -121,10 +121,10 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 
 			<if .ResultSpec.ReturnType>
 				WrapResponse func(
-					<typeReferencePtr .ResultSpec.ReturnType>,
+					<typeReference .ResultSpec.ReturnType>,
 					error) (*<$name>Result, error)
 				UnwrapResponse func(*<$name>Result) (
-					<typeReferencePtr .ResultSpec.ReturnType>, error)
+					<typeReference .ResultSpec.ReturnType>, error)
 			<else>
 				WrapResponse func(error) (*<$name>Result, error)
 				UnwrapResponse func(*<$name>Result) error
@@ -211,10 +211,14 @@ func functionWrapResponse(g Generator, f *compile.FunctionSpec) (string, error) 
 		`
 		<$name := goCase .Name>
 		<if .ResultSpec.ReturnType>
-			func(success <typeReferencePtr .ResultSpec.ReturnType>,
+			func(success <typeReference .ResultSpec.ReturnType>,
 				err error) (*<$name>Result, error) {
 				if err == nil {
-					return &<$name>Result{Success: success}, nil
+					<if isPrimitiveType .ResultSpec.ReturnType>
+						return &<$name>Result{Success: &success}, nil
+					<else>
+						return &<$name>Result{Success: success}, nil
+					<end>
 				}
 		<else>
 			func(err error) (*<$name>Result, error) {
@@ -246,7 +250,7 @@ func functionUnwrapResponse(g Generator, f *compile.FunctionSpec) (string, error
 		`
 		<if .ResultSpec.ReturnType>
 			func(result *<goCase .Name>Result) (
-				success <typeReferencePtr .ResultSpec.ReturnType>,
+				success <typeReference .ResultSpec.ReturnType>,
 				err error) {
 		<else>
 			func(result *<goCase .Name>Result) (err error) {
@@ -262,7 +266,11 @@ func functionUnwrapResponse(g Generator, f *compile.FunctionSpec) (string, error
 
 				<if .ResultSpec.ReturnType>
 					if result.Success != nil {
-						success = result.Success
+						<if isPrimitiveType .ResultSpec.ReturnType>
+							success = *result.Success
+						<else>
+							success = result.Success
+						<end>
 						return
 					}
 

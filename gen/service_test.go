@@ -139,6 +139,13 @@ func TestServiceArgsAndResult(t *testing.T) {
 				},
 			}}),
 		},
+		{
+			desc: "size result",
+			x:    &keyvalue.SizeResult{Success: int64p(42)},
+			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 0, Value: wire.NewValueI64(42)},
+			}}),
+		},
 	}
 
 	for _, tt := range tests {
@@ -316,6 +323,20 @@ func TestWrapResponse(t *testing.T) {
 			},
 			expectedError: errors.New("foo"),
 		},
+		{
+			desc: "size success",
+			run: func() (interface{}, error) {
+				return keyvalue.SizeHelper.WrapResponse(42, nil)
+			},
+			expectedResult: &keyvalue.SizeResult{Success: int64p(42)},
+		},
+		{
+			desc: "size failure",
+			run: func() (interface{}, error) {
+				return keyvalue.SizeHelper.WrapResponse(42, errors.New("foo"))
+			},
+			expectedError: errors.New("foo"),
+		},
 	}
 
 	for _, tt := range tests {
@@ -406,6 +427,12 @@ func TestUnwrapResponse(t *testing.T) {
 			},
 			// lower field ID takes precedence
 			expectedError: &tx.DoesNotExistException{Key: "foo"},
+		},
+		{
+			desc:           "size success",
+			unwrapResponse: keyvalue.SizeHelper.UnwrapResponse,
+			resultArg:      &keyvalue.SizeResult{Success: int64p(42)},
+			expectedReturn: int64(42),
 		},
 	}
 

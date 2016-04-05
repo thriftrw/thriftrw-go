@@ -27,4 +27,6 @@ service KeyValue {
     ) throws (
         1: exceptions.DoesNotExistException doesNotExist,
     )
+
+    i64 size()  // < primitve return value
 }
