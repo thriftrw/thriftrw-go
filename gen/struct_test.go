@@ -687,6 +687,17 @@ func TestStructJSON(t *testing.T) {
 	}{
 		{&ts.Point{X: 0, Y: 0}, `{"x":0,"y":0}`},
 		{&ts.Point{X: 1, Y: 2}, `{"x":1,"y":2}`},
+		{
+			&ts.Edge{
+				Start: &ts.Point{X: 1, Y: 2},
+				End:   &ts.Point{X: 3, Y: 4},
+			},
+			`{"start":{"x":1,"y":2},"end":{"x":3,"y":4}}`,
+		},
+		{
+			&ts.Edge{Start: &ts.Point{X: 1, Y: 1}},
+			`{"start":{"x":1,"y":1},"end":null}`,
+		},
 		{&ts.User{Name: ""}, `{"name":""}`},
 		{&ts.User{Name: "foo"}, `{"name":"foo"}`},
 		{

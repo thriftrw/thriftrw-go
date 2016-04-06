@@ -65,15 +65,16 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 		}`,
 		f,
 		TemplateFunc("tag", func(f *compile.FieldSpec) string {
-			// We want to add omitempty if the field is a struct or if it's an
-			// optional primitive so that we don't have "null" noise in the
-			// output. Note that binary is not a primitive.
+			// We want to add omitempty if the field is an optional struct or
+			// primitive to redure "null" noise. We won't add omitempty for
+			// optional collections because omitempty doesn't differentiate
+			// between nil and empty collections.
 
-			if isStructType(f.Type) || (isPrimitiveType(f.Type) && !f.Required) {
+			if (isStructType(f.Type) || isPrimitiveType(f.Type)) && !f.Required {
 				return fmt.Sprintf("`json:\"%s,omitempty\"`", f.Name)
 			}
 
-			return fmt.Sprintf("`json:\"%s\"`", f.Name)
+			return fmt.Sprintf("`json:%q`", f.Name)
 			// TODO(abg): Take go.tag and js.name annotations into account
 		}),
 	)

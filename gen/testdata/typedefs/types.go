@@ -9,7 +9,7 @@ import (
 )
 
 type Event struct {
-	UUID *UUID      `json:"uuid,omitempty"`
+	UUID *UUID      `json:"uuid"`
 	Time *Timestamp `json:"time,omitempty"`
 }
 

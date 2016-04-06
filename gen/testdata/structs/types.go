@@ -45,8 +45,8 @@ func (v *ContactInfo) String() string {
 }
 
 type Edge struct {
-	Start *Point `json:"start,omitempty"`
-	End   *Point `json:"end,omitempty"`
+	Start *Point `json:"start"`
+	End   *Point `json:"end"`
 }
 
 func (v *Edge) ToWire() wire.Value {
@@ -121,8 +121,8 @@ func (v *EmptyStruct) String() string {
 }
 
 type Frame struct {
-	TopLeft *Point `json:"topLeft,omitempty"`
-	Size    *Size  `json:"size,omitempty"`
+	TopLeft *Point `json:"topLeft"`
+	Size    *Size  `json:"size"`
 }
 
 func (v *Frame) ToWire() wire.Value {
