@@ -62,6 +62,7 @@ func (t *typedefGenerator) Reader(g Generator, spec *compile.TypedefSpec) (strin
 func typedef(g Generator, spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
+		<$fmt := import "fmt">
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 		<$typedefType := typeReference .>
 
@@ -72,6 +73,11 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 		func (<$v> <$typedefType>) ToWire() <$wire>.Value {
 			<$x> := (<typeReference .Target>)(<$v>)
 			return <toWire .Target $x>
+		}
+
+		func (<$v> <$typedefType>) String() string {
+			<$x> := (<typeReference .Target>)(<$v>)
+			return <$fmt>.Sprint(<$x>)
 		}
 
 		<$w := newVar "w">

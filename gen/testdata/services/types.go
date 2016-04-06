@@ -61,6 +61,11 @@ func (v Key) ToWire() wire.Value {
 	return wire.NewValueString(x)
 }
 
+func (v Key) String() string {
+	x := (string)(v)
+	return fmt.Sprint(x)
+}
+
 func (v *Key) FromWire(w wire.Value) error {
 	x, err := w.GetString(), error(nil)
 	*v = (Key)(x)

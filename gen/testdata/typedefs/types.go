@@ -119,6 +119,11 @@ func (v EventGroup) ToWire() wire.Value {
 	return wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(x), Items: _List_Event_ValueList(x)})
 }
 
+func (v EventGroup) String() string {
+	x := ([]*Event)(v)
+	return fmt.Sprint(x)
+}
+
 func (v *EventGroup) FromWire(w wire.Value) error {
 	x, err := _List_Event_Read(w.GetList())
 	*v = (EventGroup)(x)
@@ -130,6 +135,11 @@ type Pdf []byte
 func (v Pdf) ToWire() wire.Value {
 	x := ([]byte)(v)
 	return wire.NewValueBinary(x)
+}
+
+func (v Pdf) String() string {
+	x := ([]byte)(v)
+	return fmt.Sprint(x)
 }
 
 func (v *Pdf) FromWire(w wire.Value) error {
@@ -145,6 +155,11 @@ func (v State) ToWire() wire.Value {
 	return wire.NewValueString(x)
 }
 
+func (v State) String() string {
+	x := (string)(v)
+	return fmt.Sprint(x)
+}
+
 func (v *State) FromWire(w wire.Value) error {
 	x, err := w.GetString(), error(nil)
 	*v = (State)(x)
@@ -156,6 +171,11 @@ type Timestamp int64
 func (v Timestamp) ToWire() wire.Value {
 	x := (int64)(v)
 	return wire.NewValueI64(x)
+}
+
+func (v Timestamp) String() string {
+	x := (int64)(v)
+	return fmt.Sprint(x)
 }
 
 func (v *Timestamp) FromWire(w wire.Value) error {
@@ -245,6 +265,11 @@ type UUID I128
 func (v *UUID) ToWire() wire.Value {
 	x := (*I128)(v)
 	return x.ToWire()
+}
+
+func (v *UUID) String() string {
+	x := (*I128)(v)
+	return fmt.Sprint(x)
 }
 
 func (v *UUID) FromWire(w wire.Value) error {
