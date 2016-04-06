@@ -8,7 +8,9 @@ import (
 	"strings"
 )
 
-type DoesNotExistException struct{ Key string }
+type DoesNotExistException struct {
+	Key string `json:"key"`
+}
 
 func (v *DoesNotExistException) ToWire() wire.Value {
 	var fields [1]wire.Field

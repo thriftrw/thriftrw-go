@@ -21,7 +21,9 @@
 package gen
 
 import (
+	"encoding/json"
 	"fmt"
+	"reflect"
 	"testing"
 
 	tc "github.com/thriftrw/thriftrw-go/gen/testdata/containers"
@@ -675,5 +677,110 @@ func TestEmptyException(t *testing.T) {
 	assert.Equal(t, x.ToWire(), v)
 	if assert.NoError(t, y.FromWire(v)) {
 		assert.Equal(t, x, y)
+	}
+}
+
+func TestStructJSON(t *testing.T) {
+	tests := []struct {
+		v interface{}
+		j string
+	}{
+		{&ts.Point{X: 0, Y: 0}, `{"x":0,"y":0}`},
+		{&ts.Point{X: 1, Y: 2}, `{"x":1,"y":2}`},
+		{
+			&ts.Edge{
+				Start: &ts.Point{X: 1, Y: 2},
+				End:   &ts.Point{X: 3, Y: 4},
+			},
+			`{"start":{"x":1,"y":2},"end":{"x":3,"y":4}}`,
+		},
+		{
+			&ts.Edge{Start: &ts.Point{X: 1, Y: 1}},
+			`{"start":{"x":1,"y":1},"end":null}`,
+		},
+		{&ts.User{Name: ""}, `{"name":""}`},
+		{&ts.User{Name: "foo"}, `{"name":"foo"}`},
+		{
+			&ts.User{
+				Name:    "foo",
+				Contact: &ts.ContactInfo{EmailAddress: "bar@example.com"},
+			},
+			`{"name":"foo","contact":{"emailAddress":"bar@example.com"}}`,
+		},
+		{
+			&ts.User{
+				Name:    "foo",
+				Contact: &ts.ContactInfo{EmailAddress: ""},
+			},
+			`{"name":"foo","contact":{"emailAddress":""}}`,
+		},
+		{&tu.EmptyUnion{}, "{}"},
+		{&tu.Document{Pdf: td.Pdf("hello")}, `{"pdf":"aGVsbG8="}`},
+		{&tu.Document{Pdf: td.Pdf{}}, `{"pdf":""}`},
+		{
+			&tu.Document{PlainText: stringp("hello")},
+			`{"pdf":null,"plainText":"hello"}`,
+		},
+		{&tu.Document{PlainText: stringp("")}, `{"pdf":null,"plainText":""}`},
+		{
+			&tu.ArbitraryValue{BoolValue: boolp(true)},
+			`{"boolValue":true,"listValue":null,"mapValue":null}`,
+		},
+		{
+			&tu.ArbitraryValue{BoolValue: boolp(false)},
+			`{"boolValue":false,"listValue":null,"mapValue":null}`,
+		},
+		{
+			&tu.ArbitraryValue{Int64Value: int64p(42)},
+			`{"int64Value":42,"listValue":null,"mapValue":null}`,
+		},
+		{
+			&tu.ArbitraryValue{Int64Value: int64p(0)},
+			`{"int64Value":0,"listValue":null,"mapValue":null}`,
+		},
+		{
+			&tu.ArbitraryValue{StringValue: stringp("foo")},
+			`{"stringValue":"foo","listValue":null,"mapValue":null}`,
+		},
+		{
+			&tu.ArbitraryValue{StringValue: stringp("")},
+			`{"stringValue":"","listValue":null,"mapValue":null}`,
+		},
+		{
+			&tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{
+				{BoolValue: boolp(true)},
+				{Int64Value: int64p(42)},
+				{StringValue: stringp("foo")},
+			}},
+			`{"listValue":[` +
+				`{"boolValue":true,"listValue":null,"mapValue":null},` +
+				`{"int64Value":42,"listValue":null,"mapValue":null},` +
+				`{"stringValue":"foo","listValue":null,"mapValue":null}` +
+				`],"mapValue":null}`,
+		},
+		{
+			&tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{
+				"bool":   {BoolValue: boolp(true)},
+				"int64":  {Int64Value: int64p(42)},
+				"string": {StringValue: stringp("foo")},
+			}},
+			`{"listValue":null,"mapValue":{` +
+				`"bool":{"boolValue":true,"listValue":null,"mapValue":null},` +
+				`"int64":{"int64Value":42,"listValue":null,"mapValue":null},` +
+				`"string":{"stringValue":"foo","listValue":null,"mapValue":null}` +
+				`}}`,
+		},
+	}
+
+	for _, tt := range tests {
+		encoded, err := json.Marshal(tt.v)
+		if assert.NoError(t, err, "failed to JSON encode %v", tt.v) {
+			assert.Equal(t, tt.j, string(encoded))
+		}
+
+		v := reflect.New(reflect.TypeOf(tt.v).Elem()).Interface()
+		if assert.NoError(t, json.Unmarshal([]byte(tt.j), v), "failed to decode %q", tt.j) {
+			assert.Equal(t, tt.v, v)
+		}
 	}
 }

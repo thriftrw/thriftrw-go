@@ -11,7 +11,9 @@ import (
 	"strings"
 )
 
-type DeleteValueArgs struct{ Key *services.Key }
+type DeleteValueArgs struct {
+	Key *services.Key `json:"key,omitempty"`
+}
 
 func (v *DeleteValueArgs) ToWire() wire.Value {
 	var fields [1]wire.Field
@@ -58,8 +60,8 @@ func (v *DeleteValueArgs) String() string {
 }
 
 type DeleteValueResult struct {
-	DoesNotExist  *exceptions.DoesNotExistException
-	InternalError *services.InternalError
+	DoesNotExist  *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
+	InternalError *services.InternalError           `json:"internalError,omitempty"`
 }
 
 func (v *DeleteValueResult) ToWire() wire.Value {

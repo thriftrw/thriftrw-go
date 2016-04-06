@@ -95,7 +95,9 @@ func (v *EnumWithValues) FromWire(w wire.Value) error {
 	return nil
 }
 
-type StructWithOptionalEnum struct{ E *EnumDefault }
+type StructWithOptionalEnum struct {
+	E *EnumDefault `json:"e,omitempty"`
+}
 
 func (v *StructWithOptionalEnum) ToWire() wire.Value {
 	var fields [1]wire.Field

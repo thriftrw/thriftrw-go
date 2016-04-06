@@ -31,7 +31,9 @@ func (v *SizeArgs) String() string {
 	return fmt.Sprintf("SizeArgs{%v}", strings.Join(fields[:i], ", "))
 }
 
-type SizeResult struct{ Success *int64 }
+type SizeResult struct {
+	Success *int64 `json:"success,omitempty"`
+}
 
 func (v *SizeResult) ToWire() wire.Value {
 	var fields [1]wire.Field

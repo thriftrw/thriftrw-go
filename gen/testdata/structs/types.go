@@ -8,7 +8,9 @@ import (
 	"strings"
 )
 
-type ContactInfo struct{ EmailAddress string }
+type ContactInfo struct {
+	EmailAddress string `json:"emailAddress"`
+}
 
 func (v *ContactInfo) ToWire() wire.Value {
 	var fields [1]wire.Field
@@ -43,8 +45,8 @@ func (v *ContactInfo) String() string {
 }
 
 type Edge struct {
-	Start *Point
-	End   *Point
+	Start *Point `json:"start"`
+	End   *Point `json:"end"`
 }
 
 func (v *Edge) ToWire() wire.Value {
@@ -119,8 +121,8 @@ func (v *EmptyStruct) String() string {
 }
 
 type Frame struct {
-	TopLeft *Point
-	Size    *Size
+	TopLeft *Point `json:"topLeft"`
+	Size    *Size  `json:"size"`
 }
 
 func (v *Frame) ToWire() wire.Value {
@@ -172,7 +174,9 @@ func (v *Frame) String() string {
 	return fmt.Sprintf("Frame{%v}", strings.Join(fields[:i], ", "))
 }
 
-type Graph struct{ Edges []*Edge }
+type Graph struct {
+	Edges []*Edge `json:"edges"`
+}
 
 type _List_Edge_ValueList []*Edge
 
@@ -245,8 +249,8 @@ func (v *Graph) String() string {
 }
 
 type Point struct {
-	X float64
-	Y float64
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
 }
 
 func (v *Point) ToWire() wire.Value {
@@ -293,14 +297,14 @@ func (v *Point) String() string {
 }
 
 type PrimitiveOptionalStruct struct {
-	BoolField   *bool
-	ByteField   *int8
-	Int16Field  *int16
-	Int32Field  *int32
-	Int64Field  *int64
-	DoubleField *float64
-	StringField *string
-	BinaryField []byte
+	BoolField   *bool    `json:"boolField,omitempty"`
+	ByteField   *int8    `json:"byteField,omitempty"`
+	Int16Field  *int16   `json:"int16Field,omitempty"`
+	Int32Field  *int32   `json:"int32Field,omitempty"`
+	Int64Field  *int64   `json:"int64Field,omitempty"`
+	DoubleField *float64 `json:"doubleField,omitempty"`
+	StringField *string  `json:"stringField,omitempty"`
+	BinaryField []byte   `json:"binaryField"`
 }
 
 func (v *PrimitiveOptionalStruct) ToWire() wire.Value {
@@ -459,14 +463,14 @@ func (v *PrimitiveOptionalStruct) String() string {
 }
 
 type PrimitiveRequiredStruct struct {
-	BoolField   bool
-	ByteField   int8
-	Int16Field  int16
-	Int32Field  int32
-	Int64Field  int64
-	DoubleField float64
-	StringField string
-	BinaryField []byte
+	BoolField   bool    `json:"boolField"`
+	ByteField   int8    `json:"byteField"`
+	Int16Field  int16   `json:"int16Field"`
+	Int32Field  int32   `json:"int32Field"`
+	Int64Field  int64   `json:"int64Field"`
+	DoubleField float64 `json:"doubleField"`
+	StringField string  `json:"stringField"`
+	BinaryField []byte  `json:"binaryField"`
 }
 
 func (v *PrimitiveRequiredStruct) ToWire() wire.Value {
@@ -579,8 +583,8 @@ func (v *PrimitiveRequiredStruct) String() string {
 }
 
 type Size struct {
-	Width  float64
-	Height float64
+	Width  float64 `json:"width"`
+	Height float64 `json:"height"`
 }
 
 func (v *Size) ToWire() wire.Value {
@@ -627,8 +631,8 @@ func (v *Size) String() string {
 }
 
 type User struct {
-	Name    string
-	Contact *ContactInfo
+	Name    string       `json:"name"`
+	Contact *ContactInfo `json:"contact,omitempty"`
 }
 
 func (v *User) ToWire() wire.Value {

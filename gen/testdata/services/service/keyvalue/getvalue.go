@@ -12,7 +12,9 @@ import (
 	"strings"
 )
 
-type GetValueArgs struct{ Key *services.Key }
+type GetValueArgs struct {
+	Key *services.Key `json:"key,omitempty"`
+}
 
 func (v *GetValueArgs) ToWire() wire.Value {
 	var fields [1]wire.Field
@@ -53,8 +55,8 @@ func (v *GetValueArgs) String() string {
 }
 
 type GetValueResult struct {
-	Success      *unions.ArbitraryValue
-	DoesNotExist *exceptions.DoesNotExistException
+	Success      *unions.ArbitraryValue            `json:"success,omitempty"`
+	DoesNotExist *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
 }
 
 func (v *GetValueResult) ToWire() wire.Value {

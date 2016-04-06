@@ -10,9 +10,9 @@ import (
 )
 
 type EnumContainers struct {
-	ListOfEnums []enums.EnumDefault
-	SetOfEnums  map[enums.EnumWithValues]struct{}
-	MapOfEnums  map[enums.EnumWithDuplicateValues]int32
+	ListOfEnums []enums.EnumDefault                     `json:"listOfEnums"`
+	SetOfEnums  map[enums.EnumWithValues]struct{}       `json:"setOfEnums"`
+	MapOfEnums  map[enums.EnumWithDuplicateValues]int32 `json:"mapOfEnums"`
 }
 
 type _List_EnumDefault_ValueList []enums.EnumDefault
@@ -203,12 +203,12 @@ func (v *EnumContainers) String() string {
 }
 
 type PrimitiveContainers struct {
-	ListOfBinary      [][]byte
-	ListOfInts        []int64
-	SetOfStrings      map[string]struct{}
-	SetOfBytes        map[int8]struct{}
-	MapOfIntToString  map[int32]string
-	MapOfStringToBool map[string]bool
+	ListOfBinary      [][]byte            `json:"listOfBinary"`
+	ListOfInts        []int64             `json:"listOfInts"`
+	SetOfStrings      map[string]struct{} `json:"setOfStrings"`
+	SetOfBytes        map[int8]struct{}   `json:"setOfBytes"`
+	MapOfIntToString  map[int32]string    `json:"mapOfIntToString"`
+	MapOfStringToBool map[string]bool     `json:"mapOfStringToBool"`
 }
 
 type _List_Binary_ValueList [][]byte
@@ -529,9 +529,9 @@ func (v *PrimitiveContainers) String() string {
 }
 
 type PrimitiveContainersRequired struct {
-	ListOfStrings      []string
-	SetOfInts          map[int32]struct{}
-	MapOfIntsToDoubles map[int64]float64
+	ListOfStrings      []string           `json:"listOfStrings"`
+	SetOfInts          map[int32]struct{} `json:"setOfInts"`
+	MapOfIntsToDoubles map[int64]float64  `json:"mapOfIntsToDoubles"`
 }
 
 type _List_String_ValueList []string

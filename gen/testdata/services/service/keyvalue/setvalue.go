@@ -11,8 +11,8 @@ import (
 )
 
 type SetValueArgs struct {
-	Key   *services.Key
-	Value *unions.ArbitraryValue
+	Key   *services.Key          `json:"key,omitempty"`
+	Value *unions.ArbitraryValue `json:"value,omitempty"`
 }
 
 func (v *SetValueArgs) ToWire() wire.Value {
