@@ -101,6 +101,21 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 	return nil
 }
 
+// functionParams returns a named parameter list for the given function.
+func functionParams(g Generator, f *compile.FunctionSpec) (string, error) {
+	return g.TextTemplate(
+		`
+		<$params := newNamespace>
+		<range .ArgsSpec>
+			<if .Required>
+				<$params.NewName .Name> <typeReference .Type>,
+			<else>
+				<$params.NewName .Name> <typeReferencePtr .Type>,
+			<end>
+		<end>
+        `, f)
+}
+
 func functionHelper(g Generator, f *compile.FunctionSpec) error {
 	return g.DeclareFromTemplate(
 		`
@@ -109,15 +124,7 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 		var <$name>Helper = struct{
 			IsException func(error) bool
 
-			Args func(
-				<range .ArgsSpec>
-					<if .Required>
-						<unreserve .Name> <typeReference .Type>,
-					<else>
-						<unreserve .Name> <typeReferencePtr .Type>,
-					<end>
-				<end>
-			) *<$name>Args
+			Args func(<params .>) *<$name>Args
 
 			<if .ResultSpec.ReturnType>
 				WrapResponse func(
@@ -139,16 +146,11 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 		}
 		`,
 		f,
+		TemplateFunc("params", functionParams),
 		TemplateFunc("isException", functionIsException),
 		TemplateFunc("newArgs", functionNewArgs),
 		TemplateFunc("wrapResponse", functionWrapResponse),
 		TemplateFunc("unwrapResponse", functionUnwrapResponse),
-		TemplateFunc("unreserve", func(n string) string {
-			if isReservedKeyword(n) {
-				n = n + "_"
-			}
-			return n
-		}),
 	)
 }
 
@@ -175,33 +177,27 @@ func functionIsException(g Generator, f *compile.FunctionSpec) (string, error) {
 func functionNewArgs(g Generator, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
 		`
+		<$params := newNamespace>
 		func(
 			<range .ArgsSpec>
 				<if .Required>
-					<unreserve .Name> <typeReference .Type>,
+					<$params.NewName .Name> <typeReference .Type>,
 				<else>
-					<unreserve .Name> <typeReferencePtr .Type>,
+					<$params.NewName .Name> <typeReferencePtr .Type>,
 				<end>
 			<end>
 		) *<goCase .Name>Args {
 			return &<goCase .Name>Args{
 			<range .ArgsSpec>
 				<if .Required>
-					<goCase .Name>: <unreserve .Name>,
+					<goCase .Name>: <$params.Rotate .Name>,
 				<else>
-					<goCase .Name>: <unreserve .Name>,
+					<goCase .Name>: <$params.Rotate .Name>,
 				<end>
 			<end>
 			}
 		}
-		`, f,
-		TemplateFunc("unreserve", func(n string) string {
-			if isReservedKeyword(n) {
-				n = n + "_"
-			}
-			return n
-		}),
-	)
+		`, f)
 }
 
 // functionWrapResponse generates an expression that provides the WrapResponse

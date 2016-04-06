@@ -53,6 +53,9 @@ func main() {
 			"the Thrift files relative to this directory. By default, this is "+
 			"the deepest common ancestor of the Thrift files.")
 
+	var yarpc bool
+	flag.BoolVar(&yarpc, "yarpc", false, "Generate code for YARPC.")
+
 	var noRecurse bool
 	flag.BoolVar(&noRecurse, "no-recurse", false,
 		"Disable code generation for included Thrift files.")
@@ -111,6 +114,7 @@ func main() {
 		PackagePrefix: packagePrefix,
 		ThriftRoot:    thriftRoot,
 		NoRecurse:     noRecurse,
+		YARPC:         yarpc,
 	}
 
 	if err := gen.Generate(module, &opts); err != nil {

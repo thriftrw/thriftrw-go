@@ -50,6 +50,9 @@ type Options struct {
 	// This must be an absolute path.
 	ThriftRoot string
 
+	// Whether we should generate code for YARPC.
+	YARPC bool
+
 	// NoRecurse determines whether code should be generated for included Thrift
 	// files as well. If true, code gets generated only for the first module.
 	NoRecurse bool
@@ -75,16 +78,18 @@ func Generate(m *compile.Module, o *Options) error {
 	}
 
 	if o.NoRecurse {
-		return generateModule(m, importer, o.OutputDir)
+		return generateModule(m, importer, o)
 	}
 
 	return m.Walk(func(m *compile.Module) error {
-		if err := generateModule(m, importer, o.OutputDir); err != nil {
+		if err := generateModule(m, importer, o); err != nil {
 			return generateError{Name: m.ThriftPath, Reason: err}
 		}
 		return nil
 	})
 }
+
+// TODO(abg): Make some sort of public interface out of the Importer
 
 type thriftPackageImporter struct {
 	ImportPrefix string
@@ -115,12 +120,13 @@ func (i thriftPackageImporter) ServicePackage(file, name string) (string, error)
 		return "", err
 	}
 
-	return filepath.Join(topPackage, strings.ToLower(name)), nil
+	return filepath.Join(topPackage, "service", strings.ToLower(name)), nil
 }
 
 // generates code for only the given module, assuming that code for included
 // modules has already been generated.
-func generateModule(m *compile.Module, i thriftPackageImporter, outDir string) error {
+func generateModule(m *compile.Module, i thriftPackageImporter, o *Options) error {
+	outDir := o.OutputDir
 	// packageRelPath is the path relative to outputDir into which we'll be
 	// writing the package for this Thrift file. For $thriftRoot/foo/bar.thrift,
 	// packageRelPath is foo/bar, and packageDir is $outputDir/foo/bar. All
@@ -208,6 +214,20 @@ func generateModule(m *compile.Module, i thriftPackageImporter, outDir string) e
 			for name, buff := range serviceFiles {
 				filename := filepath.Join("service", packageName, name)
 				files[filename] = buff
+			}
+
+			if o.YARPC {
+				yarpcFiles, err := YARPC(i, service)
+				if err != nil {
+					return fmt.Errorf(
+						"could not generate YARPC code for service %q: %v",
+						serviceName, err)
+				}
+
+				for name, buff := range yarpcFiles {
+					filename := filepath.Join("yarpc", name)
+					files[filename] = buff
+				}
 			}
 		}
 	}

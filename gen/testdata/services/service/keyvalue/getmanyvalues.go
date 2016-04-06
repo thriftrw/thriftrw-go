@@ -178,7 +178,7 @@ func (v *GetManyValuesResult) String() string {
 
 var GetManyValuesHelper = struct {
 	IsException    func(error) bool
-	Args           func(range_ []services.Key) *GetManyValuesArgs
+	Args           func(range2 []services.Key) *GetManyValuesArgs
 	WrapResponse   func([]*unions.ArbitraryValue, error) (*GetManyValuesResult, error)
 	UnwrapResponse func(*GetManyValuesResult) ([]*unions.ArbitraryValue, error)
 }{}
@@ -192,8 +192,8 @@ func init() {
 			return false
 		}
 	}
-	GetManyValuesHelper.Args = func(range_ []services.Key) *GetManyValuesArgs {
-		return &GetManyValuesArgs{Range: range_}
+	GetManyValuesHelper.Args = func(range2 []services.Key) *GetManyValuesArgs {
+		return &GetManyValuesArgs{Range: range2}
 	}
 	GetManyValuesHelper.WrapResponse = func(success []*unions.ArbitraryValue, err error) (*GetManyValuesResult, error) {
 		if err == nil {

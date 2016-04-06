@@ -146,15 +146,27 @@ func (g *generator) LookupTypeName(t compile.TypeSpec) (string, error) {
 	return name, nil
 }
 
+// servicePackage imports the service package for the given service and returns
+// the name that should be used to refer to that package.
+func (g *generator) servicePackage(s *compile.ServiceSpec) (string, error) {
+	pkg, err := g.thriftImporter.ServicePackage(s.ThriftFile(), s.Name)
+	if err != nil {
+		return "", err
+	}
+
+	return g.Import(pkg), nil
+}
+
 // TextTemplate renders the given template with the given template context.
 func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOption) (string, error) {
 	templateFuncs := template.FuncMap{
-		"goCase":          goCase,
-		"import":          g.Import,
-		"isPrimitiveType": isPrimitiveType,
-		"isStructType":    isStructType,
-		"newVar":          g.Namespace.Child().NewName,
-
+		"goCase":           goCase,
+		"import":           g.Import,
+		"isPrimitiveType":  isPrimitiveType,
+		"isStructType":     isStructType,
+		"newNamespace":     g.Namespace.Child,
+		"newVar":           g.Namespace.Child().NewName,
+		"servicePackage":   g.servicePackage,
 		"typeName":         curryGenerator(typeName, g),
 		"typeReference":    curryGenerator(typeReference, g),
 		"typeReferencePtr": curryGenerator(typeReferencePtr, g),
