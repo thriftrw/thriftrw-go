@@ -64,4 +64,14 @@ struct User {
     2: optional ContactInfo contact
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// self-referential struct
+
+typedef Node List
+
+struct Node {
+    1: required i32 value
+    2: optional List next
+}
+
 // TODO: Default values

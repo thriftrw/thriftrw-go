@@ -248,6 +248,80 @@ func (v *Graph) String() string {
 	return fmt.Sprintf("Graph{%v}", strings.Join(fields[:i], ", "))
 }
 
+type List Node
+
+func (v *List) ToWire() wire.Value {
+	x := (*Node)(v)
+	return x.ToWire()
+}
+
+func (v *List) String() string {
+	x := (*Node)(v)
+	return fmt.Sprint(x)
+}
+
+func (v *List) FromWire(w wire.Value) error {
+	return (*Node)(v).FromWire(w)
+}
+
+type Node struct {
+	Value int32 `json:"value"`
+	Next  *List `json:"next,omitempty"`
+}
+
+func (v *Node) ToWire() wire.Value {
+	var fields [2]wire.Field
+	i := 0
+	fields[i] = wire.Field{ID: 1, Value: wire.NewValueI32(v.Value)}
+	i++
+	if v.Next != nil {
+		fields[i] = wire.Field{ID: 2, Value: v.Next.ToWire()}
+		i++
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+}
+
+func _List_Read(w wire.Value) (*List, error) {
+	var x List
+	err := x.FromWire(w)
+	return &x, err
+}
+
+func (v *Node) FromWire(w wire.Value) error {
+	var err error
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TI32 {
+				v.Value, err = field.Value.GetI32(), error(nil)
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
+			if field.Value.Type() == wire.TStruct {
+				v.Next, err = _List_Read(field.Value)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (v *Node) String() string {
+	var fields [2]string
+	i := 0
+	fields[i] = fmt.Sprintf("Value: %v", v.Value)
+	i++
+	if v.Next != nil {
+		fields[i] = fmt.Sprintf("Next: %v", v.Next)
+		i++
+	}
+	return fmt.Sprintf("Node{%v}", strings.Join(fields[:i], ", "))
+}
+
 type Point struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`

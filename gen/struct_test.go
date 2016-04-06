@@ -341,6 +341,43 @@ func TestNestedStructsOptional(t *testing.T) {
 	}
 }
 
+func TestSelfReferentialStruct(t *testing.T) {
+	tests := []struct {
+		s ts.List
+		v wire.Value
+		o string
+	}{
+		{
+			ts.List{Value: 1, Next: &ts.List{Value: 2}},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueI32(1)},
+				{
+					ID: 2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueI32(2)},
+					}}),
+				},
+			}}),
+			"Node{Value: 1, Next: Node{Value: 2}}",
+		},
+	}
+
+	for _, tt := range tests {
+		assert.True(
+			t,
+			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
+			"%v.ToWire() != %v", tt.s, tt.v,
+		)
+
+		var s ts.List
+		if assert.NoError(t, s.FromWire(tt.v)) {
+			assert.Equal(t, tt.s, s)
+		}
+
+		assert.Equal(t, tt.o, tt.s.String())
+	}
+}
+
 func TestStructStringWithMissingRequiredFields(t *testing.T) {
 	tests := []struct {
 		i fmt.Stringer
@@ -769,6 +806,10 @@ func TestStructJSON(t *testing.T) {
 				`"int64":{"int64Value":42,"listValue":null,"mapValue":null},` +
 				`"string":{"stringValue":"foo","listValue":null,"mapValue":null}` +
 				`}}`,
+		},
+		{
+			&ts.List{Value: 0, Next: &ts.List{Value: 1}},
+			`{"value":0,"next":{"value":1}}`,
 		},
 	}
 
