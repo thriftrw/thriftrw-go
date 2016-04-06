@@ -12,7 +12,9 @@ import (
 	"strings"
 )
 
-type GetManyValuesArgs struct{ Range []services.Key }
+type GetManyValuesArgs struct {
+	Range []services.Key `json:"range"`
+}
 
 type _List_Key_ValueList []services.Key
 
@@ -83,8 +85,8 @@ func (v *GetManyValuesArgs) String() string {
 }
 
 type GetManyValuesResult struct {
-	Success      []*unions.ArbitraryValue
-	DoesNotExist *exceptions.DoesNotExistException
+	Success      []*unions.ArbitraryValue          `json:"success"`
+	DoesNotExist *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
 }
 
 type _List_ArbitraryValue_ValueList []*unions.ArbitraryValue

@@ -9,8 +9,8 @@ import (
 )
 
 type Event struct {
-	UUID *UUID
-	Time *Timestamp
+	UUID *UUID      `json:"uuid,omitempty"`
+	Time *Timestamp `json:"time,omitempty"`
 }
 
 func (v *Event) ToWire() wire.Value {
@@ -165,9 +165,9 @@ func (v *Timestamp) FromWire(w wire.Value) error {
 }
 
 type Transition struct {
-	From   State
-	To     State
-	Events EventGroup
+	From   State      `json:"from"`
+	To     State      `json:"to"`
+	Events EventGroup `json:"events"`
 }
 
 func (v *Transition) ToWire() wire.Value {
@@ -252,8 +252,8 @@ func (v *UUID) FromWire(w wire.Value) error {
 }
 
 type I128 struct {
-	High int64
-	Low  int64
+	High int64 `json:"high"`
+	Low  int64 `json:"low"`
 }
 
 func (v *I128) ToWire() wire.Value {

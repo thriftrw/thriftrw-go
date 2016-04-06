@@ -20,7 +20,11 @@
 
 package gen
 
-import "github.com/thriftrw/thriftrw-go/compile"
+import (
+	"fmt"
+
+	"github.com/thriftrw/thriftrw-go/compile"
+)
 
 // fieldGroupGenerator is responsible for generating code for FieldGroups.
 type fieldGroupGenerator struct {
@@ -53,12 +57,26 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 		`type <.Name> struct {
 			<range .Fields>
 				<if .Required>
-					<goCase .Name> <typeReference .Type>
+					<goCase .Name> <typeReference .Type> <tag .>
 				<else>
-					<goCase .Name> <typeReferencePtr .Type>
+					<goCase .Name> <typeReferencePtr .Type> <tag .>
 				<end>
 			<end>
-		}`, f)
+		}`,
+		f,
+		TemplateFunc("tag", func(f *compile.FieldSpec) string {
+			// We want to add omitempty if the field is a struct or if it's an
+			// optional primitive so that we don't have "null" noise in the
+			// output. Note that binary is not a primitive.
+
+			if isStructType(f.Type) || (isPrimitiveType(f.Type) && !f.Required) {
+				return fmt.Sprintf("`json:\"%s,omitempty\"`", f.Name)
+			}
+
+			return fmt.Sprintf("`json:\"%s\"`", f.Name)
+			// TODO(abg): Take go.tag and js.name annotations into account
+		}),
+	)
 }
 
 func (f fieldGroupGenerator) ToWire(g Generator) error {

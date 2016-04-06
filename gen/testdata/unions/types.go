@@ -10,11 +10,11 @@ import (
 )
 
 type ArbitraryValue struct {
-	BoolValue   *bool
-	Int64Value  *int64
-	StringValue *string
-	ListValue   []*ArbitraryValue
-	MapValue    map[string]*ArbitraryValue
+	BoolValue   *bool                      `json:"boolValue,omitempty"`
+	Int64Value  *int64                     `json:"int64Value,omitempty"`
+	StringValue *string                    `json:"stringValue,omitempty"`
+	ListValue   []*ArbitraryValue          `json:"listValue"`
+	MapValue    map[string]*ArbitraryValue `json:"mapValue"`
 }
 
 type _List_ArbitraryValue_ValueList []*ArbitraryValue
@@ -197,8 +197,8 @@ func (v *ArbitraryValue) String() string {
 }
 
 type Document struct {
-	Pdf       typedefs.Pdf
-	PlainText *string
+	Pdf       typedefs.Pdf `json:"pdf"`
+	PlainText *string      `json:"plainText,omitempty"`
 }
 
 func (v *Document) ToWire() wire.Value {

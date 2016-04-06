@@ -8,7 +8,9 @@ import (
 	"strings"
 )
 
-type InternalError struct{ Message *string }
+type InternalError struct {
+	Message *string `json:"message,omitempty"`
+}
 
 func (v *InternalError) ToWire() wire.Value {
 	var fields [1]wire.Field
