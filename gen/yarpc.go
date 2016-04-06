@@ -112,22 +112,23 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 			<$Args := printf "%s.%sArgs" $servicePackage (goCase .Name)>
 			<$Helper := printf "%s.%sHelper" $servicePackage (goCase .Name)>
 
-			<$req := newVar "req">
-			<$body := newVar "body">
+			<$vars := newNamespace>
+			<$req := $vars.NewName "req">
+			<$body := $vars.NewName "body">
 
 			func (h handler) <goCase .Name>(
 				<$req> *<$thrift>.Request,
 				<$body> <$wire>.Value,
 			) (<$wire>.Value, *<$thrift>.Response, error) {
 
-				<$args := newVar "args">
+				<$args := $vars.NewName "args">
 				var <$args> <$Args>
 				if err := <$args>.FromWire(<$body>); err != nil {
 					return <$wire>.Value{}, nil, err
 				}
 
-				<$res := newVar "res">
-				<$succ := newVar "success">
+				<$res := $vars.NewName "res">
+				<$succ := $vars.NewName "success">
 				<if .ResultSpec.ReturnType>
 					<$succ>,
 				<end>
@@ -136,7 +137,7 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 					<range .ArgsSpec><$args>.<goCase .Name>,<end>
 				)
 
-				<$result := newVar "result">
+				<$result := $vars.NewName "result">
 				<$result>, err := <$Helper>.WrapResponse(
 					<if .ResultSpec.ReturnType>
 						<$succ>,
