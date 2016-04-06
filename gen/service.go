@@ -105,22 +105,15 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 func functionParams(g Generator, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
 		`
-				<range .ArgsSpec>
-					<if .Required>
-						<unreserve .Name> <typeReference .Type>,
-					<else>
-						<unreserve .Name> <typeReferencePtr .Type>,
-					<end>
-				<end>
-        `,
-		f,
-		TemplateFunc("unreserve", func(n string) string {
-			if isReservedKeyword(n) {
-				n = n + "_"
-			}
-			return n
-		}),
-	)
+		<$params := newNamespace>
+		<range .ArgsSpec>
+			<if .Required>
+				<$params.NewName .Name> <typeReference .Type>,
+			<else>
+				<$params.NewName .Name> <typeReferencePtr .Type>,
+			<end>
+		<end>
+        `, f)
 }
 
 func functionHelper(g Generator, f *compile.FunctionSpec) error {
@@ -184,33 +177,27 @@ func functionIsException(g Generator, f *compile.FunctionSpec) (string, error) {
 func functionNewArgs(g Generator, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
 		`
+		<$params := newNamespace>
 		func(
 			<range .ArgsSpec>
 				<if .Required>
-					<unreserve .Name> <typeReference .Type>,
+					<$params.NewName .Name> <typeReference .Type>,
 				<else>
-					<unreserve .Name> <typeReferencePtr .Type>,
+					<$params.NewName .Name> <typeReferencePtr .Type>,
 				<end>
 			<end>
 		) *<goCase .Name>Args {
 			return &<goCase .Name>Args{
 			<range .ArgsSpec>
 				<if .Required>
-					<goCase .Name>: <unreserve .Name>,
+					<goCase .Name>: <$params.Rotate .Name>,
 				<else>
-					<goCase .Name>: <unreserve .Name>,
+					<goCase .Name>: <$params.Rotate .Name>,
 				<end>
 			<end>
 			}
 		}
-		`, f,
-		TemplateFunc("unreserve", func(n string) string {
-			if isReservedKeyword(n) {
-				n = n + "_"
-			}
-			return n
-		}),
-	)
+		`, f)
 }
 
 // functionWrapResponse generates an expression that provides the WrapResponse

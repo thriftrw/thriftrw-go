@@ -91,12 +91,7 @@ func (n *namespace) NewName(base string) string {
 		name = fmt.Sprintf("%s%d", base, i)
 	}
 	n.taken[name] = struct{}{}
-
-	if _, ok := n.gave[base]; !ok {
-		n.gave[base] = []string{}
-	}
 	n.gave[base] = append(n.gave[base], name)
-
 	return name
 }
 

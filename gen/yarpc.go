@@ -186,60 +186,59 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 
 		<$service := .>
 		<range .Functions>
+			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 			<$servicePackage := servicePackage $service>
+
 			<$Result := printf "%s.%sResult" $servicePackage (goCase .Name)>
 			<$Helper := printf "%s.%sHelper" $servicePackage (goCase .Name)>
 
-			<$params := newNamespace>
+			<$vars := newNamespace>
 			func (c client) <goCase .Name>(
-				<$params.NewName "req"> *<$thrift>.Request,
+				<$vars.NewName "req"> *<$thrift>.Request,
 				<range .ArgsSpec>
 					<if .Required>
-						<$params.NewName .Name> <typeReference .Type>,
+						<$vars.NewName .Name> <typeReference .Type>,
 					<else>
-						<$params.NewName .Name> <typeReferencePtr .Type>,
+						<$vars.NewName .Name> <typeReferencePtr .Type>,
 					<end>
 				<end>
 			) (
 				<if .ResultSpec.ReturnType>
-					<typeReference .ResultSpec.ReturnType>,
+					<$vars.NewName "success"> <typeReference .ResultSpec.ReturnType>,
 				<end>
-				*<$thrift>.Response,
-				 error,
+				<$vars.NewName "res"> *<$thrift>.Response,
+				err error,
 			 ) {
-				<$req := $params.Rotate "req">
-				<$args := $params.NewName "args">
+				<$req := $vars.Rotate "req">
+				<$args := $vars.NewName "args">
 				<$args> := <$servicePackage>.<goCase .Name>Helper.Args(
-					<range .ArgsSpec><$params.Rotate .Name>,<end>)
+					<range .ArgsSpec>
+						<$vars.Rotate .Name>,
+					<end>
+				)
 
-				<$body := $params.NewName "body">
-				<$res := $params.NewName "res">
-				<$body>, <$res>, err := c.c.Call("<.Name>", <$req>, <$args>.ToWire())
+				<$res := $vars.Rotate "res">
+				<$body := $vars.NewName "body">
+
+				var <$body> <$wire>.Value
+				<$body>, <$res>, err = c.c.Call("<.Name>", <$req>, <$args>.ToWire())
 				if err != nil {
-					<if .ResultSpec.ReturnType>
-						return <zeroValue .ResultSpec.ReturnType>, <$res>, err
-					<else>
-						return <$res>, err
-					<end>
+					return
 				}
 
-				<$result := $params.NewName "result">
+				<$result := $vars.NewName "result">
 				var <$result> <$Result>
-				if err := <$result>.FromWire(<$body>); err != nil {
-					<if .ResultSpec.ReturnType>
-						return <zeroValue .ResultSpec.ReturnType>, <$res>, err
-					<else>
-						return <$res>, err
-					<end>
+				if err = <$result>.FromWire(<$body>); err != nil {
+					return
 				}
 
-				<$succ := $params.NewName "success">
 				<if .ResultSpec.ReturnType>
-					<$succ>, err := <$Helper>.UnwrapResponse(&<$result>)
-					return <$succ>, <$res>, err
+					<$succ := $vars.Rotate "success">
+					<$succ>, err = <$Helper>.UnwrapResponse(&<$result>)
 				<else>
-					return <$res>, <$Helper>.UnwrapResponse(&<$result>)
+					err = <$Helper>.UnwrapResponse(&<$result>)
 				<end>
+				return
 			}
 		<end>
 		`, s)
