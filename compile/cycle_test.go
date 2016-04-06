@@ -130,12 +130,6 @@ func TestFindTypeCycles(t *testing.T) {
 					},
 				}
 			}),
-			msgs: []string{
-				"found a type reference cycle",
-				"   foo",
-				"-> bar",
-				"-> foo",
-			},
 		},
 	}
 
@@ -143,10 +137,14 @@ func TestFindTypeCycles(t *testing.T) {
 		typ := mustLink(t, tt.typ, scope())
 
 		err := findTypeCycles(typ)
-		if assert.Error(t, err, tt.desc) {
-			for _, msg := range tt.msgs {
-				assert.Contains(t, err.Error(), msg)
+		if len(tt.msgs) > 0 {
+			if assert.Error(t, err, tt.desc) {
+				for _, msg := range tt.msgs {
+					assert.Contains(t, err.Error(), msg)
+				}
 			}
+		} else {
+			assert.NoError(t, err, tt.desc)
 		}
 	}
 }

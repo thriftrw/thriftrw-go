@@ -59,5 +59,11 @@ func (f typeCycleFinder) Visit(s TypeSpec) error {
 		return nil
 	}
 
+	if _, isStruct := s.(*StructSpec); isStruct {
+		// Cycles break at structs. A typedef for a struct which refreences back
+		// to the typedef is valid because we support self-referential structs.
+		return nil
+	}
+
 	return s.ForEachTypeReference(f.cloneWithPart(s).Visit)
 }
