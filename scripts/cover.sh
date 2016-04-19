@@ -24,6 +24,7 @@ for pkg in "$@"; do
 	coverpkg=$(go list -json "$pkg" | jq -r '
 		.Deps
 		| map(select(startswith("'"$ROOT_PKG"'")))
+		| map(select(contains("/vendor/") | not))
 		| . + ["'"$pkg"'"]
 		| join(",")
 	')
