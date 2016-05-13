@@ -61,16 +61,23 @@ func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, err
 			<$f := newVar "f">
 			<$k := newVar "k">
 			<$v := newVar "v">
+			<$i := newVar "i">
 			func (<$m> <.Name>) ForEach(<$f> func(<$wire>.MapItem) error) error {
-				for <$k>, <$v> := range <$m> {
-					err := <$f>(<$wire>.MapItem{
-						Key: <toWire .Spec.KeySpec $k>,
-						Value: <toWire .Spec.ValueSpec $v>,
-					})
-					if err != nil {
-						return err
+				<if isPrimitiveType .Spec.KeySpec>
+					for <$k>, <$v> := range <$m> {
+				<else>
+					for _, <$i> := range <$m> {
+						<$k> := <$i>.Key
+						<$v> := <$i>.Value
+				<end>
+						err := <$f>(<$wire>.MapItem{
+							Key: <toWire .Spec.KeySpec $k>,
+							Value: <toWire .Spec.ValueSpec $v>,
+						})
+						if err != nil {
+							return err
+						}
 					}
-				}
 				return nil
 			}
 
@@ -110,7 +117,11 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 					return nil, nil
 				}
 
-				<$o> := make(<$mapType>, <$m>.Size)
+				<if isPrimitiveType .Spec.KeySpec>
+					<$o> := make(<$mapType>, <$m>.Size)
+				<else>
+					<$o> := make(<$mapType>, 0, <$m>.Size)
+				<end>
 				err := <$m>.Items.ForEach(func(<$x> <$wire>.MapItem) error {
 					<$k>, err := <fromWire .Spec.KeySpec (printf "%s.Key" $x)>
 					if err != nil {
@@ -122,7 +133,14 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 						return err
 					}
 
-					<$o>[<$k>] = <$v>
+					<if isPrimitiveType .Spec.KeySpec>
+						<$o>[<$k>] = <$v>
+					<else>
+						<$o> = append(<$o>, struct {
+							Key <typeReference .Spec.KeySpec>
+							Value <typeReference .Spec.ValueSpec>
+						}{<$k>, <$v>})
+					<end>
 					return nil
 				})
 				<$m>.Items.Close()

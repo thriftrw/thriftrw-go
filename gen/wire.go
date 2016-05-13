@@ -65,7 +65,6 @@ func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName strin
 
 	switch s := spec.(type) {
 	case *compile.MapSpec:
-		// TODO unhashable types
 		mapItemList, err := w.mapG.ItemList(g, s)
 		if err != nil {
 			return "", err
@@ -110,7 +109,6 @@ func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName strin
 			return "", err
 		}
 
-		// TODO unhashable types
 		return g.TextTemplate(
 			`<.Wire>.NewValueSet(<.Wire>.Set{
 				ValueType: <typeCode .Spec.ValueSpec>,
