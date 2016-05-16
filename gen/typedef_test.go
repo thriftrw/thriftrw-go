@@ -23,6 +23,7 @@ package gen
 import (
 	"testing"
 
+	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
 	td "github.com/thriftrw/thriftrw-go/gen/testdata/typedefs"
 	"github.com/thriftrw/thriftrw-go/wire"
 )
@@ -143,5 +144,131 @@ func TestTypedefContainer(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "EventGroup")
+	}
+}
+
+func TestUnhashableSetAlias(t *testing.T) {
+	tests := []struct {
+		x td.FrameGroup
+		v wire.Value
+	}{
+		{
+			td.FrameGroup{},
+			wire.NewValueSet(wire.Set{
+				ValueType: wire.TStruct,
+				Size:      0,
+				Items:     wire.ValueListFromSlice([]wire.Value{}),
+			}),
+		},
+		{
+			td.FrameGroup{
+				&ts.Frame{TopLeft: &ts.Point{X: 1, Y: 2}, Size: &ts.Size{Width: 3, Height: 4}},
+				&ts.Frame{TopLeft: &ts.Point{X: 5, Y: 6}, Size: &ts.Size{Width: 7, Height: 8}},
+			},
+			wire.NewValueSet(wire.Set{
+				ValueType: wire.TStruct,
+				Size:      2,
+				Items: wire.ValueListFromSlice([]wire.Value{
+					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueDouble(1)},
+							{ID: 2, Value: wire.NewValueDouble(2)},
+						}})},
+						{ID: 2, Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueDouble(3)},
+							{ID: 2, Value: wire.NewValueDouble(4)},
+						}})},
+					}}),
+					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueDouble(5)},
+							{ID: 2, Value: wire.NewValueDouble(6)},
+						}})},
+						{ID: 2, Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueDouble(7)},
+							{ID: 2, Value: wire.NewValueDouble(8)},
+						}})},
+					}}),
+				}),
+			}),
+		},
+	}
+
+	for _, tt := range tests {
+		assertRoundTrip(t, &tt.x, tt.v, "FrameGroup")
+	}
+}
+
+func TestUnhashableMapKeyAlias(t *testing.T) {
+	tests := []struct {
+		x td.PointMap
+		v wire.Value
+	}{
+		{
+			td.PointMap{},
+			wire.NewValueMap(wire.Map{
+				KeyType:   wire.TStruct,
+				ValueType: wire.TStruct,
+				Size:      0,
+				Items:     wire.MapItemListFromSlice([]wire.MapItem{}),
+			}),
+		},
+		{
+			td.PointMap{
+				{
+					Key:   &ts.Point{X: 1, Y: 2},
+					Value: &ts.Point{X: 3, Y: 4},
+				},
+				{
+					Key:   &ts.Point{X: 5, Y: 6},
+					Value: &ts.Point{X: 7, Y: 8},
+				},
+				{
+					Key:   &ts.Point{X: 9, Y: 10},
+					Value: &ts.Point{X: 11, Y: 12},
+				},
+			},
+			wire.NewValueMap(wire.Map{
+				KeyType:   wire.TStruct,
+				ValueType: wire.TStruct,
+				Size:      3,
+				Items: wire.MapItemListFromSlice([]wire.MapItem{
+					{
+						Key: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueDouble(1)},
+							{ID: 2, Value: wire.NewValueDouble(2)},
+						}}),
+						Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueDouble(3)},
+							{ID: 2, Value: wire.NewValueDouble(4)},
+						}}),
+					},
+					{
+						Key: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueDouble(5)},
+							{ID: 2, Value: wire.NewValueDouble(6)},
+						}}),
+						Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueDouble(7)},
+							{ID: 2, Value: wire.NewValueDouble(8)},
+						}}),
+					},
+					{
+						Key: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueDouble(9)},
+							{ID: 2, Value: wire.NewValueDouble(10)},
+						}}),
+						Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueDouble(11)},
+							{ID: 2, Value: wire.NewValueDouble(12)},
+						}}),
+					},
+				}),
+			}),
+		},
+	}
+
+	for _, tt := range tests {
+		assertRoundTrip(t, &tt.x, tt.v, "PointMap")
 	}
 }

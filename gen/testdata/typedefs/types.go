@@ -4,6 +4,7 @@ package typedefs
 
 import (
 	"fmt"
+	"github.com/thriftrw/thriftrw-go/gen/testdata/structs"
 	"github.com/thriftrw/thriftrw-go/wire"
 	"strings"
 )
@@ -130,6 +131,62 @@ func (v *EventGroup) FromWire(w wire.Value) error {
 	return err
 }
 
+type _Set_Frame_ValueList []*structs.Frame
+
+func (v _Set_Frame_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(x.ToWire())
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _Set_Frame_ValueList) Close() {
+}
+
+func _Frame_Read(w wire.Value) (*structs.Frame, error) {
+	var v structs.Frame
+	err := v.FromWire(w)
+	return &v, err
+}
+
+func _Set_Frame_Read(s wire.Set) ([]*structs.Frame, error) {
+	if s.ValueType != wire.TStruct {
+		return nil, nil
+	}
+	o := make([]*structs.Frame, 0, s.Size)
+	err := s.Items.ForEach(func(x wire.Value) error {
+		i, err := _Frame_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	s.Items.Close()
+	return o, err
+}
+
+type FrameGroup []*structs.Frame
+
+func (v FrameGroup) ToWire() wire.Value {
+	x := ([]*structs.Frame)(v)
+	return wire.NewValueSet(wire.Set{ValueType: wire.TStruct, Size: len(x), Items: _Set_Frame_ValueList(x)})
+}
+
+func (v FrameGroup) String() string {
+	x := ([]*structs.Frame)(v)
+	return fmt.Sprint(x)
+}
+
+func (v *FrameGroup) FromWire(w wire.Value) error {
+	x, err := _Set_Frame_Read(w.GetSet())
+	*v = (FrameGroup)(x)
+	return err
+}
+
 type Pdf []byte
 
 func (v Pdf) ToWire() wire.Value {
@@ -145,6 +202,92 @@ func (v Pdf) String() string {
 func (v *Pdf) FromWire(w wire.Value) error {
 	x, err := w.GetBinary(), error(nil)
 	*v = (Pdf)(x)
+	return err
+}
+
+type _Map_Point_Point_MapItemList []struct {
+	Key   *structs.Point
+	Value *structs.Point
+}
+
+func (m _Map_Point_Point_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for _, i := range m {
+		k := i.Key
+		v := i.Value
+		err := f(wire.MapItem{Key: k.ToWire(), Value: v.ToWire()})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_Point_Point_MapItemList) Close() {
+}
+
+func _Point_Read(w wire.Value) (*structs.Point, error) {
+	var v structs.Point
+	err := v.FromWire(w)
+	return &v, err
+}
+
+func _Map_Point_Point_Read(m wire.Map) ([]struct {
+	Key   *structs.Point
+	Value *structs.Point
+}, error) {
+	if m.KeyType != wire.TStruct {
+		return nil, nil
+	}
+	if m.ValueType != wire.TStruct {
+		return nil, nil
+	}
+	o := make([]struct {
+		Key   *structs.Point
+		Value *structs.Point
+	}, 0, m.Size)
+	err := m.Items.ForEach(func(x wire.MapItem) error {
+		k, err := _Point_Read(x.Key)
+		if err != nil {
+			return err
+		}
+		v, err := _Point_Read(x.Value)
+		if err != nil {
+			return err
+		}
+		o = append(o, struct {
+			Key   *structs.Point
+			Value *structs.Point
+		}{k, v})
+		return nil
+	})
+	m.Items.Close()
+	return o, err
+}
+
+type PointMap []struct {
+	Key   *structs.Point
+	Value *structs.Point
+}
+
+func (v PointMap) ToWire() wire.Value {
+	x := ([]struct {
+		Key   *structs.Point
+		Value *structs.Point
+	})(v)
+	return wire.NewValueMap(wire.Map{KeyType: wire.TStruct, ValueType: wire.TStruct, Size: len(x), Items: _Map_Point_Point_MapItemList(x)})
+}
+
+func (v PointMap) String() string {
+	x := ([]struct {
+		Key   *structs.Point
+		Value *structs.Point
+	})(v)
+	return fmt.Sprint(x)
+}
+
+func (v *PointMap) FromWire(w wire.Value) error {
+	x, err := _Map_Point_Point_Read(w.GetMap())
+	*v = (PointMap)(x)
 	return err
 }
 
