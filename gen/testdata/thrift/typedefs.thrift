@@ -28,3 +28,5 @@ typedef binary PDF  // alias of []byte
 typedef set<structs.Frame> FrameGroup
 
 typedef map<structs.Point, structs.Point> PointMap
+
+typedef set<binary> BinarySet

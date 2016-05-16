@@ -9,6 +9,56 @@ import (
 	"strings"
 )
 
+type _Set_Binary_ValueList [][]byte
+
+func (v _Set_Binary_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueBinary(x))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _Set_Binary_ValueList) Close() {
+}
+
+func _Set_Binary_Read(s wire.Set) ([][]byte, error) {
+	if s.ValueType != wire.TBinary {
+		return nil, nil
+	}
+	o := make([][]byte, 0, s.Size)
+	err := s.Items.ForEach(func(x wire.Value) error {
+		i, err := x.GetBinary(), error(nil)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	s.Items.Close()
+	return o, err
+}
+
+type BinarySet [][]byte
+
+func (v BinarySet) ToWire() wire.Value {
+	x := ([][]byte)(v)
+	return wire.NewValueSet(wire.Set{ValueType: wire.TBinary, Size: len(x), Items: _Set_Binary_ValueList(x)})
+}
+
+func (v BinarySet) String() string {
+	x := ([][]byte)(v)
+	return fmt.Sprint(x)
+}
+
+func (v *BinarySet) FromWire(w wire.Value) error {
+	x, err := _Set_Binary_Read(w.GetSet())
+	*v = (BinarySet)(x)
+	return err
+}
+
 type Event struct {
 	UUID *UUID      `json:"uuid"`
 	Time *Timestamp `json:"time,omitempty"`

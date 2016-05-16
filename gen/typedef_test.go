@@ -272,3 +272,37 @@ func TestUnhashableMapKeyAlias(t *testing.T) {
 		assertRoundTrip(t, &tt.x, tt.v, "PointMap")
 	}
 }
+
+func TestBinarySet(t *testing.T) {
+	tests := []struct {
+		x td.BinarySet
+		v wire.Value
+	}{
+		{
+			td.BinarySet{},
+			wire.NewValueSet(wire.Set{
+				ValueType: wire.TBinary,
+				Size:      0,
+				Items:     wire.ValueListFromSlice([]wire.Value{}),
+			}),
+		},
+		{
+			td.BinarySet{
+				{1, 2, 3},
+				{4, 5, 6},
+			},
+			wire.NewValueSet(wire.Set{
+				ValueType: wire.TBinary,
+				Size:      2,
+				Items: wire.ValueListFromSlice([]wire.Value{
+					wire.NewValueBinary([]byte{1, 2, 3}),
+					wire.NewValueBinary([]byte{4, 5, 6}),
+				}),
+			}),
+		},
+	}
+
+	for _, tt := range tests {
+		assertRoundTrip(t, &tt.x, tt.v, "BinarySet")
+	}
+}
