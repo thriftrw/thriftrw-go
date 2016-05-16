@@ -27,8 +27,6 @@ import (
 	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
 	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
 	"github.com/thriftrw/thriftrw-go/wire"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCollectionsOfPrimitives(t *testing.T) {
@@ -198,17 +196,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.p.ToWire()),
-			"%s: %v.ToWire() != %v",
-			tt.desc, tt.p, tt.v,
-		)
-
-		var p tc.PrimitiveContainers
-		if assert.NoError(t, p.FromWire(tt.v)) {
-			assert.Equal(t, tt.p, p)
-		}
+		assertRoundTrip(t, &tt.p, tt.v, tt.desc)
 	}
 }
 
@@ -288,16 +276,7 @@ func TestEnumContainers(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
-			"%v.ToWire() != %v", tt.s, tt.v,
-		)
-
-		var s tc.EnumContainers
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
-		}
+		assertRoundTrip(t, &tt.s, tt.v, "EnumContainers")
 	}
 }
 
@@ -387,15 +366,6 @@ func TestListOfStructs(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
-			"%v.ToWire() != %v", tt.s, tt.v,
-		)
-
-		var s ts.Graph
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
-		}
+		assertRoundTrip(t, &tt.s, tt.v, "Graph")
 	}
 }

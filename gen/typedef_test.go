@@ -25,8 +25,6 @@ import (
 
 	td "github.com/thriftrw/thriftrw-go/gen/testdata/typedefs"
 	"github.com/thriftrw/thriftrw-go/wire"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestTypedefI64(t *testing.T) {
@@ -45,15 +43,7 @@ func TestTypedefI64(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.x.ToWire()),
-			"%v.ToWire() != %v", tt.x, tt.v)
-
-		var x td.Timestamp
-		if assert.NoError(t, x.FromWire(tt.v)) {
-			assert.Equal(t, tt.x, x)
-		}
+		assertRoundTrip(t, &tt.x, tt.v, "Timestamp")
 	}
 }
 
@@ -73,15 +63,7 @@ func TestTypedefString(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.x.ToWire()),
-			"%v.ToWire() != %v", tt.x, tt.v)
-
-		var x td.State
-		if assert.NoError(t, x.FromWire(tt.v)) {
-			assert.Equal(t, tt.x, x)
-		}
+		assertRoundTrip(t, &tt.x, tt.v, "State")
 	}
 }
 
@@ -97,15 +79,7 @@ func TestTypedefBinary(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.x.ToWire()),
-			"%v.ToWire() != %v", tt.x, tt.v)
-
-		var x td.Pdf
-		if assert.NoError(t, x.FromWire(tt.v)) {
-			assert.Equal(t, tt.x, x)
-		}
+		assertRoundTrip(t, &tt.x, tt.v, "Pdf")
 	}
 }
 
@@ -124,15 +98,7 @@ func TestTypedefStruct(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.x.ToWire()),
-			"%v.ToWire() != %v", tt.x, tt.v)
-
-		var x td.UUID
-		if assert.NoError(t, x.FromWire(tt.v)) {
-			assert.Equal(t, tt.x, &x)
-		}
+		assertRoundTrip(t, tt.x, tt.v, "UUID")
 	}
 }
 
@@ -176,14 +142,6 @@ func TestTypedefContainer(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.x.ToWire()),
-			"%v.ToWire() != %v", tt.x, tt.v)
-
-		var x td.EventGroup
-		if assert.NoError(t, x.FromWire(tt.v)) {
-			assert.Equal(t, tt.x, x)
-		}
+		assertRoundTrip(t, &tt.x, tt.v, "EventGroup")
 	}
 }
