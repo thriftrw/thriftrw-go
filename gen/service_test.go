@@ -149,16 +149,7 @@ func TestServiceArgsAndResult(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.v, tt.x.ToWire(), tt.desc)
-
-		x := reflect.New(reflect.TypeOf(tt.x).Elem())
-		err := x.MethodByName("FromWire").
-			Call([]reflect.Value{reflect.ValueOf(tt.v)})[0].
-			Interface()
-
-		if assert.Nil(t, err, tt.desc) {
-			assert.Equal(t, tt.x, x.Interface(), tt.desc)
-		}
+		assertRoundTrip(t, tt.x, tt.v, tt.desc)
 	}
 }
 

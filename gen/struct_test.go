@@ -36,13 +36,19 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPrimitiveRequiredStructWire(t *testing.T) {
+func TestStructRoundTripAndString(t *testing.T) {
 	tests := []struct {
-		s ts.PrimitiveRequiredStruct
+		desc string
+		x    interface {
+			thriftType
+			String() string
+		}
 		v wire.Value
+		s string
 	}{
 		{
-			ts.PrimitiveRequiredStruct{
+			"PrimitiveRequiredStruct",
+			&ts.PrimitiveRequiredStruct{
 				BoolField:   true,
 				ByteField:   1,
 				Int16Field:  2,
@@ -62,51 +68,11 @@ func TestPrimitiveRequiredStructWire(t *testing.T) {
 				{ID: 7, Value: wire.NewValueString("foo")},
 				{ID: 8, Value: wire.NewValueBinary([]byte("bar"))},
 			}}),
+			"",
 		},
-	}
-
-	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
-			"%v.ToWire() != %v", tt.s, tt.v,
-		)
-
-		assert.NotPanics(t, func() { tt.s.String() })
-
-		var s ts.PrimitiveRequiredStruct
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
-		}
-	}
-}
-
-func TestPrimitiveRequiredMissingFields(t *testing.T) {
-	tests := []struct {
-		v    wire.Value
-		msgs []string
-	}{}
-	// TODO add cases here once we're validating that required fields are
-	// present.
-
-	for _, tt := range tests {
-		var s ts.PrimitiveRequiredStruct
-		err := s.FromWire(tt.v)
-		if assert.Error(t, err) {
-			for _, m := range tt.msgs {
-				assert.Contains(t, err.Error(), m)
-			}
-		}
-	}
-}
-
-func TestPrimitiveOptionalStructWire(t *testing.T) {
-	tests := []struct {
-		s ts.PrimitiveOptionalStruct
-		v wire.Value
-	}{
 		{
-			ts.PrimitiveOptionalStruct{
+			"PrimitiveOptionalStruct: all fields",
+			&ts.PrimitiveOptionalStruct{
 				BoolField:   boolp(true),
 				ByteField:   bytep(1),
 				Int16Field:  int16p(2),
@@ -126,64 +92,59 @@ func TestPrimitiveOptionalStructWire(t *testing.T) {
 				{ID: 7, Value: wire.NewValueString("foo")},
 				{ID: 8, Value: wire.NewValueBinary([]byte("bar"))},
 			}}),
+			"",
 		},
 		{
-			ts.PrimitiveOptionalStruct{BoolField: boolp(true)},
+			"PrimitiveOptionalStruct: bool",
+			&ts.PrimitiveOptionalStruct{BoolField: boolp(true)},
 			singleFieldStruct(1, wire.NewValueBool(true)),
+			"",
 		},
 		{
-			ts.PrimitiveOptionalStruct{ByteField: bytep(1)},
+			"PrimitiveOptionalStruct: byte",
+			&ts.PrimitiveOptionalStruct{ByteField: bytep(1)},
 			singleFieldStruct(2, wire.NewValueI8(1)),
+			"",
 		},
 		{
-			ts.PrimitiveOptionalStruct{Int16Field: int16p(2)},
+			"PrimitiveOptionalStruct: int16",
+			&ts.PrimitiveOptionalStruct{Int16Field: int16p(2)},
 			singleFieldStruct(3, wire.NewValueI16(2)),
+			"",
 		},
 		{
-			ts.PrimitiveOptionalStruct{Int32Field: int32p(3)},
+			"PrimitiveOptionalStruct: int32",
+			&ts.PrimitiveOptionalStruct{Int32Field: int32p(3)},
 			singleFieldStruct(4, wire.NewValueI32(3)),
+			"",
 		},
 		{
-			ts.PrimitiveOptionalStruct{Int64Field: int64p(4)},
+			"PrimitiveOptionalStruct: int64",
+			&ts.PrimitiveOptionalStruct{Int64Field: int64p(4)},
 			singleFieldStruct(5, wire.NewValueI64(4)),
+			"",
 		},
 		{
-			ts.PrimitiveOptionalStruct{DoubleField: doublep(5.0)},
+			"PrimitiveOptionalStruct: double",
+			&ts.PrimitiveOptionalStruct{DoubleField: doublep(5.0)},
 			singleFieldStruct(6, wire.NewValueDouble(5.0)),
+			"",
 		},
 		{
-			ts.PrimitiveOptionalStruct{StringField: stringp("foo")},
+			"PrimitiveOptionalStruct: string",
+			&ts.PrimitiveOptionalStruct{StringField: stringp("foo")},
 			singleFieldStruct(7, wire.NewValueString("foo")),
+			"",
 		},
 		{
-			ts.PrimitiveOptionalStruct{BinaryField: []byte("bar")},
+			"PrimitiveOptionalStruct: binary",
+			&ts.PrimitiveOptionalStruct{BinaryField: []byte("bar")},
 			singleFieldStruct(8, wire.NewValueBinary([]byte("bar"))),
+			"",
 		},
-	}
-
-	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
-			"%v.ToWire() != %v", tt.s, tt.v,
-		)
-
-		assert.NotPanics(t, func() { tt.s.String() })
-
-		var s ts.PrimitiveOptionalStruct
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
-		}
-	}
-}
-
-func TestPrimitiveContainersRequired(t *testing.T) {
-	tests := []struct {
-		s tc.PrimitiveContainersRequired
-		v wire.Value
-	}{
 		{
-			tc.PrimitiveContainersRequired{
+			"PrimitiveContainersRequired",
+			&tc.PrimitiveContainersRequired{
 				ListOfStrings:      []string{"foo", "bar", "baz"},
 				SetOfInts:          map[int32]struct{}{1: struct{}{}, 2: struct{}{}},
 				MapOfIntsToDoubles: map[int64]float64{1: 2.0, 3: 4.0},
@@ -231,33 +192,11 @@ func TestPrimitiveContainersRequired(t *testing.T) {
 					}),
 				},
 			}}),
+			"",
 		},
-	}
-
-	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
-			"%v.ToWire() != %v", tt.s, tt.v,
-		)
-
-		assert.NotPanics(t, func() { tt.s.String() })
-
-		var s tc.PrimitiveContainersRequired
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
-		}
-	}
-}
-
-func TestNestedStructsRequired(t *testing.T) {
-	tests := []struct {
-		s ts.Frame
-		v wire.Value
-		o string
-	}{
 		{
-			ts.Frame{
+			"Frame",
+			&ts.Frame{
 				TopLeft: &ts.Point{X: 1, Y: 2},
 				Size:    &ts.Size{Width: 100, Height: 200},
 			},
@@ -279,39 +218,17 @@ func TestNestedStructsRequired(t *testing.T) {
 			}}),
 			"Frame{TopLeft: Point{X: 1, Y: 2}, Size: Size{Width: 100, Height: 200}}",
 		},
-	}
-
-	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
-			"%v.ToWire() != %v", tt.s, tt.v,
-		)
-
-		var s ts.Frame
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
-		}
-
-		assert.Equal(t, tt.o, tt.s.String())
-	}
-}
-
-func TestNestedStructsOptional(t *testing.T) {
-	tests := []struct {
-		s ts.User
-		v wire.Value
-		o string
-	}{
 		{
-			ts.User{Name: "Foo Bar"},
+			"User: optional field missing",
+			&ts.User{Name: "Foo Bar"},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("Foo Bar")},
 			}}),
 			"User{Name: Foo Bar}",
 		},
 		{
-			ts.User{
+			"User: optional field present",
+			&ts.User{
 				Name:    "Foo Bar",
 				Contact: &ts.ContactInfo{EmailAddress: "foo@example.com"},
 			},
@@ -323,32 +240,9 @@ func TestNestedStructsOptional(t *testing.T) {
 			}}),
 			"User{Name: Foo Bar, Contact: ContactInfo{EmailAddress: foo@example.com}}",
 		},
-	}
-
-	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
-			"%v.ToWire() != %v", tt.s, tt.v,
-		)
-
-		var s ts.User
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
-		}
-
-		assert.Equal(t, tt.o, tt.s.String())
-	}
-}
-
-func TestSelfReferentialStruct(t *testing.T) {
-	tests := []struct {
-		s ts.List
-		v wire.Value
-		o string
-	}{
 		{
-			ts.List{Value: 1, Next: &ts.List{Value: 2}},
+			"List: self-referential struct",
+			&ts.List{Value: 1, Next: &ts.List{Value: 2}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueI32(1)},
 				{
@@ -360,21 +254,154 @@ func TestSelfReferentialStruct(t *testing.T) {
 			}}),
 			"Node{Value: 1, Next: Node{Value: 2}}",
 		},
+		{
+			"Document: PDF",
+			&tu.Document{Pdf: []byte{1, 2, 3}},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
+			}}),
+			"Document{Pdf: [1 2 3]}",
+		},
+		{
+			"Document: PlainText",
+			&tu.Document{PlainText: stringp("hello")},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 2, Value: wire.NewValueString("hello")},
+			}}),
+			"Document{PlainText: hello}",
+		},
+		{
+			"ArbitraryValue: bool",
+			&tu.ArbitraryValue{BoolValue: boolp(true)},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBool(true)},
+			}}),
+			"ArbitraryValue{BoolValue: true}",
+		},
+		{
+			"ArbitraryValue: i64",
+			&tu.ArbitraryValue{Int64Value: int64p(42)},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 2, Value: wire.NewValueI64(42)},
+			}}),
+			"ArbitraryValue{Int64Value: 42}",
+		},
+		{
+			"ArbitraryValue: string",
+			&tu.ArbitraryValue{StringValue: stringp("hello")},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 3, Value: wire.NewValueString("hello")},
+			}}),
+			"ArbitraryValue{StringValue: hello}",
+		},
+		{
+			"ArbitraryValue: list",
+			&tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{
+				{BoolValue: boolp(true)},
+				{Int64Value: int64p(42)},
+				{StringValue: stringp("hello")},
+			}},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 4, Value: wire.NewValueList(wire.List{
+					ValueType: wire.TStruct,
+					Size:      3,
+					Items: wire.ValueListFromSlice([]wire.Value{
+						wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 1, Value: wire.NewValueBool(true)},
+						}}),
+						wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 2, Value: wire.NewValueI64(42)},
+						}}),
+						wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{ID: 3, Value: wire.NewValueString("hello")},
+						}}),
+					}),
+				})},
+			}}),
+			"ArbitraryValue{ListValue: [ArbitraryValue{BoolValue: true} ArbitraryValue{Int64Value: 42} ArbitraryValue{StringValue: hello}]}",
+		},
+		{
+			"ArbitraryValue: map",
+			&tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{
+				"bool":   {BoolValue: boolp(true)},
+				"int64":  {Int64Value: int64p(42)},
+				"string": {StringValue: stringp("hello")},
+			}},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 5, Value: wire.NewValueMap(wire.Map{
+					KeyType:   wire.TBinary,
+					ValueType: wire.TStruct,
+					Size:      3,
+					Items: wire.MapItemListFromSlice([]wire.MapItem{
+						{
+							Key: wire.NewValueString("bool"),
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueBool(true)},
+							}}),
+						},
+						{
+							Key: wire.NewValueString("int64"),
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 2, Value: wire.NewValueI64(42)},
+							}}),
+						},
+						{
+							Key: wire.NewValueString("string"),
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 3, Value: wire.NewValueString("hello")},
+							}}),
+						},
+					}),
+				})},
+			}}),
+			"",
+		},
+		{
+			"EmptyStruct",
+			&ts.EmptyStruct{},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			"",
+		},
+		{
+			"EmptyUnion",
+			&tu.EmptyUnion{},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			"",
+		},
+		{
+			"EmptyException",
+			&tx.EmptyException{},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			"",
+		},
 	}
 
 	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
-			"%v.ToWire() != %v", tt.s, tt.v,
-		)
-
-		var s ts.List
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
+		assertRoundTrip(t, tt.x, tt.v, tt.desc)
+		if tt.s != "" {
+			assert.Equal(t, tt.s, tt.x.String(), "ToString: %v", tt.desc)
+		} else {
+			assert.NotPanics(t, func() { _ = tt.x.String() }, "ToString: %v", tt.desc)
 		}
+	}
+}
 
-		assert.Equal(t, tt.o, tt.s.String())
+func TestPrimitiveRequiredMissingFields(t *testing.T) {
+	tests := []struct {
+		v    wire.Value
+		msgs []string
+	}{}
+	// TODO add cases here once we're validating that required fields are
+	// present.
+
+	for _, tt := range tests {
+		var s ts.PrimitiveRequiredStruct
+		err := s.FromWire(tt.v)
+		if assert.Error(t, err) {
+			for _, m := range tt.msgs {
+				assert.Contains(t, err.Error(), m)
+			}
+		}
 	}
 }
 
@@ -428,164 +455,10 @@ func TestBasicException(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
-			"%v.ToWire() != %v", tt.s, tt.v,
-		)
+		assertRoundTrip(t, &tt.s, tt.v, "DoesNotExistException")
 
-		var s tx.DoesNotExistException
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
-		}
-
-		err := error(&s) // should implement the error interface
+		err := error(&tt.s) // should implement the error interface
 		assert.Equal(t, "DoesNotExistException{Key: foo}", err.Error())
-	}
-}
-
-func TestUnionSimple(t *testing.T) {
-	tests := []struct {
-		s tu.Document
-		v wire.Value
-		o string
-	}{
-		{
-			tu.Document{Pdf: []byte{1, 2, 3}},
-			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
-			}}),
-			"Document{Pdf: [1 2 3]}",
-		},
-		{
-			tu.Document{PlainText: stringp("hello")},
-			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 2, Value: wire.NewValueString("hello")},
-			}}),
-			"Document{PlainText: hello}",
-		},
-	}
-
-	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
-			"%v.ToWire() != %v", tt.s, tt.v,
-		)
-
-		var s tu.Document
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
-		}
-
-		assert.Equal(t, tt.o, tt.s.String())
-	}
-}
-
-func TestUnionComplex(t *testing.T) {
-	tests := []struct {
-		s tu.ArbitraryValue
-		v wire.Value
-		o string
-	}{
-		{
-			tu.ArbitraryValue{BoolValue: boolp(true)},
-			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 1, Value: wire.NewValueBool(true)},
-			}}),
-			"ArbitraryValue{BoolValue: true}",
-		},
-		{
-			tu.ArbitraryValue{Int64Value: int64p(42)},
-			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 2, Value: wire.NewValueI64(42)},
-			}}),
-			"ArbitraryValue{Int64Value: 42}",
-		},
-		{
-			tu.ArbitraryValue{StringValue: stringp("hello")},
-			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 3, Value: wire.NewValueString("hello")},
-			}}),
-			"ArbitraryValue{StringValue: hello}",
-		},
-		{
-			tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{
-				{BoolValue: boolp(true)},
-				{Int64Value: int64p(42)},
-				{StringValue: stringp("hello")},
-			}},
-			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 4, Value: wire.NewValueList(wire.List{
-					ValueType: wire.TStruct,
-					Size:      3,
-					Items: wire.ValueListFromSlice([]wire.Value{
-						wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-							{ID: 1, Value: wire.NewValueBool(true)},
-						}}),
-						wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-							{ID: 2, Value: wire.NewValueI64(42)},
-						}}),
-						wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-							{ID: 3, Value: wire.NewValueString("hello")},
-						}}),
-					}),
-				})},
-			}}),
-			"ArbitraryValue{ListValue: [ArbitraryValue{BoolValue: true} ArbitraryValue{Int64Value: 42} ArbitraryValue{StringValue: hello}]}",
-		},
-		{
-			tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{
-				"bool":   {BoolValue: boolp(true)},
-				"int64":  {Int64Value: int64p(42)},
-				"string": {StringValue: stringp("hello")},
-			}},
-			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 5, Value: wire.NewValueMap(wire.Map{
-					KeyType:   wire.TBinary,
-					ValueType: wire.TStruct,
-					Size:      3,
-					Items: wire.MapItemListFromSlice([]wire.MapItem{
-						{
-							Key: wire.NewValueString("bool"),
-							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-								{ID: 1, Value: wire.NewValueBool(true)},
-							}}),
-						},
-						{
-							Key: wire.NewValueString("int64"),
-							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-								{ID: 2, Value: wire.NewValueI64(42)},
-							}}),
-						},
-						{
-							Key: wire.NewValueString("string"),
-							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-								{ID: 3, Value: wire.NewValueString("hello")},
-							}}),
-						},
-					}),
-				})},
-			}}),
-			"",
-		},
-	}
-
-	for _, tt := range tests {
-		assert.True(
-			t,
-			wire.ValuesAreEqual(tt.v, tt.s.ToWire()),
-			"%v.ToWire() != %v", tt.s, tt.v,
-		)
-
-		var s tu.ArbitraryValue
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
-		}
-
-		if tt.o != "" {
-			assert.Equal(t, tt.o, tt.s.String())
-		}
 	}
 }
 
@@ -684,36 +557,6 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.failure, tt.desc)
 			}
 		}
-	}
-}
-
-func TestEmptyStruct(t *testing.T) {
-	var x, y ts.EmptyStruct
-	v := wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}})
-
-	assert.Equal(t, x.ToWire(), v)
-	if assert.NoError(t, y.FromWire(v)) {
-		assert.Equal(t, x, y)
-	}
-}
-
-func TestEmptyUnion(t *testing.T) {
-	var x, y tu.EmptyUnion
-	v := wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}})
-
-	assert.Equal(t, x.ToWire(), v)
-	if assert.NoError(t, y.FromWire(v)) {
-		assert.Equal(t, x, y)
-	}
-}
-
-func TestEmptyException(t *testing.T) {
-	var x, y tx.EmptyException
-	v := wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}})
-
-	assert.Equal(t, x.ToWire(), v)
-	if assert.NoError(t, y.FromWire(v)) {
-		assert.Equal(t, x, y)
 	}
 }
 

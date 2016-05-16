@@ -1,0 +1,62 @@
+// Copyright (c) 2015 Uber Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+package gen
+
+import (
+	"fmt"
+	"reflect"
+	"testing"
+
+	"github.com/thriftrw/thriftrw-go/wire"
+
+	"github.com/stretchr/testify/assert"
+)
+
+type thriftType interface {
+	ToWire() wire.Value
+	FromWire(wire.Value) error
+}
+
+// assertRoundTrip checks if x.ToWire() results in the given Value and whether
+// x.FromWire() with the given value results in the original x.
+func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args ...interface{}) bool {
+	message := fmt.Sprintf(msg, args...)
+	if !assert.True(
+		t, wire.ValuesAreEqual(v, x.ToWire()),
+		"%v: %v.ToWire() != %v", message, x, v) {
+		return false
+	}
+
+	xType := reflect.TypeOf(x)
+	if xType.Kind() == reflect.Ptr {
+		xType = xType.Elem()
+	}
+
+	gotX := reflect.New(xType)
+	err := gotX.MethodByName("FromWire").
+		Call([]reflect.Value{reflect.ValueOf(v)})[0].
+		Interface()
+
+	if assert.Nil(t, err, "FromWire: %v", message) {
+		return assert.Equal(t, x, gotX.Interface(), "FromWire: %v", message)
+	}
+	return false
+}

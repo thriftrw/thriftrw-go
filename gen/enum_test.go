@@ -68,12 +68,7 @@ func TestEnumDefaultWire(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.v, tt.e.ToWire())
-
-		var e te.EnumDefault
-		if assert.NoError(t, e.FromWire(tt.v)) {
-			assert.Equal(t, tt.e, e)
-		}
+		assertRoundTrip(t, &tt.e, tt.v, "EnumDefault")
 	}
 }
 
@@ -102,12 +97,7 @@ func TestEnumWithDuplicateValuesWire(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.v, tt.e.ToWire())
-
-		var e te.EnumWithDuplicateValues
-		if assert.NoError(t, e.FromWire(tt.v)) {
-			assert.Equal(t, tt.e, e)
-		}
+		assertRoundTrip(t, &tt.e, tt.v, "EnumWithDuplicateValues")
 	}
 }
 
@@ -138,11 +128,6 @@ func TestOptionalEnum(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.v, tt.s.ToWire())
-
-		var s te.StructWithOptionalEnum
-		if assert.NoError(t, s.FromWire(tt.v)) {
-			assert.Equal(t, tt.s, s)
-		}
+		assertRoundTrip(t, &tt.s, tt.v, "StructWithOptionalEnum")
 	}
 }
