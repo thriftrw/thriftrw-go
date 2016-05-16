@@ -48,6 +48,7 @@ func TestQuickRoundTrip(t *testing.T) {
 		// reflect.TypeOf(testdata.Graph{}),
 		reflect.TypeOf(ts.ContactInfo{}),
 		reflect.TypeOf(ts.User{}),
+		reflect.TypeOf(tc.ContainersOfContainers{}),
 	}
 
 	rand := rand.New(rand.NewSource(time.Now().UnixNano()))
