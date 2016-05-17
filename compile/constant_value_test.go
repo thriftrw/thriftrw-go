@@ -51,22 +51,26 @@ func TestLinkConstantReference(t *testing.T) {
 	}
 
 	tests := []struct {
-		desc     string
-		scope    Scope
-		name     string
+		desc  string
+		scope Scope
+		name  string
+
 		expected ConstantValue
+		typ      TypeSpec
 	}{
 		{
 			"simple constant lookup",
 			scope("Version", version),
 			"Version",
 			ConstReference{Target: version},
+			I32Spec,
 		},
 		{
 			"included constant lookup",
 			scope("shared", scope("DefaultUser", defaultUser)),
 			"shared.DefaultUser",
 			ConstReference{Target: defaultUser},
+			StringSpec,
 		},
 		{
 			"enum constant lookup",
@@ -76,6 +80,7 @@ func TestLinkConstantReference(t *testing.T) {
 				Enum: role,
 				Item: EnumItem{Name: "Moderator", Value: 2},
 			},
+			role,
 		},
 		{
 			"included enum constant lookup",
@@ -85,33 +90,333 @@ func TestLinkConstantReference(t *testing.T) {
 				Enum: role,
 				Item: EnumItem{Name: "Disabled", Value: -1},
 			},
+			role,
 		},
 	}
 
 	for _, tt := range tests {
-		expected, err := tt.expected.Link(scope())
+		expected, err := tt.expected.Link(scope(), tt.typ)
 		require.NoError(t, err, "Test constant value must link without errors")
 
 		scope := scopeOrDefault(tt.scope)
-		got, err := constantReference(ast.ConstantReference{Name: tt.name}).Link(scope)
+		got, err := constantReference(ast.ConstantReference{Name: tt.name}).Link(scope, tt.typ)
 		if assert.NoError(t, err, tt.desc) {
 			assert.Equal(t, expected, got)
 		}
 	}
 }
 
+func TestCastConstants(t *testing.T) {
+	role := &EnumSpec{
+		Name: "Role",
+		Items: []EnumItem{
+			{Name: "Disabled", Value: -1},
+			{Name: "Enabled", Value: 1},
+			{Name: "Moderator", Value: 2},
+		},
+	}
+
+	someStruct := &StructSpec{
+		Name: "SomeStruct",
+		Type: ast.StructType,
+		Fields: FieldGroup{
+			{
+				ID:       1,
+				Name:     "someRequiredField",
+				Required: true,
+				Type:     I32Spec,
+			},
+			{
+				ID:   2,
+				Name: "someOptionalField",
+				Type: StringSpec,
+			},
+			{
+				ID:       3,
+				Name:     "someFieldWithADefault",
+				Required: true,
+				Type:     I64Spec,
+				Default:  ConstantInt(42),
+			},
+		},
+	}
+
+	tests := []struct {
+		desc  string
+		scope Scope
+		typ   TypeSpec
+		give  ConstantValue
+
+		want      ConstantValue
+		wantError string
+	}{
+		{
+			desc: "ConstantBool",
+			typ:  BoolSpec,
+			give: ConstantBool(true),
+			want: ConstantBool(true),
+		},
+		{
+			desc: "ConstantInt: bool (false)",
+			typ:  BoolSpec,
+			give: ConstantInt(0),
+			want: ConstantBool(false),
+		},
+		{
+			desc: "ConstantInt: bool (true)",
+			typ:  BoolSpec,
+			give: ConstantInt(1),
+			want: ConstantBool(true),
+		},
+		{
+			desc:      "ConstantInt: bool (failure)",
+			typ:       BoolSpec,
+			give:      ConstantInt(2),
+			wantError: "the value must be 0 or 1",
+		},
+		{
+			desc: "ConstantInt: i8",
+			typ:  I8Spec,
+			give: ConstantInt(42),
+			want: ConstantInt(42),
+		},
+		{
+			desc: "ConstantInt: i16",
+			typ:  I16Spec,
+			give: ConstantInt(42),
+			want: ConstantInt(42),
+		},
+		{
+			desc: "ConstantInt: i32",
+			typ:  I32Spec,
+			give: ConstantInt(42),
+			want: ConstantInt(42),
+		},
+		{
+			desc: "ConstantInt: i64",
+			typ:  I64Spec,
+			give: ConstantInt(42),
+			want: ConstantInt(42),
+		},
+		{
+			desc: "ConstantInt: double",
+			typ:  DoubleSpec,
+			give: ConstantInt(42),
+			want: ConstantDouble(42.0),
+		},
+		{
+			desc: "ConstantInt: enum (negative)",
+			typ:  role,
+			give: ConstantInt(-1),
+			want: EnumItemReference{
+				Enum: role,
+				Item: role.Items[0], // Disabled
+			},
+		},
+		{
+			desc: "ConstantInt: enum (positive)",
+			typ:  role,
+			give: ConstantInt(2),
+			want: EnumItemReference{
+				Enum: role,
+				Item: role.Items[2], // Moderator
+			},
+		},
+		{
+			desc:      "ConstantInt: enum (failure)",
+			typ:       role,
+			give:      ConstantInt(3),
+			wantError: `3 is not a valid value for enum "Role"`,
+		},
+		{
+			desc:      "ConstantInt: failure",
+			typ:       StringSpec,
+			give:      ConstantInt(1),
+			wantError: `cannot cast 1 to "string"`,
+		},
+		{
+			desc: "ConstantString",
+			typ:  StringSpec,
+			give: ConstantString("foo"),
+			want: ConstantString("foo"),
+		},
+		{
+			desc: "ConstantDouble",
+			typ:  DoubleSpec,
+			give: ConstantDouble(42.0),
+			want: ConstantDouble(42.0),
+		},
+		{
+			desc: "ConstantStruct: all fields",
+			typ:  someStruct,
+			give: &ConstantStruct{
+				Fields: map[string]ConstantValue{
+					"someRequiredField":     ConstantInt(100),
+					"someOptionalField":     ConstantString("hello"),
+					"someFieldWithADefault": ConstantInt(1),
+				},
+			},
+			want: &ConstantStruct{
+				Fields: map[string]ConstantValue{
+					"someRequiredField":     ConstantInt(100),
+					"someOptionalField":     ConstantString("hello"),
+					"someFieldWithADefault": ConstantInt(1),
+				},
+			},
+		},
+		{
+			desc: "ConstantStruct: with default",
+			typ:  someStruct,
+			give: &ConstantStruct{
+				Fields: map[string]ConstantValue{
+					"someRequiredField": ConstantInt(100),
+				},
+			},
+			want: &ConstantStruct{
+				Fields: map[string]ConstantValue{
+					"someRequiredField":     ConstantInt(100),
+					"someFieldWithADefault": ConstantInt(42),
+				},
+			},
+		},
+		{
+			desc:      "ConstantStruct: failure",
+			typ:       someStruct,
+			give:      &ConstantStruct{Fields: map[string]ConstantValue{}},
+			wantError: `"someRequiredField" is a required field`,
+		},
+		{
+			desc: "ConstantStruct: field casting failure",
+			typ:  someStruct,
+			give: &ConstantStruct{
+				Fields: map[string]ConstantValue{
+					"someRequiredField": ConstantString("foo"),
+				},
+			},
+			wantError: `failed to cast field "someRequiredField": cannot cast foo to "i32"`,
+		},
+		{
+			desc: "ConstantMap",
+			typ:  &MapSpec{KeySpec: StringSpec, ValueSpec: I32Spec},
+			give: ConstantMap{
+				{Key: ConstantString("hello"), Value: ConstantInt(100)},
+				{Key: ConstantString("world"), Value: ConstantInt(200)},
+			},
+			want: ConstantMap{
+				{Key: ConstantString("hello"), Value: ConstantInt(100)},
+				{Key: ConstantString("world"), Value: ConstantInt(200)},
+			},
+		},
+		{
+			desc: "ConstantMap: struct",
+			typ:  someStruct,
+			give: ConstantMap{
+				{
+					Key:   ConstantString("someRequiredField"),
+					Value: ConstantInt(100),
+				},
+			},
+			want: &ConstantStruct{
+				Fields: map[string]ConstantValue{
+					"someRequiredField":     ConstantInt(100),
+					"someFieldWithADefault": ConstantInt(42),
+				},
+			},
+		},
+		{
+			desc: "ConstantMap: struct (invalid key)",
+			typ:  someStruct,
+			give: ConstantMap{
+				{
+					Key:   ConstantInt(100),
+					Value: ConstantInt(200),
+				},
+			},
+			wantError: "100 is not a string: all keys must be strings",
+		},
+		{
+			desc: "ConstantSet",
+			typ:  &SetSpec{ValueSpec: I32Spec},
+			give: ConstantSet{ConstantInt(1), ConstantInt(2), ConstantInt(3)},
+			want: ConstantSet{ConstantInt(1), ConstantInt(2), ConstantInt(3)},
+		},
+		{
+			desc: "ConstantList",
+			typ:  &ListSpec{ValueSpec: I32Spec},
+			give: ConstantList{ConstantInt(1), ConstantInt(2), ConstantInt(3)},
+			want: ConstantList{ConstantInt(1), ConstantInt(2), ConstantInt(3)},
+		},
+		{
+			desc: "ConstantReference",
+			typ:  I32Spec,
+			give: ConstReference{Target: &Constant{
+				Name:  "Version",
+				Type:  I32Spec,
+				Value: ConstantInt(42),
+			}},
+			want: ConstReference{Target: &Constant{
+				Name:  "Version",
+				Type:  I32Spec,
+				Value: ConstantInt(42),
+			}},
+		},
+		{
+			desc: "ConstantReference: mismatch",
+			typ:  DoubleSpec,
+			give: ConstReference{Target: &Constant{
+				Name:  "Version",
+				Type:  I32Spec,
+				Value: ConstantInt(42),
+			}},
+			want: ConstantDouble(42.0),
+		},
+	}
+
+	for _, tt := range tests {
+		var err error
+		tt.typ, err = tt.typ.Link(scope())
+		require.NoError(t, err, "'typ' must link without errors")
+
+		if tt.want != nil {
+			tt.want, err = tt.want.Link(scope(), tt.typ)
+			require.NoError(t, err, "'want' must link without errors")
+		}
+
+		scope := scopeOrDefault(tt.scope)
+		got, err := tt.give.Link(scope, tt.typ)
+		if tt.wantError != "" {
+			if assert.Error(t, err, tt.desc) {
+				assert.Contains(t, err.Error(), tt.wantError, tt.desc)
+			}
+		} else {
+			if assert.NoError(t, err, tt.desc) {
+				assert.Equal(t, tt.want, got, tt.desc)
+			}
+		}
+	}
+}
+
 func TestLinkConstantReferenceFailure(t *testing.T) {
+	foo := &EnumSpec{
+		Name: "Foo",
+		Items: []EnumItem{
+			{Name: "A", Value: 1},
+			{Name: "B", Value: 2},
+		},
+	}
 	tests := []struct {
 		desc     string
 		scope    Scope
 		name     string
 		messages []string
+		typ      TypeSpec
 	}{
 		{
 			"unknown identifier",
 			scope("bar"),
 			"foo",
 			[]string{`could not resolve reference "foo" in "bar"`},
+			StringSpec,
 		},
 		{
 			"unknown module",
@@ -121,6 +426,7 @@ func TestLinkConstantReferenceFailure(t *testing.T) {
 				`could not resolve reference "shared.DEFAULT_UUID" in "bar"`,
 				`unknown module "shared"`,
 			},
+			StringSpec,
 		},
 		{
 			"unknown identifier in included module",
@@ -130,29 +436,25 @@ func TestLinkConstantReferenceFailure(t *testing.T) {
 				`could not resolve reference "shared.DEFAULT_UUID" in "foo"`,
 				`could not resolve reference "DEFAULT_UUID" in "shared"`,
 			},
+			StringSpec,
 		},
 		{
 			"unknown item in enum",
 			scope("foo",
-				"Foo", &EnumSpec{
-					Name: "Foo",
-					Items: []EnumItem{
-						{Name: "A", Value: 1},
-						{Name: "B", Value: 2},
-					},
-				},
+				"Foo", foo,
 			),
 			"Foo.C",
 			[]string{
 				`could not resolve reference "Foo.C" in "foo"`,
 				`enum "Foo" does not have an item named "C"`,
 			},
+			foo,
 		},
 	}
 
 	for _, tt := range tests {
 		scope := scopeOrDefault(tt.scope)
-		_, err := constantReference(ast.ConstantReference{Name: tt.name}).Link(scope)
+		_, err := constantReference(ast.ConstantReference{Name: tt.name}).Link(scope, tt.typ)
 		if assert.Error(t, err, tt.desc) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg, tt.desc)

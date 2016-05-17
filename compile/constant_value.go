@@ -21,6 +21,7 @@
 package compile
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/thriftrw/thriftrw-go/ast"
@@ -28,12 +29,9 @@ import (
 
 // ConstantValue represents a compiled constant value or a reference to one.
 type ConstantValue interface {
-	Link(scope Scope) (ConstantValue, error)
-
-	// TODO link probably needs a reference to the type the constant is expected
-	// to be.
-
-	// TODO all constants must have a type associated with them.
+	// Link the constant value with the given scope, casting it to the given
+	// type if necessary.
+	Link(scope Scope, t TypeSpec) (ConstantValue, error)
 }
 
 // compileConstantValue compiles a constant value AST into a ConstantValue.
@@ -41,6 +39,9 @@ func compileConstantValue(v ast.ConstantValue) ConstantValue {
 	if v == nil {
 		return nil
 	}
+
+	// TODO(abg): Support typedefs
+
 	switch src := v.(type) {
 	case ast.ConstantReference:
 		return constantReference(src)
@@ -61,6 +62,14 @@ func compileConstantValue(v ast.ConstantValue) ConstantValue {
 	}
 }
 
+// Helper for ConstantValues whose link method expects a specific TypeSpec.
+func typeEqualsOrCastError(c ConstantValue, want, got TypeSpec) (ConstantValue, error) {
+	if want != got {
+		return nil, constantValueCastError{Value: c, Type: got}
+	}
+	return c, nil
+}
+
 type (
 	// ConstantBool represents a boolean constant from the Thrift file.
 	ConstantBool bool
@@ -76,24 +85,123 @@ type (
 )
 
 // Link for ConstantBool
-func (c ConstantBool) Link(scope Scope) (ConstantValue, error) {
-	return c, nil
+func (c ConstantBool) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
+	return typeEqualsOrCastError(c, BoolSpec, t)
 }
 
 // Link for ConstantInt.
-func (c ConstantInt) Link(scope Scope) (ConstantValue, error) {
-	// TODO ConstantInt can resolve to a ConstantBool if it's being treated as
-	// a bool.
-	return c, nil
+func (c ConstantInt) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
+	switch t {
+	case I8Spec, I16Spec, I32Spec, I64Spec:
+		// TODO bounds checks?
+		return c, nil
+	case DoubleSpec:
+		return ConstantDouble(float64(c)).Link(scope, t)
+	case BoolSpec:
+		switch v := int64(c); v {
+		case 0, 1:
+			return ConstantBool(v == 1).Link(scope, t)
+		default:
+			return nil, constantValueCastError{
+				Value:  c,
+				Type:   t,
+				Reason: errors.New("the value must be 0 or 1"),
+			}
+		}
+	default:
+		// fall through
+	}
+
+	// Used for an enum
+	if e, ok := t.(*EnumSpec); ok {
+		for _, item := range e.Items {
+			if item.Value == int32(c) {
+				return EnumItemReference{Enum: e, Item: item}, nil
+			}
+		}
+
+		return nil, constantValueCastError{
+			Value: c,
+			Type:  t,
+			Reason: fmt.Errorf(
+				"%v is not a valid value for enum %q", int32(c), e.ThriftName()),
+		}
+	}
+
+	return nil, constantValueCastError{Value: c, Type: t}
+	// TODO: AST for constants will need to track positions for us to
+	// include them in the error messages.
 }
 
 // Link for ConstantString.
-func (c ConstantString) Link(scope Scope) (ConstantValue, error) {
-	return c, nil
+func (c ConstantString) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
+	return typeEqualsOrCastError(c, StringSpec, t)
+	// TODO(abg): Are binary literals a thing?
 }
 
 // Link for ConstantDouble.
-func (c ConstantDouble) Link(scope Scope) (ConstantValue, error) {
+func (c ConstantDouble) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
+	return typeEqualsOrCastError(c, DoubleSpec, t)
+}
+
+// ConstantStruct represents a struct literal from the Thrift file.
+type ConstantStruct struct {
+	Fields map[string]ConstantValue
+}
+
+// buildConstantStruct builds a constant struct from a ConstantMap.
+func buildConstantStruct(c ConstantMap) (*ConstantStruct, error) {
+	fields := make(map[string]ConstantValue, len(c))
+	for _, pair := range c {
+		s, isString := pair.Key.(ConstantString)
+		if !isString {
+			return nil, fmt.Errorf(
+				"%v is not a string: all keys must be strings", pair.Key)
+		}
+		fields[string(s)] = pair.Value
+	}
+	return &ConstantStruct{Fields: fields}, nil
+}
+
+// Link for ConstantStruct
+func (c *ConstantStruct) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
+	s, ok := t.(*StructSpec)
+	if !ok {
+		return nil, constantValueCastError{Value: c, Type: t}
+	}
+
+	for _, field := range s.Fields {
+		f, ok := c.Fields[field.Name]
+		if !ok {
+			if field.Default == nil {
+				if field.Required {
+					return nil, constantValueCastError{
+						Value:  c,
+						Type:   t,
+						Reason: fmt.Errorf("%q is a required field", field.Name),
+					}
+				}
+				continue
+			}
+			f = field.Default
+			c.Fields[field.Name] = f
+		}
+
+		f, err := f.Link(scope, field.Type)
+		if err != nil {
+			return nil, constantValueCastError{
+				Value: c,
+				Type:  t,
+				Reason: constantStructFieldCastError{
+					FieldName: field.Name,
+					Reason:    err,
+				},
+			}
+		}
+
+		c.Fields[field.Name] = f
+	}
+
 	return c, nil
 }
 
@@ -118,20 +226,32 @@ type ConstantValuePair struct {
 }
 
 // Link for ConstantMap.
-func (c ConstantMap) Link(scope Scope) (ConstantValue, error) {
+func (c ConstantMap) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
+	if _, isStruct := t.(*StructSpec); isStruct {
+		cs, err := buildConstantStruct(c)
+		if err != nil {
+			return nil, constantValueCastError{
+				Value:  c,
+				Type:   t,
+				Reason: err,
+			}
+		}
+		return cs.Link(scope, t)
+	}
+
+	m, ok := t.(*MapSpec)
+	if !ok {
+		return nil, constantValueCastError{Value: c, Type: t}
+	}
+
 	items := make([]ConstantValuePair, len(c))
-
-	// TODO ConstantMap can resolve into a constant struct if the type it is
-	// being cast to is a struct. Otherwise, all keys and values must be the
-	// same type.
-
 	for i, item := range c {
-		key, err := item.Key.Link(scope)
+		key, err := item.Key.Link(scope, m.KeySpec)
 		if err != nil {
 			return nil, err
 		}
 
-		value, err := item.Value.Link(scope)
+		value, err := item.Value.Link(scope, m.ValueSpec)
 		if err != nil {
 			return nil, err
 		}
@@ -141,6 +261,29 @@ func (c ConstantMap) Link(scope Scope) (ConstantValue, error) {
 	}
 
 	return ConstantMap(items), nil
+}
+
+// ConstantSet represents a set of constant values from the Thrift file.
+type ConstantSet []ConstantValue
+
+// Link for ConstantSet.
+func (c ConstantSet) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
+	s, ok := t.(*SetSpec)
+	if !ok {
+		return nil, constantValueCastError{Value: c, Type: t}
+	}
+
+	// TODO(abg): Track whether things are linked so that we don't re-link here
+	values := make([]ConstantValue, len(c))
+	for i, v := range c {
+		value, err := v.Link(scope, s.ValueSpec)
+		if err != nil {
+			return nil, err
+		}
+		values[i] = value
+	}
+
+	return ConstantSet(values), nil
 }
 
 // ConstantList represents a list of constant values from the Thrift file.
@@ -155,14 +298,19 @@ func compileConstantList(src ast.ConstantList) ConstantList {
 }
 
 // Link for ConstantList.
-func (c ConstantList) Link(scope Scope) (ConstantValue, error) {
+func (c ConstantList) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
+	if _, isSet := t.(*SetSpec); isSet {
+		return ConstantSet(c).Link(scope, t)
+	}
+
+	l, ok := t.(*ListSpec)
+	if !ok {
+		return nil, constantValueCastError{Value: c, Type: t}
+	}
+
 	values := make([]ConstantValue, len(c))
-
-	// TODO ConstantList can resolve to a constant set if it's being treated as
-	// such.
-
 	for i, v := range c {
-		value, err := v.Link(scope)
+		value, err := v.Link(scope, l.ValueSpec)
 		if err != nil {
 			return nil, err
 		}
@@ -179,9 +327,11 @@ type ConstReference struct {
 }
 
 // Link for ConstReference.
-func (c ConstReference) Link(scope Scope) (ConstantValue, error) {
-	// The reference has already been verified. Nothing to do.
-	return c, nil
+func (c ConstReference) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
+	if t == c.Target.Type {
+		return c, nil
+	}
+	return c.Target.Value.Link(scope, t)
 }
 
 // EnumItemReference represents a reference to an item of an enum defined in the
@@ -192,9 +342,8 @@ type EnumItemReference struct {
 }
 
 // Link for EnumItemReference.
-func (e EnumItemReference) Link(scope Scope) (ConstantValue, error) {
-	// The reference has already been verified. Nothing to do.
-	return e, nil
+func (e EnumItemReference) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
+	return typeEqualsOrCastError(e, e.Enum, t)
 }
 
 // constantReference represents a reference to another constant.
@@ -206,7 +355,7 @@ type constantReference ast.ConstantReference
 // Link a constantReference.
 //
 // This resolves the reference to a ConstReference or an EnumItemReference.
-func (r constantReference) Link(scope Scope) (ConstantValue, error) {
+func (r constantReference) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 	src := ast.ConstantReference(r)
 
 	c, err := scope.LookupConstant(src.Name)
@@ -254,7 +403,7 @@ func (r constantReference) Link(scope Scope) (ConstantValue, error) {
 		}
 	}
 
-	value, err := constantReference{Name: iname}.Link(includedScope)
+	value, err := constantReference{Name: iname}.Link(includedScope, t)
 	if err != nil {
 		return nil, referenceError{
 			Target:    src.Name,
