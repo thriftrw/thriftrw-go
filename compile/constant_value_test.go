@@ -362,13 +362,13 @@ func TestCastConstants(t *testing.T) {
 		},
 		{
 			desc: "ConstantReference: mismatch",
-			typ:  I64Spec,
+			typ:  DoubleSpec,
 			give: ConstReference{Target: &Constant{
 				Name:  "Version",
 				Type:  I32Spec,
 				Value: ConstantInt(42),
 			}},
-			wantError: `failed to cast constant "Version"`,
+			want: ConstantDouble(42.0),
 		},
 	}
 

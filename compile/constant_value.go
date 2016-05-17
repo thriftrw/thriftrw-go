@@ -40,6 +40,8 @@ func compileConstantValue(v ast.ConstantValue) ConstantValue {
 		return nil
 	}
 
+	// TODO(abg): Support typedefs
+
 	switch src := v.(type) {
 	case ast.ConstantReference:
 		return constantReference(src)
@@ -147,6 +149,20 @@ type ConstantStruct struct {
 	Fields map[string]ConstantValue
 }
 
+// buildConstantStruct builds a constant struct from a ConstantMap.
+func buildConstantStruct(c ConstantMap) (*ConstantStruct, error) {
+	fields := make(map[string]ConstantValue, len(c))
+	for _, pair := range c {
+		s, isString := pair.Key.(ConstantString)
+		if !isString {
+			return nil, fmt.Errorf(
+				"%v is not a string: all keys must be strings", pair.Key)
+		}
+		fields[string(s)] = pair.Value
+	}
+	return &ConstantStruct{Fields: fields}, nil
+}
+
 // Link for ConstantStruct
 func (c *ConstantStruct) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 	s, ok := t.(*StructSpec)
@@ -212,22 +228,15 @@ type ConstantValuePair struct {
 // Link for ConstantMap.
 func (c ConstantMap) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 	if _, isStruct := t.(*StructSpec); isStruct {
-		fields := make(map[string]ConstantValue, len(c))
-		for _, pair := range c {
-			s, isString := pair.Key.(ConstantString)
-			if !isString {
-				return nil, constantValueCastError{
-					Value: c,
-					Type:  t,
-					Reason: fmt.Errorf(
-						"%v is not a string: all keys must be strings", pair.Key),
-				}
+		cs, err := buildConstantStruct(c)
+		if err != nil {
+			return nil, constantValueCastError{
+				Value:  c,
+				Type:   t,
+				Reason: err,
 			}
-
-			fields[string(s)] = pair.Value
 		}
-		s := ConstantStruct{Fields: fields}
-		return s.Link(scope, t)
+		return cs.Link(scope, t)
 	}
 
 	m, ok := t.(*MapSpec)
@@ -319,11 +328,10 @@ type ConstReference struct {
 
 // Link for ConstReference.
 func (c ConstReference) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	cv, err := typeEqualsOrCastError(c, c.Target.Type, t)
-	if err != nil {
-		err = constantCastError{Name: c.Target.Name, Reason: err}
+	if t == c.Target.Type {
+		return c, nil
 	}
-	return cv, err
+	return c.Target.Value.Link(scope, t)
 }
 
 // EnumItemReference represents a reference to an item of an enum defined in the
