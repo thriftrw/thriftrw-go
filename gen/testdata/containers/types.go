@@ -9,6 +9,843 @@ import (
 	"strings"
 )
 
+type ContainersOfContainers struct {
+	ListOfLists   [][]int32             `json:"listOfLists"`
+	ListOfSets    []map[int32]struct{}  `json:"listOfSets"`
+	ListOfMaps    []map[int32]int32     `json:"listOfMaps"`
+	SetOfSets     []map[string]struct{} `json:"setOfSets"`
+	SetOfLists    [][]string            `json:"setOfLists"`
+	SetOfMaps     []map[string]string   `json:"setOfMaps"`
+	MapOfMapToInt []struct {
+		Key   map[string]int32
+		Value int64
+	} `json:"mapOfMapToInt"`
+	MapOfListToSet []struct {
+		Key   []int32
+		Value map[int64]struct{}
+	} `json:"mapOfListToSet"`
+	MapOfSetToListOfDouble []struct {
+		Key   map[int32]struct{}
+		Value []float64
+	} `json:"mapOfSetToListOfDouble"`
+}
+
+type _List_I32_ValueList []int32
+
+func (v _List_I32_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueI32(x))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_I32_ValueList) Close() {
+}
+
+type _List_List_I32_ValueList [][]int32
+
+func (v _List_List_I32_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueList(wire.List{ValueType: wire.TI32, Size: len(x), Items: _List_I32_ValueList(x)}))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_List_I32_ValueList) Close() {
+}
+
+type _Set_I32_ValueList map[int32]struct{}
+
+func (v _Set_I32_ValueList) ForEach(f func(wire.Value) error) error {
+	for x := range v {
+		err := f(wire.NewValueI32(x))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _Set_I32_ValueList) Close() {
+}
+
+type _List_Set_I32_ValueList []map[int32]struct{}
+
+func (v _List_Set_I32_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueSet(wire.Set{ValueType: wire.TI32, Size: len(x), Items: _Set_I32_ValueList(x)}))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_Set_I32_ValueList) Close() {
+}
+
+type _Map_I32_I32_MapItemList map[int32]int32
+
+func (m _Map_I32_I32_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for k, v := range m {
+		err := f(wire.MapItem{Key: wire.NewValueI32(k), Value: wire.NewValueI32(v)})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_I32_I32_MapItemList) Close() {
+}
+
+type _List_Map_I32_I32_ValueList []map[int32]int32
+
+func (v _List_Map_I32_I32_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueMap(wire.Map{KeyType: wire.TI32, ValueType: wire.TI32, Size: len(x), Items: _Map_I32_I32_MapItemList(x)}))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_Map_I32_I32_ValueList) Close() {
+}
+
+type _Set_String_ValueList map[string]struct{}
+
+func (v _Set_String_ValueList) ForEach(f func(wire.Value) error) error {
+	for x := range v {
+		err := f(wire.NewValueString(x))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _Set_String_ValueList) Close() {
+}
+
+type _Set_Set_String_ValueList []map[string]struct{}
+
+func (v _Set_Set_String_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueSet(wire.Set{ValueType: wire.TBinary, Size: len(x), Items: _Set_String_ValueList(x)}))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _Set_Set_String_ValueList) Close() {
+}
+
+type _List_String_ValueList []string
+
+func (v _List_String_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueString(x))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_String_ValueList) Close() {
+}
+
+type _Set_List_String_ValueList [][]string
+
+func (v _Set_List_String_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(x), Items: _List_String_ValueList(x)}))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _Set_List_String_ValueList) Close() {
+}
+
+type _Map_String_String_MapItemList map[string]string
+
+func (m _Map_String_String_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for k, v := range m {
+		err := f(wire.MapItem{Key: wire.NewValueString(k), Value: wire.NewValueString(v)})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_String_String_MapItemList) Close() {
+}
+
+type _Set_Map_String_String_ValueList []map[string]string
+
+func (v _Set_Map_String_String_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueMap(wire.Map{KeyType: wire.TBinary, ValueType: wire.TBinary, Size: len(x), Items: _Map_String_String_MapItemList(x)}))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _Set_Map_String_String_ValueList) Close() {
+}
+
+type _Map_String_I32_MapItemList map[string]int32
+
+func (m _Map_String_I32_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for k, v := range m {
+		err := f(wire.MapItem{Key: wire.NewValueString(k), Value: wire.NewValueI32(v)})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_String_I32_MapItemList) Close() {
+}
+
+type _Map_Map_String_I32_I64_MapItemList []struct {
+	Key   map[string]int32
+	Value int64
+}
+
+func (m _Map_Map_String_I32_I64_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for _, i := range m {
+		k := i.Key
+		v := i.Value
+		err := f(wire.MapItem{Key: wire.NewValueMap(wire.Map{KeyType: wire.TBinary, ValueType: wire.TI32, Size: len(k), Items: _Map_String_I32_MapItemList(k)}), Value: wire.NewValueI64(v)})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_Map_String_I32_I64_MapItemList) Close() {
+}
+
+type _Set_I64_ValueList map[int64]struct{}
+
+func (v _Set_I64_ValueList) ForEach(f func(wire.Value) error) error {
+	for x := range v {
+		err := f(wire.NewValueI64(x))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _Set_I64_ValueList) Close() {
+}
+
+type _Map_List_I32_Set_I64_MapItemList []struct {
+	Key   []int32
+	Value map[int64]struct{}
+}
+
+func (m _Map_List_I32_Set_I64_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for _, i := range m {
+		k := i.Key
+		v := i.Value
+		err := f(wire.MapItem{Key: wire.NewValueList(wire.List{ValueType: wire.TI32, Size: len(k), Items: _List_I32_ValueList(k)}), Value: wire.NewValueSet(wire.Set{ValueType: wire.TI64, Size: len(v), Items: _Set_I64_ValueList(v)})})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_List_I32_Set_I64_MapItemList) Close() {
+}
+
+type _List_Double_ValueList []float64
+
+func (v _List_Double_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueDouble(x))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_Double_ValueList) Close() {
+}
+
+type _Map_Set_I32_List_Double_MapItemList []struct {
+	Key   map[int32]struct{}
+	Value []float64
+}
+
+func (m _Map_Set_I32_List_Double_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for _, i := range m {
+		k := i.Key
+		v := i.Value
+		err := f(wire.MapItem{Key: wire.NewValueSet(wire.Set{ValueType: wire.TI32, Size: len(k), Items: _Set_I32_ValueList(k)}), Value: wire.NewValueList(wire.List{ValueType: wire.TDouble, Size: len(v), Items: _List_Double_ValueList(v)})})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_Set_I32_List_Double_MapItemList) Close() {
+}
+
+func (v *ContainersOfContainers) ToWire() wire.Value {
+	var fields [9]wire.Field
+	i := 0
+	if v.ListOfLists != nil {
+		fields[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TList, Size: len(v.ListOfLists), Items: _List_List_I32_ValueList(v.ListOfLists)})}
+		i++
+	}
+	if v.ListOfSets != nil {
+		fields[i] = wire.Field{ID: 2, Value: wire.NewValueList(wire.List{ValueType: wire.TSet, Size: len(v.ListOfSets), Items: _List_Set_I32_ValueList(v.ListOfSets)})}
+		i++
+	}
+	if v.ListOfMaps != nil {
+		fields[i] = wire.Field{ID: 3, Value: wire.NewValueList(wire.List{ValueType: wire.TMap, Size: len(v.ListOfMaps), Items: _List_Map_I32_I32_ValueList(v.ListOfMaps)})}
+		i++
+	}
+	if v.SetOfSets != nil {
+		fields[i] = wire.Field{ID: 4, Value: wire.NewValueSet(wire.Set{ValueType: wire.TSet, Size: len(v.SetOfSets), Items: _Set_Set_String_ValueList(v.SetOfSets)})}
+		i++
+	}
+	if v.SetOfLists != nil {
+		fields[i] = wire.Field{ID: 5, Value: wire.NewValueSet(wire.Set{ValueType: wire.TList, Size: len(v.SetOfLists), Items: _Set_List_String_ValueList(v.SetOfLists)})}
+		i++
+	}
+	if v.SetOfMaps != nil {
+		fields[i] = wire.Field{ID: 6, Value: wire.NewValueSet(wire.Set{ValueType: wire.TMap, Size: len(v.SetOfMaps), Items: _Set_Map_String_String_ValueList(v.SetOfMaps)})}
+		i++
+	}
+	if v.MapOfMapToInt != nil {
+		fields[i] = wire.Field{ID: 7, Value: wire.NewValueMap(wire.Map{KeyType: wire.TMap, ValueType: wire.TI64, Size: len(v.MapOfMapToInt), Items: _Map_Map_String_I32_I64_MapItemList(v.MapOfMapToInt)})}
+		i++
+	}
+	if v.MapOfListToSet != nil {
+		fields[i] = wire.Field{ID: 8, Value: wire.NewValueMap(wire.Map{KeyType: wire.TList, ValueType: wire.TSet, Size: len(v.MapOfListToSet), Items: _Map_List_I32_Set_I64_MapItemList(v.MapOfListToSet)})}
+		i++
+	}
+	if v.MapOfSetToListOfDouble != nil {
+		fields[i] = wire.Field{ID: 9, Value: wire.NewValueMap(wire.Map{KeyType: wire.TSet, ValueType: wire.TList, Size: len(v.MapOfSetToListOfDouble), Items: _Map_Set_I32_List_Double_MapItemList(v.MapOfSetToListOfDouble)})}
+		i++
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+}
+
+func _List_I32_Read(l wire.List) ([]int32, error) {
+	if l.ValueType != wire.TI32 {
+		return nil, nil
+	}
+	o := make([]int32, 0, l.Size)
+	err := l.Items.ForEach(func(x wire.Value) error {
+		i, err := x.GetI32(), error(nil)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Items.Close()
+	return o, err
+}
+
+func _List_List_I32_Read(l wire.List) ([][]int32, error) {
+	if l.ValueType != wire.TList {
+		return nil, nil
+	}
+	o := make([][]int32, 0, l.Size)
+	err := l.Items.ForEach(func(x wire.Value) error {
+		i, err := _List_I32_Read(x.GetList())
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Items.Close()
+	return o, err
+}
+
+func _Set_I32_Read(s wire.Set) (map[int32]struct{}, error) {
+	if s.ValueType != wire.TI32 {
+		return nil, nil
+	}
+	o := make(map[int32]struct{}, s.Size)
+	err := s.Items.ForEach(func(x wire.Value) error {
+		i, err := x.GetI32(), error(nil)
+		if err != nil {
+			return err
+		}
+		o[i] = struct{}{}
+		return nil
+	})
+	s.Items.Close()
+	return o, err
+}
+
+func _List_Set_I32_Read(l wire.List) ([]map[int32]struct{}, error) {
+	if l.ValueType != wire.TSet {
+		return nil, nil
+	}
+	o := make([]map[int32]struct{}, 0, l.Size)
+	err := l.Items.ForEach(func(x wire.Value) error {
+		i, err := _Set_I32_Read(x.GetSet())
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Items.Close()
+	return o, err
+}
+
+func _Map_I32_I32_Read(m wire.Map) (map[int32]int32, error) {
+	if m.KeyType != wire.TI32 {
+		return nil, nil
+	}
+	if m.ValueType != wire.TI32 {
+		return nil, nil
+	}
+	o := make(map[int32]int32, m.Size)
+	err := m.Items.ForEach(func(x wire.MapItem) error {
+		k, err := x.Key.GetI32(), error(nil)
+		if err != nil {
+			return err
+		}
+		v, err := x.Value.GetI32(), error(nil)
+		if err != nil {
+			return err
+		}
+		o[k] = v
+		return nil
+	})
+	m.Items.Close()
+	return o, err
+}
+
+func _List_Map_I32_I32_Read(l wire.List) ([]map[int32]int32, error) {
+	if l.ValueType != wire.TMap {
+		return nil, nil
+	}
+	o := make([]map[int32]int32, 0, l.Size)
+	err := l.Items.ForEach(func(x wire.Value) error {
+		i, err := _Map_I32_I32_Read(x.GetMap())
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Items.Close()
+	return o, err
+}
+
+func _Set_String_Read(s wire.Set) (map[string]struct{}, error) {
+	if s.ValueType != wire.TBinary {
+		return nil, nil
+	}
+	o := make(map[string]struct{}, s.Size)
+	err := s.Items.ForEach(func(x wire.Value) error {
+		i, err := x.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+		o[i] = struct{}{}
+		return nil
+	})
+	s.Items.Close()
+	return o, err
+}
+
+func _Set_Set_String_Read(s wire.Set) ([]map[string]struct{}, error) {
+	if s.ValueType != wire.TSet {
+		return nil, nil
+	}
+	o := make([]map[string]struct{}, 0, s.Size)
+	err := s.Items.ForEach(func(x wire.Value) error {
+		i, err := _Set_String_Read(x.GetSet())
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	s.Items.Close()
+	return o, err
+}
+
+func _List_String_Read(l wire.List) ([]string, error) {
+	if l.ValueType != wire.TBinary {
+		return nil, nil
+	}
+	o := make([]string, 0, l.Size)
+	err := l.Items.ForEach(func(x wire.Value) error {
+		i, err := x.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Items.Close()
+	return o, err
+}
+
+func _Set_List_String_Read(s wire.Set) ([][]string, error) {
+	if s.ValueType != wire.TList {
+		return nil, nil
+	}
+	o := make([][]string, 0, s.Size)
+	err := s.Items.ForEach(func(x wire.Value) error {
+		i, err := _List_String_Read(x.GetList())
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	s.Items.Close()
+	return o, err
+}
+
+func _Map_String_String_Read(m wire.Map) (map[string]string, error) {
+	if m.KeyType != wire.TBinary {
+		return nil, nil
+	}
+	if m.ValueType != wire.TBinary {
+		return nil, nil
+	}
+	o := make(map[string]string, m.Size)
+	err := m.Items.ForEach(func(x wire.MapItem) error {
+		k, err := x.Key.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+		v, err := x.Value.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+		o[k] = v
+		return nil
+	})
+	m.Items.Close()
+	return o, err
+}
+
+func _Set_Map_String_String_Read(s wire.Set) ([]map[string]string, error) {
+	if s.ValueType != wire.TMap {
+		return nil, nil
+	}
+	o := make([]map[string]string, 0, s.Size)
+	err := s.Items.ForEach(func(x wire.Value) error {
+		i, err := _Map_String_String_Read(x.GetMap())
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	s.Items.Close()
+	return o, err
+}
+
+func _Map_String_I32_Read(m wire.Map) (map[string]int32, error) {
+	if m.KeyType != wire.TBinary {
+		return nil, nil
+	}
+	if m.ValueType != wire.TI32 {
+		return nil, nil
+	}
+	o := make(map[string]int32, m.Size)
+	err := m.Items.ForEach(func(x wire.MapItem) error {
+		k, err := x.Key.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+		v, err := x.Value.GetI32(), error(nil)
+		if err != nil {
+			return err
+		}
+		o[k] = v
+		return nil
+	})
+	m.Items.Close()
+	return o, err
+}
+
+func _Map_Map_String_I32_I64_Read(m wire.Map) ([]struct {
+	Key   map[string]int32
+	Value int64
+}, error) {
+	if m.KeyType != wire.TMap {
+		return nil, nil
+	}
+	if m.ValueType != wire.TI64 {
+		return nil, nil
+	}
+	o := make([]struct {
+		Key   map[string]int32
+		Value int64
+	}, 0, m.Size)
+	err := m.Items.ForEach(func(x wire.MapItem) error {
+		k, err := _Map_String_I32_Read(x.Key.GetMap())
+		if err != nil {
+			return err
+		}
+		v, err := x.Value.GetI64(), error(nil)
+		if err != nil {
+			return err
+		}
+		o = append(o, struct {
+			Key   map[string]int32
+			Value int64
+		}{k, v})
+		return nil
+	})
+	m.Items.Close()
+	return o, err
+}
+
+func _Set_I64_Read(s wire.Set) (map[int64]struct{}, error) {
+	if s.ValueType != wire.TI64 {
+		return nil, nil
+	}
+	o := make(map[int64]struct{}, s.Size)
+	err := s.Items.ForEach(func(x wire.Value) error {
+		i, err := x.GetI64(), error(nil)
+		if err != nil {
+			return err
+		}
+		o[i] = struct{}{}
+		return nil
+	})
+	s.Items.Close()
+	return o, err
+}
+
+func _Map_List_I32_Set_I64_Read(m wire.Map) ([]struct {
+	Key   []int32
+	Value map[int64]struct{}
+}, error) {
+	if m.KeyType != wire.TList {
+		return nil, nil
+	}
+	if m.ValueType != wire.TSet {
+		return nil, nil
+	}
+	o := make([]struct {
+		Key   []int32
+		Value map[int64]struct{}
+	}, 0, m.Size)
+	err := m.Items.ForEach(func(x wire.MapItem) error {
+		k, err := _List_I32_Read(x.Key.GetList())
+		if err != nil {
+			return err
+		}
+		v, err := _Set_I64_Read(x.Value.GetSet())
+		if err != nil {
+			return err
+		}
+		o = append(o, struct {
+			Key   []int32
+			Value map[int64]struct{}
+		}{k, v})
+		return nil
+	})
+	m.Items.Close()
+	return o, err
+}
+
+func _List_Double_Read(l wire.List) ([]float64, error) {
+	if l.ValueType != wire.TDouble {
+		return nil, nil
+	}
+	o := make([]float64, 0, l.Size)
+	err := l.Items.ForEach(func(x wire.Value) error {
+		i, err := x.GetDouble(), error(nil)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Items.Close()
+	return o, err
+}
+
+func _Map_Set_I32_List_Double_Read(m wire.Map) ([]struct {
+	Key   map[int32]struct{}
+	Value []float64
+}, error) {
+	if m.KeyType != wire.TSet {
+		return nil, nil
+	}
+	if m.ValueType != wire.TList {
+		return nil, nil
+	}
+	o := make([]struct {
+		Key   map[int32]struct{}
+		Value []float64
+	}, 0, m.Size)
+	err := m.Items.ForEach(func(x wire.MapItem) error {
+		k, err := _Set_I32_Read(x.Key.GetSet())
+		if err != nil {
+			return err
+		}
+		v, err := _List_Double_Read(x.Value.GetList())
+		if err != nil {
+			return err
+		}
+		o = append(o, struct {
+			Key   map[int32]struct{}
+			Value []float64
+		}{k, v})
+		return nil
+	})
+	m.Items.Close()
+	return o, err
+}
+
+func (v *ContainersOfContainers) FromWire(w wire.Value) error {
+	var err error
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TList {
+				v.ListOfLists, err = _List_List_I32_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
+			if field.Value.Type() == wire.TList {
+				v.ListOfSets, err = _List_Set_I32_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+			}
+		case 3:
+			if field.Value.Type() == wire.TList {
+				v.ListOfMaps, err = _List_Map_I32_I32_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+			}
+		case 4:
+			if field.Value.Type() == wire.TSet {
+				v.SetOfSets, err = _Set_Set_String_Read(field.Value.GetSet())
+				if err != nil {
+					return err
+				}
+			}
+		case 5:
+			if field.Value.Type() == wire.TSet {
+				v.SetOfLists, err = _Set_List_String_Read(field.Value.GetSet())
+				if err != nil {
+					return err
+				}
+			}
+		case 6:
+			if field.Value.Type() == wire.TSet {
+				v.SetOfMaps, err = _Set_Map_String_String_Read(field.Value.GetSet())
+				if err != nil {
+					return err
+				}
+			}
+		case 7:
+			if field.Value.Type() == wire.TMap {
+				v.MapOfMapToInt, err = _Map_Map_String_I32_I64_Read(field.Value.GetMap())
+				if err != nil {
+					return err
+				}
+			}
+		case 8:
+			if field.Value.Type() == wire.TMap {
+				v.MapOfListToSet, err = _Map_List_I32_Set_I64_Read(field.Value.GetMap())
+				if err != nil {
+					return err
+				}
+			}
+		case 9:
+			if field.Value.Type() == wire.TMap {
+				v.MapOfSetToListOfDouble, err = _Map_Set_I32_List_Double_Read(field.Value.GetMap())
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (v *ContainersOfContainers) String() string {
+	var fields [9]string
+	i := 0
+	if v.ListOfLists != nil {
+		fields[i] = fmt.Sprintf("ListOfLists: %v", v.ListOfLists)
+		i++
+	}
+	if v.ListOfSets != nil {
+		fields[i] = fmt.Sprintf("ListOfSets: %v", v.ListOfSets)
+		i++
+	}
+	if v.ListOfMaps != nil {
+		fields[i] = fmt.Sprintf("ListOfMaps: %v", v.ListOfMaps)
+		i++
+	}
+	if v.SetOfSets != nil {
+		fields[i] = fmt.Sprintf("SetOfSets: %v", v.SetOfSets)
+		i++
+	}
+	if v.SetOfLists != nil {
+		fields[i] = fmt.Sprintf("SetOfLists: %v", v.SetOfLists)
+		i++
+	}
+	if v.SetOfMaps != nil {
+		fields[i] = fmt.Sprintf("SetOfMaps: %v", v.SetOfMaps)
+		i++
+	}
+	if v.MapOfMapToInt != nil {
+		fields[i] = fmt.Sprintf("MapOfMapToInt: %v", v.MapOfMapToInt)
+		i++
+	}
+	if v.MapOfListToSet != nil {
+		fields[i] = fmt.Sprintf("MapOfListToSet: %v", v.MapOfListToSet)
+		i++
+	}
+	if v.MapOfSetToListOfDouble != nil {
+		fields[i] = fmt.Sprintf("MapOfSetToListOfDouble: %v", v.MapOfSetToListOfDouble)
+		i++
+	}
+	return fmt.Sprintf("ContainersOfContainers{%v}", strings.Join(fields[:i], ", "))
+}
+
 type EnumContainers struct {
 	ListOfEnums []enums.EnumDefault                     `json:"listOfEnums"`
 	SetOfEnums  map[enums.EnumWithValues]struct{}       `json:"setOfEnums"`
@@ -241,21 +1078,6 @@ func (v _List_I64_ValueList) ForEach(f func(wire.Value) error) error {
 func (v _List_I64_ValueList) Close() {
 }
 
-type _Set_String_ValueList map[string]struct{}
-
-func (v _Set_String_ValueList) ForEach(f func(wire.Value) error) error {
-	for x := range v {
-		err := f(wire.NewValueString(x))
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (v _Set_String_ValueList) Close() {
-}
-
 type _Set_Byte_ValueList map[int8]struct{}
 
 func (v _Set_Byte_ValueList) ForEach(f func(wire.Value) error) error {
@@ -362,23 +1184,6 @@ func _List_I64_Read(l wire.List) ([]int64, error) {
 		return nil
 	})
 	l.Items.Close()
-	return o, err
-}
-
-func _Set_String_Read(s wire.Set) (map[string]struct{}, error) {
-	if s.ValueType != wire.TBinary {
-		return nil, nil
-	}
-	o := make(map[string]struct{}, s.Size)
-	err := s.Items.ForEach(func(x wire.Value) error {
-		i, err := x.GetString(), error(nil)
-		if err != nil {
-			return err
-		}
-		o[i] = struct{}{}
-		return nil
-	})
-	s.Items.Close()
 	return o, err
 }
 
@@ -534,36 +1339,6 @@ type PrimitiveContainersRequired struct {
 	MapOfIntsToDoubles map[int64]float64  `json:"mapOfIntsToDoubles"`
 }
 
-type _List_String_ValueList []string
-
-func (v _List_String_ValueList) ForEach(f func(wire.Value) error) error {
-	for _, x := range v {
-		err := f(wire.NewValueString(x))
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (v _List_String_ValueList) Close() {
-}
-
-type _Set_I32_ValueList map[int32]struct{}
-
-func (v _Set_I32_ValueList) ForEach(f func(wire.Value) error) error {
-	for x := range v {
-		err := f(wire.NewValueI32(x))
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (v _Set_I32_ValueList) Close() {
-}
-
 type _Map_I64_Double_MapItemList map[int64]float64
 
 func (m _Map_I64_Double_MapItemList) ForEach(f func(wire.MapItem) error) error {
@@ -589,40 +1364,6 @@ func (v *PrimitiveContainersRequired) ToWire() wire.Value {
 	fields[i] = wire.Field{ID: 3, Value: wire.NewValueMap(wire.Map{KeyType: wire.TI64, ValueType: wire.TDouble, Size: len(v.MapOfIntsToDoubles), Items: _Map_I64_Double_MapItemList(v.MapOfIntsToDoubles)})}
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
-}
-
-func _List_String_Read(l wire.List) ([]string, error) {
-	if l.ValueType != wire.TBinary {
-		return nil, nil
-	}
-	o := make([]string, 0, l.Size)
-	err := l.Items.ForEach(func(x wire.Value) error {
-		i, err := x.GetString(), error(nil)
-		if err != nil {
-			return err
-		}
-		o = append(o, i)
-		return nil
-	})
-	l.Items.Close()
-	return o, err
-}
-
-func _Set_I32_Read(s wire.Set) (map[int32]struct{}, error) {
-	if s.ValueType != wire.TI32 {
-		return nil, nil
-	}
-	o := make(map[int32]struct{}, s.Size)
-	err := s.Items.ForEach(func(x wire.Value) error {
-		i, err := x.GetI32(), error(nil)
-		if err != nil {
-			return err
-		}
-		o[i] = struct{}{}
-		return nil
-	})
-	s.Items.Close()
-	return o, err
 }
 
 func _Map_I64_Double_Read(m wire.Map) (map[int64]float64, error) {

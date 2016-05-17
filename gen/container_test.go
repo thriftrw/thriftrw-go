@@ -369,3 +369,465 @@ func TestListOfStructs(t *testing.T) {
 		assertRoundTrip(t, &tt.s, tt.v, "Graph")
 	}
 }
+
+func TestCrazyTown(t *testing.T) {
+	tests := []struct {
+		desc string
+		x    tc.ContainersOfContainers
+		v    wire.Value
+	}{
+		{
+			"ListOfLists",
+			tc.ContainersOfContainers{
+				ListOfLists: [][]int32{
+					{1, 2, 3},
+					{4, 5, 6},
+				},
+			},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueList(wire.List{
+					ValueType: wire.TList,
+					Size:      2,
+					Items: wire.ValueListFromSlice([]wire.Value{
+						wire.NewValueList(wire.List{
+							ValueType: wire.TI32,
+							Size:      3,
+							Items: wire.ValueListFromSlice([]wire.Value{
+								wire.NewValueI32(1),
+								wire.NewValueI32(2),
+								wire.NewValueI32(3),
+							}),
+						}),
+						wire.NewValueList(wire.List{
+							ValueType: wire.TI32,
+							Size:      3,
+							Items: wire.ValueListFromSlice([]wire.Value{
+								wire.NewValueI32(4),
+								wire.NewValueI32(5),
+								wire.NewValueI32(6),
+							}),
+						}),
+					}),
+				})},
+			}}),
+		},
+		{
+			"ListOfSets",
+			tc.ContainersOfContainers{
+				ListOfSets: []map[int32]struct{}{
+					{
+						1: struct{}{},
+						2: struct{}{},
+						3: struct{}{},
+					},
+					{
+						4: struct{}{},
+						5: struct{}{},
+						6: struct{}{},
+					},
+				},
+			},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 2, Value: wire.NewValueList(wire.List{
+					ValueType: wire.TSet,
+					Size:      2,
+					Items: wire.ValueListFromSlice([]wire.Value{
+						wire.NewValueSet(wire.Set{
+							ValueType: wire.TI32,
+							Size:      3,
+							Items: wire.ValueListFromSlice([]wire.Value{
+								wire.NewValueI32(1),
+								wire.NewValueI32(2),
+								wire.NewValueI32(3),
+							}),
+						}),
+						wire.NewValueSet(wire.Set{
+							ValueType: wire.TI32,
+							Size:      3,
+							Items: wire.ValueListFromSlice([]wire.Value{
+								wire.NewValueI32(4),
+								wire.NewValueI32(5),
+								wire.NewValueI32(6),
+							}),
+						}),
+					}),
+				})},
+			}}),
+		},
+		{
+			"ListOfMaps",
+			tc.ContainersOfContainers{
+				ListOfMaps: []map[int32]int32{
+					{
+						1: 100,
+						2: 200,
+						3: 300,
+					},
+					{
+						4: 400,
+						5: 500,
+						6: 600,
+					},
+				},
+			},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 3, Value: wire.NewValueList(wire.List{
+					ValueType: wire.TMap,
+					Size:      2,
+					Items: wire.ValueListFromSlice([]wire.Value{
+						wire.NewValueMap(wire.Map{
+							KeyType:   wire.TI32,
+							ValueType: wire.TI32,
+							Size:      3,
+							Items: wire.MapItemListFromSlice([]wire.MapItem{
+								{Key: wire.NewValueI32(1), Value: wire.NewValueI32(100)},
+								{Key: wire.NewValueI32(2), Value: wire.NewValueI32(200)},
+								{Key: wire.NewValueI32(3), Value: wire.NewValueI32(300)},
+							}),
+						}),
+						wire.NewValueMap(wire.Map{
+							KeyType:   wire.TI32,
+							ValueType: wire.TI32,
+							Size:      3,
+							Items: wire.MapItemListFromSlice([]wire.MapItem{
+								{Key: wire.NewValueI32(4), Value: wire.NewValueI32(400)},
+								{Key: wire.NewValueI32(5), Value: wire.NewValueI32(500)},
+								{Key: wire.NewValueI32(6), Value: wire.NewValueI32(600)},
+							}),
+						}),
+					}),
+				})},
+			}}),
+		},
+		{
+			"SetOfSets",
+			tc.ContainersOfContainers{
+				SetOfSets: []map[string]struct{}{
+					{
+						"1": struct{}{},
+						"2": struct{}{},
+						"3": struct{}{},
+					},
+					{
+						"4": struct{}{},
+						"5": struct{}{},
+						"6": struct{}{},
+					},
+				},
+			},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 4, Value: wire.NewValueSet(wire.Set{
+					ValueType: wire.TSet,
+					Size:      2,
+					Items: wire.ValueListFromSlice([]wire.Value{
+						wire.NewValueSet(wire.Set{
+							ValueType: wire.TBinary,
+							Size:      3,
+							Items: wire.ValueListFromSlice([]wire.Value{
+								wire.NewValueString("1"),
+								wire.NewValueString("2"),
+								wire.NewValueString("3"),
+							}),
+						}),
+						wire.NewValueSet(wire.Set{
+							ValueType: wire.TBinary,
+							Size:      3,
+							Items: wire.ValueListFromSlice([]wire.Value{
+								wire.NewValueString("4"),
+								wire.NewValueString("5"),
+								wire.NewValueString("6"),
+							}),
+						}),
+					}),
+				})},
+			}}),
+		},
+		{
+			"SetOfLists",
+			tc.ContainersOfContainers{
+				SetOfLists: [][]string{
+					{"1", "2", "3"},
+					{"4", "5", "6"},
+				},
+			},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 5, Value: wire.NewValueSet(wire.Set{
+					ValueType: wire.TList,
+					Size:      2,
+					Items: wire.ValueListFromSlice([]wire.Value{
+						wire.NewValueList(wire.List{
+							ValueType: wire.TBinary,
+							Size:      3,
+							Items: wire.ValueListFromSlice([]wire.Value{
+								wire.NewValueString("1"),
+								wire.NewValueString("2"),
+								wire.NewValueString("3"),
+							}),
+						}),
+						wire.NewValueList(wire.List{
+							ValueType: wire.TBinary,
+							Size:      3,
+							Items: wire.ValueListFromSlice([]wire.Value{
+								wire.NewValueString("4"),
+								wire.NewValueString("5"),
+								wire.NewValueString("6"),
+							}),
+						}),
+					}),
+				})},
+			}}),
+		},
+		{
+			"SetOfMaps",
+			tc.ContainersOfContainers{
+				SetOfMaps: []map[string]string{
+					{
+						"1": "one",
+						"2": "two",
+						"3": "three",
+					},
+					{
+						"4": "four",
+						"5": "five",
+						"6": "six",
+					},
+				},
+			},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 6, Value: wire.NewValueSet(wire.Set{
+					ValueType: wire.TMap,
+					Size:      2,
+					Items: wire.ValueListFromSlice([]wire.Value{
+						wire.NewValueMap(wire.Map{
+							KeyType:   wire.TBinary,
+							ValueType: wire.TBinary,
+							Size:      3,
+							Items: wire.MapItemListFromSlice([]wire.MapItem{
+								{Key: wire.NewValueString("1"), Value: wire.NewValueString("one")},
+								{Key: wire.NewValueString("2"), Value: wire.NewValueString("two")},
+								{Key: wire.NewValueString("3"), Value: wire.NewValueString("three")},
+							}),
+						}),
+						wire.NewValueMap(wire.Map{
+							KeyType:   wire.TBinary,
+							ValueType: wire.TBinary,
+							Size:      3,
+							Items: wire.MapItemListFromSlice([]wire.MapItem{
+								{Key: wire.NewValueString("4"), Value: wire.NewValueString("four")},
+								{Key: wire.NewValueString("5"), Value: wire.NewValueString("five")},
+								{Key: wire.NewValueString("6"), Value: wire.NewValueString("six")},
+							}),
+						}),
+					}),
+				})},
+			}}),
+		},
+		{
+			"MapOfMapToInt",
+			tc.ContainersOfContainers{
+				MapOfMapToInt: []struct {
+					Key   map[string]int32
+					Value int64
+				}{
+					{
+						Key:   map[string]int32{"1": 1, "2": 2, "3": 3},
+						Value: 123,
+					},
+					{
+						Key:   map[string]int32{"4": 4, "5": 5, "6": 6},
+						Value: 456,
+					},
+				},
+			},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 7, Value: wire.NewValueMap(wire.Map{
+					KeyType:   wire.TMap,
+					ValueType: wire.TI64,
+					Size:      2,
+					Items: wire.MapItemListFromSlice([]wire.MapItem{
+						{
+							Key: wire.NewValueMap(wire.Map{
+								KeyType:   wire.TBinary,
+								ValueType: wire.TI32,
+								Size:      3,
+								Items: wire.MapItemListFromSlice([]wire.MapItem{
+									{Key: wire.NewValueString("1"), Value: wire.NewValueI32(1)},
+									{Key: wire.NewValueString("2"), Value: wire.NewValueI32(2)},
+									{Key: wire.NewValueString("3"), Value: wire.NewValueI32(3)},
+								}),
+							}),
+							Value: wire.NewValueI64(123),
+						},
+						{
+							Key: wire.NewValueMap(wire.Map{
+								KeyType:   wire.TBinary,
+								ValueType: wire.TI32,
+								Size:      3,
+								Items: wire.MapItemListFromSlice([]wire.MapItem{
+									{Key: wire.NewValueString("4"), Value: wire.NewValueI32(4)},
+									{Key: wire.NewValueString("5"), Value: wire.NewValueI32(5)},
+									{Key: wire.NewValueString("6"), Value: wire.NewValueI32(6)},
+								}),
+							}),
+							Value: wire.NewValueI64(456),
+						},
+					}),
+				})},
+			}}),
+		},
+		{
+			"MapOfListToSet",
+			tc.ContainersOfContainers{
+				MapOfListToSet: []struct {
+					Key   []int32
+					Value map[int64]struct{}
+				}{
+					{
+						Key: []int32{1, 2, 3},
+						Value: map[int64]struct{}{
+							1: struct{}{},
+							2: struct{}{},
+							3: struct{}{},
+						},
+					},
+					{
+						Key: []int32{4, 5, 6},
+						Value: map[int64]struct{}{
+							4: struct{}{},
+							5: struct{}{},
+							6: struct{}{},
+						},
+					},
+				},
+			},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 8, Value: wire.NewValueMap(wire.Map{
+					KeyType:   wire.TList,
+					ValueType: wire.TSet,
+					Size:      2,
+					Items: wire.MapItemListFromSlice([]wire.MapItem{
+						{
+							Key: wire.NewValueList(wire.List{
+								ValueType: wire.TI32,
+								Size:      3,
+								Items: wire.ValueListFromSlice([]wire.Value{
+									wire.NewValueI32(1),
+									wire.NewValueI32(2),
+									wire.NewValueI32(3),
+								}),
+							}),
+							Value: wire.NewValueSet(wire.Set{
+								ValueType: wire.TI64,
+								Size:      3,
+								Items: wire.ValueListFromSlice([]wire.Value{
+									wire.NewValueI64(1),
+									wire.NewValueI64(2),
+									wire.NewValueI64(3),
+								}),
+							}),
+						},
+						{
+							Key: wire.NewValueList(wire.List{
+								ValueType: wire.TI32,
+								Size:      3,
+								Items: wire.ValueListFromSlice([]wire.Value{
+									wire.NewValueI32(4),
+									wire.NewValueI32(5),
+									wire.NewValueI32(6),
+								}),
+							}),
+							Value: wire.NewValueSet(wire.Set{
+								ValueType: wire.TI64,
+								Size:      3,
+								Items: wire.ValueListFromSlice([]wire.Value{
+									wire.NewValueI64(4),
+									wire.NewValueI64(5),
+									wire.NewValueI64(6),
+								}),
+							}),
+						},
+					}),
+				})},
+			}}),
+		},
+		{
+			"MapOfSetToListOfDouble",
+			tc.ContainersOfContainers{
+				MapOfSetToListOfDouble: []struct {
+					Key   map[int32]struct{}
+					Value []float64
+				}{
+					{
+						Key: map[int32]struct{}{
+							1: struct{}{},
+							2: struct{}{},
+							3: struct{}{},
+						},
+						Value: []float64{1.0, 2.0, 3.0},
+					},
+					{
+						Key: map[int32]struct{}{
+							4: struct{}{},
+							5: struct{}{},
+							6: struct{}{},
+						},
+						Value: []float64{4.0, 5.0, 6.0},
+					},
+				},
+			},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 9, Value: wire.NewValueMap(wire.Map{
+					KeyType:   wire.TSet,
+					ValueType: wire.TList,
+					Size:      2,
+					Items: wire.MapItemListFromSlice([]wire.MapItem{
+						{
+							Key: wire.NewValueSet(wire.Set{
+								ValueType: wire.TI32,
+								Size:      3,
+								Items: wire.ValueListFromSlice([]wire.Value{
+									wire.NewValueI32(1),
+									wire.NewValueI32(2),
+									wire.NewValueI32(3),
+								}),
+							}),
+							Value: wire.NewValueList(wire.List{
+								ValueType: wire.TDouble,
+								Size:      3,
+								Items: wire.ValueListFromSlice([]wire.Value{
+									wire.NewValueDouble(1.0),
+									wire.NewValueDouble(2.0),
+									wire.NewValueDouble(3.0),
+								}),
+							}),
+						},
+						{
+							Key: wire.NewValueSet(wire.Set{
+								ValueType: wire.TI32,
+								Size:      3,
+								Items: wire.ValueListFromSlice([]wire.Value{
+									wire.NewValueI32(4),
+									wire.NewValueI32(5),
+									wire.NewValueI32(6),
+								}),
+							}),
+							Value: wire.NewValueList(wire.List{
+								ValueType: wire.TDouble,
+								Size:      3,
+								Items: wire.ValueListFromSlice([]wire.Value{
+									wire.NewValueDouble(4.0),
+									wire.NewValueDouble(5.0),
+									wire.NewValueDouble(6.0),
+								}),
+							}),
+						},
+					}),
+				})},
+			}}),
+		},
+	}
+
+	for _, tt := range tests {
+		assertRoundTrip(t, &tt.x, tt.v, tt.desc)
+	}
+}

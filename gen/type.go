@@ -40,7 +40,15 @@ func TypeDefinition(g Generator, spec compile.TypeSpec) error {
 	}
 }
 
-// isPrimitiveType returns true if the given type is a primitive type.
+// isHashable returns true if the given type is considered hashable by
+// thriftrw-go.
+func isHashable(t compile.TypeSpec) bool {
+	// Only primitive types are hashable
+	return isPrimitiveType(t)
+}
+
+// isPrimitiveType returns true if the given type is a primitive type. Only
+// primitive types are considered hashable.
 //
 // Note that binary is not considered a primitive type because it is
 // represented as []byte in Go.
@@ -148,7 +156,6 @@ func typeName(g Generator, spec compile.TypeSpec) (string, error) {
 
 	switch s := spec.(type) {
 	case *compile.MapSpec:
-		// TODO unhashable types
 		k, err := typeReference(g, s.KeySpec)
 		if err != nil {
 			return "", err
@@ -156,6 +163,10 @@ func typeName(g Generator, spec compile.TypeSpec) (string, error) {
 		v, err := typeReference(g, s.ValueSpec)
 		if err != nil {
 			return "", err
+		}
+		if !isHashable(s.KeySpec) {
+			// unhashable type
+			return fmt.Sprintf("[]struct{Key %s; Value %s}", k, v), nil
 		}
 		return fmt.Sprintf("map[%s]%s", k, v), nil
 	case *compile.ListSpec:
@@ -165,10 +176,13 @@ func typeName(g Generator, spec compile.TypeSpec) (string, error) {
 		}
 		return "[]" + v, nil
 	case *compile.SetSpec:
-		// TODO unhashable types
 		v, err := typeReference(g, s.ValueSpec)
 		if err != nil {
 			return "", err
+		}
+		if !isHashable(s.ValueSpec) {
+			// unhashable type
+			return fmt.Sprintf("[]%s", v), nil
 		}
 		return fmt.Sprintf("map[%s]struct{}", v), nil
 	case *compile.EnumSpec, *compile.StructSpec, *compile.TypedefSpec:

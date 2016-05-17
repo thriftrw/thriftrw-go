@@ -57,12 +57,16 @@ func (s *setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, er
 			<$x := newVar "x">
 			<$f := newVar "f">
 			func (<$v> <.Name>) ForEach(<$f> func(<$wire>.Value) error) error {
-				for <$x> := range <$v> {
-					err := <$f>(<toWire .Spec.ValueSpec $x>)
-					if err != nil {
-						return err
+				<if isHashable .Spec.ValueSpec>
+					for <$x> := range <$v> {
+				<else>
+					for _, <$x> := range <$v> {
+				<end>
+						err := <$f>(<toWire .Spec.ValueSpec $x>)
+						if err != nil {
+							return err
+						}
 					}
-				}
 				return nil
 			}
 
@@ -97,13 +101,21 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 					return nil, nil
 				}
 
-				<$o> := make(<$setType>, <$s>.Size)
+				<if isHashable .Spec.ValueSpec>
+					<$o> := make(<$setType>, <$s>.Size)
+				<else>
+					<$o> := make(<$setType>, 0, <$s>.Size)
+				<end>
 				err := <$s>.Items.ForEach(func(<$x> <$wire>.Value) error {
 					<$i>, err := <fromWire .Spec.ValueSpec $x>
 					if err != nil {
 						return err
 					}
-					<$o>[<$i>] = struct{}{}
+					<if isHashable .Spec.ValueSpec>
+						<$o>[<$i>] = struct{}{}
+					<else>
+						<$o> = append(<$o>, <$i>)
+					<end>
 					return nil
 				})
 				<$s>.Items.Close()

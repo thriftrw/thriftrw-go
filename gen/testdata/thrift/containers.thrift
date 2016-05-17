@@ -20,3 +20,17 @@ struct EnumContainers {
     2: optional set<enums.EnumWithValues> setOfEnums
     3: optional map<enums.EnumWithDuplicateValues, i32> mapOfEnums
 }
+
+struct ContainersOfContainers {
+    1: optional list<list<i32>> listOfLists;
+    2: optional list<set<i32>> listOfSets;
+    3: optional list<map<i32, i32>> listOfMaps;
+
+    4: optional set<set<string>> setOfSets;
+    5: optional set<list<string>> setOfLists;
+    6: optional set<map<string, string>> setOfMaps;
+
+    7: optional map<map<string, i32>, i64> mapOfMapToInt;
+    8: optional map<list<i32>, set<i64>> mapOfListToSet;
+    9: optional map<set<i32>, list<double>> mapOfSetToListOfDouble;
+}

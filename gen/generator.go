@@ -162,6 +162,7 @@ func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOpt
 	templateFuncs := template.FuncMap{
 		"goCase":           goCase,
 		"import":           g.Import,
+		"isHashable":       isHashable,
 		"isPrimitiveType":  isPrimitiveType,
 		"isStructType":     isStructType,
 		"newNamespace":     g.Namespace.Child,
@@ -284,6 +285,9 @@ func (g *generator) recordGenDeclNames(d *ast.GenDecl) error {
 //
 // 	<$fmt := import "fmt">
 // 	<$fmt>.Println("hello world")
+//
+// isHashable(TypeSpec): Returns true if the given TypeSpec is for a type that
+// is hashable.
 //
 // isPrimitiveType(TypeSpec): Returns true if the given TypeSpec is for a
 // primitive type.
