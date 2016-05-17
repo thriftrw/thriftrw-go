@@ -96,8 +96,7 @@ func (c ConstantInt) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 	case DoubleSpec:
 		return ConstantDouble(float64(c)).Link(scope, t)
 	case BoolSpec:
-		v := int64(c)
-		switch v {
+		switch v := int64(c); v {
 		case 0, 1:
 			return ConstantBool(v == 1).Link(scope, t)
 		default:
