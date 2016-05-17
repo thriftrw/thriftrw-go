@@ -63,7 +63,7 @@ func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, err
 			<$v := newVar "v">
 			<$i := newVar "i">
 			func (<$m> <.Name>) ForEach(<$f> func(<$wire>.MapItem) error) error {
-				<if isPrimitiveType .Spec.KeySpec>
+				<if isHashable .Spec.KeySpec>
 					for <$k>, <$v> := range <$m> {
 				<else>
 					for _, <$i> := range <$m> {
@@ -117,7 +117,7 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 					return nil, nil
 				}
 
-				<if isPrimitiveType .Spec.KeySpec>
+				<if isHashable .Spec.KeySpec>
 					<$o> := make(<$mapType>, <$m>.Size)
 				<else>
 					<$o> := make(<$mapType>, 0, <$m>.Size)
@@ -133,7 +133,7 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 						return err
 					}
 
-					<if isPrimitiveType .Spec.KeySpec>
+					<if isHashable .Spec.KeySpec>
 						<$o>[<$k>] = <$v>
 					<else>
 						<$o> = append(<$o>, struct {

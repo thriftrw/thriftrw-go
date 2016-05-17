@@ -40,6 +40,13 @@ func TypeDefinition(g Generator, spec compile.TypeSpec) error {
 	}
 }
 
+// isHashable returns true if the given type is considered hashable by
+// thriftrw-go.
+func isHashable(t compile.TypeSpec) bool {
+	// Only primitive types are hashable
+	return isPrimitiveType(t)
+}
+
 // isPrimitiveType returns true if the given type is a primitive type. Only
 // primitive types are considered hashable.
 //
@@ -157,7 +164,7 @@ func typeName(g Generator, spec compile.TypeSpec) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if !isPrimitiveType(s.KeySpec) {
+		if !isHashable(s.KeySpec) {
 			// unhashable type
 			return fmt.Sprintf("[]struct{Key %s; Value %s}", k, v), nil
 		}
@@ -173,7 +180,7 @@ func typeName(g Generator, spec compile.TypeSpec) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if !isPrimitiveType(s.ValueSpec) {
+		if !isHashable(s.ValueSpec) {
 			// unhashable type
 			return fmt.Sprintf("[]%s", v), nil
 		}

@@ -57,7 +57,7 @@ func (s *setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, er
 			<$x := newVar "x">
 			<$f := newVar "f">
 			func (<$v> <.Name>) ForEach(<$f> func(<$wire>.Value) error) error {
-				<if isPrimitiveType .Spec.ValueSpec>
+				<if isHashable .Spec.ValueSpec>
 					for <$x> := range <$v> {
 				<else>
 					for _, <$x> := range <$v> {
@@ -101,7 +101,7 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 					return nil, nil
 				}
 
-				<if isPrimitiveType .Spec.ValueSpec>
+				<if isHashable .Spec.ValueSpec>
 					<$o> := make(<$setType>, <$s>.Size)
 				<else>
 					<$o> := make(<$setType>, 0, <$s>.Size)
@@ -111,7 +111,7 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 					if err != nil {
 						return err
 					}
-					<if isPrimitiveType .Spec.ValueSpec>
+					<if isHashable .Spec.ValueSpec>
 						<$o>[<$i>] = struct{}{}
 					<else>
 						<$o> = append(<$o>, <$i>)
