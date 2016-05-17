@@ -20,7 +20,11 @@
 
 package compile
 
-import "github.com/thriftrw/thriftrw-go/ast"
+import (
+	"fmt"
+
+	"github.com/thriftrw/thriftrw-go/ast"
+)
 
 // Constant represents a single named constant value from the Thrift file.
 type Constant struct {
@@ -52,10 +56,13 @@ func (c *Constant) Link(scope Scope) (err error) {
 		return compileError{Target: c.Name, Reason: err}
 	}
 
-	if c.Value, err = c.Value.Link(scope); err != nil {
+	if c.Value, err = c.Value.Link(scope, c.Type); err != nil {
 		return compileError{Target: c.Name, Reason: err}
 	}
 
-	// TODO(abg): validate that the constant matches the TypeSpec
 	return nil
+}
+
+func (c *Constant) String() string {
+	return fmt.Sprintf("Constant(%s %s)", c.Type.ThriftName(), c.Name)
 }

@@ -83,10 +83,10 @@ func TestCompileConstant(t *testing.T) {
 				Name: "foo",
 				File: "test.thrift",
 				Type: &ListSpec{ValueSpec: StringSpec},
-				Value: ConstantList([]ConstantValue{
+				Value: ConstantList{
 					ConstantString("hello"),
 					ConstantString("world"),
-				}),
+				},
 			},
 		},
 		{
@@ -96,10 +96,10 @@ func TestCompileConstant(t *testing.T) {
 				Name: "foo",
 				File: "test.thrift",
 				Type: &ListSpec{ValueSpec: StringSpec},
-				Value: ConstantList([]ConstantValue{
+				Value: ConstantList{
 					ConstantString("x"),
 					ConstReference{Target: y},
-				}),
+				},
 			},
 		},
 	}

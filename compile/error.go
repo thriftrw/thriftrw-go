@@ -276,3 +276,38 @@ func (e typeReferenceCycleError) Error() string {
 	}
 	return strings.Join(lines, "\n")
 }
+
+// Failure to cast a Constantvalue to a specific type.
+type constantValueCastError struct {
+	Value  ConstantValue
+	Type   TypeSpec
+	Reason error // optional
+}
+
+func (e constantValueCastError) Error() string {
+	s := fmt.Sprintf("cannot cast %v to %q", e.Value, e.Type.ThriftName())
+	if e.Reason != nil {
+		s += fmt.Sprintf(": %v", e.Reason)
+	}
+	return s
+}
+
+// Failure to cast a specific field of a struct literal.
+type constantStructFieldCastError struct {
+	FieldName string
+	Reason    error
+}
+
+func (e constantStructFieldCastError) Error() string {
+	return fmt.Sprintf("failed to cast field %q: %v", e.FieldName, e.Reason)
+}
+
+// Failure to cast a value referenced by a named constant.
+type constantCastError struct {
+	Name   string
+	Reason error
+}
+
+func (e constantCastError) Error() string {
+	return fmt.Sprintf("failed to cast constant %q: %v", e.Name, e.Reason)
+}

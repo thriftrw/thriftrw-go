@@ -127,7 +127,7 @@ func (f *FieldSpec) Link(scope Scope) (err error) {
 		return err
 	}
 	if f.Default != nil {
-		f.Default, err = f.Default.Link(scope)
+		f.Default, err = f.Default.Link(scope, f.Type)
 	}
 	return err
 }
