@@ -60,6 +60,11 @@ type Generator interface {
 	// This must be called with user-defined types only.
 	LookupTypeName(compile.TypeSpec) (string, error)
 
+	// LookupConstantName returns the fully qualified name that should be used
+	// for the given Thrift constant. It imports the corresponding Go package if
+	// necessary.
+	LookupConstantName(*compile.Constant) (string, error)
+
 	// Import ensures that the given package has been imported in the generated
 	// code. Returns the name that should be used to reference the imported
 	// module.
@@ -139,6 +144,20 @@ func (g *generator) LookupTypeName(t compile.TypeSpec) (string, error) {
 	}
 
 	name := goCase(t.ThriftName())
+	if importPath != g.ImportPath {
+		pkg := g.Import(importPath)
+		name = pkg + "." + name
+	}
+	return name, nil
+}
+
+func (g *generator) LookupConstantName(c *compile.Constant) (string, error) {
+	importPath, err := g.thriftImporter.Package(c.File)
+	if err != nil {
+		return "", err
+	}
+
+	name := goCase(c.Name)
 	if importPath != g.ImportPath {
 		pkg := g.Import(importPath)
 		name = pkg + "." + name

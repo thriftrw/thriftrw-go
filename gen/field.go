@@ -81,6 +81,7 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 }
 
 func (f fieldGroupGenerator) ToWire(g Generator) error {
+	// TODO(abg): Default values
 	return g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
@@ -120,6 +121,7 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 }
 
 func (f fieldGroupGenerator) FromWire(g Generator) error {
+	// TODO(abg): Default values
 	return g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">

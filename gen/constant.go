@@ -20,17 +20,114 @@
 
 package gen
 
-import "github.com/thriftrw/thriftrw-go/compile"
+import (
+	"fmt"
+	"strconv"
+
+	"github.com/thriftrw/thriftrw-go/compile"
+)
 
 // Constant TODO
 func Constant(g Generator, c *compile.Constant) error {
 	err := g.DeclareFromTemplate(
-		`
-		const <goCase .Name> <typeReference .Type> = nil // TODO
-		`,
+		`<if canBeConstant .Type>const<else>var<end> <goCase .Name> <typeReference .Type> = <constantValue .Value .Type>`,
 		c,
+		TemplateFunc("constantValue", ConstantValue),
+		TemplateFunc("canBeConstant", canBeConstant),
 	)
-	// TODO(abg): Implement constantValue
-	// TODO(abg): Complex types will need to use var rather than const
 	return wrapGenerateError(c.Name, err)
+}
+
+// ConstantValue generates an expression containing the given constant value of
+// the given type.
+//
+// The constant must already have been linked to the given type.
+func ConstantValue(g Generator, c compile.ConstantValue, t compile.TypeSpec) (string, error) {
+	switch v := c.(type) {
+	case compile.ConstantBool:
+		if v {
+			return "true", nil
+		}
+		return "false", nil
+	case compile.ConstantDouble:
+		return fmt.Sprint(float64(v)), nil
+	case compile.ConstantInt:
+		return fmt.Sprint(int(v)), nil
+	case compile.ConstantList:
+		return g.TextTemplate(
+			`
+			<$valueType := .Spec.ValueSpec>
+			<typeReference .Spec>{
+				<range .Value>
+					<constantValue . $valueType>,
+				<end>
+			}`, struct {
+				Spec  compile.TypeSpec
+				Value compile.ConstantList
+			}{Spec: t, Value: v},
+			TemplateFunc("constantValue", ConstantValue))
+	case compile.ConstantMap:
+		return g.TextTemplate(
+			`
+			<$keyType := .Spec.KeySpec>
+			<$valueType := .Spec.ValueSpec>
+			<typeReference .Spec>{
+				<range .Value>
+					<if isHashable $keyType>
+						<constantValue .Key $keyType>:
+							<constantValue .Value $valueType>,
+					<else>
+						{
+							Key: <constantValue .Key $keyType>,
+							Value: <constantValue .Value $valueType>,
+						},
+					<end>
+				<end>
+			}`, struct {
+				Spec  compile.TypeSpec
+				Value compile.ConstantMap
+			}{Spec: t, Value: v},
+			TemplateFunc("constantValue", ConstantValue))
+	case compile.ConstantSet:
+		return g.TextTemplate(
+			`
+			<$valueType := .Spec.ValueSpec>
+			<typeReference .Spec>{
+				<range .Value>
+					<if isHashable $valueType>
+						<constantValue . $valueType>: struct{}{},
+					<else>
+						<constantValue . $valueType>,
+					<end>
+				<end>
+			}`, struct {
+				Spec  compile.TypeSpec
+				Value compile.ConstantSet
+			}{Spec: t, Value: v},
+			TemplateFunc("constantValue", ConstantValue))
+	case compile.ConstantString:
+		return strconv.Quote(string(v)), nil
+	case *compile.ConstantStruct:
+		return g.TextTemplate(
+			`
+			<$fields := .Value.Fields>
+			&<typeName .Spec>{
+				<range .Spec.Fields>
+					<$value := index $fields .Name>
+					<if $value>
+						<goCase .Name>: <constantValue $value .Type>,
+					<end>
+				<end>
+			}`, struct {
+				Spec  compile.TypeSpec
+				Value *compile.ConstantStruct
+			}{Spec: t, Value: v},
+			TemplateFunc("constantValue", ConstantValue))
+	case compile.EnumItemReference:
+		return g.TextTemplate(`<typeName .Enum><goCase .Item.Name>`, v)
+	case compile.ConstReference:
+		return g.LookupConstantName(v.Target)
+	default:
+		panic(fmt.Sprintf("Unknown constant value %v (%T)", c, c))
+	}
 }

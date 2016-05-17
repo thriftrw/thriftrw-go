@@ -360,8 +360,10 @@ func (r constantReference) Link(scope Scope, t TypeSpec) (ConstantValue, error) 
 
 	c, err := scope.LookupConstant(src.Name)
 	if err == nil {
-		err = c.Link(scope)
-		return ConstReference{Target: c}, err
+		if err := c.Link(scope); err != nil {
+			return nil, err
+		}
+		return ConstReference{Target: c}.Link(scope, t)
 	}
 
 	mname, iname := splitInclude(src.Name)
