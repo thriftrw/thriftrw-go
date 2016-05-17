@@ -415,12 +415,12 @@ func TestCrazyTown(t *testing.T) {
 			"ListOfSets",
 			tc.ContainersOfContainers{
 				ListOfSets: []map[int32]struct{}{
-					map[int32]struct{}{
+					{
 						1: struct{}{},
 						2: struct{}{},
 						3: struct{}{},
 					},
-					map[int32]struct{}{
+					{
 						4: struct{}{},
 						5: struct{}{},
 						6: struct{}{},
@@ -458,12 +458,12 @@ func TestCrazyTown(t *testing.T) {
 			"ListOfMaps",
 			tc.ContainersOfContainers{
 				ListOfMaps: []map[int32]int32{
-					map[int32]int32{
+					{
 						1: 100,
 						2: 200,
 						3: 300,
 					},
-					map[int32]int32{
+					{
 						4: 400,
 						5: 500,
 						6: 600,
@@ -503,12 +503,12 @@ func TestCrazyTown(t *testing.T) {
 			"SetOfSets",
 			tc.ContainersOfContainers{
 				SetOfSets: []map[string]struct{}{
-					map[string]struct{}{
+					{
 						"1": struct{}{},
 						"2": struct{}{},
 						"3": struct{}{},
 					},
-					map[string]struct{}{
+					{
 						"4": struct{}{},
 						"5": struct{}{},
 						"6": struct{}{},
@@ -581,12 +581,12 @@ func TestCrazyTown(t *testing.T) {
 			"SetOfMaps",
 			tc.ContainersOfContainers{
 				SetOfMaps: []map[string]string{
-					map[string]string{
+					{
 						"1": "one",
 						"2": "two",
 						"3": "three",
 					},
-					map[string]string{
+					{
 						"4": "four",
 						"5": "five",
 						"6": "six",
