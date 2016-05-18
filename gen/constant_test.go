@@ -23,13 +23,14 @@ package gen
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	tk "github.com/thriftrw/thriftrw-go/gen/testdata/constants"
 	tc "github.com/thriftrw/thriftrw-go/gen/testdata/containers"
 	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
 	tx "github.com/thriftrw/thriftrw-go/gen/testdata/exceptions"
 	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
 	tu "github.com/thriftrw/thriftrw-go/gen/testdata/unions"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConstants(t *testing.T) {
