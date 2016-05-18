@@ -53,12 +53,21 @@ type Generator interface {
 	// declarations that have not been written so far.
 	DeclareFromTemplate(s string, data interface{}, opts ...TemplateOption) error
 
+	// EnsureDeclared is similar to DeclareFromTemplate except that it simply
+	// ignores conflicting definitions.
+	EnsureDeclared(s string, data interface{}, opts ...TemplateOption) error
+
 	// LookupTypeName returns the fully qualified name that should be used for
 	// the given Thrift type. It imports the corresponding Go package if
 	// necessary.
 	//
 	// This must be called with user-defined types only.
 	LookupTypeName(compile.TypeSpec) (string, error)
+
+	// LookupConstantName returns the fully qualified name that should be used
+	// for the given Thrift constant. It imports the corresponding Go package if
+	// necessary.
+	LookupConstantName(*compile.Constant) (string, error)
 
 	// Import ensures that the given package has been imported in the generated
 	// code. Returns the name that should be used to reference the imported
@@ -146,6 +155,20 @@ func (g *generator) LookupTypeName(t compile.TypeSpec) (string, error) {
 	return name, nil
 }
 
+func (g *generator) LookupConstantName(c *compile.Constant) (string, error) {
+	importPath, err := g.thriftImporter.Package(c.File)
+	if err != nil {
+		return "", err
+	}
+
+	name := goCase(c.Name)
+	if importPath != g.ImportPath {
+		pkg := g.Import(importPath)
+		name = pkg + "." + name
+	}
+	return name, nil
+}
+
 // servicePackage imports the service package for the given service and returns
 // the name that should be used to refer to that package.
 func (g *generator) servicePackage(s *compile.ServiceSpec) (string, error) {
@@ -210,7 +233,7 @@ func (g *generator) renderTemplate(s string, data interface{}, opts ...TemplateO
 	return buff.Bytes(), nil
 }
 
-func (g *generator) recordGenDeclNames(d *ast.GenDecl) error {
+func (g *generator) recordGenDeclNames(ignoreConflicts bool, d *ast.GenDecl) error {
 	switch d.Tok {
 	case token.IMPORT:
 		for _, spec := range d.Specs {
@@ -223,7 +246,7 @@ func (g *generator) recordGenDeclNames(d *ast.GenDecl) error {
 	case token.CONST:
 		for _, spec := range d.Specs {
 			for _, name := range spec.(*ast.ValueSpec).Names {
-				if err := g.Reserve(name.Name); err != nil {
+				if err := g.Reserve(name.Name); err != nil && !ignoreConflicts {
 					return fmt.Errorf(
 						"could not declare constant %q: %v", name.Name, err,
 					)
@@ -233,14 +256,14 @@ func (g *generator) recordGenDeclNames(d *ast.GenDecl) error {
 	case token.TYPE:
 		for _, spec := range d.Specs {
 			name := spec.(*ast.TypeSpec).Name.Name
-			if err := g.Reserve(name); err != nil {
+			if err := g.Reserve(name); err != nil && !ignoreConflicts {
 				return fmt.Errorf("could not declare type %q: %v", name, err)
 			}
 		}
 	case token.VAR:
 		for _, spec := range d.Specs {
 			for _, name := range spec.(*ast.ValueSpec).Names {
-				if err := g.Reserve(name.Name); err != nil {
+				if err := g.Reserve(name.Name); err != nil && !ignoreConflicts {
 					return fmt.Errorf(
 						"could not declare var %q: %v", name.Name, err,
 					)
@@ -322,7 +345,7 @@ func (g *generator) recordGenDeclNames(d *ast.GenDecl) error {
 // itself is not a reference type.
 //
 // 	<typeReferencePtr $someType>
-func (g *generator) DeclareFromTemplate(s string, data interface{}, opts ...TemplateOption) error {
+func (g *generator) declare(ignoreConflicts bool, s string, data interface{}, opts ...TemplateOption) error {
 	bs, err := g.renderTemplate(s, data, opts...)
 	if err != nil {
 		return err
@@ -339,11 +362,14 @@ func (g *generator) DeclareFromTemplate(s string, data interface{}, opts ...Temp
 			if d.Recv == nil {
 				// top-level function
 				if err := g.Reserve(d.Name.Name); err != nil {
+					if ignoreConflicts {
+						continue
+					}
 					return err
 				}
 			}
 		case *ast.GenDecl:
-			if err := g.recordGenDeclNames(d); err != nil {
+			if err := g.recordGenDeclNames(ignoreConflicts, d); err != nil {
 				return err
 			}
 		default:
@@ -353,6 +379,14 @@ func (g *generator) DeclareFromTemplate(s string, data interface{}, opts ...Temp
 	}
 
 	return nil
+}
+
+func (g *generator) DeclareFromTemplate(s string, data interface{}, opts ...TemplateOption) error {
+	return g.declare(false, s, data, opts...)
+}
+
+func (g *generator) EnsureDeclared(s string, data interface{}, opts ...TemplateOption) error {
+	return g.declare(true, s, data, opts...)
 }
 
 func (g *generator) Write(w io.Writer, fs *token.FileSet) error {

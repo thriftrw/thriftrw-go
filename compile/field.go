@@ -20,7 +20,11 @@
 
 package compile
 
-import "github.com/thriftrw/thriftrw-go/ast"
+import (
+	"fmt"
+
+	"github.com/thriftrw/thriftrw-go/ast"
+)
 
 // fieldRequiredness controls how fields treat required/optional specifiers.
 type fieldRequiredness int
@@ -175,6 +179,16 @@ func compileFields(src []*ast.Field, options fieldOptions) (FieldGroup, error) {
 	}
 
 	return FieldGroup(fields), nil
+}
+
+// FindByName retrieves the FieldSpec for the field with the given name.
+func (fg FieldGroup) FindByName(name string) (*FieldSpec, error) {
+	for _, field := range fg {
+		if field.Name == name {
+			return field, nil
+		}
+	}
+	return nil, fmt.Errorf("unknown field %v", name)
 }
 
 // Link resolves references made by fields inside the FieldGroup.

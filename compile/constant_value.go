@@ -274,6 +274,7 @@ func (c ConstantSet) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 	}
 
 	// TODO(abg): Track whether things are linked so that we don't re-link here
+	// TODO(abg): Fail for duplicates
 	values := make([]ConstantValue, len(c))
 	for i, v := range c {
 		value, err := v.Link(scope, s.ValueSpec)
@@ -360,8 +361,10 @@ func (r constantReference) Link(scope Scope, t TypeSpec) (ConstantValue, error) 
 
 	c, err := scope.LookupConstant(src.Name)
 	if err == nil {
-		err = c.Link(scope)
-		return ConstReference{Target: c}, err
+		if err := c.Link(scope); err != nil {
+			return nil, err
+		}
+		return ConstReference{Target: c}.Link(scope, t)
 	}
 
 	mname, iname := splitInclude(src.Name)

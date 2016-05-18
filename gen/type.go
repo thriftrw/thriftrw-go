@@ -191,3 +191,10 @@ func typeName(g Generator, spec compile.TypeSpec) (string, error) {
 		panic(fmt.Sprintf("Unknown type (%T) %v", spec, spec))
 	}
 }
+
+// canBeConstant returns true if the given type can be a constant.
+func canBeConstant(t compile.TypeSpec) bool {
+	// Only primitives can use const declarations. Everything else has to be a
+	// `var` declaration.
+	return isPrimitiveType(t)
+}
