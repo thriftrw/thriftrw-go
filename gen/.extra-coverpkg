@@ -1,6 +1,9 @@
+testdata/constants
+testdata/other_constants
 testdata/containers
 testdata/enums
 testdata/exceptions
+testdata/services
 testdata/structs
 testdata/typedefs
 testdata/unions

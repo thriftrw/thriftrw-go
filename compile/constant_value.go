@@ -274,6 +274,7 @@ func (c ConstantSet) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 	}
 
 	// TODO(abg): Track whether things are linked so that we don't re-link here
+	// TODO(abg): Fail for duplicates
 	values := make([]ConstantValue, len(c))
 	for i, v := range c {
 		value, err := v.Link(scope, s.ValueSpec)
