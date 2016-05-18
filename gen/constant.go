@@ -54,6 +54,11 @@ func ConstantValue(g Generator, c compile.ConstantValue, t compile.TypeSpec) (st
 	case compile.ConstantInt:
 		return fmt.Sprint(int(v)), nil
 	case compile.ConstantList:
+		l, ok := t.(*compile.ListSpec)
+		if !ok {
+			return "", fmt.Errorf(
+				"cannot cast list %v to %v", v, t.ThriftName())
+		}
 		return g.TextTemplate(
 			`
 			<$valueType := .Spec.ValueSpec>
@@ -62,11 +67,16 @@ func ConstantValue(g Generator, c compile.ConstantValue, t compile.TypeSpec) (st
 					<constantValue . $valueType>,
 				<end>
 			}`, struct {
-				Spec  compile.TypeSpec
+				Spec  *compile.ListSpec
 				Value compile.ConstantList
-			}{Spec: t, Value: v},
+			}{Spec: l, Value: v},
 			TemplateFunc("constantValue", ConstantValue))
 	case compile.ConstantMap:
+		m, ok := t.(*compile.MapSpec)
+		if !ok {
+			return "", fmt.Errorf(
+				"cannot cast map %v to %v", v, t.ThriftName())
+		}
 		return g.TextTemplate(
 			`
 			<$keyType := .Spec.KeySpec>
@@ -84,11 +94,16 @@ func ConstantValue(g Generator, c compile.ConstantValue, t compile.TypeSpec) (st
 					<end>
 				<end>
 			}`, struct {
-				Spec  compile.TypeSpec
+				Spec  *compile.MapSpec
 				Value compile.ConstantMap
-			}{Spec: t, Value: v},
+			}{Spec: m, Value: v},
 			TemplateFunc("constantValue", ConstantValue))
 	case compile.ConstantSet:
+		s, ok := t.(*compile.SetSpec)
+		if !ok {
+			return "", fmt.Errorf(
+				"cannot cast set %v to %v", v, t.ThriftName())
+		}
 		return g.TextTemplate(
 			`
 			<$valueType := .Spec.ValueSpec>
@@ -101,13 +116,18 @@ func ConstantValue(g Generator, c compile.ConstantValue, t compile.TypeSpec) (st
 					<end>
 				<end>
 			}`, struct {
-				Spec  compile.TypeSpec
+				Spec  *compile.SetSpec
 				Value compile.ConstantSet
-			}{Spec: t, Value: v},
+			}{Spec: s, Value: v},
 			TemplateFunc("constantValue", ConstantValue))
 	case compile.ConstantString:
 		return strconv.Quote(string(v)), nil
 	case *compile.ConstantStruct:
+		s, ok := t.(*compile.StructSpec)
+		if !ok {
+			return "", fmt.Errorf(
+				"cannot cast struct %v to %v", v, t.ThriftName())
+		}
 		return g.TextTemplate(
 			`
 			<$fields := .Spec.Fields>
@@ -121,9 +141,9 @@ func ConstantValue(g Generator, c compile.ConstantValue, t compile.TypeSpec) (st
 					<end>
 				<end>
 			}`, struct {
-				Spec  compile.TypeSpec
+				Spec  *compile.StructSpec
 				Value *compile.ConstantStruct
-			}{Spec: t, Value: v},
+			}{Spec: s, Value: v},
 			TemplateFunc("constantValue", ConstantValue),
 			TemplateFunc("primitiveValueRef", primitiveValueRef),
 		)
