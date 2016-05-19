@@ -11,19 +11,19 @@ import (
 	"github.com/thriftrw/thriftrw-go/gen/testdata/unions"
 )
 
-func _boolptr(v bool) *bool {
+func _bool_ptr(v bool) *bool {
 	return &v
 }
 
-func _i64ptr(v int64) *int64 {
+func _i64_ptr(v int64) *int64 {
 	return &v
 }
 
-func _stringptr(v string) *string {
+func _string_ptr(v string) *string {
 	return &v
 }
 
-var ArbitraryValue *unions.ArbitraryValue = &unions.ArbitraryValue{ListValue: []*unions.ArbitraryValue{&unions.ArbitraryValue{BoolValue: _boolptr(true)}, &unions.ArbitraryValue{Int64Value: _i64ptr(2)}, &unions.ArbitraryValue{StringValue: _stringptr("hello")}, &unions.ArbitraryValue{MapValue: map[string]*unions.ArbitraryValue{"foo": &unions.ArbitraryValue{StringValue: _stringptr("bar")}}}}}
+var ArbitraryValue *unions.ArbitraryValue = &unions.ArbitraryValue{ListValue: []*unions.ArbitraryValue{&unions.ArbitraryValue{BoolValue: _bool_ptr(true)}, &unions.ArbitraryValue{Int64Value: _i64_ptr(2)}, &unions.ArbitraryValue{StringValue: _string_ptr("hello")}, &unions.ArbitraryValue{MapValue: map[string]*unions.ArbitraryValue{"foo": &unions.ArbitraryValue{StringValue: _string_ptr("bar")}}}}}
 
 var ContainersOfContainers *containers.ContainersOfContainers = &containers.ContainersOfContainers{ListOfLists: [][]int32{[]int32{1, 2, 3}, []int32{4, 5, 6}}, ListOfMaps: []map[int32]int32{map[int32]int32{1: 2, 3: 4, 5: 6}, map[int32]int32{7: 8, 9: 10, 11: 12}}, ListOfSets: []map[int32]struct{}{map[int32]struct{}{1: struct{}{}, 2: struct{}{}, 3: struct{}{}}, map[int32]struct{}{4: struct{}{}, 5: struct{}{}, 6: struct{}{}}}, MapOfListToSet: []struct {
 	Key   []int32

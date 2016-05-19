@@ -158,7 +158,7 @@ func constantStruct(g Generator, v *compile.ConstantStruct, s *compile.StructSpe
 			<range $name, $value := .Value.Fields>
 				<$field := $fields.FindByName $name>
 				<if and (not $field.Required) (isPrimitiveType $field.Type)>
-					<goCase $field.Name>: <primitiveValueRef $value $field.Type>,
+					<goCase $field.Name>: <constantValuePtr $value $field.Type>,
 				<else>
 					<goCase $field.Name>: <constantValue $value $field.Type>,
 				<end>
@@ -168,61 +168,26 @@ func constantStruct(g Generator, v *compile.ConstantStruct, s *compile.StructSpe
 			Value *compile.ConstantStruct
 		}{Spec: s, Value: v},
 		TemplateFunc("constantValue", ConstantValue),
-		TemplateFunc("primitiveValueRef", primitiveValueRef),
+		TemplateFunc("constantValuePtr", ConstantValuePtr),
 	)
 }
 
-// helper to generate pointers to primitives
-func primitiveValueRef(g Generator, c compile.ConstantValue, t compile.TypeSpec) (string, error) {
-	var (
-		f   string
-		err error
-	)
-
-	switch t {
-	case compile.BoolSpec:
-		f = "_boolptr"
-		err = g.EnsureDeclared(`func _boolptr(v bool) *bool { return &v }`, nil)
-	case compile.I8Spec:
-		f = "_i8ptr"
-		err = g.EnsureDeclared(`func _i8ptr(v int8) *int8 { return &v }`, nil)
-	case compile.I16Spec:
-		f = "_i16ptr"
-		err = g.EnsureDeclared(`func _i16ptr(v int16) *int16 { return &v }`, nil)
-	case compile.I32Spec:
-		f = "_i32ptr"
-		err = g.EnsureDeclared(`func _i32ptr(v int32) *int32 { return &v }`, nil)
-	case compile.I64Spec:
-		f = "_i64ptr"
-		err = g.EnsureDeclared(`func _i64ptr(v int64) *int64 { return &v }`, nil)
-	case compile.DoubleSpec:
-		f = "_doubleptr"
-		err = g.EnsureDeclared(`func _doubleptr(v float64) *float64 { return &v }`, nil)
-	case compile.StringSpec:
-		f = "_stringptr"
-		err = g.EnsureDeclared(`func _stringptr(v string) *string { return &v }`, nil)
+// ConstantValuePtr generates an expression which is a pointer to a value of
+// type $t.
+func ConstantValuePtr(g Generator, c compile.ConstantValue, t compile.TypeSpec) (string, error) {
+	if !isPrimitiveType(t) {
+		return ConstantValue(g, c, t)
 	}
 
-	switch t.(type) {
-	case *compile.EnumSpec, *compile.TypedefSpec:
-		f = fmt.Sprintf("_%v_ptr", t.ThriftName())
-		err = g.EnsureDeclared(
-			`func _<.ThriftName>_ptr(v <typeReference .>) *<typeReference .> {
-				return &v
-			}`, t)
-	}
-
+	err := g.EnsureDeclared(
+		`func _<.ThriftName>_ptr(v <typeReference .>) *<typeReference .> {
+			return &v
+		}`, t)
 	if err != nil {
 		return "", err
 	}
 
-	if f == "" {
-		panic(fmt.Sprintf(
-			"primitiveValueRef called with %v which is not a primitive",
-			t.ThriftName()))
-	}
-
 	s, err := ConstantValue(g, c, t)
-	s = fmt.Sprintf("%v(%v)", f, s)
+	s = fmt.Sprintf("_%v_ptr(%v)", t.ThriftName(), s)
 	return s, err
 }
