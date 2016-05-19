@@ -72,7 +72,9 @@ func (r fieldRequiredness) isRequired(src *ast.Field) (bool, error) {
 		// do nothing
 	}
 
-	return src.Requiredness == ast.Required, nil
+	// A field is considered required only if it was marked required AND it
+	// does not have a default value.
+	return (src.Requiredness == ast.Required && src.Default == nil), nil
 }
 
 // fieldOptions controls the behavior of field compilation.
