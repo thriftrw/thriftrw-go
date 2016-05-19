@@ -97,19 +97,29 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 
 			<range .Fields>
 				<$f := printf "%s.%s" $v (goCase .Name)>
-
 				<if .Required>
 					<$wVal := toWire .Type $f>
 					<$fields>[<$i>] = <$wire>.Field{ID: <.ID>, Value: <$wVal>}
 					<$i>++
 				<else>
-					if <$f> != nil {
+					<if .Default>
+						if <$f> == nil {
+							<$f> = <constantValuePtr .Default .Type>
+						}
 						<$fields>[<$i>] = <$wire>.Field{
 							ID: <.ID>,
 							Value: <toWirePtr .Type $f>,
 						}
 						<$i>++
-					}
+					<else>
+						if <$f> != nil {
+							<$fields>[<$i>] = <$wire>.Field{
+								ID: <.ID>,
+								Value: <toWirePtr .Type $f>,
+							}
+							<$i>++
+						}
+					<end>
 				<end>
 			<end>
 
@@ -117,7 +127,7 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 				<$wire>.Struct{Fields: <$fields>[:<$i>]},
 			)
 		}
-		`, f)
+		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))
 }
 
 func (f fieldGroupGenerator) FromWire(g Generator) error {
@@ -153,10 +163,19 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				}
 			}
 
+			<range .Fields>
+				<$f := printf "%s.%s" $v (goCase .Name)>
+				<if .Default>
+					if <$f> == nil {
+						<$f> = <constantValuePtr .Default .Type>
+					}
+				<end>
+			<end>
+
 			// TODO(abg): Check that all required fields were set.
 			return nil
 		}
-		`, f)
+		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))
 }
 
 func (f fieldGroupGenerator) String(g Generator) error {

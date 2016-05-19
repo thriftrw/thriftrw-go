@@ -1,3 +1,5 @@
+include "./enums.thrift"
+
 struct EmptyStruct {}
 
 //////////////////////////////////////////////////////////////////////////////
@@ -74,4 +76,26 @@ struct Node {
     2: optional List next
 }
 
-// TODO: Default values
+
+//////////////////////////////////////////////////////////////////////////////
+// Default values
+
+struct DefaultsStruct {
+    1: required i32 requiredPrimitive = 100
+    2: optional i32 optionalPrimitive = 200
+
+    3: required enums.EnumDefault requiredEnum = enums.EnumDefault.Bar
+    4: optional enums.EnumDefault optionalEnum = 2
+
+    5: required list<string> requiredList = ["hello", "world"]
+    6: optional list<double> optionalList = [1, 2.0, 3]
+
+    7: required Frame requiredStruct = {
+        "topLeft": {"x": 1, "y": 2},
+        "size": {"width": 100, "height": 200},
+    }
+    8: optional Edge optionalStruct = {
+        "start": {"x": 1, "y": 2},
+        "end":   {"x": 3, "y": 4},
+    }
+}

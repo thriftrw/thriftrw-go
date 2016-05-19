@@ -4,6 +4,7 @@ package structs
 
 import (
 	"fmt"
+	"github.com/thriftrw/thriftrw-go/gen/testdata/enums"
 	"github.com/thriftrw/thriftrw-go/wire"
 	"strings"
 )
@@ -42,6 +43,288 @@ func (v *ContactInfo) String() string {
 	fields[i] = fmt.Sprintf("EmailAddress: %v", v.EmailAddress)
 	i++
 	return fmt.Sprintf("ContactInfo{%v}", strings.Join(fields[:i], ", "))
+}
+
+type DefaultsStruct struct {
+	RequiredPrimitive *int32             `json:"requiredPrimitive,omitempty"`
+	OptionalPrimitive *int32             `json:"optionalPrimitive,omitempty"`
+	RequiredEnum      *enums.EnumDefault `json:"requiredEnum,omitempty"`
+	OptionalEnum      *enums.EnumDefault `json:"optionalEnum,omitempty"`
+	RequiredList      []string           `json:"requiredList"`
+	OptionalList      []float64          `json:"optionalList"`
+	RequiredStruct    *Frame             `json:"requiredStruct,omitempty"`
+	OptionalStruct    *Edge              `json:"optionalStruct,omitempty"`
+}
+
+func _i32_ptr(v int32) *int32 {
+	return &v
+}
+
+func _EnumDefault_ptr(v enums.EnumDefault) *enums.EnumDefault {
+	return &v
+}
+
+type _List_String_ValueList []string
+
+func (v _List_String_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueString(x))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_String_ValueList) Close() {
+}
+
+type _List_Double_ValueList []float64
+
+func (v _List_Double_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		err := f(wire.NewValueDouble(x))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_Double_ValueList) Close() {
+}
+
+func (v *DefaultsStruct) ToWire() wire.Value {
+	var fields [8]wire.Field
+	i := 0
+	if v.RequiredPrimitive == nil {
+		v.RequiredPrimitive = _i32_ptr(100)
+	}
+	fields[i] = wire.Field{ID: 1, Value: wire.NewValueI32(*(v.RequiredPrimitive))}
+	i++
+	if v.OptionalPrimitive == nil {
+		v.OptionalPrimitive = _i32_ptr(200)
+	}
+	fields[i] = wire.Field{ID: 2, Value: wire.NewValueI32(*(v.OptionalPrimitive))}
+	i++
+	if v.RequiredEnum == nil {
+		v.RequiredEnum = _EnumDefault_ptr(enums.EnumDefaultBar)
+	}
+	fields[i] = wire.Field{ID: 3, Value: v.RequiredEnum.ToWire()}
+	i++
+	if v.OptionalEnum == nil {
+		v.OptionalEnum = _EnumDefault_ptr(enums.EnumDefaultBaz)
+	}
+	fields[i] = wire.Field{ID: 4, Value: v.OptionalEnum.ToWire()}
+	i++
+	if v.RequiredList == nil {
+		v.RequiredList = []string{"hello", "world"}
+	}
+	fields[i] = wire.Field{ID: 5, Value: wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.RequiredList), Items: _List_String_ValueList(v.RequiredList)})}
+	i++
+	if v.OptionalList == nil {
+		v.OptionalList = []float64{1, 2, 3}
+	}
+	fields[i] = wire.Field{ID: 6, Value: wire.NewValueList(wire.List{ValueType: wire.TDouble, Size: len(v.OptionalList), Items: _List_Double_ValueList(v.OptionalList)})}
+	i++
+	if v.RequiredStruct == nil {
+		v.RequiredStruct = &Frame{Size: &Size{Height: 200, Width: 100}, TopLeft: &Point{X: 1, Y: 2}}
+	}
+	fields[i] = wire.Field{ID: 7, Value: v.RequiredStruct.ToWire()}
+	i++
+	if v.OptionalStruct == nil {
+		v.OptionalStruct = &Edge{End: &Point{X: 3, Y: 4}, Start: &Point{X: 1, Y: 2}}
+	}
+	fields[i] = wire.Field{ID: 8, Value: v.OptionalStruct.ToWire()}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+}
+
+func _EnumDefault_Read(w wire.Value) (enums.EnumDefault, error) {
+	var v enums.EnumDefault
+	err := v.FromWire(w)
+	return v, err
+}
+
+func _List_String_Read(l wire.List) ([]string, error) {
+	if l.ValueType != wire.TBinary {
+		return nil, nil
+	}
+	o := make([]string, 0, l.Size)
+	err := l.Items.ForEach(func(x wire.Value) error {
+		i, err := x.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Items.Close()
+	return o, err
+}
+
+func _List_Double_Read(l wire.List) ([]float64, error) {
+	if l.ValueType != wire.TDouble {
+		return nil, nil
+	}
+	o := make([]float64, 0, l.Size)
+	err := l.Items.ForEach(func(x wire.Value) error {
+		i, err := x.GetDouble(), error(nil)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Items.Close()
+	return o, err
+}
+
+func _Frame_Read(w wire.Value) (*Frame, error) {
+	var v Frame
+	err := v.FromWire(w)
+	return &v, err
+}
+
+func _Edge_Read(w wire.Value) (*Edge, error) {
+	var v Edge
+	err := v.FromWire(w)
+	return &v, err
+}
+
+func (v *DefaultsStruct) FromWire(w wire.Value) error {
+	var err error
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TI32 {
+				var x int32
+				x, err = field.Value.GetI32(), error(nil)
+				v.RequiredPrimitive = &x
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
+			if field.Value.Type() == wire.TI32 {
+				var x int32
+				x, err = field.Value.GetI32(), error(nil)
+				v.OptionalPrimitive = &x
+				if err != nil {
+					return err
+				}
+			}
+		case 3:
+			if field.Value.Type() == wire.TI32 {
+				var x enums.EnumDefault
+				x, err = _EnumDefault_Read(field.Value)
+				v.RequiredEnum = &x
+				if err != nil {
+					return err
+				}
+			}
+		case 4:
+			if field.Value.Type() == wire.TI32 {
+				var x enums.EnumDefault
+				x, err = _EnumDefault_Read(field.Value)
+				v.OptionalEnum = &x
+				if err != nil {
+					return err
+				}
+			}
+		case 5:
+			if field.Value.Type() == wire.TList {
+				v.RequiredList, err = _List_String_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+			}
+		case 6:
+			if field.Value.Type() == wire.TList {
+				v.OptionalList, err = _List_Double_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+			}
+		case 7:
+			if field.Value.Type() == wire.TStruct {
+				v.RequiredStruct, err = _Frame_Read(field.Value)
+				if err != nil {
+					return err
+				}
+			}
+		case 8:
+			if field.Value.Type() == wire.TStruct {
+				v.OptionalStruct, err = _Edge_Read(field.Value)
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	if v.RequiredPrimitive == nil {
+		v.RequiredPrimitive = _i32_ptr(100)
+	}
+	if v.OptionalPrimitive == nil {
+		v.OptionalPrimitive = _i32_ptr(200)
+	}
+	if v.RequiredEnum == nil {
+		v.RequiredEnum = _EnumDefault_ptr(enums.EnumDefaultBar)
+	}
+	if v.OptionalEnum == nil {
+		v.OptionalEnum = _EnumDefault_ptr(enums.EnumDefaultBaz)
+	}
+	if v.RequiredList == nil {
+		v.RequiredList = []string{"hello", "world"}
+	}
+	if v.OptionalList == nil {
+		v.OptionalList = []float64{1, 2, 3}
+	}
+	if v.RequiredStruct == nil {
+		v.RequiredStruct = &Frame{Size: &Size{Height: 200, Width: 100}, TopLeft: &Point{X: 1, Y: 2}}
+	}
+	if v.OptionalStruct == nil {
+		v.OptionalStruct = &Edge{End: &Point{X: 3, Y: 4}, Start: &Point{X: 1, Y: 2}}
+	}
+	return nil
+}
+
+func (v *DefaultsStruct) String() string {
+	var fields [8]string
+	i := 0
+	if v.RequiredPrimitive != nil {
+		fields[i] = fmt.Sprintf("RequiredPrimitive: %v", *(v.RequiredPrimitive))
+		i++
+	}
+	if v.OptionalPrimitive != nil {
+		fields[i] = fmt.Sprintf("OptionalPrimitive: %v", *(v.OptionalPrimitive))
+		i++
+	}
+	if v.RequiredEnum != nil {
+		fields[i] = fmt.Sprintf("RequiredEnum: %v", *(v.RequiredEnum))
+		i++
+	}
+	if v.OptionalEnum != nil {
+		fields[i] = fmt.Sprintf("OptionalEnum: %v", *(v.OptionalEnum))
+		i++
+	}
+	if v.RequiredList != nil {
+		fields[i] = fmt.Sprintf("RequiredList: %v", v.RequiredList)
+		i++
+	}
+	if v.OptionalList != nil {
+		fields[i] = fmt.Sprintf("OptionalList: %v", v.OptionalList)
+		i++
+	}
+	if v.RequiredStruct != nil {
+		fields[i] = fmt.Sprintf("RequiredStruct: %v", v.RequiredStruct)
+		i++
+	}
+	if v.OptionalStruct != nil {
+		fields[i] = fmt.Sprintf("OptionalStruct: %v", v.OptionalStruct)
+		i++
+	}
+	return fmt.Sprintf("DefaultsStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
 type Edge struct {
@@ -199,12 +482,6 @@ func (v *Graph) ToWire() wire.Value {
 	fields[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.Edges), Items: _List_Edge_ValueList(v.Edges)})}
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
-}
-
-func _Edge_Read(w wire.Value) (*Edge, error) {
-	var v Edge
-	err := v.FromWire(w)
-	return &v, err
 }
 
 func _List_Edge_Read(l wire.List) ([]*Edge, error) {
