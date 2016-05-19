@@ -27,6 +27,7 @@ import (
 	"testing"
 
 	tc "github.com/thriftrw/thriftrw-go/gen/testdata/containers"
+	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
 	tx "github.com/thriftrw/thriftrw-go/gen/testdata/exceptions"
 	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
 	td "github.com/thriftrw/thriftrw-go/gen/testdata/typedefs"
@@ -556,6 +557,222 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 			if assert.Error(t, err) {
 				assert.Contains(t, err.Error(), tt.failure, tt.desc)
 			}
+		}
+	}
+}
+
+func TestStructWithDefaults(t *testing.T) {
+	enumDefaultFoo := te.EnumDefaultFoo
+	enumDefaultBar := te.EnumDefaultBar
+	enumDefaultBaz := te.EnumDefaultBaz
+
+	tests := []struct {
+		give     *ts.DefaultsStruct
+		giveWire wire.Value
+
+		wantToWire   wire.Value
+		wantFromWire *ts.DefaultsStruct
+	}{
+		{
+			give:     &ts.DefaultsStruct{},
+			giveWire: wire.NewValueStruct(wire.Struct{}),
+
+			wantToWire: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueI32(100)},
+				{ID: 2, Value: wire.NewValueI32(200)},
+				{ID: 3, Value: wire.NewValueI32(1)},
+				{ID: 4, Value: wire.NewValueI32(2)},
+				{
+					ID: 5,
+					Value: wire.NewValueList(wire.List{
+						ValueType: wire.TBinary,
+						Size:      2,
+						Items: wire.ValueListFromSlice{
+							wire.NewValueString("hello"),
+							wire.NewValueString("world"),
+						},
+					}),
+				},
+				{
+					ID: 6,
+					Value: wire.NewValueList(wire.List{
+						ValueType: wire.TDouble,
+						Size:      3,
+						Items: wire.ValueListFromSlice{
+							wire.NewValueDouble(1.0),
+							wire.NewValueDouble(2.0),
+							wire.NewValueDouble(3.0),
+						},
+					}),
+				},
+				{
+					ID: 7,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{
+							ID: 1,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(1.0)},
+								{ID: 2, Value: wire.NewValueDouble(2.0)},
+							}}),
+						},
+						{
+							ID: 2,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(100.0)},
+								{ID: 2, Value: wire.NewValueDouble(200.0)},
+							}}),
+						},
+					}}),
+				},
+				{
+					ID: 8,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{
+							ID: 1,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(1.0)},
+								{ID: 2, Value: wire.NewValueDouble(2.0)},
+							}}),
+						},
+						{
+							ID: 2,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(3.0)},
+								{ID: 2, Value: wire.NewValueDouble(4.0)},
+							}}),
+						},
+					}}),
+				},
+			}}),
+			wantFromWire: &ts.DefaultsStruct{
+				RequiredPrimitive: int32p(100),
+				OptionalPrimitive: int32p(200),
+				RequiredEnum:      &enumDefaultBar,
+				OptionalEnum:      &enumDefaultBaz,
+				RequiredList:      []string{"hello", "world"},
+				OptionalList:      []float64{1.0, 2.0, 3.0},
+				RequiredStruct: &ts.Frame{
+					TopLeft: &ts.Point{X: 1.0, Y: 2.0},
+					Size:    &ts.Size{Width: 100.0, Height: 200.0},
+				},
+				OptionalStruct: &ts.Edge{
+					Start: &ts.Point{X: 1.0, Y: 2.0},
+					End:   &ts.Point{X: 3.0, Y: 4.0},
+				},
+			},
+		},
+		{
+			give: &ts.DefaultsStruct{
+				RequiredPrimitive: int32p(0),
+				OptionalEnum:      &enumDefaultFoo,
+				RequiredList:      []string{},
+			},
+			giveWire: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueI32(0)},
+				{ID: 4, Value: wire.NewValueI32(0)},
+				{
+					ID: 5,
+					Value: wire.NewValueList(wire.List{
+						ValueType: wire.TBinary,
+						Size:      0,
+						Items:     wire.ValueListFromSlice{},
+					}),
+				},
+			}}),
+
+			wantToWire: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueI32(0)},
+				{ID: 2, Value: wire.NewValueI32(200)},
+				{ID: 3, Value: wire.NewValueI32(1)},
+				{ID: 4, Value: wire.NewValueI32(0)},
+				{
+					ID: 5,
+					Value: wire.NewValueList(wire.List{
+						ValueType: wire.TBinary,
+						Size:      0,
+						Items:     wire.ValueListFromSlice{},
+					}),
+				},
+				{
+					ID: 6,
+					Value: wire.NewValueList(wire.List{
+						ValueType: wire.TDouble,
+						Size:      3,
+						Items: wire.ValueListFromSlice{
+							wire.NewValueDouble(1.0),
+							wire.NewValueDouble(2.0),
+							wire.NewValueDouble(3.0),
+						},
+					}),
+				},
+				{
+					ID: 7,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{
+							ID: 1,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(1.0)},
+								{ID: 2, Value: wire.NewValueDouble(2.0)},
+							}}),
+						},
+						{
+							ID: 2,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(100.0)},
+								{ID: 2, Value: wire.NewValueDouble(200.0)},
+							}}),
+						},
+					}}),
+				},
+				{
+					ID: 8,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{
+							ID: 1,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(1.0)},
+								{ID: 2, Value: wire.NewValueDouble(2.0)},
+							}}),
+						},
+						{
+							ID: 2,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueDouble(3.0)},
+								{ID: 2, Value: wire.NewValueDouble(4.0)},
+							}}),
+						},
+					}}),
+				},
+			}}),
+			wantFromWire: &ts.DefaultsStruct{
+				RequiredPrimitive: int32p(0),
+				OptionalPrimitive: int32p(200),
+				RequiredEnum:      &enumDefaultBar,
+				OptionalEnum:      &enumDefaultFoo,
+				RequiredList:      []string{},
+				OptionalList:      []float64{1.0, 2.0, 3.0},
+				RequiredStruct: &ts.Frame{
+					TopLeft: &ts.Point{X: 1.0, Y: 2.0},
+					Size:    &ts.Size{Width: 100.0, Height: 200.0},
+				},
+				OptionalStruct: &ts.Edge{
+					Start: &ts.Point{X: 1.0, Y: 2.0},
+					End:   &ts.Point{X: 3.0, Y: 4.0},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		gotWire := tt.give.ToWire()
+		assert.True(
+			t, wire.ValuesAreEqual(tt.wantToWire, gotWire),
+			"%v.ToWire() != %v", tt.give, tt.wantToWire)
+
+		var gotFromWire ts.DefaultsStruct
+		err := gotFromWire.FromWire(tt.giveWire)
+		if assert.NoError(t, err) {
+			assert.Equal(t, tt.wantFromWire, &gotFromWire)
 		}
 	}
 }
