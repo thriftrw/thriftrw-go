@@ -59,6 +59,14 @@ func (v *DeleteValueArgs) String() string {
 	return fmt.Sprintf("DeleteValueArgs{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (v *DeleteValueArgs) MethodName() string {
+	return "deleteValue"
+}
+
+func (v *DeleteValueArgs) EnvelopeType() wire.EnvelopeType {
+	return wire.Call
+}
+
 type DeleteValueResult struct {
 	DoesNotExist  *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
 	InternalError *services.InternalError           `json:"internalError,omitempty"`
@@ -125,6 +133,14 @@ func (v *DeleteValueResult) String() string {
 		i++
 	}
 	return fmt.Sprintf("DeleteValueResult{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *DeleteValueResult) MethodName() string {
+	return "deleteValue"
+}
+
+func (v *DeleteValueResult) EnvelopeType() wire.EnvelopeType {
+	return wire.Reply
 }
 
 var DeleteValueHelper = struct {

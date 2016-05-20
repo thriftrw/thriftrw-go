@@ -68,6 +68,14 @@ func (v *SetValueArgs) String() string {
 	return fmt.Sprintf("SetValueArgs{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (v *SetValueArgs) MethodName() string {
+	return "setValue"
+}
+
+func (v *SetValueArgs) EnvelopeType() wire.EnvelopeType {
+	return wire.Call
+}
+
 type SetValueResult struct{}
 
 func (v *SetValueResult) ToWire() wire.Value {
@@ -88,6 +96,14 @@ func (v *SetValueResult) String() string {
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("SetValueResult{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *SetValueResult) MethodName() string {
+	return "setValue"
+}
+
+func (v *SetValueResult) EnvelopeType() wire.EnvelopeType {
+	return wire.Reply
 }
 
 var SetValueHelper = struct {

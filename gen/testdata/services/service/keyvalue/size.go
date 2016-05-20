@@ -31,6 +31,14 @@ func (v *SizeArgs) String() string {
 	return fmt.Sprintf("SizeArgs{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (v *SizeArgs) MethodName() string {
+	return "size"
+}
+
+func (v *SizeArgs) EnvelopeType() wire.EnvelopeType {
+	return wire.Call
+}
+
 type SizeResult struct {
 	Success *int64 `json:"success,omitempty"`
 }
@@ -71,6 +79,14 @@ func (v *SizeResult) String() string {
 		i++
 	}
 	return fmt.Sprintf("SizeResult{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *SizeResult) MethodName() string {
+	return "size"
+}
+
+func (v *SizeResult) EnvelopeType() wire.EnvelopeType {
+	return wire.Reply
 }
 
 var SizeHelper = struct {

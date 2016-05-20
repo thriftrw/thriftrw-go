@@ -18,41 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package wire
+package envelope
 
-import "fmt"
+import (
+	"io"
 
-// EnvelopeType is the type of data inside of the envelope.
-type EnvelopeType int8
-
-// List of envelope types, same as TMessageType in Apache Thrift.
-const (
-	Call      EnvelopeType = 1
-	Reply     EnvelopeType = 2
-	Exception EnvelopeType = 3
-	OneWay    EnvelopeType = 4
+	"github.com/thriftrw/thriftrw-go/protocol"
+	"github.com/thriftrw/thriftrw-go/wire"
 )
 
-// Envelope represents an enveloped value which includes metadata about
-// the method, the type of data in the envelope, and the value.
-type Envelope struct {
-	Name  string
-	Type  EnvelopeType
-	SeqID int32
-	Value Value
+// Enveloper is the interface implemented by a type that can be written with
+// an envelope.
+type Enveloper interface {
+	MethodName() string
+	EnvelopeType() wire.EnvelopeType
+	ToWire() wire.Value
 }
 
-func (et EnvelopeType) String() string {
-	switch et {
-	case Call:
-		return "Call"
-	case Reply:
-		return "Reply"
-	case Exception:
-		return "Exception"
-	case OneWay:
-		return "OneWay"
-	default:
-		return fmt.Sprintf("EnvelopeType(%v)", int8(et))
-	}
+// Write writes an Envelope to the given writer.
+func Write(p protocol.Protocol, w io.Writer, seqID int32, e Enveloper) error {
+	return p.EncodeEnveloped(wire.Envelope{
+		SeqID: seqID,
+		Name:  e.MethodName(),
+		Type:  e.EnvelopeType(),
+		Value: e.ToWire(),
+	}, w)
 }

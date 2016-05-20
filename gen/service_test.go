@@ -21,17 +21,21 @@
 package gen
 
 import (
+	"bytes"
 	"errors"
 	"reflect"
 	"testing"
 
+	"github.com/thriftrw/thriftrw-go/envelope"
 	tx "github.com/thriftrw/thriftrw-go/gen/testdata/exceptions"
 	tv "github.com/thriftrw/thriftrw-go/gen/testdata/services"
 	"github.com/thriftrw/thriftrw-go/gen/testdata/services/service/keyvalue"
 	tu "github.com/thriftrw/thriftrw-go/gen/testdata/unions"
+	"github.com/thriftrw/thriftrw-go/protocol"
 	"github.com/thriftrw/thriftrw-go/wire"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestServiceArgsAndResult(t *testing.T) {
@@ -444,5 +448,53 @@ func TestUnwrapResponse(t *testing.T) {
 		} else {
 			assert.Equal(t, tt.expectedReturn, returnValue, tt.desc)
 		}
+	}
+}
+
+func TestServiceTypesEnveloper(t *testing.T) {
+	getResponse, err := keyvalue.GetValueHelper.WrapResponse(&tu.ArbitraryValue{BoolValue: boolp(true)}, nil)
+	require.NoError(t, err, "Failed to get successful GetValue response")
+
+	tests := []struct {
+		s            envelope.Enveloper
+		wantEnvelope wire.Envelope
+	}{
+		{
+			s: keyvalue.GetValueHelper.Args((*tv.Key)(stringp("foo"))),
+			wantEnvelope: wire.Envelope{
+				Name: "getValue",
+				Type: wire.Call,
+			},
+		},
+		{
+			s: getResponse,
+			wantEnvelope: wire.Envelope{
+				Name: "getValue",
+				Type: wire.Reply,
+			},
+		},
+		{
+			s: keyvalue.DeleteValueHelper.Args((*tv.Key)(stringp("foo"))),
+			wantEnvelope: wire.Envelope{
+				Name: "deleteValue",
+				Type: wire.Call,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		buf := &bytes.Buffer{}
+		err := envelope.Write(protocol.Binary, buf, 1234, tt.s)
+		require.NoError(t, err, "envelope.Write for %v failed", tt)
+
+		// Decode the payload and validate the payload.
+		reader := bytes.NewReader(buf.Bytes())
+		envelope, err := protocol.Binary.DecodeEnveloped(reader)
+		require.NoError(t, err, "Failed to read enveloped data for %v", tt)
+
+		expected := tt.wantEnvelope
+		expected.SeqID = 1234
+		expected.Value = tt.s.ToWire()
+		assert.Equal(t, expected, envelope, "Envelope mismatch for %v", tt)
 	}
 }

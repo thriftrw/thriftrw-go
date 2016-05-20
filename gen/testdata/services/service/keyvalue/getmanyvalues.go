@@ -84,6 +84,14 @@ func (v *GetManyValuesArgs) String() string {
 	return fmt.Sprintf("GetManyValuesArgs{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (v *GetManyValuesArgs) MethodName() string {
+	return "getManyValues"
+}
+
+func (v *GetManyValuesArgs) EnvelopeType() wire.EnvelopeType {
+	return wire.Call
+}
+
 type GetManyValuesResult struct {
 	Success      []*unions.ArbitraryValue          `json:"success"`
 	DoesNotExist *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
@@ -176,6 +184,14 @@ func (v *GetManyValuesResult) String() string {
 		i++
 	}
 	return fmt.Sprintf("GetManyValuesResult{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *GetManyValuesResult) MethodName() string {
+	return "getManyValues"
+}
+
+func (v *GetManyValuesResult) EnvelopeType() wire.EnvelopeType {
+	return wire.Reply
 }
 
 var GetManyValuesHelper = struct {

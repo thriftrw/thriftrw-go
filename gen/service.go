@@ -73,6 +73,9 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 	if err := argsGen.Generate(g); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
+	if err := functionArgsEnveloper(g, f); err != nil {
+		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
+	}
 
 	resultFields := make(compile.FieldGroup, 0, len(f.ResultSpec.Exceptions)+1)
 	if f.ResultSpec.ReturnType != nil {
@@ -89,6 +92,9 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 		Fields: resultFields,
 	}
 	if err := resultGen.Generate(g); err != nil {
+		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
+	}
+	if err := functionResponseEnveloper(g, f); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
 
@@ -278,5 +284,40 @@ func functionUnwrapResponse(g Generator, f *compile.FunctionSpec) (string, error
 				<end>
 
 			}
+		`, f)
+}
+
+func functionArgsEnveloper(g Generator, f *compile.FunctionSpec) error {
+	// TODO: Figure out naming conflicts with user fields.
+	return g.DeclareFromTemplate(
+		`
+		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$argType := printf "%v%v" (goCase .Name) "Args">
+		<$v := newVar "v">
+
+		func (<$v> *<$argType>) MethodName() string {
+			return "<.MethodName>"
+		}
+
+		func (<$v> *<$argType>) EnvelopeType() <$wire>.EnvelopeType {
+			return <$wire>.<.CallType.String>
+		}
+		`, f)
+}
+
+func functionResponseEnveloper(g Generator, f *compile.FunctionSpec) error {
+	return g.DeclareFromTemplate(
+		`
+		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$resType := printf "%v%v" (goCase .Name) "Result">
+		<$v := newVar "v">
+
+		func (<$v> *<$resType>) MethodName() string {
+			return "<.MethodName>"
+		}
+
+		func (<$v> *<$resType>) EnvelopeType() <$wire>.EnvelopeType {
+			return <$wire>.Reply
+		}
 		`, f)
 }
