@@ -99,6 +99,15 @@ func (bw *Writer) writeInt64(n int64) error {
 	return bw.write(bs)
 }
 
+func (bw *Writer) writeString(s string) error {
+	if err := bw.writeInt32(int32(len(s))); err != nil {
+		return err
+	}
+
+	_, err := io.WriteString(bw.writer, s)
+	return err
+}
+
 func (bw *Writer) writeField(f wire.Field) error {
 	// type:1
 	if err := bw.writeByte(byte(f.Value.Type())); err != nil {

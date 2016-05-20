@@ -48,3 +48,16 @@ func (binaryProtocol) Decode(r io.ReaderAt, t wire.Type) (wire.Value, error) {
 	value, _, err := reader.ReadValue(t, 0)
 	return value, err
 }
+
+func (binaryProtocol) EncodeEnveloped(e wire.Envelope, w io.Writer) error {
+	writer := binary.BorrowWriter(w)
+	err := writer.WriteEnveloped(e)
+	binary.ReturnWriter(writer)
+	return err
+}
+
+func (binaryProtocol) DecodeEnveloped(r io.ReaderAt) (wire.Envelope, error) {
+	reader := binary.NewReader(r)
+	e, err := reader.ReadEnveloped()
+	return e, err
+}
