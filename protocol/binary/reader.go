@@ -226,6 +226,30 @@ func (br *Reader) readInt64(off int64) (int64, int64, error) {
 	return int64(bigEndian.Uint64(bs)), off, err
 }
 
+func (br *Reader) readBytes(off int64) ([]byte, int64, error) {
+	length, off, err := br.readInt32(off)
+	if err != nil {
+		return nil, off, err
+	}
+	if length < 0 {
+		return nil, off, decodeErrorf(
+			"negative length %d requested for binary value", length,
+		)
+	}
+	if length == 0 {
+		return nil, off, nil
+	}
+
+	bs := make([]byte, length)
+	off, err = br.read(bs, off)
+	return bs, off, err
+}
+
+func (br *Reader) readString(off int64) (string, int64, error) {
+	v, off, err := br.readBytes(off)
+	return string(v), off, err
+}
+
 func (br *Reader) readStruct(off int64) (wire.Struct, int64, error) {
 	var fields []wire.Field
 	// TODO(abg) add a lazy FieldList type instead of []Field.
@@ -421,21 +445,8 @@ func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 		return wire.NewValueI64(n), off, err
 
 	case wire.TBinary:
-		length, off, err := br.readInt32(off)
-		if err != nil {
-			return wire.Value{}, off, err
-		}
-		if length < 0 {
-			return wire.Value{}, off, decodeErrorf(
-				"negative length %d requested for binary value", length,
-			)
-		}
-
-		bs := make([]byte, length)
-		if length != 0 {
-			off, err = br.read(bs, off)
-		}
-		return wire.NewValueBinary(bs), off, err
+		v, off, err := br.readBytes(off)
+		return wire.NewValueBinary(v), off, err
 
 	case wire.TStruct:
 		s, off, err := br.readStruct(off)

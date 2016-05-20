@@ -18,29 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package protocol provides implementations of different Thrift protocols.
-package protocol
+package wire
 
-import (
-	"io"
+// EnvelopeType is the type of data inside of the envelope.
+type EnvelopeType int8
 
-	"github.com/thriftrw/thriftrw-go/wire"
+// List of envelope types, same as TMessageType in Apache Thrift.
+const (
+	Call      EnvelopeType = 1
+	Reply     EnvelopeType = 2
+	Exception EnvelopeType = 3
+	OneWay    EnvelopeType = 4
 )
 
-// Protocol defines a specific way for a Thrift value to be encoded or
-// decoded.
-type Protocol interface {
-	// Encode the given Value and write the result to the given Writer.
-	Encode(v wire.Value, w io.Writer) error
-
-	// EncodeEnveloped encodes the enveloped value and writes the result
-	// to the given Writer.
-	EncodeEnveloped(e wire.Envelope, w io.Writer) error
-
-	// Decode reads a Value of the given type from the given Reader.
-	Decode(r io.ReaderAt, t wire.Type) (wire.Value, error)
-
-	// DecodeEnveloped reads an enveloped value from the given Reader.
-	// Enveloped values are assumed to be TStructs.
-	DecodeEnveloped(r io.ReaderAt) (wire.Envelope, error)
+// Envelope represents an enveloped value which includes metadata about
+// the method, the type of data in the envelope, and the value.
+type Envelope struct {
+	Name  string
+	Type  EnvelopeType
+	SeqID int32
+	Value Value
 }

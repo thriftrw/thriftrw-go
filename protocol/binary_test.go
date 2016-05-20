@@ -669,3 +669,151 @@ func TestStructOfContainers(t *testing.T) {
 
 	checkEncodeDecode(t, wire.TStruct, tests)
 }
+
+func TestBinaryEnvelopeErrors(t *testing.T) {
+	tests := []struct {
+		encoded []byte
+		errMsg  string
+	}{
+		{
+			encoded: []byte{
+				0x80, 0x02, 0x00, 0x01, // version|type:4 = 2 | call
+				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+
+				// <struct>
+				0x06,       // type:1 = i16
+				0x00, 0x01, // id:2 = 1
+				0x00, 0x64, // value = 100
+				0x00, // stop
+			},
+			errMsg: "cannot decode envelope of version",
+		},
+		{
+			encoded: []byte{
+				0x80, 0x02, 0x00, 0x01, // version|type:4 = 2 | call
+				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+
+				// <struct>
+				0x06,       // type:1 = i16
+				0x00, 0x01, // id:2 = 1
+				0x00, 0x64, // value = 100
+				0x00, // stop
+			},
+			errMsg: "cannot decode envelope of version",
+		},
+	}
+
+	for _, tt := range tests {
+		reader := bytes.NewReader(tt.encoded)
+		_, err := Binary.DecodeEnveloped(reader)
+		if !assert.Error(t, err, "%v: should fail", tt.errMsg) {
+			continue
+		}
+
+		assert.Contains(t, err.Error(), tt.errMsg, "Unexpected failure")
+	}
+}
+
+func TestBinaryEnvelopeSuccessful(t *testing.T) {
+	tests := []struct {
+		msg      string
+		encoded  []byte
+		want     wire.Envelope
+		reencode bool
+	}{
+		{
+			msg: "non-strict envelope, struct",
+			encoded: []byte{
+				0x00, 0x00, 0x00, 0x05, // length:4 = 5
+				0x77, 0x72, 0x69, 0x74, 0x65, // 'write'
+				0x04,                   // type:1 = OneWay
+				0x00, 0x00, 0x00, 0x2a, // seqid:4 = 42
+
+				// <struct>
+				0x0B,       // ttype:1 = BINARY
+				0x00, 0x01, // id:2 = 1
+				0x00, 0x00, 0x00, 0x05, // length:4 = 5
+				0x68, 0x65, 0x6c, 0x6c, 0x6f, // 'hello'
+				0x00, // stop
+			},
+			want: wire.Envelope{
+				Name:  "write",
+				Type:  wire.OneWay,
+				SeqID: 42,
+				Value: vstruct(
+					vfield(1, vbinary("hello")),
+				),
+			},
+		},
+		{
+			msg: "strict envelope, struct",
+			encoded: []byte{
+				0x80, 0x01, 0x00, 0x01, // version|type:4 = 1 | call
+				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+
+				// <struct>
+				0x06,       // type:1 = i16
+				0x00, 0x01, // id:2 = 1
+				0x00, 0x64, // value = 100
+				0x00, // stop
+			},
+			want: wire.Envelope{
+				Name:  "abc",
+				Type:  wire.Call,
+				SeqID: 5436,
+				Value: vstruct(
+					vfield(1, vi16(100)),
+				),
+			},
+			reencode: true,
+		},
+		{
+			msg: "non-strict envelope, struct",
+			encoded: []byte{
+				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+				0x03,                   // type:1 = Exception
+				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+
+				// <struct>
+				0x06,       // type:1 = i16
+				0x00, 0x01, // id:2 = 1
+				0x00, 0x64, // value = 100
+				0x00, // stop
+			},
+			want: wire.Envelope{
+				Name:  "abc",
+				Type:  wire.Exception,
+				SeqID: 5436,
+				Value: vstruct(
+					vfield(1, vi16(100)),
+				),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		reader := bytes.NewReader(tt.encoded)
+		e, err := Binary.DecodeEnveloped(reader)
+		if !assert.NoError(t, err, "%v: failed to decode", tt.msg) {
+			continue
+		}
+
+		if !assert.Equal(t, tt.want, e, "%v: decoded envelope mismatch") {
+			continue
+		}
+
+		if !tt.reencode {
+			continue
+		}
+
+		buf := &bytes.Buffer{}
+		if !assert.NoError(t, Binary.EncodeEnveloped(e, buf), "%v: failed to encode", tt.msg) {
+			continue
+		}
+
+		assert.Equal(t, tt.encoded, buf.Bytes(), "%v: reencoded bytes mismatch")
+	}
+}
