@@ -322,12 +322,12 @@ func (g *generator) recordGenDeclNames(ignoreConflicts bool, d *ast.GenDecl) err
 //
 // 	<$x := newVar "x">
 //
-// toWire(TypeSpec, v): Returns an expression of type Value that contains the
-// wire representation of the item "v" of type TypeSpec.
+// toWire(TypeSpec, v): Returns an expression of type (Value, error) that
+// contains the wire representation of the item "v" of type TypeSpec.
 
-// toWirePtr(TypeSpec, v): Returns an expression of type Value that contains
-// the wire representation of the item "v" which is a reference to a value of
-// type TypeSpec.
+// toWirePtr(TypeSpec, v): Returns an expression of type (Value, error) that
+// contains the wire representation of the item "v" which is a reference to a
+// value of type TypeSpec.
 //
 // typeCode(TypeSpec): Gets the wire.Type for the given TypeSpec, importing
 // the wire module if necessary.

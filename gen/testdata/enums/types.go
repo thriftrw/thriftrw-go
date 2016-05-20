@@ -12,8 +12,8 @@ type EmptyEnum int32
 
 const ()
 
-func (v EmptyEnum) ToWire() wire.Value {
-	return wire.NewValueI32(int32(v))
+func (v EmptyEnum) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
 }
 
 func (v *EmptyEnum) FromWire(w wire.Value) error {
@@ -29,8 +29,8 @@ const (
 	EnumDefaultBaz EnumDefault = 2
 )
 
-func (v EnumDefault) ToWire() wire.Value {
-	return wire.NewValueI32(int32(v))
+func (v EnumDefault) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
 }
 
 func (v *EnumDefault) FromWire(w wire.Value) error {
@@ -52,8 +52,8 @@ const (
 	EnumWithDuplicateNameZ EnumWithDuplicateName = 8
 )
 
-func (v EnumWithDuplicateName) ToWire() wire.Value {
-	return wire.NewValueI32(int32(v))
+func (v EnumWithDuplicateName) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
 }
 
 func (v *EnumWithDuplicateName) FromWire(w wire.Value) error {
@@ -69,8 +69,8 @@ const (
 	EnumWithDuplicateValuesR EnumWithDuplicateValues = 0
 )
 
-func (v EnumWithDuplicateValues) ToWire() wire.Value {
-	return wire.NewValueI32(int32(v))
+func (v EnumWithDuplicateValues) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
 }
 
 func (v *EnumWithDuplicateValues) FromWire(w wire.Value) error {
@@ -86,8 +86,8 @@ const (
 	EnumWithValuesZ EnumWithValues = 789
 )
 
-func (v EnumWithValues) ToWire() wire.Value {
-	return wire.NewValueI32(int32(v))
+func (v EnumWithValues) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
 }
 
 func (v *EnumWithValues) FromWire(w wire.Value) error {
@@ -99,14 +99,22 @@ type StructWithOptionalEnum struct {
 	E *EnumDefault `json:"e,omitempty"`
 }
 
-func (v *StructWithOptionalEnum) ToWire() wire.Value {
-	var fields [1]wire.Field
-	i := 0
+func (v *StructWithOptionalEnum) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
 	if v.E != nil {
-		fields[i] = wire.Field{ID: 1, Value: v.E.ToWire()}
+		w, err = v.E.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _EnumDefault_Read(w wire.Value) (EnumDefault, error) {

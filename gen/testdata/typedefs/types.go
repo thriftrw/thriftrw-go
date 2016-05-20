@@ -3,6 +3,7 @@
 package typedefs
 
 import (
+	"errors"
 	"fmt"
 	"github.com/thriftrw/thriftrw-go/gen/testdata/structs"
 	"github.com/thriftrw/thriftrw-go/wire"
@@ -13,7 +14,11 @@ type _Set_Binary_ValueList [][]byte
 
 func (v _Set_Binary_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
-		err := f(wire.NewValueBinary(x))
+		w, err := wire.NewValueBinary(x), error(nil)
+		if err != nil {
+			return err
+		}
+		err = f(w)
 		if err != nil {
 			return err
 		}
@@ -43,9 +48,9 @@ func _Set_Binary_Read(s wire.Set) ([][]byte, error) {
 
 type BinarySet [][]byte
 
-func (v BinarySet) ToWire() wire.Value {
+func (v BinarySet) ToWire() (wire.Value, error) {
 	x := ([][]byte)(v)
-	return wire.NewValueSet(wire.Set{ValueType: wire.TBinary, Size: len(x), Items: _Set_Binary_ValueList(x)})
+	return wire.NewValueSet(wire.Set{ValueType: wire.TBinary, Size: len(x), Items: _Set_Binary_ValueList(x)}), error(nil)
 }
 
 func (v BinarySet) String() string {
@@ -59,21 +64,130 @@ func (v *BinarySet) FromWire(w wire.Value) error {
 	return err
 }
 
+type _Map_Edge_Edge_MapItemList []struct {
+	Key   *structs.Edge
+	Value *structs.Edge
+}
+
+func (m _Map_Edge_Edge_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for _, i := range m {
+		k := i.Key
+		v := i.Value
+		kw, err := k.ToWire()
+		if err != nil {
+			return err
+		}
+		vw, err := v.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(wire.MapItem{Key: kw, Value: vw})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_Edge_Edge_MapItemList) Close() {
+}
+
+func _Edge_Read(w wire.Value) (*structs.Edge, error) {
+	var v structs.Edge
+	err := v.FromWire(w)
+	return &v, err
+}
+
+func _Map_Edge_Edge_Read(m wire.Map) ([]struct {
+	Key   *structs.Edge
+	Value *structs.Edge
+}, error) {
+	if m.KeyType != wire.TStruct {
+		return nil, nil
+	}
+	if m.ValueType != wire.TStruct {
+		return nil, nil
+	}
+	o := make([]struct {
+		Key   *structs.Edge
+		Value *structs.Edge
+	}, 0, m.Size)
+	err := m.Items.ForEach(func(x wire.MapItem) error {
+		k, err := _Edge_Read(x.Key)
+		if err != nil {
+			return err
+		}
+		v, err := _Edge_Read(x.Value)
+		if err != nil {
+			return err
+		}
+		o = append(o, struct {
+			Key   *structs.Edge
+			Value *structs.Edge
+		}{k, v})
+		return nil
+	})
+	m.Items.Close()
+	return o, err
+}
+
+type EdgeMap []struct {
+	Key   *structs.Edge
+	Value *structs.Edge
+}
+
+func (v EdgeMap) ToWire() (wire.Value, error) {
+	x := ([]struct {
+		Key   *structs.Edge
+		Value *structs.Edge
+	})(v)
+	return wire.NewValueMap(wire.Map{KeyType: wire.TStruct, ValueType: wire.TStruct, Size: len(x), Items: _Map_Edge_Edge_MapItemList(x)}), error(nil)
+}
+
+func (v EdgeMap) String() string {
+	x := ([]struct {
+		Key   *structs.Edge
+		Value *structs.Edge
+	})(v)
+	return fmt.Sprint(x)
+}
+
+func (v *EdgeMap) FromWire(w wire.Value) error {
+	x, err := _Map_Edge_Edge_Read(w.GetMap())
+	*v = (EdgeMap)(x)
+	return err
+}
+
 type Event struct {
 	UUID *UUID      `json:"uuid"`
 	Time *Timestamp `json:"time,omitempty"`
 }
 
-func (v *Event) ToWire() wire.Value {
-	var fields [2]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: v.UUID.ToWire()}
+func (v *Event) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.UUID == nil {
+		return w, errors.New("field UUID of Event is required")
+	}
+	w, err = v.UUID.ToWire()
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
 	if v.Time != nil {
-		fields[i] = wire.Field{ID: 2, Value: v.Time.ToWire()}
+		w, err = v.Time.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _UUID_Read(w wire.Value) (*UUID, error) {
@@ -90,6 +204,7 @@ func _Timestamp_Read(w wire.Value) (Timestamp, error) {
 
 func (v *Event) FromWire(w wire.Value) error {
 	var err error
+	uuidIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -98,6 +213,7 @@ func (v *Event) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				uuidIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TI64 {
@@ -109,6 +225,9 @@ func (v *Event) FromWire(w wire.Value) error {
 				}
 			}
 		}
+	}
+	if !uuidIsSet {
+		return errors.New("field UUID of Event is required")
 	}
 	return nil
 }
@@ -129,7 +248,11 @@ type _List_Event_ValueList []*Event
 
 func (v _List_Event_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
-		err := f(x.ToWire())
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
 		if err != nil {
 			return err
 		}
@@ -165,9 +288,9 @@ func _List_Event_Read(l wire.List) ([]*Event, error) {
 
 type EventGroup []*Event
 
-func (v EventGroup) ToWire() wire.Value {
+func (v EventGroup) ToWire() (wire.Value, error) {
 	x := ([]*Event)(v)
-	return wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(x), Items: _List_Event_ValueList(x)})
+	return wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(x), Items: _List_Event_ValueList(x)}), error(nil)
 }
 
 func (v EventGroup) String() string {
@@ -185,7 +308,11 @@ type _Set_Frame_ValueList []*structs.Frame
 
 func (v _Set_Frame_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
-		err := f(x.ToWire())
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
 		if err != nil {
 			return err
 		}
@@ -221,9 +348,9 @@ func _Set_Frame_Read(s wire.Set) ([]*structs.Frame, error) {
 
 type FrameGroup []*structs.Frame
 
-func (v FrameGroup) ToWire() wire.Value {
+func (v FrameGroup) ToWire() (wire.Value, error) {
 	x := ([]*structs.Frame)(v)
-	return wire.NewValueSet(wire.Set{ValueType: wire.TStruct, Size: len(x), Items: _Set_Frame_ValueList(x)})
+	return wire.NewValueSet(wire.Set{ValueType: wire.TStruct, Size: len(x), Items: _Set_Frame_ValueList(x)}), error(nil)
 }
 
 func (v FrameGroup) String() string {
@@ -239,9 +366,9 @@ func (v *FrameGroup) FromWire(w wire.Value) error {
 
 type Pdf []byte
 
-func (v Pdf) ToWire() wire.Value {
+func (v Pdf) ToWire() (wire.Value, error) {
 	x := ([]byte)(v)
-	return wire.NewValueBinary(x)
+	return wire.NewValueBinary(x), error(nil)
 }
 
 func (v Pdf) String() string {
@@ -264,7 +391,15 @@ func (m _Map_Point_Point_MapItemList) ForEach(f func(wire.MapItem) error) error 
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
-		err := f(wire.MapItem{Key: k.ToWire(), Value: v.ToWire()})
+		kw, err := k.ToWire()
+		if err != nil {
+			return err
+		}
+		vw, err := v.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(wire.MapItem{Key: kw, Value: vw})
 		if err != nil {
 			return err
 		}
@@ -319,12 +454,12 @@ type PointMap []struct {
 	Value *structs.Point
 }
 
-func (v PointMap) ToWire() wire.Value {
+func (v PointMap) ToWire() (wire.Value, error) {
 	x := ([]struct {
 		Key   *structs.Point
 		Value *structs.Point
 	})(v)
-	return wire.NewValueMap(wire.Map{KeyType: wire.TStruct, ValueType: wire.TStruct, Size: len(x), Items: _Map_Point_Point_MapItemList(x)})
+	return wire.NewValueMap(wire.Map{KeyType: wire.TStruct, ValueType: wire.TStruct, Size: len(x), Items: _Map_Point_Point_MapItemList(x)}), error(nil)
 }
 
 func (v PointMap) String() string {
@@ -343,9 +478,9 @@ func (v *PointMap) FromWire(w wire.Value) error {
 
 type State string
 
-func (v State) ToWire() wire.Value {
+func (v State) ToWire() (wire.Value, error) {
 	x := (string)(v)
-	return wire.NewValueString(x)
+	return wire.NewValueString(x), error(nil)
 }
 
 func (v State) String() string {
@@ -361,9 +496,9 @@ func (v *State) FromWire(w wire.Value) error {
 
 type Timestamp int64
 
-func (v Timestamp) ToWire() wire.Value {
+func (v Timestamp) ToWire() (wire.Value, error) {
 	x := (int64)(v)
-	return wire.NewValueI64(x)
+	return wire.NewValueI64(x), error(nil)
 }
 
 func (v Timestamp) String() string {
@@ -383,18 +518,34 @@ type Transition struct {
 	Events EventGroup `json:"events"`
 }
 
-func (v *Transition) ToWire() wire.Value {
-	var fields [3]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: v.From.ToWire()}
+func (v *Transition) ToWire() (wire.Value, error) {
+	var (
+		fields [3]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = v.From.ToWire()
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 2, Value: v.To.ToWire()}
+	w, err = v.To.ToWire()
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
 	if v.Events != nil {
-		fields[i] = wire.Field{ID: 3, Value: v.Events.ToWire()}
+		w, err = v.Events.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _State_Read(w wire.Value) (State, error) {
@@ -411,6 +562,8 @@ func _EventGroup_Read(w wire.Value) (EventGroup, error) {
 
 func (v *Transition) FromWire(w wire.Value) error {
 	var err error
+	fromIsSet := false
+	toIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -419,6 +572,7 @@ func (v *Transition) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				fromIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
@@ -426,6 +580,7 @@ func (v *Transition) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				toIsSet = true
 			}
 		case 3:
 			if field.Value.Type() == wire.TList {
@@ -435,6 +590,12 @@ func (v *Transition) FromWire(w wire.Value) error {
 				}
 			}
 		}
+	}
+	if !fromIsSet {
+		return errors.New("field From of Transition is required")
+	}
+	if !toIsSet {
+		return errors.New("field To of Transition is required")
 	}
 	return nil
 }
@@ -455,7 +616,7 @@ func (v *Transition) String() string {
 
 type UUID I128
 
-func (v *UUID) ToWire() wire.Value {
+func (v *UUID) ToWire() (wire.Value, error) {
 	x := (*I128)(v)
 	return x.ToWire()
 }
@@ -474,18 +635,32 @@ type I128 struct {
 	Low  int64 `json:"low"`
 }
 
-func (v *I128) ToWire() wire.Value {
-	var fields [2]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: wire.NewValueI64(v.High)}
+func (v *I128) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueI64(v.High), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 2, Value: wire.NewValueI64(v.Low)}
+	w, err = wire.NewValueI64(v.Low), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *I128) FromWire(w wire.Value) error {
 	var err error
+	highIsSet := false
+	lowIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -494,6 +669,7 @@ func (v *I128) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				highIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TI64 {
@@ -501,8 +677,15 @@ func (v *I128) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				lowIsSet = true
 			}
 		}
+	}
+	if !highIsSet {
+		return errors.New("field High of I128 is required")
+	}
+	if !lowIsSet {
+		return errors.New("field Low of I128 is required")
 	}
 	return nil
 }

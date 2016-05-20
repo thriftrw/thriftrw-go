@@ -389,19 +389,121 @@ func TestStructRoundTripAndString(t *testing.T) {
 
 func TestPrimitiveRequiredMissingFields(t *testing.T) {
 	tests := []struct {
-		v    wire.Value
-		msgs []string
-	}{}
-	// TODO add cases here once we're validating that required fields are
-	// present.
+		desc      string
+		v         wire.Value
+		wantError string
+	}{
+		{
+			"bool",
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 2, Value: wire.NewValueI8(1)},
+				{ID: 3, Value: wire.NewValueI16(2)},
+				{ID: 4, Value: wire.NewValueI32(3)},
+				{ID: 5, Value: wire.NewValueI64(4)},
+				{ID: 6, Value: wire.NewValueDouble(5.0)},
+				{ID: 7, Value: wire.NewValueString("foo")},
+				{ID: 8, Value: wire.NewValueBinary([]byte("bar"))},
+			}}),
+			"field BoolField of PrimitiveRequiredStruct is required",
+		},
+		{
+			"byte",
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBool(true)},
+				{ID: 3, Value: wire.NewValueI16(2)},
+				{ID: 4, Value: wire.NewValueI32(3)},
+				{ID: 5, Value: wire.NewValueI64(4)},
+				{ID: 6, Value: wire.NewValueDouble(5.0)},
+				{ID: 7, Value: wire.NewValueString("foo")},
+				{ID: 8, Value: wire.NewValueBinary([]byte("bar"))},
+			}}),
+			"field ByteField of PrimitiveRequiredStruct is required",
+		},
+		{
+			"int16",
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBool(true)},
+				{ID: 2, Value: wire.NewValueI8(1)},
+				{ID: 4, Value: wire.NewValueI32(3)},
+				{ID: 5, Value: wire.NewValueI64(4)},
+				{ID: 6, Value: wire.NewValueDouble(5.0)},
+				{ID: 7, Value: wire.NewValueString("foo")},
+				{ID: 8, Value: wire.NewValueBinary([]byte("bar"))},
+			}}),
+			"field Int16Field of PrimitiveRequiredStruct is required",
+		},
+		{
+			"int32",
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBool(true)},
+				{ID: 2, Value: wire.NewValueI8(1)},
+				{ID: 3, Value: wire.NewValueI16(2)},
+				{ID: 5, Value: wire.NewValueI64(4)},
+				{ID: 6, Value: wire.NewValueDouble(5.0)},
+				{ID: 7, Value: wire.NewValueString("foo")},
+				{ID: 8, Value: wire.NewValueBinary([]byte("bar"))},
+			}}),
+			"field Int32Field of PrimitiveRequiredStruct is required",
+		},
+		{
+			"int64",
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBool(true)},
+				{ID: 2, Value: wire.NewValueI8(1)},
+				{ID: 3, Value: wire.NewValueI16(2)},
+				{ID: 4, Value: wire.NewValueI32(3)},
+				{ID: 6, Value: wire.NewValueDouble(5.0)},
+				{ID: 7, Value: wire.NewValueString("foo")},
+				{ID: 8, Value: wire.NewValueBinary([]byte("bar"))},
+			}}),
+			"field Int64Field of PrimitiveRequiredStruct is required",
+		},
+		{
+			"double",
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBool(true)},
+				{ID: 2, Value: wire.NewValueI8(1)},
+				{ID: 3, Value: wire.NewValueI16(2)},
+				{ID: 4, Value: wire.NewValueI32(3)},
+				{ID: 5, Value: wire.NewValueI64(4)},
+				{ID: 7, Value: wire.NewValueString("foo")},
+				{ID: 8, Value: wire.NewValueBinary([]byte("bar"))},
+			}}),
+			"field DoubleField of PrimitiveRequiredStruct is required",
+		},
+		{
+			"string",
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBool(true)},
+				{ID: 2, Value: wire.NewValueI8(1)},
+				{ID: 3, Value: wire.NewValueI16(2)},
+				{ID: 4, Value: wire.NewValueI32(3)},
+				{ID: 5, Value: wire.NewValueI64(4)},
+				{ID: 6, Value: wire.NewValueDouble(5.0)},
+				{ID: 8, Value: wire.NewValueBinary([]byte("bar"))},
+			}}),
+			"field StringField of PrimitiveRequiredStruct is required",
+		},
+		{
+			"binary",
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBool(true)},
+				{ID: 2, Value: wire.NewValueI8(1)},
+				{ID: 3, Value: wire.NewValueI16(2)},
+				{ID: 4, Value: wire.NewValueI32(3)},
+				{ID: 5, Value: wire.NewValueI64(4)},
+				{ID: 6, Value: wire.NewValueDouble(5.0)},
+				{ID: 7, Value: wire.NewValueString("foo")},
+			}}),
+			"field BinaryField of PrimitiveRequiredStruct is required",
+		},
+	}
 
 	for _, tt := range tests {
 		var s ts.PrimitiveRequiredStruct
 		err := s.FromWire(tt.v)
-		if assert.Error(t, err) {
-			for _, m := range tt.msgs {
-				assert.Contains(t, err.Error(), m)
-			}
+		if assert.Error(t, err, tt.desc) {
+			assert.Contains(t, err.Error(), tt.wantError, tt.desc)
 		}
 	}
 }
@@ -466,37 +568,47 @@ func TestBasicException(t *testing.T) {
 func TestStructFromWireUnrecognizedField(t *testing.T) {
 	tests := []struct {
 		desc string
-		i    wire.Value
-		o    ts.ContactInfo
+		give wire.Value
+
+		want      ts.ContactInfo
+		wantError string
 	}{
 		{
-			"unknown field",
-			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			desc: "unknown field",
+			give: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("foo")},
 				{ID: 2, Value: wire.NewValueI32(42)},
 			}}),
-			ts.ContactInfo{EmailAddress: "foo"},
+			want: ts.ContactInfo{EmailAddress: "foo"},
 		},
 		{
-			"only unknown field",
-			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			desc: "only unknown field",
+			give: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 2, Value: wire.NewValueString("bar")},
 			}}),
-			ts.ContactInfo{},
+			wantError: "field EmailAddress of ContactInfo is required",
 		},
 		{
-			"wrong type for recognized field",
-			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			desc: "wrong type for recognized field",
+			give: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueI32(42)},
+				{ID: 1, Value: wire.NewValueString("foo")},
 			}}),
-			ts.ContactInfo{},
+			want: ts.ContactInfo{EmailAddress: "foo"},
 		},
 	}
 
 	for _, tt := range tests {
 		var o ts.ContactInfo
-		if assert.NoError(t, o.FromWire(tt.i)) {
-			assert.Equal(t, tt.o, o)
+		err := o.FromWire(tt.give)
+		if tt.wantError != "" {
+			if assert.Error(t, err, tt.desc) {
+				assert.Contains(t, err.Error(), tt.wantError)
+			}
+		} else {
+			if assert.NoError(t, err, tt.desc) {
+				assert.Equal(t, tt.want, o)
+			}
 		}
 	}
 }
@@ -514,12 +626,7 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
 				{ID: 2, Value: wire.NewValueString("hello")},
 			}}),
-			success: &tu.Document{
-				Pdf:       []byte{1, 2, 3},
-				PlainText: stringp("hello"),
-			},
-			// TODO(abg): Once we're validating, this will become a failure
-			// case. We want to fail if mutliple fields are set on a union.
+			failure: "should receive exactly one field value: received 2 values",
 		},
 		{
 			desc: "recognized and unrecognized fields",
@@ -535,14 +642,12 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 				{ID: 2, Value: wire.NewValueI32(42)}, // also a type mismatch
 				{ID: 3, Value: wire.NewValueString("hello")},
 			}}),
-			success: &tu.Document{},
-			// TODO(abg): If the union is empty, we need to fail the request
+			failure: "should receive exactly one field value: received 0 values",
 		},
 		{
 			desc:    "no fields",
 			input:   wire.NewValueStruct(wire.Struct{}),
-			success: &tu.Document{},
-			// TODO(abg): If the union is empty, we need to fail the request
+			failure: "should receive exactly one field value: received 0 values",
 		},
 	}
 
@@ -550,11 +655,11 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 		var o tu.Document
 		err := o.FromWire(tt.input)
 		if tt.success != nil {
-			if assert.NoError(t, err) {
+			if assert.NoError(t, err, tt.desc) {
 				assert.Equal(t, tt.success, &o, tt.desc)
 			}
 		} else {
-			if assert.Error(t, err) {
+			if assert.Error(t, err, tt.desc) {
 				assert.Contains(t, err.Error(), tt.failure, tt.desc)
 			}
 		}
@@ -764,14 +869,15 @@ func TestStructWithDefaults(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		gotWire := tt.give.ToWire()
-		assert.True(
-			t, wire.ValuesAreEqual(tt.wantToWire, gotWire),
-			"%v.ToWire() != %v", tt.give, tt.wantToWire)
+		if gotWire, err := tt.give.ToWire(); assert.NoError(
+			t, err, "%v.ToWire() failed", tt.give) {
+			assert.True(
+				t, wire.ValuesAreEqual(tt.wantToWire, gotWire),
+				"%v.ToWire() != %v", tt.give, tt.wantToWire)
+		}
 
 		var gotFromWire ts.DefaultsStruct
-		err := gotFromWire.FromWire(tt.giveWire)
-		if assert.NoError(t, err) {
+		if err := gotFromWire.FromWire(tt.giveWire); assert.NoError(t, err) {
 			assert.Equal(t, tt.wantFromWire, &gotFromWire)
 		}
 	}
@@ -882,6 +988,583 @@ func TestStructJSON(t *testing.T) {
 		v := reflect.New(reflect.TypeOf(tt.v).Elem()).Interface()
 		if assert.NoError(t, json.Unmarshal([]byte(tt.j), v), "failed to decode %q", tt.j) {
 			assert.Equal(t, tt.v, v)
+		}
+	}
+}
+
+func TestStructValidation(t *testing.T) {
+	tests := []struct {
+		desc        string
+		serialize   thriftType
+		deserialize wire.Value
+		typ         reflect.Type // must be set if serialize is not
+		wantError   string
+	}{
+		{
+			desc: "Point: missing X",
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueDouble(42)},
+			}}),
+			typ:       reflect.TypeOf(ts.Point{}),
+			wantError: "field Y of Point is required",
+		},
+		{
+			desc: "Point: missing Y",
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 2, Value: wire.NewValueDouble(42)},
+			}}),
+			typ:       reflect.TypeOf(ts.Point{}),
+			wantError: "field X of Point is required",
+		},
+		{
+			desc: "Size: missing width",
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueDouble(42)},
+			}}),
+			typ:       reflect.TypeOf(ts.Size{}),
+			wantError: "field Height of Size is required",
+		},
+		{
+			desc: "Size: missing height",
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 2, Value: wire.NewValueDouble(42)},
+			}}),
+			typ:       reflect.TypeOf(ts.Size{}),
+			wantError: "field Width of Size is required",
+		},
+		{
+			desc:      "Frame: missing topLeft",
+			serialize: &ts.Frame{Size: &ts.Size{Width: 1, Height: 2}},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueDouble(1)},
+						{ID: 2, Value: wire.NewValueDouble(2)},
+					}}),
+				},
+			}}),
+			wantError: "field TopLeft of Frame is required",
+		},
+		{
+			desc:      "Frame: missing Size",
+			serialize: &ts.Frame{TopLeft: &ts.Point{X: 1, Y: 2}},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 1,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueDouble(1)},
+						{ID: 2, Value: wire.NewValueDouble(2)},
+					}}),
+				},
+			}}),
+			wantError: "field Size of Frame is required",
+		},
+		{
+			desc: "Frame: topLeft: missing y",
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 1,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueDouble(1)},
+					}}),
+				},
+				{
+					ID: 2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueDouble(1)},
+						{ID: 2, Value: wire.NewValueDouble(2)},
+					}}),
+				},
+			}}),
+			typ:       reflect.TypeOf(ts.Frame{}),
+			wantError: "field Y of Point is required",
+		},
+		{
+			desc:        "Graph: missing edges",
+			serialize:   &ts.Graph{Edges: nil},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			wantError:   "field Edges of Graph is required",
+		},
+		{
+			desc: "Graph: edges: misssing end",
+			serialize: &ts.Graph{
+				Edges: []*ts.Edge{
+					{Start: &ts.Point{X: 1, Y: 2}, End: &ts.Point{X: 3, Y: 4}},
+					{Start: &ts.Point{X: 5, Y: 6}},
+				},
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 1,
+					Value: wire.NewValueList(wire.List{
+						ValueType: wire.TStruct,
+						Size:      2,
+						Items: wire.ValueListFromSlice{
+							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{
+									ID: 1,
+									Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+										{ID: 1, Value: wire.NewValueDouble(1)},
+										{ID: 2, Value: wire.NewValueDouble(2)},
+									}}),
+								},
+								{
+									ID: 2,
+									Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+										{ID: 1, Value: wire.NewValueDouble(3)},
+										{ID: 2, Value: wire.NewValueDouble(4)},
+									}}),
+								},
+							}}),
+							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{
+									ID: 1,
+									Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+										{ID: 1, Value: wire.NewValueDouble(1)},
+										{ID: 2, Value: wire.NewValueDouble(2)},
+									}}),
+								},
+							}}),
+						},
+					}),
+				},
+			}}),
+			wantError: "field End of Edge is required",
+		},
+		{
+			desc: "User: contact: missing emailAddress",
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("hello")},
+				{
+					ID:    2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+				},
+			}}),
+			typ:       reflect.TypeOf(ts.User{}),
+			wantError: "field EmailAddress of ContactInfo is required",
+		},
+		{
+			desc: "PrimitiveContainersRequired: missing list",
+			serialize: &tc.PrimitiveContainersRequired{
+				SetOfInts: map[int32]struct{}{
+					1: struct{}{},
+					2: struct{}{},
+					3: struct{}{},
+				},
+				MapOfIntsToDoubles: map[int64]float64{1: 2.3, 4: 5.6},
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 2,
+					Value: wire.NewValueSet(wire.Set{
+						ValueType: wire.TI32,
+						Size:      3,
+						Items: wire.ValueListFromSlice{
+							wire.NewValueI32(1),
+							wire.NewValueI32(2),
+							wire.NewValueI32(3),
+						},
+					}),
+				},
+				{
+					ID: 3,
+					Value: wire.NewValueMap(wire.Map{
+						KeyType:   wire.TI64,
+						ValueType: wire.TDouble,
+						Size:      2,
+						Items: wire.MapItemListFromSlice{
+							{
+								Key:   wire.NewValueI64(1),
+								Value: wire.NewValueDouble(2.3),
+							},
+							{
+								Key:   wire.NewValueI64(4),
+								Value: wire.NewValueDouble(5.6),
+							},
+						},
+					}),
+				},
+			}}),
+			wantError: "field ListOfStrings of PrimitiveContainersRequired is required",
+		},
+		{
+			desc: "PrimitiveContainersRequired: missing set",
+			serialize: &tc.PrimitiveContainersRequired{
+				ListOfStrings:      []string{"hello", "world"},
+				MapOfIntsToDoubles: map[int64]float64{1: 2.3, 4: 5.6},
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 1,
+					Value: wire.NewValueList(wire.List{
+						ValueType: wire.TBinary,
+						Size:      2,
+						Items: wire.ValueListFromSlice{
+							wire.NewValueString("hello"),
+							wire.NewValueString("world"),
+						},
+					}),
+				},
+				{
+					ID: 3,
+					Value: wire.NewValueMap(wire.Map{
+						KeyType:   wire.TI64,
+						ValueType: wire.TDouble,
+						Size:      2,
+						Items: wire.MapItemListFromSlice{
+							{
+								Key:   wire.NewValueI64(1),
+								Value: wire.NewValueDouble(2.3),
+							},
+							{
+								Key:   wire.NewValueI64(4),
+								Value: wire.NewValueDouble(5.6),
+							},
+						},
+					}),
+				},
+			}}),
+			wantError: "field SetOfInts of PrimitiveContainersRequired is required",
+		},
+		{
+			desc: "PrimitiveContainersRequired: missing map",
+			serialize: &tc.PrimitiveContainersRequired{
+				ListOfStrings: []string{"hello", "world"},
+				SetOfInts: map[int32]struct{}{
+					1: struct{}{},
+					2: struct{}{},
+					3: struct{}{},
+				},
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 1,
+					Value: wire.NewValueList(wire.List{
+						ValueType: wire.TBinary,
+						Size:      2,
+						Items: wire.ValueListFromSlice{
+							wire.NewValueString("hello"),
+							wire.NewValueString("world"),
+						},
+					}),
+				},
+				{
+					ID: 2,
+					Value: wire.NewValueSet(wire.Set{
+						ValueType: wire.TI32,
+						Size:      3,
+						Items: wire.ValueListFromSlice{
+							wire.NewValueI32(1),
+							wire.NewValueI32(2),
+							wire.NewValueI32(3),
+						},
+					}),
+				},
+			}}),
+			wantError: "field MapOfIntsToDoubles of PrimitiveContainersRequired is required",
+		},
+		{
+			desc:        "Document: empty",
+			serialize:   &tu.Document{},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			wantError:   "Document should receive exactly one field value: received 0 values",
+		},
+		{
+			desc: "Document: multiple",
+			serialize: &tu.Document{
+				Pdf:       td.Pdf{},
+				PlainText: stringp("hello"),
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID:    1,
+					Value: wire.NewValueBinary([]byte{}),
+				},
+				{
+					ID:    2,
+					Value: wire.NewValueString("hello"),
+				},
+			}}),
+			wantError: "Document should receive exactly one field value: received 2 values",
+		},
+		{
+			desc:        "ArbitraryValue: empty",
+			serialize:   &tu.ArbitraryValue{},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			wantError:   "ArbitraryValue should receive exactly one field value: received 0 values",
+		},
+		{
+			desc: "ArbitraryValue: primitives",
+			serialize: &tu.ArbitraryValue{
+				BoolValue:   boolp(true),
+				Int64Value:  int64p(42),
+				StringValue: stringp(""),
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBool(true)},
+				{ID: 2, Value: wire.NewValueI64(42)},
+				{ID: 3, Value: wire.NewValueString("")},
+			}}),
+			wantError: "ArbitraryValue should receive exactly one field value: received 3 values",
+		},
+		{
+			desc: "ArbitraryValue: full",
+			serialize: &tu.ArbitraryValue{
+				BoolValue:   boolp(true),
+				Int64Value:  int64p(42),
+				StringValue: stringp(""),
+				ListValue: []*tu.ArbitraryValue{
+					{BoolValue: boolp(true)},
+					{Int64Value: int64p(42)},
+					{StringValue: stringp("")},
+				},
+				MapValue: map[string]*tu.ArbitraryValue{
+					"bool":   {BoolValue: boolp(true)},
+					"int":    {Int64Value: int64p(42)},
+					"string": {StringValue: stringp("")},
+				},
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBool(true)},
+				{ID: 2, Value: wire.NewValueI64(42)},
+				{ID: 3, Value: wire.NewValueString("")},
+				{
+					ID: 4,
+					Value: wire.NewValueList(wire.List{
+						ValueType: wire.TStruct,
+						Size:      3,
+						Items: wire.ValueListFromSlice{
+							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueBool(true)},
+							}}),
+							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 2, Value: wire.NewValueI64(42)},
+							}}),
+							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 3, Value: wire.NewValueString("")},
+							}}),
+						},
+					}),
+				},
+				{
+					ID: 5,
+					Value: wire.NewValueMap(wire.Map{
+						KeyType:   wire.TBinary,
+						ValueType: wire.TStruct,
+						Size:      3,
+						Items: wire.MapItemListFromSlice{
+							{
+								Key: wire.NewValueString("bool"),
+								Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+									{ID: 1, Value: wire.NewValueBool(true)},
+								}}),
+							},
+							{
+								Key: wire.NewValueString("int"),
+								Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+									{ID: 2, Value: wire.NewValueI64(42)},
+								}}),
+							},
+							{
+								Key: wire.NewValueString("string"),
+								Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+									{ID: 3, Value: wire.NewValueString("")},
+								}}),
+							},
+						},
+					}),
+				},
+			}}),
+			wantError: "ArbitraryValue should receive exactly one field value: received 5 values",
+		},
+		{
+			desc: "ArbitraryValue: error inside a list",
+			serialize: &tu.ArbitraryValue{
+				ListValue: []*tu.ArbitraryValue{
+					{BoolValue: boolp(true)},
+					{},
+				},
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 4,
+					Value: wire.NewValueList(wire.List{
+						ValueType: wire.TStruct,
+						Size:      2,
+						Items: wire.ValueListFromSlice{
+							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{ID: 1, Value: wire.NewValueBool(true)},
+							}}),
+							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+						},
+					}),
+				},
+			}}),
+			wantError: "ArbitraryValue should receive exactly one field value: received 0 values",
+		},
+		{
+			desc: "ArbitraryValue: error inside a map value",
+			serialize: &tu.ArbitraryValue{
+				MapValue: map[string]*tu.ArbitraryValue{
+					"bool":  {BoolValue: boolp(true)},
+					"empty": {},
+				},
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 5,
+					Value: wire.NewValueMap(wire.Map{
+						KeyType:   wire.TBinary,
+						ValueType: wire.TStruct,
+						Size:      2,
+						Items: wire.MapItemListFromSlice{
+							{
+								Key: wire.NewValueString("bool"),
+								Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+									{ID: 1, Value: wire.NewValueBool(true)},
+								}}),
+							},
+							{
+								Key:   wire.NewValueString("empty"),
+								Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+							},
+						},
+					}),
+				},
+			}}),
+			wantError: "ArbitraryValue should receive exactly one field value: received 0 values",
+		},
+		{
+			desc: "FrameGroup: error inside a set",
+			serialize: &td.FrameGroup{
+				&ts.Frame{
+					TopLeft: &ts.Point{X: 1, Y: 2},
+					Size:    &ts.Size{Width: 3, Height: 4},
+				},
+				&ts.Frame{TopLeft: &ts.Point{X: 5, Y: 6}},
+			},
+			deserialize: wire.NewValueSet(wire.Set{
+				ValueType: wire.TStruct,
+				Size:      2,
+				Items: wire.ValueListFromSlice{
+					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{
+							ID: 1,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{
+									ID:    1,
+									Value: wire.NewValueDouble(1),
+								},
+								{
+									ID:    2,
+									Value: wire.NewValueDouble(2),
+								},
+							}}),
+						},
+						{
+							ID: 2,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{
+									ID:    1,
+									Value: wire.NewValueDouble(3),
+								},
+								{
+									ID:    2,
+									Value: wire.NewValueDouble(4),
+								},
+							}}),
+						},
+					}}),
+					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{
+							ID: 1,
+							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+								{
+									ID:    1,
+									Value: wire.NewValueDouble(5),
+								},
+								{
+									ID:    2,
+									Value: wire.NewValueDouble(6),
+								},
+							}}),
+						},
+					}}),
+				},
+			}),
+			wantError: "field Size of Frame is required",
+		},
+		{
+			desc: "EdgeMap: error inside a map key",
+			serialize: &td.EdgeMap{
+				{
+					Key:   &ts.Edge{Start: &ts.Point{X: 1, Y: 2}},
+					Value: &ts.Edge{Start: &ts.Point{X: 3, Y: 4}, End: &ts.Point{X: 5, Y: 6}},
+				},
+			},
+			deserialize: wire.NewValueMap(wire.Map{
+				KeyType:   wire.TStruct,
+				ValueType: wire.TStruct,
+				Size:      1,
+				Items: wire.MapItemListFromSlice{
+					{
+						Key: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{
+								ID: 1,
+								Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+									{ID: 1, Value: wire.NewValueDouble(1)},
+									{ID: 2, Value: wire.NewValueDouble(2)},
+								}}),
+							},
+						}}),
+						Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+							{
+								ID: 1,
+								Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+									{ID: 1, Value: wire.NewValueDouble(3)},
+									{ID: 2, Value: wire.NewValueDouble(4)},
+								}}),
+							},
+							{
+								ID: 2,
+								Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+									{ID: 1, Value: wire.NewValueDouble(5)},
+									{ID: 2, Value: wire.NewValueDouble(6)},
+								}}),
+							},
+						}}),
+					},
+				},
+			}),
+			wantError: "field End of Edge is required",
+		},
+	}
+
+	for _, tt := range tests {
+		var typ reflect.Type
+		if tt.serialize != nil {
+			typ = reflect.TypeOf(tt.serialize).Elem()
+			v, err := tt.serialize.ToWire()
+			if err == nil {
+				err = wire.EvaluateValue(v)
+			}
+			if assert.Error(t, err, "%v: expected failure but got %v", tt.desc, v) {
+				assert.Contains(t, err.Error(), tt.wantError, tt.desc)
+			}
+		} else {
+			typ = tt.typ
+		}
+
+		if typ == nil {
+			t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
+		}
+
+		x := reflect.New(typ)
+		args := []reflect.Value{reflect.ValueOf(tt.deserialize)}
+		e := x.MethodByName("FromWire").Call(args)[0].Interface()
+		if assert.NotNil(t, e, "%v: expected failure but got %v", tt.desc, x) {
+			assert.Contains(t, e.(error).Error(), tt.wantError, tt.desc)
 		}
 	}
 }

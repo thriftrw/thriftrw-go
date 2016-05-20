@@ -16,14 +16,22 @@ type GetValueArgs struct {
 	Key *services.Key `json:"key,omitempty"`
 }
 
-func (v *GetValueArgs) ToWire() wire.Value {
-	var fields [1]wire.Field
-	i := 0
+func (v *GetValueArgs) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
 	if v.Key != nil {
-		fields[i] = wire.Field{ID: 1, Value: v.Key.ToWire()}
+		w, err = v.Key.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *GetValueArgs) FromWire(w wire.Value) error {
@@ -67,18 +75,40 @@ type GetValueResult struct {
 	DoesNotExist *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
 }
 
-func (v *GetValueResult) ToWire() wire.Value {
-	var fields [2]wire.Field
-	i := 0
+func (v *GetValueResult) ToWire() (wire.Value, error) {
+	count := 0
 	if v.Success != nil {
-		fields[i] = wire.Field{ID: 0, Value: v.Success.ToWire()}
+		count++
+	}
+	if v.DoesNotExist != nil {
+		count++
+	}
+	if count != 1 {
+		return wire.Value{}, fmt.Errorf("GetValueResult should receive exactly one field value: received %v values", count)
+	}
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.Success != nil {
+		w, err = v.Success.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 0, Value: w}
 		i++
 	}
 	if v.DoesNotExist != nil {
-		fields[i] = wire.Field{ID: 1, Value: v.DoesNotExist.ToWire()}
+		w, err = v.DoesNotExist.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *GetValueResult) FromWire(w wire.Value) error {
@@ -100,6 +130,16 @@ func (v *GetValueResult) FromWire(w wire.Value) error {
 				}
 			}
 		}
+	}
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.DoesNotExist != nil {
+		count++
+	}
+	if count != 1 {
+		return fmt.Errorf("GetValueResult should receive exactly one field value: received %v values", count)
 	}
 	return nil
 }

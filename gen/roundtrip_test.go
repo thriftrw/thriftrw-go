@@ -31,7 +31,7 @@ import (
 )
 
 type thriftType interface {
-	ToWire() wire.Value
+	ToWire() (wire.Value, error)
 	FromWire(wire.Value) error
 }
 
@@ -39,10 +39,11 @@ type thriftType interface {
 // x.FromWire() with the given value results in the original x.
 func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args ...interface{}) bool {
 	message := fmt.Sprintf(msg, args...)
-	if !assert.True(
-		t, wire.ValuesAreEqual(v, x.ToWire()),
-		"%v: %v.ToWire() != %v", message, x, v) {
-		return false
+	if w, err := x.ToWire(); assert.NoError(t, err, "failed to serialize: %v", x) {
+		if !assert.True(
+			t, wire.ValuesAreEqual(v, w), "%v: %v.ToWire() != %v", message, x, v) {
+			return false
+		}
 	}
 
 	xType := reflect.TypeOf(x)

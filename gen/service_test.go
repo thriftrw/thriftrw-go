@@ -41,11 +41,8 @@ import (
 func TestServiceArgsAndResult(t *testing.T) {
 	tests := []struct {
 		desc string
-		x    interface {
-			ToWire() wire.Value
-			FromWire(wire.Value) error
-		}
-		v wire.Value
+		x    thriftType
+		v    wire.Value
 	}{
 		{
 			desc: "setValue args",

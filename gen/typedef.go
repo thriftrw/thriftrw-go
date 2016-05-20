@@ -70,7 +70,7 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 
 		<$v := newVar "v">
 		<$x := newVar "x">
-		func (<$v> <$typedefType>) ToWire() <$wire>.Value {
+		func (<$v> <$typedefType>) ToWire() (<$wire>.Value, error) {
 			<$x> := (<typeReference .Target>)(<$v>)
 			return <toWire .Target $x>
 		}

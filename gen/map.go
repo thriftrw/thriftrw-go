@@ -62,6 +62,8 @@ func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, err
 			<$k := newVar "k">
 			<$v := newVar "v">
 			<$i := newVar "i">
+			<$kw := newVar "kw">
+			<$vw := newVar "vw">
 			func (<$m> <.Name>) ForEach(<$f> func(<$wire>.MapItem) error) error {
 				<if isHashable .Spec.KeySpec>
 					for <$k>, <$v> := range <$m> {
@@ -70,10 +72,15 @@ func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, err
 						<$k> := <$i>.Key
 						<$v> := <$i>.Value
 				<end>
-						err := <$f>(<$wire>.MapItem{
-							Key: <toWire .Spec.KeySpec $k>,
-							Value: <toWire .Spec.ValueSpec $v>,
-						})
+						<$kw>, err := <toWire .Spec.KeySpec $k>
+						if err != nil {
+							return err
+						}
+						<$vw>, err := <toWire .Spec.ValueSpec $v>
+						if err != nil {
+							return err
+						}
+						err = <$f>(<$wire>.MapItem{Key: <$kw>, Value: <$vw>})
 						if err != nil {
 							return err
 						}

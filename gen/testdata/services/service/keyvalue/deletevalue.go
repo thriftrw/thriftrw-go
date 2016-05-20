@@ -15,14 +15,22 @@ type DeleteValueArgs struct {
 	Key *services.Key `json:"key,omitempty"`
 }
 
-func (v *DeleteValueArgs) ToWire() wire.Value {
-	var fields [1]wire.Field
-	i := 0
+func (v *DeleteValueArgs) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
 	if v.Key != nil {
-		fields[i] = wire.Field{ID: 1, Value: v.Key.ToWire()}
+		w, err = v.Key.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _Key_Read(w wire.Value) (services.Key, error) {
@@ -72,18 +80,30 @@ type DeleteValueResult struct {
 	InternalError *services.InternalError           `json:"internalError,omitempty"`
 }
 
-func (v *DeleteValueResult) ToWire() wire.Value {
-	var fields [2]wire.Field
-	i := 0
+func (v *DeleteValueResult) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
 	if v.DoesNotExist != nil {
-		fields[i] = wire.Field{ID: 1, Value: v.DoesNotExist.ToWire()}
+		w, err = v.DoesNotExist.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
 	if v.InternalError != nil {
-		fields[i] = wire.Field{ID: 2, Value: v.InternalError.ToWire()}
+		w, err = v.InternalError.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _DoesNotExistException_Read(w wire.Value) (*exceptions.DoesNotExistException, error) {

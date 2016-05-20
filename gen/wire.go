@@ -38,27 +38,27 @@ type WireGenerator struct {
 	typedefG typedefGenerator
 }
 
-// ToWire generates an expression which evaluates to a Value object containing
-// the wire representation of the variable $varName of type $spec.
+// ToWire generates an expression of type (Value, error) object containing the
+// wire representation of the variable $varName of type $spec or an error.
 func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName string) (string, error) {
 	wire := g.Import("github.com/thriftrw/thriftrw-go/wire")
 	switch spec {
 	case compile.BoolSpec:
-		return fmt.Sprintf("%s.NewValueBool(%s)", wire, varName), nil
+		return fmt.Sprintf("%s.NewValueBool(%s), error(nil)", wire, varName), nil
 	case compile.I8Spec:
-		return fmt.Sprintf("%s.NewValueI8(%s)", wire, varName), nil
+		return fmt.Sprintf("%s.NewValueI8(%s), error(nil)", wire, varName), nil
 	case compile.I16Spec:
-		return fmt.Sprintf("%s.NewValueI16(%s)", wire, varName), nil
+		return fmt.Sprintf("%s.NewValueI16(%s), error(nil)", wire, varName), nil
 	case compile.I32Spec:
-		return fmt.Sprintf("%s.NewValueI32(%s)", wire, varName), nil
+		return fmt.Sprintf("%s.NewValueI32(%s), error(nil)", wire, varName), nil
 	case compile.I64Spec:
-		return fmt.Sprintf("%s.NewValueI64(%s)", wire, varName), nil
+		return fmt.Sprintf("%s.NewValueI64(%s), error(nil)", wire, varName), nil
 	case compile.DoubleSpec:
-		return fmt.Sprintf("%s.NewValueDouble(%s)", wire, varName), nil
+		return fmt.Sprintf("%s.NewValueDouble(%s), error(nil)", wire, varName), nil
 	case compile.StringSpec:
-		return fmt.Sprintf("%s.NewValueString(%s)", wire, varName), nil
+		return fmt.Sprintf("%s.NewValueString(%s), error(nil)", wire, varName), nil
 	case compile.BinarySpec:
-		return fmt.Sprintf("%s.NewValueBinary(%s)", wire, varName), nil
+		return fmt.Sprintf("%s.NewValueBinary(%s), error(nil)", wire, varName), nil
 	default:
 		// Not a primitive type. It's probably a container or a custom type.
 	}
@@ -76,7 +76,7 @@ func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName strin
 				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
 				Items: <.MapItemList>(<.Name>),
-			})`,
+			}), error(nil)`,
 			struct {
 				Wire        string
 				Name        string
@@ -95,7 +95,7 @@ func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName strin
 				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
 				Items: <.ValueList>(<.Name>),
-			})`,
+			}), error(nil)`,
 			struct {
 				Wire      string
 				Name      string
@@ -114,7 +114,7 @@ func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName strin
 				ValueType: <typeCode .Spec.ValueSpec>,
 				Size: len(<.Name>),
 				Items: <.ValueList>(<.Name>),
-			})`,
+			}), error(nil)`,
 			struct {
 				Wire      string
 				Name      string

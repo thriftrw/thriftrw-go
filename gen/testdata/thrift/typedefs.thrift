@@ -30,3 +30,5 @@ typedef set<structs.Frame> FrameGroup
 typedef map<structs.Point, structs.Point> PointMap
 
 typedef set<binary> BinarySet
+
+typedef map<structs.Edge, structs.Edge> EdgeMap

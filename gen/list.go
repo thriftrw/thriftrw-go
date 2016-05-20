@@ -55,9 +55,14 @@ func (l *listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, 
 			<$v := newVar "v">
 			<$x := newVar "x">
 			<$f := newVar "f">
+			<$w := newVar "w">
 			func (<$v> <.Name>) ForEach(<$f> func(<$wire>.Value) error) error {
 				for _, <$x> := range <$v> {
-					err := <$f>(<toWire .Spec.ValueSpec $x>)
+					<$w>, err := <toWire .Spec.ValueSpec $x>
+					if err != nil {
+						return err
+					}
+					err = <$f>(<$w>)
 					if err != nil {
 						return err
 					}

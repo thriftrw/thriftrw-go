@@ -11,10 +11,12 @@ import (
 
 type SizeArgs struct{}
 
-func (v *SizeArgs) ToWire() wire.Value {
-	var fields [0]wire.Field
-	i := 0
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+func (v *SizeArgs) ToWire() (wire.Value, error) {
+	var (
+		fields [0]wire.Field
+		i      int = 0
+	)
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *SizeArgs) FromWire(w wire.Value) error {
@@ -43,14 +45,29 @@ type SizeResult struct {
 	Success *int64 `json:"success,omitempty"`
 }
 
-func (v *SizeResult) ToWire() wire.Value {
-	var fields [1]wire.Field
-	i := 0
+func (v *SizeResult) ToWire() (wire.Value, error) {
+	count := 0
 	if v.Success != nil {
-		fields[i] = wire.Field{ID: 0, Value: wire.NewValueI64(*(v.Success))}
+		count++
+	}
+	if count != 1 {
+		return wire.Value{}, fmt.Errorf("SizeResult should receive exactly one field value: received %v values", count)
+	}
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.Success != nil {
+		w, err = wire.NewValueI64(*(v.Success)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 0, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *SizeResult) FromWire(w wire.Value) error {
@@ -67,6 +84,13 @@ func (v *SizeResult) FromWire(w wire.Value) error {
 				}
 			}
 		}
+	}
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if count != 1 {
+		return fmt.Errorf("SizeResult should receive exactly one field value: received %v values", count)
 	}
 	return nil
 }
