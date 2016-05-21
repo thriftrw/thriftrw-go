@@ -18,40 +18,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// +build gofuzz
+package wire
 
-package binary
+import "fmt"
 
-import (
-	"bytes"
-	"fmt"
-
-	"github.com/thriftrw/thriftrw-go/wire"
-)
-
-func Fuzz(data []byte) int {
-	reader := NewReader(bytes.NewReader(data))
-	value, pos, err := reader.ReadValue(wire.TStruct, 0)
-	if err != nil || pos != int64(len(data)) {
-		return 0
+// EvaluateValue ensures that the given Value is fully evaluated. Lazy lists
+// are spinned and any errors raised by them are returned.
+func EvaluateValue(v Value) error {
+	switch v.Type() {
+	case TBool, TI8, TDouble, TI16, TI32, TI64, TBinary:
+		return nil
+	case TStruct:
+		for _, f := range v.GetStruct().Fields {
+			if err := EvaluateValue(f.Value); err != nil {
+				return err
+			}
+		}
+		return nil
+	case TMap:
+		m := v.GetMap()
+		defer m.Items.Close()
+		return m.Items.ForEach(func(item MapItem) error {
+			if err := EvaluateValue(item.Key); err != nil {
+				return err
+			}
+			if err := EvaluateValue(item.Value); err != nil {
+				return err
+			}
+			return nil
+		})
+	case TSet:
+		s := v.GetSet()
+		defer s.Items.Close()
+		return s.Items.ForEach(EvaluateValue)
+	case TList:
+		l := v.GetList()
+		defer l.Items.Close()
+		return l.Items.ForEach(EvaluateValue)
+	default:
+		return fmt.Errorf("unknown type %s", v.Type())
 	}
-	if err := wire.EvaluateValue(value); err != nil {
-		return 0
-	}
-
-	buffer := bytes.Buffer{}
-	writer := BorrowWriter(&buffer)
-	if err := writer.WriteValue(value); err != nil {
-		panic(fmt.Sprintf("error encoding %v: %v", value, err))
-	}
-	ReturnWriter(writer)
-
-	if encoded := buffer.Bytes(); !bytes.Equal(data, encoded) {
-		panic(fmt.Sprintf(
-			"encoding mismatch for %v:\n\t   %#v (got)\n\t!= %#v (expected)\n",
-			value, encoded, data,
-		))
-	}
-
-	return 1
 }
