@@ -38,49 +38,6 @@ type encodeDecodeTest struct {
 	encoded []byte
 }
 
-// Fully evaluate lazy collections inside a Value.
-func evaluate(v wire.Value) error {
-	switch v.Type() {
-	case wire.TBool:
-		return nil
-	case wire.TI8:
-		return nil
-	case wire.TDouble:
-		return nil
-	case wire.TI16:
-		return nil
-	case wire.TI32:
-		return nil
-	case wire.TI64:
-		return nil
-	case wire.TBinary:
-		return nil
-	case wire.TStruct:
-		for _, f := range v.GetStruct().Fields {
-			if err := evaluate(f.Value); err != nil {
-				return err
-			}
-		}
-		return nil
-	case wire.TMap:
-		return v.GetMap().Items.ForEach(func(item wire.MapItem) error {
-			if err := evaluate(item.Key); err != nil {
-				return err
-			}
-			if err := evaluate(item.Value); err != nil {
-				return err
-			}
-			return nil
-		})
-	case wire.TSet:
-		return v.GetSet().Items.ForEach(evaluate)
-	case wire.TList:
-		return v.GetList().Items.ForEach(evaluate)
-	default:
-		return fmt.Errorf("unknown type %s", v.Type())
-	}
-}
-
 func checkEncodeDecode(t *testing.T, typ wire.Type, tests []encodeDecodeTest) {
 	for _, tt := range tests {
 		buffer := bytes.Buffer{}
@@ -117,7 +74,7 @@ func checkDecodeFailure(t *testing.T, typ wire.Type, tests []failureTest) {
 		if err == nil {
 			// lazy collections need to be fully evaluated for the failure to
 			// propagate
-			err = evaluate(value)
+			err = wire.EvaluateValue(value)
 		}
 		if assert.Error(t, err, "Expected failure parsing %x, got %s", tt, value) {
 			assert.True(
@@ -137,7 +94,7 @@ func checkEOFError(t *testing.T, typ wire.Type, tests []failureTest) {
 		if err == nil {
 			// lazy collections need to be fully evaluated for the failure to
 			// propagate
-			err = evaluate(value)
+			err = wire.EvaluateValue(value)
 		}
 		if assert.Error(t, err, "Expected failure parsing %x, got %s", tt, value) {
 			assert.Equal(
