@@ -491,7 +491,9 @@ func TestServiceTypesEnveloper(t *testing.T) {
 
 		expected := tt.wantEnvelope
 		expected.SeqID = 1234
-		expected.Value = tt.s.ToWire()
-		assert.Equal(t, expected, envelope, "Envelope mismatch for %v", tt)
+		expected.Value, err = tt.s.ToWire()
+		if assert.NoError(t, err, "Error serializing %v", tt.s) {
+			assert.Equal(t, expected, envelope, "Envelope mismatch for %v", tt)
+		}
 	}
 }
