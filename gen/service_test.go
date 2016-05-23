@@ -497,3 +497,125 @@ func TestServiceTypesEnveloper(t *testing.T) {
 		}
 	}
 }
+
+func TestArgsAndResultValidation(t *testing.T) {
+	tests := []struct {
+		desc        string
+		serialize   thriftType
+		deserialize wire.Value
+		typ         reflect.Type // must be set if serialize is not
+		wantError   string
+	}{
+		{
+			desc: "SetValue: args: value: empty",
+			serialize: keyvalue.SetValueHelper.Args(
+				(*tv.Key)(stringp("foo")),
+				&tu.ArbitraryValue{},
+			),
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("foo")},
+				{
+					ID:    2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+				},
+			}}),
+			wantError: "ArbitraryValue should receive exactly one field value: received 0 values",
+		},
+		{
+			desc: "SetValueV2: args: missing value",
+			typ:  reflect.TypeOf(keyvalue.SetValueV2Args{}),
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueBool(true)},
+					}}),
+				},
+			}}),
+			wantError: "field Key of SetValueV2Args is required",
+		},
+		{
+			desc: "SetValueV2: args: missing key",
+			typ:  reflect.TypeOf(keyvalue.SetValueV2Args{}),
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("foo")},
+			}}),
+			wantError: "field Value of SetValueV2Args is required",
+		},
+		{
+			desc:        "getValue: result: empty",
+			serialize:   &keyvalue.GetValueResult{},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			wantError:   "GetValueResult should receive exactly one field value: received 0 values",
+		},
+		{
+			desc: "getValue: result: multiple",
+			serialize: &keyvalue.GetValueResult{
+				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
+				Success:      &tu.ArbitraryValue{BoolValue: boolp(true)},
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 0,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueBool(true)},
+					}}),
+				},
+				{
+					ID: 1,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueString("foo")},
+					}}),
+				},
+			}}),
+			wantError: "GetValueResult should receive exactly one field value: received 2 values",
+		},
+		{
+			desc: "deleteValue: result: multiple",
+			serialize: &keyvalue.DeleteValueResult{
+				DoesNotExist:  &tx.DoesNotExistException{Key: "foo"},
+				InternalError: &tv.InternalError{},
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 1,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueString("foo")},
+					}}),
+				},
+				{
+					ID:    2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+				},
+			}}),
+			wantError: "DeleteValueResult should receive at most one field value: received 2 values",
+		},
+	}
+
+	for _, tt := range tests {
+		var typ reflect.Type
+		if tt.serialize != nil {
+			typ = reflect.TypeOf(tt.serialize).Elem()
+			v, err := tt.serialize.ToWire()
+			if err == nil {
+				err = wire.EvaluateValue(v)
+			}
+			if assert.Error(t, err, "%v: expected failure but got %v", tt.desc, v) {
+				assert.Contains(t, err.Error(), tt.wantError, tt.desc)
+			}
+		} else {
+			typ = tt.typ
+		}
+
+		if typ == nil {
+			t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
+		}
+
+		x := reflect.New(typ)
+		args := []reflect.Value{reflect.ValueOf(tt.deserialize)}
+		e := x.MethodByName("FromWire").Call(args)[0].Interface()
+		if assert.NotNil(t, e, "%v: expected failure but got %v", tt.desc, x) {
+			assert.Contains(t, e.(error).Error(), tt.wantError, tt.desc)
+		}
+	}
+}

@@ -96,17 +96,24 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
     		<$i := newVar "i">
 			<$wVal := newVar "w">
 
-			<if and .IsUnion (len .Fields) (not .AllowEmptyUnion)>
+			<if and .IsUnion (len .Fields)>
 				<$fmt := import "fmt">
 				<$count := newVar "count">
 				<$count> := 0
 				<range .Fields>
 					if <$v>.<goCase .Name> != nil { <$count>++ }
 				<end>
-				if <$count> != 1 {
-					return <$wire>.Value{}, <$fmt>.Errorf(
-						"<.Name> should receive exactly one field value: received %v values", <$count>)
-				}
+				<if .AllowEmptyUnion>
+					if <$count> > 1 {
+						return <$wire>.Value{}, <$fmt>.Errorf(
+							"<.Name> should receive at most one field value: received %v values", <$count>)
+					}
+				<else>
+					if <$count> != 1 {
+						return <$wire>.Value{}, <$fmt>.Errorf(
+							"<.Name> should receive exactly one field value: received %v values", <$count>)
+					}
+				<end>
 			<end>
 
 			var (
@@ -227,16 +234,24 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				<end>
 			<end>
 
-			<if and .IsUnion (len .Fields) (not .AllowEmptyUnion)>
+			<if and .IsUnion (len .Fields)>
+				<$fmt := import "fmt">
 				<$count := newVar "count">
 				<$count> := 0
 				<range .Fields>
 					if <$v>.<goCase .Name> != nil { <$count>++ }
 				<end>
-				if <$count> != 1 {
-					return <import "fmt">.Errorf(
-						"<.Name> should receive exactly one field value: received %v values", <$count>)
-				}
+				<if .AllowEmptyUnion>
+					if <$count> > 1 {
+						return <$fmt>.Errorf(
+							"<.Name> should receive at most one field value: received %v values", <$count>)
+					}
+				<else>
+					if <$count> != 1 {
+						return <$fmt>.Errorf(
+							"<.Name> should receive exactly one field value: received %v values", <$count>)
+					}
+				<end>
 			<end>
 			return nil
 		}
