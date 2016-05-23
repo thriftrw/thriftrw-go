@@ -20,7 +20,10 @@
 
 package compile
 
-import "github.com/thriftrw/thriftrw-go/ast"
+import (
+	"github.com/thriftrw/thriftrw-go/ast"
+	"github.com/thriftrw/thriftrw-go/wire"
+)
 
 // ServiceSpec is a collection of named functions.
 type ServiceSpec struct {
@@ -205,6 +208,20 @@ func (f *FunctionSpec) Link(scope Scope) error {
 	}
 
 	return nil
+}
+
+// MethodName returns the method name for this function.
+func (f *FunctionSpec) MethodName() string {
+	return f.Name
+}
+
+// CallType returns the envelope type that is used when making enveloped
+// requests for this function.
+func (f *FunctionSpec) CallType() wire.EnvelopeType {
+	if f.OneWay {
+		return wire.OneWay
+	}
+	return wire.Call
 }
 
 // ArgsSpec contains information about a Function's arguments.

@@ -54,6 +54,14 @@ func (v *GetValueArgs) String() string {
 	return fmt.Sprintf("GetValueArgs{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (v *GetValueArgs) MethodName() string {
+	return "getValue"
+}
+
+func (v *GetValueArgs) EnvelopeType() wire.EnvelopeType {
+	return wire.Call
+}
+
 type GetValueResult struct {
 	Success      *unions.ArbitraryValue            `json:"success,omitempty"`
 	DoesNotExist *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
@@ -108,6 +116,14 @@ func (v *GetValueResult) String() string {
 		i++
 	}
 	return fmt.Sprintf("GetValueResult{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *GetValueResult) MethodName() string {
+	return "getValue"
+}
+
+func (v *GetValueResult) EnvelopeType() wire.EnvelopeType {
+	return wire.Reply
 }
 
 var GetValueHelper = struct {
