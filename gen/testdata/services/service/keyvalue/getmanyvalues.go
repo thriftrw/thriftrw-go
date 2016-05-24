@@ -182,6 +182,7 @@ func _List_ArbitraryValue_Read(l wire.List) ([]*unions.ArbitraryValue, error) {
 
 func (v *GetManyValuesResult) FromWire(w wire.Value) error {
 	var err error
+	count := 0
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 0:
@@ -190,6 +191,7 @@ func (v *GetManyValuesResult) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				count++
 			}
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -197,15 +199,9 @@ func (v *GetManyValuesResult) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				count++
 			}
 		}
-	}
-	count := 0
-	if v.Success != nil {
-		count++
-	}
-	if v.DoesNotExist != nil {
-		count++
 	}
 	if count != 1 {
 		return fmt.Errorf("GetManyValuesResult should receive exactly one field value: received %v values", count)

@@ -189,6 +189,12 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				<end>
 			<end>
 
+			<$count := newVar "count">
+			<if and .IsUnion (len .Fields)>
+				<$count> := 0
+			<end>
+
+			<$isUnion := .IsUnion>
 			for _, <$f> := range <$w>.GetStruct().Fields {
 				switch <$f>.ID {
 				<range .Fields>
@@ -207,6 +213,7 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 						<if .Required>
 							<$isSet.Rotate (printf "%sIsSet" .Name)> = true
 						<end>
+						<if $isUnion><$count>++<end>
 					}
 				<end>
 				}
@@ -231,11 +238,6 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 
 			<if and .IsUnion (len .Fields)>
 				<$fmt := import "fmt">
-				<$count := newVar "count">
-				<$count> := 0
-				<range .Fields>
-					if <$v>.<goCase .Name> != nil { <$count>++ }
-				<end>
 				<if .AllowEmptyUnion>
 					if <$count> > 1 {
 						return <$fmt>.Errorf(

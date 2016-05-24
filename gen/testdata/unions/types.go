@@ -161,6 +161,7 @@ func _Map_String_ArbitraryValue_Read(m wire.Map) (map[string]*ArbitraryValue, er
 
 func (v *ArbitraryValue) FromWire(w wire.Value) error {
 	var err error
+	count := 0
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -171,6 +172,7 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				count++
 			}
 		case 2:
 			if field.Value.Type() == wire.TI64 {
@@ -180,6 +182,7 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				count++
 			}
 		case 3:
 			if field.Value.Type() == wire.TBinary {
@@ -189,6 +192,7 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				count++
 			}
 		case 4:
 			if field.Value.Type() == wire.TList {
@@ -196,6 +200,7 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				count++
 			}
 		case 5:
 			if field.Value.Type() == wire.TMap {
@@ -203,24 +208,9 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				count++
 			}
 		}
-	}
-	count := 0
-	if v.BoolValue != nil {
-		count++
-	}
-	if v.Int64Value != nil {
-		count++
-	}
-	if v.StringValue != nil {
-		count++
-	}
-	if v.ListValue != nil {
-		count++
-	}
-	if v.MapValue != nil {
-		count++
 	}
 	if count != 1 {
 		return fmt.Errorf("ArbitraryValue should receive exactly one field value: received %v values", count)
@@ -296,6 +286,7 @@ func _Pdf_Read(w wire.Value) (typedefs.Pdf, error) {
 
 func (v *Document) FromWire(w wire.Value) error {
 	var err error
+	count := 0
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -304,6 +295,7 @@ func (v *Document) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				count++
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
@@ -313,15 +305,9 @@ func (v *Document) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				count++
 			}
 		}
-	}
-	count := 0
-	if v.Pdf != nil {
-		count++
-	}
-	if v.PlainText != nil {
-		count++
 	}
 	if count != 1 {
 		return fmt.Errorf("Document should receive exactly one field value: received %v values", count)

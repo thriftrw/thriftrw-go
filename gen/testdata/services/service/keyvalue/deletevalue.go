@@ -123,6 +123,7 @@ func _InternalError_Read(w wire.Value) (*services.InternalError, error) {
 
 func (v *DeleteValueResult) FromWire(w wire.Value) error {
 	var err error
+	count := 0
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -131,6 +132,7 @@ func (v *DeleteValueResult) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				count++
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
@@ -138,15 +140,9 @@ func (v *DeleteValueResult) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				count++
 			}
 		}
-	}
-	count := 0
-	if v.DoesNotExist != nil {
-		count++
-	}
-	if v.InternalError != nil {
-		count++
 	}
 	if count > 1 {
 		return fmt.Errorf("DeleteValueResult should receive at most one field value: received %v values", count)
