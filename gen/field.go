@@ -133,6 +133,7 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 						if <$f> == nil {
 							<$f> = <constantValuePtr .Default .Type>
 						}
+						{
 					<else>
 						if <$f> != nil {
 					<end>
@@ -147,9 +148,7 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 								Value: <$wVal>,
 							}
 							<$i>++
-					<if not .Default>
 						}
-					<end>
 				<end>
 			<end>
 
