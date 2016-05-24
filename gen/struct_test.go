@@ -637,6 +637,14 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 			success: &tu.Document{Pdf: []byte{1, 2, 3}},
 		},
 		{
+			desc: "recognized field duplicates",
+			input: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
+				{ID: 1, Value: wire.NewValueBinary([]byte{4, 5, 6})},
+			}}),
+			success: &tu.Document{Pdf: []byte{4, 5, 6}},
+		},
+		{
 			desc: "only unrecognized fields",
 			input: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 2, Value: wire.NewValueI32(42)}, // also a type mismatch

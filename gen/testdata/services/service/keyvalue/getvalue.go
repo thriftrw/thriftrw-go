@@ -106,7 +106,6 @@ func (v *GetValueResult) ToWire() (wire.Value, error) {
 
 func (v *GetValueResult) FromWire(w wire.Value) error {
 	var err error
-	count := 0
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 0:
@@ -115,7 +114,6 @@ func (v *GetValueResult) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
-				count++
 			}
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -123,9 +121,15 @@ func (v *GetValueResult) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
-				count++
 			}
 		}
+	}
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.DoesNotExist != nil {
+		count++
 	}
 	if count != 1 {
 		return fmt.Errorf("GetValueResult should receive exactly one field value: received %v values", count)
