@@ -111,12 +111,16 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 				<if .Required>
 					<if not (isPrimitiveType .Type)>
 						if <$f> == nil {
+							// TODO: Include names of all missing fields in
+							// the error message.
 							return <$wVal>, <import "errors">.New(
 								"field <goCase .Name> of <$structName> is required")
 						}
 					<end>
 						<$wVal>, err = <toWire .Type $f>
 						if err != nil {
+							// TODO: Nest the error inside a "failed to
+							// serialize field X of struct Y" error.
 							return <$wVal>, err
 						}
 						<$fields>[<$i>] = <$wire>.Field{
@@ -134,6 +138,8 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 					<end>
 							<$wVal>, err = <toWirePtr .Type $f>
 							if err != nil {
+								// TODO: Nest the error inside a "failed to
+								// serialize field X of struct Y" error.
 								return <$wVal>, err
 							}
 							<$fields>[<$i>] = <$wire>.Field{
@@ -209,6 +215,8 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 						<end>
 						if err != nil {
 							return err
+							// TODO: Nest the error inside a "failed to read
+							// field X of struct Y" error.
 						}
 						<if .Required>
 							<$isSet.Rotate (printf "%sIsSet" .Name)> = true
@@ -232,6 +240,8 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 							return <import "errors">.New(
 								"field <goCase .Name> of <$structName> is required")
 						}
+						// TODO: Include names of all missing fields in the
+						// error message.
 					<end>
 				<end>
 			<end>
