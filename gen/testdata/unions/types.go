@@ -60,25 +60,6 @@ func (m _Map_String_ArbitraryValue_MapItemList) Close() {
 }
 
 func (v *ArbitraryValue) ToWire() (wire.Value, error) {
-	count := 0
-	if v.BoolValue != nil {
-		count++
-	}
-	if v.Int64Value != nil {
-		count++
-	}
-	if v.StringValue != nil {
-		count++
-	}
-	if v.ListValue != nil {
-		count++
-	}
-	if v.MapValue != nil {
-		count++
-	}
-	if count != 1 {
-		return wire.Value{}, fmt.Errorf("ArbitraryValue should receive exactly one field value: received %v values", count)
-	}
 	var (
 		fields [5]wire.Field
 		i      int = 0
@@ -124,6 +105,9 @@ func (v *ArbitraryValue) ToWire() (wire.Value, error) {
 		}
 		fields[i] = wire.Field{ID: 5, Value: w}
 		i++
+	}
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("ArbitraryValue should receive exactly one field value: received %v values", i)
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
@@ -276,16 +260,6 @@ type Document struct {
 }
 
 func (v *Document) ToWire() (wire.Value, error) {
-	count := 0
-	if v.Pdf != nil {
-		count++
-	}
-	if v.PlainText != nil {
-		count++
-	}
-	if count != 1 {
-		return wire.Value{}, fmt.Errorf("Document should receive exactly one field value: received %v values", count)
-	}
 	var (
 		fields [2]wire.Field
 		i      int = 0
@@ -307,6 +281,9 @@ func (v *Document) ToWire() (wire.Value, error) {
 		}
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
+	}
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("Document should receive exactly one field value: received %v values", i)
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }

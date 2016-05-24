@@ -81,16 +81,6 @@ type DeleteValueResult struct {
 }
 
 func (v *DeleteValueResult) ToWire() (wire.Value, error) {
-	count := 0
-	if v.DoesNotExist != nil {
-		count++
-	}
-	if v.InternalError != nil {
-		count++
-	}
-	if count > 1 {
-		return wire.Value{}, fmt.Errorf("DeleteValueResult should receive at most one field value: received %v values", count)
-	}
 	var (
 		fields [2]wire.Field
 		i      int = 0
@@ -112,6 +102,9 @@ func (v *DeleteValueResult) ToWire() (wire.Value, error) {
 		}
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
+	}
+	if i > 1 {
+		return wire.Value{}, fmt.Errorf("DeleteValueResult should receive at most one field value: received %v values", i)
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
