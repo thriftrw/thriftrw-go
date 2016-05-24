@@ -3,6 +3,7 @@
 package exceptions
 
 import (
+	"errors"
 	"fmt"
 	"github.com/thriftrw/thriftrw-go/wire"
 	"strings"
@@ -12,16 +13,25 @@ type DoesNotExistException struct {
 	Key string `json:"key"`
 }
 
-func (v *DoesNotExistException) ToWire() wire.Value {
-	var fields [1]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.Key)}
+func (v *DoesNotExistException) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueString(v.Key), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *DoesNotExistException) FromWire(w wire.Value) error {
 	var err error
+	keyIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -30,8 +40,12 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				keyIsSet = true
 			}
 		}
+	}
+	if !keyIsSet {
+		return errors.New("field Key of DoesNotExistException is required")
 	}
 	return nil
 }
@@ -50,10 +64,12 @@ func (v *DoesNotExistException) Error() string {
 
 type EmptyException struct{}
 
-func (v *EmptyException) ToWire() wire.Value {
-	var fields [0]wire.Field
-	i := 0
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+func (v *EmptyException) ToWire() (wire.Value, error) {
+	var (
+		fields [0]wire.Field
+		i      int = 0
+	)
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *EmptyException) FromWire(w wire.Value) error {

@@ -11,6 +11,11 @@ service KeyValue {
     // void and no exceptions
     void setValue(1: Key key, 2: unions.ArbitraryValue value)
 
+    void setValueV2(
+        1: required Key key,
+        2: required unions.ArbitraryValue value,
+    )
+
     // Return with exceptions
     unions.ArbitraryValue getValue(1: Key key)
         throws (1: exceptions.DoesNotExistException doesNotExist)

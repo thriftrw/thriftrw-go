@@ -70,8 +70,8 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		)
 
 		<$v := newVar "v">
-		func (<$v> <$enumName>) ToWire() <$wire>.Value {
-			return <$wire>.NewValueI32(int32(<$v>))
+		func (<$v> <$enumName>) ToWire() (<$wire>.Value, error) {
+			return <$wire>.NewValueI32(int32(<$v>)), nil
 		}
 
 		<$w := newVar "w">

@@ -12,14 +12,22 @@ type InternalError struct {
 	Message *string `json:"message,omitempty"`
 }
 
-func (v *InternalError) ToWire() wire.Value {
-	var fields [1]wire.Field
-	i := 0
+func (v *InternalError) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
 	if v.Message != nil {
-		fields[i] = wire.Field{ID: 1, Value: wire.NewValueString(*(v.Message))}
+		w, err = wire.NewValueString(*(v.Message)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *InternalError) FromWire(w wire.Value) error {
@@ -56,9 +64,9 @@ func (v *InternalError) Error() string {
 
 type Key string
 
-func (v Key) ToWire() wire.Value {
+func (v Key) ToWire() (wire.Value, error) {
 	x := (string)(v)
-	return wire.NewValueString(x)
+	return wire.NewValueString(x), error(nil)
 }
 
 func (v Key) String() string {

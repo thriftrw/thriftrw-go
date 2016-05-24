@@ -54,18 +54,26 @@ func TestQuickRoundTrip(t *testing.T) {
 	rand := rand.New(rand.NewSource(time.Now().UnixNano()))
 	attempts := 1000
 	for _, tt := range tests {
-		for i := 0; i < attempts; i++ {
+		i := 0
+		for i < attempts {
 			structValue, ok := quick.Value(tt, rand)
 			if !ok {
 				t.Fatalf("failed to generate a value for %v", tt)
 			}
 
-			wireValue := structValue.Addr().MethodByName("ToWire").Call(nil)
+			result := structValue.Addr().MethodByName("ToWire").Call(nil)
+			if result[1].Interface() != nil {
+				continue // invalid value generated
+			}
 
+			i++ // increment i only if we found a valid sample
+
+			wireValue := result[0]
 			parsedValue := reflect.New(tt)
-			result := parsedValue.MethodByName("FromWire").Call(wireValue)
+			result = parsedValue.MethodByName("FromWire").
+				Call([]reflect.Value{wireValue})
 			if result[0].Interface() != nil {
-				t.Fatal("failed to parse", tt, "from", wireValue[0].Interface())
+				t.Fatal("failed to parse", tt, "from", wireValue.Interface())
 			}
 
 			assert.Equal(t, structValue.Addr().Interface(), parsedValue.Interface())

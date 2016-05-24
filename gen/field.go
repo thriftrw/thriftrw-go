@@ -30,6 +30,11 @@ import (
 type fieldGroupGenerator struct {
 	Name   string
 	Fields compile.FieldGroup
+
+	// If this field group represents a union of values, exactly one field
+	// must be set for it to be valid.
+	IsUnion         bool
+	AllowEmptyUnion bool
 }
 
 func (f fieldGroupGenerator) Generate(g Generator) error {
@@ -81,57 +86,95 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 }
 
 func (f fieldGroupGenerator) ToWire(g Generator) error {
-	// TODO(abg): Default values
 	return g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 
 		<$v := newVar "v">
-		func (<$v> *<.Name>) ToWire() <$wire>.Value {
+		func (<$v> *<.Name>) ToWire() (<$wire>.Value, error) {
     		<$fields := newVar "fields">
     		<$i := newVar "i">
-			// TODO check if required fields that are reference types are nil
+			<$wVal := newVar "w">
 
-			var <$fields> [<len .Fields>]<$wire>.Field
-			<$i> := 0
+			var (
+					<$fields> [<len .Fields>]<$wire>.Field
+					<$i> int = 0
+				<if len .Fields>
+					<$wVal> <$wire>.Value
+					err error
+				<end>
+			)
 
+			<$structName := .Name>
 			<range .Fields>
 				<$f := printf "%s.%s" $v (goCase .Name)>
 				<if .Required>
-					<$wVal := toWire .Type $f>
-					<$fields>[<$i>] = <$wire>.Field{ID: <.ID>, Value: <$wVal>}
-					<$i>++
+					<if not (isPrimitiveType .Type)>
+						if <$f> == nil {
+							// TODO: Include names of all missing fields in
+							// the error message.
+							return <$wVal>, <import "errors">.New(
+								"field <goCase .Name> of <$structName> is required")
+						}
+					<end>
+						<$wVal>, err = <toWire .Type $f>
+						if err != nil {
+							// TODO: Nest the error inside a "failed to
+							// serialize field X of struct Y" error.
+							return <$wVal>, err
+						}
+						<$fields>[<$i>] = <$wire>.Field{
+							ID: <.ID>,
+							Value: <$wVal>,
+						}
+						<$i>++
 				<else>
 					<if .Default>
 						if <$f> == nil {
 							<$f> = <constantValuePtr .Default .Type>
 						}
-						<$fields>[<$i>] = <$wire>.Field{
-							ID: <.ID>,
-							Value: <toWirePtr .Type $f>,
-						}
-						<$i>++
+						{
 					<else>
 						if <$f> != nil {
+					<end>
+							<$wVal>, err = <toWirePtr .Type $f>
+							if err != nil {
+								// TODO: Nest the error inside a "failed to
+								// serialize field X of struct Y" error.
+								return <$wVal>, err
+							}
 							<$fields>[<$i>] = <$wire>.Field{
 								ID: <.ID>,
-								Value: <toWirePtr .Type $f>,
+								Value: <$wVal>,
 							}
 							<$i>++
 						}
-					<end>
+				<end>
+			<end>
+
+			<if and .IsUnion (len .Fields)>
+				<$fmt := import "fmt">
+				<if .AllowEmptyUnion>
+					if <$i> > 1 {
+						return <$wire>.Value{}, <$fmt>.Errorf(
+							"<.Name> should have at most one field: got %v fields", <$i>)
+					}
+				<else>
+					if <$i> != 1 {
+						return <$wire>.Value{}, <$fmt>.Errorf(
+							"<.Name> should have exactly one field: got %v fields", <$i>)
+					}
 				<end>
 			<end>
 
 			return <$wire>.NewValueStruct(
 				<$wire>.Struct{Fields: <$fields>[:<$i>]},
-			)
+			), nil
 		}
 		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))
 }
 
 func (f fieldGroupGenerator) FromWire(g Generator) error {
-	// TODO(abg): Default values
 	return g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
@@ -143,6 +186,14 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				var err error
 			<end>
 			<$f := newVar "field">
+
+			<$isSet := newNamespace>
+			<range .Fields>
+				<if .Required>
+					<$isSet.NewName (printf "%sIsSet" .Name)> := false
+				<end>
+			<end>
+
 			for _, <$f> := range <$w>.GetStruct().Fields {
 				switch <$f>.ID {
 				<range .Fields>
@@ -157,22 +208,55 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 						<end>
 						if err != nil {
 							return err
+							// TODO: Nest the error inside a "failed to read
+							// field X of struct Y" error.
 						}
+						<if .Required>
+							<$isSet.Rotate (printf "%sIsSet" .Name)> = true
+						<end>
 					}
 				<end>
 				}
 			}
 
+			<$structName := .Name>
 			<range .Fields>
 				<$f := printf "%s.%s" $v (goCase .Name)>
 				<if .Default>
 					if <$f> == nil {
 						<$f> = <constantValuePtr .Default .Type>
 					}
+				<else>
+					<if .Required>
+						if !<$isSet.Rotate (printf "%sIsSet" .Name)> {
+							return <import "errors">.New(
+								"field <goCase .Name> of <$structName> is required")
+						}
+						// TODO: Include names of all missing fields in the
+						// error message.
+					<end>
 				<end>
 			<end>
 
-			// TODO(abg): Check that all required fields were set.
+			<if and .IsUnion (len .Fields)>
+				<$fmt := import "fmt">
+				<$count := newVar "count">
+				<$count> := 0
+				<range .Fields>
+					if <$v>.<goCase .Name> != nil { <$count>++ }
+				<end>
+				<if .AllowEmptyUnion>
+					if <$count> > 1 {
+						return <$fmt>.Errorf(
+							"<.Name> should have at most one field: got %v fields", <$count>)
+					}
+				<else>
+					if <$count> != 1 {
+						return <$fmt>.Errorf(
+							"<.Name> should have exactly one field: got %v fields", <$count>)
+					}
+				<end>
+			<end>
 			return nil
 		}
 		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))

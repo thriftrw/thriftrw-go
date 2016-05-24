@@ -20,7 +20,11 @@ type _List_Key_ValueList []services.Key
 
 func (v _List_Key_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
-		err := f(x.ToWire())
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
 		if err != nil {
 			return err
 		}
@@ -31,14 +35,22 @@ func (v _List_Key_ValueList) ForEach(f func(wire.Value) error) error {
 func (v _List_Key_ValueList) Close() {
 }
 
-func (v *GetManyValuesArgs) ToWire() wire.Value {
-	var fields [1]wire.Field
-	i := 0
+func (v *GetManyValuesArgs) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
 	if v.Range != nil {
-		fields[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.Range), Items: _List_Key_ValueList(v.Range)})}
+		w, err = wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.Range), Items: _List_Key_ValueList(v.Range)}), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _List_Key_Read(l wire.List) ([]services.Key, error) {
@@ -101,7 +113,11 @@ type _List_ArbitraryValue_ValueList []*unions.ArbitraryValue
 
 func (v _List_ArbitraryValue_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
-		err := f(x.ToWire())
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
 		if err != nil {
 			return err
 		}
@@ -112,18 +128,33 @@ func (v _List_ArbitraryValue_ValueList) ForEach(f func(wire.Value) error) error 
 func (v _List_ArbitraryValue_ValueList) Close() {
 }
 
-func (v *GetManyValuesResult) ToWire() wire.Value {
-	var fields [2]wire.Field
-	i := 0
+func (v *GetManyValuesResult) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
 	if v.Success != nil {
-		fields[i] = wire.Field{ID: 0, Value: wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.Success), Items: _List_ArbitraryValue_ValueList(v.Success)})}
+		w, err = wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.Success), Items: _List_ArbitraryValue_ValueList(v.Success)}), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 0, Value: w}
 		i++
 	}
 	if v.DoesNotExist != nil {
-		fields[i] = wire.Field{ID: 1, Value: v.DoesNotExist.ToWire()}
+		w, err = v.DoesNotExist.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("GetManyValuesResult should have exactly one field: got %v fields", i)
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _ArbitraryValue_Read(w wire.Value) (*unions.ArbitraryValue, error) {
@@ -168,6 +199,16 @@ func (v *GetManyValuesResult) FromWire(w wire.Value) error {
 				}
 			}
 		}
+	}
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.DoesNotExist != nil {
+		count++
+	}
+	if count != 1 {
+		return fmt.Errorf("GetManyValuesResult should have exactly one field: got %v fields", count)
 	}
 	return nil
 }

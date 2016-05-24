@@ -56,13 +56,18 @@ func (s *setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, er
 			<$v := newVar "v">
 			<$x := newVar "x">
 			<$f := newVar "f">
+			<$w := newVar "w">
 			func (<$v> <.Name>) ForEach(<$f> func(<$wire>.Value) error) error {
 				<if isHashable .Spec.ValueSpec>
 					for <$x> := range <$v> {
 				<else>
 					for _, <$x> := range <$v> {
 				<end>
-						err := <$f>(<toWire .Spec.ValueSpec $x>)
+						<$w>, err := <toWire .Spec.ValueSpec $x>
+						if err != nil {
+							return err
+						}
+						err = <$f>(<$w>)
 						if err != nil {
 							return err
 						}

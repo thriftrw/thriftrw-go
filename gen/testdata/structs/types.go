@@ -3,6 +3,7 @@
 package structs
 
 import (
+	"errors"
 	"fmt"
 	"github.com/thriftrw/thriftrw-go/gen/testdata/enums"
 	"github.com/thriftrw/thriftrw-go/wire"
@@ -13,16 +14,25 @@ type ContactInfo struct {
 	EmailAddress string `json:"emailAddress"`
 }
 
-func (v *ContactInfo) ToWire() wire.Value {
-	var fields [1]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.EmailAddress)}
+func (v *ContactInfo) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueString(v.EmailAddress), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *ContactInfo) FromWire(w wire.Value) error {
 	var err error
+	emailAddressIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -31,8 +41,12 @@ func (v *ContactInfo) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				emailAddressIsSet = true
 			}
 		}
+	}
+	if !emailAddressIsSet {
+		return errors.New("field EmailAddress of ContactInfo is required")
 	}
 	return nil
 }
@@ -68,7 +82,11 @@ type _List_String_ValueList []string
 
 func (v _List_String_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
-		err := f(wire.NewValueString(x))
+		w, err := wire.NewValueString(x), error(nil)
+		if err != nil {
+			return err
+		}
+		err = f(w)
 		if err != nil {
 			return err
 		}
@@ -83,7 +101,11 @@ type _List_Double_ValueList []float64
 
 func (v _List_Double_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
-		err := f(wire.NewValueDouble(x))
+		w, err := wire.NewValueDouble(x), error(nil)
+		if err != nil {
+			return err
+		}
+		err = f(w)
 		if err != nil {
 			return err
 		}
@@ -94,50 +116,102 @@ func (v _List_Double_ValueList) ForEach(f func(wire.Value) error) error {
 func (v _List_Double_ValueList) Close() {
 }
 
-func (v *DefaultsStruct) ToWire() wire.Value {
-	var fields [8]wire.Field
-	i := 0
+func (v *DefaultsStruct) ToWire() (wire.Value, error) {
+	var (
+		fields [8]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
 	if v.RequiredPrimitive == nil {
 		v.RequiredPrimitive = _i32_ptr(100)
 	}
-	fields[i] = wire.Field{ID: 1, Value: wire.NewValueI32(*(v.RequiredPrimitive))}
-	i++
+	{
+		w, err = wire.NewValueI32(*(v.RequiredPrimitive)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
 	if v.OptionalPrimitive == nil {
 		v.OptionalPrimitive = _i32_ptr(200)
 	}
-	fields[i] = wire.Field{ID: 2, Value: wire.NewValueI32(*(v.OptionalPrimitive))}
-	i++
+	{
+		w, err = wire.NewValueI32(*(v.OptionalPrimitive)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
 	if v.RequiredEnum == nil {
 		v.RequiredEnum = _EnumDefault_ptr(enums.EnumDefaultBar)
 	}
-	fields[i] = wire.Field{ID: 3, Value: v.RequiredEnum.ToWire()}
-	i++
+	{
+		w, err = v.RequiredEnum.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
+		i++
+	}
 	if v.OptionalEnum == nil {
 		v.OptionalEnum = _EnumDefault_ptr(enums.EnumDefaultBaz)
 	}
-	fields[i] = wire.Field{ID: 4, Value: v.OptionalEnum.ToWire()}
-	i++
+	{
+		w, err = v.OptionalEnum.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 4, Value: w}
+		i++
+	}
 	if v.RequiredList == nil {
 		v.RequiredList = []string{"hello", "world"}
 	}
-	fields[i] = wire.Field{ID: 5, Value: wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.RequiredList), Items: _List_String_ValueList(v.RequiredList)})}
-	i++
+	{
+		w, err = wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.RequiredList), Items: _List_String_ValueList(v.RequiredList)}), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 5, Value: w}
+		i++
+	}
 	if v.OptionalList == nil {
 		v.OptionalList = []float64{1, 2, 3}
 	}
-	fields[i] = wire.Field{ID: 6, Value: wire.NewValueList(wire.List{ValueType: wire.TDouble, Size: len(v.OptionalList), Items: _List_Double_ValueList(v.OptionalList)})}
-	i++
+	{
+		w, err = wire.NewValueList(wire.List{ValueType: wire.TDouble, Size: len(v.OptionalList), Items: _List_Double_ValueList(v.OptionalList)}), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 6, Value: w}
+		i++
+	}
 	if v.RequiredStruct == nil {
 		v.RequiredStruct = &Frame{Size: &Size{Height: 200, Width: 100}, TopLeft: &Point{X: 1, Y: 2}}
 	}
-	fields[i] = wire.Field{ID: 7, Value: v.RequiredStruct.ToWire()}
-	i++
+	{
+		w, err = v.RequiredStruct.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
 	if v.OptionalStruct == nil {
 		v.OptionalStruct = &Edge{End: &Point{X: 3, Y: 4}, Start: &Point{X: 1, Y: 2}}
 	}
-	fields[i] = wire.Field{ID: 8, Value: v.OptionalStruct.ToWire()}
-	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	{
+		w, err = v.OptionalStruct.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
+		i++
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _EnumDefault_Read(w wire.Value) (enums.EnumDefault, error) {
@@ -332,14 +406,32 @@ type Edge struct {
 	End   *Point `json:"end"`
 }
 
-func (v *Edge) ToWire() wire.Value {
-	var fields [2]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: v.Start.ToWire()}
+func (v *Edge) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.Start == nil {
+		return w, errors.New("field Start of Edge is required")
+	}
+	w, err = v.Start.ToWire()
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 2, Value: v.End.ToWire()}
+	if v.End == nil {
+		return w, errors.New("field End of Edge is required")
+	}
+	w, err = v.End.ToWire()
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _Point_Read(w wire.Value) (*Point, error) {
@@ -350,6 +442,8 @@ func _Point_Read(w wire.Value) (*Point, error) {
 
 func (v *Edge) FromWire(w wire.Value) error {
 	var err error
+	startIsSet := false
+	endIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -358,6 +452,7 @@ func (v *Edge) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				startIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
@@ -365,8 +460,15 @@ func (v *Edge) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				endIsSet = true
 			}
 		}
+	}
+	if !startIsSet {
+		return errors.New("field Start of Edge is required")
+	}
+	if !endIsSet {
+		return errors.New("field End of Edge is required")
 	}
 	return nil
 }
@@ -383,10 +485,12 @@ func (v *Edge) String() string {
 
 type EmptyStruct struct{}
 
-func (v *EmptyStruct) ToWire() wire.Value {
-	var fields [0]wire.Field
-	i := 0
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+func (v *EmptyStruct) ToWire() (wire.Value, error) {
+	var (
+		fields [0]wire.Field
+		i      int = 0
+	)
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *EmptyStruct) FromWire(w wire.Value) error {
@@ -408,14 +512,32 @@ type Frame struct {
 	Size    *Size  `json:"size"`
 }
 
-func (v *Frame) ToWire() wire.Value {
-	var fields [2]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: v.TopLeft.ToWire()}
+func (v *Frame) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.TopLeft == nil {
+		return w, errors.New("field TopLeft of Frame is required")
+	}
+	w, err = v.TopLeft.ToWire()
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 2, Value: v.Size.ToWire()}
+	if v.Size == nil {
+		return w, errors.New("field Size of Frame is required")
+	}
+	w, err = v.Size.ToWire()
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _Size_Read(w wire.Value) (*Size, error) {
@@ -426,6 +548,8 @@ func _Size_Read(w wire.Value) (*Size, error) {
 
 func (v *Frame) FromWire(w wire.Value) error {
 	var err error
+	topLeftIsSet := false
+	sizeIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -434,6 +558,7 @@ func (v *Frame) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				topLeftIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
@@ -441,8 +566,15 @@ func (v *Frame) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				sizeIsSet = true
 			}
 		}
+	}
+	if !topLeftIsSet {
+		return errors.New("field TopLeft of Frame is required")
+	}
+	if !sizeIsSet {
+		return errors.New("field Size of Frame is required")
 	}
 	return nil
 }
@@ -465,7 +597,11 @@ type _List_Edge_ValueList []*Edge
 
 func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
-		err := f(x.ToWire())
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
 		if err != nil {
 			return err
 		}
@@ -476,12 +612,23 @@ func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
 func (v _List_Edge_ValueList) Close() {
 }
 
-func (v *Graph) ToWire() wire.Value {
-	var fields [1]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.Edges), Items: _List_Edge_ValueList(v.Edges)})}
+func (v *Graph) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.Edges == nil {
+		return w, errors.New("field Edges of Graph is required")
+	}
+	w, err = wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.Edges), Items: _List_Edge_ValueList(v.Edges)}), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _List_Edge_Read(l wire.List) ([]*Edge, error) {
@@ -503,6 +650,7 @@ func _List_Edge_Read(l wire.List) ([]*Edge, error) {
 
 func (v *Graph) FromWire(w wire.Value) error {
 	var err error
+	edgesIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -511,8 +659,12 @@ func (v *Graph) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				edgesIsSet = true
 			}
 		}
+	}
+	if !edgesIsSet {
+		return errors.New("field Edges of Graph is required")
 	}
 	return nil
 }
@@ -527,7 +679,7 @@ func (v *Graph) String() string {
 
 type List Node
 
-func (v *List) ToWire() wire.Value {
+func (v *List) ToWire() (wire.Value, error) {
 	x := (*Node)(v)
 	return x.ToWire()
 }
@@ -546,16 +698,28 @@ type Node struct {
 	Next  *List `json:"next,omitempty"`
 }
 
-func (v *Node) ToWire() wire.Value {
-	var fields [2]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: wire.NewValueI32(v.Value)}
+func (v *Node) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueI32(v.Value), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
 	if v.Next != nil {
-		fields[i] = wire.Field{ID: 2, Value: v.Next.ToWire()}
+		w, err = v.Next.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _List_Read(w wire.Value) (*List, error) {
@@ -566,6 +730,7 @@ func _List_Read(w wire.Value) (*List, error) {
 
 func (v *Node) FromWire(w wire.Value) error {
 	var err error
+	valueIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -574,6 +739,7 @@ func (v *Node) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				valueIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
@@ -583,6 +749,9 @@ func (v *Node) FromWire(w wire.Value) error {
 				}
 			}
 		}
+	}
+	if !valueIsSet {
+		return errors.New("field Value of Node is required")
 	}
 	return nil
 }
@@ -604,18 +773,32 @@ type Point struct {
 	Y float64 `json:"y"`
 }
 
-func (v *Point) ToWire() wire.Value {
-	var fields [2]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: wire.NewValueDouble(v.X)}
+func (v *Point) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueDouble(v.X), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 2, Value: wire.NewValueDouble(v.Y)}
+	w, err = wire.NewValueDouble(v.Y), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *Point) FromWire(w wire.Value) error {
 	var err error
+	xIsSet := false
+	yIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -624,6 +807,7 @@ func (v *Point) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				xIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TDouble {
@@ -631,8 +815,15 @@ func (v *Point) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				yIsSet = true
 			}
 		}
+	}
+	if !xIsSet {
+		return errors.New("field X of Point is required")
+	}
+	if !yIsSet {
+		return errors.New("field Y of Point is required")
 	}
 	return nil
 }
@@ -658,42 +849,78 @@ type PrimitiveOptionalStruct struct {
 	BinaryField []byte   `json:"binaryField"`
 }
 
-func (v *PrimitiveOptionalStruct) ToWire() wire.Value {
-	var fields [8]wire.Field
-	i := 0
+func (v *PrimitiveOptionalStruct) ToWire() (wire.Value, error) {
+	var (
+		fields [8]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
 	if v.BoolField != nil {
-		fields[i] = wire.Field{ID: 1, Value: wire.NewValueBool(*(v.BoolField))}
+		w, err = wire.NewValueBool(*(v.BoolField)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
 	if v.ByteField != nil {
-		fields[i] = wire.Field{ID: 2, Value: wire.NewValueI8(*(v.ByteField))}
+		w, err = wire.NewValueI8(*(v.ByteField)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
 	if v.Int16Field != nil {
-		fields[i] = wire.Field{ID: 3, Value: wire.NewValueI16(*(v.Int16Field))}
+		w, err = wire.NewValueI16(*(v.Int16Field)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
 		i++
 	}
 	if v.Int32Field != nil {
-		fields[i] = wire.Field{ID: 4, Value: wire.NewValueI32(*(v.Int32Field))}
+		w, err = wire.NewValueI32(*(v.Int32Field)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 4, Value: w}
 		i++
 	}
 	if v.Int64Field != nil {
-		fields[i] = wire.Field{ID: 5, Value: wire.NewValueI64(*(v.Int64Field))}
+		w, err = wire.NewValueI64(*(v.Int64Field)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 5, Value: w}
 		i++
 	}
 	if v.DoubleField != nil {
-		fields[i] = wire.Field{ID: 6, Value: wire.NewValueDouble(*(v.DoubleField))}
+		w, err = wire.NewValueDouble(*(v.DoubleField)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 6, Value: w}
 		i++
 	}
 	if v.StringField != nil {
-		fields[i] = wire.Field{ID: 7, Value: wire.NewValueString(*(v.StringField))}
+		w, err = wire.NewValueString(*(v.StringField)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 7, Value: w}
 		i++
 	}
 	if v.BinaryField != nil {
-		fields[i] = wire.Field{ID: 8, Value: wire.NewValueBinary(v.BinaryField)}
+		w, err = wire.NewValueBinary(v.BinaryField), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
@@ -824,30 +1051,77 @@ type PrimitiveRequiredStruct struct {
 	BinaryField []byte  `json:"binaryField"`
 }
 
-func (v *PrimitiveRequiredStruct) ToWire() wire.Value {
-	var fields [8]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: wire.NewValueBool(v.BoolField)}
+func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
+	var (
+		fields [8]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueBool(v.BoolField), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 2, Value: wire.NewValueI8(v.ByteField)}
+	w, err = wire.NewValueI8(v.ByteField), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 3, Value: wire.NewValueI16(v.Int16Field)}
+	w, err = wire.NewValueI16(v.Int16Field), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 3, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 4, Value: wire.NewValueI32(v.Int32Field)}
+	w, err = wire.NewValueI32(v.Int32Field), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 4, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 5, Value: wire.NewValueI64(v.Int64Field)}
+	w, err = wire.NewValueI64(v.Int64Field), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 5, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 6, Value: wire.NewValueDouble(v.DoubleField)}
+	w, err = wire.NewValueDouble(v.DoubleField), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 6, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 7, Value: wire.NewValueString(v.StringField)}
+	w, err = wire.NewValueString(v.StringField), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 7, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 8, Value: wire.NewValueBinary(v.BinaryField)}
+	if v.BinaryField == nil {
+		return w, errors.New("field BinaryField of PrimitiveRequiredStruct is required")
+	}
+	w, err = wire.NewValueBinary(v.BinaryField), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 8, Value: w}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	var err error
+	boolFieldIsSet := false
+	byteFieldIsSet := false
+	int16FieldIsSet := false
+	int32FieldIsSet := false
+	int64FieldIsSet := false
+	doubleFieldIsSet := false
+	stringFieldIsSet := false
+	binaryFieldIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -856,6 +1130,7 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				boolFieldIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TI8 {
@@ -863,6 +1138,7 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				byteFieldIsSet = true
 			}
 		case 3:
 			if field.Value.Type() == wire.TI16 {
@@ -870,6 +1146,7 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				int16FieldIsSet = true
 			}
 		case 4:
 			if field.Value.Type() == wire.TI32 {
@@ -877,6 +1154,7 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				int32FieldIsSet = true
 			}
 		case 5:
 			if field.Value.Type() == wire.TI64 {
@@ -884,6 +1162,7 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				int64FieldIsSet = true
 			}
 		case 6:
 			if field.Value.Type() == wire.TDouble {
@@ -891,6 +1170,7 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				doubleFieldIsSet = true
 			}
 		case 7:
 			if field.Value.Type() == wire.TBinary {
@@ -898,6 +1178,7 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				stringFieldIsSet = true
 			}
 		case 8:
 			if field.Value.Type() == wire.TBinary {
@@ -905,8 +1186,33 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				binaryFieldIsSet = true
 			}
 		}
+	}
+	if !boolFieldIsSet {
+		return errors.New("field BoolField of PrimitiveRequiredStruct is required")
+	}
+	if !byteFieldIsSet {
+		return errors.New("field ByteField of PrimitiveRequiredStruct is required")
+	}
+	if !int16FieldIsSet {
+		return errors.New("field Int16Field of PrimitiveRequiredStruct is required")
+	}
+	if !int32FieldIsSet {
+		return errors.New("field Int32Field of PrimitiveRequiredStruct is required")
+	}
+	if !int64FieldIsSet {
+		return errors.New("field Int64Field of PrimitiveRequiredStruct is required")
+	}
+	if !doubleFieldIsSet {
+		return errors.New("field DoubleField of PrimitiveRequiredStruct is required")
+	}
+	if !stringFieldIsSet {
+		return errors.New("field StringField of PrimitiveRequiredStruct is required")
+	}
+	if !binaryFieldIsSet {
+		return errors.New("field BinaryField of PrimitiveRequiredStruct is required")
 	}
 	return nil
 }
@@ -938,18 +1244,32 @@ type Size struct {
 	Height float64 `json:"height"`
 }
 
-func (v *Size) ToWire() wire.Value {
-	var fields [2]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: wire.NewValueDouble(v.Width)}
+func (v *Size) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueDouble(v.Width), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	fields[i] = wire.Field{ID: 2, Value: wire.NewValueDouble(v.Height)}
+	w, err = wire.NewValueDouble(v.Height), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *Size) FromWire(w wire.Value) error {
 	var err error
+	widthIsSet := false
+	heightIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -958,6 +1278,7 @@ func (v *Size) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				widthIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TDouble {
@@ -965,8 +1286,15 @@ func (v *Size) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				heightIsSet = true
 			}
 		}
+	}
+	if !widthIsSet {
+		return errors.New("field Width of Size is required")
+	}
+	if !heightIsSet {
+		return errors.New("field Height of Size is required")
 	}
 	return nil
 }
@@ -986,16 +1314,28 @@ type User struct {
 	Contact *ContactInfo `json:"contact,omitempty"`
 }
 
-func (v *User) ToWire() wire.Value {
-	var fields [2]wire.Field
-	i := 0
-	fields[i] = wire.Field{ID: 1, Value: wire.NewValueString(v.Name)}
+func (v *User) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueString(v.Name), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
 	if v.Contact != nil {
-		fields[i] = wire.Field{ID: 2, Value: v.Contact.ToWire()}
+		w, err = v.Contact.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]})
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
@@ -1006,6 +1346,7 @@ func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
 
 func (v *User) FromWire(w wire.Value) error {
 	var err error
+	nameIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -1014,6 +1355,7 @@ func (v *User) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+				nameIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
@@ -1023,6 +1365,9 @@ func (v *User) FromWire(w wire.Value) error {
 				}
 			}
 		}
+	}
+	if !nameIsSet {
+		return errors.New("field Name of User is required")
 	}
 	return nil
 }

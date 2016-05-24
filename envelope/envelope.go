@@ -32,15 +32,19 @@ import (
 type Enveloper interface {
 	MethodName() string
 	EnvelopeType() wire.EnvelopeType
-	ToWire() wire.Value
+	ToWire() (wire.Value, error)
 }
 
 // Write writes an Envelope to the given writer.
 func Write(p protocol.Protocol, w io.Writer, seqID int32, e Enveloper) error {
+	body, err := e.ToWire()
+	if err != nil {
+		return err
+	}
 	return p.EncodeEnveloped(wire.Envelope{
 		SeqID: seqID,
 		Name:  e.MethodName(),
 		Type:  e.EnvelopeType(),
-		Value: e.ToWire(),
+		Value: body,
 	}, w)
 }

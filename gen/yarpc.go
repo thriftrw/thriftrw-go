@@ -143,7 +143,12 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 						<$succ>,
 					<end>
 					err)
-				return <$result>.ToWire(), <$res>, err
+				<$w := $vars.NewName "w">
+				var <$w> <$wire>.Value
+				if err == nil {
+					<$w>, err = <$result>.ToWire()
+				}
+				return <$w>, <$res>, err
 			}
 		<end>
 		`,
@@ -221,8 +226,15 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 				<$res := $vars.Rotate "res">
 				<$body := $vars.NewName "body">
 
+				<$w := $vars.NewName "w">
+				var <$w> <$wire>.Value
+				<$w>, err = <$args>.ToWire()
+				if err != nil {
+					return
+				}
+
 				var <$body> <$wire>.Value
-				<$body>, <$res>, err = c.c.Call("<.Name>", <$req>, <$args>.ToWire())
+				<$body>, <$res>, err = c.c.Call("<.Name>", <$req>, <$w>)
 				if err != nil {
 					return
 				}

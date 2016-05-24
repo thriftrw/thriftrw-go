@@ -41,11 +41,8 @@ import (
 func TestServiceArgsAndResult(t *testing.T) {
 	tests := []struct {
 		desc string
-		x    interface {
-			ToWire() wire.Value
-			FromWire(wire.Value) error
-		}
-		v wire.Value
+		x    thriftType
+		v    wire.Value
 	}{
 		{
 			desc: "setValue args",
@@ -494,7 +491,131 @@ func TestServiceTypesEnveloper(t *testing.T) {
 
 		expected := tt.wantEnvelope
 		expected.SeqID = 1234
-		expected.Value = tt.s.ToWire()
-		assert.Equal(t, expected, envelope, "Envelope mismatch for %v", tt)
+		expected.Value, err = tt.s.ToWire()
+		if assert.NoError(t, err, "Error serializing %v", tt.s) {
+			assert.Equal(t, expected, envelope, "Envelope mismatch for %v", tt)
+		}
+	}
+}
+
+func TestArgsAndResultValidation(t *testing.T) {
+	tests := []struct {
+		desc        string
+		serialize   thriftType
+		deserialize wire.Value
+		typ         reflect.Type // must be set if serialize is not
+		wantError   string
+	}{
+		{
+			desc: "SetValue: args: value: empty",
+			serialize: keyvalue.SetValueHelper.Args(
+				(*tv.Key)(stringp("foo")),
+				&tu.ArbitraryValue{},
+			),
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("foo")},
+				{
+					ID:    2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+				},
+			}}),
+			wantError: "ArbitraryValue should have exactly one field: got 0 fields",
+		},
+		{
+			desc: "SetValueV2: args: missing value",
+			typ:  reflect.TypeOf(keyvalue.SetValueV2Args{}),
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueBool(true)},
+					}}),
+				},
+			}}),
+			wantError: "field Key of SetValueV2Args is required",
+		},
+		{
+			desc: "SetValueV2: args: missing key",
+			typ:  reflect.TypeOf(keyvalue.SetValueV2Args{}),
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("foo")},
+			}}),
+			wantError: "field Value of SetValueV2Args is required",
+		},
+		{
+			desc:        "getValue: result: empty",
+			serialize:   &keyvalue.GetValueResult{},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			wantError:   "GetValueResult should have exactly one field: got 0 fields",
+		},
+		{
+			desc: "getValue: result: multiple",
+			serialize: &keyvalue.GetValueResult{
+				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
+				Success:      &tu.ArbitraryValue{BoolValue: boolp(true)},
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 0,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueBool(true)},
+					}}),
+				},
+				{
+					ID: 1,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueString("foo")},
+					}}),
+				},
+			}}),
+			wantError: "GetValueResult should have exactly one field: got 2 fields",
+		},
+		{
+			desc: "deleteValue: result: multiple",
+			serialize: &keyvalue.DeleteValueResult{
+				DoesNotExist:  &tx.DoesNotExistException{Key: "foo"},
+				InternalError: &tv.InternalError{},
+			},
+			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{
+					ID: 1,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+						{ID: 1, Value: wire.NewValueString("foo")},
+					}}),
+				},
+				{
+					ID:    2,
+					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+				},
+			}}),
+			wantError: "DeleteValueResult should have at most one field: got 2 fields",
+		},
+	}
+
+	for _, tt := range tests {
+		var typ reflect.Type
+		if tt.serialize != nil {
+			typ = reflect.TypeOf(tt.serialize).Elem()
+			v, err := tt.serialize.ToWire()
+			if err == nil {
+				err = wire.EvaluateValue(v)
+			}
+			if assert.Error(t, err, "%v: expected failure but got %v", tt.desc, v) {
+				assert.Contains(t, err.Error(), tt.wantError, tt.desc)
+			}
+		} else {
+			typ = tt.typ
+		}
+
+		if typ == nil {
+			t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
+		}
+
+		x := reflect.New(typ)
+		args := []reflect.Value{reflect.ValueOf(tt.deserialize)}
+		e := x.MethodByName("FromWire").Call(args)[0].Interface()
+		if assert.NotNil(t, e, "%v: expected failure but got %v", tt.desc, x) {
+			assert.Contains(t, e.(error).Error(), tt.wantError, tt.desc)
+		}
 	}
 }

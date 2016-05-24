@@ -59,8 +59,9 @@ func (s *structGenerator) Reader(g Generator, spec *compile.StructSpec) (string,
 
 func structure(g Generator, spec *compile.StructSpec) error {
 	fg := fieldGroupGenerator{
-		Name:   goCase(spec.Name),
-		Fields: spec.Fields,
+		Name:    goCase(spec.Name),
+		Fields:  spec.Fields,
+		IsUnion: spec.Type == ast.UnionType,
 	}
 
 	if err := fg.Generate(g); err != nil {
@@ -81,7 +82,6 @@ func structure(g Generator, spec *compile.StructSpec) error {
 	}
 
 	return nil
-	// TODO(abg): JSON tags for generated structs
 	// TODO(abg): For all struct types, handle the case where fields are named
 	// ToWire or FromWire.
 	// TODO(abg): For exceptions, handle the case where a field is named

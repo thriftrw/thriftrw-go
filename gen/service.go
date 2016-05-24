@@ -88,8 +88,10 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 	resultFields = append(resultFields, f.ResultSpec.Exceptions...)
 
 	resultGen := fieldGroupGenerator{
-		Name:   goCase(f.Name) + "Result",
-		Fields: resultFields,
+		Name:            goCase(f.Name) + "Result",
+		Fields:          resultFields,
+		IsUnion:         true,
+		AllowEmptyUnion: f.ResultSpec.ReturnType == nil,
 	}
 	if err := resultGen.Generate(g); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
