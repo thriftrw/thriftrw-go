@@ -107,7 +107,7 @@ func (v *ArbitraryValue) ToWire() (wire.Value, error) {
 		i++
 	}
 	if i != 1 {
-		return wire.Value{}, fmt.Errorf("ArbitraryValue should receive exactly one field value: received %v values", i)
+		return wire.Value{}, fmt.Errorf("ArbitraryValue should have exactly one field: got %v fields", i)
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
@@ -223,7 +223,7 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 		count++
 	}
 	if count != 1 {
-		return fmt.Errorf("ArbitraryValue should receive exactly one field value: received %v values", count)
+		return fmt.Errorf("ArbitraryValue should have exactly one field: got %v fields", count)
 	}
 	return nil
 }
@@ -283,7 +283,7 @@ func (v *Document) ToWire() (wire.Value, error) {
 		i++
 	}
 	if i != 1 {
-		return wire.Value{}, fmt.Errorf("Document should receive exactly one field value: received %v values", i)
+		return wire.Value{}, fmt.Errorf("Document should have exactly one field: got %v fields", i)
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
@@ -324,7 +324,7 @@ func (v *Document) FromWire(w wire.Value) error {
 		count++
 	}
 	if count != 1 {
-		return fmt.Errorf("Document should receive exactly one field value: received %v values", count)
+		return fmt.Errorf("Document should have exactly one field: got %v fields", count)
 	}
 	return nil
 }

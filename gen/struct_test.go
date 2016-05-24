@@ -626,7 +626,7 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 				{ID: 1, Value: wire.NewValueBinary([]byte{1, 2, 3})},
 				{ID: 2, Value: wire.NewValueString("hello")},
 			}}),
-			failure: "should receive exactly one field value: received 2 values",
+			failure: "should have exactly one field: got 2 fields",
 		},
 		{
 			desc: "recognized and unrecognized fields",
@@ -650,12 +650,12 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 				{ID: 2, Value: wire.NewValueI32(42)}, // also a type mismatch
 				{ID: 3, Value: wire.NewValueString("hello")},
 			}}),
-			failure: "should receive exactly one field value: received 0 values",
+			failure: "should have exactly one field: got 0 fields",
 		},
 		{
 			desc:    "no fields",
 			input:   wire.NewValueStruct(wire.Struct{}),
-			failure: "should receive exactly one field value: received 0 values",
+			failure: "should have exactly one field: got 0 fields",
 		},
 	}
 
@@ -1276,7 +1276,7 @@ func TestStructValidation(t *testing.T) {
 			desc:        "Document: empty",
 			serialize:   &tu.Document{},
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
-			wantError:   "Document should receive exactly one field value: received 0 values",
+			wantError:   "Document should have exactly one field: got 0 fields",
 		},
 		{
 			desc: "Document: multiple",
@@ -1294,13 +1294,13 @@ func TestStructValidation(t *testing.T) {
 					Value: wire.NewValueString("hello"),
 				},
 			}}),
-			wantError: "Document should receive exactly one field value: received 2 values",
+			wantError: "Document should have exactly one field: got 2 fields",
 		},
 		{
 			desc:        "ArbitraryValue: empty",
 			serialize:   &tu.ArbitraryValue{},
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
-			wantError:   "ArbitraryValue should receive exactly one field value: received 0 values",
+			wantError:   "ArbitraryValue should have exactly one field: got 0 fields",
 		},
 		{
 			desc: "ArbitraryValue: primitives",
@@ -1314,7 +1314,7 @@ func TestStructValidation(t *testing.T) {
 				{ID: 2, Value: wire.NewValueI64(42)},
 				{ID: 3, Value: wire.NewValueString("")},
 			}}),
-			wantError: "ArbitraryValue should receive exactly one field value: received 3 values",
+			wantError: "ArbitraryValue should have exactly one field: got 3 fields",
 		},
 		{
 			desc: "ArbitraryValue: full",
@@ -1384,7 +1384,7 @@ func TestStructValidation(t *testing.T) {
 					}),
 				},
 			}}),
-			wantError: "ArbitraryValue should receive exactly one field value: received 5 values",
+			wantError: "ArbitraryValue should have exactly one field: got 5 fields",
 		},
 		{
 			desc: "ArbitraryValue: error inside a list",
@@ -1409,7 +1409,7 @@ func TestStructValidation(t *testing.T) {
 					}),
 				},
 			}}),
-			wantError: "ArbitraryValue should receive exactly one field value: received 0 values",
+			wantError: "ArbitraryValue should have exactly one field: got 0 fields",
 		},
 		{
 			desc: "ArbitraryValue: error inside a map value",
@@ -1441,7 +1441,7 @@ func TestStructValidation(t *testing.T) {
 					}),
 				},
 			}}),
-			wantError: "ArbitraryValue should receive exactly one field value: received 0 values",
+			wantError: "ArbitraryValue should have exactly one field: got 0 fields",
 		},
 		{
 			desc: "FrameGroup: error inside a set",

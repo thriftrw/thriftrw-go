@@ -104,7 +104,7 @@ func (v *DeleteValueResult) ToWire() (wire.Value, error) {
 		i++
 	}
 	if i > 1 {
-		return wire.Value{}, fmt.Errorf("DeleteValueResult should receive at most one field value: received %v values", i)
+		return wire.Value{}, fmt.Errorf("DeleteValueResult should have at most one field: got %v fields", i)
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
@@ -149,7 +149,7 @@ func (v *DeleteValueResult) FromWire(w wire.Value) error {
 		count++
 	}
 	if count > 1 {
-		return fmt.Errorf("DeleteValueResult should receive at most one field value: received %v values", count)
+		return fmt.Errorf("DeleteValueResult should have at most one field: got %v fields", count)
 	}
 	return nil
 }

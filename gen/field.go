@@ -157,12 +157,12 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 				<if .AllowEmptyUnion>
 					if <$i> > 1 {
 						return <$wire>.Value{}, <$fmt>.Errorf(
-							"<.Name> should receive at most one field value: received %v values", <$i>)
+							"<.Name> should have at most one field: got %v fields", <$i>)
 					}
 				<else>
 					if <$i> != 1 {
 						return <$wire>.Value{}, <$fmt>.Errorf(
-							"<.Name> should receive exactly one field value: received %v values", <$i>)
+							"<.Name> should have exactly one field: got %v fields", <$i>)
 					}
 				<end>
 			<end>
@@ -248,12 +248,12 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				<if .AllowEmptyUnion>
 					if <$count> > 1 {
 						return <$fmt>.Errorf(
-							"<.Name> should receive at most one field value: received %v values", <$count>)
+							"<.Name> should have at most one field: got %v fields", <$count>)
 					}
 				<else>
 					if <$count> != 1 {
 						return <$fmt>.Errorf(
-							"<.Name> should receive exactly one field value: received %v values", <$count>)
+							"<.Name> should have exactly one field: got %v fields", <$count>)
 					}
 				<end>
 			<end>

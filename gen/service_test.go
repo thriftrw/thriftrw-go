@@ -519,7 +519,7 @@ func TestArgsAndResultValidation(t *testing.T) {
 					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
 				},
 			}}),
-			wantError: "ArbitraryValue should receive exactly one field value: received 0 values",
+			wantError: "ArbitraryValue should have exactly one field: got 0 fields",
 		},
 		{
 			desc: "SetValueV2: args: missing value",
@@ -546,7 +546,7 @@ func TestArgsAndResultValidation(t *testing.T) {
 			desc:        "getValue: result: empty",
 			serialize:   &keyvalue.GetValueResult{},
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
-			wantError:   "GetValueResult should receive exactly one field value: received 0 values",
+			wantError:   "GetValueResult should have exactly one field: got 0 fields",
 		},
 		{
 			desc: "getValue: result: multiple",
@@ -568,7 +568,7 @@ func TestArgsAndResultValidation(t *testing.T) {
 					}}),
 				},
 			}}),
-			wantError: "GetValueResult should receive exactly one field value: received 2 values",
+			wantError: "GetValueResult should have exactly one field: got 2 fields",
 		},
 		{
 			desc: "deleteValue: result: multiple",
@@ -588,7 +588,7 @@ func TestArgsAndResultValidation(t *testing.T) {
 					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
 				},
 			}}),
-			wantError: "DeleteValueResult should receive at most one field value: received 2 values",
+			wantError: "DeleteValueResult should have at most one field: got 2 fields",
 		},
 	}
 
