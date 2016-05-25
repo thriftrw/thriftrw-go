@@ -21,6 +21,7 @@
 package gen
 
 import (
+	"fmt"
 	"testing"
 
 	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
@@ -129,5 +130,41 @@ func TestOptionalEnum(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.s, tt.v, "StructWithOptionalEnum")
+	}
+}
+
+func TestEnumString(t *testing.T) {
+	tests := []struct {
+		give fmt.Stringer
+		want string
+	}{
+		{
+			te.EmptyEnum(42),
+			"EmptyEnum(42)",
+		},
+		{
+			te.EnumDefaultFoo,
+			"Foo",
+		},
+		{
+			te.EnumDefault(-1),
+			"EnumDefault(-1)",
+		},
+		{
+			te.EnumWithDuplicateValuesP,
+			"P",
+		},
+		{
+			te.EnumWithDuplicateValuesR,
+			"P", // same value as P
+		},
+		{
+			te.EnumWithDuplicateValuesQ,
+			"Q",
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.want, tt.give.String())
 	}
 }
