@@ -46,13 +46,34 @@ func parseStruct(s string) *ast.Struct {
 
 func TestCompileStructSuccess(t *testing.T) {
 	tests := []struct {
-		src   string
-		scope Scope
-		spec  *StructSpec
+		src          string
+		scope        Scope
+		requiredness fieldRequiredness
+		spec         *StructSpec
 	}{
 		{
 			"struct Health { 1: optional bool healthy = true }",
 			nil,
+			explicitRequiredness,
+			&StructSpec{
+				Name: "Health",
+				File: "test.thrift",
+				Type: ast.StructType,
+				Fields: FieldGroup{
+					{
+						ID:       1,
+						Name:     "healthy",
+						Type:     BoolSpec,
+						Required: false,
+						Default:  ConstantBool(true),
+					},
+				},
+			},
+		},
+		{
+			"struct Health { 1: bool healthy = true }",
+			nil,
+			defaultToOptional,
 			&StructSpec{
 				Name: "Health",
 				File: "test.thrift",
@@ -74,6 +95,7 @@ func TestCompileStructSuccess(t *testing.T) {
 				2: optional Key key
 			}`,
 			scope("Key", &TypedefSpec{Name: "Key", Target: StringSpec}),
+			explicitRequiredness,
 			&StructSpec{
 				Name: "KeyNotFoundError",
 				File: "test.thrift",
@@ -100,6 +122,7 @@ func TestCompileStructSuccess(t *testing.T) {
 				5678: binary richText
 			}`,
 			nil,
+			explicitRequiredness,
 			&StructSpec{
 				Name: "Body",
 				File: "test.thrift",
@@ -126,7 +149,7 @@ func TestCompileStructSuccess(t *testing.T) {
 		expected := mustLink(t, tt.spec, scope())
 
 		src := parseStruct(tt.src)
-		structSpec, err := compileStruct("test.thrift", src)
+		structSpec, err := compileStruct("test.thrift", src, tt.requiredness)
 		scope := scopeOrDefault(tt.scope)
 		if assert.NoError(t, err) {
 			spec, err := structSpec.Link(scope)
@@ -199,7 +222,7 @@ func TestCompileStructFailure(t *testing.T) {
 
 	for _, tt := range tests {
 		src := parseStruct(tt.src)
-		_, err := compileStruct("test.thrift", src)
+		_, err := compileStruct("test.thrift", src, explicitRequiredness)
 
 		if assert.Error(t, err, tt.desc) {
 			for _, msg := range tt.messages {
@@ -240,7 +263,7 @@ func TestLinkStructFailure(t *testing.T) {
 		src := parseStruct(tt.src)
 		scope := scopeOrDefault(tt.scope)
 
-		spec, err := compileStruct("test.thrift", src)
+		spec, err := compileStruct("test.thrift", src, explicitRequiredness)
 		if assert.NoError(t, err, tt.desc) {
 			_, err := spec.Link(scope)
 			if assert.Error(t, err, tt.desc) {

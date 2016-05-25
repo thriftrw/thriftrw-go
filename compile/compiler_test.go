@@ -84,3 +84,27 @@ func TestCompile(t *testing.T) {
 	require.NoError(t, err, "Lookup KeyValue failed")
 	require.NotNil(t, kvSvc, "KeyValue service is nil")
 }
+
+func TestCompileNonStrict(t *testing.T) {
+	files := map[string]string{
+		"/some/prefix/main.thrift": `
+			struct S {
+				1: string uuid;
+			}
+		`,
+	}
+
+	fs := dummyFS{"/some/prefix/", files}
+
+	module, err := Compile("main.thrift", Filesystem(fs), NonStrict())
+	require.NoError(t, err, "Compile failed")
+
+	sType, err := module.LookupType("S")
+	require.NoError(t, err, "Lookup S failed")
+	require.NotNil(t, sType, "Type S is nil")
+	assert.Equal(t, wire.TStruct, sType.TypeCode(), "Type mismatch")
+
+	uuidField, err := sType.(*StructSpec).Fields.FindByName("uuid")
+	require.NoError(t, err, "Failed to find UUID field in struct")
+	assert.False(t, uuidField.Required, "Unspecified requiredness should be treated as optional")
+}

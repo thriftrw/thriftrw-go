@@ -56,6 +56,8 @@ func Compile(path string, opts ...Option) (*Module, error) {
 type compiler struct {
 	// fs is the interface used to interact with the filesystem.
 	fs FS
+	// nonStrict will compile Thrift files that do not pass strict validation.
+	nonStrict bool
 	// Map from file path to Module representing that file.
 	Modules map[string]*Module
 }
@@ -208,7 +210,11 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 			}
 			m.Types[enum.ThriftName()] = enum
 		case *ast.Struct:
-			s, err := compileStruct(m.ThriftPath, definition)
+			requiredness := explicitRequiredness
+			if c.nonStrict {
+				requiredness = defaultToOptional
+			}
+			s, err := compileStruct(m.ThriftPath, definition, requiredness)
 			if err != nil {
 				return definitionError{Definition: d, Reason: err}
 			}

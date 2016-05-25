@@ -54,3 +54,11 @@ func Filesystem(fs FS) Option {
 		c.fs = fs
 	}
 }
+
+// NonStrict disables strict validation of the Thrift file. This allows
+// struct fields which are not marked as optional or required.
+func NonStrict() Option {
+	return func(c *compiler) {
+		c.nonStrict = true
+	}
+}
