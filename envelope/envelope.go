@@ -21,11 +21,15 @@
 package envelope
 
 import (
+	"fmt"
 	"io"
 
+	"github.com/thriftrw/thriftrw-go/envelope/internal/exception"
 	"github.com/thriftrw/thriftrw-go/protocol"
 	"github.com/thriftrw/thriftrw-go/wire"
 )
+
+//go:generate thriftrw-go -out internal exception.thrift
 
 // Enveloper is the interface implemented by a type that can be written with
 // an envelope.
@@ -47,4 +51,27 @@ func Write(p protocol.Protocol, w io.Writer, seqID int32, e Enveloper) error {
 		Type:  e.EnvelopeType(),
 		Value: body,
 	}, w)
+}
+
+// ReadReply reads enveloped responses from the given reader.
+func ReadReply(p protocol.Protocol, r io.ReaderAt) (_ wire.Value, seqID int32, _ error) {
+	envelope, err := p.DecodeEnveloped(r)
+	if err != nil {
+		return wire.Value{}, 0, err
+	}
+
+	switch {
+	case envelope.Type == wire.Reply:
+		return envelope.Value, envelope.SeqID, nil
+	case envelope.Type != wire.Exception:
+		return envelope.Value, envelope.SeqID, fmt.Errorf("unknown envelope type for reply, got %v", envelope.Type)
+	}
+
+	// Decode the exception payload.
+	ex := &exception.TApplicationException{}
+	if err := ex.FromWire(envelope.Value); err != nil {
+		return envelope.Value, envelope.SeqID, fmt.Errorf("failed to decode exception: %v", err)
+	}
+
+	return envelope.Value, envelope.SeqID, ex
 }
