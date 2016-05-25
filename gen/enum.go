@@ -55,16 +55,18 @@ func (e *enumGenerator) Reader(g Generator, spec *compile.EnumSpec) (string, err
 }
 
 func enum(g Generator, spec *compile.EnumSpec) error {
+	items := enumUniqueItems(spec.Items)
+
 	// TODO(abg) define an error type in the library for unrecognized enums.
 	err := g.DeclareFromTemplate(
 		`
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
 
-		<$enumName := typeName .>
+		<$enumName := typeName .Spec>
 		type <$enumName> int32
 
 		const (
-		<range .Items>
+		<range .Spec.Items>
 			<$enumName><goCase .Name> <$enumName> = <.Value>
 		<end>
 		)
@@ -79,9 +81,42 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			*<$v> = (<$enumName>)(<$w>.GetI32());
 			return nil
 		}
+
+		func (<$v> <$enumName>) String() string {
+			<$w> := int32(<$v>)
+			<if len .Spec.Items>
+				switch <$w> {
+				<range .UniqueItems>
+					case <.Value>:
+						return "<goCase .Name>"
+				<end>
+				}
+			<end>
+			return fmt.Sprintf("<$enumName>(%d)", <$w>)
+		}
 		`,
-		spec,
-	)
+		struct {
+			Spec        *compile.EnumSpec
+			UniqueItems []compile.EnumItem
+		}{
+			Spec:        spec,
+			UniqueItems: items,
+		})
 
 	return wrapGenerateError(spec.Name, err)
+}
+
+// enumUniqueItems returns a subset of the given list of enum items where
+// there are no value collisions between items.
+func enumUniqueItems(items []compile.EnumItem) []compile.EnumItem {
+	used := make(map[int32]struct{}, len(items))
+	filtered := items[:0] // zero-alloc filtering
+	for _, i := range items {
+		if _, isUsed := used[i.Value]; isUsed {
+			continue
+		}
+		filtered = append(filtered, i)
+		used[i.Value] = struct{}{}
+	}
+	return filtered
 }

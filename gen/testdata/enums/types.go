@@ -21,6 +21,11 @@ func (v *EmptyEnum) FromWire(w wire.Value) error {
 	return nil
 }
 
+func (v EmptyEnum) String() string {
+	w := int32(v)
+	return fmt.Sprintf("EmptyEnum(%d)", w)
+}
+
 type EnumDefault int32
 
 const (
@@ -36,6 +41,19 @@ func (v EnumDefault) ToWire() (wire.Value, error) {
 func (v *EnumDefault) FromWire(w wire.Value) error {
 	*v = (EnumDefault)(w.GetI32())
 	return nil
+}
+
+func (v EnumDefault) String() string {
+	w := int32(v)
+	switch w {
+	case 0:
+		return "Foo"
+	case 1:
+		return "Bar"
+	case 2:
+		return "Baz"
+	}
+	return fmt.Sprintf("EnumDefault(%d)", w)
 }
 
 type EnumWithDuplicateName int32
@@ -61,6 +79,31 @@ func (v *EnumWithDuplicateName) FromWire(w wire.Value) error {
 	return nil
 }
 
+func (v EnumWithDuplicateName) String() string {
+	w := int32(v)
+	switch w {
+	case 0:
+		return "A"
+	case 1:
+		return "B"
+	case 2:
+		return "C"
+	case 3:
+		return "P"
+	case 4:
+		return "Q"
+	case 5:
+		return "R"
+	case 6:
+		return "X"
+	case 7:
+		return "Y"
+	case 8:
+		return "Z"
+	}
+	return fmt.Sprintf("EnumWithDuplicateName(%d)", w)
+}
+
 type EnumWithDuplicateValues int32
 
 const (
@@ -78,6 +121,17 @@ func (v *EnumWithDuplicateValues) FromWire(w wire.Value) error {
 	return nil
 }
 
+func (v EnumWithDuplicateValues) String() string {
+	w := int32(v)
+	switch w {
+	case 0:
+		return "P"
+	case -1:
+		return "Q"
+	}
+	return fmt.Sprintf("EnumWithDuplicateValues(%d)", w)
+}
+
 type EnumWithValues int32
 
 const (
@@ -93,6 +147,19 @@ func (v EnumWithValues) ToWire() (wire.Value, error) {
 func (v *EnumWithValues) FromWire(w wire.Value) error {
 	*v = (EnumWithValues)(w.GetI32())
 	return nil
+}
+
+func (v EnumWithValues) String() string {
+	w := int32(v)
+	switch w {
+	case 123:
+		return "X"
+	case 456:
+		return "Y"
+	case 789:
+		return "Z"
+	}
+	return fmt.Sprintf("EnumWithValues(%d)", w)
 }
 
 type StructWithOptionalEnum struct {
