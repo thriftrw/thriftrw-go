@@ -42,7 +42,7 @@ func main() {
 	var packagePrefix string
 	flag.StringVar(
 		&packagePrefix, "pkg-prefix", "",
-		"Prefix for import paths of generated modules. By default, this is"+
+		"Prefix for import paths of generated modules. By default, this is "+
 			"based on the output directory's location relative to $GOPATH.")
 
 	var thriftRoot string
