@@ -69,46 +69,43 @@ func ConstantValue(g Generator, c compile.ConstantValue, t compile.TypeSpec) (st
 	}
 }
 
-func constantBool(g Generator, v compile.ConstantBool, t compile.TypeSpec) (string, error) {
+func castConstant(g Generator, t compile.TypeSpec, s string) (string, error) {
+	n, err := typeName(g, t)
+	if err != nil {
+		return "", err
+	}
+	s = fmt.Sprintf("%v(%v)", n, s)
+	return s, nil
+}
+
+func constantBool(g Generator, v compile.ConstantBool, t compile.TypeSpec) (_ string, err error) {
 	s := "false"
 	if v {
 		s = "true"
 	}
 	if t != compile.BoolSpec {
-		n, err := typeName(g, t)
-		if err != nil {
-			return "", err
-		}
-		s = fmt.Sprintf("%v(%v)", n, s)
+		s, err = castConstant(g, t, s)
 	}
-	return s, nil
+	return s, err
 }
 
-func constantDouble(g Generator, v compile.ConstantDouble, t compile.TypeSpec) (string, error) {
+func constantDouble(g Generator, v compile.ConstantDouble, t compile.TypeSpec) (_ string, err error) {
 	s := fmt.Sprint(float64(v))
 	if t != compile.DoubleSpec {
-		n, err := typeName(g, t)
-		if err != nil {
-			return "", err
-		}
-		s = fmt.Sprintf("%v(%v)", n, s)
+		s, err = castConstant(g, t, s)
 	}
-	return s, nil
+	return s, err
 }
 
-func constantInt(g Generator, v compile.ConstantInt, t compile.TypeSpec) (string, error) {
+func constantInt(g Generator, v compile.ConstantInt, t compile.TypeSpec) (_ string, err error) {
 	s := fmt.Sprint(int(v))
 	switch t {
 	case compile.I8Spec, compile.I16Spec, compile.I32Spec, compile.I64Spec:
 		// do nothing
 	default:
-		n, err := typeName(g, t)
-		if err != nil {
-			return "", err
-		}
-		s = fmt.Sprintf("%v(%v)", n, s)
+		s, err = castConstant(g, t, s)
 	}
-	return s, nil
+	return s, err
 }
 
 func constantList(g Generator, v compile.ConstantList, t compile.TypeSpec) (string, error) {
@@ -202,19 +199,15 @@ func constantStruct(g Generator, v *compile.ConstantStruct, t compile.TypeSpec) 
 	)
 }
 
-func enumItemReference(g Generator, v compile.EnumItemReference, t compile.TypeSpec) (string, error) {
+func enumItemReference(g Generator, v compile.EnumItemReference, t compile.TypeSpec) (_ string, err error) {
 	s, err := g.TextTemplate(`<typeName .Enum><goCase .Item.Name>`, v)
 	if err != nil {
 		return "", err
 	}
 	if t != v.Enum {
-		n, err := typeName(g, t)
-		if err != nil {
-			return "", err
-		}
-		s = fmt.Sprintf("%v(%v)", n, s)
+		s, err = castConstant(g, t, s)
 	}
-	return s, nil
+	return s, err
 }
 
 // ConstantValuePtr generates an expression which is a pointer to a value of
