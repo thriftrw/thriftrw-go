@@ -61,7 +61,7 @@ func TestResolveBaseType(t *testing.T) {
 
 	for _, tt := range tests {
 		spec := compileTypeReference(tt.input)
-		linked, err := spec.Link(scope())
+		linked, err := spec.Link(defaultScope)
 
 		assert.NoError(t, err)
 		assert.Equal(t, tt.wireType, spec.TypeCode())
@@ -100,7 +100,7 @@ func TestLinkTypeReference(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		expected := mustLink(t, tt.expected, scope())
+		expected := mustLink(t, tt.expected, defaultScope)
 		scope := scopeOrDefault(tt.scope)
 
 		spec, err := typeSpecReference(ast.TypeReference{Name: tt.name}).Link(scope)
@@ -233,7 +233,7 @@ func TestRootTypeSpec(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		give, err := tt.give.Link(scope())
+		give, err := tt.give.Link(defaultScope)
 		if !assert.NoError(t, err, "%v: failed to link", tt.desc) {
 			continue
 		}
@@ -243,7 +243,7 @@ func TestRootTypeSpec(t *testing.T) {
 			assert.Equal(t, give, RootTypeSpec(spec), "%v: level %d", tt.desc, i)
 
 			spec = &TypedefSpec{Name: fmt.Sprintf("foo%d", i), Target: spec}
-			spec, err = spec.Link(scope())
+			spec, err = spec.Link(defaultScope)
 			if !assert.NoError(t, err, "%v: failed to link level %d", tt.desc, i) {
 				break
 			}

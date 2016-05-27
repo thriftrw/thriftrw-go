@@ -20,6 +20,8 @@
 
 package compile
 
+import "fmt"
+
 // Scope represents a queryable compilation scope.
 //
 // All Lookup methods must only return types defined in this scope. References
@@ -48,4 +50,29 @@ func getIncludedScope(scope Scope, name string) (Scope, error) {
 		return nil, unrecognizedModuleError{Name: name, Reason: err}
 	}
 	return included, nil
+}
+
+// EmptyScope returns a Scope that fails all lookups.
+func EmptyScope(name string) Scope {
+	return emptyScope{name}
+}
+
+type emptyScope struct{ name string }
+
+func (e emptyScope) GetName() string { return e.name }
+
+func (emptyScope) LookupType(name string) (TypeSpec, error) {
+	return nil, fmt.Errorf("unknown type: %v", name)
+}
+
+func (emptyScope) LookupService(name string) (*ServiceSpec, error) {
+	return nil, fmt.Errorf("unknown service: %v", name)
+}
+
+func (emptyScope) LookupConstant(name string) (*Constant, error) {
+	return nil, fmt.Errorf("unknown constant: %v", name)
+}
+
+func (emptyScope) LookupInclude(name string) (Scope, error) {
+	return nil, fmt.Errorf("unknown include: %v", name)
 }

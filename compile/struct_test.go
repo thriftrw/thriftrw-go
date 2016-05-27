@@ -146,7 +146,7 @@ func TestCompileStructSuccess(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		expected := mustLink(t, tt.spec, scope())
+		expected := mustLink(t, tt.spec, defaultScope)
 
 		src := parseStruct(tt.src)
 		structSpec, err := compileStruct("test.thrift", src, tt.requiredness)

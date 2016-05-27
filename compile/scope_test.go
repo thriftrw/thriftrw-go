@@ -22,6 +22,8 @@ package compile
 
 import "fmt"
 
+var defaultScope = EmptyScope("fake")
+
 // fakeScope is an implementation of Scope for testing. Instances may be
 // constructed easily with the scope() function.
 type fakeScope struct {
@@ -68,7 +70,7 @@ func (s fakeScope) LookupInclude(name string) (Scope, error) {
 // empty scope if the given scope was nil.
 func scopeOrDefault(s Scope) Scope {
 	if s == nil {
-		s = scope()
+		s = defaultScope
 	}
 	return s
 }

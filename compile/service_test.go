@@ -186,7 +186,7 @@ func TestCompileService(t *testing.T) {
 
 	for _, tt := range tests {
 		require.NoError(
-			t, tt.spec.Link(scope()),
+			t, tt.spec.Link(defaultScope),
 			"invalid test: service must with an empty scope",
 		)
 		scope := scopeOrDefault(tt.scope)

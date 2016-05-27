@@ -58,7 +58,7 @@ func TestCompileList(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		output := mustLink(t, tt.output, scope())
+		output := mustLink(t, tt.output, defaultScope)
 
 		scope := scopeOrDefault(tt.scope)
 		spec, err := compileTypeReference(tt.input).Link(scope)
@@ -81,7 +81,7 @@ func TestLinkListFailure(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		_, err := compileTypeReference(tt.input).Link(scope())
+		_, err := compileTypeReference(tt.input).Link(defaultScope)
 		if assert.Error(t, err) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg)
@@ -115,7 +115,7 @@ func TestCompileMap(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		output := mustLink(t, tt.output, scope())
+		output := mustLink(t, tt.output, defaultScope)
 
 		scope := scopeOrDefault(tt.scope)
 		spec, err := compileTypeReference(tt.input).Link(scope)
@@ -148,7 +148,7 @@ func TestLinkMapFailure(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		_, err := compileTypeReference(tt.input).Link(scope())
+		_, err := compileTypeReference(tt.input).Link(defaultScope)
 		if assert.Error(t, err) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg)
@@ -173,7 +173,7 @@ func TestCompileSet(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		output := mustLink(t, tt.output, scope())
+		output := mustLink(t, tt.output, defaultScope)
 
 		scope := scopeOrDefault(tt.scope)
 		spec, err := compileTypeReference(tt.input).Link(scope)
@@ -196,7 +196,7 @@ func TestLinkSetFailure(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		_, err := compileTypeReference(tt.input).Link(scope())
+		_, err := compileTypeReference(tt.input).Link(defaultScope)
 		if assert.Error(t, err) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg)
