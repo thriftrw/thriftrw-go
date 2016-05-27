@@ -134,7 +134,7 @@ func TestFindTypeCycles(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		typ := mustLink(t, tt.typ, scope())
+		typ := mustLink(t, tt.typ, defaultScope)
 
 		err := findTypeCycles(typ)
 		if len(tt.msgs) > 0 {

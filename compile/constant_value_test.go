@@ -95,7 +95,7 @@ func TestLinkConstantReference(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		expected, err := tt.expected.Link(scope(), tt.typ)
+		expected, err := tt.expected.Link(defaultScope, tt.typ)
 		require.NoError(t, err, "Test constant value must link without errors")
 
 		scope := scopeOrDefault(tt.scope)
@@ -374,11 +374,11 @@ func TestCastConstants(t *testing.T) {
 
 	for _, tt := range tests {
 		var err error
-		tt.typ, err = tt.typ.Link(scope())
+		tt.typ, err = tt.typ.Link(defaultScope)
 		require.NoError(t, err, "'typ' must link without errors")
 
 		if tt.want != nil {
-			tt.want, err = tt.want.Link(scope(), tt.typ)
+			tt.want, err = tt.want.Link(defaultScope, tt.typ)
 			require.NoError(t, err, "'want' must link without errors")
 		}
 

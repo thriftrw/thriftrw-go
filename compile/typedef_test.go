@@ -82,7 +82,7 @@ func TestCompileTypedef(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		expected := mustLink(t, tt.spec, scope())
+		expected := mustLink(t, tt.spec, defaultScope)
 
 		src := parseTypedef(tt.src)
 		typedefSpec := compileTypedef("test.thrift", src)

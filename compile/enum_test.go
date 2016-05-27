@@ -115,13 +115,13 @@ func TestCompileEnumSuccess(t *testing.T) {
 		src := parseEnum(tt.src)
 		enumspec, err := compileEnum("test.thrift", src)
 		if assert.NoError(t, err) {
-			spec, err := enumspec.Link(scope())
+			spec, err := enumspec.Link(defaultScope)
 			assert.NoError(t, err)
 			assert.Equal(t, wire.TI32, spec.TypeCode())
 			assert.Equal(t, tt.spec, spec)
 
 			// compiling twice should not error
-			spec, err = spec.Link(scope())
+			spec, err = spec.Link(defaultScope)
 			assert.NoError(t, err)
 		}
 	}
