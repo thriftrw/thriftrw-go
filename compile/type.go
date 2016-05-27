@@ -53,6 +53,17 @@ type TypeSpec interface {
 	ForEachTypeReference(func(TypeSpec) error) error
 }
 
+// RootTypeSpec returns the TypeSpec that the given linked TypeSpec points to.
+//
+// For most types, this is the type itself. For Typedefs, it is the root
+// TypeSpec of the Typedef's target.
+func RootTypeSpec(s TypeSpec) TypeSpec {
+	if t, ok := s.(*TypedefSpec); ok {
+		return t.root
+	}
+	return s
+}
+
 // nativeThriftType is the common parent for all TypeSpecs that are native
 // Thrift types.
 type nativeThriftType struct{}
