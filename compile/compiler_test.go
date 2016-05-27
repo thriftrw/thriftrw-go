@@ -21,8 +21,6 @@
 package compile
 
 import (
-	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -30,26 +28,6 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/thriftrw/thriftrw-go/wire"
 )
-
-type dummyFS struct {
-	prefix string
-	files  map[string]string
-}
-
-func (fs dummyFS) Abs(p string) (string, error) {
-	if strings.HasPrefix(p, "/") {
-		return p, nil
-	}
-	return fs.prefix + p, nil
-}
-
-func (fs dummyFS) Read(path string) ([]byte, error) {
-	if contents, ok := fs.files[path]; ok {
-		return []byte(contents), nil
-	}
-
-	return nil, fmt.Errorf("file not found: %v", path)
-}
 
 func TestFilesystem(t *testing.T) {
 	files := map[string]string{
