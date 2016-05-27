@@ -241,6 +241,7 @@ func (w *WireGenerator) FromWirePtr(g Generator, spec compile.TypeSpec, lhs stri
 // over-the-wire type code for the given TypeSpec.
 func TypeCode(g Generator, spec compile.TypeSpec) string {
 	wire := g.Import("github.com/thriftrw/thriftrw-go/wire")
+	spec = compile.RootTypeSpec(spec)
 
 	switch spec {
 	case compile.BoolSpec:
@@ -261,15 +262,13 @@ func TypeCode(g Generator, spec compile.TypeSpec) string {
 		// Not a primitive type
 	}
 
-	switch s := spec.(type) {
+	switch spec.(type) {
 	case *compile.MapSpec:
 		return fmt.Sprintf("%s.TMap", wire)
 	case *compile.ListSpec:
 		return fmt.Sprintf("%s.TList", wire)
 	case *compile.SetSpec:
 		return fmt.Sprintf("%s.TSet", wire)
-	case *compile.TypedefSpec:
-		return TypeCode(g, s.Target)
 	case *compile.EnumSpec:
 		return fmt.Sprintf("%s.TI32", wire)
 	case *compile.StructSpec:

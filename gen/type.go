@@ -42,62 +42,52 @@ func TypeDefinition(g Generator, spec compile.TypeSpec) error {
 
 // isHashable returns true if the given type is considered hashable by
 // thriftrw-go.
+//
+// Only primitive types, enums, and typedefs of other hashable types are
+// considered hashable.
 func isHashable(t compile.TypeSpec) bool {
-	// Only primitive types are hashable
 	return isPrimitiveType(t)
 }
 
-// isPrimitiveType returns true if the given type is a primitive type. Only
-// primitive types are considered hashable.
+// isPrimitiveType returns true if the given type is a primitive type.
+// Primitive types, enums, and typedefs of primitive types are considered
+// primitive.
 //
 // Note that binary is not considered a primitive type because it is
 // represented as []byte in Go.
 func isPrimitiveType(spec compile.TypeSpec) bool {
+	spec = compile.RootTypeSpec(spec)
 	switch spec {
 	case compile.BoolSpec, compile.I8Spec, compile.I16Spec, compile.I32Spec,
 		compile.I64Spec, compile.DoubleSpec, compile.StringSpec:
 		return true
 	}
 
-	switch s := spec.(type) {
-	case *compile.EnumSpec:
-		return true
-	case *compile.TypedefSpec:
-		return isPrimitiveType(s.Target)
-	}
-
-	return false
+	_, isEnum := spec.(*compile.EnumSpec)
+	return isEnum
 }
 
 // isReferenceType checks if the given TypeSpec represents a reference type.
 //
 // Sets, maps, lists, and slices are reference types.
 func isReferenceType(spec compile.TypeSpec) bool {
+	spec = compile.RootTypeSpec(spec)
 	if spec == compile.BinarySpec {
 		return true
 	}
 
-	switch s := spec.(type) {
-	case *compile.MapSpec,
-		*compile.ListSpec,
-		*compile.SetSpec:
+	switch spec.(type) {
+	case *compile.MapSpec, *compile.ListSpec, *compile.SetSpec:
 		return true
-	case *compile.TypedefSpec:
-		return isReferenceType(s.Target)
 	default:
 		return false
 	}
 }
 
 func isStructType(spec compile.TypeSpec) bool {
-	switch s := spec.(type) {
-	case *compile.StructSpec:
-		return true
-	case *compile.TypedefSpec:
-		return isStructType(s.Target)
-	default:
-		return false
-	}
+	spec = compile.RootTypeSpec(spec)
+	_, isStruct := spec.(*compile.StructSpec)
+	return isStruct
 }
 
 // typeReference returns a string representation of a reference to the given

@@ -21,6 +21,7 @@
 package compile
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -158,6 +159,93 @@ func TestLinkTypeReferenceFailure(t *testing.T) {
 		if assert.Error(t, err, tt.desc) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg, tt.desc)
+			}
+		}
+	}
+}
+
+func TestRootTypeSpec(t *testing.T) {
+	tests := []struct {
+		desc string
+		give TypeSpec
+	}{
+		// Primitives
+		{desc: "BoolSpec", give: BoolSpec},
+		{desc: "I8Spec", give: I8Spec},
+		{desc: "I16Spec", give: I16Spec},
+		{desc: "I32Spec", give: I32Spec},
+		{desc: "I64Spec", give: I64Spec},
+		{desc: "DoubleSpec", give: DoubleSpec},
+		{desc: "StringSpec", give: StringSpec},
+		{desc: "BinarySpec", give: BinarySpec},
+
+		// Containers
+		{
+			desc: "ListSpec",
+			give: &ListSpec{
+				ValueSpec: &TypedefSpec{Name: "UUID", Target: StringSpec},
+			},
+		},
+		{
+			desc: "SetSpec",
+			give: &SetSpec{
+				ValueSpec: &TypedefSpec{Name: "UUID", Target: StringSpec},
+			},
+		},
+		{
+			desc: "MapSpec",
+			give: &MapSpec{
+				KeySpec:   StringSpec,
+				ValueSpec: &TypedefSpec{Name: "UUID", Target: StringSpec},
+			},
+		},
+
+		// Structs and enums
+		{
+			desc: "StructSpec",
+			give: &StructSpec{
+				Name: "Foo",
+				Type: ast.StructType,
+				Fields: FieldGroup{
+					{
+						ID:   1,
+						Name: "a",
+						Type: StringSpec,
+					},
+					{
+						ID:   2,
+						Name: "b",
+						Type: &TypedefSpec{Name: "UUID", Target: StringSpec},
+					},
+				},
+			},
+		},
+		{
+			desc: "EnumSpec",
+			give: &EnumSpec{
+				Name: "Numbers",
+				Items: []EnumItem{
+					{Name: "One", Value: 1},
+					{Name: "Two", Value: 2},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		give, err := tt.give.Link(scope())
+		if !assert.NoError(t, err, "%v: failed to link", tt.desc) {
+			continue
+		}
+
+		spec := give
+		for i := 0; i < 10; i++ {
+			assert.Equal(t, give, RootTypeSpec(spec), "%v: level %d", tt.desc, i)
+
+			spec = &TypedefSpec{Name: fmt.Sprintf("foo%d", i), Target: spec}
+			spec, err = spec.Link(scope())
+			if !assert.NoError(t, err, "%v: failed to link level %d", tt.desc, i) {
+				break
 			}
 		}
 	}

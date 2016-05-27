@@ -32,6 +32,8 @@ type TypedefSpec struct {
 	Name   string
 	File   string
 	Target TypeSpec
+
+	root TypeSpec
 }
 
 // compileTypedef compiles the given Typedef AST into a TypedefSpec.
@@ -56,6 +58,9 @@ func (t *TypedefSpec) Link(scope Scope) (TypeSpec, error) {
 
 	var err error
 	t.Target, err = t.Target.Link(scope)
+	if err == nil {
+		t.root = RootTypeSpec(t.Target)
+	}
 	return t, err
 }
 
