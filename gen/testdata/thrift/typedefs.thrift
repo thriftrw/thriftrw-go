@@ -1,4 +1,5 @@
 include "./structs.thrift"
+include "./enums.thrift"
 
 typedef i64 Timestamp  // alias of primitive
 typedef string State
@@ -32,3 +33,5 @@ typedef map<structs.Point, structs.Point> PointMap
 typedef set<binary> BinarySet
 
 typedef map<structs.Edge, structs.Edge> EdgeMap
+
+typedef enums.EnumWithValues MyEnum

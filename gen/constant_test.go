@@ -28,6 +28,7 @@ import (
 	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
 	tx "github.com/thriftrw/thriftrw-go/gen/testdata/exceptions"
 	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
+	td "github.com/thriftrw/thriftrw-go/gen/testdata/typedefs"
 	tu "github.com/thriftrw/thriftrw-go/gen/testdata/unions"
 
 	"github.com/stretchr/testify/assert"
@@ -240,6 +241,50 @@ func TestConstants(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			"lastNode",
+			tk.LastNode,
+			&ts.Node{Value: 3},
+		},
+		{
+			"node",
+			tk.Node,
+			&ts.Node{Value: 1, Next: &ts.List{Value: 2, Next: &ts.List{Value: 3}}},
+		},
+		{
+			"i128",
+			tk.I128,
+			&td.I128{High: 1234, Low: 5678},
+		},
+		{
+			"uuid",
+			tk.UUID,
+			&td.UUID{High: 1234, Low: 5678},
+		},
+		{
+			"beginningOfTime",
+			tk.BeginningOfTime,
+			td.Timestamp(0),
+		},
+		{
+			"frameGroup",
+			tk.FrameGroup,
+			td.FrameGroup{
+				&ts.Frame{
+					TopLeft: &ts.Point{X: 1, Y: 2},
+					Size:    &ts.Size{Width: 100, Height: 200},
+				},
+				&ts.Frame{
+					TopLeft: &ts.Point{X: 3, Y: 4},
+					Size:    &ts.Size{Width: 300, Height: 400},
+				},
+			},
+		},
+		{
+			"myEnum",
+			tk.MyEnum,
+			td.MyEnum(te.EnumWithValuesY),
 		},
 	}
 

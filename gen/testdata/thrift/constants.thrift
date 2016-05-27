@@ -4,6 +4,7 @@ include "./enums.thrift"
 include "./exceptions.thrift"
 include "./structs.thrift"
 include "./unions.thrift"
+include "./typedefs.thrift"
 
 const containers.PrimitiveContainers primitiveContainers = {
     "listOfInts": other_constants.listOfInts, // imported constant
@@ -68,12 +69,11 @@ const structs.Graph graph = {
     ]
 }
 
-// TODO: Uncomment when constants for typedefs are supported.
-//
-// const structs.Node node = {
-//     "value": 1,
-//     "next": {"value": 2, "next": {"value": 3}},
-// }
+const structs.Node lastNode = {"value": 3}
+const structs.Node node = {
+    "value": 1,
+    "next": {"value": 2, "next": lastNode},
+}
 
 const unions.ArbitraryValue arbitraryValue = {
     "listValue": [
@@ -84,3 +84,20 @@ const unions.ArbitraryValue arbitraryValue = {
     ],
 }
 // TODO: union validation for constants?
+
+const typedefs.i128 i128 = uuid
+const typedefs.UUID uuid = {"high": 1234, "low": 5678}
+
+const typedefs.Timestamp beginningOfTime = 0
+const typedefs.FrameGroup frameGroup = [
+    {
+        "topLeft": {"x": 1, "y": 2},
+        "size": {"width": 100, "height": 200},
+    }
+    {
+        "topLeft": {"x": 3, "y": 4},
+        "size": {"width": 300, "height": 400},
+    },
+]
+
+const typedefs.MyEnum myEnum = enums.EnumWithValues.Y
