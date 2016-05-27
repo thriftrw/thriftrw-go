@@ -45,46 +45,23 @@ func Constant(g Generator, c *compile.Constant) error {
 func ConstantValue(g Generator, c compile.ConstantValue, t compile.TypeSpec) (string, error) {
 	switch v := c.(type) {
 	case compile.ConstantBool:
-		if v {
-			return "true", nil
-		}
-		return "false", nil
+		return constantBool(g, v, t)
 	case compile.ConstantDouble:
-		return fmt.Sprint(float64(v)), nil
+		return constantDouble(g, v, t)
 	case compile.ConstantInt:
-		return fmt.Sprint(int(v)), nil
+		return constantInt(g, v, t)
 	case compile.ConstantList:
-		l, ok := t.(*compile.ListSpec)
-		if !ok {
-			return "", fmt.Errorf(
-				"cannot cast list %v to %v", v, t.ThriftName())
-		}
-		return constantList(g, v, l)
+		return constantList(g, v, t)
 	case compile.ConstantMap:
-		m, ok := t.(*compile.MapSpec)
-		if !ok {
-			return "", fmt.Errorf(
-				"cannot cast map %v to %v", v, t.ThriftName())
-		}
-		return constantMap(g, v, m)
+		return constantMap(g, v, t)
 	case compile.ConstantSet:
-		s, ok := t.(*compile.SetSpec)
-		if !ok {
-			return "", fmt.Errorf(
-				"cannot cast set %v to %v", v, t.ThriftName())
-		}
-		return constantSet(g, v, s)
+		return constantSet(g, v, t)
 	case compile.ConstantString:
 		return strconv.Quote(string(v)), nil
 	case *compile.ConstantStruct:
-		s, ok := t.(*compile.StructSpec)
-		if !ok {
-			return "", fmt.Errorf(
-				"cannot cast struct %v to %v", v, t.ThriftName())
-		}
-		return constantStruct(g, v, s)
+		return constantStruct(g, v, t)
 	case compile.EnumItemReference:
-		return g.TextTemplate(`<typeName .Enum><goCase .Item.Name>`, v)
+		return enumItemReference(g, v, t)
 	case compile.ConstReference:
 		return g.LookupConstantName(v.Target)
 	default:
@@ -92,26 +69,70 @@ func ConstantValue(g Generator, c compile.ConstantValue, t compile.TypeSpec) (st
 	}
 }
 
-func constantList(g Generator, v compile.ConstantList, l *compile.ListSpec) (string, error) {
+func castConstant(g Generator, t compile.TypeSpec, s string) (string, error) {
+	n, err := typeName(g, t)
+	if err != nil {
+		return "", err
+	}
+	s = fmt.Sprintf("%v(%v)", n, s)
+	return s, nil
+}
+
+func constantBool(g Generator, v compile.ConstantBool, t compile.TypeSpec) (_ string, err error) {
+	s := "false"
+	if v {
+		s = "true"
+	}
+	if t != compile.BoolSpec {
+		s, err = castConstant(g, t, s)
+	}
+	return s, err
+}
+
+func constantDouble(g Generator, v compile.ConstantDouble, t compile.TypeSpec) (_ string, err error) {
+	s := fmt.Sprint(float64(v))
+	if t != compile.DoubleSpec {
+		s, err = castConstant(g, t, s)
+	}
+	return s, err
+}
+
+func constantInt(g Generator, v compile.ConstantInt, t compile.TypeSpec) (_ string, err error) {
+	s := fmt.Sprint(int(v))
+	switch t {
+	case compile.I8Spec, compile.I16Spec, compile.I32Spec, compile.I64Spec:
+		// do nothing
+	default:
+		s, err = castConstant(g, t, s)
+	}
+	return s, err
+}
+
+func constantList(g Generator, v compile.ConstantList, t compile.TypeSpec) (string, error) {
+	valueSpec := compile.RootTypeSpec(t).(*compile.ListSpec).ValueSpec
 	return g.TextTemplate(
 		`
-		<$valueType := .Spec.ValueSpec>
+		<$valueType := .ValueSpec>
 		<typeReference .Spec>{
 			<range .Value>
 				<constantValue . $valueType>,
 			<end>
 		}`, struct {
-			Spec  *compile.ListSpec
-			Value compile.ConstantList
-		}{Spec: l, Value: v},
+			Spec      compile.TypeSpec
+			ValueSpec compile.TypeSpec
+			Value     compile.ConstantList
+		}{Spec: t, ValueSpec: valueSpec, Value: v},
 		TemplateFunc("constantValue", ConstantValue))
 }
 
-func constantMap(g Generator, v compile.ConstantMap, m *compile.MapSpec) (string, error) {
+func constantMap(g Generator, v compile.ConstantMap, t compile.TypeSpec) (string, error) {
+	mapSpec := compile.RootTypeSpec(t).(*compile.MapSpec)
+	keySpec := mapSpec.KeySpec
+	valueSpec := mapSpec.ValueSpec
 	return g.TextTemplate(
 		`
-		<$keyType := .Spec.KeySpec>
-		<$valueType := .Spec.ValueSpec>
+		<$keyType := .KeySpec>
+		<$valueType := .ValueSpec>
 		<typeReference .Spec>{
 			<range .Value>
 				<if isHashable $keyType>
@@ -125,16 +146,19 @@ func constantMap(g Generator, v compile.ConstantMap, m *compile.MapSpec) (string
 				<end>
 			<end>
 		}`, struct {
-			Spec  *compile.MapSpec
-			Value compile.ConstantMap
-		}{Spec: m, Value: v},
+			Spec      compile.TypeSpec
+			KeySpec   compile.TypeSpec
+			ValueSpec compile.TypeSpec
+			Value     compile.ConstantMap
+		}{Spec: t, KeySpec: keySpec, ValueSpec: valueSpec, Value: v},
 		TemplateFunc("constantValue", ConstantValue))
 }
 
-func constantSet(g Generator, v compile.ConstantSet, s *compile.SetSpec) (string, error) {
+func constantSet(g Generator, v compile.ConstantSet, t compile.TypeSpec) (string, error) {
+	valueSpec := compile.RootTypeSpec(t).(*compile.SetSpec).ValueSpec
 	return g.TextTemplate(
 		`
-		<$valueType := .Spec.ValueSpec>
+		<$valueType := .ValueSpec>
 		<typeReference .Spec>{
 			<range .Value>
 				<if isHashable $valueType>
@@ -144,16 +168,18 @@ func constantSet(g Generator, v compile.ConstantSet, s *compile.SetSpec) (string
 				<end>
 			<end>
 		}`, struct {
-			Spec  *compile.SetSpec
-			Value compile.ConstantSet
-		}{Spec: s, Value: v},
+			Spec      compile.TypeSpec
+			ValueSpec compile.TypeSpec
+			Value     compile.ConstantSet
+		}{Spec: t, ValueSpec: valueSpec, Value: v},
 		TemplateFunc("constantValue", ConstantValue))
 }
 
-func constantStruct(g Generator, v *compile.ConstantStruct, s *compile.StructSpec) (string, error) {
+func constantStruct(g Generator, v *compile.ConstantStruct, t compile.TypeSpec) (string, error) {
+	fields := compile.RootTypeSpec(t).(*compile.StructSpec).Fields
 	return g.TextTemplate(
 		`
-		<$fields := .Spec.Fields>
+		<$fields := .Fields>
 		&<typeName .Spec>{
 			<range $name, $value := .Value.Fields>
 				<$field := $fields.FindByName $name>
@@ -164,12 +190,24 @@ func constantStruct(g Generator, v *compile.ConstantStruct, s *compile.StructSpe
 				<end>
 			<end>
 		}`, struct {
-			Spec  *compile.StructSpec
-			Value *compile.ConstantStruct
-		}{Spec: s, Value: v},
+			Spec   compile.TypeSpec
+			Fields compile.FieldGroup
+			Value  *compile.ConstantStruct
+		}{Spec: t, Fields: fields, Value: v},
 		TemplateFunc("constantValue", ConstantValue),
 		TemplateFunc("constantValuePtr", ConstantValuePtr),
 	)
+}
+
+func enumItemReference(g Generator, v compile.EnumItemReference, t compile.TypeSpec) (_ string, err error) {
+	s, err := g.TextTemplate(`<typeName .Enum><goCase .Item.Name>`, v)
+	if err != nil {
+		return "", err
+	}
+	if t != v.Enum {
+		s, err = castConstant(g, t, s)
+	}
+	return s, err
 }
 
 // ConstantValuePtr generates an expression which is a pointer to a value of

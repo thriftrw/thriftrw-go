@@ -62,14 +62,6 @@ func compileConstantValue(v ast.ConstantValue) ConstantValue {
 	}
 }
 
-// Helper for ConstantValues whose link method expects a specific TypeSpec.
-func typeEqualsOrCastError(c ConstantValue, want, got TypeSpec) (ConstantValue, error) {
-	if want != got {
-		return nil, constantValueCastError{Value: c, Type: got}
-	}
-	return c, nil
-}
-
 type (
 	// ConstantBool represents a boolean constant from the Thrift file.
 	ConstantBool bool
@@ -86,12 +78,16 @@ type (
 
 // Link for ConstantBool
 func (c ConstantBool) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	return typeEqualsOrCastError(c, BoolSpec, t)
+	if RootTypeSpec(t) != BoolSpec {
+		return nil, constantValueCastError{Value: c, Type: t}
+	}
+	return c, nil
 }
 
 // Link for ConstantInt.
 func (c ConstantInt) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	switch t {
+	rt := RootTypeSpec(t)
+	switch rt {
 	case I8Spec, I16Spec, I32Spec, I64Spec:
 		// TODO bounds checks?
 		return c, nil
@@ -113,7 +109,7 @@ func (c ConstantInt) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 	}
 
 	// Used for an enum
-	if e, ok := t.(*EnumSpec); ok {
+	if e, ok := rt.(*EnumSpec); ok {
 		for _, item := range e.Items {
 			if item.Value == int32(c) {
 				return EnumItemReference{Enum: e, Item: item}, nil
@@ -135,13 +131,19 @@ func (c ConstantInt) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 
 // Link for ConstantString.
 func (c ConstantString) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	return typeEqualsOrCastError(c, StringSpec, t)
 	// TODO(abg): Are binary literals a thing?
+	if RootTypeSpec(t) != StringSpec {
+		return nil, constantValueCastError{Value: c, Type: t}
+	}
+	return c, nil
 }
 
 // Link for ConstantDouble.
 func (c ConstantDouble) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	return typeEqualsOrCastError(c, DoubleSpec, t)
+	if RootTypeSpec(t) != DoubleSpec {
+		return nil, constantValueCastError{Value: c, Type: t}
+	}
+	return c, nil
 }
 
 // ConstantStruct represents a struct literal from the Thrift file.
@@ -165,7 +167,7 @@ func buildConstantStruct(c ConstantMap) (*ConstantStruct, error) {
 
 // Link for ConstantStruct
 func (c *ConstantStruct) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	s, ok := t.(*StructSpec)
+	s, ok := RootTypeSpec(t).(*StructSpec)
 	if !ok {
 		return nil, constantValueCastError{Value: c, Type: t}
 	}
@@ -227,7 +229,8 @@ type ConstantValuePair struct {
 
 // Link for ConstantMap.
 func (c ConstantMap) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	if _, isStruct := t.(*StructSpec); isStruct {
+	rt := RootTypeSpec(t)
+	if _, isStruct := rt.(*StructSpec); isStruct {
 		cs, err := buildConstantStruct(c)
 		if err != nil {
 			return nil, constantValueCastError{
@@ -239,7 +242,7 @@ func (c ConstantMap) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 		return cs.Link(scope, t)
 	}
 
-	m, ok := t.(*MapSpec)
+	m, ok := rt.(*MapSpec)
 	if !ok {
 		return nil, constantValueCastError{Value: c, Type: t}
 	}
@@ -268,7 +271,7 @@ type ConstantSet []ConstantValue
 
 // Link for ConstantSet.
 func (c ConstantSet) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	s, ok := t.(*SetSpec)
+	s, ok := RootTypeSpec(t).(*SetSpec)
 	if !ok {
 		return nil, constantValueCastError{Value: c, Type: t}
 	}
@@ -300,11 +303,12 @@ func compileConstantList(src ast.ConstantList) ConstantList {
 
 // Link for ConstantList.
 func (c ConstantList) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	if _, isSet := t.(*SetSpec); isSet {
+	rt := RootTypeSpec(t)
+	if _, isSet := rt.(*SetSpec); isSet {
 		return ConstantSet(c).Link(scope, t)
 	}
 
-	l, ok := t.(*ListSpec)
+	l, ok := rt.(*ListSpec)
 	if !ok {
 		return nil, constantValueCastError{Value: c, Type: t}
 	}
@@ -344,7 +348,10 @@ type EnumItemReference struct {
 
 // Link for EnumItemReference.
 func (e EnumItemReference) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	return typeEqualsOrCastError(e, e.Enum, t)
+	if RootTypeSpec(t) != e.Enum {
+		return nil, constantValueCastError{Value: e, Type: t}
+	}
+	return e, nil
 }
 
 // constantReference represents a reference to another constant.

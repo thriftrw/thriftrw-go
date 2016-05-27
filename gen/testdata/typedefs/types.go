@@ -5,6 +5,7 @@ package typedefs
 import (
 	"errors"
 	"fmt"
+	"github.com/thriftrw/thriftrw-go/gen/testdata/enums"
 	"github.com/thriftrw/thriftrw-go/gen/testdata/structs"
 	"github.com/thriftrw/thriftrw-go/wire"
 	"strings"
@@ -361,6 +362,30 @@ func (v FrameGroup) String() string {
 func (v *FrameGroup) FromWire(w wire.Value) error {
 	x, err := _Set_Frame_Read(w.GetSet())
 	*v = (FrameGroup)(x)
+	return err
+}
+
+func _EnumWithValues_Read(w wire.Value) (enums.EnumWithValues, error) {
+	var v enums.EnumWithValues
+	err := v.FromWire(w)
+	return v, err
+}
+
+type MyEnum enums.EnumWithValues
+
+func (v MyEnum) ToWire() (wire.Value, error) {
+	x := (enums.EnumWithValues)(v)
+	return x.ToWire()
+}
+
+func (v MyEnum) String() string {
+	x := (enums.EnumWithValues)(v)
+	return fmt.Sprint(x)
+}
+
+func (v *MyEnum) FromWire(w wire.Value) error {
+	x, err := _EnumWithValues_Read(w)
+	*v = (MyEnum)(x)
 	return err
 }
 
