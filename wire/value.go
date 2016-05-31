@@ -39,9 +39,7 @@ type Value struct {
 	ti64    int64
 	tbinary []byte
 	tstruct Struct
-	tmap    MapItemList
-	tset    ValueList
-	tlist   ValueList
+	tcoll   interface{} // set/map/list
 }
 
 // Type retrieves the type of value inside a Value.
@@ -68,12 +66,8 @@ func (v *Value) Get() interface{} {
 		return v.tbinary
 	case TStruct:
 		return v.tstruct
-	case TMap:
-		return v.tmap
-	case TSet:
-		return v.tset
-	case TList:
-		return v.tlist
+	case TMap, TSet, TList:
+		return v.tcoll
 	default:
 		panic(fmt.Sprintf("Unknown value type %v", v.typ))
 	}
@@ -199,40 +193,40 @@ func (v *Value) GetStruct() Struct {
 // NewValueMap constructs a new Value that contains a map.
 func NewValueMap(v MapItemList) Value {
 	return Value{
-		typ:  TMap,
-		tmap: v,
+		typ:   TMap,
+		tcoll: v,
 	}
 }
 
 // GetMap gets the Map value from a Value.
 func (v *Value) GetMap() MapItemList {
-	return v.tmap
+	return v.tcoll.(MapItemList)
 }
 
 // NewValueSet constructs a new Value that contains a set.
 func NewValueSet(v ValueList) Value {
 	return Value{
-		typ:  TSet,
-		tset: v,
+		typ:   TSet,
+		tcoll: v,
 	}
 }
 
 // GetSet gets the Set value from a Value.
 func (v *Value) GetSet() ValueList {
-	return v.tset
+	return v.tcoll.(ValueList)
 }
 
 // NewValueList constructs a new Value that contains a list.
 func NewValueList(v ValueList) Value {
 	return Value{
 		typ:   TList,
-		tlist: v,
+		tcoll: v,
 	}
 }
 
 // GetList gets the List value from a Value.
 func (v *Value) GetList() ValueList {
-	return v.tlist
+	return v.tcoll.(ValueList)
 }
 
 func (v Value) String() string {
@@ -254,11 +248,11 @@ func (v Value) String() string {
 	case TStruct:
 		return fmt.Sprintf("TStruct(%v)", v.tstruct)
 	case TMap:
-		return fmt.Sprintf("TMap(%v)", v.tmap)
+		return fmt.Sprintf("TMap(%v)", v.tcoll)
 	case TSet:
-		return fmt.Sprintf("TSet(%v)", v.tset)
+		return fmt.Sprintf("TSet(%v)", v.tcoll)
 	case TList:
-		return fmt.Sprintf("TList(%v)", v.tlist)
+		return fmt.Sprintf("TList(%v)", v.tcoll)
 	default:
 		panic(fmt.Sprintf("Unknown value type %v", v.typ))
 	}

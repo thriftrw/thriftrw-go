@@ -54,11 +54,11 @@ func ValuesAreEqual(left, right Value) bool {
 	case TStruct:
 		return StructsAreEqual(left.tstruct, right.tstruct)
 	case TMap:
-		return MapsAreEqual(left.tmap, right.tmap)
+		return MapsAreEqual(left.tcoll.(MapItemList), right.tcoll.(MapItemList))
 	case TSet:
-		return SetsAreEqual(left.tset, right.tset)
+		return SetsAreEqual(left.tcoll.(ValueList), right.tcoll.(ValueList))
 	case TList:
-		return ListsAreEqual(left.tlist, right.tlist)
+		return ListsAreEqual(left.tcoll.(ValueList), right.tcoll.(ValueList))
 	default:
 		return false
 	}
