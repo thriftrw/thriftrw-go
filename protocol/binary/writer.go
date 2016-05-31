@@ -148,51 +148,51 @@ func (bw *Writer) realWriteMapItem(item wire.MapItem) error {
 	return bw.WriteValue(item.Value)
 }
 
-func (bw *Writer) writeMap(m wire.Map) error {
+func (bw *Writer) writeMap(m wire.MapItemList) error {
 	// ktype:1
-	if err := bw.writeByte(byte(m.KeyType)); err != nil {
+	if err := bw.writeByte(byte(m.KeyType())); err != nil {
 		return err
 	}
 
 	// vtype:1
-	if err := bw.writeByte(byte(m.ValueType)); err != nil {
+	if err := bw.writeByte(byte(m.ValueType())); err != nil {
 		return err
 	}
 
 	// length:4
-	if err := bw.writeInt32(int32(m.Size)); err != nil {
+	if err := bw.writeInt32(int32(m.Size())); err != nil {
 		return err
 	}
 
-	return m.Items.ForEach(bw.writeMapItem)
+	return m.ForEach(bw.writeMapItem)
 }
 
-func (bw *Writer) writeSet(s wire.Set) error {
+func (bw *Writer) writeSet(s wire.ValueList) error {
 	// vtype:1
-	if err := bw.writeByte(byte(s.ValueType)); err != nil {
+	if err := bw.writeByte(byte(s.ValueType())); err != nil {
 		return err
 	}
 
 	// length:4
-	if err := bw.writeInt32(int32(s.Size)); err != nil {
+	if err := bw.writeInt32(int32(s.Size())); err != nil {
 		return err
 	}
 
-	return s.Items.ForEach(bw.writeValue)
+	return s.ForEach(bw.writeValue)
 }
 
-func (bw *Writer) writeList(l wire.List) error {
+func (bw *Writer) writeList(l wire.ValueList) error {
 	// vtype:1
-	if err := bw.writeByte(byte(l.ValueType)); err != nil {
+	if err := bw.writeByte(byte(l.ValueType())); err != nil {
 		return err
 	}
 
 	// length:4
-	if err := bw.writeInt32(int32(l.Size)); err != nil {
+	if err := bw.writeInt32(int32(l.Size())); err != nil {
 		return err
 	}
 
-	return l.Items.ForEach(bw.writeValue)
+	return l.ForEach(bw.writeValue)
 }
 
 // WriteValue writes the given Thrift value to the underlying stream using the

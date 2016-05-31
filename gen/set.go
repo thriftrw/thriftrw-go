@@ -75,7 +75,15 @@ func (s *setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, er
 				return nil
 			}
 
-			func (<$v> <.Name>) Close() {}
+			func (<$v> <.Name>) Size() int {
+				return len(<$v>)
+			}
+
+			func (<.Name>) ValueType() <$wire>.Type {
+				return <typeCode .Spec.ValueSpec>
+			}
+
+			func (<.Name>) Close() {}
 		`,
 		struct {
 			Name string
@@ -101,17 +109,17 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 			<$i := newVar "i">
 			<$o := newVar "o">
 			<$x := newVar "x">
-			func <.Name>(<$s> <$wire>.Set) (<$setType>, error) {
-				if <$s>.ValueType != <typeCode .Spec.ValueSpec> {
+			func <.Name>(<$s> <$wire>.ValueList) (<$setType>, error) {
+				if <$s>.ValueType() != <typeCode .Spec.ValueSpec> {
 					return nil, nil
 				}
 
 				<if isHashable .Spec.ValueSpec>
-					<$o> := make(<$setType>, <$s>.Size)
+					<$o> := make(<$setType>, <$s>.Size())
 				<else>
-					<$o> := make(<$setType>, 0, <$s>.Size)
+					<$o> := make(<$setType>, 0, <$s>.Size())
 				<end>
-				err := <$s>.Items.ForEach(func(<$x> <$wire>.Value) error {
+				err := <$s>.ForEach(func(<$x> <$wire>.Value) error {
 					<$i>, err := <fromWire .Spec.ValueSpec $x>
 					if err != nil {
 						return err
@@ -123,7 +131,7 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 					<end>
 					return nil
 				})
-				<$s>.Items.Close()
+				<$s>.Close()
 				return <$o>, err
 			}
 		`,

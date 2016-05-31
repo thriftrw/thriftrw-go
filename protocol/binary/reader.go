@@ -283,23 +283,23 @@ func (br *Reader) readStruct(off int64) (wire.Struct, int64, error) {
 	return wire.Struct{Fields: fields}, off, err
 }
 
-func (br *Reader) readMap(off int64) (wire.Map, int64, error) {
+func (br *Reader) readMap(off int64) (wire.MapItemList, int64, error) {
 	ktByte, off, err := br.readByte(off)
 	if err != nil {
-		return wire.Map{}, off, err
+		return nil, off, err
 	}
 
 	vtByte, off, err := br.readByte(off)
 	if err != nil {
-		return wire.Map{}, off, err
+		return nil, off, err
 	}
 
 	count, off, err := br.readInt32(off)
 	if err != nil {
-		return wire.Map{}, off, err
+		return nil, off, err
 	}
 	if count < 0 {
-		return wire.Map{}, off, decodeErrorf("negative length %d requested for map", count)
+		return nil, off, decodeErrorf("negative length %d requested for map", count)
 	}
 
 	kt := wire.Type(ktByte)
@@ -309,12 +309,12 @@ func (br *Reader) readMap(off int64) (wire.Map, int64, error) {
 	for i := int32(0); i < count; i++ {
 		off, err = br.skipValue(kt, off)
 		if err != nil {
-			return wire.Map{}, off, err
+			return nil, off, err
 		}
 
 		off, err = br.skipValue(vt, off)
 		if err != nil {
-			return wire.Map{}, off, err
+			return nil, off, err
 		}
 	}
 
@@ -325,33 +325,28 @@ func (br *Reader) readMap(off int64) (wire.Map, int64, error) {
 	items.reader = br
 	items.startOffset = start
 
-	return wire.Map{
-		KeyType:   kt,
-		ValueType: vt,
-		Size:      int(count),
-		Items:     items,
-	}, off, err
+	return items, off, err
 }
 
-func (br *Reader) readSet(off int64) (wire.Set, int64, error) {
+func (br *Reader) readSet(off int64) (wire.ValueList, int64, error) {
 	typ, off, err := br.readByte(off)
 	if err != nil {
-		return wire.Set{}, off, err
+		return nil, off, err
 	}
 
 	count, off, err := br.readInt32(off)
 	if err != nil {
-		return wire.Set{}, off, err
+		return nil, off, err
 	}
 	if count < 0 {
-		return wire.Set{}, off, decodeErrorf("negative length %d requested for set", count)
+		return nil, off, decodeErrorf("negative length %d requested for set", count)
 	}
 
 	start := off
 	for i := int32(0); i < count; i++ {
 		off, err = br.skipValue(wire.Type(typ), off)
 		if err != nil {
-			return wire.Set{}, off, err
+			return nil, off, err
 		}
 	}
 
@@ -361,32 +356,28 @@ func (br *Reader) readSet(off int64) (wire.Set, int64, error) {
 	items.reader = br
 	items.startOffset = start
 
-	return wire.Set{
-		ValueType: wire.Type(typ),
-		Size:      int(count),
-		Items:     items,
-	}, off, err
+	return items, off, err
 }
 
-func (br *Reader) readList(off int64) (wire.List, int64, error) {
+func (br *Reader) readList(off int64) (wire.ValueList, int64, error) {
 	typ, off, err := br.readByte(off)
 	if err != nil {
-		return wire.List{}, off, err
+		return nil, off, err
 	}
 
 	count, off, err := br.readInt32(off)
 	if err != nil {
-		return wire.List{}, off, err
+		return nil, off, err
 	}
 	if count < 0 {
-		return wire.List{}, off, decodeErrorf("negative length %d requested for list", count)
+		return nil, off, decodeErrorf("negative length %d requested for list", count)
 	}
 
 	start := off
 	for i := int32(0); i < count; i++ {
 		off, err = br.skipValue(wire.Type(typ), off)
 		if err != nil {
-			return wire.List{}, off, err
+			return nil, off, err
 		}
 	}
 
@@ -396,11 +387,7 @@ func (br *Reader) readList(off int64) (wire.List, int64, error) {
 	items.reader = br
 	items.startOffset = start
 
-	return wire.List{
-		ValueType: wire.Type(typ),
-		Size:      int(count),
-		Items:     items,
-	}, off, err
+	return items, off, err
 }
 
 // ReadValue reads a value off the given type off the wire starting at the

@@ -62,28 +62,15 @@ func vfield(id int16, v wire.Value) wire.Field {
 }
 
 func vlist(typ wire.Type, vs ...wire.Value) wire.Value {
-	return wire.NewValueList(wire.List{
-		ValueType: typ,
-		Size:      len(vs),
-		Items:     wire.ValueListFromSlice(vs),
-	})
+	return wire.NewValueList(wire.ValueListFromSlice(typ, vs))
 }
 
 func vset(typ wire.Type, vs ...wire.Value) wire.Value {
-	return wire.NewValueSet(wire.Set{
-		ValueType: typ,
-		Size:      len(vs),
-		Items:     wire.ValueListFromSlice(vs),
-	})
+	return wire.NewValueSet(wire.ValueListFromSlice(typ, vs))
 }
 
 func vmap(kt, vt wire.Type, items ...wire.MapItem) wire.Value {
-	return wire.NewValueMap(wire.Map{
-		KeyType:   kt,
-		ValueType: vt,
-		Size:      len(items),
-		Items:     wire.MapItemListFromSlice(items),
-	})
+	return wire.NewValueMap(wire.MapItemListFromSlice(kt, vt, items))
 }
 
 func vitem(k, v wire.Value) wire.MapItem {

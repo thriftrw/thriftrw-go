@@ -37,8 +37,8 @@ func EvaluateValue(v Value) error {
 		return nil
 	case TMap:
 		m := v.GetMap()
-		defer m.Items.Close()
-		return m.Items.ForEach(func(item MapItem) error {
+		defer m.Close()
+		return m.ForEach(func(item MapItem) error {
 			if err := EvaluateValue(item.Key); err != nil {
 				return err
 			}
@@ -49,12 +49,12 @@ func EvaluateValue(v Value) error {
 		})
 	case TSet:
 		s := v.GetSet()
-		defer s.Items.Close()
-		return s.Items.ForEach(EvaluateValue)
+		defer s.Close()
+		return s.ForEach(EvaluateValue)
 	case TList:
 		l := v.GetList()
-		defer l.Items.Close()
-		return l.Items.ForEach(EvaluateValue)
+		defer l.Close()
+		return l.ForEach(EvaluateValue)
 	default:
 		return fmt.Errorf("unknown type %s", v.Type())
 	}

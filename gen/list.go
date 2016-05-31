@@ -70,7 +70,15 @@ func (l *listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, 
 				return nil
 			}
 
-			func (<$v> <.Name>) Close() {}
+			func (<$v> <.Name>) Size() int {
+				return len(<$v>)
+			}
+
+			func (<.Name>) ValueType() <$wire>.Type {
+				return <typeCode .Spec.ValueSpec>
+			}
+
+			func (<.Name>) Close() {}
 		`,
 		struct {
 			Name string
@@ -104,13 +112,13 @@ func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, err
 			<$i := newVar "i">
 			<$o := newVar "o">
 			<$x := newVar "x">
-			func <.Name>(<$l> <$wire>.List) (<$listType>, error) {
-				if <$l>.ValueType != <typeCode .Spec.ValueSpec> {
+			func <.Name>(<$l> <$wire>.ValueList) (<$listType>, error) {
+				if <$l>.ValueType() != <typeCode .Spec.ValueSpec> {
 					return nil, nil
 				}
 
-				<$o> := make(<$listType>, 0, <$l>.Size)
-				err := <$l>.Items.ForEach(func(<$x> <$wire>.Value) error {
+				<$o> := make(<$listType>, 0, <$l>.Size())
+				err := <$l>.ForEach(func(<$x> <$wire>.Value) error {
 					<$i>, err := <fromWire .Spec.ValueSpec $x>
 					if err != nil {
 						return err
@@ -118,7 +126,7 @@ func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, err
 					<$o> = append(<$o>, <$i>)
 					return nil
 				})
-				<$l>.Items.Close()
+				<$l>.Close()
 				return <$o>, err
 			}
 		`,

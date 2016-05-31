@@ -33,7 +33,15 @@ func (v _List_ArbitraryValue_ValueList) ForEach(f func(wire.Value) error) error 
 	return nil
 }
 
-func (v _List_ArbitraryValue_ValueList) Close() {
+func (v _List_ArbitraryValue_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_ArbitraryValue_ValueList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_List_ArbitraryValue_ValueList) Close() {
 }
 
 type _Map_String_ArbitraryValue_MapItemList map[string]*ArbitraryValue
@@ -56,7 +64,19 @@ func (m _Map_String_ArbitraryValue_MapItemList) ForEach(f func(wire.MapItem) err
 	return nil
 }
 
-func (m _Map_String_ArbitraryValue_MapItemList) Close() {
+func (m _Map_String_ArbitraryValue_MapItemList) Size() int {
+	return len(m)
+}
+
+func (_Map_String_ArbitraryValue_MapItemList) KeyType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Map_String_ArbitraryValue_MapItemList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_Map_String_ArbitraryValue_MapItemList) Close() {
 }
 
 func (v *ArbitraryValue) ToWire() (wire.Value, error) {
@@ -91,7 +111,7 @@ func (v *ArbitraryValue) ToWire() (wire.Value, error) {
 		i++
 	}
 	if v.ListValue != nil {
-		w, err = wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.ListValue), Items: _List_ArbitraryValue_ValueList(v.ListValue)}), error(nil)
+		w, err = wire.NewValueList(_List_ArbitraryValue_ValueList(v.ListValue)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -99,7 +119,7 @@ func (v *ArbitraryValue) ToWire() (wire.Value, error) {
 		i++
 	}
 	if v.MapValue != nil {
-		w, err = wire.NewValueMap(wire.Map{KeyType: wire.TBinary, ValueType: wire.TStruct, Size: len(v.MapValue), Items: _Map_String_ArbitraryValue_MapItemList(v.MapValue)}), error(nil)
+		w, err = wire.NewValueMap(_Map_String_ArbitraryValue_MapItemList(v.MapValue)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -118,12 +138,12 @@ func _ArbitraryValue_Read(w wire.Value) (*ArbitraryValue, error) {
 	return &v, err
 }
 
-func _List_ArbitraryValue_Read(l wire.List) ([]*ArbitraryValue, error) {
-	if l.ValueType != wire.TStruct {
+func _List_ArbitraryValue_Read(l wire.ValueList) ([]*ArbitraryValue, error) {
+	if l.ValueType() != wire.TStruct {
 		return nil, nil
 	}
-	o := make([]*ArbitraryValue, 0, l.Size)
-	err := l.Items.ForEach(func(x wire.Value) error {
+	o := make([]*ArbitraryValue, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
 		i, err := _ArbitraryValue_Read(x)
 		if err != nil {
 			return err
@@ -131,19 +151,19 @@ func _List_ArbitraryValue_Read(l wire.List) ([]*ArbitraryValue, error) {
 		o = append(o, i)
 		return nil
 	})
-	l.Items.Close()
+	l.Close()
 	return o, err
 }
 
-func _Map_String_ArbitraryValue_Read(m wire.Map) (map[string]*ArbitraryValue, error) {
-	if m.KeyType != wire.TBinary {
+func _Map_String_ArbitraryValue_Read(m wire.MapItemList) (map[string]*ArbitraryValue, error) {
+	if m.KeyType() != wire.TBinary {
 		return nil, nil
 	}
-	if m.ValueType != wire.TStruct {
+	if m.ValueType() != wire.TStruct {
 		return nil, nil
 	}
-	o := make(map[string]*ArbitraryValue, m.Size)
-	err := m.Items.ForEach(func(x wire.MapItem) error {
+	o := make(map[string]*ArbitraryValue, m.Size())
+	err := m.ForEach(func(x wire.MapItem) error {
 		k, err := x.Key.GetString(), error(nil)
 		if err != nil {
 			return err
@@ -155,7 +175,7 @@ func _Map_String_ArbitraryValue_Read(m wire.Map) (map[string]*ArbitraryValue, er
 		o[k] = v
 		return nil
 	})
-	m.Items.Close()
+	m.Close()
 	return o, err
 }
 
