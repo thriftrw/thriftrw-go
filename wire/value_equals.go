@@ -38,27 +38,27 @@ func ValuesAreEqual(left, right Value) bool {
 
 	switch left.typ {
 	case TBool:
-		return left.tbool == right.tbool
+		return left.GetBool() == right.GetBool()
 	case TI8:
-		return left.ti8 == right.ti8
+		return left.GetI8() == right.GetI8()
 	case TDouble:
-		return left.tdouble == right.tdouble
+		return left.GetDouble() == right.GetDouble()
 	case TI16:
-		return left.ti16 == right.ti16
+		return left.GetI16() == right.GetI16()
 	case TI32:
-		return left.ti32 == right.ti32
+		return left.GetI32() == right.GetI32()
 	case TI64:
-		return left.ti64 == right.ti64
+		return left.GetI64() == right.GetI64()
 	case TBinary:
 		return bytes.Equal(left.tbinary, right.tbinary)
 	case TStruct:
 		return StructsAreEqual(left.tstruct, right.tstruct)
 	case TMap:
-		return MapsAreEqual(left.tmap, right.tmap)
+		return MapsAreEqual(left.tcoll.(MapItemList), right.tcoll.(MapItemList))
 	case TSet:
-		return SetsAreEqual(left.tset, right.tset)
+		return SetsAreEqual(left.tcoll.(ValueList), right.tcoll.(ValueList))
 	case TList:
-		return ListsAreEqual(left.tlist, right.tlist)
+		return ListsAreEqual(left.tcoll.(ValueList), right.tcoll.(ValueList))
 	default:
 		return false
 	}

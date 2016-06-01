@@ -22,6 +22,7 @@ package wire
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -31,17 +32,10 @@ import (
 type Value struct {
 	typ Type
 
-	tbool   bool
-	tdouble float64
-	ti8     int8
-	ti16    int16
-	ti32    int32
-	ti64    int64
+	tnumber uint64
 	tbinary []byte
 	tstruct Struct
-	tmap    MapItemList
-	tset    ValueList
-	tlist   ValueList
+	tcoll   interface{} // set/map/list
 }
 
 // Type retrieves the type of value inside a Value.
@@ -53,27 +47,25 @@ func (v *Value) Type() Type {
 func (v *Value) Get() interface{} {
 	switch v.typ {
 	case TBool:
-		return v.tbool
+		return v.GetBool()
 	case TI8:
-		return v.ti8
+		return v.GetI8()
 	case TDouble:
-		return v.tdouble
+		return v.GetDouble()
 	case TI16:
-		return v.ti16
+		return v.GetI16()
 	case TI32:
-		return v.ti32
+		return v.GetI32()
 	case TI64:
-		return v.ti64
+		return v.GetI64()
 	case TBinary:
-		return v.tbinary
+		return v.GetBinary()
 	case TStruct:
-		return v.tstruct
+		return v.GetStruct()
 	case TMap:
-		return v.tmap
-	case TSet:
-		return v.tset
-	case TList:
-		return v.tlist
+		return v.GetMap()
+	case TSet, TList:
+		return v.GetList()
 	default:
 		panic(fmt.Sprintf("Unknown value type %v", v.typ))
 	}
@@ -81,80 +73,84 @@ func (v *Value) Get() interface{} {
 
 // NewValueBool constructs a new Value that contains a boolean.
 func NewValueBool(v bool) Value {
+	n := uint64(0)
+	if v {
+		n = 1
+	}
 	return Value{
-		typ:   TBool,
-		tbool: v,
+		typ:     TBool,
+		tnumber: n,
 	}
 }
 
 // GetBool gets the Bool value from a Value.
 func (v *Value) GetBool() bool {
-	return v.tbool
+	return v.tnumber != 0
 }
 
 // NewValueI8 constructs a new Value that contains a byte
 func NewValueI8(v int8) Value {
 	return Value{
-		typ: TI8,
-		ti8: v,
+		typ:     TI8,
+		tnumber: uint64(v),
 	}
 }
 
 // GetI8 gets the I8 value from a Value.
 func (v *Value) GetI8() int8 {
-	return v.ti8
+	return int8(v.tnumber)
 }
 
 // NewValueDouble constructs a new Value that contains a double.
 func NewValueDouble(v float64) Value {
 	return Value{
 		typ:     TDouble,
-		tdouble: v,
+		tnumber: math.Float64bits(v),
 	}
 }
 
 // GetDouble gets the Double value from a Value.
 func (v *Value) GetDouble() float64 {
-	return v.tdouble
+	return math.Float64frombits(v.tnumber)
 }
 
 // NewValueI16 constructs a new Value that contains a 16-bit integer.
 func NewValueI16(v int16) Value {
 	return Value{
-		typ:  TI16,
-		ti16: v,
+		typ:     TI16,
+		tnumber: uint64(v),
 	}
 }
 
 // GetI16 gets the I16 value from a Value.
 func (v *Value) GetI16() int16 {
-	return v.ti16
+	return int16(v.tnumber)
 }
 
 // NewValueI32 constructs a new Value that contains a 32-bit integer.
 func NewValueI32(v int32) Value {
 	return Value{
-		typ:  TI32,
-		ti32: v,
+		typ:     TI32,
+		tnumber: uint64(v),
 	}
 }
 
 // GetI32 gets the I32 value from a Value.
 func (v *Value) GetI32() int32 {
-	return v.ti32
+	return int32(v.tnumber)
 }
 
 // NewValueI64 constructs a new Value that contains a 64-bit integer.
 func NewValueI64(v int64) Value {
 	return Value{
-		typ:  TI64,
-		ti64: v,
+		typ:     TI64,
+		tnumber: uint64(v),
 	}
 }
 
 // GetI64 gets the I64 value from a Value.
 func (v *Value) GetI64() int64 {
-	return v.ti64
+	return int64(v.tnumber)
 }
 
 // NewValueBinary constructs a new Value that contains a binary string.
@@ -199,66 +195,66 @@ func (v *Value) GetStruct() Struct {
 // NewValueMap constructs a new Value that contains a map.
 func NewValueMap(v MapItemList) Value {
 	return Value{
-		typ:  TMap,
-		tmap: v,
+		typ:   TMap,
+		tcoll: v,
 	}
 }
 
 // GetMap gets the Map value from a Value.
 func (v *Value) GetMap() MapItemList {
-	return v.tmap
+	return v.tcoll.(MapItemList)
 }
 
 // NewValueSet constructs a new Value that contains a set.
 func NewValueSet(v ValueList) Value {
 	return Value{
-		typ:  TSet,
-		tset: v,
+		typ:   TSet,
+		tcoll: v,
 	}
 }
 
 // GetSet gets the Set value from a Value.
 func (v *Value) GetSet() ValueList {
-	return v.tset
+	return v.tcoll.(ValueList)
 }
 
 // NewValueList constructs a new Value that contains a list.
 func NewValueList(v ValueList) Value {
 	return Value{
 		typ:   TList,
-		tlist: v,
+		tcoll: v,
 	}
 }
 
 // GetList gets the List value from a Value.
 func (v *Value) GetList() ValueList {
-	return v.tlist
+	return v.tcoll.(ValueList)
 }
 
 func (v Value) String() string {
 	switch v.typ {
 	case TBool:
-		return fmt.Sprintf("TBool(%v)", v.tbool)
+		return fmt.Sprintf("TBool(%v)", v.GetBool())
 	case TI8:
-		return fmt.Sprintf("TI8(%v)", v.ti8)
+		return fmt.Sprintf("TI8(%v)", v.GetI8())
 	case TDouble:
-		return fmt.Sprintf("TDouble(%v)", v.tdouble)
+		return fmt.Sprintf("TDouble(%v)", v.GetDouble())
 	case TI16:
-		return fmt.Sprintf("TI16(%v)", v.ti16)
+		return fmt.Sprintf("TI16(%v)", v.GetI16())
 	case TI32:
-		return fmt.Sprintf("TI32(%v)", v.ti32)
+		return fmt.Sprintf("TI32(%v)", v.GetI32())
 	case TI64:
-		return fmt.Sprintf("TI64(%v)", v.ti64)
+		return fmt.Sprintf("TI64(%v)", v.GetI64())
 	case TBinary:
 		return fmt.Sprintf("TBinary(%v)", v.tbinary)
 	case TStruct:
 		return fmt.Sprintf("TStruct(%v)", v.tstruct)
 	case TMap:
-		return fmt.Sprintf("TMap(%v)", v.tmap)
+		return fmt.Sprintf("TMap(%v)", v.tcoll)
 	case TSet:
-		return fmt.Sprintf("TSet(%v)", v.tset)
+		return fmt.Sprintf("TSet(%v)", v.tcoll)
 	case TList:
-		return fmt.Sprintf("TList(%v)", v.tlist)
+		return fmt.Sprintf("TList(%v)", v.tcoll)
 	default:
 		panic(fmt.Sprintf("Unknown value type %v", v.typ))
 	}
