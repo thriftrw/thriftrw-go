@@ -38,17 +38,17 @@ func ValuesAreEqual(left, right Value) bool {
 
 	switch left.typ {
 	case TBool:
-		return left.tbool == right.tbool
+		return left.GetBool() == right.GetBool()
 	case TI8:
-		return left.ti8 == right.ti8
+		return left.GetI8() == right.GetI8()
 	case TDouble:
-		return left.tdouble == right.tdouble
+		return left.GetDouble() == right.GetDouble()
 	case TI16:
-		return left.ti16 == right.ti16
+		return left.GetI16() == right.GetI16()
 	case TI32:
-		return left.ti32 == right.ti32
+		return left.GetI32() == right.GetI32()
 	case TI64:
-		return left.ti64 == right.ti64
+		return left.GetI64() == right.GetI64()
 	case TBinary:
 		return bytes.Equal(left.tbinary, right.tbinary)
 	case TStruct:
