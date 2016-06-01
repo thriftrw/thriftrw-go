@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+// Package ptr provides helpers to convert basic types to pointers.
 package ptr
 
 // Bool converts a bool to a pointer
