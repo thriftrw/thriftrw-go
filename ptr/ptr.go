@@ -46,8 +46,8 @@ func Int64(x int64) *int64 {
 	return &x
 }
 
-// Double converts a float64 to a pointer
-func Double(x float64) *float64 {
+// Float64 converts a float64 to a pointer
+func Float64(x float64) *float64 {
 	return &x
 }
 
