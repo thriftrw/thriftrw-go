@@ -20,8 +20,13 @@
 
 package ptr
 
-// Byte converts an int8 to a pointer
-func Byte(x int8) *int8 {
+// Bool converts a bool to a pointer
+func Bool(x bool) *bool {
+	return &x
+}
+
+// Int8 converts an int8 to a pointer
+func Int8(x int8) *int8 {
 	return &x
 }
 
