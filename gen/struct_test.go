@@ -153,34 +153,27 @@ func TestStructRoundTripAndString(t *testing.T) {
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 1,
-					Value: wire.NewValueList(wire.List{
-						ValueType: wire.TBinary,
-						Size:      3,
-						Items: wire.ValueListFromSlice([]wire.Value{
+					Value: wire.NewValueList(
+						wire.ValueListFromSlice(wire.TBinary, []wire.Value([]wire.Value{
 							wire.NewValueString("foo"),
 							wire.NewValueString("bar"),
 							wire.NewValueString("baz"),
-						}),
-					}),
+						})),
+					),
 				},
 				{
 					ID: 2,
-					Value: wire.NewValueSet(wire.Set{
-						ValueType: wire.TI32,
-						Size:      2,
-						Items: wire.ValueListFromSlice([]wire.Value{
+					Value: wire.NewValueSet(
+						wire.ValueListFromSlice(wire.TI32, []wire.Value{
 							wire.NewValueI32(1),
 							wire.NewValueI32(2),
 						}),
-					}),
+					),
 				},
 				{
 					ID: 3,
-					Value: wire.NewValueMap(wire.Map{
-						KeyType:   wire.TI64,
-						ValueType: wire.TDouble,
-						Size:      2,
-						Items: wire.MapItemListFromSlice([]wire.MapItem{
+					Value: wire.NewValueMap(
+						wire.MapItemListFromSlice(wire.TI64, wire.TDouble, []wire.MapItem{
 							wire.MapItem{
 								Key:   wire.NewValueI64(1),
 								Value: wire.NewValueDouble(2.0),
@@ -190,7 +183,7 @@ func TestStructRoundTripAndString(t *testing.T) {
 								Value: wire.NewValueDouble(4.0),
 							},
 						}),
-					}),
+					),
 				},
 			}}),
 			"",
@@ -303,10 +296,8 @@ func TestStructRoundTripAndString(t *testing.T) {
 				{StringValue: stringp("hello")},
 			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 4, Value: wire.NewValueList(wire.List{
-					ValueType: wire.TStruct,
-					Size:      3,
-					Items: wire.ValueListFromSlice([]wire.Value{
+				{ID: 4, Value: wire.NewValueList(
+					wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 						wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 							{ID: 1, Value: wire.NewValueBool(true)},
 						}}),
@@ -317,7 +308,7 @@ func TestStructRoundTripAndString(t *testing.T) {
 							{ID: 3, Value: wire.NewValueString("hello")},
 						}}),
 					}),
-				})},
+				)},
 			}}),
 			"ArbitraryValue{ListValue: [ArbitraryValue{BoolValue: true} ArbitraryValue{Int64Value: 42} ArbitraryValue{StringValue: hello}]}",
 		},
@@ -329,11 +320,8 @@ func TestStructRoundTripAndString(t *testing.T) {
 				"string": {StringValue: stringp("hello")},
 			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 5, Value: wire.NewValueMap(wire.Map{
-					KeyType:   wire.TBinary,
-					ValueType: wire.TStruct,
-					Size:      3,
-					Items: wire.MapItemListFromSlice([]wire.MapItem{
+				{ID: 5, Value: wire.NewValueMap(
+					wire.MapItemListFromSlice(wire.TBinary, wire.TStruct, []wire.MapItem{
 						{
 							Key: wire.NewValueString("bool"),
 							Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -353,7 +341,7 @@ func TestStructRoundTripAndString(t *testing.T) {
 							}}),
 						},
 					}),
-				})},
+				)},
 			}}),
 			"",
 		},
@@ -697,26 +685,22 @@ func TestStructWithDefaults(t *testing.T) {
 				{ID: 4, Value: wire.NewValueI32(2)},
 				{
 					ID: 5,
-					Value: wire.NewValueList(wire.List{
-						ValueType: wire.TBinary,
-						Size:      2,
-						Items: wire.ValueListFromSlice{
+					Value: wire.NewValueList(
+						wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 							wire.NewValueString("hello"),
 							wire.NewValueString("world"),
-						},
-					}),
+						}),
+					),
 				},
 				{
 					ID: 6,
-					Value: wire.NewValueList(wire.List{
-						ValueType: wire.TDouble,
-						Size:      3,
-						Items: wire.ValueListFromSlice{
+					Value: wire.NewValueList(
+						wire.ValueListFromSlice(wire.TDouble, []wire.Value{
 							wire.NewValueDouble(1.0),
 							wire.NewValueDouble(2.0),
 							wire.NewValueDouble(3.0),
-						},
-					}),
+						}),
+					),
 				},
 				{
 					ID: 7,
@@ -785,11 +769,9 @@ func TestStructWithDefaults(t *testing.T) {
 				{ID: 4, Value: wire.NewValueI32(0)},
 				{
 					ID: 5,
-					Value: wire.NewValueList(wire.List{
-						ValueType: wire.TBinary,
-						Size:      0,
-						Items:     wire.ValueListFromSlice{},
-					}),
+					Value: wire.NewValueList(
+						wire.ValueListFromSlice(wire.TBinary, []wire.Value{}),
+					),
 				},
 			}}),
 
@@ -800,23 +782,19 @@ func TestStructWithDefaults(t *testing.T) {
 				{ID: 4, Value: wire.NewValueI32(0)},
 				{
 					ID: 5,
-					Value: wire.NewValueList(wire.List{
-						ValueType: wire.TBinary,
-						Size:      0,
-						Items:     wire.ValueListFromSlice{},
-					}),
+					Value: wire.NewValueList(
+						wire.ValueListFromSlice(wire.TBinary, []wire.Value{}),
+					),
 				},
 				{
 					ID: 6,
-					Value: wire.NewValueList(wire.List{
-						ValueType: wire.TDouble,
-						Size:      3,
-						Items: wire.ValueListFromSlice{
+					Value: wire.NewValueList(
+						wire.ValueListFromSlice(wire.TDouble, []wire.Value{
 							wire.NewValueDouble(1.0),
 							wire.NewValueDouble(2.0),
 							wire.NewValueDouble(3.0),
-						},
-					}),
+						}),
+					),
 				},
 				{
 					ID: 7,
@@ -1105,10 +1083,8 @@ func TestStructValidation(t *testing.T) {
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 1,
-					Value: wire.NewValueList(wire.List{
-						ValueType: wire.TStruct,
-						Size:      2,
-						Items: wire.ValueListFromSlice{
+					Value: wire.NewValueList(
+						wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 								{
 									ID: 1,
@@ -1134,8 +1110,8 @@ func TestStructValidation(t *testing.T) {
 									}}),
 								},
 							}}),
-						},
-					}),
+						}),
+					),
 				},
 			}}),
 			wantError: "field End of Edge is required",
@@ -1165,23 +1141,18 @@ func TestStructValidation(t *testing.T) {
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 2,
-					Value: wire.NewValueSet(wire.Set{
-						ValueType: wire.TI32,
-						Size:      3,
-						Items: wire.ValueListFromSlice{
+					Value: wire.NewValueSet(
+						wire.ValueListFromSlice(wire.TI32, []wire.Value{
 							wire.NewValueI32(1),
 							wire.NewValueI32(2),
 							wire.NewValueI32(3),
-						},
-					}),
+						}),
+					),
 				},
 				{
 					ID: 3,
-					Value: wire.NewValueMap(wire.Map{
-						KeyType:   wire.TI64,
-						ValueType: wire.TDouble,
-						Size:      2,
-						Items: wire.MapItemListFromSlice{
+					Value: wire.NewValueMap(
+						wire.MapItemListFromSlice(wire.TI64, wire.TDouble, []wire.MapItem{
 							{
 								Key:   wire.NewValueI64(1),
 								Value: wire.NewValueDouble(2.3),
@@ -1190,8 +1161,8 @@ func TestStructValidation(t *testing.T) {
 								Key:   wire.NewValueI64(4),
 								Value: wire.NewValueDouble(5.6),
 							},
-						},
-					}),
+						}),
+					),
 				},
 			}}),
 			wantError: "field ListOfStrings of PrimitiveContainersRequired is required",
@@ -1205,22 +1176,17 @@ func TestStructValidation(t *testing.T) {
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 1,
-					Value: wire.NewValueList(wire.List{
-						ValueType: wire.TBinary,
-						Size:      2,
-						Items: wire.ValueListFromSlice{
+					Value: wire.NewValueList(
+						wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 							wire.NewValueString("hello"),
 							wire.NewValueString("world"),
-						},
-					}),
+						}),
+					),
 				},
 				{
 					ID: 3,
-					Value: wire.NewValueMap(wire.Map{
-						KeyType:   wire.TI64,
-						ValueType: wire.TDouble,
-						Size:      2,
-						Items: wire.MapItemListFromSlice{
+					Value: wire.NewValueMap(
+						wire.MapItemListFromSlice(wire.TI64, wire.TDouble, []wire.MapItem{
 							{
 								Key:   wire.NewValueI64(1),
 								Value: wire.NewValueDouble(2.3),
@@ -1229,8 +1195,8 @@ func TestStructValidation(t *testing.T) {
 								Key:   wire.NewValueI64(4),
 								Value: wire.NewValueDouble(5.6),
 							},
-						},
-					}),
+						}),
+					),
 				},
 			}}),
 			wantError: "field SetOfInts of PrimitiveContainersRequired is required",
@@ -1248,26 +1214,22 @@ func TestStructValidation(t *testing.T) {
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 1,
-					Value: wire.NewValueList(wire.List{
-						ValueType: wire.TBinary,
-						Size:      2,
-						Items: wire.ValueListFromSlice{
+					Value: wire.NewValueList(
+						wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 							wire.NewValueString("hello"),
 							wire.NewValueString("world"),
-						},
-					}),
+						}),
+					),
 				},
 				{
 					ID: 2,
-					Value: wire.NewValueSet(wire.Set{
-						ValueType: wire.TI32,
-						Size:      3,
-						Items: wire.ValueListFromSlice{
+					Value: wire.NewValueSet(
+						wire.ValueListFromSlice(wire.TI32, []wire.Value{
 							wire.NewValueI32(1),
 							wire.NewValueI32(2),
 							wire.NewValueI32(3),
-						},
-					}),
+						}),
+					),
 				},
 			}}),
 			wantError: "field MapOfIntsToDoubles of PrimitiveContainersRequired is required",
@@ -1339,10 +1301,8 @@ func TestStructValidation(t *testing.T) {
 				{ID: 3, Value: wire.NewValueString("")},
 				{
 					ID: 4,
-					Value: wire.NewValueList(wire.List{
-						ValueType: wire.TStruct,
-						Size:      3,
-						Items: wire.ValueListFromSlice{
+					Value: wire.NewValueList(
+						wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 								{ID: 1, Value: wire.NewValueBool(true)},
 							}}),
@@ -1352,16 +1312,13 @@ func TestStructValidation(t *testing.T) {
 							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 								{ID: 3, Value: wire.NewValueString("")},
 							}}),
-						},
-					}),
+						}),
+					),
 				},
 				{
 					ID: 5,
-					Value: wire.NewValueMap(wire.Map{
-						KeyType:   wire.TBinary,
-						ValueType: wire.TStruct,
-						Size:      3,
-						Items: wire.MapItemListFromSlice{
+					Value: wire.NewValueMap(
+						wire.MapItemListFromSlice(wire.TBinary, wire.TStruct, []wire.MapItem{
 							{
 								Key: wire.NewValueString("bool"),
 								Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -1380,8 +1337,8 @@ func TestStructValidation(t *testing.T) {
 									{ID: 3, Value: wire.NewValueString("")},
 								}}),
 							},
-						},
-					}),
+						}),
+					),
 				},
 			}}),
 			wantError: "ArbitraryValue should have exactly one field: got 5 fields",
@@ -1397,16 +1354,13 @@ func TestStructValidation(t *testing.T) {
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 4,
-					Value: wire.NewValueList(wire.List{
-						ValueType: wire.TStruct,
-						Size:      2,
-						Items: wire.ValueListFromSlice{
+					Value: wire.NewValueList(
+						wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 								{ID: 1, Value: wire.NewValueBool(true)},
 							}}),
 							wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
-						},
-					}),
+						})),
 				},
 			}}),
 			wantError: "ArbitraryValue should have exactly one field: got 0 fields",
@@ -1422,11 +1376,8 @@ func TestStructValidation(t *testing.T) {
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 5,
-					Value: wire.NewValueMap(wire.Map{
-						KeyType:   wire.TBinary,
-						ValueType: wire.TStruct,
-						Size:      2,
-						Items: wire.MapItemListFromSlice{
+					Value: wire.NewValueMap(
+						wire.MapItemListFromSlice(wire.TBinary, wire.TStruct, []wire.MapItem{
 							{
 								Key: wire.NewValueString("bool"),
 								Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -1437,8 +1388,8 @@ func TestStructValidation(t *testing.T) {
 								Key:   wire.NewValueString("empty"),
 								Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
 							},
-						},
-					}),
+						}),
+					),
 				},
 			}}),
 			wantError: "ArbitraryValue should have exactly one field: got 0 fields",
@@ -1452,10 +1403,8 @@ func TestStructValidation(t *testing.T) {
 				},
 				&ts.Frame{TopLeft: &ts.Point{X: 5, Y: 6}},
 			},
-			deserialize: wire.NewValueSet(wire.Set{
-				ValueType: wire.TStruct,
-				Size:      2,
-				Items: wire.ValueListFromSlice{
+			deserialize: wire.NewValueSet(
+				wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 						{
 							ID: 1,
@@ -1499,8 +1448,8 @@ func TestStructValidation(t *testing.T) {
 							}}),
 						},
 					}}),
-				},
-			}),
+				}),
+			),
 			wantError: "field Size of Frame is required",
 		},
 		{
@@ -1511,11 +1460,8 @@ func TestStructValidation(t *testing.T) {
 					Value: &ts.Edge{Start: &ts.Point{X: 3, Y: 4}, End: &ts.Point{X: 5, Y: 6}},
 				},
 			},
-			deserialize: wire.NewValueMap(wire.Map{
-				KeyType:   wire.TStruct,
-				ValueType: wire.TStruct,
-				Size:      1,
-				Items: wire.MapItemListFromSlice{
+			deserialize: wire.NewValueMap(
+				wire.MapItemListFromSlice(wire.TStruct, wire.TStruct, []wire.MapItem{
 					{
 						Key: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 							{
@@ -1543,8 +1489,8 @@ func TestStructValidation(t *testing.T) {
 							},
 						}}),
 					},
-				},
-			}),
+				}),
+			),
 			wantError: "field End of Edge is required",
 		},
 	}

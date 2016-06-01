@@ -40,12 +40,8 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 			"empty list",
 			tc.PrimitiveContainers{ListOfInts: []int64{}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
-				ID: 2,
-				Value: wire.NewValueList(wire.List{
-					ValueType: wire.TI64,
-					Size:      0,
-					Items:     wire.ValueListFromSlice([]wire.Value{}),
-				}),
+				ID:    2,
+				Value: wire.NewValueList(wire.ValueListFromSlice(wire.TI64, []wire.Value{})),
 			}}}),
 		},
 		{
@@ -53,15 +49,13 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 			tc.PrimitiveContainers{ListOfInts: []int64{1, 2, 3}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 2,
-				Value: wire.NewValueList(wire.List{
-					ValueType: wire.TI64,
-					Size:      3,
-					Items: wire.ValueListFromSlice([]wire.Value{
+				Value: wire.NewValueList(
+					wire.ValueListFromSlice(wire.TI64, []wire.Value{
 						wire.NewValueI64(1),
 						wire.NewValueI64(2),
 						wire.NewValueI64(3),
 					}),
-				}),
+				),
 			}}}),
 		},
 		{
@@ -73,15 +67,13 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 1,
-				Value: wire.NewValueList(wire.List{
-					ValueType: wire.TBinary,
-					Size:      3,
-					Items: wire.ValueListFromSlice([]wire.Value{
+				Value: wire.NewValueList(
+					wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 						wire.NewValueBinary([]byte("foo")),
 						wire.NewValueBinary([]byte("bar")),
 						wire.NewValueBinary([]byte("baz")),
 					}),
-				}),
+				),
 			}}}),
 		},
 		// Sets //////////////////////////////////////////////////////////////
@@ -90,11 +82,9 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 3,
-				Value: wire.NewValueSet(wire.Set{
-					ValueType: wire.TBinary,
-					Size:      0,
-					Items:     wire.ValueListFromSlice([]wire.Value{}),
-				}),
+				Value: wire.NewValueSet(
+					wire.ValueListFromSlice(wire.TBinary, []wire.Value{}),
+				),
 			}}}),
 		},
 		{
@@ -106,15 +96,13 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 3,
-				Value: wire.NewValueSet(wire.Set{
-					ValueType: wire.TBinary,
-					Size:      3,
-					Items: wire.ValueListFromSlice([]wire.Value{
+				Value: wire.NewValueSet(
+					wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 						wire.NewValueString("foo"),
 						wire.NewValueString("bar"),
 						wire.NewValueString("baz"),
 					}),
-				}),
+				),
 			}}}),
 		},
 		{
@@ -126,15 +114,13 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 4,
-				Value: wire.NewValueSet(wire.Set{
-					ValueType: wire.TI8,
-					Size:      3,
-					Items: wire.ValueListFromSlice([]wire.Value{
+				Value: wire.NewValueSet(
+					wire.ValueListFromSlice(wire.TI8, []wire.Value{
 						wire.NewValueI8(-1),
 						wire.NewValueI8(1),
 						wire.NewValueI8(125),
 					}),
-				}),
+				),
 			}}}),
 		},
 		// Maps //////////////////////////////////////////////////////////////
@@ -143,12 +129,9 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 			tc.PrimitiveContainers{MapOfStringToBool: map[string]bool{}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 6,
-				Value: wire.NewValueMap(wire.Map{
-					KeyType:   wire.TBinary,
-					ValueType: wire.TBool,
-					Size:      0,
-					Items:     wire.MapItemListFromSlice([]wire.MapItem{}),
-				}),
+				Value: wire.NewValueMap(
+					wire.MapItemListFromSlice(wire.TBinary, wire.TBool, []wire.MapItem{}),
+				),
 			}}}),
 		},
 		{
@@ -160,16 +143,13 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 5,
-				Value: wire.NewValueMap(wire.Map{
-					KeyType:   wire.TI32,
-					ValueType: wire.TBinary,
-					Size:      3,
-					Items: wire.MapItemListFromSlice([]wire.MapItem{
+				Value: wire.NewValueMap(
+					wire.MapItemListFromSlice(wire.TI32, wire.TBinary, []wire.MapItem{
 						{Key: wire.NewValueI32(-1), Value: wire.NewValueString("foo")},
 						{Key: wire.NewValueI32(1234), Value: wire.NewValueString("bar")},
 						{Key: wire.NewValueI32(-9876), Value: wire.NewValueString("baz")},
 					}),
-				}),
+				),
 			}}}),
 		},
 		{
@@ -181,16 +161,13 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 6,
-				Value: wire.NewValueMap(wire.Map{
-					KeyType:   wire.TBinary,
-					ValueType: wire.TBool,
-					Size:      3,
-					Items: wire.MapItemListFromSlice([]wire.MapItem{
+				Value: wire.NewValueMap(
+					wire.MapItemListFromSlice(wire.TBinary, wire.TBool, []wire.MapItem{
 						{Key: wire.NewValueString("foo"), Value: wire.NewValueBool(true)},
 						{Key: wire.NewValueString("bar"), Value: wire.NewValueBool(false)},
 						{Key: wire.NewValueString("baz"), Value: wire.NewValueBool(true)},
 					}),
-				}),
+				),
 			}}}),
 		},
 	}
@@ -212,14 +189,12 @@ func TestEnumContainers(t *testing.T) {
 					te.EnumDefaultBar,
 				},
 			},
-			singleFieldStruct(1, wire.NewValueList(wire.List{
-				ValueType: wire.TI32,
-				Size:      2,
-				Items: wire.ValueListFromSlice([]wire.Value{
+			singleFieldStruct(1, wire.NewValueList(
+				wire.ValueListFromSlice(wire.TI32, []wire.Value{
 					wire.NewValueI32(0),
 					wire.NewValueI32(1),
 				}),
-			})),
+			)),
 		},
 		{
 			tc.EnumContainers{
@@ -228,14 +203,12 @@ func TestEnumContainers(t *testing.T) {
 					te.EnumWithValuesZ: struct{}{},
 				},
 			},
-			singleFieldStruct(2, wire.NewValueSet(wire.Set{
-				ValueType: wire.TI32,
-				Size:      2,
-				Items: wire.ValueListFromSlice([]wire.Value{
+			singleFieldStruct(2, wire.NewValueSet(
+				wire.ValueListFromSlice(wire.TI32, []wire.Value{
 					wire.NewValueI32(123),
 					wire.NewValueI32(789),
 				}),
-			})),
+			)),
 		},
 		{
 			tc.EnumContainers{
@@ -244,15 +217,12 @@ func TestEnumContainers(t *testing.T) {
 					te.EnumWithDuplicateValuesQ: 456,
 				},
 			},
-			singleFieldStruct(3, wire.NewValueMap(wire.Map{
-				KeyType:   wire.TI32,
-				ValueType: wire.TI32,
-				Size:      2,
-				Items: wire.MapItemListFromSlice([]wire.MapItem{
+			singleFieldStruct(3, wire.NewValueMap(
+				wire.MapItemListFromSlice(wire.TI32, wire.TI32, []wire.MapItem{
 					wire.MapItem{Key: wire.NewValueI32(0), Value: wire.NewValueI32(123)},
 					wire.MapItem{Key: wire.NewValueI32(-1), Value: wire.NewValueI32(456)},
 				}),
-			})),
+			)),
 		},
 		{
 			// this is the same as the one above except we're using "R" intsead
@@ -263,15 +233,13 @@ func TestEnumContainers(t *testing.T) {
 					te.EnumWithDuplicateValuesQ: 456,
 				},
 			},
-			singleFieldStruct(3, wire.NewValueMap(wire.Map{
-				KeyType:   wire.TI32,
-				ValueType: wire.TI32,
-				Size:      2,
-				Items: wire.MapItemListFromSlice([]wire.MapItem{
+			singleFieldStruct(3, wire.NewValueMap(
+
+				wire.MapItemListFromSlice(wire.TI32, wire.TI32, []wire.MapItem{
 					wire.MapItem{Key: wire.NewValueI32(0), Value: wire.NewValueI32(123)},
 					wire.MapItem{Key: wire.NewValueI32(-1), Value: wire.NewValueI32(456)},
 				}),
-			})),
+			)),
 		},
 	}
 
@@ -287,11 +255,9 @@ func TestListOfStructs(t *testing.T) {
 	}{
 		{
 			ts.Graph{Edges: []*ts.Edge{}},
-			singleFieldStruct(1, wire.NewValueList(wire.List{
-				ValueType: wire.TStruct,
-				Size:      0,
-				Items:     wire.ValueListFromSlice(nil),
-			})),
+			singleFieldStruct(1, wire.NewValueList(
+				wire.ValueListFromSlice(wire.TStruct, nil),
+			)),
 		},
 		{
 			ts.Graph{Edges: []*ts.Edge{
@@ -308,10 +274,8 @@ func TestListOfStructs(t *testing.T) {
 					End:   &ts.Point{X: 11.0, Y: 12.0},
 				},
 			}},
-			singleFieldStruct(1, wire.NewValueList(wire.List{
-				ValueType: wire.TStruct,
-				Size:      3,
-				Items: wire.ValueListFromSlice([]wire.Value{
+			singleFieldStruct(1, wire.NewValueList(
+				wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 						{
 							ID: 1,
@@ -361,7 +325,7 @@ func TestListOfStructs(t *testing.T) {
 						},
 					}}),
 				}),
-			})),
+			)),
 		},
 	}
 
@@ -385,30 +349,24 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 1, Value: wire.NewValueList(wire.List{
-					ValueType: wire.TList,
-					Size:      2,
-					Items: wire.ValueListFromSlice([]wire.Value{
-						wire.NewValueList(wire.List{
-							ValueType: wire.TI32,
-							Size:      3,
-							Items: wire.ValueListFromSlice([]wire.Value{
+				{ID: 1, Value: wire.NewValueList(
+					wire.ValueListFromSlice(wire.TList, []wire.Value{
+						wire.NewValueList(
+							wire.ValueListFromSlice(wire.TI32, []wire.Value{
 								wire.NewValueI32(1),
 								wire.NewValueI32(2),
 								wire.NewValueI32(3),
 							}),
-						}),
-						wire.NewValueList(wire.List{
-							ValueType: wire.TI32,
-							Size:      3,
-							Items: wire.ValueListFromSlice([]wire.Value{
+						),
+						wire.NewValueList(
+							wire.ValueListFromSlice(wire.TI32, []wire.Value{
 								wire.NewValueI32(4),
 								wire.NewValueI32(5),
 								wire.NewValueI32(6),
 							}),
-						}),
+						),
 					}),
-				})},
+				)},
 			}}),
 		},
 		{
@@ -428,30 +386,24 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 2, Value: wire.NewValueList(wire.List{
-					ValueType: wire.TSet,
-					Size:      2,
-					Items: wire.ValueListFromSlice([]wire.Value{
-						wire.NewValueSet(wire.Set{
-							ValueType: wire.TI32,
-							Size:      3,
-							Items: wire.ValueListFromSlice([]wire.Value{
+				{ID: 2, Value: wire.NewValueList(
+					wire.ValueListFromSlice(wire.TSet, []wire.Value{
+						wire.NewValueSet(
+							wire.ValueListFromSlice(wire.TI32, []wire.Value{
 								wire.NewValueI32(1),
 								wire.NewValueI32(2),
 								wire.NewValueI32(3),
 							}),
-						}),
-						wire.NewValueSet(wire.Set{
-							ValueType: wire.TI32,
-							Size:      3,
-							Items: wire.ValueListFromSlice([]wire.Value{
+						),
+						wire.NewValueSet(
+							wire.ValueListFromSlice(wire.TI32, []wire.Value{
 								wire.NewValueI32(4),
 								wire.NewValueI32(5),
 								wire.NewValueI32(6),
 							}),
-						}),
+						),
 					}),
-				})},
+				)},
 			}}),
 		},
 		{
@@ -471,32 +423,24 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 3, Value: wire.NewValueList(wire.List{
-					ValueType: wire.TMap,
-					Size:      2,
-					Items: wire.ValueListFromSlice([]wire.Value{
-						wire.NewValueMap(wire.Map{
-							KeyType:   wire.TI32,
-							ValueType: wire.TI32,
-							Size:      3,
-							Items: wire.MapItemListFromSlice([]wire.MapItem{
+				{ID: 3, Value: wire.NewValueList(
+					wire.ValueListFromSlice(wire.TMap, []wire.Value{
+						wire.NewValueMap(
+							wire.MapItemListFromSlice(wire.TI32, wire.TI32, []wire.MapItem{
 								{Key: wire.NewValueI32(1), Value: wire.NewValueI32(100)},
 								{Key: wire.NewValueI32(2), Value: wire.NewValueI32(200)},
 								{Key: wire.NewValueI32(3), Value: wire.NewValueI32(300)},
 							}),
-						}),
-						wire.NewValueMap(wire.Map{
-							KeyType:   wire.TI32,
-							ValueType: wire.TI32,
-							Size:      3,
-							Items: wire.MapItemListFromSlice([]wire.MapItem{
+						),
+						wire.NewValueMap(
+							wire.MapItemListFromSlice(wire.TI32, wire.TI32, []wire.MapItem{
 								{Key: wire.NewValueI32(4), Value: wire.NewValueI32(400)},
 								{Key: wire.NewValueI32(5), Value: wire.NewValueI32(500)},
 								{Key: wire.NewValueI32(6), Value: wire.NewValueI32(600)},
 							}),
-						}),
+						),
 					}),
-				})},
+				)},
 			}}),
 		},
 		{
@@ -516,30 +460,24 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 4, Value: wire.NewValueSet(wire.Set{
-					ValueType: wire.TSet,
-					Size:      2,
-					Items: wire.ValueListFromSlice([]wire.Value{
-						wire.NewValueSet(wire.Set{
-							ValueType: wire.TBinary,
-							Size:      3,
-							Items: wire.ValueListFromSlice([]wire.Value{
+				{ID: 4, Value: wire.NewValueSet(
+					wire.ValueListFromSlice(wire.TSet, []wire.Value{
+						wire.NewValueSet(
+							wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 								wire.NewValueString("1"),
 								wire.NewValueString("2"),
 								wire.NewValueString("3"),
 							}),
-						}),
-						wire.NewValueSet(wire.Set{
-							ValueType: wire.TBinary,
-							Size:      3,
-							Items: wire.ValueListFromSlice([]wire.Value{
+						),
+						wire.NewValueSet(
+							wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 								wire.NewValueString("4"),
 								wire.NewValueString("5"),
 								wire.NewValueString("6"),
 							}),
-						}),
+						),
 					}),
-				})},
+				)},
 			}}),
 		},
 		{
@@ -551,30 +489,24 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 5, Value: wire.NewValueSet(wire.Set{
-					ValueType: wire.TList,
-					Size:      2,
-					Items: wire.ValueListFromSlice([]wire.Value{
-						wire.NewValueList(wire.List{
-							ValueType: wire.TBinary,
-							Size:      3,
-							Items: wire.ValueListFromSlice([]wire.Value{
+				{ID: 5, Value: wire.NewValueSet(
+					wire.ValueListFromSlice(wire.TList, []wire.Value{
+						wire.NewValueList(
+							wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 								wire.NewValueString("1"),
 								wire.NewValueString("2"),
 								wire.NewValueString("3"),
 							}),
-						}),
-						wire.NewValueList(wire.List{
-							ValueType: wire.TBinary,
-							Size:      3,
-							Items: wire.ValueListFromSlice([]wire.Value{
+						),
+						wire.NewValueList(
+							wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 								wire.NewValueString("4"),
 								wire.NewValueString("5"),
 								wire.NewValueString("6"),
 							}),
-						}),
+						),
 					}),
-				})},
+				)},
 			}}),
 		},
 		{
@@ -594,32 +526,24 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 6, Value: wire.NewValueSet(wire.Set{
-					ValueType: wire.TMap,
-					Size:      2,
-					Items: wire.ValueListFromSlice([]wire.Value{
-						wire.NewValueMap(wire.Map{
-							KeyType:   wire.TBinary,
-							ValueType: wire.TBinary,
-							Size:      3,
-							Items: wire.MapItemListFromSlice([]wire.MapItem{
+				{ID: 6, Value: wire.NewValueSet(
+					wire.ValueListFromSlice(wire.TMap, []wire.Value{
+						wire.NewValueMap(
+							wire.MapItemListFromSlice(wire.TBinary, wire.TBinary, []wire.MapItem{
 								{Key: wire.NewValueString("1"), Value: wire.NewValueString("one")},
 								{Key: wire.NewValueString("2"), Value: wire.NewValueString("two")},
 								{Key: wire.NewValueString("3"), Value: wire.NewValueString("three")},
 							}),
-						}),
-						wire.NewValueMap(wire.Map{
-							KeyType:   wire.TBinary,
-							ValueType: wire.TBinary,
-							Size:      3,
-							Items: wire.MapItemListFromSlice([]wire.MapItem{
+						),
+						wire.NewValueMap(
+							wire.MapItemListFromSlice(wire.TBinary, wire.TBinary, []wire.MapItem{
 								{Key: wire.NewValueString("4"), Value: wire.NewValueString("four")},
 								{Key: wire.NewValueString("5"), Value: wire.NewValueString("five")},
 								{Key: wire.NewValueString("6"), Value: wire.NewValueString("six")},
 							}),
-						}),
+						),
 					}),
-				})},
+				)},
 			}}),
 		},
 		{
@@ -640,39 +564,30 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 7, Value: wire.NewValueMap(wire.Map{
-					KeyType:   wire.TMap,
-					ValueType: wire.TI64,
-					Size:      2,
-					Items: wire.MapItemListFromSlice([]wire.MapItem{
+				{ID: 7, Value: wire.NewValueMap(
+					wire.MapItemListFromSlice(wire.TMap, wire.TI64, []wire.MapItem{
 						{
-							Key: wire.NewValueMap(wire.Map{
-								KeyType:   wire.TBinary,
-								ValueType: wire.TI32,
-								Size:      3,
-								Items: wire.MapItemListFromSlice([]wire.MapItem{
+							Key: wire.NewValueMap(
+								wire.MapItemListFromSlice(wire.TBinary, wire.TI32, []wire.MapItem{
 									{Key: wire.NewValueString("1"), Value: wire.NewValueI32(1)},
 									{Key: wire.NewValueString("2"), Value: wire.NewValueI32(2)},
 									{Key: wire.NewValueString("3"), Value: wire.NewValueI32(3)},
 								}),
-							}),
+							),
 							Value: wire.NewValueI64(123),
 						},
 						{
-							Key: wire.NewValueMap(wire.Map{
-								KeyType:   wire.TBinary,
-								ValueType: wire.TI32,
-								Size:      3,
-								Items: wire.MapItemListFromSlice([]wire.MapItem{
+							Key: wire.NewValueMap(
+								wire.MapItemListFromSlice(wire.TBinary, wire.TI32, []wire.MapItem{
 									{Key: wire.NewValueString("4"), Value: wire.NewValueI32(4)},
 									{Key: wire.NewValueString("5"), Value: wire.NewValueI32(5)},
 									{Key: wire.NewValueString("6"), Value: wire.NewValueI32(6)},
 								}),
-							}),
+							),
 							Value: wire.NewValueI64(456),
 						},
 					}),
-				})},
+				)},
 			}}),
 		},
 		{
@@ -701,53 +616,42 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 8, Value: wire.NewValueMap(wire.Map{
-					KeyType:   wire.TList,
-					ValueType: wire.TSet,
-					Size:      2,
-					Items: wire.MapItemListFromSlice([]wire.MapItem{
+				{ID: 8, Value: wire.NewValueMap(
+					wire.MapItemListFromSlice(wire.TList, wire.TSet, []wire.MapItem{
 						{
-							Key: wire.NewValueList(wire.List{
-								ValueType: wire.TI32,
-								Size:      3,
-								Items: wire.ValueListFromSlice([]wire.Value{
+							Key: wire.NewValueList(
+								wire.ValueListFromSlice(wire.TI32, []wire.Value{
 									wire.NewValueI32(1),
 									wire.NewValueI32(2),
 									wire.NewValueI32(3),
 								}),
-							}),
-							Value: wire.NewValueSet(wire.Set{
-								ValueType: wire.TI64,
-								Size:      3,
-								Items: wire.ValueListFromSlice([]wire.Value{
+							),
+							Value: wire.NewValueSet(
+								wire.ValueListFromSlice(wire.TI64, []wire.Value{
 									wire.NewValueI64(1),
 									wire.NewValueI64(2),
 									wire.NewValueI64(3),
 								}),
-							}),
+							),
 						},
 						{
-							Key: wire.NewValueList(wire.List{
-								ValueType: wire.TI32,
-								Size:      3,
-								Items: wire.ValueListFromSlice([]wire.Value{
+							Key: wire.NewValueList(
+								wire.ValueListFromSlice(wire.TI32, []wire.Value{
 									wire.NewValueI32(4),
 									wire.NewValueI32(5),
 									wire.NewValueI32(6),
 								}),
-							}),
-							Value: wire.NewValueSet(wire.Set{
-								ValueType: wire.TI64,
-								Size:      3,
-								Items: wire.ValueListFromSlice([]wire.Value{
+							),
+							Value: wire.NewValueSet(
+								wire.ValueListFromSlice(wire.TI64, []wire.Value{
 									wire.NewValueI64(4),
 									wire.NewValueI64(5),
 									wire.NewValueI64(6),
 								}),
-							}),
+							),
 						},
 					}),
-				})},
+				)},
 			}}),
 		},
 		{
@@ -776,53 +680,42 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 9, Value: wire.NewValueMap(wire.Map{
-					KeyType:   wire.TSet,
-					ValueType: wire.TList,
-					Size:      2,
-					Items: wire.MapItemListFromSlice([]wire.MapItem{
+				{ID: 9, Value: wire.NewValueMap(
+					wire.MapItemListFromSlice(wire.TSet, wire.TList, []wire.MapItem{
 						{
-							Key: wire.NewValueSet(wire.Set{
-								ValueType: wire.TI32,
-								Size:      3,
-								Items: wire.ValueListFromSlice([]wire.Value{
+							Key: wire.NewValueSet(
+								wire.ValueListFromSlice(wire.TI32, []wire.Value{
 									wire.NewValueI32(1),
 									wire.NewValueI32(2),
 									wire.NewValueI32(3),
 								}),
-							}),
-							Value: wire.NewValueList(wire.List{
-								ValueType: wire.TDouble,
-								Size:      3,
-								Items: wire.ValueListFromSlice([]wire.Value{
+							),
+							Value: wire.NewValueList(
+								wire.ValueListFromSlice(wire.TDouble, []wire.Value{
 									wire.NewValueDouble(1.0),
 									wire.NewValueDouble(2.0),
 									wire.NewValueDouble(3.0),
 								}),
-							}),
+							),
 						},
 						{
-							Key: wire.NewValueSet(wire.Set{
-								ValueType: wire.TI32,
-								Size:      3,
-								Items: wire.ValueListFromSlice([]wire.Value{
+							Key: wire.NewValueSet(
+								wire.ValueListFromSlice(wire.TI32, []wire.Value{
 									wire.NewValueI32(4),
 									wire.NewValueI32(5),
 									wire.NewValueI32(6),
 								}),
-							}),
-							Value: wire.NewValueList(wire.List{
-								ValueType: wire.TDouble,
-								Size:      3,
-								Items: wire.ValueListFromSlice([]wire.Value{
+							),
+							Value: wire.NewValueList(
+								wire.ValueListFromSlice(wire.TDouble, []wire.Value{
 									wire.NewValueDouble(4.0),
 									wire.NewValueDouble(5.0),
 									wire.NewValueDouble(6.0),
 								}),
-							}),
+							),
 						},
 					}),
-				})},
+				)},
 			}}),
 		},
 	}

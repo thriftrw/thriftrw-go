@@ -27,15 +27,23 @@ func (v _Set_Binary_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _Set_Binary_ValueList) Close() {
+func (v _Set_Binary_ValueList) Size() int {
+	return len(v)
 }
 
-func _Set_Binary_Read(s wire.Set) ([][]byte, error) {
-	if s.ValueType != wire.TBinary {
+func (_Set_Binary_ValueList) ValueType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Set_Binary_ValueList) Close() {
+}
+
+func _Set_Binary_Read(s wire.ValueList) ([][]byte, error) {
+	if s.ValueType() != wire.TBinary {
 		return nil, nil
 	}
-	o := make([][]byte, 0, s.Size)
-	err := s.Items.ForEach(func(x wire.Value) error {
+	o := make([][]byte, 0, s.Size())
+	err := s.ForEach(func(x wire.Value) error {
 		i, err := x.GetBinary(), error(nil)
 		if err != nil {
 			return err
@@ -43,7 +51,7 @@ func _Set_Binary_Read(s wire.Set) ([][]byte, error) {
 		o = append(o, i)
 		return nil
 	})
-	s.Items.Close()
+	s.Close()
 	return o, err
 }
 
@@ -51,7 +59,7 @@ type BinarySet [][]byte
 
 func (v BinarySet) ToWire() (wire.Value, error) {
 	x := ([][]byte)(v)
-	return wire.NewValueSet(wire.Set{ValueType: wire.TBinary, Size: len(x), Items: _Set_Binary_ValueList(x)}), error(nil)
+	return wire.NewValueSet(_Set_Binary_ValueList(x)), error(nil)
 }
 
 func (v BinarySet) String() string {
@@ -90,7 +98,19 @@ func (m _Map_Edge_Edge_MapItemList) ForEach(f func(wire.MapItem) error) error {
 	return nil
 }
 
-func (m _Map_Edge_Edge_MapItemList) Close() {
+func (m _Map_Edge_Edge_MapItemList) Size() int {
+	return len(m)
+}
+
+func (_Map_Edge_Edge_MapItemList) KeyType() wire.Type {
+	return wire.TStruct
+}
+
+func (_Map_Edge_Edge_MapItemList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_Map_Edge_Edge_MapItemList) Close() {
 }
 
 func _Edge_Read(w wire.Value) (*structs.Edge, error) {
@@ -99,21 +119,21 @@ func _Edge_Read(w wire.Value) (*structs.Edge, error) {
 	return &v, err
 }
 
-func _Map_Edge_Edge_Read(m wire.Map) ([]struct {
+func _Map_Edge_Edge_Read(m wire.MapItemList) ([]struct {
 	Key   *structs.Edge
 	Value *structs.Edge
 }, error) {
-	if m.KeyType != wire.TStruct {
+	if m.KeyType() != wire.TStruct {
 		return nil, nil
 	}
-	if m.ValueType != wire.TStruct {
+	if m.ValueType() != wire.TStruct {
 		return nil, nil
 	}
 	o := make([]struct {
 		Key   *structs.Edge
 		Value *structs.Edge
-	}, 0, m.Size)
-	err := m.Items.ForEach(func(x wire.MapItem) error {
+	}, 0, m.Size())
+	err := m.ForEach(func(x wire.MapItem) error {
 		k, err := _Edge_Read(x.Key)
 		if err != nil {
 			return err
@@ -128,7 +148,7 @@ func _Map_Edge_Edge_Read(m wire.Map) ([]struct {
 		}{k, v})
 		return nil
 	})
-	m.Items.Close()
+	m.Close()
 	return o, err
 }
 
@@ -142,7 +162,7 @@ func (v EdgeMap) ToWire() (wire.Value, error) {
 		Key   *structs.Edge
 		Value *structs.Edge
 	})(v)
-	return wire.NewValueMap(wire.Map{KeyType: wire.TStruct, ValueType: wire.TStruct, Size: len(x), Items: _Map_Edge_Edge_MapItemList(x)}), error(nil)
+	return wire.NewValueMap(_Map_Edge_Edge_MapItemList(x)), error(nil)
 }
 
 func (v EdgeMap) String() string {
@@ -261,7 +281,15 @@ func (v _List_Event_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _List_Event_ValueList) Close() {
+func (v _List_Event_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_Event_ValueList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_List_Event_ValueList) Close() {
 }
 
 func _Event_Read(w wire.Value) (*Event, error) {
@@ -270,12 +298,12 @@ func _Event_Read(w wire.Value) (*Event, error) {
 	return &v, err
 }
 
-func _List_Event_Read(l wire.List) ([]*Event, error) {
-	if l.ValueType != wire.TStruct {
+func _List_Event_Read(l wire.ValueList) ([]*Event, error) {
+	if l.ValueType() != wire.TStruct {
 		return nil, nil
 	}
-	o := make([]*Event, 0, l.Size)
-	err := l.Items.ForEach(func(x wire.Value) error {
+	o := make([]*Event, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
 		i, err := _Event_Read(x)
 		if err != nil {
 			return err
@@ -283,7 +311,7 @@ func _List_Event_Read(l wire.List) ([]*Event, error) {
 		o = append(o, i)
 		return nil
 	})
-	l.Items.Close()
+	l.Close()
 	return o, err
 }
 
@@ -291,7 +319,7 @@ type EventGroup []*Event
 
 func (v EventGroup) ToWire() (wire.Value, error) {
 	x := ([]*Event)(v)
-	return wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(x), Items: _List_Event_ValueList(x)}), error(nil)
+	return wire.NewValueList(_List_Event_ValueList(x)), error(nil)
 }
 
 func (v EventGroup) String() string {
@@ -321,7 +349,15 @@ func (v _Set_Frame_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _Set_Frame_ValueList) Close() {
+func (v _Set_Frame_ValueList) Size() int {
+	return len(v)
+}
+
+func (_Set_Frame_ValueList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_Set_Frame_ValueList) Close() {
 }
 
 func _Frame_Read(w wire.Value) (*structs.Frame, error) {
@@ -330,12 +366,12 @@ func _Frame_Read(w wire.Value) (*structs.Frame, error) {
 	return &v, err
 }
 
-func _Set_Frame_Read(s wire.Set) ([]*structs.Frame, error) {
-	if s.ValueType != wire.TStruct {
+func _Set_Frame_Read(s wire.ValueList) ([]*structs.Frame, error) {
+	if s.ValueType() != wire.TStruct {
 		return nil, nil
 	}
-	o := make([]*structs.Frame, 0, s.Size)
-	err := s.Items.ForEach(func(x wire.Value) error {
+	o := make([]*structs.Frame, 0, s.Size())
+	err := s.ForEach(func(x wire.Value) error {
 		i, err := _Frame_Read(x)
 		if err != nil {
 			return err
@@ -343,7 +379,7 @@ func _Set_Frame_Read(s wire.Set) ([]*structs.Frame, error) {
 		o = append(o, i)
 		return nil
 	})
-	s.Items.Close()
+	s.Close()
 	return o, err
 }
 
@@ -351,7 +387,7 @@ type FrameGroup []*structs.Frame
 
 func (v FrameGroup) ToWire() (wire.Value, error) {
 	x := ([]*structs.Frame)(v)
-	return wire.NewValueSet(wire.Set{ValueType: wire.TStruct, Size: len(x), Items: _Set_Frame_ValueList(x)}), error(nil)
+	return wire.NewValueSet(_Set_Frame_ValueList(x)), error(nil)
 }
 
 func (v FrameGroup) String() string {
@@ -432,7 +468,19 @@ func (m _Map_Point_Point_MapItemList) ForEach(f func(wire.MapItem) error) error 
 	return nil
 }
 
-func (m _Map_Point_Point_MapItemList) Close() {
+func (m _Map_Point_Point_MapItemList) Size() int {
+	return len(m)
+}
+
+func (_Map_Point_Point_MapItemList) KeyType() wire.Type {
+	return wire.TStruct
+}
+
+func (_Map_Point_Point_MapItemList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_Map_Point_Point_MapItemList) Close() {
 }
 
 func _Point_Read(w wire.Value) (*structs.Point, error) {
@@ -441,21 +489,21 @@ func _Point_Read(w wire.Value) (*structs.Point, error) {
 	return &v, err
 }
 
-func _Map_Point_Point_Read(m wire.Map) ([]struct {
+func _Map_Point_Point_Read(m wire.MapItemList) ([]struct {
 	Key   *structs.Point
 	Value *structs.Point
 }, error) {
-	if m.KeyType != wire.TStruct {
+	if m.KeyType() != wire.TStruct {
 		return nil, nil
 	}
-	if m.ValueType != wire.TStruct {
+	if m.ValueType() != wire.TStruct {
 		return nil, nil
 	}
 	o := make([]struct {
 		Key   *structs.Point
 		Value *structs.Point
-	}, 0, m.Size)
-	err := m.Items.ForEach(func(x wire.MapItem) error {
+	}, 0, m.Size())
+	err := m.ForEach(func(x wire.MapItem) error {
 		k, err := _Point_Read(x.Key)
 		if err != nil {
 			return err
@@ -470,7 +518,7 @@ func _Map_Point_Point_Read(m wire.Map) ([]struct {
 		}{k, v})
 		return nil
 	})
-	m.Items.Close()
+	m.Close()
 	return o, err
 }
 
@@ -484,7 +532,7 @@ func (v PointMap) ToWire() (wire.Value, error) {
 		Key   *structs.Point
 		Value *structs.Point
 	})(v)
-	return wire.NewValueMap(wire.Map{KeyType: wire.TStruct, ValueType: wire.TStruct, Size: len(x), Items: _Map_Point_Point_MapItemList(x)}), error(nil)
+	return wire.NewValueMap(_Map_Point_Point_MapItemList(x)), error(nil)
 }
 
 func (v PointMap) String() string {

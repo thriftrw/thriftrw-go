@@ -52,6 +52,14 @@ type lazyValueList struct {
 	startOffset int64
 }
 
+func (ll *lazyValueList) ValueType() wire.Type {
+	return ll.typ
+}
+
+func (ll *lazyValueList) Size() int {
+	return int(ll.count)
+}
+
 func (ll *lazyValueList) ForEach(f func(wire.Value) error) error {
 	off := ll.startOffset
 
@@ -85,6 +93,18 @@ type lazyMapItemList struct {
 	count        int32
 	reader       *Reader
 	startOffset  int64
+}
+
+func (lm *lazyMapItemList) KeyType() wire.Type {
+	return lm.ktype
+}
+
+func (lm *lazyMapItemList) ValueType() wire.Type {
+	return lm.vtype
+}
+
+func (lm *lazyMapItemList) Size() int {
+	return int(lm.count)
 }
 
 func (lm *lazyMapItemList) ForEach(f func(wire.MapItem) error) error {

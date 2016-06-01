@@ -24,6 +24,12 @@ package wire
 // it. This helps us avoid the cost of allocating memory for all collections
 // passing through the system.
 type ValueList interface {
+	// Size returns the size of this lazy list.
+	Size() int
+
+	// ValueType specifies the type of values contained in this list.
+	ValueType() Type
+
 	// ForEach calls the given function on each element of the list.
 	//
 	// If any call fails with an error, that error is returned and the
@@ -38,6 +44,14 @@ type ValueList interface {
 // through it. This helps us avoid the cost of allocating memory for all
 // collections passing through the system.
 type MapItemList interface {
+	// Size returns the size of this lazy list.
+	Size() int
+
+	// KeyType and ValueType specify the kind of values held in this
+	// MapItemList.
+	KeyType() Type
+	ValueType() Type
+
 	// ForEach calls the given function on each element of the list.
 	//
 	// If any call fails with an error, that error is returned and the
@@ -51,10 +65,25 @@ type MapItemList interface {
 //////////////////////////////////////////////////////////////////////////////
 
 // ValueListFromSlice builds a ValueList from the given slice of Values.
-type ValueListFromSlice []Value
+func ValueListFromSlice(t Type, values []Value) ValueList {
+	return sliceValueList{t: t, values: values}
+}
 
-func (vs ValueListFromSlice) ForEach(f func(Value) error) error {
-	for _, v := range vs {
+type sliceValueList struct {
+	t      Type
+	values []Value
+}
+
+func (vs sliceValueList) ValueType() Type {
+	return vs.t
+}
+
+func (vs sliceValueList) Size() int {
+	return len(vs.values)
+}
+
+func (vs sliceValueList) ForEach(f func(Value) error) error {
+	for _, v := range vs.values {
 		if err := f(v); err != nil {
 			return err
 		}
@@ -62,15 +91,34 @@ func (vs ValueListFromSlice) ForEach(f func(Value) error) error {
 	return nil
 }
 
-func (ValueListFromSlice) Close() {}
+func (sliceValueList) Close() {}
 
 //////////////////////////////////////////////////////////////////////////////
 
 // MapItemListFromSlice builds a MapItemList from the given slice of Values.
-type MapItemListFromSlice []MapItem
+func MapItemListFromSlice(k, v Type, items []MapItem) MapItemList {
+	return sliceMapItemList{ktype: k, vtype: v, items: items}
+}
 
-func (vs MapItemListFromSlice) ForEach(f func(MapItem) error) error {
-	for _, v := range vs {
+type sliceMapItemList struct {
+	ktype, vtype Type
+	items        []MapItem
+}
+
+func (vs sliceMapItemList) KeyType() Type {
+	return vs.ktype
+}
+
+func (vs sliceMapItemList) ValueType() Type {
+	return vs.vtype
+}
+
+func (vs sliceMapItemList) Size() int {
+	return len(vs.items)
+}
+
+func (vs sliceMapItemList) ForEach(f func(MapItem) error) error {
+	for _, v := range vs.items {
 		if err := f(v); err != nil {
 			return err
 		}
@@ -78,19 +126,13 @@ func (vs MapItemListFromSlice) ForEach(f func(MapItem) error) error {
 	return nil
 }
 
-func (MapItemListFromSlice) Close() {}
+func (sliceMapItemList) Close() {}
 
 //////////////////////////////////////////////////////////////////////////////
 
 // ValueListToSlice builds a slice of values from the given ValueList.
-//
-// Capacity may be provided to set an initial capacity for the slice.
-func ValueListToSlice(l ValueList, capacity int) []Value {
-	if capacity < 0 {
-		capacity = 0
-	}
-
-	items := make([]Value, 0, capacity)
+func ValueListToSlice(l ValueList) []Value {
+	items := make([]Value, 0, l.Size())
 	l.ForEach(func(v Value) error {
 		items = append(items, v)
 		return nil
@@ -99,14 +141,8 @@ func ValueListToSlice(l ValueList, capacity int) []Value {
 }
 
 // MapItemListToSlice builds a slice of values from the given MapItemList.
-//
-// Capacity may be provided to set an initial capacity for the slice.
-func MapItemListToSlice(l MapItemList, capacity int) []MapItem {
-	if capacity < 0 {
-		capacity = 0
-	}
-
-	items := make([]MapItem, 0, capacity)
+func MapItemListToSlice(l MapItemList) []MapItem {
+	items := make([]MapItem, 0, l.Size())
 	l.ForEach(func(v MapItem) error {
 		items = append(items, v)
 		return nil

@@ -39,9 +39,9 @@ type Value struct {
 	ti64    int64
 	tbinary []byte
 	tstruct Struct
-	tmap    Map
-	tset    Set
-	tlist   List
+	tmap    MapItemList
+	tset    ValueList
+	tlist   ValueList
 }
 
 // Type retrieves the type of value inside a Value.
@@ -197,7 +197,7 @@ func (v *Value) GetStruct() Struct {
 }
 
 // NewValueMap constructs a new Value that contains a map.
-func NewValueMap(v Map) Value {
+func NewValueMap(v MapItemList) Value {
 	return Value{
 		typ:  TMap,
 		tmap: v,
@@ -205,12 +205,12 @@ func NewValueMap(v Map) Value {
 }
 
 // GetMap gets the Map value from a Value.
-func (v *Value) GetMap() Map {
+func (v *Value) GetMap() MapItemList {
 	return v.tmap
 }
 
 // NewValueSet constructs a new Value that contains a set.
-func NewValueSet(v Set) Value {
+func NewValueSet(v ValueList) Value {
 	return Value{
 		typ:  TSet,
 		tset: v,
@@ -218,12 +218,12 @@ func NewValueSet(v Set) Value {
 }
 
 // GetSet gets the Set value from a Value.
-func (v *Value) GetSet() Set {
+func (v *Value) GetSet() ValueList {
 	return v.tset
 }
 
 // NewValueList constructs a new Value that contains a list.
-func NewValueList(v List) Value {
+func NewValueList(v ValueList) Value {
 	return Value{
 		typ:   TList,
 		tlist: v,
@@ -231,7 +231,7 @@ func NewValueList(v List) Value {
 }
 
 // GetList gets the List value from a Value.
-func (v *Value) GetList() List {
+func (v *Value) GetList() ValueList {
 	return v.tlist
 }
 
@@ -295,60 +295,6 @@ type Field struct {
 
 func (f Field) String() string {
 	return fmt.Sprintf("%v: %v", f.ID, f.Value)
-}
-
-// Set is a set of values.
-type Set struct {
-	ValueType Type
-	Size      int
-	Items     ValueList
-}
-
-func (s Set) String() string {
-	items := make([]string, 0, s.Size)
-	s.Items.ForEach(func(item Value) error {
-		items = append(items, item.String())
-		return nil
-	})
-
-	return fmt.Sprintf("[set]%v{%s}", s.ValueType, strings.Join(items, ", "))
-}
-
-// List is a list of values.
-type List struct {
-	ValueType Type
-	Size      int
-	Items     ValueList
-}
-
-func (l List) String() string {
-	items := make([]string, 0, l.Size)
-	l.Items.ForEach(func(item Value) error {
-		items = append(items, item.String())
-		return nil
-	})
-
-	return fmt.Sprintf("[]%v{%s}", l.ValueType, strings.Join(items, ", "))
-}
-
-// Map is a collection of key-value pairs.
-type Map struct {
-	KeyType   Type
-	ValueType Type
-	Size      int
-	Items     MapItemList
-}
-
-func (m Map) String() string {
-	items := make([]string, 0, m.Size)
-	m.Items.ForEach(func(item MapItem) error {
-		items = append(items, item.String())
-		return nil
-	})
-
-	return fmt.Sprintf(
-		"map[%v]%v{%s}", m.KeyType, m.ValueType, strings.Join(items, ", "),
-	)
 }
 
 // MapItem is a single item in a Map.

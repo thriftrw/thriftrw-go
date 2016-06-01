@@ -94,7 +94,15 @@ func (v _List_String_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _List_String_ValueList) Close() {
+func (v _List_String_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_String_ValueList) ValueType() wire.Type {
+	return wire.TBinary
+}
+
+func (_List_String_ValueList) Close() {
 }
 
 type _List_Double_ValueList []float64
@@ -113,7 +121,15 @@ func (v _List_Double_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _List_Double_ValueList) Close() {
+func (v _List_Double_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_Double_ValueList) ValueType() wire.Type {
+	return wire.TDouble
+}
+
+func (_List_Double_ValueList) Close() {
 }
 
 func (v *DefaultsStruct) ToWire() (wire.Value, error) {
@@ -171,7 +187,7 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 		v.RequiredList = []string{"hello", "world"}
 	}
 	{
-		w, err = wire.NewValueList(wire.List{ValueType: wire.TBinary, Size: len(v.RequiredList), Items: _List_String_ValueList(v.RequiredList)}), error(nil)
+		w, err = wire.NewValueList(_List_String_ValueList(v.RequiredList)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -182,7 +198,7 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 		v.OptionalList = []float64{1, 2, 3}
 	}
 	{
-		w, err = wire.NewValueList(wire.List{ValueType: wire.TDouble, Size: len(v.OptionalList), Items: _List_Double_ValueList(v.OptionalList)}), error(nil)
+		w, err = wire.NewValueList(_List_Double_ValueList(v.OptionalList)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -220,12 +236,12 @@ func _EnumDefault_Read(w wire.Value) (enums.EnumDefault, error) {
 	return v, err
 }
 
-func _List_String_Read(l wire.List) ([]string, error) {
-	if l.ValueType != wire.TBinary {
+func _List_String_Read(l wire.ValueList) ([]string, error) {
+	if l.ValueType() != wire.TBinary {
 		return nil, nil
 	}
-	o := make([]string, 0, l.Size)
-	err := l.Items.ForEach(func(x wire.Value) error {
+	o := make([]string, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
 		i, err := x.GetString(), error(nil)
 		if err != nil {
 			return err
@@ -233,16 +249,16 @@ func _List_String_Read(l wire.List) ([]string, error) {
 		o = append(o, i)
 		return nil
 	})
-	l.Items.Close()
+	l.Close()
 	return o, err
 }
 
-func _List_Double_Read(l wire.List) ([]float64, error) {
-	if l.ValueType != wire.TDouble {
+func _List_Double_Read(l wire.ValueList) ([]float64, error) {
+	if l.ValueType() != wire.TDouble {
 		return nil, nil
 	}
-	o := make([]float64, 0, l.Size)
-	err := l.Items.ForEach(func(x wire.Value) error {
+	o := make([]float64, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
 		i, err := x.GetDouble(), error(nil)
 		if err != nil {
 			return err
@@ -250,7 +266,7 @@ func _List_Double_Read(l wire.List) ([]float64, error) {
 		o = append(o, i)
 		return nil
 	})
-	l.Items.Close()
+	l.Close()
 	return o, err
 }
 
@@ -609,7 +625,15 @@ func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _List_Edge_ValueList) Close() {
+func (v _List_Edge_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_Edge_ValueList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_List_Edge_ValueList) Close() {
 }
 
 func (v *Graph) ToWire() (wire.Value, error) {
@@ -622,7 +646,7 @@ func (v *Graph) ToWire() (wire.Value, error) {
 	if v.Edges == nil {
 		return w, errors.New("field Edges of Graph is required")
 	}
-	w, err = wire.NewValueList(wire.List{ValueType: wire.TStruct, Size: len(v.Edges), Items: _List_Edge_ValueList(v.Edges)}), error(nil)
+	w, err = wire.NewValueList(_List_Edge_ValueList(v.Edges)), error(nil)
 	if err != nil {
 		return w, err
 	}
@@ -631,12 +655,12 @@ func (v *Graph) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _List_Edge_Read(l wire.List) ([]*Edge, error) {
-	if l.ValueType != wire.TStruct {
+func _List_Edge_Read(l wire.ValueList) ([]*Edge, error) {
+	if l.ValueType() != wire.TStruct {
 		return nil, nil
 	}
-	o := make([]*Edge, 0, l.Size)
-	err := l.Items.ForEach(func(x wire.Value) error {
+	o := make([]*Edge, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
 		i, err := _Edge_Read(x)
 		if err != nil {
 			return err
@@ -644,7 +668,7 @@ func _List_Edge_Read(l wire.List) ([]*Edge, error) {
 		o = append(o, i)
 		return nil
 	})
-	l.Items.Close()
+	l.Close()
 	return o, err
 }
 

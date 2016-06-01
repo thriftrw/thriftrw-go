@@ -119,10 +119,8 @@ func TestTypedefContainer(t *testing.T) {
 					Time: (*td.Timestamp)(int64p(100)),
 				},
 			},
-			wire.NewValueList(wire.List{
-				ValueType: wire.TStruct,
-				Size:      2,
-				Items: wire.ValueListFromSlice([]wire.Value{
+			wire.NewValueList(
+				wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 						{ID: 1, Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 							{ID: 1, Value: wire.NewValueI64(100)},
@@ -138,7 +136,7 @@ func TestTypedefContainer(t *testing.T) {
 						{ID: 2, Value: wire.NewValueI64(100)},
 					}}),
 				}),
-			}),
+			),
 		},
 	}
 
@@ -154,21 +152,17 @@ func TestUnhashableSetAlias(t *testing.T) {
 	}{
 		{
 			td.FrameGroup{},
-			wire.NewValueSet(wire.Set{
-				ValueType: wire.TStruct,
-				Size:      0,
-				Items:     wire.ValueListFromSlice([]wire.Value{}),
-			}),
+			wire.NewValueSet(
+				wire.ValueListFromSlice(wire.TStruct, []wire.Value{}),
+			),
 		},
 		{
 			td.FrameGroup{
 				&ts.Frame{TopLeft: &ts.Point{X: 1, Y: 2}, Size: &ts.Size{Width: 3, Height: 4}},
 				&ts.Frame{TopLeft: &ts.Point{X: 5, Y: 6}, Size: &ts.Size{Width: 7, Height: 8}},
 			},
-			wire.NewValueSet(wire.Set{
-				ValueType: wire.TStruct,
-				Size:      2,
-				Items: wire.ValueListFromSlice([]wire.Value{
+			wire.NewValueSet(
+				wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 						{ID: 1, Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 							{ID: 1, Value: wire.NewValueDouble(1)},
@@ -190,7 +184,7 @@ func TestUnhashableSetAlias(t *testing.T) {
 						}})},
 					}}),
 				}),
-			}),
+			),
 		},
 	}
 
@@ -206,12 +200,9 @@ func TestUnhashableMapKeyAlias(t *testing.T) {
 	}{
 		{
 			td.PointMap{},
-			wire.NewValueMap(wire.Map{
-				KeyType:   wire.TStruct,
-				ValueType: wire.TStruct,
-				Size:      0,
-				Items:     wire.MapItemListFromSlice([]wire.MapItem{}),
-			}),
+			wire.NewValueMap(
+				wire.MapItemListFromSlice(wire.TStruct, wire.TStruct, []wire.MapItem{}),
+			),
 		},
 		{
 			td.PointMap{
@@ -228,11 +219,8 @@ func TestUnhashableMapKeyAlias(t *testing.T) {
 					Value: &ts.Point{X: 11, Y: 12},
 				},
 			},
-			wire.NewValueMap(wire.Map{
-				KeyType:   wire.TStruct,
-				ValueType: wire.TStruct,
-				Size:      3,
-				Items: wire.MapItemListFromSlice([]wire.MapItem{
+			wire.NewValueMap(
+				wire.MapItemListFromSlice(wire.TStruct, wire.TStruct, []wire.MapItem{
 					{
 						Key: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 							{ID: 1, Value: wire.NewValueDouble(1)},
@@ -264,7 +252,7 @@ func TestUnhashableMapKeyAlias(t *testing.T) {
 						}}),
 					},
 				}),
-			}),
+			),
 		},
 	}
 
@@ -280,25 +268,21 @@ func TestBinarySet(t *testing.T) {
 	}{
 		{
 			td.BinarySet{},
-			wire.NewValueSet(wire.Set{
-				ValueType: wire.TBinary,
-				Size:      0,
-				Items:     wire.ValueListFromSlice([]wire.Value{}),
-			}),
+			wire.NewValueSet(
+				wire.ValueListFromSlice(wire.TBinary, []wire.Value{}),
+			),
 		},
 		{
 			td.BinarySet{
 				{1, 2, 3},
 				{4, 5, 6},
 			},
-			wire.NewValueSet(wire.Set{
-				ValueType: wire.TBinary,
-				Size:      2,
-				Items: wire.ValueListFromSlice([]wire.Value{
+			wire.NewValueSet(
+				wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 					wire.NewValueBinary([]byte{1, 2, 3}),
 					wire.NewValueBinary([]byte{4, 5, 6}),
 				}),
-			}),
+			),
 		},
 	}
 

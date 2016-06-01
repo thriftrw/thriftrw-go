@@ -88,7 +88,19 @@ func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, err
 				return nil
 			}
 
-			func (<$m> <.Name>) Close() {}
+			func (<$m> <.Name>) Size() int {
+				return len(<$m>)
+			}
+
+			func (<.Name>) KeyType() <$wire>.Type {
+				return <typeCode .Spec.KeySpec>
+			}
+
+			func (<.Name>) ValueType() <$wire>.Type {
+				return <typeCode .Spec.ValueSpec>
+			}
+
+			func (<.Name>) Close() {}
 		`,
 		struct {
 			Name string
@@ -115,21 +127,21 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 			<$x := newVar "x">
 			<$k := newVar "k">
 			<$v := newVar "v">
-			func <.Name>(<$m> <$wire>.Map) (<$mapType>, error) {
-				if <$m>.KeyType != <typeCode .Spec.KeySpec> {
+			func <.Name>(<$m> <$wire>.MapItemList) (<$mapType>, error) {
+				if <$m>.KeyType() != <typeCode .Spec.KeySpec> {
 					return nil, nil
 				}
 
-				if <$m>.ValueType != <typeCode .Spec.ValueSpec> {
+				if <$m>.ValueType() != <typeCode .Spec.ValueSpec> {
 					return nil, nil
 				}
 
 				<if isHashable .Spec.KeySpec>
-					<$o> := make(<$mapType>, <$m>.Size)
+					<$o> := make(<$mapType>, <$m>.Size())
 				<else>
-					<$o> := make(<$mapType>, 0, <$m>.Size)
+					<$o> := make(<$mapType>, 0, <$m>.Size())
 				<end>
-				err := <$m>.Items.ForEach(func(<$x> <$wire>.MapItem) error {
+				err := <$m>.ForEach(func(<$x> <$wire>.MapItem) error {
 					<$k>, err := <fromWire .Spec.KeySpec (printf "%s.Key" $x)>
 					if err != nil {
 						return err
@@ -150,7 +162,7 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 					<end>
 					return nil
 				})
-				<$m>.Items.Close()
+				<$m>.Close()
 				return <$o>, err
 			}
 		`,

@@ -35,28 +35,15 @@ func vbinary(s string) Value {
 }
 
 func vlist(typ Type, vs ...Value) Value {
-	return NewValueList(List{
-		ValueType: typ,
-		Size:      len(vs),
-		Items:     ValueListFromSlice(vs),
-	})
+	return NewValueList(ValueListFromSlice(typ, vs))
 }
 
 func vset(typ Type, vs ...Value) Value {
-	return NewValueSet(Set{
-		ValueType: typ,
-		Size:      len(vs),
-		Items:     ValueListFromSlice(vs),
-	})
+	return NewValueSet(ValueListFromSlice(typ, vs))
 }
 
 func vmap(kt, vt Type, items ...MapItem) Value {
-	return NewValueMap(Map{
-		KeyType:   kt,
-		ValueType: vt,
-		Size:      len(items),
-		Items:     MapItemListFromSlice(items),
-	})
+	return NewValueMap(MapItemListFromSlice(kt, vt, items))
 }
 
 func vitem(k, v Value) MapItem {

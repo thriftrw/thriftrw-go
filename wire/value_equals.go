@@ -26,9 +26,9 @@ import (
 	"fmt"
 )
 
-// notEqualError is a sentinel error used while iterating through ValueLists
-// to indicate that two values did not match.
-var notEqualError = errors.New("Values are not equal")
+// errNotEquals is a sentinel error used while iterating through ValueLists to
+// indicate that two values did not match.
+var errNotEquals = errors.New("Values are not equal")
 
 // ValuesAreEqual checks if two values are equal.
 func ValuesAreEqual(left, right Value) bool {
@@ -88,19 +88,18 @@ func StructsAreEqual(left, right Struct) bool {
 }
 
 // SetsAreEqual checks if two sets are equal.
-func SetsAreEqual(left, right Set) bool {
-	if left.ValueType != right.ValueType {
+func SetsAreEqual(left, right ValueList) bool {
+	if left.ValueType() != right.ValueType() {
 		return false
 	}
-	if left.Size != right.Size {
+	if left.Size() != right.Size() {
 		return false
 	}
 
-	if isHashable(left.ValueType) {
-		return setsArEqualHashable(left.Size, left.Items, right.Items)
-	} else {
-		return setsAreEqualUnhashable(left.Size, left.Items, right.Items)
+	if isHashable(left.ValueType()) {
+		return setsArEqualHashable(left.Size(), left, right)
 	}
+	return setsAreEqualUnhashable(left.Size(), left, right)
 }
 
 // setsArEqualHashable checks if two unordered ValueLists are equal, provided
@@ -113,9 +112,9 @@ func setsArEqualHashable(size int, l, r ValueList) bool {
 		return nil
 	})
 
-	return notEqualError != r.ForEach(func(v Value) error {
+	return errNotEquals != r.ForEach(func(v Value) error {
 		if _, ok := m[toHashable(v)]; !ok {
-			return notEqualError
+			return errNotEquals
 		}
 		return nil
 	})
@@ -124,9 +123,9 @@ func setsArEqualHashable(size int, l, r ValueList) bool {
 // setsAreEqualUnhashable checks if two unordered ValueLists are equal for
 // types that are not hashable. Note that this is O(n^2) in time complexity.
 func setsAreEqualUnhashable(size int, l, r ValueList) bool {
-	lItems := ValueListToSlice(l, size)
+	lItems := ValueListToSlice(l)
 
-	return notEqualError != r.ForEach(func(rItem Value) error {
+	return errNotEquals != r.ForEach(func(rItem Value) error {
 		matched := false
 		for _, lItem := range lItems {
 			if ValuesAreEqual(lItem, rItem) {
@@ -135,29 +134,28 @@ func setsAreEqualUnhashable(size int, l, r ValueList) bool {
 			}
 		}
 		if !matched {
-			return notEqualError
+			return errNotEquals
 		}
 		return nil
 	})
 }
 
 // MapsAreEqual checks if two maps are equal.
-func MapsAreEqual(left, right Map) bool {
-	if left.KeyType != right.KeyType {
+func MapsAreEqual(left, right MapItemList) bool {
+	if left.KeyType() != right.KeyType() {
 		return false
 	}
-	if left.ValueType != right.ValueType {
+	if left.ValueType() != right.ValueType() {
 		return false
 	}
-	if left.Size != right.Size {
+	if left.Size() != right.Size() {
 		return false
 	}
 
-	if isHashable(left.KeyType) {
-		return mapsAreEqualHashable(left.Size, left.Items, right.Items)
-	} else {
-		return mapsAreEqualUnhashable(left.Size, left.Items, right.Items)
+	if isHashable(left.KeyType()) {
+		return mapsAreEqualHashable(left.Size(), left, right)
 	}
+	return mapsAreEqualUnhashable(left.Size(), left, right)
 }
 
 func mapsAreEqualHashable(size int, l, r MapItemList) bool {
@@ -168,22 +166,22 @@ func mapsAreEqualHashable(size int, l, r MapItemList) bool {
 		return nil
 	})
 
-	return notEqualError != r.ForEach(func(item MapItem) error {
-		if lValue, ok := m[toHashable(item.Key)]; !ok {
-			return notEqualError
-		} else {
-			if !ValuesAreEqual(lValue, item.Value) {
-				return notEqualError
-			}
-			return nil
+	return errNotEquals != r.ForEach(func(item MapItem) error {
+		lValue, ok := m[toHashable(item.Key)]
+		if !ok {
+			return errNotEquals
 		}
+		if !ValuesAreEqual(lValue, item.Value) {
+			return errNotEquals
+		}
+		return nil
 	})
 }
 
 func mapsAreEqualUnhashable(size int, l, r MapItemList) bool {
-	lItems := MapItemListToSlice(l, size)
+	lItems := MapItemListToSlice(l)
 
-	return notEqualError != r.ForEach(func(rItem MapItem) error {
+	return errNotEquals != r.ForEach(func(rItem MapItem) error {
 		matched := false
 		for _, lItem := range lItems {
 			if !ValuesAreEqual(lItem.Key, rItem.Key) {
@@ -196,7 +194,7 @@ func mapsAreEqualUnhashable(size int, l, r MapItemList) bool {
 		}
 
 		if !matched {
-			return notEqualError
+			return errNotEquals
 		}
 		return nil
 	})
@@ -223,16 +221,16 @@ func toHashable(v Value) interface{} {
 }
 
 // ListsAreEqual checks if two lists are equal.
-func ListsAreEqual(left, right List) bool {
-	if left.ValueType != right.ValueType {
+func ListsAreEqual(left, right ValueList) bool {
+	if left.ValueType() != right.ValueType() {
 		return false
 	}
-	if left.Size != right.Size {
+	if left.Size() != right.Size() {
 		return false
 	}
 
-	leftItems := ValueListToSlice(left.Items, left.Size)
-	rightItems := ValueListToSlice(right.Items, right.Size)
+	leftItems := ValueListToSlice(left)
+	rightItems := ValueListToSlice(right)
 
 	for i, lv := range leftItems {
 		rv := rightItems[i]

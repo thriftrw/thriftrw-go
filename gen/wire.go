@@ -71,12 +71,7 @@ func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName strin
 		}
 
 		return g.TextTemplate(
-			`<.Wire>.NewValueMap(<.Wire>.Map{
-				KeyType: <typeCode .Spec.KeySpec>,
-				ValueType: <typeCode .Spec.ValueSpec>,
-				Size: len(<.Name>),
-				Items: <.MapItemList>(<.Name>),
-			}), error(nil)`,
+			`<.Wire>.NewValueMap(<.MapItemList>(<.Name>)), error(nil)`,
 			struct {
 				Wire        string
 				Name        string
@@ -91,11 +86,7 @@ func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName strin
 		}
 
 		return g.TextTemplate(
-			`<.Wire>.NewValueList(<.Wire>.List{
-				ValueType: <typeCode .Spec.ValueSpec>,
-				Size: len(<.Name>),
-				Items: <.ValueList>(<.Name>),
-			}), error(nil)`,
+			`<.Wire>.NewValueList(<.ValueList>(<.Name>)), error(nil)`,
 			struct {
 				Wire      string
 				Name      string
@@ -110,11 +101,7 @@ func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName strin
 		}
 
 		return g.TextTemplate(
-			`<.Wire>.NewValueSet(<.Wire>.Set{
-				ValueType: <typeCode .Spec.ValueSpec>,
-				Size: len(<.Name>),
-				Items: <.ValueList>(<.Name>),
-			}), error(nil)`,
+			`<.Wire>.NewValueSet(<.ValueList>(<.Name>)), error(nil)`,
 			struct {
 				Wire      string
 				Name      string
