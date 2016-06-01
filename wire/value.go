@@ -73,7 +73,7 @@ func (v *Value) Get() interface{} {
 
 // NewValueBool constructs a new Value that contains a boolean.
 func NewValueBool(v bool) Value {
-	var n uint64 = 0
+	n := uint64(0)
 	if v {
 		n = 1
 	}
