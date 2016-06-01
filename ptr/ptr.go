@@ -31,6 +31,11 @@ func Int8(x int8) *int8 {
 	return &x
 }
 
+// Int16 converts an int32 to a pointer
+func Int16(x int16) *int16 {
+	return &x
+}
+
 // Int32 converts an int32 to a pointer
 func Int32(x int32) *int32 {
 	return &x
