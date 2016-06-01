@@ -119,12 +119,12 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 			func (h handler) <goCase .Name>(
 				<$req> *<$thrift>.Request,
 				<$body> <$wire>.Value,
-			) (<$wire>.Value, *<$thrift>.Response, error) {
+			) (<$thrift>.TResponse, error) {
 
 				<$args := $vars.NewName "args">
 				var <$args> <$Args>
 				if err := <$args>.FromWire(<$body>); err != nil {
-					return <$wire>.Value{}, nil, err
+					return <$thrift>.TResponse{}, err
 				}
 
 				<$res := $vars.NewName "res">
@@ -138,17 +138,23 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 				)
 
 				<$result := $vars.NewName "result">
+				<$hadError := $vars.NewName "hadError">
+
+				<$hadError> := err != nil
 				<$result>, err := <$Helper>.WrapResponse(
 					<if .ResultSpec.ReturnType>
 						<$succ>,
 					<end>
 					err)
-				<$w := $vars.NewName "w">
-				var <$w> <$wire>.Value
+
+				<$response := $vars.NewName "response">
+				var <$response> <$thrift>.TResponse
 				if err == nil {
-					<$w>, err = <$result>.ToWire()
+					<$response>.IsApplicationError = <$hadError>
+					<$response>.Response = <$res>
+					<$response>.Body, err = <$result>.ToWire()
 				}
-				return <$w>, <$res>, err
+				return <$response>, err
 			}
 		<end>
 		`,
