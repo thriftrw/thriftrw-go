@@ -113,27 +113,27 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 			<$Helper := printf "%s.%sHelper" $servicePackage (goCase .Name)>
 
 			<$vars := newNamespace>
-			<$req := $vars.NewName "req">
+			<$reqMeta := $vars.NewName "reqMeta">
 			<$body := $vars.NewName "body">
 
 			func (h handler) <goCase .Name>(
-				<$req> *<$thrift>.Request,
+				<$reqMeta> *<$thrift>.ReqMeta,
 				<$body> <$wire>.Value,
-			) (<$thrift>.TResponse, error) {
+			) (<$thrift>.Response, error) {
 
 				<$args := $vars.NewName "args">
 				var <$args> <$Args>
 				if err := <$args>.FromWire(<$body>); err != nil {
-					return <$thrift>.TResponse{}, err
+					return <$thrift>.Response{}, err
 				}
 
-				<$res := $vars.NewName "res">
+				<$resMeta := $vars.NewName "resMeta">
 				<$succ := $vars.NewName "success">
 				<if .ResultSpec.ReturnType>
 					<$succ>,
 				<end>
-				<$res>, err := h.impl.<goCase .Name>(
-					<$req>,
+				<$resMeta>, err := h.impl.<goCase .Name>(
+					<$reqMeta>,
 					<range .ArgsSpec><$args>.<goCase .Name>,<end>
 				)
 
@@ -148,10 +148,10 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 					err)
 
 				<$response := $vars.NewName "response">
-				var <$response> <$thrift>.TResponse
+				var <$response> <$thrift>.Response
 				if err == nil {
 					<$response>.IsApplicationError = <$hadError>
-					<$response>.Response = <$res>
+					<$response>.ResMeta = <$resMeta>
 					<$response>.Body, err = <$result>.ToWire()
 				}
 				return <$response>, err
@@ -206,7 +206,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 
 			<$vars := newNamespace>
 			func (c client) <goCase .Name>(
-				<$vars.NewName "req"> *<$thrift>.Request,
+				<$vars.NewName "reqMeta"> *<$thrift>.ReqMeta,
 				<range .ArgsSpec>
 					<if .Required>
 						<$vars.NewName .Name> <typeReference .Type>,
@@ -218,10 +218,10 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 				<if .ResultSpec.ReturnType>
 					<$vars.NewName "success"> <typeReference .ResultSpec.ReturnType>,
 				<end>
-				<$vars.NewName "res"> *<$thrift>.Response,
+				<$vars.NewName "resMeta"> *<$thrift>.ResMeta,
 				err error,
 			 ) {
-				<$req := $vars.Rotate "req">
+				<$reqMeta := $vars.Rotate "reqMeta">
 				<$args := $vars.NewName "args">
 				<$args> := <$servicePackage>.<goCase .Name>Helper.Args(
 					<range .ArgsSpec>
@@ -229,7 +229,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 					<end>
 				)
 
-				<$res := $vars.Rotate "res">
+				<$resMeta := $vars.Rotate "resMeta">
 				<$body := $vars.NewName "body">
 
 				<$w := $vars.NewName "w">
@@ -240,7 +240,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 				}
 
 				var <$body> <$wire>.Value
-				<$body>, <$res>, err = c.c.Call("<.Name>", <$req>, <$w>)
+				<$body>, <$resMeta>, err = c.c.Call("<.Name>", <$reqMeta>, <$w>)
 				if err != nil {
 					return
 				}
@@ -293,7 +293,7 @@ func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 			<range .Functions>
 				<$params := newNamespace>
 				<goCase .Name>(
-					<$params.NewName "req"> *<$thrift>.Request,
+					<$params.NewName "reqMeta"> *<$thrift>.ReqMeta,
 					<range .ArgsSpec>
 						<if .Required>
 							<$params.NewName .Name> <typeReference .Type>,
@@ -305,7 +305,7 @@ func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 					<if .ResultSpec.ReturnType>
 						<typeReference .ResultSpec.ReturnType>,
 					<end>
-					*<$thrift>.Response,
+					*<$thrift>.ResMeta,
 					 error,
 				 )
 			<end>
