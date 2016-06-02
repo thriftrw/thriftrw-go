@@ -151,7 +151,7 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 				var <$response> <$thrift>.Response
 				if err == nil {
 					<$response>.IsApplicationError = <$hadError>
-					<$response>.ResMeta = <$resMeta>
+					<$response>.Meta = <$resMeta>
 					<$response>.Body, err = <$result>.ToWire()
 				}
 				return <$response>, err
