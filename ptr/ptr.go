@@ -26,6 +26,11 @@ func Bool(x bool) *bool {
 	return &x
 }
 
+// Int converts an int to a pointer
+func Int(x int) *int {
+	return &x
+}
+
 // Int8 converts an int8 to a pointer
 func Int8(x int8) *int8 {
 	return &x
