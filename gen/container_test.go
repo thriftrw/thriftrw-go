@@ -90,9 +90,9 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		{
 			"set of strings",
 			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{
-				"foo": struct{}{},
-				"bar": struct{}{},
-				"baz": struct{}{},
+				"foo": {},
+				"bar": {},
+				"baz": {},
 			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 3,
@@ -108,9 +108,9 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		{
 			"set of bytes",
 			tc.PrimitiveContainers{SetOfBytes: map[int8]struct{}{
-				-1:  struct{}{},
-				1:   struct{}{},
-				125: struct{}{},
+				-1:  {},
+				1:   {},
+				125: {},
 			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 4,
@@ -199,8 +199,8 @@ func TestEnumContainers(t *testing.T) {
 		{
 			tc.EnumContainers{
 				SetOfEnums: map[te.EnumWithValues]struct{}{
-					te.EnumWithValuesX: struct{}{},
-					te.EnumWithValuesZ: struct{}{},
+					te.EnumWithValuesX: {},
+					te.EnumWithValuesZ: {},
 				},
 			},
 			singleFieldStruct(2, wire.NewValueSet(
@@ -219,8 +219,8 @@ func TestEnumContainers(t *testing.T) {
 			},
 			singleFieldStruct(3, wire.NewValueMap(
 				wire.MapItemListFromSlice(wire.TI32, wire.TI32, []wire.MapItem{
-					wire.MapItem{Key: wire.NewValueI32(0), Value: wire.NewValueI32(123)},
-					wire.MapItem{Key: wire.NewValueI32(-1), Value: wire.NewValueI32(456)},
+					{Key: wire.NewValueI32(0), Value: wire.NewValueI32(123)},
+					{Key: wire.NewValueI32(-1), Value: wire.NewValueI32(456)},
 				}),
 			)),
 		},
@@ -236,8 +236,8 @@ func TestEnumContainers(t *testing.T) {
 			singleFieldStruct(3, wire.NewValueMap(
 
 				wire.MapItemListFromSlice(wire.TI32, wire.TI32, []wire.MapItem{
-					wire.MapItem{Key: wire.NewValueI32(0), Value: wire.NewValueI32(123)},
-					wire.MapItem{Key: wire.NewValueI32(-1), Value: wire.NewValueI32(456)},
+					{Key: wire.NewValueI32(0), Value: wire.NewValueI32(123)},
+					{Key: wire.NewValueI32(-1), Value: wire.NewValueI32(456)},
 				}),
 			)),
 		},
@@ -600,17 +600,17 @@ func TestCrazyTown(t *testing.T) {
 					{
 						Key: []int32{1, 2, 3},
 						Value: map[int64]struct{}{
-							1: struct{}{},
-							2: struct{}{},
-							3: struct{}{},
+							1: {},
+							2: {},
+							3: {},
 						},
 					},
 					{
 						Key: []int32{4, 5, 6},
 						Value: map[int64]struct{}{
-							4: struct{}{},
-							5: struct{}{},
-							6: struct{}{},
+							4: {},
+							5: {},
+							6: {},
 						},
 					},
 				},
@@ -663,17 +663,17 @@ func TestCrazyTown(t *testing.T) {
 				}{
 					{
 						Key: map[int32]struct{}{
-							1: struct{}{},
-							2: struct{}{},
-							3: struct{}{},
+							1: {},
+							2: {},
+							3: {},
 						},
 						Value: []float64{1.0, 2.0, 3.0},
 					},
 					{
 						Key: map[int32]struct{}{
-							4: struct{}{},
-							5: struct{}{},
-							6: struct{}{},
+							4: {},
+							5: {},
+							6: {},
 						},
 						Value: []float64{4.0, 5.0, 6.0},
 					},

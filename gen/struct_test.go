@@ -147,7 +147,7 @@ func TestStructRoundTripAndString(t *testing.T) {
 			"PrimitiveContainersRequired",
 			&tc.PrimitiveContainersRequired{
 				ListOfStrings:      []string{"foo", "bar", "baz"},
-				SetOfInts:          map[int32]struct{}{1: struct{}{}, 2: struct{}{}},
+				SetOfInts:          map[int32]struct{}{1: {}, 2: {}},
 				MapOfIntsToDoubles: map[int64]float64{1: 2.0, 3: 4.0},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -174,11 +174,11 @@ func TestStructRoundTripAndString(t *testing.T) {
 					ID: 3,
 					Value: wire.NewValueMap(
 						wire.MapItemListFromSlice(wire.TI64, wire.TDouble, []wire.MapItem{
-							wire.MapItem{
+							{
 								Key:   wire.NewValueI64(1),
 								Value: wire.NewValueDouble(2.0),
 							},
-							wire.MapItem{
+							{
 								Key:   wire.NewValueI64(3),
 								Value: wire.NewValueDouble(4.0),
 							},
@@ -1132,9 +1132,9 @@ func TestStructValidation(t *testing.T) {
 			desc: "PrimitiveContainersRequired: missing list",
 			serialize: &tc.PrimitiveContainersRequired{
 				SetOfInts: map[int32]struct{}{
-					1: struct{}{},
-					2: struct{}{},
-					3: struct{}{},
+					1: {},
+					2: {},
+					3: {},
 				},
 				MapOfIntsToDoubles: map[int64]float64{1: 2.3, 4: 5.6},
 			},
@@ -1206,9 +1206,9 @@ func TestStructValidation(t *testing.T) {
 			serialize: &tc.PrimitiveContainersRequired{
 				ListOfStrings: []string{"hello", "world"},
 				SetOfInts: map[int32]struct{}{
-					1: struct{}{},
-					2: struct{}{},
-					3: struct{}{},
+					1: {},
+					2: {},
+					3: {},
 				},
 			},
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
