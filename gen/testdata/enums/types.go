@@ -10,8 +10,6 @@ import (
 
 type EmptyEnum int32
 
-const ()
-
 func (v EmptyEnum) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
