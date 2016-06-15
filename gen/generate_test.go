@@ -43,12 +43,12 @@ func TestGenerateWithRelativePaths(t *testing.T) {
 	require.NoError(t, err)
 
 	opts := []*Options{
-		&Options{
+		{
 			OutputDir:     outputDir,
 			PackagePrefix: "github.com/thriftrw/thriftrw-go/gen",
 			ThriftRoot:    "testdata",
 		},
-		&Options{
+		{
 			OutputDir:     "testdata",
 			PackagePrefix: "github.com/thriftrw/thriftrw-go/gen",
 			ThriftRoot:    thriftRoot,

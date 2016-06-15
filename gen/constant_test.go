@@ -48,13 +48,13 @@ func TestConstants(t *testing.T) {
 			&tc.PrimitiveContainers{
 				ListOfInts: []int64{1, 2, 3},
 				SetOfStrings: map[string]struct{}{
-					"foo": struct{}{},
-					"bar": struct{}{},
+					"foo": {},
+					"bar": {},
 				},
 				SetOfBytes: map[int8]struct{}{
-					1: struct{}{},
-					2: struct{}{},
-					3: struct{}{},
+					1: {},
+					2: {},
+					3: {},
 				},
 				MapOfIntToString: map[int32]string{
 					1: "1",
@@ -74,8 +74,8 @@ func TestConstants(t *testing.T) {
 			&tc.EnumContainers{
 				ListOfEnums: []te.EnumDefault{te.EnumDefaultBar, te.EnumDefaultFoo},
 				SetOfEnums: map[te.EnumWithValues]struct{}{
-					te.EnumWithValuesX: struct{}{},
-					te.EnumWithValuesY: struct{}{},
+					te.EnumWithValuesX: {},
+					te.EnumWithValuesY: {},
 				},
 				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
 					te.EnumWithDuplicateValuesP: 1,
@@ -163,17 +163,17 @@ func TestConstants(t *testing.T) {
 					{
 						Key: []int32{1, 2, 3},
 						Value: map[int64]struct{}{
-							1: struct{}{},
-							2: struct{}{},
-							3: struct{}{},
+							1: {},
+							2: {},
+							3: {},
 						},
 					},
 					{
 						Key: []int32{4, 5, 6},
 						Value: map[int64]struct{}{
-							4: struct{}{},
-							5: struct{}{},
-							6: struct{}{},
+							4: {},
+							5: {},
+							6: {},
 						},
 					},
 				},
@@ -183,17 +183,17 @@ func TestConstants(t *testing.T) {
 				}{
 					{
 						Key: map[int32]struct{}{
-							1: struct{}{},
-							2: struct{}{},
-							3: struct{}{},
+							1: {},
+							2: {},
+							3: {},
 						},
 						Value: []float64{1.2, 3.4},
 					},
 					{
 						Key: map[int32]struct{}{
-							4: struct{}{},
-							5: struct{}{},
-							6: struct{}{},
+							4: {},
+							5: {},
+							6: {},
 						},
 						Value: []float64{5.6, 7.8},
 					},
@@ -215,11 +215,11 @@ func TestConstants(t *testing.T) {
 			tk.Graph,
 			&ts.Graph{
 				Edges: []*ts.Edge{
-					&ts.Edge{
+					{
 						Start: &ts.Point{X: 1, Y: 2},
 						End:   &ts.Point{X: 3, Y: 4},
 					},
-					&ts.Edge{
+					{
 						Start: &ts.Point{X: 5, Y: 6},
 						End:   &ts.Point{X: 7, Y: 8},
 					},
@@ -236,7 +236,7 @@ func TestConstants(t *testing.T) {
 					{StringValue: stringp("hello")},
 					{
 						MapValue: map[string]*tu.ArbitraryValue{
-							"foo": &tu.ArbitraryValue{StringValue: stringp("bar")},
+							"foo": {StringValue: stringp("bar")},
 						},
 					},
 				},

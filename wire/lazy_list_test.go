@@ -75,15 +75,15 @@ func TestValueListFromSliceBreak(t *testing.T) {
 
 func TestMapItemListFromSliceAll(t *testing.T) {
 	slice := []MapItem{
-		MapItem{
+		{
 			Key:   NewValueI32(1),
 			Value: NewValueI64(101),
 		},
-		MapItem{
+		{
 			Key:   NewValueI32(2),
 			Value: NewValueI64(102),
 		},
-		MapItem{
+		{
 			Key:   NewValueI32(3),
 			Value: NewValueI64(103),
 		},
@@ -103,15 +103,15 @@ func TestMapItemListFromSliceAll(t *testing.T) {
 
 func TestMapItemListFromSliceBreak(t *testing.T) {
 	slice := []MapItem{
-		MapItem{
+		{
 			Key:   NewValueI32(1),
 			Value: NewValueI64(101),
 		},
-		MapItem{
+		{
 			Key:   NewValueI32(2),
 			Value: NewValueI64(102),
 		},
-		MapItem{
+		{
 			Key:   NewValueI32(3),
 			Value: NewValueI64(103),
 		},

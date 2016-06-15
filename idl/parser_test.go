@@ -188,7 +188,7 @@ func TestParseConstants(t *testing.T) {
 					Type: BaseType{
 						ID: BoolTypeID,
 						Annotations: []*Annotation{
-							&Annotation{Name: "foo", Value: "a\nb", Line: 1},
+							{Name: "foo", Value: "a\nb", Line: 1},
 						},
 					},
 					Value: ConstantBoolean(true),
@@ -224,21 +224,21 @@ func TestParseConstants(t *testing.T) {
 						KeyType: BaseType{
 							ID: StringTypeID,
 							Annotations: []*Annotation{
-								&Annotation{Name: "foo", Value: "", Line: 2},
+								{Name: "foo", Value: "", Line: 2},
 							},
 						},
 						ValueType: BaseType{ID: I32TypeID},
 						Annotations: []*Annotation{
-							&Annotation{Name: "baz", Value: "qux", Line: 2},
+							{Name: "baz", Value: "qux", Line: 2},
 						},
 					},
 					Value: ConstantMap{
 						Items: []ConstantMapItem{
-							ConstantMapItem{
+							{
 								Key:   ConstantString("a"),
 								Value: ConstantInteger(1),
 							},
-							ConstantMapItem{
+							{
 								Key:   ConstantString("b"),
 								Value: ConstantInteger(2),
 							},
@@ -275,11 +275,11 @@ func TestParseConstants(t *testing.T) {
 					Name: "const_struct",
 					Type: TypeReference{Name: "Item", Line: 10},
 					Value: ConstantMap{Items: []ConstantMapItem{
-						ConstantMapItem{
+						{
 							Key:   ConstantString("key"),
 							Value: ConstantString("foo"),
 						},
-						ConstantMapItem{
+						{
 							Key:   ConstantString("value"),
 							Value: ConstantInteger(42),
 						},
@@ -328,7 +328,7 @@ func TestParseTypedef(t *testing.T) {
 					Name: "UUID",
 					Type: BaseType{ID: StringTypeID},
 					Annotations: []*Annotation{
-						&Annotation{
+						{
 							Name:  "length",
 							Value: "32",
 							Line:  2,
@@ -341,7 +341,7 @@ func TestParseTypedef(t *testing.T) {
 					Type: BaseType{
 						ID: I64TypeID,
 						Annotations: []*Annotation{
-							&Annotation{
+							{
 								Name:  "js.type",
 								Value: "Date",
 								Line:  4,
@@ -392,10 +392,10 @@ func TestParseEnum(t *testing.T) {
 				&Enum{
 					Name: "SillyEnum",
 					Items: []*EnumItem{
-						&EnumItem{
+						{
 							Name: "foo",
 							Annotations: []*Annotation{
-								&Annotation{
+								{
 									Name:  "x",
 									Value: "",
 									Line:  3,
@@ -403,14 +403,14 @@ func TestParseEnum(t *testing.T) {
 							},
 							Line: 3,
 						},
-						&EnumItem{Name: "bar", Line: 3},
-						&EnumItem{Name: "baz", Value: &aValue, Line: 4},
-						&EnumItem{Name: "qux", Line: 5},
-						&EnumItem{Name: "quux", Line: 6},
+						{Name: "bar", Line: 3},
+						{Name: "baz", Value: &aValue, Line: 4},
+						{Name: "qux", Line: 5},
+						{Name: "quux", Line: 6},
 					},
 					Annotations: []*Annotation{
-						&Annotation{Name: "_", Value: "__", Line: 7},
-						&Annotation{Name: "foo", Value: "bar", Line: 7},
+						{Name: "_", Value: "__", Line: 7},
+						{Name: "foo", Value: "bar", Line: 7},
 					},
 					Line: 2,
 				},
@@ -456,14 +456,14 @@ func TestParseStruct(t *testing.T) {
 					Name: "i128",
 					Type: StructType,
 					Fields: []*Field{
-						&Field{
+						{
 							ID:           1,
 							Name:         "high",
 							Type:         BaseType{ID: I64TypeID},
 							Requiredness: Required,
 							Line:         3,
 						},
-						&Field{
+						{
 							ID:           2,
 							Name:         "low",
 							Type:         BaseType{ID: I64TypeID},
@@ -472,7 +472,7 @@ func TestParseStruct(t *testing.T) {
 						},
 					},
 					Annotations: []*Annotation{
-						&Annotation{
+						{
 							Name:  "serializer",
 							Value: "Int128Serializer",
 							Line:  5,
@@ -484,14 +484,14 @@ func TestParseStruct(t *testing.T) {
 					Name: "Contents",
 					Type: UnionType,
 					Fields: []*Field{
-						&Field{
+						{
 							ID:           1,
 							Name:         "plainText",
 							Requiredness: Unspecified,
 							Type: BaseType{
 								ID: StringTypeID,
 								Annotations: []*Annotation{
-									&Annotation{
+									{
 										Name:  "format",
 										Value: "markdown",
 										Line:  8,
@@ -500,14 +500,14 @@ func TestParseStruct(t *testing.T) {
 							},
 							Line: 8,
 						},
-						&Field{
+						{
 							ID:   2,
 							Name: "pdf",
 							Type: BaseType{ID: BinaryTypeID},
 							// Requiredness intentionally skipped because
 							// zero-value for it is Unspecified.
 							Annotations: []*Annotation{
-								&Annotation{
+								{
 									Name:  "name",
 									Value: "pdfFile",
 									Line:  9,
@@ -522,7 +522,7 @@ func TestParseStruct(t *testing.T) {
 					Name: "GreatSadness",
 					Type: ExceptionType,
 					Fields: []*Field{
-						&Field{
+						{
 							ID:           1,
 							Name:         "message",
 							Type:         BaseType{ID: StringTypeID},
@@ -578,16 +578,16 @@ func TestParseServices(t *testing.T) {
 				&Service{
 					Name: "KeyValue",
 					Functions: []*Function{
-						&Function{
+						{
 							Name:   "empty",
 							OneWay: true,
 							Line:   4,
 						},
-						&Function{
+						{
 							Name:       "something",
 							ReturnType: BaseType{ID: I32TypeID},
 							Exceptions: []*Field{
-								&Field{
+								{
 									ID:   1,
 									Name: "sadness",
 									Type: TypeReference{
@@ -600,16 +600,16 @@ func TestParseServices(t *testing.T) {
 							OneWay: false,
 							Line:   7,
 						},
-						&Function{
+						{
 							Name: "somethingElse",
 							Parameters: []*Field{
-								&Field{
+								{
 									ID:   1,
 									Name: "a",
 									Type: TypeReference{Name: "A", Line: 11},
 									Line: 11,
 								},
-								&Field{
+								{
 									ID:   2,
 									Name: "b",
 									Type: TypeReference{Name: "B", Line: 12},
@@ -617,7 +617,7 @@ func TestParseServices(t *testing.T) {
 								},
 							},
 							Annotations: []*Annotation{
-								&Annotation{
+								{
 									Name:  "py.name",
 									Value: "something_else",
 									Line:  13,
@@ -627,7 +627,7 @@ func TestParseServices(t *testing.T) {
 						},
 					},
 					Annotations: []*Annotation{
-						&Annotation{
+						{
 							Name:  "ttl.milliseconds",
 							Value: "200",
 							Line:  14,
