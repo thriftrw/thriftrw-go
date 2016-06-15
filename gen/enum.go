@@ -65,11 +65,13 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<$enumName := typeName .Spec>
 		type <$enumName> int32
 
-		const (
-		<range .Spec.Items>
-			<$enumName><goCase .Name> <$enumName> = <.Value>
+		<if .Spec.Items>
+			const (
+			<range .Spec.Items>
+				<$enumName><goCase .Name> <$enumName> = <.Value>
+			<end>
+			)
 		<end>
-		)
 
 		<$v := newVar "v">
 		func (<$v> <$enumName>) ToWire() (<$wire>.Value, error) {
