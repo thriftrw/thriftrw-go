@@ -42,15 +42,15 @@ build:
 .PHONY: lint
 lint:
 ifdef SHOULD_LINT
-	$(eval FMT_LOG := $(shell mktemp -t gofmt))
+	$(eval FMT_LOG := $(shell mktemp -t gofmt.XXXXX))
 	@gofmt -e -s -l $(GO_FILES) | $(FILTER_LINT) > $(FMT_LOG) || true
 	@[ ! -s "$(FMT_LOG)" ] || (echo "gofmt failed:" | cat - $(FMT_LOG) && false)
 
-	$(eval VET_LOG := $(shell mktemp -t govet))
+	$(eval VET_LOG := $(shell mktemp -t govet.XXXXX))
 	@go vet $(PACKAGES) 2>&1 | grep -v '^exit status' | $(FILTER_LINT) > $(VET_LOG) || true
 	@[ ! -s "$(VET_LOG)" ] || (echo "govet failed:" | cat - $(VET_LOG) && false)
 
-	$(eval LINT_LOG := $(shell mktemp -t golint))
+	$(eval LINT_LOG := $(shell mktemp -t golint.XXXXX))
 	@cat /dev/null > $(LINT_LOG)
 	@$(foreach pkg, $(PACKAGES), golint $(pkg) | $(FILTER_LINT) >> $(LINT_LOG) || true;)
 	@[ ! -s "$(LINT_LOG)" ] || (echo "golint failed:" | cat - $(LINT_LOG) && false)
