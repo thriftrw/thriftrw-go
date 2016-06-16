@@ -82,9 +82,12 @@ install:
 
 .PHONY: install_ci
 install_ci: install
-	go get github.com/wadey/gocovmerge
-	go get github.com/mattn/goveralls
-	go get golang.org/x/tools/cmd/cover
+ifdef SHOULD_LINT
+	go get -u -f github.com/golang/lint/golint
+endif
+	go get -u github.com/wadey/gocovmerge
+	go get -u github.com/mattn/goveralls
+	go get -u golang.org/x/tools/cmd/cover
 
 .PHONY: build_ci
 build_ci: build
