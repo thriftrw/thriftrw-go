@@ -62,9 +62,8 @@ func TestValueListFromSliceBreak(t *testing.T) {
 		if i == 2 {
 			// Break after processing I32: 2
 			return expectedErr
-		} else {
-			return nil
 		}
+		return nil
 	})
 
 	assert.Equal(t, expectedErr, err)
@@ -126,9 +125,8 @@ func TestMapItemListFromSliceBreak(t *testing.T) {
 		if i == 2 {
 			// Break after processing I32: 2
 			return expectedErr
-		} else {
-			return nil
 		}
+		return nil
 	})
 
 	assert.Equal(t, expectedErr, err)
