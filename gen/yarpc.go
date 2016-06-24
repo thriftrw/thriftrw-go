@@ -118,7 +118,7 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 			<$body := $vars.NewName "body">
 
 			func (h handler) <goCase .Name>(
-				<$reqMeta> <$yarpc>.ReqMetaIn,
+				<$reqMeta> <$yarpc>.ReqMeta,
 				<$body> <$wire>.Value,
 			) (<$thrift>.Response, error) {
 
@@ -297,7 +297,7 @@ func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 				<$params := newNamespace>
 				<goCase .Name>(
 					<if isServer>
-						<$params.NewName "reqMeta"> <$yarpc>.ReqMetaIn,
+						<$params.NewName "reqMeta"> <$yarpc>.ReqMeta,
 					<else>
 						<$params.NewName "reqMeta"> <$yarpc>.ReqMetaOut,
 					<end>
@@ -313,7 +313,7 @@ func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 						<typeReference .ResultSpec.ReturnType>,
 					<end>
 					<if isServer>
-						<$yarpc>.ResMetaOut,
+						<$yarpc>.ResMeta,
 					<else>
 						<$yarpc>.ResMetaIn,
 					<end>
