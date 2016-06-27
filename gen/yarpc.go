@@ -78,6 +78,7 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 
 	err := yg.g.DeclareFromTemplate(
 		`
+		<$yarpc := import "github.com/yarpc/yarpc-go">
 		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
 		<$protocol := import "github.com/thriftrw/thriftrw-go/protocol">
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
@@ -117,7 +118,7 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 			<$body := $vars.NewName "body">
 
 			func (h handler) <goCase .Name>(
-				<$reqMeta> *<$thrift>.ReqMeta,
+				<$reqMeta> <$yarpc>.ReqMeta,
 				<$body> <$wire>.Value,
 			) (<$thrift>.Response, error) {
 
@@ -180,6 +181,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 
 	err := yg.g.DeclareFromTemplate(
 		`
+		<$yarpc := import "github.com/yarpc/yarpc-go">
 		<$transport := import "github.com/yarpc/yarpc-go/transport">
 		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
 		<$protocol := import "github.com/thriftrw/thriftrw-go/protocol">
@@ -206,7 +208,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 
 			<$vars := newNamespace>
 			func (c client) <goCase .Name>(
-				<$vars.NewName "reqMeta"> *<$thrift>.ReqMeta,
+				<$vars.NewName "reqMeta"> <$yarpc>.CallReqMeta,
 				<range .ArgsSpec>
 					<if .Required>
 						<$vars.NewName .Name> <typeReference .Type>,
@@ -218,7 +220,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 				<if .ResultSpec.ReturnType>
 					<$vars.NewName "success"> <typeReference .ResultSpec.ReturnType>,
 				<end>
-				<$vars.NewName "resMeta"> *<$thrift>.ResMeta,
+				<$vars.NewName "resMeta"> <$yarpc>.CallResMeta,
 				err error,
 			 ) {
 				<$reqMeta := $vars.Rotate "reqMeta">
@@ -279,6 +281,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 	return yg.g.DeclareFromTemplate(
 		`
+		<$yarpc := import "github.com/yarpc/yarpc-go">
 		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
 
 		type Interface interface {
@@ -293,7 +296,11 @@ func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 			<range .Functions>
 				<$params := newNamespace>
 				<goCase .Name>(
-					<$params.NewName "reqMeta"> *<$thrift>.ReqMeta,
+					<if isServer>
+						<$params.NewName "reqMeta"> <$yarpc>.ReqMeta,
+					<else>
+						<$params.NewName "reqMeta"> <$yarpc>.CallReqMeta,
+					<end>
 					<range .ArgsSpec>
 						<if .Required>
 							<$params.NewName .Name> <typeReference .Type>,
@@ -305,7 +312,11 @@ func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 					<if .ResultSpec.ReturnType>
 						<typeReference .ResultSpec.ReturnType>,
 					<end>
-					*<$thrift>.ResMeta,
+					<if isServer>
+						<$yarpc>.ResMeta,
+					<else>
+						<$yarpc>.CallResMeta,
+					<end>
 					 error,
 				 )
 			<end>
