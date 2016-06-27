@@ -208,7 +208,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 
 			<$vars := newNamespace>
 			func (c client) <goCase .Name>(
-				<$vars.NewName "reqMeta"> <$yarpc>.ReqMetaOut,
+				<$vars.NewName "reqMeta"> <$yarpc>.CallReqMeta,
 				<range .ArgsSpec>
 					<if .Required>
 						<$vars.NewName .Name> <typeReference .Type>,
@@ -220,7 +220,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 				<if .ResultSpec.ReturnType>
 					<$vars.NewName "success"> <typeReference .ResultSpec.ReturnType>,
 				<end>
-				<$vars.NewName "resMeta"> <$yarpc>.ResMetaIn,
+				<$vars.NewName "resMeta"> <$yarpc>.CallResMeta,
 				err error,
 			 ) {
 				<$reqMeta := $vars.Rotate "reqMeta">
@@ -299,7 +299,7 @@ func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 					<if isServer>
 						<$params.NewName "reqMeta"> <$yarpc>.ReqMeta,
 					<else>
-						<$params.NewName "reqMeta"> <$yarpc>.ReqMetaOut,
+						<$params.NewName "reqMeta"> <$yarpc>.CallReqMeta,
 					<end>
 					<range .ArgsSpec>
 						<if .Required>
@@ -315,7 +315,7 @@ func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 					<if isServer>
 						<$yarpc>.ResMeta,
 					<else>
-						<$yarpc>.ResMetaIn,
+						<$yarpc>.CallResMeta,
 					<end>
 					 error,
 				 )
