@@ -207,8 +207,7 @@ func (br *Reader) read(bs []byte, off int64) (int64, error) {
 	return off, err
 }
 
-// copyN copies the given number of bytes starting at the given position into
-// the Writer.
+// copyN copies n bytes starting at offset off into the given Writer.
 func (br *Reader) copyN(w io.Writer, off int64, n int64) (int64, error) {
 	src := io.NewSectionReader(br.reader, off, n)
 	copied, err := io.CopyN(w, src, n)
