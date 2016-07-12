@@ -21,11 +21,16 @@
 package binary
 
 import (
+	"bytes"
 	"io"
 	"math"
 
 	"github.com/thriftrw/thriftrw-go/wire"
 )
+
+// Requests for byte slices longer than this will use a dynamically resizing
+// buffer.
+const bytesAllocThreshold = 1048576 // 1 MB
 
 // Reader implements a parser for the Thrift Binary Protocol based on an
 // io.ReaderAt.
@@ -202,6 +207,19 @@ func (br *Reader) read(bs []byte, off int64) (int64, error) {
 	return off, err
 }
 
+// copyN copies the given number of bytes starting at the given position into
+// the Writer.
+func (br *Reader) copyN(w io.Writer, off int64, n int64) (int64, error) {
+	src := io.NewSectionReader(br.reader, off, n)
+	copied, err := io.CopyN(w, src, n)
+	off += copied
+	if err == io.EOF {
+		// All EOFs are unexpected for the decoder
+		err = io.ErrUnexpectedEOF
+	}
+	return off, err
+}
+
 func (br *Reader) readByte(off int64) (byte, int64, error) {
 	bs := br.buffer[0:1]
 	off, err := br.read(bs, off)
@@ -238,6 +256,17 @@ func (br *Reader) readBytes(off int64) ([]byte, int64, error) {
 	}
 	if length == 0 {
 		return nil, off, nil
+	}
+
+	// Use a dynamically resizing buffer for requests larger than
+	// bytesAllocThreshold. We don't want bad requests to lock the system up.
+	if length > bytesAllocThreshold {
+		var buff bytes.Buffer
+		off, err = br.copyN(&buff, off, int64(length))
+		if err != nil {
+			return nil, off, err
+		}
+		return buff.Bytes(), off, err
 	}
 
 	bs := make([]byte, length)

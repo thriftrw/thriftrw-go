@@ -31,6 +31,7 @@ import (
 	"github.com/thriftrw/thriftrw-go/wire"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type encodeDecodeTest struct {
@@ -284,6 +285,18 @@ func TestBinary(t *testing.T) {
 	checkEncodeDecode(t, wire.TBinary, tests)
 }
 
+func TestBinaryLargeLength(t *testing.T) {
+	// 5 MB + 4 bytes for length
+	data := make([]byte, 5242880+4)
+	data[0], data[1], data[2], data[3] = 0x0, 0x50, 0x0, 0x0 // 5 MB
+
+	value, err := Binary.Decode(bytes.NewReader(data), wire.TBinary)
+	require.NoError(t, err, "failed to decode value")
+
+	want := wire.NewValueBinary(data[4:])
+	assert.True(t, wire.ValuesAreEqual(want, value), "values did not match")
+}
+
 func TestBinaryDecodeFailure(t *testing.T) {
 	tests := []failureTest{
 		{0xff, 0x30, 0x30, 0x30}, // negative length
@@ -297,6 +310,7 @@ func TestBinaryEOFFailure(t *testing.T) {
 		{},
 		{0x00}, // incomplete length
 		{0x00, 0x00, 0x00, 0x01}, // length mismatch
+		{0x22, 0x6e, 0x6f, 0x74}, // really long length
 	}
 
 	checkEOFError(t, wire.TBinary, tests)
