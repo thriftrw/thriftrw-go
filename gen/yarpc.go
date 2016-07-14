@@ -186,13 +186,13 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
 		<$protocol := import "github.com/thriftrw/thriftrw-go/protocol">
 
-		func New(c <$transport>.Channel) Interface {
+		func New(c <$transport>.Channel, opts ...<$thrift>.ClientOption) Interface {
 			return client{
 				c: <$thrift>.New(<$thrift>.Config{
 					Service: "<.Name>",
 					Channel: c,
 					Protocol: <$protocol>.Binary,
-				}),
+				}, opts...),
 			}
 		}
 
