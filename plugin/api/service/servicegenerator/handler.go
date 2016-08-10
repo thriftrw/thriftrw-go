@@ -21,12 +21,48 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package api
+package servicegenerator
 
-type Plugin interface {
-	Goodbye() error
+import (
+	"github.com/thriftrw/thriftrw-go/internal/envelope"
+	"github.com/thriftrw/thriftrw-go/wire"
+	"github.com/thriftrw/thriftrw-go/plugin/api"
+)
 
-	Handshake(
-		Request *HandshakeRequest,
-	) (*HandshakeResponse, error)
+// Handler serves an implementation of the ServiceGenerator service.
+type Handler struct {
+	impl api.ServiceGenerator
+}
+
+// NewHandler builds a new ServiceGenerator handler.
+func NewHandler(service api.ServiceGenerator) Handler {
+	return Handler{
+		impl: service,
+	}
+}
+
+// Handle receives and handles a request for the ServiceGenerator service.
+func (h Handler) Handle(name string, reqValue wire.Value) (wire.Value, error) {
+	switch name {
+
+	case "generate":
+		var args GenerateArgs
+		if err := args.FromWire(reqValue); err != nil {
+			return wire.Value{}, err
+		}
+
+		result, err := GenerateHelper.WrapResponse(
+			h.impl.Generate(args.Request),
+		)
+		if err != nil {
+			return wire.Value{}, err
+		}
+
+		return result.ToWire()
+
+	default:
+
+		return wire.Value{}, envelope.ErrUnknownMethod(name)
+
+	}
 }
