@@ -33,26 +33,26 @@ var (
 	_typeOfInt   = reflect.TypeOf(int(0))
 )
 
-// Range calls the function f on all items in c concurrently and waits for all
-// calls to finish.
+// Range calls the function fn on all items in coll concurrently and waits for
+// all calls to finish.
 //
-// c may be a slice or a map. If c is a map, f must accept the key and the value
-// as its arguments, and otherwise it must accept an int index and the value as
-// its arguments.
+// coll may be a slice or a map. If coll is a map, fn must accept the key and
+// the value as its arguments, and otherwise it must accept an int index and
+// the value as its arguments.
 //
-// f may return nothing or error.
-func Range(c, f interface{}) error {
-	if c == nil || f == nil {
-		log.Panicf("ConcurrentRange(%T, %T): both arguments must be non-nil", c, f)
+// fn may return nothing or error.
+func Range(coll, fn interface{}) error {
+	if coll == nil || fn == nil {
+		log.Panicf("ConcurrentRange(%T, %T): both arguments must be non-nil", coll, fn)
 	}
 
-	cv := reflect.ValueOf(c)
-	fv := reflect.ValueOf(f)
+	cv := reflect.ValueOf(coll)
+	fv := reflect.ValueOf(fn)
 	ct := cv.Type()
 	ft := fv.Type()
 
 	if ft.NumIn() != 2 {
-		log.Panicf("ConcurrentRange(%T, %T): f must accept exactly two arguments", c, f)
+		log.Panicf("ConcurrentRange(%T, %T): fn must accept exactly two arguments", coll, fn)
 	}
 
 	switch ft.NumOut() {
@@ -62,10 +62,10 @@ func Range(c, f interface{}) error {
 		ft = fv.Type()
 	case 1:
 		if ft.Out(0) != _typeOfError {
-			log.Panicf("ConcurrentRange(%T, %T): f may only return error or nothing", c, f)
+			log.Panicf("ConcurrentRange(%T, %T): fn may only return error or nothing", coll, fn)
 		}
 	case 2:
-		log.Panicf("ConcurrentRange(%T, %T): f may only return error or nothing", c, f)
+		log.Panicf("ConcurrentRange(%T, %T): fn may only return error or nothing", coll, fn)
 	}
 
 	var (
@@ -77,11 +77,11 @@ func Range(c, f interface{}) error {
 	switch ct.Kind() {
 	case reflect.Map:
 		if ft.In(0) != ct.Key() {
-			log.Panicf("ConcurrentRange(%T, %T): f's first argument must be a %v", c, f, ct.Key())
+			log.Panicf("ConcurrentRange(%T, %T): fn's first argument must be a %v", coll, fn, ct.Key())
 		}
 
 		if ft.In(1) != ct.Elem() {
-			log.Panicf("ConcurrentRange(%T, %T): f's second argument must be a %v", c, f, ct.Elem())
+			log.Panicf("ConcurrentRange(%T, %T): fn's second argument must be a %v", coll, fn, ct.Elem())
 		}
 
 		for _, key := range cv.MapKeys() {
@@ -100,11 +100,11 @@ func Range(c, f interface{}) error {
 
 	case reflect.Slice:
 		if ft.In(0) != _typeOfInt {
-			log.Panicf("ConcurrentRange(%T, %T): f's first argument must be an int", c, f)
+			log.Panicf("ConcurrentRange(%T, %T): fn's first argument must be an int", coll, fn)
 		}
 
 		if ft.In(1) != ct.Elem() {
-			log.Panicf("ConcurrentRange(%T, %T): f's second argument must be a %v", c, f, ct.Elem())
+			log.Panicf("ConcurrentRange(%T, %T): fn's second argument must be a %v", coll, fn, ct.Elem())
 		}
 
 		for i := 0; i < cv.Len(); i++ {
@@ -122,16 +122,16 @@ func Range(c, f interface{}) error {
 		}
 
 	default:
-		log.Panicf("ConcurrentRange(%T, %T): called with a type that is not a slice or a map", c, f)
+		log.Panicf("ConcurrentRange(%T, %T): called with a type that is not a slice or a map", coll, fn)
 	}
 
 	wg.Wait()
 	return internal.MultiError(errors)
 }
 
-func alwaysReturnNoError(f reflect.Value) reflect.Value {
+func alwaysReturnNoError(fn reflect.Value) reflect.Value {
 	var (
-		ft       = f.Type()
+		ft       = fn.Type()
 		in       []reflect.Type
 		variadic = ft.IsVariadic()
 	)
@@ -142,7 +142,7 @@ func alwaysReturnNoError(f reflect.Value) reflect.Value {
 
 	newFt := reflect.FuncOf(in, []reflect.Type{_typeOfError}, variadic)
 	return reflect.MakeFunc(newFt, func(args []reflect.Value) []reflect.Value {
-		f.Call(args)
+		fn.Call(args)
 		return []reflect.Value{reflect.Zero(_typeOfError)}
 	})
 }
