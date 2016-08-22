@@ -24,12 +24,10 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/thriftrw/thriftrw-go/envelope/internal/exception"
+	"github.com/thriftrw/thriftrw-go/internal/envelope/exception"
 	"github.com/thriftrw/thriftrw-go/protocol"
 	"github.com/thriftrw/thriftrw-go/wire"
 )
-
-//go:generate thriftrw-go -out internal exception.thrift
 
 // Enveloper is the interface implemented by a type that can be written with
 // an envelope.
