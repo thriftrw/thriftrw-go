@@ -5,6 +5,7 @@ import (
 	"io"
 	"testing"
 
+	"github.com/thriftrw/thriftrw-go/internal/envelope/envelopetest"
 	"github.com/thriftrw/thriftrw-go/internal/envelope/exception"
 	"github.com/thriftrw/thriftrw-go/ptr"
 	"github.com/thriftrw/thriftrw-go/wire"
@@ -110,7 +111,7 @@ func TestClient(t *testing.T) {
 			assert.NoError(t, err, tt.desc)
 		}).Return(nil)
 
-		transport := NewMockTransport(mockCtrl)
+		transport := envelopetest.NewMockTransport(mockCtrl)
 		if tt.transportError != nil {
 			transport.EXPECT().Send([]byte{1, 2, 3}).Return(nil, tt.transportError)
 		} else {
