@@ -6,3 +6,4 @@ import:
   subpackages:
   - gomock
 - package: github.com/kr/pretty
+- package: github.com/kr/text
