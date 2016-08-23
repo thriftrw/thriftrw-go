@@ -63,7 +63,7 @@ func (w *Writer) Write(b []byte) error {
 
 // Close closes the given Writeer.
 func (w *Writer) Close() error {
-	if c, ok := w.w.(io.WriteCloser); ok {
+	if c, ok := w.w.(io.Closer); ok {
 		return c.Close()
 	}
 	return nil

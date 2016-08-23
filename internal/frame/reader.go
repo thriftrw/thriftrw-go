@@ -80,7 +80,7 @@ func (r *Reader) readFastPath(l int64) ([]byte, error) {
 
 // Close closes the given Reader.
 func (r *Reader) Close() error {
-	if c, ok := r.r.(io.ReadCloser); ok {
+	if c, ok := r.r.(io.Closer); ok {
 		return c.Close()
 	}
 	return nil
