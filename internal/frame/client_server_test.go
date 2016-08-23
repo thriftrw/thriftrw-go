@@ -48,6 +48,33 @@ func TestClientServer(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestClientServerHandleError(t *testing.T) {
+	serverReader, clientWriter := io.Pipe()
+	clientReader, serverWriter := io.Pipe()
+
+	defer func() {
+		assert.NoError(t, serverWriter.Close())
+		assert.NoError(t, clientWriter.Close())
+		assert.NoError(t, clientReader.Close())
+		assert.NoError(t, serverReader.Close())
+	}()
+
+	server := NewServer(serverReader, serverWriter)
+	client := NewClient(clientWriter, clientReader)
+
+	go func() {
+		err := server.Serve(handlerFunc(
+			func([]byte) ([]byte, error) {
+				return nil, errors.New("great sadness")
+			},
+		))
+		assert.Error(t, err)
+	}()
+
+	_, err := client.Send([]byte("hello"))
+	assert.Equal(t, io.EOF, err)
+}
+
 type handlerFunc func([]byte) ([]byte, error)
 
 func (f handlerFunc) Handle(b []byte) ([]byte, error) {

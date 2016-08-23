@@ -67,11 +67,13 @@ func (s *Server) Serve(h Handler) error {
 	for s.running.Load() {
 		req, err := s.r.Read()
 		if err != nil {
+			s.w.Close()
 			return err
 		}
 
 		res, err := h.Handle(req)
 		if err != nil {
+			s.w.Close()
 			return err
 		}
 

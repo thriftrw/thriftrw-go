@@ -19,7 +19,10 @@ func TestServeReadError(t *testing.T) {
 	ch <- []byte{0x00, 0x00}
 	ch <- nil
 
-	server := NewServer(r, NewMockWriter(mockCtrl))
+	w := NewMockWriteCloser(mockCtrl)
+	w.EXPECT().Close().Return(nil)
+
+	server := NewServer(r, w)
 	err := server.Serve(handlerFunc(
 		func([]byte) ([]byte, error) {
 			return nil, errors.New("unexpected call")
@@ -30,10 +33,15 @@ func TestServeReadError(t *testing.T) {
 }
 
 func TestServeHandleError(t *testing.T) {
-	r := bytes.NewReader([]byte{0x00, 0x00, 0x00, 0x00})
-	w := new(bytes.Buffer)
-	server := NewServer(r, w)
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
 
+	r := bytes.NewReader([]byte{0x00, 0x00, 0x00, 0x00})
+
+	w := NewMockWriteCloser(mockCtrl)
+	w.EXPECT().Close().Return(nil)
+
+	server := NewServer(r, w)
 	err := server.Serve(handlerFunc(
 		func([]byte) ([]byte, error) {
 			return nil, errors.New("great sadness")
