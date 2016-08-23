@@ -82,6 +82,7 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
 		<$protocol := import "github.com/thriftrw/thriftrw-go/protocol">
 		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$context := import "golang.org/x/net/context">
 
 		func New(impl Interface) <$thrift>.Service {
 			return service{handler{impl}}
@@ -118,6 +119,7 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 			<$body := $vars.NewName "body">
 
 			func (h handler) <goCase .Name>(
+				ctx <$context>.Context,
 				<$reqMeta> <$yarpc>.ReqMeta,
 				<$body> <$wire>.Value,
 			) (<$thrift>.Response, error) {
@@ -134,6 +136,7 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 					<$succ>,
 				<end>
 				<$resMeta>, err := h.impl.<goCase .Name>(
+					ctx,
 					<$reqMeta>,
 					<range .ArgsSpec><$args>.<goCase .Name>,<end>
 				)
@@ -185,6 +188,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 		<$transport := import "github.com/yarpc/yarpc-go/transport">
 		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
 		<$protocol := import "github.com/thriftrw/thriftrw-go/protocol">
+		<$context := import "golang.org/x/net/context">
 
 		func New(c <$transport>.Channel, opts ...<$thrift>.ClientOption) Interface {
 			return client{
@@ -208,6 +212,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 
 			<$vars := newNamespace>
 			func (c client) <goCase .Name>(
+				ctx <$context>.Context,
 				<$vars.NewName "reqMeta"> <$yarpc>.CallReqMeta,
 				<range .ArgsSpec>
 					<if .Required>
@@ -235,7 +240,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 				<$body := $vars.NewName "body">
 
 				var <$body> <$wire>.Value
-				<$body>, <$resMeta>, err = c.c.Call(<$reqMeta>, <$args>)
+				<$body>, <$resMeta>, err = c.c.Call(ctx, <$reqMeta>, <$args>)
 				if err != nil {
 					return
 				}
@@ -276,6 +281,7 @@ func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 		`
 		<$yarpc := import "github.com/yarpc/yarpc-go">
 		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
+		<$context := import "golang.org/x/net/context">
 
 		type Interface interface {
 			<if .Parent>
@@ -289,6 +295,7 @@ func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 			<range .Functions>
 				<$params := newNamespace>
 				<goCase .Name>(
+					ctx <$context>.Context,
 					<if isServer>
 						<$params.NewName "reqMeta"> <$yarpc>.ReqMeta,
 					<else>
