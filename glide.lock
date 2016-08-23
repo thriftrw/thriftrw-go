@@ -1,26 +1,16 @@
-hash: 4b5b028e14ecc683b2bf83310b5187fe30991517184e477830a6a35c45555c75
-updated: 2016-02-10T10:03:59.005435217-08:00
+hash: 316af8ff6050b3923ccf8aabf9cb370d7b0decb017883e00093f7e223c070fe1
+updated: 2016-08-22T17:13:47.99223996-07:00
 imports:
-- name: github.com/davecgh/go-spew
-  version: 2df174808ee097f90d259e432cc04442cf60be21
+- name: github.com/golang/mock
+  version: bd3c8e81be01eef76d4b503f5e687d2d1354d2d9
   subpackages:
-  - spew
+  - gomock
 - name: github.com/kr/pretty
-  version: e6ac2fc51e89a3249e82157fa0bb7a18ef9dd5bb
-- name: github.com/kr/pty
-  version: f7ee69f31298ecbe5d2b349c711e2547a617d398
-  repo: https://github.com/kr/pty
+  version: 737b74a46c4bf788349f72cb256fed10aea4d0ac
 - name: github.com/kr/text
-  version: bb797dc4fb8320488f47bf11de07a733d7233e1f
-- name: github.com/pmezard/go-difflib
-  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
-  subpackages:
-  - difflib
-- name: github.com/stretchr/objx
-  version: cbeaeb16a013161a98496fad62933b1d21786672
+  version: 7cafcd837844e784b526369c9bce262804aebc60
 - name: github.com/stretchr/testify
-  version: 9f9027faeb0dad515336ed2f28317f9f8f527ab4
-  subpackages:
-  - /assert
-  - /require
+  version: d77da356e56a7428ad25149ca77381849a6a5232
+- name: github.com/uber-go/atomic
+  version: 0c9e689d64f004564b79d9a663634756df322902
 devImports: []
