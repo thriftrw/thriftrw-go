@@ -23,7 +23,6 @@ package frame
 import (
 	"bytes"
 	"encoding/binary"
-	"fmt"
 	"io"
 	"sync"
 )
@@ -62,12 +61,9 @@ func (r *Reader) Read() ([]byte, error) {
 	}
 
 	var buff bytes.Buffer
-	copied, err := io.CopyN(&buff, r.r, length)
+	_, err := io.CopyN(&buff, r.r, length)
 	if err != nil {
 		return nil, err
-	}
-	if copied < length {
-		return nil, fmt.Errorf("unexpected end of input: expected %v bytes but got %v", length, copied)
 	}
 
 	return buff.Bytes(), nil
