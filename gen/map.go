@@ -72,12 +72,27 @@ func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, err
 						<$k> := <$i>.Key
 						<$v> := <$i>.Value
 				<end>
+						<if not (isPrimitiveType .Spec.KeySpec)>
+							if <$k> == nil {
+								return <import "fmt">.Errorf("invalid map key: value is nil")
+							}
+						<end>
+
+						<if not (isPrimitiveType .Spec.ValueSpec)>
+							if <$v> == nil {
+								return <import "fmt">.Errorf("invalid [%v]: value is nil", <$k>)
+							}
+						<end>
+
 						<$kw>, err := <toWire .Spec.KeySpec $k>
 						if err != nil {
+							// TODO(abg): nested error "invalid map key: %v"
 							return err
 						}
+
 						<$vw>, err := <toWire .Spec.ValueSpec $v>
 						if err != nil {
+							// TODO(abg): nested error "invalid [%v]: %v"
 							return err
 						}
 						err = <$f>(<$wire>.MapItem{Key: <$kw>, Value: <$vw>})

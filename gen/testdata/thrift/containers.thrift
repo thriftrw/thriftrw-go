@@ -34,3 +34,8 @@ struct ContainersOfContainers {
     8: optional map<list<i32>, set<i64>> mapOfListToSet;
     9: optional map<set<i32>, list<double>> mapOfSetToListOfDouble;
 }
+
+struct MapOfBinaryAndString {
+    1: optional map<binary, string> binaryToString;
+    2: optional map<string, binary> stringToBinary;
+}

@@ -27,6 +27,8 @@ import (
 	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
 	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
 	"github.com/thriftrw/thriftrw-go/wire"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCollectionsOfPrimitives(t *testing.T) {
@@ -722,5 +724,72 @@ func TestCrazyTown(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, tt.desc)
+	}
+}
+
+func TestContainerValidate(t *testing.T) {
+	tests := []struct {
+		value     thriftType
+		wantError string
+	}{
+		{
+			value: &tc.PrimitiveContainers{
+				ListOfBinary: [][]byte{
+					{1, 2, 3},
+					{},
+					nil,
+					{4, 5, 6},
+				},
+			},
+			wantError: "invalid [2]: value is nil",
+		},
+		{
+			value: &ts.Graph{
+				Edges: []*ts.Edge{
+					{Start: &ts.Point{X: 1, Y: 2}, End: &ts.Point{X: 3, Y: 4}},
+					nil,
+					{Start: &ts.Point{X: 5, Y: 6}, End: &ts.Point{X: 7, Y: 8}},
+				},
+			},
+			wantError: "invalid [1]: value is nil",
+		},
+		{
+			value: &tc.ContainersOfContainers{
+				SetOfLists: [][]string{{}, nil},
+			},
+			wantError: "invalid set item: value is nil",
+		},
+		{
+			value: &tc.MapOfBinaryAndString{
+				BinaryToString: []struct {
+					Key   []byte
+					Value string
+				}{
+					{Key: []byte("hello"), Value: "world"},
+					{Key: nil, Value: "foo"},
+				},
+			},
+			wantError: "invalid map key: value is nil",
+		},
+		{
+			value: &tc.MapOfBinaryAndString{
+				StringToBinary: map[string][]byte{
+					"hello": []byte("world"),
+					"foo":   nil,
+				},
+			},
+			wantError: "invalid [foo]: value is nil",
+		},
+	}
+
+	for _, tt := range tests {
+		value, err := tt.value.ToWire()
+		if err == nil {
+			err = wire.EvaluateValue(value) // lazy error
+		}
+
+		if assert.Error(t, err) {
+			assert.Equal(t, tt.wantError, err.Error())
+		}
 	}
 }
