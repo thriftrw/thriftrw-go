@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package envelope
+package envelopetest
 
-//go:generate thriftrw-go exception.thrift
+//go:generate mockgen -source ../server.go -destination server.go -package envelopetest
+//go:generate mockgen -source ../client.go -destination client.go -package envelopetest
