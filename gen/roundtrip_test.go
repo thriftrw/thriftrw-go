@@ -21,10 +21,12 @@
 package gen
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
 	"testing"
 
+	"github.com/thriftrw/thriftrw-go/protocol"
 	"github.com/thriftrw/thriftrw-go/wire"
 
 	"github.com/stretchr/testify/assert"
@@ -44,6 +46,26 @@ func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args 
 			t, wire.ValuesAreEqual(v, w), "%v: %v.ToWire() != %v", message, x, v) {
 			return false
 		}
+
+		var buff bytes.Buffer
+		if !assert.NoError(t, protocol.Binary.Encode(w, &buff), "%v: failed to serialize", message) {
+			return false
+		}
+
+		// Flip v to deserialize(serialize(x.ToWire())) to ensure full round
+		// tripping
+
+		newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), v.Type())
+		if !assert.NoError(t, err, "%v: failed to deserialize", message) {
+			return false
+		}
+
+		if !assert.True(
+			t, wire.ValuesAreEqual(newV, v), "%v: deserialize(serialize(%v.ToWire())) != %v", message, x, v) {
+			return false
+		}
+
+		v = newV
 	}
 
 	xType := reflect.TypeOf(x)

@@ -29,6 +29,7 @@ import (
 	"github.com/thriftrw/thriftrw-go/wire"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestCollectionsOfPrimitives(t *testing.T) {
@@ -64,7 +65,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 			"list of binary",
 			tc.PrimitiveContainers{
 				ListOfBinary: [][]byte{
-					[]byte("foo"), []byte("bar"), []byte("baz"),
+					[]byte("foo"), {}, []byte("bar"), []byte("baz"),
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
@@ -72,6 +73,7 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 				Value: wire.NewValueList(
 					wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 						wire.NewValueBinary([]byte("foo")),
+						wire.NewValueBinary([]byte{}),
 						wire.NewValueBinary([]byte("bar")),
 						wire.NewValueBinary([]byte("baz")),
 					}),
@@ -792,4 +794,26 @@ func TestContainerValidate(t *testing.T) {
 			assert.Equal(t, tt.wantError, err.Error())
 		}
 	}
+}
+
+func TestListOfBinaryReadNil(t *testing.T) {
+	value := wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
+		ID: 1,
+		Value: wire.NewValueList(
+			wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+				wire.NewValueBinary([]byte("foo")),
+				wire.NewValueBinary(nil),
+				wire.NewValueBinary([]byte("bar")),
+				wire.NewValueBinary([]byte("baz")),
+			}),
+		),
+	}}})
+
+	var c tc.PrimitiveContainers
+	require.NoError(t, c.FromWire(value))
+
+	got, err := c.ToWire()
+	require.NoError(t, err)
+	require.NoError(t, wire.EvaluateValue(got))
+	assert.True(t, wire.ValuesAreEqual(value, got))
 }
