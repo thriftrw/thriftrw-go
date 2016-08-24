@@ -7,3 +7,6 @@ import:
   - gomock
 - package: github.com/kr/pretty
 - package: github.com/kr/text
+- package: golang.org/x/tools
+  subpackages:
+  - go/ast/astutil
