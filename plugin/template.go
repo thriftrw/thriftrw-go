@@ -159,11 +159,7 @@ func (g *goFileGenerator) FormatType(t *api.Type) (string, error) {
 		}
 	case t.SliceType != nil:
 		v, err := g.FormatType(t.SliceType)
-		if err != nil {
-			return "", err
-		}
-
-		return "[]" + v, nil
+		return "[]" + v, err
 	case t.KeyValueSliceType != nil:
 		k, err := g.FormatType(t.KeyValueSliceType.Left)
 		if err != nil {
@@ -190,11 +186,7 @@ func (g *goFileGenerator) FormatType(t *api.Type) (string, error) {
 		return importName + "." + t.ReferenceType.Name, nil
 	case t.PointerType != nil:
 		v, err := g.FormatType(t.PointerType)
-		if err != nil {
-			return "", err
-		}
-
-		return "*" + v, nil
+		return "*" + v, err
 	default:
 		return "", fmt.Errorf("unknown type: %v", t)
 	}
