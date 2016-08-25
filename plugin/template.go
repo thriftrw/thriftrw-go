@@ -52,7 +52,7 @@ type TemplateOption struct {
 // 	)
 func TemplateFunc(name string, f interface{}) TemplateOption {
 	return TemplateOption{apply: func(t *goFileGenerator) {
-		t.funcs[name] = f
+		t.templateFuncs[name] = f
 	}}
 }
 
@@ -76,8 +76,8 @@ func GoFileImportPath(path string) TemplateOption {
 
 // goFileGenerator generates a single Go file.
 type goFileGenerator struct {
-	importPath string
-	funcs      map[string]interface{}
+	importPath    string
+	templateFuncs template.FuncMap
 
 	// Names of known globals. All global variables share this namespace.
 	globals map[string]struct{}
@@ -91,7 +91,7 @@ type goFileGenerator struct {
 
 func newGoFileGenerator(opts []TemplateOption) *goFileGenerator {
 	t := goFileGenerator{
-		funcs:         make(map[string]interface{}),
+		templateFuncs: make(template.FuncMap),
 		globals:       make(map[string]struct{}),
 		imports:       make(map[string]string),
 		importedNames: make(map[string]string),
@@ -207,7 +207,7 @@ func (g *goFileGenerator) Generate(filename, tmpl string, data interface{}) ([]b
 		"import":     g.Import,
 		"formatType": g.FormatType,
 	}
-	for k, v := range g.funcs {
+	for k, v := range g.templateFuncs {
 		funcs[k] = v
 	}
 
