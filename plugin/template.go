@@ -56,12 +56,18 @@ func TemplateFunc(name string, f interface{}) TemplateOption {
 	}}
 }
 
-// GoFileImportPath is a TemplateOption that specifies the intended import path
-// for the file being generated.
+// GoFileImportPath is a TemplateOption that specifies the intended absolute
+// import path for the file being generated.
 //
-// If specified, this changes the behavior of the `formatType` template function
-// to NOT import this package and instead use the types directly since they are
-// available in the same package.
+// 	GoFileFromTemplate(
+// 		filename,
+// 		mytemplate,
+// 		GoFileImportPath("github.com/thriftrw/thriftrw-go/myservice"),
+// 	)
+//
+// If specified, this changes the behavior of the `formatType` template
+// function to NOT import this package and instead use the types directly
+// since they are available in the same package.
 func GoFileImportPath(path string) TemplateOption {
 	return TemplateOption{apply: func(t *goFileGenerator) {
 		t.importPath = path
