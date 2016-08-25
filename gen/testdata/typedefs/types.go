@@ -16,6 +16,9 @@ type _Set_Binary_ValueList [][]byte
 
 func (v _Set_Binary_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid set item: value is nil")
+		}
 		w, err := wire.NewValueBinary(x), error(nil)
 		if err != nil {
 			return err
@@ -83,6 +86,12 @@ func (m _Map_Edge_Edge_MapItemList) ForEach(f func(wire.MapItem) error) error {
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
+		if k == nil {
+			return fmt.Errorf("invalid map key: value is nil")
+		}
+		if v == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", k)
+		}
 		kw, err := k.ToWire()
 		if err != nil {
 			return err
@@ -269,7 +278,10 @@ func (v *Event) String() string {
 type _List_Event_ValueList []*Event
 
 func (v _List_Event_ValueList) ForEach(f func(wire.Value) error) error {
-	for _, x := range v {
+	for i, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", i)
+		}
 		w, err := x.ToWire()
 		if err != nil {
 			return err
@@ -338,6 +350,9 @@ type _Set_Frame_ValueList []*structs.Frame
 
 func (v _Set_Frame_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid set item: value is nil")
+		}
 		w, err := x.ToWire()
 		if err != nil {
 			return err
@@ -453,6 +468,12 @@ func (m _Map_Point_Point_MapItemList) ForEach(f func(wire.MapItem) error) error 
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
+		if k == nil {
+			return fmt.Errorf("invalid map key: value is nil")
+		}
+		if v == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", k)
+		}
 		kw, err := k.ToWire()
 		if err != nil {
 			return err

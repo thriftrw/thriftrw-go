@@ -21,7 +21,10 @@ type ArbitraryValue struct {
 type _List_ArbitraryValue_ValueList []*ArbitraryValue
 
 func (v _List_ArbitraryValue_ValueList) ForEach(f func(wire.Value) error) error {
-	for _, x := range v {
+	for i, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", i)
+		}
 		w, err := x.ToWire()
 		if err != nil {
 			return err
@@ -49,6 +52,9 @@ type _Map_String_ArbitraryValue_MapItemList map[string]*ArbitraryValue
 
 func (m _Map_String_ArbitraryValue_MapItemList) ForEach(f func(wire.MapItem) error) error {
 	for k, v := range m {
+		if v == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", k)
+		}
 		kw, err := wire.NewValueString(k), error(nil)
 		if err != nil {
 			return err

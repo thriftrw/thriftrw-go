@@ -613,7 +613,10 @@ type Graph struct {
 type _List_Edge_ValueList []*Edge
 
 func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
-	for _, x := range v {
+	for i, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", i)
+		}
 		w, err := x.ToWire()
 		if err != nil {
 			return err

@@ -63,8 +63,15 @@ func (s *setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, er
 				<else>
 					for _, <$x> := range <$v> {
 				<end>
+						<if not (isPrimitiveType .Spec.ValueSpec)>
+							if <$x> == nil {
+								return <import "fmt">.Errorf("invalid set item: value is nil")
+							}
+						<end>
+
 						<$w>, err := <toWire .Spec.ValueSpec $x>
 						if err != nil {
+							// TODO(abg): nested error "invalid set item: %v"
 							return err
 						}
 						err = <$f>(<$w>)

@@ -26,6 +26,10 @@ import (
 	"strings"
 )
 
+// An empty []byte with zero length and capacity. We'll use this rather than
+// allocating new byte slices for empty []byte.
+var _emptyByteSlice = make([]byte, 0, 0)
+
 // Value holds the over-the-wire representation of a Thrift value.
 //
 // The Type of the value determines which field in the Value is valid.
@@ -155,6 +159,9 @@ func (v *Value) GetI64() int64 {
 
 // NewValueBinary constructs a new Value that contains a binary string.
 func NewValueBinary(v []byte) Value {
+	if v == nil {
+		v = _emptyByteSlice
+	}
 	return Value{
 		typ:     TBinary,
 		tbinary: v,

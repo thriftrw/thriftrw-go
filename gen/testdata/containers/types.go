@@ -62,7 +62,10 @@ func (_List_I32_ValueList) Close() {
 type _List_List_I32_ValueList [][]int32
 
 func (v _List_List_I32_ValueList) ForEach(f func(wire.Value) error) error {
-	for _, x := range v {
+	for i, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", i)
+		}
 		w, err := wire.NewValueList(_List_I32_ValueList(x)), error(nil)
 		if err != nil {
 			return err
@@ -116,7 +119,10 @@ func (_Set_I32_ValueList) Close() {
 type _List_Set_I32_ValueList []map[int32]struct{}
 
 func (v _List_Set_I32_ValueList) ForEach(f func(wire.Value) error) error {
-	for _, x := range v {
+	for i, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", i)
+		}
 		w, err := wire.NewValueSet(_Set_I32_ValueList(x)), error(nil)
 		if err != nil {
 			return err
@@ -178,7 +184,10 @@ func (_Map_I32_I32_MapItemList) Close() {
 type _List_Map_I32_I32_ValueList []map[int32]int32
 
 func (v _List_Map_I32_I32_ValueList) ForEach(f func(wire.Value) error) error {
-	for _, x := range v {
+	for i, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", i)
+		}
 		w, err := wire.NewValueMap(_Map_I32_I32_MapItemList(x)), error(nil)
 		if err != nil {
 			return err
@@ -233,6 +242,9 @@ type _Set_Set_String_ValueList []map[string]struct{}
 
 func (v _Set_Set_String_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid set item: value is nil")
+		}
 		w, err := wire.NewValueSet(_Set_String_ValueList(x)), error(nil)
 		if err != nil {
 			return err
@@ -287,6 +299,9 @@ type _Set_List_String_ValueList [][]string
 
 func (v _Set_List_String_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid set item: value is nil")
+		}
 		w, err := wire.NewValueList(_List_String_ValueList(x)), error(nil)
 		if err != nil {
 			return err
@@ -349,6 +364,9 @@ type _Set_Map_String_String_ValueList []map[string]string
 
 func (v _Set_Map_String_String_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid set item: value is nil")
+		}
 		w, err := wire.NewValueMap(_Map_String_String_MapItemList(x)), error(nil)
 		if err != nil {
 			return err
@@ -416,6 +434,9 @@ func (m _Map_Map_String_I32_I64_MapItemList) ForEach(f func(wire.MapItem) error)
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
+		if k == nil {
+			return fmt.Errorf("invalid map key: value is nil")
+		}
 		kw, err := wire.NewValueMap(_Map_String_I32_MapItemList(k)), error(nil)
 		if err != nil {
 			return err
@@ -483,6 +504,12 @@ func (m _Map_List_I32_Set_I64_MapItemList) ForEach(f func(wire.MapItem) error) e
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
+		if k == nil {
+			return fmt.Errorf("invalid map key: value is nil")
+		}
+		if v == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", k)
+		}
 		kw, err := wire.NewValueList(_List_I32_ValueList(k)), error(nil)
 		if err != nil {
 			return err
@@ -550,6 +577,12 @@ func (m _Map_Set_I32_List_Double_MapItemList) ForEach(f func(wire.MapItem) error
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
+		if k == nil {
+			return fmt.Errorf("invalid map key: value is nil")
+		}
+		if v == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", k)
+		}
 		kw, err := wire.NewValueSet(_Set_I32_ValueList(k)), error(nil)
 		if err != nil {
 			return err
@@ -1405,6 +1438,215 @@ func (v *EnumContainers) String() string {
 	return fmt.Sprintf("EnumContainers{%v}", strings.Join(fields[:i], ", "))
 }
 
+type MapOfBinaryAndString struct {
+	BinaryToString []struct {
+		Key   []byte
+		Value string
+	} `json:"binaryToString"`
+	StringToBinary map[string][]byte `json:"stringToBinary"`
+}
+
+type _Map_Binary_String_MapItemList []struct {
+	Key   []byte
+	Value string
+}
+
+func (m _Map_Binary_String_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for _, i := range m {
+		k := i.Key
+		v := i.Value
+		if k == nil {
+			return fmt.Errorf("invalid map key: value is nil")
+		}
+		kw, err := wire.NewValueBinary(k), error(nil)
+		if err != nil {
+			return err
+		}
+		vw, err := wire.NewValueString(v), error(nil)
+		if err != nil {
+			return err
+		}
+		err = f(wire.MapItem{Key: kw, Value: vw})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_Binary_String_MapItemList) Size() int {
+	return len(m)
+}
+
+func (_Map_Binary_String_MapItemList) KeyType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Map_Binary_String_MapItemList) ValueType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Map_Binary_String_MapItemList) Close() {
+}
+
+type _Map_String_Binary_MapItemList map[string][]byte
+
+func (m _Map_String_Binary_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for k, v := range m {
+		if v == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", k)
+		}
+		kw, err := wire.NewValueString(k), error(nil)
+		if err != nil {
+			return err
+		}
+		vw, err := wire.NewValueBinary(v), error(nil)
+		if err != nil {
+			return err
+		}
+		err = f(wire.MapItem{Key: kw, Value: vw})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_String_Binary_MapItemList) Size() int {
+	return len(m)
+}
+
+func (_Map_String_Binary_MapItemList) KeyType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Map_String_Binary_MapItemList) ValueType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Map_String_Binary_MapItemList) Close() {
+}
+
+func (v *MapOfBinaryAndString) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.BinaryToString != nil {
+		w, err = wire.NewValueMap(_Map_Binary_String_MapItemList(v.BinaryToString)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+	if v.StringToBinary != nil {
+		w, err = wire.NewValueMap(_Map_String_Binary_MapItemList(v.StringToBinary)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _Map_Binary_String_Read(m wire.MapItemList) ([]struct {
+	Key   []byte
+	Value string
+}, error) {
+	if m.KeyType() != wire.TBinary {
+		return nil, nil
+	}
+	if m.ValueType() != wire.TBinary {
+		return nil, nil
+	}
+	o := make([]struct {
+		Key   []byte
+		Value string
+	}, 0, m.Size())
+	err := m.ForEach(func(x wire.MapItem) error {
+		k, err := x.Key.GetBinary(), error(nil)
+		if err != nil {
+			return err
+		}
+		v, err := x.Value.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+		o = append(o, struct {
+			Key   []byte
+			Value string
+		}{k, v})
+		return nil
+	})
+	m.Close()
+	return o, err
+}
+
+func _Map_String_Binary_Read(m wire.MapItemList) (map[string][]byte, error) {
+	if m.KeyType() != wire.TBinary {
+		return nil, nil
+	}
+	if m.ValueType() != wire.TBinary {
+		return nil, nil
+	}
+	o := make(map[string][]byte, m.Size())
+	err := m.ForEach(func(x wire.MapItem) error {
+		k, err := x.Key.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+		v, err := x.Value.GetBinary(), error(nil)
+		if err != nil {
+			return err
+		}
+		o[k] = v
+		return nil
+	})
+	m.Close()
+	return o, err
+}
+
+func (v *MapOfBinaryAndString) FromWire(w wire.Value) error {
+	var err error
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TMap {
+				v.BinaryToString, err = _Map_Binary_String_Read(field.Value.GetMap())
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
+			if field.Value.Type() == wire.TMap {
+				v.StringToBinary, err = _Map_String_Binary_Read(field.Value.GetMap())
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	return nil
+}
+
+func (v *MapOfBinaryAndString) String() string {
+	var fields [2]string
+	i := 0
+	if v.BinaryToString != nil {
+		fields[i] = fmt.Sprintf("BinaryToString: %v", v.BinaryToString)
+		i++
+	}
+	if v.StringToBinary != nil {
+		fields[i] = fmt.Sprintf("StringToBinary: %v", v.StringToBinary)
+		i++
+	}
+	return fmt.Sprintf("MapOfBinaryAndString{%v}", strings.Join(fields[:i], ", "))
+}
+
 type PrimitiveContainers struct {
 	ListOfBinary      [][]byte            `json:"listOfBinary"`
 	ListOfInts        []int64             `json:"listOfInts"`
@@ -1417,7 +1659,10 @@ type PrimitiveContainers struct {
 type _List_Binary_ValueList [][]byte
 
 func (v _List_Binary_ValueList) ForEach(f func(wire.Value) error) error {
-	for _, x := range v {
+	for i, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", i)
+		}
 		w, err := wire.NewValueBinary(x), error(nil)
 		if err != nil {
 			return err
