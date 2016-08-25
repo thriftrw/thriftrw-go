@@ -161,6 +161,27 @@ func TestGoFileFromTemplate(t *testing.T) {
 			wantError: "plain imports are not allowed with GoFileFromTemplate: " +
 				"use the import function",
 		},
+		{
+			desc: "import keyword",
+			template: `
+				package hello
+
+				<$foo := import "github.com/thriftrw/thriftrw-go/range">
+
+				type foo struct {
+					<$foo>.Range
+				}
+			`,
+			wantBody: unlines(
+				`package hello`,
+				``,
+				`import range2 "github.com/thriftrw/thriftrw-go/range"`,
+				``,
+				`type foo struct {`,
+				`	range2.Range`,
+				`}`,
+			),
+		},
 	}
 
 	for _, tt := range tests {

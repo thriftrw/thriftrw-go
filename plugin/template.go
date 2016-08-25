@@ -102,6 +102,11 @@ func newGoFileGenerator(opts []TemplateOption) *goFileGenerator {
 	return &t
 }
 
+func (g *goFileGenerator) isGlobalTaken(name string) bool {
+	_, taken := g.globals[name]
+	return taken || goast.IsReservedKeyword(name)
+}
+
 // Import the given import path and return the imported name for this package.
 func (g *goFileGenerator) Import(path string) string {
 	if name, ok := g.importedNames[path]; ok {
@@ -113,7 +118,7 @@ func (g *goFileGenerator) Import(path string) string {
 	// Find an import name that does not conflict with any known globals.
 	importedName := name
 	for i := 2; ; i++ {
-		if _, conflict := g.globals[importedName]; !conflict {
+		if !g.isGlobalTaken(importedName) {
 			break
 		}
 		importedName = fmt.Sprintf("%s%d", name, i)
