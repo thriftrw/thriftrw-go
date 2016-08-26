@@ -18,26 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package gen
+package plugintest
 
-var _reservedNames = make(map[string]struct{})
-
-func init() {
-	// from https://golang.org/ref/spec#Keywords + "error" added manually
-	reservedNames := []string{
-		"break", "default", "func", "interface", "select", "case", "defer",
-		"go", "map", "struct", "chan", "else", "goto", "package", "switch",
-		"const", "fallthrough", "if", "range", "type", "continue", "for",
-		"import", "return", "var", "error",
-	}
-
-	for _, n := range reservedNames {
-		_reservedNames[n] = struct{}{}
-	}
-}
-
-// isReservedKeyword returns true if the given word is a reserved keyword.
-func isReservedKeyword(n string) bool {
-	_, ok := _reservedNames[n]
-	return ok
-}
+//go:generate mockgen -destination plugintest/api.go -package plugintest github.com/thriftrw/thriftrw-go/plugin/api Plugin,ServiceGenerator
