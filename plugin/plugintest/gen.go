@@ -18,6 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package plugin
+package plugintest
 
 //go:generate mockgen -destination plugintest/api.go -package plugintest github.com/thriftrw/thriftrw-go/plugin/api Plugin,ServiceGenerator
