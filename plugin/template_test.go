@@ -56,11 +56,11 @@ func TestGoFileFromTemplate(t *testing.T) {
 			data: &api.Type{
 				ReferenceType: &api.TypeReference{
 					Name:    "Foo",
-					Package: "github.com/thriftrw/thriftrw-go/hello",
+					Package: "github.com/thriftrw/thriftrw-go/bar",
 				},
 			},
 			options: []TemplateOption{
-				GoFileImportPath("github.com/thriftrw/thriftrw-go/hello"),
+				GoFileImportPath("github.com/thriftrw/thriftrw-go/bar"),
 			},
 			wantBody: unlines(
 				`package bar`,
