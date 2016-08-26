@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package gen
+package goast
 
 var _reservedNames = make(map[string]struct{})
 
@@ -36,8 +36,8 @@ func init() {
 	}
 }
 
-// isReservedKeyword returns true if the given word is a reserved keyword.
-func isReservedKeyword(n string) bool {
+// IsReservedKeyword returns true if the given word is a reserved keyword.
+func IsReservedKeyword(n string) bool {
 	_, ok := _reservedNames[n]
 	return ok
 }

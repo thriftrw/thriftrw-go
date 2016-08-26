@@ -20,7 +20,11 @@
 
 package gen
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/thriftrw/thriftrw-go/internal/goast"
+)
 
 // Namespace allows finding names that don't conflict with other names in
 // certain scopes.
@@ -81,7 +85,7 @@ func (n *namespace) isTaken(name string) bool {
 	if n.parent != nil {
 		return n.parent.isTaken(name)
 	}
-	return isReservedKeyword(name)
+	return goast.IsReservedKeyword(name)
 }
 
 func (n *namespace) NewName(base string) string {
