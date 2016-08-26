@@ -10,14 +10,13 @@ import (
 	"github.com/thriftrw/thriftrw-go/plugin/api"
 	"github.com/thriftrw/thriftrw-go/plugin/api/service/plugin"
 	"github.com/thriftrw/thriftrw-go/plugin/api/service/servicegenerator"
+	"github.com/thriftrw/thriftrw-go/plugin/plugintest"
 	"github.com/thriftrw/thriftrw-go/ptr"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-//go:generate mockgen -destination mock_service_generator_test.go -package plugin github.com/thriftrw/thriftrw-go/plugin/api ServiceGenerator
 
 // fakeStreams is a helper for tests to control the output and input used by
 // plugin.Main while testing.
@@ -72,7 +71,7 @@ func TestServiceGenerator(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	serviceGenerator := NewMockServiceGenerator(mockCtrl)
+	serviceGenerator := plugintest.NewMockServiceGenerator(mockCtrl)
 
 	go Main(&Plugin{
 		Name:             "hello",
