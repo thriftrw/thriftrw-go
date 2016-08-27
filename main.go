@@ -22,51 +22,46 @@ package main
 
 import (
 	"errors"
-	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
+	flags "github.com/jessevdk/go-flags"
 	"github.com/thriftrw/thriftrw-go/compile"
 	"github.com/thriftrw/thriftrw-go/gen"
 )
 
+type options struct {
+	OutputDirectory string `long:"out" short:"o" value-name:"DIR" description:"Directory to which the generated files will be written."`
+
+	PackagePrefix string `long:"pkg-prefix" value-name:"PREFIX" description:"Prefix for import paths of generated module. By default, this is based on the output directory's location relativet o $GOPATH."`
+	ThriftRoot    string `long:"thrift-root" value-name:"DIR" description:"Directory whose descendants contain all Thrift files. The structure of the generated Go packages mirrors the paths to the Thrift files relative to this directory. By default, this is the deepest common ancestor directory of the Thrift files."`
+
+	NoRecurse bool `long:"no-recurse" description:"Don't generate code for included Thrift files."`
+	YARPC     bool `long:"yarpc" description:"Generate code for YARPC. Defaults to false."`
+
+	// TODO(abg): Detailed help with examples of --thrift-root and --pkg-prefix
+}
+
 func main() {
-	var outputDir string
-	flag.StringVar(
-		&outputDir, "out", ".",
-		"Directory to which the generated files will be written.")
+	var opts options
 
-	var packagePrefix string
-	flag.StringVar(
-		&packagePrefix, "pkg-prefix", "",
-		"Prefix for import paths of generated modules. By default, this is "+
-			"based on the output directory's location relative to $GOPATH.")
+	parser := flags.NewParser(&opts, flags.Default)
+	parser.Usage = "[OPTIONS] FILE"
 
-	var thriftRoot string
-	flag.StringVar(
-		&thriftRoot, "thrift-root", "",
-		"Directory whose descendants contain all the used Thrift files. "+
-			"The structure of the generated Go packages mirrors the paths to "+
-			"the Thrift files relative to this directory. By default, this is "+
-			"the deepest common ancestor of the Thrift files.")
+	args, err := parser.Parse()
+	if err != nil {
+		return // message already printed by go-flags
+	}
 
-	var yarpc bool
-	flag.BoolVar(&yarpc, "yarpc", false, "Generate code for YARPC.")
-
-	var noRecurse bool
-	flag.BoolVar(&noRecurse, "no-recurse", false,
-		"Disable code generation for included Thrift files.")
-
-	flag.Parse()
-
-	inputFile := flag.Arg(0)
-	if len(inputFile) == 0 {
-		flag.Usage()
+	if len(args) != 1 {
+		parser.WriteHelp(os.Stdout)
 		os.Exit(1)
 	}
+
+	inputFile := args[0]
 	if _, err := os.Stat(inputFile); err != nil {
 		if os.IsNotExist(err) {
 			log.Fatalf("file %q does not exist: %v", inputFile, err)
@@ -74,16 +69,16 @@ func main() {
 		log.Fatalf("error describing file %q: %v", inputFile, err)
 	}
 
-	if len(outputDir) == 0 {
-		outputDir = "."
+	if len(opts.OutputDirectory) == 0 {
+		opts.OutputDirectory = "."
 	}
-	outputDir, err := filepath.Abs(outputDir)
+	opts.OutputDirectory, err = filepath.Abs(opts.OutputDirectory)
 	if err != nil {
-		log.Fatalf("could not resolve path %q: %v", outputDir, err)
+		log.Fatalf("could not resolve path %q: %v", opts.OutputDirectory, err)
 	}
 
-	if packagePrefix == "" {
-		packagePrefix, err = determinePackagePrefix(outputDir)
+	if opts.PackagePrefix == "" {
+		opts.PackagePrefix, err = determinePackagePrefix(opts.OutputDirectory)
 		if err != nil {
 			log.Fatalf("could not determine the package prefix: %v", err)
 		}
@@ -94,30 +89,30 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if thriftRoot == "" {
-		thriftRoot, err = findCommonAncestor(module)
+	if opts.ThriftRoot == "" {
+		opts.ThriftRoot, err = findCommonAncestor(module)
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		thriftRoot, err = filepath.Abs(thriftRoot)
+		opts.ThriftRoot, err = filepath.Abs(opts.ThriftRoot)
 		if err != nil {
 			log.Fatal(err)
 		}
-		if err := verifyAncestry(module, thriftRoot); err != nil {
+		if err := verifyAncestry(module, opts.ThriftRoot); err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	opts := gen.Options{
-		OutputDir:     outputDir,
-		PackagePrefix: packagePrefix,
-		ThriftRoot:    thriftRoot,
-		NoRecurse:     noRecurse,
-		YARPC:         yarpc,
+	generatorOptions := gen.Options{
+		OutputDir:     opts.OutputDirectory,
+		PackagePrefix: opts.PackagePrefix,
+		ThriftRoot:    opts.ThriftRoot,
+		NoRecurse:     opts.NoRecurse,
+		YARPC:         opts.YARPC,
 	}
 
-	if err := gen.Generate(module, &opts); err != nil {
+	if err := gen.Generate(module, &generatorOptions); err != nil {
 		log.Fatal(err)
 	}
 }

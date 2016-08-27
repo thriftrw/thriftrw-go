@@ -15,4 +15,4 @@ $(THRIFTRW):
 	make -C $(ROOT) build
 
 %: thrift/%.thrift $(THRIFTRW)
-	$(THRIFTRW) -no-recurse $<
+	$(THRIFTRW) --no-recurse $<

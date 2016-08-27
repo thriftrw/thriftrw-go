@@ -10,3 +10,4 @@ import:
 - package: golang.org/x/tools
   subpackages:
   - go/ast/astutil
+- package: github.com/jessevdk/go-flags
