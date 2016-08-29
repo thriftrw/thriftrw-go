@@ -64,16 +64,22 @@ func (s *Server) Serve(h Handler) error {
 		return fmt.Errorf("server is already running")
 	}
 
+	defer s.r.Close()
+	defer s.w.Close()
+
 	for s.running.Load() {
 		req, err := s.r.Read()
 		if err != nil {
-			s.w.Close()
+			// If the error occurred because the server was stopped, ignore it.
+			if !s.running.Load() {
+				break
+			}
+
 			return err
 		}
 
 		res, err := h.Handle(req)
 		if err != nil {
-			s.w.Close()
 			return err
 		}
 
@@ -88,6 +94,13 @@ func (s *Server) Serve(h Handler) error {
 // Stop tells the Server that it's okay to stop Serve.
 //
 // This is a no-op if the server wasn't already running.
-func (s *Server) Stop() {
-	s.running.Store(false)
+func (s *Server) Stop() error {
+	// We only close the reader because we want the writer to be available if
+	// Stop() was called by a request handler which still needs to send back a
+	// response (goodbye()). The writer will be closed automatically when the
+	// loop exits.
+	if s.running.Swap(false) {
+		return s.r.Close()
+	}
+	return nil
 }
