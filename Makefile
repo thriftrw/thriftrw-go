@@ -61,7 +61,7 @@ endif
 
 .PHONY: test
 test: build
-	go test $(PACKAGES)
+	go test -race $(PACKAGES)
 
 .PHONY: cover
 cover:
