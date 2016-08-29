@@ -1,12 +1,14 @@
-hash: 325f10fea77188e5dbef900a3452d12b6fbccea67143fb2b1e437482daec838e
-updated: 2016-08-26T16:56:31.778461579-07:00
+hash: 9916ba39872b835d00fed77e42ba4fe85d64c0892501f60f3452ff19840ed369
+updated: 2016-08-29T10:57:58.892748056-07:00
 imports:
+- name: github.com/anmitsu/go-shlex
+  version: 53a3d8a8a362cca54fd6825caf2216aa6d8139fc
 - name: github.com/golang/mock
   version: bd3c8e81be01eef76d4b503f5e687d2d1354d2d9
   subpackages:
   - gomock
 - name: github.com/jessevdk/go-flags
-  version: 01a6b3ff72f9b826af6791c3b87368c7791b5376
+  version: a8cab0163d48558ffd77076c9c99388529766f63
 - name: github.com/kr/pretty
   version: 737b74a46c4bf788349f72cb256fed10aea4d0ac
 - name: github.com/kr/text
