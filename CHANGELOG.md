@@ -1,10 +1,14 @@
 Releases
 ========
 
-v0.1.1 (unreleased)
+v0.2.0 (unreleased)
 -------------------
 
--   Nothing changed yet.
+-   Add a plugin system.
+
+    ThriftRW now provides a plugin system to allow customizing code generation.
+    Initially, only the generated code for `service` declarations is
+    customizable. Check the documentation for more details.
 
 
 v0.1.0 (2016-08-31)
