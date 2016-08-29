@@ -1,10 +1,12 @@
-hash: 316af8ff6050b3923ccf8aabf9cb370d7b0decb017883e00093f7e223c070fe1
-updated: 2016-08-22T17:13:47.99223996-07:00
+hash: 325f10fea77188e5dbef900a3452d12b6fbccea67143fb2b1e437482daec838e
+updated: 2016-08-26T16:56:31.778461579-07:00
 imports:
 - name: github.com/golang/mock
   version: bd3c8e81be01eef76d4b503f5e687d2d1354d2d9
   subpackages:
   - gomock
+- name: github.com/jessevdk/go-flags
+  version: 01a6b3ff72f9b826af6791c3b87368c7791b5376
 - name: github.com/kr/pretty
   version: 737b74a46c4bf788349f72cb256fed10aea4d0ac
 - name: github.com/kr/text
