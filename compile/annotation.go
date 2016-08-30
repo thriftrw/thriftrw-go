@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Uber Technologies, Inc.
+// Copyright (c) 2016 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -32,7 +32,7 @@ type AnnotationSpec struct {
 
 func compileAnnotations(annotations []*ast.Annotation) ([]*AnnotationSpec, error) {
 	namespace := newNamespace(caseInsensitive)
-	annotationSpecs := []*AnnotationSpec{}
+	var annotationSpecs []*AnnotationSpec
 	for _, a := range annotations {
 		if err := namespace.claim(a.Name, a.Line); err != nil {
 			return nil, compileError{

@@ -60,54 +60,46 @@ func TestCompileService(t *testing.T) {
 	}
 
 	keyValueSpec := &ServiceSpec{
-		Name:        "KeyValue",
-		File:        "test.thrift",
-		Annotations: []*AnnotationSpec{},
+		Name: "KeyValue",
+		File: "test.thrift",
 		Functions: map[string]*FunctionSpec{
 			"setValue": {
 				Name: "setValue",
 				ArgsSpec: ArgsSpec{
 					{
-						ID:          1,
-						Name:        "key",
-						Type:        StringSpec,
-						Annotations: []*AnnotationSpec{},
+						ID:   1,
+						Name: "key",
+						Type: StringSpec,
 					},
 					{
-						ID:          2,
-						Name:        "value",
-						Type:        BinarySpec,
-						Annotations: []*AnnotationSpec{},
+						ID:   2,
+						Name: "value",
+						Type: BinarySpec,
 					},
 				},
-				Annotations: []*AnnotationSpec{},
-				ResultSpec:  &ResultSpec{},
+				ResultSpec: &ResultSpec{},
 			},
 			"getValue": {
 				Name: "getValue",
 				ArgsSpec: ArgsSpec{
 					{
-						ID:          1,
-						Name:        "key",
-						Type:        StringSpec,
-						Annotations: []*AnnotationSpec{},
+						ID:   1,
+						Name: "key",
+						Type: StringSpec,
 					},
 				},
-				Annotations: []*AnnotationSpec{},
 				ResultSpec: &ResultSpec{
 					ReturnType: BinarySpec,
 					Exceptions: FieldGroup{
 						{
-							ID:          1,
-							Name:        "doesNotExist",
-							Type:        keyDoesNotExistSpec,
-							Annotations: []*AnnotationSpec{},
+							ID:   1,
+							Name: "doesNotExist",
+							Type: keyDoesNotExistSpec,
 						},
 						{
-							ID:          2,
-							Name:        "internalError",
-							Type:        internalErrorSpec,
-							Annotations: []*AnnotationSpec{},
+							ID:   2,
+							Name: "internalError",
+							Type: internalErrorSpec,
 						},
 					},
 				},
@@ -123,16 +115,14 @@ func TestCompileService(t *testing.T) {
 				Name: "setValue",
 				ArgsSpec: ArgsSpec{
 					{
-						ID:          1,
-						Name:        "key",
-						Type:        StringSpec,
-						Annotations: []*AnnotationSpec{},
+						ID:   1,
+						Name: "key",
+						Type: StringSpec,
 					},
 					{
-						ID:          2,
-						Name:        "value",
-						Type:        BinarySpec,
-						Annotations: []*AnnotationSpec{},
+						ID:   2,
+						Name: "value",
+						Type: BinarySpec,
 					},
 				},
 				Annotations: []*AnnotationSpec{
@@ -163,10 +153,9 @@ func TestCompileService(t *testing.T) {
 			"service Foo {}",
 			nil,
 			&ServiceSpec{
-				Name:        "Foo",
-				File:        "test.thrift",
-				Functions:   make(map[string]*FunctionSpec),
-				Annotations: []*AnnotationSpec{},
+				Name:      "Foo",
+				File:      "test.thrift",
+				Functions: make(map[string]*FunctionSpec),
 			},
 		},
 		{
@@ -220,14 +209,11 @@ func TestCompileService(t *testing.T) {
 									KeySpec:   StringSpec,
 									ValueSpec: BinarySpec,
 								},
-								Annotations: []*AnnotationSpec{},
 							},
 						},
-						Annotations: []*AnnotationSpec{},
-						ResultSpec:  &ResultSpec{},
+						ResultSpec: &ResultSpec{},
 					},
 				},
-				Annotations: []*AnnotationSpec{},
 			},
 		},
 		{
@@ -235,11 +221,10 @@ func TestCompileService(t *testing.T) {
 			"service AnotherKeyValue extends shared.KeyValue {}",
 			scope("shared", scope("KeyValue", keyValueSpec)),
 			&ServiceSpec{
-				Name:        "AnotherKeyValue",
-				File:        "test.thrift",
-				Parent:      keyValueSpec,
-				Functions:   make(map[string]*FunctionSpec),
-				Annotations: []*AnnotationSpec{},
+				Name:      "AnotherKeyValue",
+				File:      "test.thrift",
+				Parent:    keyValueSpec,
+				Functions: make(map[string]*FunctionSpec),
 			},
 		},
 	}
