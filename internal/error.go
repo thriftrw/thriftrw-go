@@ -43,7 +43,7 @@ func indentTail(spaces int, s string) string {
 	return strings.Join(lines, "\n")
 }
 
-// MultiError combines a list of errors into one.
+// MultiError combines a list of errors into one. The list MUST NOT contain nil.
 //
 // Returns nil if the error list is empty.
 func MultiError(errors []error) error {
@@ -65,4 +65,33 @@ func MultiError(errors []error) error {
 	}
 
 	return multiError(newErrors)
+}
+
+// CombineErrors combines the given collection of errors together. nil values
+// will be ignored.
+//
+// The intention for this is to help chain togeter errors from multiple failing
+// operations.
+//
+// 	CombineErrors(
+// 		reader.Close(),
+// 		writer.Close(),
+// 	)
+//
+// This may also be used like so,
+//
+// 	err := reader.Close()
+// 	err = internal.CombineErrors(err, writer.Close())
+// 	if someCondition {
+// 		err = internal.CombineErrors(err, transport.Close())
+// 	}
+func CombineErrors(errors ...error) error {
+	newErrors := errors[:0] // zero-alloc filtering
+	for _, err := range errors {
+		if err != nil {
+			newErrors = append(newErrors, err)
+		}
+	}
+
+	return MultiError(newErrors)
 }

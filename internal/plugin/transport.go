@@ -94,18 +94,11 @@ func (h *transportHandle) Close() error {
 		return nil // already closed
 	}
 
-	var errors []error
-	if err := h.Client.Goodbye(); err != nil {
-		errors = append(errors, err)
-	}
-
+	err := h.Client.Goodbye()
 	if closer, ok := h.Transport.(io.Closer); ok {
-		if err := closer.Close(); err != nil {
-			errors = append(errors, err)
-		}
+		err = internal.CombineErrors(err, closer.Close())
 	}
-
-	return internal.MultiError(errors)
+	return err
 }
 
 func (h *transportHandle) ServiceGenerator() api.ServiceGenerator {
