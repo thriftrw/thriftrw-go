@@ -115,10 +115,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if pluginHandle != nil {
-		defer pluginHandle.Close()
-	}
+	defer pluginHandle.Close()
 
 	generatorOptions := gen.Options{
 		OutputDir:     opts.OutputDirectory,

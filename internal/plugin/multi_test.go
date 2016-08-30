@@ -30,6 +30,16 @@ func TestMultiHandleClose(t *testing.T) {
 	assert.NoError(t, mh.Close())
 }
 
+func TestMultiHandleCloseNil(t *testing.T) {
+	var mh MultiHandle
+	assert.NoError(t, mh.Close())
+}
+
+func TestMultiHandleServiceGeneratorNil(t *testing.T) {
+	var mh MultiHandle
+	mh.ServiceGenerator() // should not panic
+}
+
 func TestMultiHandleCloseError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -242,4 +252,10 @@ func TestMultiServiceGeneratorGenerate(t *testing.T) {
 			}
 		}()
 	}
+}
+
+func TestMultiServiceGeneratorGenerateNil(t *testing.T) {
+	var msg MultiServiceGenerator
+	_, err := msg.Generate(&api.GenerateServiceRequest{})
+	assert.NoError(t, err)
 }
