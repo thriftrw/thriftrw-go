@@ -29,10 +29,11 @@ import (
 type ServiceSpec struct {
 	linkOnce
 
-	Name      string
-	File      string
-	Parent    *ServiceSpec
-	Functions map[string]*FunctionSpec
+	Name        string
+	File        string
+	Parent      *ServiceSpec
+	Functions   map[string]*FunctionSpec
+	Annotations map[string]*AnnotationSpec
 
 	parentSrc *ast.ServiceReference
 }
@@ -62,11 +63,18 @@ func compileService(file string, src *ast.Service) (*ServiceSpec, error) {
 		functions[function.Name] = function
 	}
 
+	annotations, err := compileAnnotations(src.Annotations)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return &ServiceSpec{
-		Name:      src.Name,
-		File:      file,
-		Functions: functions,
-		parentSrc: src.Parent,
+		Name:        src.Name,
+		File:        file,
+		Functions:   functions,
+		Annotations: annotations,
+		parentSrc:   src.Parent,
 	}, nil
 }
 
@@ -150,10 +158,11 @@ func (s *ServiceSpec) ThriftFile() string {
 type FunctionSpec struct {
 	linkOnce
 
-	Name       string
-	ArgsSpec   ArgsSpec
-	ResultSpec *ResultSpec
-	OneWay     bool
+	Name        string
+	ArgsSpec    ArgsSpec
+	ResultSpec  *ResultSpec
+	OneWay      bool
+	Annotations map[string]*AnnotationSpec
 }
 
 func compileFunction(src *ast.Function) (*FunctionSpec, error) {
@@ -183,11 +192,21 @@ func compileFunction(src *ast.Function) (*FunctionSpec, error) {
 		}
 	}
 
+	annotations, err := compileAnnotations(src.Annotations)
+	if err != nil {
+		return nil, compileError{
+			Target: src.Name,
+			Line:   src.Line,
+			Reason: err,
+		}
+	}
+
 	return &FunctionSpec{
-		Name:       src.Name,
-		ArgsSpec:   args,
-		ResultSpec: result,
-		OneWay:     src.OneWay,
+		Name:        src.Name,
+		ArgsSpec:    args,
+		ResultSpec:  result,
+		Annotations: annotations,
+		OneWay:      src.OneWay,
 	}, nil
 }
 
