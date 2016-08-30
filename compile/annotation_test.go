@@ -33,8 +33,8 @@ func TestCompileAnnotation(t *testing.T) {
 		Name:      "AnnotatedService",
 		File:      "test.thrift",
 		Functions: make(map[string]*FunctionSpec),
-		Annotations: map[string]*AnnotationSpec{
-			"test": {
+		Annotations: []*AnnotationSpec{
+			{
 				Name:  "test",
 				Value: "test",
 			},

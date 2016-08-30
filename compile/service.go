@@ -33,7 +33,7 @@ type ServiceSpec struct {
 	File        string
 	Parent      *ServiceSpec
 	Functions   map[string]*FunctionSpec
-	Annotations map[string]*AnnotationSpec
+	Annotations []*AnnotationSpec
 
 	parentSrc *ast.ServiceReference
 }
@@ -162,7 +162,7 @@ type FunctionSpec struct {
 	ArgsSpec    ArgsSpec
 	ResultSpec  *ResultSpec
 	OneWay      bool
-	Annotations map[string]*AnnotationSpec
+	Annotations []*AnnotationSpec
 }
 
 func compileFunction(src *ast.Function) (*FunctionSpec, error) {

@@ -62,7 +62,7 @@ func TestCompileService(t *testing.T) {
 	keyValueSpec := &ServiceSpec{
 		Name:        "KeyValue",
 		File:        "test.thrift",
-		Annotations: make(map[string]*AnnotationSpec),
+		Annotations: []*AnnotationSpec{},
 		Functions: map[string]*FunctionSpec{
 			"setValue": {
 				Name: "setValue",
@@ -78,7 +78,7 @@ func TestCompileService(t *testing.T) {
 						Type: BinarySpec,
 					},
 				},
-				Annotations: make(map[string]*AnnotationSpec),
+				Annotations: []*AnnotationSpec{},
 				ResultSpec:  &ResultSpec{},
 			},
 			"getValue": {
@@ -90,7 +90,7 @@ func TestCompileService(t *testing.T) {
 						Type: StringSpec,
 					},
 				},
-				Annotations: make(map[string]*AnnotationSpec),
+				Annotations: []*AnnotationSpec{},
 				ResultSpec: &ResultSpec{
 					ReturnType: BinarySpec,
 					Exceptions: FieldGroup{
@@ -128,8 +128,8 @@ func TestCompileService(t *testing.T) {
 						Type: BinarySpec,
 					},
 				},
-				Annotations: map[string]*AnnotationSpec{
-					"test": {
+				Annotations: []*AnnotationSpec{
+					{
 						Name:  "test",
 						Value: "ok",
 					},
@@ -137,8 +137,8 @@ func TestCompileService(t *testing.T) {
 				ResultSpec: &ResultSpec{},
 			},
 		},
-		Annotations: map[string]*AnnotationSpec{
-			"test": {
+		Annotations: []*AnnotationSpec{
+			{
 				Name:  "test",
 				Value: "test",
 			},
@@ -159,7 +159,7 @@ func TestCompileService(t *testing.T) {
 				Name:        "Foo",
 				File:        "test.thrift",
 				Functions:   make(map[string]*FunctionSpec),
-				Annotations: make(map[string]*AnnotationSpec),
+				Annotations: []*AnnotationSpec{},
 			},
 		},
 		{
@@ -215,11 +215,11 @@ func TestCompileService(t *testing.T) {
 								},
 							},
 						},
-						Annotations: make(map[string]*AnnotationSpec),
+						Annotations: []*AnnotationSpec{},
 						ResultSpec:  &ResultSpec{},
 					},
 				},
-				Annotations: make(map[string]*AnnotationSpec),
+				Annotations: []*AnnotationSpec{},
 			},
 		},
 		{
@@ -231,7 +231,7 @@ func TestCompileService(t *testing.T) {
 				File:        "test.thrift",
 				Parent:      keyValueSpec,
 				Functions:   make(map[string]*FunctionSpec),
-				Annotations: make(map[string]*AnnotationSpec),
+				Annotations: []*AnnotationSpec{},
 			},
 		},
 	}

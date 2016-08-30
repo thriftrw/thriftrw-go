@@ -20,7 +20,9 @@
 
 package compile
 
-import "github.com/thriftrw/thriftrw-go/ast"
+import (
+	"github.com/thriftrw/thriftrw-go/ast"
+)
 
 // AnnotationSpec describes and a thrift annotation
 type AnnotationSpec struct {
@@ -28,9 +30,9 @@ type AnnotationSpec struct {
 	Value string
 }
 
-func compileAnnotations(annotations []*ast.Annotation) (map[string]*AnnotationSpec, error) {
+func compileAnnotations(annotations []*ast.Annotation) ([]*AnnotationSpec, error) {
 	namespace := newNamespace(caseInsensitive)
-	annotationMap := make(map[string]*AnnotationSpec)
+	annotationSpecs := []*AnnotationSpec{}
 	for _, a := range annotations {
 		if err := namespace.claim(a.Name, a.Line); err != nil {
 			return nil, compileError{
@@ -40,11 +42,11 @@ func compileAnnotations(annotations []*ast.Annotation) (map[string]*AnnotationSp
 			}
 		}
 
-		annotationMap[a.Name] = &AnnotationSpec{
+		annotationSpecs = append(annotationSpecs, &AnnotationSpec{
 			Name:  a.Name,
 			Value: a.Value,
-		}
+		})
 	}
 
-	return annotationMap, nil
+	return annotationSpecs, nil
 }
