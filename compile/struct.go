@@ -33,6 +33,7 @@ type StructSpec struct {
 	File   string
 	Type   ast.StructureType
 	Fields FieldGroup
+	Annotations []*AnnotationSpec
 }
 
 // compileStruct compiles a struct AST into a StructSpec.
@@ -53,11 +54,21 @@ func compileStruct(file string, src *ast.Struct, requiredness fieldRequiredness)
 		}
 	}
 
+	annotations, err := compileAnnotations(src.Annotations)
+	if err != nil {
+		return nil, compileError{
+			Target: src.Name,
+			Line:   src.Line,
+			Reason: err,
+		}
+	}
+
 	return &StructSpec{
 		Name:   src.Name,
 		File:   file,
 		Type:   src.Type,
 		Fields: fields,
+		Annotations: annotations,
 	}, nil
 }
 

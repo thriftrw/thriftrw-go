@@ -96,6 +96,7 @@ type FieldSpec struct {
 	Type     TypeSpec
 	Required bool
 	Default  ConstantValue
+	Annotations []*AnnotationSpec
 }
 
 // compileField compiles the given Field source into a FieldSpec.
@@ -112,6 +113,11 @@ func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
 		}
 	}
 
+	annotations, err := compileAnnotations(src.Annotations)
+	if err != nil {
+		return nil, err
+	}
+
 	return &FieldSpec{
 		// TODO(abg): perform bounds check on field ID
 		ID:       int16(src.ID),
@@ -119,6 +125,7 @@ func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
 		Type:     compileTypeReference(src.Type),
 		Required: required,
 		Default:  compileConstantValue(src.Default),
+		Annotations: annotations,
 	}, nil
 }
 
