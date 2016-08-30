@@ -107,6 +107,35 @@ func TestCompileService(t *testing.T) {
 		},
 	}
 
+	annotatedSpec := &ServiceSpec{
+		Name: "AnnotatedService",
+		File: "test.thrift",
+		Functions: map[string]*FunctionSpec{
+			"setValue": {
+				Name: "setValue",
+				ArgsSpec: ArgsSpec{
+					{
+						ID:   1,
+						Name: "key",
+						Type: StringSpec,
+					},
+					{
+						ID:   2,
+						Name: "value",
+						Type: BinarySpec,
+					},
+				},
+				Annotations: Annotations{
+					"test": "ok",
+				},
+				ResultSpec: &ResultSpec{},
+			},
+		},
+		Annotations: Annotations{
+			"test": "abcde",
+		},
+	}
+
 	tests := []struct {
 		desc  string
 		src   string
@@ -140,6 +169,16 @@ func TestCompileService(t *testing.T) {
 				"InternalServiceError", internalErrorSpec,
 			),
 			keyValueSpec,
+		},
+		{
+			"service annotations",
+			`
+				service AnnotatedService {
+					void setValue(1: string key, 2: binary value) (test = "ok")
+				} (test = "abcde")
+			`,
+			scope(),
+			annotatedSpec,
 		},
 		{
 			"service inheritance",
@@ -279,6 +318,28 @@ func TestCompileServiceFailure(t *testing.T) {
 				}
 			`,
 			[]string{`function "bar" cannot`, "raise exceptions"},
+		},
+		{
+			"duplicate annotation name",
+			`
+				service AnnotatedService {
+
+				} (test = "mytest", test = "t")
+			`,
+			[]string{
+				`the name "test" has already been used`,
+			},
+		},
+		{
+			"duplicate annotation name on function",
+			`
+				service AnnotatedService {
+					i32 bar() (functest = "test", functest = "t")
+				} (test = "mytest")
+			`,
+			[]string{
+				`the name "functest" has already been used`,
+			},
 		},
 	}
 

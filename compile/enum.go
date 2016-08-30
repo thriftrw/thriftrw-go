@@ -27,15 +27,17 @@ import (
 
 // EnumSpec represents an enum defined in the Thrift file.
 type EnumSpec struct {
-	Name  string
-	File  string
-	Items []EnumItem
+	Name        string
+	File        string
+	Items       []EnumItem
+	Annotations Annotations
 }
 
 // EnumItem is a single item inside an enum.
 type EnumItem struct {
-	Name  string
-	Value int32
+	Name        string
+	Value       int32
+	Annotations Annotations
 }
 
 // compileEnum compiles the given Enum AST into an EnumSpec.
@@ -52,19 +54,34 @@ func compileEnum(file string, src *ast.Enum) (*EnumSpec, error) {
 				Reason: err,
 			}
 		}
-
 		value := prev + 1
 		if astItem.Value != nil {
 			value = *astItem.Value
 		}
 		prev = value
 
+		itemAnnotations, err := compileAnnotations(astItem.Annotations)
+		if err != nil {
+			return nil, compileError{
+				Target: src.Name + "." + astItem.Name,
+				Line:   astItem.Line,
+				Reason: err,
+			}
+		}
 		// TODO bounds check for value
-		item := EnumItem{Name: astItem.Name, Value: int32(value)}
+		item := EnumItem{Name: astItem.Name, Value: int32(value), Annotations: itemAnnotations}
 		items = append(items, item)
 	}
 
-	return &EnumSpec{Name: src.Name, File: file, Items: items}, nil
+	annotations, err := compileAnnotations(src.Annotations)
+	if err != nil {
+		return nil, compileError{
+			Target: src.Name,
+			Line:   src.Line,
+			Reason: err,
+		}
+	}
+	return &EnumSpec{Name: src.Name, File: file, Items: items, Annotations: annotations}, nil
 }
 
 // LookupItem retrieves the item with the given name from the enum.
