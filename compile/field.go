@@ -91,11 +91,11 @@ type fieldOptions struct {
 
 // FieldSpec represents a single field of a struct or parameter list.
 type FieldSpec struct {
-	ID       int16
-	Name     string
-	Type     TypeSpec
-	Required bool
-	Default  ConstantValue
+	ID          int16
+	Name        string
+	Type        TypeSpec
+	Required    bool
+	Default     ConstantValue
 	Annotations []*AnnotationSpec
 }
 
@@ -120,11 +120,11 @@ func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
 
 	return &FieldSpec{
 		// TODO(abg): perform bounds check on field ID
-		ID:       int16(src.ID),
-		Name:     src.Name,
-		Type:     compileTypeReference(src.Type),
-		Required: required,
-		Default:  compileConstantValue(src.Default),
+		ID:          int16(src.ID),
+		Name:        src.Name,
+		Type:        compileTypeReference(src.Type),
+		Required:    required,
+		Default:     compileConstantValue(src.Default),
 		Annotations: annotations,
 	}, nil
 }

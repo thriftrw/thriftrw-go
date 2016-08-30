@@ -27,16 +27,16 @@ import (
 
 // EnumSpec represents an enum defined in the Thrift file.
 type EnumSpec struct {
-	Name  string
-	File  string
-	Items []EnumItem
+	Name        string
+	File        string
+	Items       []EnumItem
 	Annotations []*AnnotationSpec
 }
 
 // EnumItem is a single item inside an enum.
 type EnumItem struct {
-	Name  string
-	Value int32
+	Name        string
+	Value       int32
 	Annotations []*AnnotationSpec
 }
 

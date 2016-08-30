@@ -68,15 +68,15 @@ func TestCompileService(t *testing.T) {
 				Name: "setValue",
 				ArgsSpec: ArgsSpec{
 					{
-						ID:   1,
-						Name: "key",
-						Type: StringSpec,
+						ID:          1,
+						Name:        "key",
+						Type:        StringSpec,
 						Annotations: []*AnnotationSpec{},
 					},
 					{
-						ID:   2,
-						Name: "value",
-						Type: BinarySpec,
+						ID:          2,
+						Name:        "value",
+						Type:        BinarySpec,
 						Annotations: []*AnnotationSpec{},
 					},
 				},
@@ -87,9 +87,9 @@ func TestCompileService(t *testing.T) {
 				Name: "getValue",
 				ArgsSpec: ArgsSpec{
 					{
-						ID:   1,
-						Name: "key",
-						Type: StringSpec,
+						ID:          1,
+						Name:        "key",
+						Type:        StringSpec,
 						Annotations: []*AnnotationSpec{},
 					},
 				},
@@ -98,15 +98,15 @@ func TestCompileService(t *testing.T) {
 					ReturnType: BinarySpec,
 					Exceptions: FieldGroup{
 						{
-							ID:   1,
-							Name: "doesNotExist",
-							Type: keyDoesNotExistSpec,
+							ID:          1,
+							Name:        "doesNotExist",
+							Type:        keyDoesNotExistSpec,
 							Annotations: []*AnnotationSpec{},
 						},
 						{
-							ID:   2,
-							Name: "internalError",
-							Type: internalErrorSpec,
+							ID:          2,
+							Name:        "internalError",
+							Type:        internalErrorSpec,
 							Annotations: []*AnnotationSpec{},
 						},
 					},
@@ -123,15 +123,15 @@ func TestCompileService(t *testing.T) {
 				Name: "setValue",
 				ArgsSpec: ArgsSpec{
 					{
-						ID:   1,
-						Name: "key",
-						Type: StringSpec,
+						ID:          1,
+						Name:        "key",
+						Type:        StringSpec,
 						Annotations: []*AnnotationSpec{},
 					},
 					{
-						ID:   2,
-						Name: "value",
-						Type: BinarySpec,
+						ID:          2,
+						Name:        "value",
+						Type:        BinarySpec,
 						Annotations: []*AnnotationSpec{},
 					},
 				},

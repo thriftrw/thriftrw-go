@@ -29,10 +29,10 @@ import (
 type StructSpec struct {
 	linkOnce
 
-	Name   string
-	File   string
-	Type   ast.StructureType
-	Fields FieldGroup
+	Name        string
+	File        string
+	Type        ast.StructureType
+	Fields      FieldGroup
 	Annotations []*AnnotationSpec
 }
 
@@ -64,10 +64,10 @@ func compileStruct(file string, src *ast.Struct, requiredness fieldRequiredness)
 	}
 
 	return &StructSpec{
-		Name:   src.Name,
-		File:   file,
-		Type:   src.Type,
-		Fields: fields,
+		Name:        src.Name,
+		File:        file,
+		Type:        src.Type,
+		Fields:      fields,
 		Annotations: annotations,
 	}, nil
 }
