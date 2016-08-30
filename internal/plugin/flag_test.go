@@ -86,6 +86,7 @@ func TestUnmarshalFlag(t *testing.T) {
 	for _, tt := range tests {
 		var f Flag
 		err := f.UnmarshalFlag(tt.giveValue)
+
 		if tt.wantErrorPrefix != "" {
 			if assert.Error(t, err, "expected error for %q", tt.giveValue) {
 				assert.True(t,
@@ -94,18 +95,21 @@ func TestUnmarshalFlag(t *testing.T) {
 					tt.wantErrorPrefix, err.Error(), tt.giveValue,
 				)
 			}
-		} else {
-			if assert.NoError(t, err, "expected no error for %q", tt.giveValue) {
-				assert.Equal(t, tt.wantName, f.Name, "name for %q does not match", tt.giveValue)
-				assert.Equal(t, tt.wantPath, f.Command.Path, "path for %q does not match", tt.giveValue)
+			continue
+		}
 
-				// We check args[1:] because args[0] is always path.
-				if len(tt.wantArgs) == 0 {
-					assert.Empty(t, f.Command.Args[1:], "args for %q do not match", tt.giveValue)
-				} else {
-					assert.Equal(t, tt.wantArgs, f.Command.Args[1:], "args for %q do not match", tt.giveValue)
-				}
-			}
+		if !assert.NoError(t, err, "expected no error for %q", tt.giveValue) {
+			continue
+		}
+
+		assert.Equal(t, tt.wantName, f.Name, "name for %q does not match", tt.giveValue)
+		assert.Equal(t, tt.wantPath, f.Command.Path, "path for %q does not match", tt.giveValue)
+
+		// We check args[1:] because args[0] is always path.
+		if len(tt.wantArgs) == 0 {
+			assert.Empty(t, f.Command.Args[1:], "args for %q do not match", tt.giveValue)
+		} else {
+			assert.Equal(t, tt.wantArgs, f.Command.Args[1:], "args for %q do not match", tt.giveValue)
 		}
 	}
 }
@@ -175,17 +179,14 @@ func TestFlagsHandle(t *testing.T) {
 		desc  string
 		plugs []plug
 
-		wantNil    bool // both, handle and err must be nil
 		wantErrors []string
 	}{
 		{
-			desc:    "no plugins",
-			wantNil: true,
+			desc: "no plugins",
 		},
 		{
-			desc:    "empty plugins",
-			plugs:   []plug{},
-			wantNil: true,
+			desc:  "empty plugins",
+			plugs: []plug{},
 		},
 		{
 			desc: "duplicate plugin",
@@ -263,12 +264,6 @@ func TestFlagsHandle(t *testing.T) {
 
 		h, err := flags.Handle()
 
-		if tt.wantNil {
-			assert.Nil(t, h, "%v: expected nil handle", tt.desc)
-			assert.Nil(t, err, "%v: expected nil error", tt.desc)
-			continue
-		}
-
 		if len(tt.wantErrors) > 0 {
 			if !assert.Error(t, err, "%v: expected error", tt.desc) {
 				continue
@@ -277,10 +272,12 @@ func TestFlagsHandle(t *testing.T) {
 			for _, msg := range tt.wantErrors {
 				assert.Contains(t, err.Error(), msg, "%v: error message mismatch", tt.desc)
 			}
-		} else {
-			if assert.NoError(t, err, "%v: expected no error", tt.desc) {
-				assert.NoError(t, h.Close(), "%v: failed to close", tt.desc)
-			}
+
+			continue
+		}
+
+		if assert.NoError(t, err, "%v: expected no error", tt.desc) {
+			assert.NoError(t, h.Close(), "%v: failed to close", tt.desc)
 		}
 	}
 }

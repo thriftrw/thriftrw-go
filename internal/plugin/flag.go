@@ -62,7 +62,10 @@ func (f *Flag) Handle() (Handle, error) {
 
 	handle, err := NewTransportHandle(f.Name, transport)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open plugin %q: %v", f.Name, err)
+		return nil, internal.CombineErrors(
+			fmt.Errorf("failed to open plugin %q: %v", f.Name, err),
+			transport.Close(),
+		)
 	}
 
 	return handle, nil
@@ -70,7 +73,7 @@ func (f *Flag) Handle() (Handle, error) {
 
 // UnmarshalFlag parses a string specification of a plugin.
 func (f *Flag) UnmarshalFlag(value string) error {
-	tokens, err := shlex.Split(value, true)
+	tokens, err := shlex.Split(value, true /* posix */)
 	if err != nil {
 		return fmt.Errorf("invalid plugin %q: %v", value, err)
 	}
@@ -101,10 +104,6 @@ type Flags []Flag
 //
 // The returned handle MUST be closed by the caller if error was nil.
 func (fs Flags) Handle() (MultiHandle, error) {
-	if len(fs) == 0 {
-		return nil, nil
-	}
-
 	var (
 		lock  sync.Mutex
 		multi = make(MultiHandle)
@@ -134,10 +133,5 @@ func (fs Flags) Handle() (MultiHandle, error) {
 		return multi, nil
 	}
 
-	errors := []error{err}
-	if err := multi.Close(); err != nil {
-		errors = append(errors, err)
-	}
-
-	return nil, internal.MultiError(errors)
+	return nil, internal.CombineErrors(err, multi.Close())
 }
