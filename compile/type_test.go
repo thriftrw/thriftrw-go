@@ -27,8 +27,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/thriftrw/thriftrw-go/ast"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/wire"
 )
 
 // mustLink links the given TypeSpec inside the given scope, failing the test

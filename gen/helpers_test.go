@@ -28,7 +28,7 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/wire"
 )
 
 // This file contains helpers for the different test cases in this module.

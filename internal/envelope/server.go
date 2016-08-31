@@ -24,10 +24,10 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/internal/envelope/exception"
-	"github.com/thriftrw/thriftrw-go/protocol"
-	"github.com/thriftrw/thriftrw-go/ptr"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/internal/envelope/exception"
+	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/ptr"
+	"go.uber.org/thriftrw/wire"
 )
 
 // ErrUnknownMethod is raised by Handlers to indicate that the given method is

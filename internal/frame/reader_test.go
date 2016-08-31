@@ -6,7 +6,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/internal/iotest"
+	"go.uber.org/thriftrw/internal/iotest"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"

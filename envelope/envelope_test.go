@@ -27,12 +27,12 @@ import (
 
 	// Use . import so the generated Thrift code can import envelope
 	// without causing a circular dependency.
-	. "github.com/thriftrw/thriftrw-go/envelope"
+	. "go.uber.org/thriftrw/envelope"
 
-	tv "github.com/thriftrw/thriftrw-go/gen/testdata/services"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/services/service/keyvalue"
-	"github.com/thriftrw/thriftrw-go/protocol"
-	"github.com/thriftrw/thriftrw-go/wire"
+	tv "go.uber.org/thriftrw/gen/testdata/services"
+	"go.uber.org/thriftrw/gen/testdata/services/service/keyvalue"
+	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
 )

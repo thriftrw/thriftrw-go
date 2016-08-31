@@ -26,7 +26,7 @@
 // 	// thriftrw-plugin-myfancyplugin/main.go
 // 	package main
 //
-// 	import "github.com/thriftrw/thriftrw-go/plugin"
+// 	import "go.uber.org/thriftrw/plugin"
 //
 // 	func main() {
 // 		plugin.Main(&plugin.Plugin{

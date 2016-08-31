@@ -1,6 +1,6 @@
 package main
 
-import "github.com/thriftrw/thriftrw-go/plugin"
+import "go.uber.org/thriftrw/plugin"
 
 // A valid plugin that does not do anything.
 

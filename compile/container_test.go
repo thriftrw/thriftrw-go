@@ -25,8 +25,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/thriftrw/thriftrw-go/ast"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/wire"
 )
 
 func TestCompileList(t *testing.T) {

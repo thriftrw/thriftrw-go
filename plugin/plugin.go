@@ -25,13 +25,13 @@ import (
 	"log"
 	"os"
 
-	"github.com/thriftrw/thriftrw-go/internal/envelope"
-	"github.com/thriftrw/thriftrw-go/internal/frame"
-	"github.com/thriftrw/thriftrw-go/internal/multiplex"
-	"github.com/thriftrw/thriftrw-go/plugin/api"
-	"github.com/thriftrw/thriftrw-go/plugin/api/service/plugin"
-	"github.com/thriftrw/thriftrw-go/plugin/api/service/servicegenerator"
-	"github.com/thriftrw/thriftrw-go/protocol"
+	"go.uber.org/thriftrw/internal/envelope"
+	"go.uber.org/thriftrw/internal/frame"
+	"go.uber.org/thriftrw/internal/multiplex"
+	"go.uber.org/thriftrw/plugin/api"
+	"go.uber.org/thriftrw/plugin/api/service/plugin"
+	"go.uber.org/thriftrw/plugin/api/service/servicegenerator"
+	"go.uber.org/thriftrw/protocol"
 )
 
 const _fastPathFrameSize = 10 * 1024 * 1024 // 10 MB

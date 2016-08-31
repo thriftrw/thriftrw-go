@@ -23,8 +23,8 @@ package compile
 import (
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/ast"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/wire"
 )
 
 // MapSpec represents a key-value mapping between two types.

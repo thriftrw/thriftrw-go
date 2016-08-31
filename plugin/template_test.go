@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/thriftrw/thriftrw-go/plugin/api"
+	"go.uber.org/thriftrw/plugin/api"
 )
 
 func TestGoFileFromTemplate(t *testing.T) {
@@ -33,13 +33,13 @@ func TestGoFileFromTemplate(t *testing.T) {
 			data: &api.Type{
 				ReferenceType: &api.TypeReference{
 					Name:    "Foo",
-					Package: "github.com/thriftrw/thriftrw-go/bar",
+					Package: "go.uber.org/thriftrw/bar",
 				},
 			},
 			wantBody: unlines(
 				`package foo`,
 				``,
-				`import "github.com/thriftrw/thriftrw-go/bar"`,
+				`import "go.uber.org/thriftrw/bar"`,
 				``,
 				`var foo bar.Foo = nil`,
 			),
@@ -56,11 +56,11 @@ func TestGoFileFromTemplate(t *testing.T) {
 			data: &api.Type{
 				ReferenceType: &api.TypeReference{
 					Name:    "Foo",
-					Package: "github.com/thriftrw/thriftrw-go/bar",
+					Package: "go.uber.org/thriftrw/bar",
 				},
 			},
 			options: []TemplateOption{
-				GoFileImportPath("github.com/thriftrw/thriftrw-go/bar"),
+				GoFileImportPath("go.uber.org/thriftrw/bar"),
 			},
 			wantBody: unlines(
 				`package bar`,
@@ -75,8 +75,8 @@ func TestGoFileFromTemplate(t *testing.T) {
 			template: `
 				package hello
 
-				<$foo := import "github.com/thriftrw/thriftrw-go/plugin">
-				<$bar := import "github.com/thriftrw/thriftrw-go/hello">
+				<$foo := import "go.uber.org/thriftrw/plugin">
+				<$bar := import "go.uber.org/thriftrw/hello">
 
 				func main() {
 					<$foo>.Main(<$bar>.Baz)
@@ -86,8 +86,8 @@ func TestGoFileFromTemplate(t *testing.T) {
 				`package hello`,
 				``,
 				`import (`,
-				`	"github.com/thriftrw/thriftrw-go/hello"`,
-				`	"github.com/thriftrw/thriftrw-go/plugin"`,
+				`	"go.uber.org/thriftrw/hello"`,
+				`	"go.uber.org/thriftrw/plugin"`,
 				`)`,
 				``,
 				`func main() {`,
@@ -166,7 +166,7 @@ func TestGoFileFromTemplate(t *testing.T) {
 			template: `
 				package hello
 
-				<$foo := import "github.com/thriftrw/thriftrw-go/range">
+				<$foo := import "go.uber.org/thriftrw/range">
 
 				type foo struct {
 					<$foo>.Range
@@ -175,7 +175,7 @@ func TestGoFileFromTemplate(t *testing.T) {
 			wantBody: unlines(
 				`package hello`,
 				``,
-				`import range2 "github.com/thriftrw/thriftrw-go/range"`,
+				`import range2 "go.uber.org/thriftrw/range"`,
 				``,
 				`type foo struct {`,
 				`	range2.Range`,
