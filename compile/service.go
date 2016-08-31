@@ -64,7 +64,6 @@ func compileService(file string, src *ast.Service) (*ServiceSpec, error) {
 	}
 
 	annotations, err := compileAnnotations(src.Annotations)
-
 	if err != nil {
 		return nil, compileError{
 			Target: src.Name,

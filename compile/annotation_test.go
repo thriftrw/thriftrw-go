@@ -23,20 +23,16 @@ package compile
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/thriftrw/thriftrw-go/ast"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCompileAnnotation(t *testing.T) {
-	annotatedSpec := Annotations{
-		"test": "ok",
-	}
-
 	tests := []struct {
-		desc  string
-		src   []*ast.Annotation
-		scope Scope
-		spec  Annotations
+		desc string
+		src  []*ast.Annotation
+		spec Annotations
 	}{
 		{
 			"simple annotation",
@@ -47,8 +43,9 @@ func TestCompileAnnotation(t *testing.T) {
 					Line:  1,
 				},
 			},
-			scope(),
-			annotatedSpec,
+			Annotations{
+				"test": "ok",
+			},
 		},
 	}
 

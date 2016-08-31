@@ -63,7 +63,7 @@ func compileEnum(file string, src *ast.Enum) (*EnumSpec, error) {
 		itemAnnotations, err := compileAnnotations(astItem.Annotations)
 		if err != nil {
 			return nil, compileError{
-				Target: astItem.Name,
+				Target: src.Name + "." + astItem.Name,
 				Line:   astItem.Line,
 				Reason: err,
 			}
