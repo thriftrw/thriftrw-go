@@ -18,9 +18,8 @@ set -x
 
 PACKAGE=github.com/thriftrw/thriftrw-go/internal/plugin
 INTERFACES=Handle
-DESTINATION=mock_test.go
-
-PACKAGENAME=$(basename "$PACKAGE")
+DESTINATION=handletest/mock.go
+PACKAGENAME=handletest
 
 mkdir -p _mockgen
 mockgen -prog_only "$PACKAGE" "$INTERFACES" > _mockgen/main.go
