@@ -83,3 +83,29 @@ func TestMultiError(t *testing.T) {
 		}
 	}
 }
+
+func TestCombineErrors(t *testing.T) {
+	tests := []struct {
+		give []error
+		want error
+	}{
+		{
+			give: []error{
+				errors.New("foo"),
+				nil,
+				multiError{
+					errors.New("bar"),
+				},
+				nil,
+			},
+			want: multiError{
+				errors.New("foo"),
+				errors.New("bar"),
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.want, CombineErrors(tt.give...))
+	}
+}

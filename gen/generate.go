@@ -30,6 +30,7 @@ import (
 	"strings"
 
 	"github.com/thriftrw/thriftrw-go/compile"
+	"github.com/thriftrw/thriftrw-go/internal/plugin"
 )
 
 // Options controls how code gets generated.
@@ -56,6 +57,9 @@ type Options struct {
 	// NoRecurse determines whether code should be generated for included Thrift
 	// files as well. If true, code gets generated only for the first module.
 	NoRecurse bool
+
+	// Code generation plugin
+	Plugin plugin.Handle
 }
 
 // Generate generates code based on the given options.
@@ -87,6 +91,8 @@ func Generate(m *compile.Module, o *Options) error {
 		}
 		return nil
 	})
+
+	// TODO(abg): Generate code from opts.Plugin
 }
 
 // TODO(abg): Make some sort of public interface out of the Importer

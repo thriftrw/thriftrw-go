@@ -28,9 +28,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	flags "github.com/jessevdk/go-flags"
 	"github.com/thriftrw/thriftrw-go/compile"
 	"github.com/thriftrw/thriftrw-go/gen"
+	"github.com/thriftrw/thriftrw-go/internal/plugin"
+
+	"github.com/jessevdk/go-flags"
 )
 
 type options struct {
@@ -42,7 +44,12 @@ type options struct {
 	NoRecurse bool `long:"no-recurse" description:"Don't generate code for included Thrift files."`
 	YARPC     bool `long:"yarpc" description:"Generate code for YARPC. Defaults to false."`
 
-	// TODO(abg): Detailed help with examples of --thrift-root and --pkg-prefix
+	// TODO(abg): Drop --yarpc flag
+
+	Plugins plugin.Flags `long:"plugin" short:"p" value-name:"PLUGIN" description:"Code generation plugin for ThriftRW. This option may be provided multiple times to apply multiple plugins."`
+
+	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
+	// and --plugin
 }
 
 func main() {
@@ -104,14 +111,20 @@ func main() {
 		}
 	}
 
+	pluginHandle, err := opts.Plugins.Handle()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer pluginHandle.Close()
+
 	generatorOptions := gen.Options{
 		OutputDir:     opts.OutputDirectory,
 		PackagePrefix: opts.PackagePrefix,
 		ThriftRoot:    opts.ThriftRoot,
 		NoRecurse:     opts.NoRecurse,
 		YARPC:         opts.YARPC,
+		Plugin:        pluginHandle,
 	}
-
 	if err := gen.Generate(module, &generatorOptions); err != nil {
 		log.Fatal(err)
 	}
