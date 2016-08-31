@@ -22,6 +22,7 @@ package compile
 
 import (
 	"fmt"
+
 	"github.com/thriftrw/thriftrw-go/ast"
 )
 

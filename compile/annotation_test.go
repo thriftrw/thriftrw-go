@@ -28,9 +28,8 @@ import (
 )
 
 func TestCompileAnnotation(t *testing.T) {
-
 	annotatedSpec := Annotations{
-		"test": "test",
+		"test": "ok",
 	}
 
 	tests := []struct {
@@ -44,7 +43,7 @@ func TestCompileAnnotation(t *testing.T) {
 			[]*ast.Annotation{
 				{
 					Name:  "test",
-					Value: "test",
+					Value: "ok",
 					Line:  1,
 				},
 			},
@@ -72,12 +71,12 @@ func TestCompileAnnotationFailure(t *testing.T) {
 			[]*ast.Annotation{
 				{
 					Name:  "test",
-					Value: "test",
+					Value: "ok",
 					Line:  1,
 				},
 				{
 					Name:  "test",
-					Value: "test",
+					Value: "abcd",
 					Line:  1,
 				},
 			},

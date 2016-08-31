@@ -132,7 +132,7 @@ func TestCompileService(t *testing.T) {
 			},
 		},
 		Annotations: Annotations{
-			"test": "test",
+			"test": "abcde",
 		},
 	}
 
@@ -175,7 +175,7 @@ func TestCompileService(t *testing.T) {
 			`
 				service AnnotatedService {
 					void setValue(1: string key, 2: binary value) (test = "ok")
-				} (test = "test")
+				} (test = "abcde")
 			`,
 			scope(),
 			annotatedSpec,
@@ -324,7 +324,7 @@ func TestCompileServiceFailure(t *testing.T) {
 			`
 				service AnnotatedService {
 
-				} (test = "test", test = "t")
+				} (test = "mytest", test = "t")
 			`,
 			[]string{
 				`the name "test" has already been used`,
@@ -335,7 +335,7 @@ func TestCompileServiceFailure(t *testing.T) {
 			`
 				service AnnotatedService {
 					i32 bar() (functest = "test" functest = "t")
-				} (test = "test")
+				} (test = "mytest")
 			`,
 			[]string{
 				`the name "functest" has already been used`,
