@@ -9,6 +9,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/thriftrw/thriftrw-go/internal/plugin/handletest"
 	"github.com/thriftrw/thriftrw-go/plugin/api"
 	"github.com/thriftrw/thriftrw-go/plugin/plugintest"
 )
@@ -17,11 +18,11 @@ func TestMultiHandleClose(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	handles := make([]*MockHandle, 1000)
+	handles := make([]*handletest.MockHandle, 1000)
 	mh := make(MultiHandle)
 
 	for i := range handles {
-		handle := NewMockHandle(mockCtrl)
+		handle := handletest.NewMockHandle(mockCtrl)
 		handle.EXPECT().Close().Return(nil)
 		handles[i] = handle
 		mh[fmt.Sprintf("plugin-%d", i)] = handle
@@ -44,11 +45,11 @@ func TestMultiHandleCloseError(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	handles := make([]*MockHandle, 1000)
+	handles := make([]*handletest.MockHandle, 1000)
 	mh := make(MultiHandle)
 
 	for i := range handles {
-		handle := NewMockHandle(mockCtrl)
+		handle := handletest.NewMockHandle(mockCtrl)
 		handles[i] = handle
 		mh[fmt.Sprintf("plugin-%d", i)] = handle
 
@@ -77,10 +78,10 @@ func TestMultiHandleNoServiceGenerators(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	handles := make([]*MockHandle, 1000)
+	handles := make([]*handletest.MockHandle, 1000)
 	mh := make(MultiHandle)
 	for i := range handles {
-		handle := NewMockHandle(mockCtrl)
+		handle := handletest.NewMockHandle(mockCtrl)
 		handles[i] = handle
 		mh[fmt.Sprintf("plugin-%d", i)] = handle
 		handle.EXPECT().ServiceGenerator().Return(nil)
@@ -93,11 +94,11 @@ func TestMultiHandleServiceGenerator(t *testing.T) {
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
 
-	handles := make([]*MockHandle, 1000)
+	handles := make([]*handletest.MockHandle, 1000)
 
 	mh := make(MultiHandle)
 	for i := range handles {
-		handle := NewMockHandle(mockCtrl)
+		handle := handletest.NewMockHandle(mockCtrl)
 		handles[i] = handle
 		mh[fmt.Sprintf("plugin-%d", i)] = handle
 
