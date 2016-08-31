@@ -311,3 +311,11 @@ type constantCastError struct {
 func (e constantCastError) Error() string {
 	return fmt.Sprintf("failed to cast constant %q: %v", e.Name, e.Reason)
 }
+
+type annotationConflictError struct {
+	Reason error
+}
+
+func (e annotationConflictError) Error() string {
+	return fmt.Sprint("annotation conflict: %v", e.Reason)
+}

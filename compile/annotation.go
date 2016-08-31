@@ -21,40 +21,26 @@
 package compile
 
 import (
-	"fmt"
-
 	"github.com/thriftrw/thriftrw-go/ast"
 )
 
 // Annotations maps annotations
 type Annotations map[string]string
 
-type annotationConflictError struct {
-	Reason error
-}
-
-func (e annotationConflictError) Error() string {
-	msg := fmt.Sprint("annotation conflict")
-	if e.Reason != nil {
-		msg += fmt.Sprintf(": %v", e.Reason)
-	}
-	return msg
-}
-
-func compileAnnotations(annotations []*ast.Annotation) (Annotations, error) {
+func compileAnnotations(astAnnotations []*ast.Annotation) (Annotations, error) {
 	namespace := newNamespace(caseSensitive)
-	annotationSpecs := make(Annotations)
+	annotations := make(Annotations, len(astAnnotations))
 
-	for _, a := range annotations {
+	for _, a := range astAnnotations {
 		if err := namespace.claim(a.Name, a.Line); err != nil {
 			return nil, annotationConflictError{Reason: err}
 		}
 
-		annotationSpecs[a.Name] = a.Value
+		annotations[a.Name] = a.Value
 	}
 
-	if len(annotationSpecs) == 0 {
+	if len(annotations) == 0 {
 		return nil, nil
 	}
-	return annotationSpecs, nil
+	return annotations, nil
 }
