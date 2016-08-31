@@ -25,9 +25,9 @@ import (
 	"io"
 	"os/exec"
 
+	"github.com/uber-go/atomic"
 	"go.uber.org/thriftrw/internal"
 	"go.uber.org/thriftrw/internal/frame"
-	"github.com/uber-go/atomic"
 )
 
 // Client sends framed requests and receives framed responses from an external
