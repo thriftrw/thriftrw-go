@@ -23,7 +23,7 @@ package compile
 import (
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/ast"
+	"go.uber.org/thriftrw/ast"
 )
 
 // Constant represents a single named constant value from the Thrift file.

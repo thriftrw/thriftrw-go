@@ -4,14 +4,14 @@ import (
 	"io"
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/internal/envelope"
-	"github.com/thriftrw/thriftrw-go/internal/frame"
-	"github.com/thriftrw/thriftrw-go/internal/multiplex"
-	"github.com/thriftrw/thriftrw-go/plugin/api"
-	"github.com/thriftrw/thriftrw-go/plugin/api/service/plugin"
-	"github.com/thriftrw/thriftrw-go/plugin/api/service/servicegenerator"
-	"github.com/thriftrw/thriftrw-go/plugin/plugintest"
-	"github.com/thriftrw/thriftrw-go/ptr"
+	"go.uber.org/thriftrw/internal/envelope"
+	"go.uber.org/thriftrw/internal/frame"
+	"go.uber.org/thriftrw/internal/multiplex"
+	"go.uber.org/thriftrw/plugin/api"
+	"go.uber.org/thriftrw/plugin/api/service/plugin"
+	"go.uber.org/thriftrw/plugin/api/service/servicegenerator"
+	"go.uber.org/thriftrw/plugin/plugintest"
+	"go.uber.org/thriftrw/ptr"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -93,7 +93,7 @@ func TestServiceGenerator(t *testing.T) {
 		Services: map[api.ServiceID]*api.Service{
 			1: {
 				Name:      "MyService",
-				Package:   "github.com/thriftrw/thriftrw-go/plugin/fake/myservice",
+				Package:   "go.uber.org/thriftrw/plugin/fake/myservice",
 				Directory: "fake/myservice",
 				Functions: []*api.Function{},
 				ParentID:  (*api.ServiceID)(ptr.Int32(2)),
@@ -101,7 +101,7 @@ func TestServiceGenerator(t *testing.T) {
 			},
 			2: {
 				Name:      "BaseService",
-				Package:   "github.com/thriftrw/thriftrw-go/plugin/fake/baseservice",
+				Package:   "go.uber.org/thriftrw/plugin/fake/baseservice",
 				Directory: "fake/baseservice",
 				Functions: []*api.Function{
 					{
@@ -115,7 +115,7 @@ func TestServiceGenerator(t *testing.T) {
 		},
 		Modules: map[api.ModuleID]*api.Module{
 			1: {
-				Package:   "github.com/thriftrw/thriftrw-go/plugin/fake",
+				Package:   "go.uber.org/thriftrw/plugin/fake",
 				Directory: "fake",
 			},
 		},

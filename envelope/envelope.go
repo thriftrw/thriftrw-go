@@ -24,9 +24,9 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/thriftrw/thriftrw-go/internal/envelope/exception"
-	"github.com/thriftrw/thriftrw-go/protocol"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/internal/envelope/exception"
+	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/wire"
 )
 
 // Enveloper is the interface implemented by a type that can be written with

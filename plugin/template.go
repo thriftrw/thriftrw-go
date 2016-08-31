@@ -29,8 +29,8 @@ import (
 	"sort"
 	"text/template"
 
-	"github.com/thriftrw/thriftrw-go/internal/goast"
-	"github.com/thriftrw/thriftrw-go/plugin/api"
+	"go.uber.org/thriftrw/internal/goast"
+	"go.uber.org/thriftrw/plugin/api"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -62,7 +62,7 @@ func TemplateFunc(name string, f interface{}) TemplateOption {
 // 	GoFileFromTemplate(
 // 		filename,
 // 		mytemplate,
-// 		GoFileImportPath("github.com/thriftrw/thriftrw-go/myservice"),
+// 		GoFileImportPath("go.uber.org/thriftrw/myservice"),
 // 	)
 //
 // If specified, this changes the behavior of the `formatType` template
@@ -266,7 +266,7 @@ func (g *goFileGenerator) Generate(filename, tmpl string, data interface{}) ([]b
 // imported name of the package. Use the return value of this function to
 // reference the imported package.
 //
-// 	<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+// 	<$wire := import "go.uber.org/thriftrw/wire">
 // 	var value <$wire>.Value
 //
 // formatType: Formats an api.Type into a Go type representation, automatically

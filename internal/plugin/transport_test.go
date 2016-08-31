@@ -5,15 +5,15 @@ import (
 	"io"
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/internal/envelope"
-	"github.com/thriftrw/thriftrw-go/internal/envelope/envelopetest"
-	"github.com/thriftrw/thriftrw-go/internal/frame"
-	"github.com/thriftrw/thriftrw-go/internal/multiplex"
-	"github.com/thriftrw/thriftrw-go/plugin/api"
-	"github.com/thriftrw/thriftrw-go/plugin/api/service/plugin"
-	"github.com/thriftrw/thriftrw-go/plugin/api/service/servicegenerator"
-	"github.com/thriftrw/thriftrw-go/plugin/plugintest"
-	"github.com/thriftrw/thriftrw-go/protocol"
+	"go.uber.org/thriftrw/internal/envelope"
+	"go.uber.org/thriftrw/internal/envelope/envelopetest"
+	"go.uber.org/thriftrw/internal/frame"
+	"go.uber.org/thriftrw/internal/multiplex"
+	"go.uber.org/thriftrw/plugin/api"
+	"go.uber.org/thriftrw/plugin/api/service/plugin"
+	"go.uber.org/thriftrw/plugin/api/service/servicegenerator"
+	"go.uber.org/thriftrw/plugin/plugintest"
+	"go.uber.org/thriftrw/protocol"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -351,7 +351,7 @@ func TestServiceGeneratorGenerate(t *testing.T) {
 				Services: map[api.ServiceID]*api.Service{
 					1: {
 						Name:      "KeyValue",
-						Package:   "github.com/thriftrw/thriftrw-go/foo/keyvalue",
+						Package:   "go.uber.org/thriftrw/foo/keyvalue",
 						Directory: "foo/keyvalue",
 						Functions: []*api.Function{},
 						ModuleID:  api.ModuleID(1),
@@ -359,7 +359,7 @@ func TestServiceGeneratorGenerate(t *testing.T) {
 				},
 				Modules: map[api.ModuleID]*api.Module{
 					1: {
-						Package:   "github.com/thriftrw/thriftrw-go/foo",
+						Package:   "go.uber.org/thriftrw/foo",
 						Directory: "foo",
 					},
 				},

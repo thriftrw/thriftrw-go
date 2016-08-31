@@ -26,7 +26,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/compile"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -58,21 +58,21 @@ func TestDeterminePackagePrefix(t *testing.T) {
 		},
 		{
 			dir:    genDir,
-			result: "github.com/thriftrw/thriftrw-go/gen",
+			result: "go.uber.org/thriftrw/gen",
 		},
 		{
 			overrideGoPath: func(gopath string) string {
 				return tmpDir + ":" + gopath
 			},
-			dir:    filepath.Join(tmpDir, "src/github.com/thriftrw/thriftrw-go"),
-			result: "github.com/thriftrw/thriftrw-go",
+			dir:    filepath.Join(tmpDir, "src/go.uber.org/thriftrw"),
+			result: "go.uber.org/thriftrw",
 		},
 		{
 			overrideGoPath: func(gopath string) string {
 				return tmpDir + ":" + gopath
 			},
 			dir:    genDir,
-			result: "github.com/thriftrw/thriftrw-go/gen",
+			result: "go.uber.org/thriftrw/gen",
 		},
 	}
 

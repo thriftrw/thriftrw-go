@@ -24,8 +24,8 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/thriftrw/thriftrw-go/internal/concurrent"
-	"github.com/thriftrw/thriftrw-go/plugin/api"
+	"go.uber.org/thriftrw/internal/concurrent"
+	"go.uber.org/thriftrw/plugin/api"
 )
 
 // MultiHandle wraps a collection of handles into a single handle.

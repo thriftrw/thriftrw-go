@@ -4,13 +4,13 @@
 package constants
 
 import (
-	"github.com/thriftrw/thriftrw-go/gen/testdata/containers"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/enums"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/exceptions"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/other_constants"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/structs"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/typedefs"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/unions"
+	"go.uber.org/thriftrw/gen/testdata/containers"
+	"go.uber.org/thriftrw/gen/testdata/enums"
+	"go.uber.org/thriftrw/gen/testdata/exceptions"
+	"go.uber.org/thriftrw/gen/testdata/other_constants"
+	"go.uber.org/thriftrw/gen/testdata/structs"
+	"go.uber.org/thriftrw/gen/testdata/typedefs"
+	"go.uber.org/thriftrw/gen/testdata/unions"
 )
 
 func _bool_ptr(v bool) *bool {

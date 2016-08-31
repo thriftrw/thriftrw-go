@@ -23,7 +23,7 @@ package plugin
 import (
 	"io"
 
-	"github.com/thriftrw/thriftrw-go/plugin/api"
+	"go.uber.org/thriftrw/plugin/api"
 )
 
 // Handle is a handle to ThriftRW plugin.

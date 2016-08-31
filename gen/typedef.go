@@ -20,7 +20,7 @@
 
 package gen
 
-import "github.com/thriftrw/thriftrw-go/compile"
+import "go.uber.org/thriftrw/compile"
 
 // typedefGenerator generates code to serialize and deserialize typedefs.
 type typedefGenerator struct {
@@ -35,7 +35,7 @@ func (t *typedefGenerator) Reader(g Generator, spec *compile.TypedefSpec) (strin
 
 	err := g.DeclareFromTemplate(
 		`
-		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$x := newVar "x">
 		<$w := newVar "w">
@@ -63,7 +63,7 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$fmt := import "fmt">
-		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$wire := import "go.uber.org/thriftrw/wire">
 		<$typedefType := typeReference .>
 
 		type <typeName .> <typeName .Target>

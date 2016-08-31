@@ -23,7 +23,7 @@ package gen
 import (
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/compile"
 )
 
 // TypeDefinition generates code for the given TypeSpec.

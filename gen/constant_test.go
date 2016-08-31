@@ -23,13 +23,13 @@ package gen
 import (
 	"testing"
 
-	tk "github.com/thriftrw/thriftrw-go/gen/testdata/constants"
-	tc "github.com/thriftrw/thriftrw-go/gen/testdata/containers"
-	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
-	tx "github.com/thriftrw/thriftrw-go/gen/testdata/exceptions"
-	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
-	td "github.com/thriftrw/thriftrw-go/gen/testdata/typedefs"
-	tu "github.com/thriftrw/thriftrw-go/gen/testdata/unions"
+	tk "go.uber.org/thriftrw/gen/testdata/constants"
+	tc "go.uber.org/thriftrw/gen/testdata/containers"
+	te "go.uber.org/thriftrw/gen/testdata/enums"
+	tx "go.uber.org/thriftrw/gen/testdata/exceptions"
+	ts "go.uber.org/thriftrw/gen/testdata/structs"
+	td "go.uber.org/thriftrw/gen/testdata/typedefs"
+	tu "go.uber.org/thriftrw/gen/testdata/unions"
 
 	"github.com/stretchr/testify/assert"
 )

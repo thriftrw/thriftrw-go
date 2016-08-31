@@ -26,7 +26,7 @@ import (
 	"math"
 	"sync"
 
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/wire"
 )
 
 var writerPool = sync.Pool{New: func() interface{} {

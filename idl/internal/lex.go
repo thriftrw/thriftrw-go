@@ -31,7 +31,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/thriftrw/thriftrw-go/ast"
+	"go.uber.org/thriftrw/ast"
 )
 
 //line lex.go:19

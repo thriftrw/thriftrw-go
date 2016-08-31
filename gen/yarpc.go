@@ -27,7 +27,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/compile"
 )
 
 // TODO: This should be moved into a separate program or template
@@ -80,8 +80,8 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 		`
 		<$yarpc := import "github.com/yarpc/yarpc-go">
 		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
-		<$protocol := import "github.com/thriftrw/thriftrw-go/protocol">
-		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$protocol := import "go.uber.org/thriftrw/protocol">
+		<$wire := import "go.uber.org/thriftrw/wire">
 		<$context := import "golang.org/x/net/context">
 
 		func New(impl Interface) <$thrift>.Service {
@@ -187,7 +187,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 		<$yarpc := import "github.com/yarpc/yarpc-go">
 		<$transport := import "github.com/yarpc/yarpc-go/transport">
 		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
-		<$protocol := import "github.com/thriftrw/thriftrw-go/protocol">
+		<$protocol := import "go.uber.org/thriftrw/protocol">
 		<$context := import "golang.org/x/net/context">
 
 		func New(c <$transport>.Channel, opts ...<$thrift>.ClientOption) Interface {
@@ -204,7 +204,7 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 
 		<$service := .>
 		<range .Functions>
-			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+			<$wire := import "go.uber.org/thriftrw/wire">
 			<$servicePackage := servicePackage $service>
 
 			<$Result := printf "%s.%sResult" $servicePackage (goCase .Name)>

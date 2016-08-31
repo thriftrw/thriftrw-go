@@ -26,7 +26,7 @@ import (
 	"go/token"
 	"strings"
 
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/compile"
 )
 
 // Service generates code for the given service.
@@ -293,7 +293,7 @@ func functionArgsEnveloper(g Generator, f *compile.FunctionSpec) error {
 	// TODO: Figure out naming conflicts with user fields.
 	return g.DeclareFromTemplate(
 		`
-		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$wire := import "go.uber.org/thriftrw/wire">
 		<$argType := printf "%v%v" (goCase .Name) "Args">
 		<$v := newVar "v">
 
@@ -310,7 +310,7 @@ func functionArgsEnveloper(g Generator, f *compile.FunctionSpec) error {
 func functionResponseEnveloper(g Generator, f *compile.FunctionSpec) error {
 	return g.DeclareFromTemplate(
 		`
-		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$wire := import "go.uber.org/thriftrw/wire">
 		<$resType := printf "%v%v" (goCase .Name) "Result">
 		<$v := newVar "v">
 

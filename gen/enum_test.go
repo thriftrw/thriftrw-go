@@ -24,8 +24,8 @@ import (
 	"fmt"
 	"testing"
 
-	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
-	"github.com/thriftrw/thriftrw-go/wire"
+	te "go.uber.org/thriftrw/gen/testdata/enums"
+	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
 )

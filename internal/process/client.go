@@ -25,8 +25,8 @@ import (
 	"io"
 	"os/exec"
 
-	"github.com/thriftrw/thriftrw-go/internal"
-	"github.com/thriftrw/thriftrw-go/internal/frame"
+	"go.uber.org/thriftrw/internal"
+	"go.uber.org/thriftrw/internal/frame"
 	"github.com/uber-go/atomic"
 )
 

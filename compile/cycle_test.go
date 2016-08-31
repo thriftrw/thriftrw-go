@@ -23,7 +23,7 @@ package compile
 import (
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/ast"
+	"go.uber.org/thriftrw/ast"
 
 	"github.com/stretchr/testify/assert"
 )

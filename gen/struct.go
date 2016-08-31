@@ -21,8 +21,8 @@
 package gen
 
 import (
-	"github.com/thriftrw/thriftrw-go/ast"
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/compile"
 )
 
 // structGenerator generates code to serialize and deserialize structs.
@@ -38,7 +38,7 @@ func (s *structGenerator) Reader(g Generator, spec *compile.StructSpec) (string,
 
 	err := g.DeclareFromTemplate(
 		`
-		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$v := newVar "v">
 		<$w := newVar "w">

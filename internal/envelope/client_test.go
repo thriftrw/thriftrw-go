@@ -5,10 +5,10 @@ import (
 	"io"
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/internal/envelope/envelopetest"
-	"github.com/thriftrw/thriftrw-go/internal/envelope/exception"
-	"github.com/thriftrw/thriftrw-go/ptr"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/internal/envelope/envelopetest"
+	"go.uber.org/thriftrw/internal/envelope/exception"
+	"go.uber.org/thriftrw/ptr"
+	"go.uber.org/thriftrw/wire"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
