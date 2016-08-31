@@ -30,14 +30,14 @@ type EnumSpec struct {
 	Name        string
 	File        string
 	Items       []EnumItem
-	Annotations []*AnnotationSpec
+	Annotations Annotations
 }
 
 // EnumItem is a single item inside an enum.
 type EnumItem struct {
 	Name        string
 	Value       int32
-	Annotations []*AnnotationSpec
+	Annotations Annotations
 }
 
 // compileEnum compiles the given Enum AST into an EnumSpec.

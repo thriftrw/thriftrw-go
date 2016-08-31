@@ -33,7 +33,7 @@ type StructSpec struct {
 	File        string
 	Type        ast.StructureType
 	Fields      FieldGroup
-	Annotations []*AnnotationSpec
+	Annotations Annotations
 }
 
 // compileStruct compiles a struct AST into a StructSpec.

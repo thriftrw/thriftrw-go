@@ -96,7 +96,7 @@ type FieldSpec struct {
 	Type        TypeSpec
 	Required    bool
 	Default     ConstantValue
-	Annotations []*AnnotationSpec
+	Annotations Annotations
 }
 
 // compileField compiles the given Field source into a FieldSpec.

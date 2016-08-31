@@ -25,11 +25,8 @@ import (
 	"github.com/thriftrw/thriftrw-go/ast"
 )
 
-// AnnotationSpec describes and a thrift annotation
-type AnnotationSpec struct {
-	Name  string
-	Value string
-}
+// Annotations maps annotations
+type Annotations map[string]string
 
 type annotationConflictError struct {
 	Reason error
@@ -43,19 +40,20 @@ func (e annotationConflictError) Error() string {
 	return msg
 }
 
-func compileAnnotations(annotations []*ast.Annotation) ([]*AnnotationSpec, error) {
+func compileAnnotations(annotations []*ast.Annotation) (Annotations, error) {
 	namespace := newNamespace(caseSensitive)
-	var annotationSpecs []*AnnotationSpec
+	annotationSpecs := make(Annotations)
+
 	for _, a := range annotations {
 		if err := namespace.claim(a.Name, a.Line); err != nil {
 			return nil, annotationConflictError{Reason: err}
 		}
 
-		annotationSpecs = append(annotationSpecs, &AnnotationSpec{
-			Name:  a.Name,
-			Value: a.Value,
-		})
+		annotationSpecs[a.Name] = a.Value
 	}
 
+	if len(annotationSpecs) == 0 {
+		return nil, nil
+	}
 	return annotationSpecs, nil
 }

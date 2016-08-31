@@ -29,18 +29,15 @@ import (
 
 func TestCompileAnnotation(t *testing.T) {
 
-	annotatedSpec := []*AnnotationSpec{
-		{
-			Name:  "test",
-			Value: "test",
-		},
+	annotatedSpec := Annotations{
+		"test": "test",
 	}
 
 	tests := []struct {
 		desc  string
 		src   []*ast.Annotation
 		scope Scope
-		spec  []*AnnotationSpec
+		spec  Annotations
 	}{
 		{
 			"simple annotation",

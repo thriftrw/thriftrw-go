@@ -125,20 +125,14 @@ func TestCompileService(t *testing.T) {
 						Type: BinarySpec,
 					},
 				},
-				Annotations: []*AnnotationSpec{
-					{
-						Name:  "test",
-						Value: "ok",
-					},
+				Annotations: Annotations{
+					"test": "ok",
 				},
 				ResultSpec: &ResultSpec{},
 			},
 		},
-		Annotations: []*AnnotationSpec{
-			{
-				Name:  "test",
-				Value: "test",
-			},
+		Annotations: Annotations{
+			"test": "test",
 		},
 	}
 
