@@ -12,8 +12,6 @@ import (
 	"go.uber.org/thriftrw/internal/plugin/handletest"
 	"go.uber.org/thriftrw/plugin/api"
 	"go.uber.org/thriftrw/plugin/plugintest"
-	"go.uber.org/thriftrw/plugin/api"
-	"go.uber.org/thriftrw/plugin/plugintest"
 )
 
 func TestMultiHandleClose(t *testing.T) {
