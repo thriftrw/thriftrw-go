@@ -62,7 +62,11 @@ func compileEnum(file string, src *ast.Enum) (*EnumSpec, error) {
 
 		itemAnnotations, err := compileAnnotations(astItem.Annotations)
 		if err != nil {
-			return nil, err
+			return nil, compileError{
+				Target: astItem.Name,
+				Line:   astItem.Line,
+				Reason: err,
+			}
 		}
 		// TODO bounds check for value
 		item := EnumItem{Name: astItem.Name, Value: int32(value), Annotations: itemAnnotations}
@@ -71,7 +75,11 @@ func compileEnum(file string, src *ast.Enum) (*EnumSpec, error) {
 
 	annotations, err := compileAnnotations(src.Annotations)
 	if err != nil {
-		return nil, err
+		return nil, compileError{
+			Target: src.Name,
+			Line:   src.Line,
+			Reason: err,
+		}
 	}
 	return &EnumSpec{Name: src.Name, File: file, Items: items, Annotations: annotations}, nil
 }

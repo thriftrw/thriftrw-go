@@ -46,9 +46,9 @@ func TestCompileAnnotation(t *testing.T) {
 			"simple annotation",
 			[]*ast.Annotation{
 				{
-					Name: "test",
+					Name:  "test",
 					Value: "test",
-					Line: 1,
+					Line:  1,
 				},
 			},
 			scope(),
@@ -65,7 +65,6 @@ func TestCompileAnnotation(t *testing.T) {
 }
 
 func TestCompileAnnotationFailure(t *testing.T) {
-
 	tests := []struct {
 		desc     string
 		src      []*ast.Annotation
@@ -75,14 +74,14 @@ func TestCompileAnnotationFailure(t *testing.T) {
 			"duplicate annotation",
 			[]*ast.Annotation{
 				{
-					Name: "test",
+					Name:  "test",
 					Value: "test",
-					Line: 1,
+					Line:  1,
 				},
 				{
-					Name: "test",
+					Name:  "test",
 					Value: "test",
-					Line: 1,
+					Line:  1,
 				},
 			},
 			[]string{

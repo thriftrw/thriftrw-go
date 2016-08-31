@@ -21,6 +21,7 @@
 package compile
 
 import (
+	"fmt"
 	"github.com/thriftrw/thriftrw-go/ast"
 )
 
@@ -30,16 +31,24 @@ type AnnotationSpec struct {
 	Value string
 }
 
+type annotationConflictError struct {
+	Reason error
+}
+
+func (e annotationConflictError) Error() string {
+	msg := fmt.Sprint("annotation conflict")
+	if e.Reason != nil {
+		msg += fmt.Sprintf(": %v", e.Reason)
+	}
+	return msg
+}
+
 func compileAnnotations(annotations []*ast.Annotation) ([]*AnnotationSpec, error) {
-	namespace := newNamespace(caseInsensitive)
+	namespace := newNamespace(caseSensitive)
 	var annotationSpecs []*AnnotationSpec
 	for _, a := range annotations {
 		if err := namespace.claim(a.Name, a.Line); err != nil {
-			return nil, compileError{
-				Target: a.Name,
-				Line:   a.Line,
-				Reason: err,
-			}
+			return nil, annotationConflictError{Reason: err}
 		}
 
 		annotationSpecs = append(annotationSpecs, &AnnotationSpec{

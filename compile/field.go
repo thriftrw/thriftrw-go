@@ -115,7 +115,11 @@ func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
 
 	annotations, err := compileAnnotations(src.Annotations)
 	if err != nil {
-		return nil, err
+		return nil, compileError{
+			Target: src.Name,
+			Line:   src.Line,
+			Reason: err,
+		}
 	}
 
 	return &FieldSpec{
