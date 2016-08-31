@@ -20,7 +20,7 @@
 
 package gen
 
-import "github.com/thriftrw/thriftrw-go/compile"
+import "go.uber.org/thriftrw/compile"
 
 // enumGenerator generates code to serialize and deserialize enums.
 type enumGenerator struct {
@@ -35,7 +35,7 @@ func (e *enumGenerator) Reader(g Generator, spec *compile.EnumSpec) (string, err
 
 	err := g.DeclareFromTemplate(
 		`
-		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$v := newVar "v">
 		<$w := newVar "w">
@@ -60,7 +60,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 	// TODO(abg) define an error type in the library for unrecognized enums.
 	err := g.DeclareFromTemplate(
 		`
-		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$enumName := typeName .Spec>
 		type <$enumName> int32

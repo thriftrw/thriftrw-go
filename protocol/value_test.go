@@ -20,7 +20,7 @@
 
 package protocol
 
-import "github.com/thriftrw/thriftrw-go/wire"
+import "go.uber.org/thriftrw/wire"
 
 // This file doesn't actually contain any tests. It just contains helpers for
 // constructing complex Value objects during protocol.

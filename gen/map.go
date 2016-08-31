@@ -23,7 +23,7 @@ package gen
 import (
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/compile"
 )
 
 // mapGenerator generates logic to convert lists of arbitrary Thrift types to
@@ -54,7 +54,7 @@ func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, err
 
 	err := g.DeclareFromTemplate(
 		`
-			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+			<$wire := import "go.uber.org/thriftrw/wire">
 			type <.Name> <typeReference .Spec>
 
 			<$m := newVar "m">
@@ -134,7 +134,7 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 
 	err := g.DeclareFromTemplate(
 		`
-			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+			<$wire := import "go.uber.org/thriftrw/wire">
 			<$mapType := typeReference .Spec>
 
 			<$m := newVar "m">

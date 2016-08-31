@@ -21,8 +21,8 @@
 package multiplex
 
 import (
-	"github.com/thriftrw/thriftrw-go/internal/envelope"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/internal/envelope"
+	"go.uber.org/thriftrw/wire"
 )
 
 // NewClient builds a new multiplexing client.

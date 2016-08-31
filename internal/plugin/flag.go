@@ -26,9 +26,9 @@ import (
 	"os/exec"
 	"sync"
 
-	"github.com/thriftrw/thriftrw-go/internal"
-	"github.com/thriftrw/thriftrw-go/internal/concurrent"
-	"github.com/thriftrw/thriftrw-go/internal/process"
+	"go.uber.org/thriftrw/internal"
+	"go.uber.org/thriftrw/internal/concurrent"
+	"go.uber.org/thriftrw/internal/process"
 
 	"github.com/anmitsu/go-shlex"
 )

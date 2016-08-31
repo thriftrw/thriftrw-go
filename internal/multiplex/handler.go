@@ -23,8 +23,8 @@ package multiplex
 import (
 	"strings"
 
-	"github.com/thriftrw/thriftrw-go/internal/envelope"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/internal/envelope"
+	"go.uber.org/thriftrw/wire"
 )
 
 // Handler implements a service multiplexer

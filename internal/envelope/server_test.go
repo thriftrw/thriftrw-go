@@ -5,7 +5,7 @@ import (
 	"io"
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/wire"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"

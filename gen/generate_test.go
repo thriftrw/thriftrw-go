@@ -25,7 +25,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/compile"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -45,12 +45,12 @@ func TestGenerateWithRelativePaths(t *testing.T) {
 	opts := []*Options{
 		{
 			OutputDir:     outputDir,
-			PackagePrefix: "github.com/thriftrw/thriftrw-go/gen",
+			PackagePrefix: "go.uber.org/thriftrw/gen",
 			ThriftRoot:    "testdata",
 		},
 		{
 			OutputDir:     "testdata",
-			PackagePrefix: "github.com/thriftrw/thriftrw-go/gen",
+			PackagePrefix: "go.uber.org/thriftrw/gen",
 			ThriftRoot:    thriftRoot,
 		},
 	}

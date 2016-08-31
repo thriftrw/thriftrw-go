@@ -23,7 +23,7 @@ package gen
 import (
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/internal/goast"
+	"go.uber.org/thriftrw/internal/goast"
 )
 
 // Namespace allows finding names that don't conflict with other names in

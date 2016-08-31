@@ -28,9 +28,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/thriftrw/thriftrw-go/compile"
-	"github.com/thriftrw/thriftrw-go/gen"
-	"github.com/thriftrw/thriftrw-go/internal/plugin"
+	"go.uber.org/thriftrw/compile"
+	"go.uber.org/thriftrw/gen"
+	"go.uber.org/thriftrw/internal/plugin"
 
 	"github.com/jessevdk/go-flags"
 )

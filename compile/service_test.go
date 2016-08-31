@@ -27,8 +27,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/thriftrw/thriftrw-go/ast"
-	"github.com/thriftrw/thriftrw-go/idl"
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/idl"
 )
 
 func parseService(s string) *ast.Service {

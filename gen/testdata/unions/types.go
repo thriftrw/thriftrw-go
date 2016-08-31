@@ -5,8 +5,8 @@ package unions
 
 import (
 	"fmt"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/typedefs"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/gen/testdata/typedefs"
+	"go.uber.org/thriftrw/wire"
 	"strings"
 )
 
