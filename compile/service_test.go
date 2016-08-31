@@ -334,7 +334,7 @@ func TestCompileServiceFailure(t *testing.T) {
 			"duplicate annotation name on function",
 			`
 				service AnnotatedService {
-					i32 bar() (functest = "test" functest = "t")
+					i32 bar() (functest = "test", functest = "t")
 				} (test = "mytest")
 			`,
 			[]string{
