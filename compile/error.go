@@ -317,5 +317,5 @@ type annotationConflictError struct {
 }
 
 func (e annotationConflictError) Error() string {
-	return fmt.Sprint("annotation conflict: %v", e.Reason)
+	return fmt.Sprintf("annotation conflict: %v", e.Reason)
 }
