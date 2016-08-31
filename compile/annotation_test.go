@@ -24,54 +24,42 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
+	"github.com/thriftrw/thriftrw-go/ast"
 )
 
 func TestCompileAnnotation(t *testing.T) {
 
-	annotatedSpec := &ServiceSpec{
-		Name:      "AnnotatedService",
-		File:      "test.thrift",
-		Functions: make(map[string]*FunctionSpec),
-		Annotations: []*AnnotationSpec{
-			{
-				Name:  "test",
-				Value: "test",
-			},
+	annotatedSpec := []*AnnotationSpec{
+		{
+			Name:  "test",
+			Value: "test",
 		},
 	}
 
 	tests := []struct {
 		desc  string
-		src   string
+		src   []*ast.Annotation
 		scope Scope
-		spec  *ServiceSpec
+		spec  []*AnnotationSpec
 	}{
 		{
-			"service annotations",
-			`
-				service AnnotatedService {
-
-				} (test = "test")
-			`,
+			"simple annotation",
+			[]*ast.Annotation{
+				{
+					Name: "test",
+					Value: "test",
+					Line: 1,
+				},
+			},
 			scope(),
 			annotatedSpec,
 		},
 	}
 
 	for _, tt := range tests {
-		require.NoError(
-			t, tt.spec.Link(defaultScope),
-			"invalid test: service must with an empty scope",
-		)
-		scope := scopeOrDefault(tt.scope)
-
-		src := parseService(tt.src)
-		spec, err := compileService("test.thrift", src)
+		spec, err := compileAnnotations(tt.src)
 		if assert.NoError(t, err, tt.desc) {
-			if assert.NoError(t, spec.Link(scope), tt.desc) {
-				assert.Equal(t, tt.spec, spec, tt.desc)
-			}
+			assert.Equal(t, tt.spec, spec, tt.desc)
 		}
 	}
 }
@@ -80,16 +68,23 @@ func TestCompileAnnotationFailure(t *testing.T) {
 
 	tests := []struct {
 		desc     string
-		src      string
+		src      []*ast.Annotation
 		messages []string
 	}{
 		{
-			"service annotations",
-			`
-				service AnnotatedService {
-
-				} (test = "test", test = "t")
-			`,
+			"duplicate annotation",
+			[]*ast.Annotation{
+				{
+					Name: "test",
+					Value: "test",
+					Line: 1,
+				},
+				{
+					Name: "test",
+					Value: "test",
+					Line: 1,
+				},
+			},
 			[]string{
 				`the name "test" has already been used`,
 			},
@@ -97,8 +92,7 @@ func TestCompileAnnotationFailure(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		src := parseService(tt.src)
-		_, err := compileService("test.thrift", src)
+		_, err := compileAnnotations(tt.src)
 		if assert.Error(t, err, tt.desc) {
 			for _, msg := range tt.messages {
 				assert.Contains(t, err.Error(), msg, tt.desc)
