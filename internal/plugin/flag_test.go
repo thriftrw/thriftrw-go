@@ -189,23 +189,6 @@ func TestFlagsHandle(t *testing.T) {
 			plugs: []plug{},
 		},
 		{
-			desc: "duplicate plugin",
-			plugs: []plug{
-				{
-					name: "empty",
-					path: testdata(t, "thriftrw-plugin-empty"),
-				},
-				{
-					name: "empty",
-					path: testdata(t, "thriftrw-plugin-empty"),
-					args: []string{"extra", "args"},
-				},
-			},
-			wantErrors: []string{
-				`plugin conflict: plugin "empty" is specified multiple times`,
-			},
-		},
-		{
 			desc: "all success",
 			plugs: []plug{
 				{

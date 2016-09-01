@@ -106,7 +106,7 @@ type Flags []Flag
 func (fs Flags) Handle() (MultiHandle, error) {
 	var (
 		lock  sync.Mutex
-		multi = make(MultiHandle)
+		multi MultiHandle
 	)
 
 	err := concurrent.Range(fs, func(_ int, f Flag) error {
@@ -118,14 +118,7 @@ func (fs Flags) Handle() (MultiHandle, error) {
 		lock.Lock()
 		defer lock.Unlock()
 
-		// TODO(abg): We could stop keying off the name and allow the same
-		// plugin to be specified multiple times with different arguments.
-		if _, conflict := multi[f.Name]; conflict {
-			h.Close()
-			return fmt.Errorf("plugin conflict: plugin %q is specified multiple times", f.Name)
-		}
-
-		multi[f.Name] = h
+		multi = append(multi, h)
 		return nil
 	})
 

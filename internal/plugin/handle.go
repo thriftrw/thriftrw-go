@@ -30,10 +30,21 @@ import (
 type Handle interface {
 	io.Closer
 
+	// Name is the name of this plugin.
+	Name() string
+
 	// ServiceGenerator returns a ServiceGenerator for this plugin or nil if
 	// this plugin does not implement that feature.
 	//
 	// Note that the ServiceGenerator is valid only as long as Close is not
 	// called on the Handle.
-	ServiceGenerator() api.ServiceGenerator
+	ServiceGenerator() ServiceGenerator
+}
+
+// ServiceGenerator generates files for Thrift services.
+type ServiceGenerator interface {
+	api.ServiceGenerator
+
+	// Handle returns the Handle that owns this ServiceGenerator.
+	Handle() Handle
 }
