@@ -31,6 +31,8 @@ struct TypeReference {
      * Import path for the package defining this type.
      */
     2: required string package
+
+    // TODO(abg): Should this just be using ModuleID instead of a package?
 }
 
 /**

@@ -89,6 +89,7 @@ endif
 	go get -u github.com/wadey/gocovmerge
 	go get -u github.com/mattn/goveralls
 	go get -u golang.org/x/tools/cmd/cover
+	go install .
 
 .PHONY: build_ci
 build_ci: build

@@ -30,6 +30,7 @@ import (
 	"strings"
 
 	"github.com/thriftrw/thriftrw-go/compile"
+	"github.com/thriftrw/thriftrw-go/internal"
 	"github.com/thriftrw/thriftrw-go/internal/plugin"
 )
 
@@ -81,18 +82,64 @@ func Generate(m *compile.Module, o *Options) error {
 		ThriftRoot:   o.ThriftRoot,
 	}
 
-	if o.NoRecurse {
-		return generateModule(m, importer, o)
-	}
+	// Mapping of filenames relative to OutputDir to their contents.
+	files := make(map[string][]byte)
+	genBuilder := newGenerateServiceBuilder(importer)
 
-	return m.Walk(func(m *compile.Module) error {
-		if err := generateModule(m, importer, o); err != nil {
+	generate := func(m *compile.Module) error {
+		moduleFiles, err := generateModule(m, importer, genBuilder, o)
+		if err != nil {
+			return generateError{Name: m.ThriftPath, Reason: err}
+		}
+		if err := mergeFiles(files, moduleFiles); err != nil {
 			return generateError{Name: m.ThriftPath, Reason: err}
 		}
 		return nil
-	})
+	}
 
-	// TODO(abg): Generate code from opts.Plugin
+	// Note that we call generate directly on only those modules that we need
+	// to generate code for. If the user used --no-recurse, we're not going to
+	// generate code for included modules.
+	if o.NoRecurse {
+		if err := generate(m); err != nil {
+			return err
+		}
+	} else {
+		if err := m.Walk(generate); err != nil {
+			return err
+		}
+	}
+
+	plug := o.Plugin
+	if plug == nil {
+		plug = plugin.EmptyHandle
+	}
+
+	if sgen := plug.ServiceGenerator(); sgen != nil {
+		res, err := sgen.Generate(genBuilder.Build())
+		if err != nil {
+			return err
+		}
+
+		if err := mergeFiles(files, res.Files); err != nil {
+			return err
+		}
+	}
+
+	for relPath, contents := range files {
+		fullPath := filepath.Join(o.OutputDir, relPath)
+		directory := filepath.Dir(fullPath)
+
+		if err := os.MkdirAll(directory, 0755); err != nil {
+			return fmt.Errorf("could not create directory %q: %v", directory, err)
+		}
+
+		if err := ioutil.WriteFile(fullPath, contents, 0644); err != nil {
+			return fmt.Errorf("failed to write %q: %v", fullPath, err)
+		}
+	}
+
+	return nil
 }
 
 // TODO(abg): Make some sort of public interface out of the Importer
@@ -129,10 +176,21 @@ func (i thriftPackageImporter) ServicePackage(file, name string) (string, error)
 	return filepath.Join(topPackage, "service", strings.ToLower(name)), nil
 }
 
-// generates code for only the given module, assuming that code for included
-// modules has already been generated.
-func generateModule(m *compile.Module, i thriftPackageImporter, o *Options) error {
-	outDir := o.OutputDir
+func mergeFiles(dest, src map[string][]byte) error {
+	var errors []error
+	for path, contents := range src {
+		if _, ok := dest[path]; ok {
+			errors = append(errors, fmt.Errorf("file generation conflict: "+
+				"multiple sources are trying to write to %q", path))
+		}
+		dest[path] = contents
+	}
+	return internal.MultiError(errors)
+}
+
+// generateModule returns a mapping from filename to file contents of files
+// that should be generated relative to o.OutputDir.
+func generateModule(m *compile.Module, i thriftPackageImporter, builder *generateServiceBuilder, o *Options) (map[string][]byte, error) {
 	// packageRelPath is the path relative to outputDir into which we'll be
 	// writing the package for this Thrift file. For $thriftRoot/foo/bar.thrift,
 	// packageRelPath is foo/bar, and packageDir is $outputDir/foo/bar. All
@@ -140,7 +198,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, o *Options) erro
 	// package will be importable via $importPrefix/foo/bar.
 	packageRelPath, err := i.RelativePackage(m.ThriftPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// TODO(abg): Prefer top-level package name from `namespace go` directive.
@@ -150,33 +208,31 @@ func generateModule(m *compile.Module, i thriftPackageImporter, o *Options) erro
 	// for this Thrift file.
 	importPath, err := i.Package(m.ThriftPath)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	// packageOutDir is the directory whithin which all files and folders for
-	// this Thrift file will be written.
-	packageOutDir := filepath.Join(outDir, packageRelPath)
-
-	// Mapping of file names relative to $packageOutDir and their contents.
-	files := make(map[string]*bytes.Buffer)
+	// Mapping of file names relative to packageRelPath to their contents.
+	// Note that we need to return a mapping relative to o.OutputDir so we
+	// will prepend $packageRelPath/ to all these paths.
+	files := make(map[string][]byte)
 
 	if len(m.Constants) > 0 {
 		g := NewGenerator(i, importPath, packageName)
 
 		for _, constantName := range sortStringKeys(m.Constants) {
 			if err := Constant(g, m.Constants[constantName]); err != nil {
-				return err
+				return nil, err
 			}
 		}
 
 		buff := new(bytes.Buffer)
 		if err := g.Write(buff, token.NewFileSet()); err != nil {
-			return fmt.Errorf(
+			return nil, fmt.Errorf(
 				"could not generate constants for %q: %v", m.ThriftPath, err)
 		}
 
 		// TODO(abg): Verify no file collisions
-		files["constants.go"] = buff
+		files["constants.go"] = buff.Bytes()
 	}
 
 	if len(m.Types) > 0 {
@@ -184,71 +240,74 @@ func generateModule(m *compile.Module, i thriftPackageImporter, o *Options) erro
 
 		for _, typeName := range sortStringKeys(m.Types) {
 			if err := TypeDefinition(g, m.Types[typeName]); err != nil {
-				return err
+				return nil, err
 			}
 		}
 
 		buff := new(bytes.Buffer)
 		if err := g.Write(buff, token.NewFileSet()); err != nil {
-			return fmt.Errorf(
+			return nil, fmt.Errorf(
 				"could not generate types for %q: %v", m.ThriftPath, err)
 		}
 
 		// TODO(abg): Verify no file collisions
-		files["types.go"] = buff
+		files["types.go"] = buff.Bytes()
 	}
 
 	if len(m.Services) > 0 {
 		for _, serviceName := range sortStringKeys(m.Services) {
 			service := m.Services[serviceName]
+
+			// generateModule gets called only for those modules for which we
+			// need to generate code. With --no-recurse, generateModule is
+			// called only on the root file specified by the user and not its
+			// included modules. Only services defined in these files are
+			// considered root services; plugins will generate code only for
+			// root services, even though they have information about the
+			// whole service tree.
+			if _, err := builder.AddRootService(service); err != nil {
+				return nil, err
+			}
+
 			importPath, err := i.ServicePackage(service.ThriftFile(), service.Name)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			packageName := filepath.Base(importPath)
-
-			// TODO inherited service functions
 
 			g := NewGenerator(i, importPath, packageName)
 			serviceFiles, err := Service(g, service)
 			if err != nil {
-				return fmt.Errorf(
+				return nil, fmt.Errorf(
 					"could not generate code for service %q: %v",
 					serviceName, err)
 			}
 
 			for name, buff := range serviceFiles {
 				filename := filepath.Join("service", packageName, name)
-				files[filename] = buff
+				files[filename] = buff.Bytes()
 			}
 
+			// TODO(abg): Delete this once the YARPC plugin is landed.
 			if o.YARPC {
 				yarpcFiles, err := YARPC(i, service)
 				if err != nil {
-					return fmt.Errorf(
+					return nil, fmt.Errorf(
 						"could not generate YARPC code for service %q: %v",
 						serviceName, err)
 				}
 
 				for name, buff := range yarpcFiles {
 					filename := filepath.Join("yarpc", name)
-					files[filename] = buff
+					files[filename] = buff.Bytes()
 				}
 			}
 		}
 	}
 
-	for relPath, contents := range files {
-		fullPath := filepath.Join(packageOutDir, relPath)
-		directory := filepath.Dir(fullPath)
-
-		if err := os.MkdirAll(directory, 0755); err != nil {
-			return fmt.Errorf("could not create directory %q: %v", directory, err)
-		}
-
-		if err := ioutil.WriteFile(fullPath, contents.Bytes(), 0644); err != nil {
-			return fmt.Errorf("failed to write %q: %v", fullPath, err)
-		}
+	newFiles := make(map[string][]byte, len(files))
+	for path, contents := range files {
+		newFiles[filepath.Join(packageRelPath, path)] = contents
 	}
-	return nil
+	return newFiles, nil
 }
