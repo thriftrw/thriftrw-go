@@ -82,7 +82,7 @@ func Generate(m *compile.Module, o *Options) error {
 		ThriftRoot:   o.ThriftRoot,
 	}
 
-	// Mapping of files relative to OutputDir to their contents.
+	// Mapping of filenames relative to OutputDir to their contents.
 	files := make(map[string][]byte)
 	genBuilder := newGenerateServiceBuilder(importer)
 
@@ -97,6 +97,9 @@ func Generate(m *compile.Module, o *Options) error {
 		return nil
 	}
 
+	// Note that we call generate directly on only those modules that we need
+	// to generate code for. If the user used --no-recurse, we're not going to
+	// generate code for included modules.
 	if o.NoRecurse {
 		if err := generate(m); err != nil {
 			return err
@@ -255,8 +258,13 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		for _, serviceName := range sortStringKeys(m.Services) {
 			service := m.Services[serviceName]
 
-			// If we called generateModule on something, that's a root
-			// service. We need plugins to generate code for them.
+			// generateModule gets called only for those modules for which we
+			// need to generate code. With --no-recurse, generateModule is
+			// called only on the root file specified by the user and not its
+			// included modules. Only services defined in these files are
+			// considered root services; plugins will generate code only for
+			// root services, even though they have information about the
+			// whole service tree.
 			if _, err := builder.AddRootService(service); err != nil {
 				return nil, err
 			}

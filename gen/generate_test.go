@@ -38,6 +38,7 @@ import (
 )
 
 func testdata(t *testing.T, paths ...string) string {
+	// We need an absolute path to CWD.
 	cwd, err := os.Getwd()
 	require.NoError(t, err, "could not determine CWD")
 
