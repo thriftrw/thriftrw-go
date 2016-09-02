@@ -19,12 +19,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-// Source: github.com/thriftrw/thriftrw-go/internal/plugin (interfaces: Handle)
+// Source: github.com/thriftrw/thriftrw-go/internal/plugin (interfaces: Handle,ServiceGenerator)
 
 package handletest
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	plugin "github.com/thriftrw/thriftrw-go/internal/plugin"
 	api "github.com/thriftrw/thriftrw-go/plugin/api"
 )
 
@@ -59,12 +60,64 @@ func (_mr *_MockHandleRecorder) Close() *gomock.Call {
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "Close")
 }
 
-func (_m *MockHandle) ServiceGenerator() api.ServiceGenerator {
+func (_m *MockHandle) Name() string {
+	ret := _m.ctrl.Call(_m, "Name")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+func (_mr *_MockHandleRecorder) Name() *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "Name")
+}
+
+func (_m *MockHandle) ServiceGenerator() plugin.ServiceGenerator {
 	ret := _m.ctrl.Call(_m, "ServiceGenerator")
-	ret0, _ := ret[0].(api.ServiceGenerator)
+	ret0, _ := ret[0].(plugin.ServiceGenerator)
 	return ret0
 }
 
 func (_mr *_MockHandleRecorder) ServiceGenerator() *gomock.Call {
 	return _mr.mock.ctrl.RecordCall(_mr.mock, "ServiceGenerator")
+}
+
+// Mock of ServiceGenerator interface
+type MockServiceGenerator struct {
+	ctrl     *gomock.Controller
+	recorder *_MockServiceGeneratorRecorder
+}
+
+// Recorder for MockServiceGenerator (not exported)
+type _MockServiceGeneratorRecorder struct {
+	mock *MockServiceGenerator
+}
+
+func NewMockServiceGenerator(ctrl *gomock.Controller) *MockServiceGenerator {
+	mock := &MockServiceGenerator{ctrl: ctrl}
+	mock.recorder = &_MockServiceGeneratorRecorder{mock}
+	return mock
+}
+
+func (_m *MockServiceGenerator) EXPECT() *_MockServiceGeneratorRecorder {
+	return _m.recorder
+}
+
+func (_m *MockServiceGenerator) Generate(_param0 *api.GenerateServiceRequest) (*api.GenerateServiceResponse, error) {
+	ret := _m.ctrl.Call(_m, "Generate", _param0)
+	ret0, _ := ret[0].(*api.GenerateServiceResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+func (_mr *_MockServiceGeneratorRecorder) Generate(arg0 interface{}) *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "Generate", arg0)
+}
+
+func (_m *MockServiceGenerator) Handle() plugin.Handle {
+	ret := _m.ctrl.Call(_m, "Handle")
+	ret0, _ := ret[0].(plugin.Handle)
+	return ret0
+}
+
+func (_mr *_MockServiceGeneratorRecorder) Handle() *gomock.Call {
+	return _mr.mock.ctrl.RecordCall(_mr.mock, "Handle")
 }

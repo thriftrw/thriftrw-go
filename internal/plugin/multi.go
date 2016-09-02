@@ -22,6 +22,7 @@ package plugin
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 
 	"github.com/thriftrw/thriftrw-go/internal/concurrent"
@@ -29,38 +30,49 @@ import (
 )
 
 // MultiHandle wraps a collection of handles into a single handle.
-type MultiHandle map[string]Handle
+type MultiHandle []Handle
+
+// Name is the combined name of this plugin
+func (mh MultiHandle) Name() string {
+	names := make([]string, 0, len(mh))
+	for _, h := range mh {
+		names = append(names, h.Name())
+	}
+	return fmt.Sprintf("MultiHandle{%v}", strings.Join(names, ", "))
+}
 
 // Close closes all Handles associated with this MultiHandle.
 func (mh MultiHandle) Close() error {
-	return concurrent.Range(mh, func(name string, h Handle) error {
-		if err := h.Close(); err != nil {
-			return fmt.Errorf("plugin %q failed to close: %v", name, err)
-		}
-		return nil
+	return concurrent.Range(mh, func(_ int, h Handle) error {
+		return h.Close()
 	})
 }
 
 // ServiceGenerator returns a ServiceGenerator which calls into the
 // ServiceGenerators of all plugins associated with this MultiHandle and
 // consolidates their results.
-func (mh MultiHandle) ServiceGenerator() api.ServiceGenerator {
-	msg := make(MultiServiceGenerator, len(mh))
-	for name, h := range mh {
-		sg := h.ServiceGenerator()
-		if sg != nil {
-			msg[name] = sg
+func (mh MultiHandle) ServiceGenerator() ServiceGenerator {
+	msg := make(MultiServiceGenerator, 0, len(mh))
+	for _, h := range mh {
+		if sg := h.ServiceGenerator(); sg != nil {
+			msg = append(msg, sg)
 		}
-	}
-	if len(msg) == 0 {
-		return nil
 	}
 	return msg
 }
 
 // MultiServiceGenerator wraps a collection of ServiceGenerators into a single
 // ServiceGenerator.
-type MultiServiceGenerator map[string]api.ServiceGenerator
+type MultiServiceGenerator []ServiceGenerator
+
+// Handle returns a reference to the Handle that owns this ServiceGenerator.
+func (msg MultiServiceGenerator) Handle() Handle {
+	mh := make(MultiHandle, len(msg))
+	for i, sg := range msg {
+		mh[i] = sg.Handle()
+	}
+	return mh
+}
 
 // Generate calls all the service generators associated with this plugin and
 // consolidates their output.
@@ -73,22 +85,23 @@ func (msg MultiServiceGenerator) Generate(req *api.GenerateServiceRequest) (*api
 		usedPaths = make(map[string]string) // path -> plugin name
 	)
 
-	err := concurrent.Range(msg, func(name string, sg api.ServiceGenerator) error {
+	err := concurrent.Range(msg, func(_ int, sg ServiceGenerator) error {
 		res, err := sg.Generate(req)
 		if err != nil {
-			return fmt.Errorf("plugin %q failed to generate service code: %v", name, err)
+			return err
 		}
 
 		lock.Lock()
 		defer lock.Unlock()
 
+		pluginName := sg.Handle().Name()
 		for path, contents := range res.Files {
 			if takenBy, taken := usedPaths[path]; taken {
 				return fmt.Errorf("plugin conflict: cannot write file %q for plugin %q: "+
-					"plugin %q already wrote to that file", path, name, takenBy)
+					"plugin %q already wrote to that file", path, pluginName, takenBy)
 			}
 
-			usedPaths[path] = name
+			usedPaths[path] = pluginName
 			files[path] = contents
 		}
 
