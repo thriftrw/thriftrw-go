@@ -54,8 +54,7 @@ func (mh MultiHandle) Close() error {
 func (mh MultiHandle) ServiceGenerator() ServiceGenerator {
 	msg := make(MultiServiceGenerator, 0, len(mh))
 	for _, h := range mh {
-		sg := h.ServiceGenerator()
-		if sg != nil {
+		if sg := h.ServiceGenerator(); sg != nil {
 			msg = append(msg, sg)
 		}
 	}
