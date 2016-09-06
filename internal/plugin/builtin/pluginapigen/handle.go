@@ -28,13 +28,13 @@ import (
 	"path/filepath"
 	"strings"
 
-	iplugin "github.com/thriftrw/thriftrw-go/internal/plugin"
+	intplugin "github.com/thriftrw/thriftrw-go/internal/plugin"
 	"github.com/thriftrw/thriftrw-go/plugin"
 	"github.com/thriftrw/thriftrw-go/plugin/api"
 )
 
 // Handle is a plugin.Handle that generates code for the plugin system API.
-var Handle iplugin.Handle = handle{}
+var Handle intplugin.Handle = handle{}
 
 type handle struct{}
 
@@ -46,13 +46,13 @@ func (handle) Close() error {
 	return nil // no-op
 }
 
-func (handle) ServiceGenerator() iplugin.ServiceGenerator {
+func (handle) ServiceGenerator() intplugin.ServiceGenerator {
 	return sgen{}
 }
 
 type sgen struct{}
 
-func (sgen) Handle() iplugin.Handle {
+func (sgen) Handle() intplugin.Handle {
 	return Handle
 }
 
