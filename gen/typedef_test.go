@@ -70,17 +70,17 @@ func TestTypedefString(t *testing.T) {
 
 func TestTypedefBinary(t *testing.T) {
 	tests := []struct {
-		x td.Pdf
+		x td.PDF
 		v wire.Value
 	}{
 		{
-			td.Pdf{1, 2, 3},
+			td.PDF{1, 2, 3},
 			wire.NewValueBinary([]byte{1, 2, 3}),
 		},
 	}
 
 	for _, tt := range tests {
-		assertRoundTrip(t, &tt.x, tt.v, "Pdf")
+		assertRoundTrip(t, &tt.x, tt.v, "PDF")
 	}
 }
 

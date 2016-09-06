@@ -68,7 +68,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<if .Spec.Items>
 			const (
 			<range .Spec.Items>
-				<$enumName><goCase .Name> <$enumName> = <.Value>
+				<enumItemName $enumName .Name> <$enumName> = <.Value>
 			<end>
 			)
 		<end>
@@ -90,7 +90,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch <$w> {
 				<range .UniqueItems>
 					case <.Value>:
-						return "<goCase .Name>"
+						return "<.Name>"
 				<end>
 				}
 			<end>
@@ -103,7 +103,9 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		}{
 			Spec:        spec,
 			UniqueItems: items,
-		})
+		},
+		TemplateFunc("enumItemName", enumItemName),
+	)
 
 	return wrapGenerateError(spec.Name, err)
 }

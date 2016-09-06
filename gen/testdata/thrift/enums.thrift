@@ -25,3 +25,9 @@ enum EnumWithDuplicateName {
 struct StructWithOptionalEnum {
     1: optional EnumDefault e
 }
+
+enum RecordType {
+  NAME,
+  HOME_ADDRESS,
+  WORK_ADDRESS
+}

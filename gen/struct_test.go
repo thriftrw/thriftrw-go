@@ -904,8 +904,8 @@ func TestStructJSON(t *testing.T) {
 			`{"name":"foo","contact":{"emailAddress":""}}`,
 		},
 		{&tu.EmptyUnion{}, "{}"},
-		{&tu.Document{Pdf: td.Pdf("hello")}, `{"pdf":"aGVsbG8="}`},
-		{&tu.Document{Pdf: td.Pdf{}}, `{"pdf":""}`},
+		{&tu.Document{Pdf: td.PDF("hello")}, `{"pdf":"aGVsbG8="}`},
+		{&tu.Document{Pdf: td.PDF{}}, `{"pdf":""}`},
 		{
 			&tu.Document{PlainText: stringp("hello")},
 			`{"pdf":null,"plainText":"hello"}`,
@@ -1243,7 +1243,7 @@ func TestStructValidation(t *testing.T) {
 		{
 			desc: "Document: multiple",
 			serialize: &tu.Document{
-				Pdf:       td.Pdf{},
+				Pdf:       td.PDF{},
 				PlainText: stringp("hello"),
 			},
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{

@@ -161,6 +161,36 @@ func (v EnumWithValues) String() string {
 	return fmt.Sprintf("EnumWithValues(%d)", w)
 }
 
+type RecordType int32
+
+const (
+	RecordTypeName        RecordType = 0
+	RecordTypeHomeAddress RecordType = 1
+	RecordTypeWorkAddress RecordType = 2
+)
+
+func (v RecordType) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
+}
+
+func (v *RecordType) FromWire(w wire.Value) error {
+	*v = (RecordType)(w.GetI32())
+	return nil
+}
+
+func (v RecordType) String() string {
+	w := int32(v)
+	switch w {
+	case 0:
+		return "NAME"
+	case 1:
+		return "HOME_ADDRESS"
+	case 2:
+		return "WORK_ADDRESS"
+	}
+	return fmt.Sprintf("RecordType(%d)", w)
+}
+
 type StructWithOptionalEnum struct {
 	E *EnumDefault `json:"e,omitempty"`
 }
