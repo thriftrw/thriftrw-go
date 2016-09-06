@@ -59,7 +59,9 @@ func goCase(s string) string {
 		}
 
 		// Was SCREAMING_SNAKE_CASE and not a known initialism so Titlecase it.
-		if isAllCaps(chunk) {
+		if isAllCaps(chunk) && len(chunks) > 1 {
+			// A single ALLCAPS word does not count as SCREAMING_SNAKE_CASE.
+			// There must be at least one underscore.
 			chunks[i] = strings.Title(strings.ToLower(chunk))
 			continue
 		}

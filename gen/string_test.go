@@ -41,6 +41,9 @@ func TestGoCase(t *testing.T) {
 		{"ALL_CAPS_WITH_UNDERSCORE", "AllCapsWithUnderscore"},
 		{"get_user_id", "GetUserID"},
 		{"GET_USER_ID", "GetUserID"},
+		{"IP", "IP"},
+		{"ZIPCode", "ZIPCode"},
+		{"VIP", "VIP"}, // not a known abbreviation
 	}
 
 	for _, tt := range tests {
