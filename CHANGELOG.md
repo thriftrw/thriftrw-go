@@ -13,6 +13,9 @@ v0.2.0 (unreleased)
 -   Breaking: Fixed a bug where all-caps attributes that are not known
     abbreviations were changed to PascalCase.
 
+-   Breaking: The `String()` method for `enum` types now returns the name of
+    the item as specified in the Thrift file.
+
 
 v0.1.0 (2016-08-31)
 -------------------

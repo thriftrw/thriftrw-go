@@ -26,6 +26,38 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestPascalCase(t *testing.T) {
+	tests := []struct {
+		input  []string
+		output string
+	}{
+		{
+			input:  []string{"snake", "case"},
+			output: "SnakeCase",
+		},
+		{
+			input:  []string{"get", "ZIP", "code"},
+			output: "GetZipCode",
+		},
+		{
+			input:  []string{"IP"},
+			output: "IP",
+		},
+		{
+			input:  []string{"VIP"},
+			output: "VIP",
+		},
+		{
+			input:  []string{"MyEnum", "FOO"},
+			output: "MyEnumFoo",
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.output, pascalCase(tt.input...))
+	}
+}
+
 func TestGoCase(t *testing.T) {
 	tests := []struct {
 		input  string
@@ -48,5 +80,33 @@ func TestGoCase(t *testing.T) {
 
 	for _, tt := range tests {
 		assert.Equal(t, tt.output, goCase(tt.input))
+	}
+}
+
+func TestEnumItemName(t *testing.T) {
+	tests := []struct {
+		enumName string
+		itemName string
+		want     string
+	}{
+		{
+			enumName: "MyEnum",
+			itemName: "foo",
+			want:     "MyEnumFoo",
+		},
+		{
+			enumName: "Role",
+			itemName: "USER",
+			want:     "RoleUser",
+		},
+		{
+			enumName: "Type",
+			itemName: "FIRST_NAME",
+			want:     "TypeFirstName",
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.want, enumItemName(tt.enumName, tt.itemName))
 	}
 }

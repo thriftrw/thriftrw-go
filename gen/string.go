@@ -38,14 +38,9 @@ func isAllCaps(s string) bool {
 	return true
 }
 
-// goCase converts strings into PascalCase.
-func goCase(s string) string {
-	if len(s) == 0 {
-		panic(fmt.Sprintf("%q is not a valid identifier", s))
-	}
-
-	chunks := strings.Split(s, "_")
-	for i, chunk := range chunks {
+// pascalCase combines the given words using PascalCase.
+func pascalCase(words ...string) string {
+	for i, chunk := range words {
 		if len(chunk) == 0 {
 			// foo__bar
 			continue
@@ -54,25 +49,42 @@ func goCase(s string) string {
 		// known initalism
 		init := strings.ToUpper(chunk)
 		if _, ok := commonInitialisms[init]; ok {
-			chunks[i] = init
+			words[i] = init
 			continue
 		}
 
 		// Was SCREAMING_SNAKE_CASE and not a known initialism so Titlecase it.
-		if isAllCaps(chunk) && len(chunks) > 1 {
+		if isAllCaps(chunk) && len(words) > 1 {
 			// A single ALLCAPS word does not count as SCREAMING_SNAKE_CASE.
 			// There must be at least one underscore.
-			chunks[i] = strings.Title(strings.ToLower(chunk))
+			words[i] = strings.Title(strings.ToLower(chunk))
 			continue
 		}
 
 		// Just another word, but could already be camelCased somehow, so just
 		// change the first letter.
 		head, headIndex := utf8.DecodeRuneInString(chunk)
-		chunks[i] = string(unicode.ToUpper(head)) + string(chunk[headIndex:])
+		words[i] = string(unicode.ToUpper(head)) + string(chunk[headIndex:])
 	}
 
-	return strings.Join(chunks, "")
+	return strings.Join(words, "")
+}
+
+// enumItemName returns the Go name that should be used for an enum item with
+// the given Thrift name.
+func enumItemName(enumName string, itemName string) string {
+	words := []string{enumName}
+	words = append(words, strings.Split(itemName, "_")...)
+	return pascalCase(words...)
+}
+
+// goCase converts strings into PascalCase.
+func goCase(s string) string {
+	if len(s) == 0 {
+		panic(fmt.Sprintf("%q is not a valid identifier", s))
+	}
+
+	return pascalCase(strings.Split(s, "_")...)
 }
 
 // This set is taken from https://github.com/golang/lint/blob/master/lint.go#L692
