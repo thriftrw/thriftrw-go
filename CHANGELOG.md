@@ -5,7 +5,6 @@ v0.2.0 (unreleased)
 -------------------
 
 -   Added a `-v`/`--version` flag.
-
 -   Added a plugin system.
 
     ThriftRW now provides a plugin system to allow customizing code generation.
