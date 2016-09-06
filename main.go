@@ -37,21 +37,23 @@ import (
 )
 
 type options struct {
+	DisplayVersion bool       `long:"version" short:"v" description:"Show the ThriftRW version number"`
+	GOpts          genOptions `group:"Generator Options"`
+}
+
+type genOptions struct {
 	OutputDirectory string `long:"out" short:"o" value-name:"DIR" description:"Directory to which the generated files will be written."`
+	PackagePrefix   string `long:"pkg-prefix" value-name:"PREFIX" description:"Prefix for import paths of generated module. By default, this is based on the output directory's location relativet o $GOPATH."`
+	ThriftRoot      string `long:"thrift-root" value-name:"DIR" description:"Directory whose descendants contain all Thrift files. The structure of the generated Go packages mirrors the paths to the Thrift files relative to this directory. By default, this is the deepest common ancestor directory of the Thrift files."`
 
-	PackagePrefix string `long:"pkg-prefix" value-name:"PREFIX" description:"Prefix for import paths of generated module. By default, this is based on the output directory's location relativet o $GOPATH."`
-	ThriftRoot    string `long:"thrift-root" value-name:"DIR" description:"Directory whose descendants contain all Thrift files. The structure of the generated Go packages mirrors the paths to the Thrift files relative to this directory. By default, this is the deepest common ancestor directory of the Thrift files."`
-
-	NoRecurse bool `long:"no-recurse" description:"Don't generate code for included Thrift files."`
-	YARPC     bool `long:"yarpc" description:"Generate code for YARPC. Defaults to false."`
-
-	// TODO(abg): Drop --yarpc flag
-
+	NoRecurse         bool         `long:"no-recurse" description:"Don't generate code for included Thrift files."`
+	YARPC             bool         `long:"yarpc" description:"Generate code for YARPC. Defaults to false."`
 	Plugins           plugin.Flags `long:"plugin" short:"p" value-name:"PLUGIN" description:"Code generation plugin for ThriftRW. This option may be provided multiple times to apply multiple plugins."`
 	GeneratePluginAPI bool         `long:"generate-plugin-api" hidden:"true" description:"Generates code for the plugin API"`
-
+	// TODO(abg): Drop --yarpc flag
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
+
 }
 
 func main() {
@@ -63,6 +65,11 @@ func main() {
 	args, err := parser.Parse()
 	if err != nil {
 		return // message already printed by go-flags
+	}
+
+	if opts.DisplayVersion {
+		fmt.Println("thriftrw", version)
+		os.Exit(0)
 	}
 
 	if len(args) != 1 {
@@ -78,16 +85,17 @@ func main() {
 		log.Fatalf("error describing file %q: %v", inputFile, err)
 	}
 
-	if len(opts.OutputDirectory) == 0 {
-		opts.OutputDirectory = "."
+	gopts := opts.GOpts
+	if len(gopts.OutputDirectory) == 0 {
+		gopts.OutputDirectory = "."
 	}
-	opts.OutputDirectory, err = filepath.Abs(opts.OutputDirectory)
+	gopts.OutputDirectory, err = filepath.Abs(gopts.OutputDirectory)
 	if err != nil {
-		log.Fatalf("could not resolve path %q: %v", opts.OutputDirectory, err)
+		log.Fatalf("could not resolve path %q: %v", gopts.OutputDirectory, err)
 	}
 
-	if opts.PackagePrefix == "" {
-		opts.PackagePrefix, err = determinePackagePrefix(opts.OutputDirectory)
+	if gopts.PackagePrefix == "" {
+		gopts.PackagePrefix, err = determinePackagePrefix(gopts.OutputDirectory)
 		if err != nil {
 			log.Fatalf("could not determine the package prefix: %v", err)
 		}
@@ -98,38 +106,38 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if opts.ThriftRoot == "" {
-		opts.ThriftRoot, err = findCommonAncestor(module)
+	if gopts.ThriftRoot == "" {
+		gopts.ThriftRoot, err = findCommonAncestor(module)
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else {
-		opts.ThriftRoot, err = filepath.Abs(opts.ThriftRoot)
+		gopts.ThriftRoot, err = filepath.Abs(gopts.ThriftRoot)
 		if err != nil {
 			log.Fatal(err)
 		}
-		if err := verifyAncestry(module, opts.ThriftRoot); err != nil {
+		if err := verifyAncestry(module, gopts.ThriftRoot); err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	pluginHandle, err := opts.Plugins.Handle()
+	pluginHandle, err := gopts.Plugins.Handle()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if opts.GeneratePluginAPI {
+	if gopts.GeneratePluginAPI {
 		pluginHandle = append(pluginHandle, pluginapigen.Handle)
 	}
 
 	defer pluginHandle.Close()
 
 	generatorOptions := gen.Options{
-		OutputDir:     opts.OutputDirectory,
-		PackagePrefix: opts.PackagePrefix,
-		ThriftRoot:    opts.ThriftRoot,
-		NoRecurse:     opts.NoRecurse,
-		YARPC:         opts.YARPC,
+		OutputDir:     gopts.OutputDirectory,
+		PackagePrefix: gopts.PackagePrefix,
+		ThriftRoot:    gopts.ThriftRoot,
+		NoRecurse:     gopts.NoRecurse,
+		YARPC:         gopts.YARPC,
 		Plugin:        pluginHandle,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {
