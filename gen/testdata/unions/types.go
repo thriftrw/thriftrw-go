@@ -282,7 +282,7 @@ func (v *ArbitraryValue) String() string {
 }
 
 type Document struct {
-	Pdf       typedefs.Pdf `json:"pdf"`
+	Pdf       typedefs.PDF `json:"pdf"`
 	PlainText *string      `json:"plainText,omitempty"`
 }
 
@@ -315,8 +315,8 @@ func (v *Document) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _Pdf_Read(w wire.Value) (typedefs.Pdf, error) {
-	var x typedefs.Pdf
+func _PDF_Read(w wire.Value) (typedefs.PDF, error) {
+	var x typedefs.PDF
 	err := x.FromWire(w)
 	return x, err
 }
@@ -327,7 +327,7 @@ func (v *Document) FromWire(w wire.Value) error {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
-				v.Pdf, err = _Pdf_Read(field.Value)
+				v.Pdf, err = _PDF_Read(field.Value)
 				if err != nil {
 					return err
 				}

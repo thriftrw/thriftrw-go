@@ -441,21 +441,21 @@ func (v *MyEnum) FromWire(w wire.Value) error {
 	return err
 }
 
-type Pdf []byte
+type PDF []byte
 
-func (v Pdf) ToWire() (wire.Value, error) {
+func (v PDF) ToWire() (wire.Value, error) {
 	x := ([]byte)(v)
 	return wire.NewValueBinary(x), error(nil)
 }
 
-func (v Pdf) String() string {
+func (v PDF) String() string {
 	x := ([]byte)(v)
 	return fmt.Sprint(x)
 }
 
-func (v *Pdf) FromWire(w wire.Value) error {
+func (v *PDF) FromWire(w wire.Value) error {
 	x, err := w.GetBinary(), error(nil)
-	*v = (Pdf)(x)
+	*v = (PDF)(x)
 	return err
 }
 
