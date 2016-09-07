@@ -13,6 +13,12 @@ import (
 	"github.com/thriftrw/thriftrw-go/gen/testdata/unions"
 )
 
+const Home enums.RecordType = enums.RecordTypeHomeAddress
+
+const Name enums.RecordType = enums.RecordTypeName
+
+const WorkAddress enums.RecordType = enums.RecordTypeWorkAddress
+
 func _bool_ptr(v bool) *bool {
 	return &v
 }

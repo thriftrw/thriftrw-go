@@ -30,10 +30,11 @@ import (
 // Constant generates code for `const` expressions in Thrift files.
 func Constant(g Generator, c *compile.Constant) error {
 	err := g.DeclareFromTemplate(
-		`<if canBeConstant .Type>const<else>var<end> <goCase .Name> <typeReference .Type> = <constantValue .Value .Type>`,
+		`<if canBeConstant .Type>const<else>var<end> <constantName .Name> <typeReference .Type> = <constantValue .Value .Type>`,
 		c,
 		TemplateFunc("constantValue", ConstantValue),
 		TemplateFunc("canBeConstant", canBeConstant),
+		TemplateFunc("constantName", constantName),
 	)
 	return wrapGenerateError(c.Name, err)
 }
@@ -200,7 +201,7 @@ func constantStruct(g Generator, v *compile.ConstantStruct, t compile.TypeSpec) 
 }
 
 func enumItemReference(g Generator, v compile.EnumItemReference, t compile.TypeSpec) (_ string, err error) {
-	s, err := g.TextTemplate(`<typeName .Enum><goCase .Item.Name>`, v)
+	s, err := g.TextTemplate(`<enumItemName (typeName .Enum) .Item.Name>`, v, TemplateFunc("enumItemName", enumItemName))
 	if err != nil {
 		return "", err
 	}

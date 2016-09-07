@@ -28,33 +28,46 @@ import (
 
 func TestPascalCase(t *testing.T) {
 	tests := []struct {
-		input  []string
-		output string
+		allCaps bool
+		words   []string
+		output  string
 	}{
 		{
-			input:  []string{"snake", "case"},
+			words:  []string{"snake", "case"},
 			output: "SnakeCase",
 		},
 		{
-			input:  []string{"get", "ZIP", "code"},
+			words:  []string{"get", "ZIP", "code"},
 			output: "GetZipCode",
 		},
 		{
-			input:  []string{"IP"},
+			allCaps: true,
+			words:   []string{"get", "ZIP", "code"},
+			output:  "GetZIPCode",
+		},
+		{
+			words:  []string{"IP"},
 			output: "IP",
 		},
 		{
-			input:  []string{"VIP"},
-			output: "VIP",
+			allCaps: true,
+			words:   []string{"VIP"},
+			output:  "VIP",
 		},
 		{
-			input:  []string{"MyEnum", "FOO"},
-			output: "MyEnumFoo",
+			allCaps: false,
+			words:   []string{"VIP"},
+			output:  "Vip",
+		},
+		{
+			allCaps: false,
+			words:   []string{"MyEnum", "FOO"},
+			output:  "MyEnumFoo",
 		},
 	}
 
 	for _, tt := range tests {
-		assert.Equal(t, tt.output, pascalCase(tt.input...))
+		assert.Equal(t, tt.output, pascalCase(tt.allCaps, tt.words...))
 	}
 }
 
@@ -108,5 +121,25 @@ func TestEnumItemName(t *testing.T) {
 
 	for _, tt := range tests {
 		assert.Equal(t, tt.want, enumItemName(tt.enumName, tt.itemName))
+	}
+}
+
+func TestConstantName(t *testing.T) {
+	tests := []struct {
+		give string
+		want string
+	}{
+		{
+			give: "VERSION",
+			want: "Version",
+		},
+		{
+			give: "API_VERSION",
+			want: "APIVersion",
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.want, constantName(tt.give))
 	}
 }
