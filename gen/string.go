@@ -39,7 +39,11 @@ func isAllCaps(s string) bool {
 }
 
 // pascalCase combines the given words using PascalCase.
-func pascalCase(words ...string) string {
+//
+// If allowAllCaps is true, when an all-caps word that is not a known
+// abbreviation is encountered, it is left unchanged. Otherwise, it is
+// Titlecased.
+func pascalCase(allowAllCaps bool, words ...string) string {
 	for i, chunk := range words {
 		if len(chunk) == 0 {
 			// foo__bar
@@ -54,7 +58,7 @@ func pascalCase(words ...string) string {
 		}
 
 		// Was SCREAMING_SNAKE_CASE and not a known initialism so Titlecase it.
-		if isAllCaps(chunk) && len(words) > 1 {
+		if isAllCaps(chunk) && !allowAllCaps {
 			// A single ALLCAPS word does not count as SCREAMING_SNAKE_CASE.
 			// There must be at least one underscore.
 			words[i] = strings.Title(strings.ToLower(chunk))
@@ -70,12 +74,8 @@ func pascalCase(words ...string) string {
 	return strings.Join(words, "")
 }
 
-// enumItemName returns the Go name that should be used for an enum item with
-// the given Thrift name.
-func enumItemName(enumName string, itemName string) string {
-	words := []string{enumName}
-	words = append(words, strings.Split(itemName, "_")...)
-	return pascalCase(words...)
+func constantName(s string) string {
+	return pascalCase(false /* all caps */, strings.Split(s, "_")...)
 }
 
 // goCase converts strings into PascalCase.
@@ -84,7 +84,10 @@ func goCase(s string) string {
 		panic(fmt.Sprintf("%q is not a valid identifier", s))
 	}
 
-	return pascalCase(strings.Split(s, "_")...)
+	words := strings.Split(s, "_")
+	return pascalCase(len(words) == 1 /* all caps */, words...)
+	// goCase allows all caps only if the string is a single all caps word.
+	// That is, "FOO" is allowed but "FOO_BAR" is changed to "FooBar".
 }
 
 // This set is taken from https://github.com/golang/lint/blob/master/lint.go#L692

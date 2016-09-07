@@ -246,3 +246,33 @@ func (v *StructWithOptionalEnum) String() string {
 	}
 	return fmt.Sprintf("StructWithOptionalEnum{%v}", strings.Join(fields[:i], ", "))
 }
+
+type LowerCaseEnum int32
+
+const (
+	LowerCaseEnumWith      LowerCaseEnum = 0
+	LowerCaseEnumLowerCase LowerCaseEnum = 1
+	LowerCaseEnumItems     LowerCaseEnum = 2
+)
+
+func (v LowerCaseEnum) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
+}
+
+func (v *LowerCaseEnum) FromWire(w wire.Value) error {
+	*v = (LowerCaseEnum)(w.GetI32())
+	return nil
+}
+
+func (v LowerCaseEnum) String() string {
+	w := int32(v)
+	switch w {
+	case 0:
+		return "with"
+	case 1:
+		return "lower_case"
+	case 2:
+		return "items"
+	}
+	return fmt.Sprintf("LowerCaseEnum(%d)", w)
+}

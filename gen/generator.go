@@ -161,7 +161,7 @@ func (g *generator) LookupConstantName(c *compile.Constant) (string, error) {
 		return "", err
 	}
 
-	name := goCase(c.Name)
+	name := constantName(c.Name)
 	if importPath != g.ImportPath {
 		pkg := g.Import(importPath)
 		name = pkg + "." + name
