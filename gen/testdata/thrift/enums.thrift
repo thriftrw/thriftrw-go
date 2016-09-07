@@ -31,3 +31,7 @@ enum RecordType {
   HOME_ADDRESS,
   WORK_ADDRESS
 }
+
+enum lowerCaseEnum {
+    with, lower_case, items
+}

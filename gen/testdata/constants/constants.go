@@ -58,6 +58,8 @@ var I128 *typedefs.I128 = &typedefs.I128{High: 1234, Low: 5678}
 
 var LastNode *structs.Node = &structs.Node{Value: 3}
 
+const Lower enums.LowerCaseEnum = enums.LowerCaseEnumItems
+
 const MyEnum typedefs.MyEnum = typedefs.MyEnum(enums.EnumWithValuesY)
 
 var Node *structs.Node = &structs.Node{Next: &structs.List{Next: &structs.List{Value: 3}, Value: 2}, Value: 1}
