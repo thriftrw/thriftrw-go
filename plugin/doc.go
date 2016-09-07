@@ -36,5 +36,13 @@
 // 	}
 //
 // Note that the name in the executable MUST match the name in the Plugin
-// struct.
+// struct. Plugins must be installed and available on the $PATH before they
+// can be used. To use a plugin, pass its name in with the -p/--plugin option.
+//
+// 	thriftrw-go --plugin=myfancyplugin foo.thrift
+//
+// Arguments may be sent to plugins by including them in the name. These are
+// passed through to the plugin process as command line arguments.
+//
+// 	thriftrw-go --plugin='myfancyplugin --useContext'
 package plugin

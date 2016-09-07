@@ -43,19 +43,31 @@ var (
 )
 
 // Plugin defines a ThriftRW plugin.
+//
+// At minimum, a plugin name must be provided and it MUST match the name of
+// the plugin in the executable.
 type Plugin struct {
 	// Name of the plugin. The name of the executable providing this plugin MUST
-	// BE thriftrw-plugin-$name.
+	// be thriftrw-plugin-$name.
 	Name string
 
-	// If non-nil, this indicates that the plugin will generate code for Thrift
-	// services.
+	// Plugins can implement a ServiceGenerator to generate arbitrary code for
+	// Thrift services. This may be nil if the plugin does not provide this
+	// functionality.
 	ServiceGenerator api.ServiceGenerator
 }
 
 // Main serves the given plugin. It is the entry point to the plugin system.
 // User-defined plugins should call Main with their main function.
+//
+// 	func main() {
+// 		plugin.Main(myPlugin)
+// 	}
 func Main(p *Plugin) {
+	if p.Name == "" {
+		panic("a plugin name must be provided")
+	}
+
 	// The plugin communicates with the ThriftRW process over stdout and stdin
 	// of this process. Requests and responses are Thrift envelopes with a
 	// 4-byte big-endian encoded length prefix. Envelope names contain method
