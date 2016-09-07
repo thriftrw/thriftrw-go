@@ -78,12 +78,6 @@ func constantName(s string) string {
 	return pascalCase(false /* all caps */, strings.Split(s, "_")...)
 }
 
-// enumItemName returns the Go name that should be used for an enum item with
-// the given Thrift name.
-func enumItemName(enumName string, itemName string) string {
-	return enumName + pascalCase(false /* all caps */, strings.Split(itemName, "_")...)
-}
-
 // goCase converts strings into PascalCase.
 func goCase(s string) string {
 	if len(s) == 0 {

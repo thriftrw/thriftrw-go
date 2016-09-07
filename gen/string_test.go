@@ -96,34 +96,6 @@ func TestGoCase(t *testing.T) {
 	}
 }
 
-func TestEnumItemName(t *testing.T) {
-	tests := []struct {
-		enumName string
-		itemName string
-		want     string
-	}{
-		{
-			enumName: "MyEnum",
-			itemName: "foo",
-			want:     "MyEnumFoo",
-		},
-		{
-			enumName: "Role",
-			itemName: "USER",
-			want:     "RoleUser",
-		},
-		{
-			enumName: "Type",
-			itemName: "FIRST_NAME",
-			want:     "TypeFirstName",
-		},
-	}
-
-	for _, tt := range tests {
-		assert.Equal(t, tt.want, enumItemName(tt.enumName, tt.itemName))
-	}
-}
-
 func TestConstantName(t *testing.T) {
 	tests := []struct {
 		give string
