@@ -162,6 +162,18 @@ func TestEnumString(t *testing.T) {
 			te.EnumWithDuplicateValuesQ,
 			"Q",
 		},
+		{
+			te.LowerCaseEnumWith,
+			"with",
+		},
+		{
+			te.LowerCaseEnumLowerCase,
+			"lower_case",
+		},
+		{
+			te.LowerCaseEnumItems,
+			"items",
+		},
 	}
 
 	for _, tt := range tests {

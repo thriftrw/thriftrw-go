@@ -101,3 +101,9 @@ const typedefs.FrameGroup frameGroup = [
 ]
 
 const typedefs.MyEnum myEnum = enums.EnumWithValues.Y
+
+const enums.RecordType NAME = enums.RecordType.NAME
+const enums.RecordType HOME = enums.RecordType.HOME_ADDRESS
+const enums.RecordType WORK_ADDRESS = enums.RecordType.WORK_ADDRESS
+
+const enums.lowerCaseEnum lower = enums.lowerCaseEnum.items
