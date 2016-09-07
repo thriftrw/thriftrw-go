@@ -31,6 +31,7 @@ import (
 	"github.com/thriftrw/thriftrw-go/compile"
 	"github.com/thriftrw/thriftrw-go/gen"
 	"github.com/thriftrw/thriftrw-go/internal/plugin"
+	"github.com/thriftrw/thriftrw-go/internal/plugin/builtin/pluginapigen"
 
 	"github.com/jessevdk/go-flags"
 )
@@ -45,11 +46,11 @@ type genOptions struct {
 	PackagePrefix   string `long:"pkg-prefix" value-name:"PREFIX" description:"Prefix for import paths of generated module. By default, this is based on the output directory's location relativet o $GOPATH."`
 	ThriftRoot      string `long:"thrift-root" value-name:"DIR" description:"Directory whose descendants contain all Thrift files. The structure of the generated Go packages mirrors the paths to the Thrift files relative to this directory. By default, this is the deepest common ancestor directory of the Thrift files."`
 
-	NoRecurse bool         `long:"no-recurse" description:"Don't generate code for included Thrift files."`
-	YARPC     bool         `long:"yarpc" description:"Generate code for YARPC. Defaults to false."`
-	Plugins   plugin.Flags `long:"plugin" short:"p" value-name:"PLUGIN" description:"Code generation plugin for ThriftRW. This option may be provided multiple times to apply multiple plugins."`
+	NoRecurse         bool         `long:"no-recurse" description:"Don't generate code for included Thrift files."`
+	YARPC             bool         `long:"yarpc" description:"Generate code for YARPC. Defaults to false."`
+	Plugins           plugin.Flags `long:"plugin" short:"p" value-name:"PLUGIN" description:"Code generation plugin for ThriftRW. This option may be provided multiple times to apply multiple plugins."`
+	GeneratePluginAPI bool         `long:"generate-plugin-api" hidden:"true" description:"Generates code for the plugin API"`
 	// TODO(abg): Drop --yarpc flag
-
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
 
@@ -124,6 +125,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	if gopts.GeneratePluginAPI {
+		pluginHandle = append(pluginHandle, pluginapigen.Handle)
+	}
+
 	defer pluginHandle.Close()
 
 	generatorOptions := gen.Options{
