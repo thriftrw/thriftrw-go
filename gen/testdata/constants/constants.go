@@ -13,6 +13,12 @@ import (
 	"github.com/thriftrw/thriftrw-go/gen/testdata/unions"
 )
 
+const Home enums.RecordType = enums.RecordTypeHomeAddress
+
+const Name enums.RecordType = enums.RecordTypeName
+
+const WorkAddress enums.RecordType = enums.RecordTypeWorkAddress
+
 func _bool_ptr(v bool) *bool {
 	return &v
 }
@@ -51,6 +57,8 @@ var Graph *structs.Graph = &structs.Graph{Edges: []*structs.Edge{&structs.Edge{E
 var I128 *typedefs.I128 = &typedefs.I128{High: 1234, Low: 5678}
 
 var LastNode *structs.Node = &structs.Node{Value: 3}
+
+const Lower enums.LowerCaseEnum = enums.LowerCaseEnumItems
 
 const MyEnum typedefs.MyEnum = typedefs.MyEnum(enums.EnumWithValuesY)
 

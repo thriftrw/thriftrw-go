@@ -1,3 +1,5 @@
+WANT_VERSION = $(shell grep '^v[0-9]' CHANGELOG.md | head -n1 | cut -d' ' -f1)
+
 # Minor versions of Go for which the lint check should be run.
 LINTABLE_MINOR_VERSIONS := 6
 
@@ -59,8 +61,19 @@ else
 	@echo "Skipping linters for $(GO_VERSION)"
 endif
 
+.PHONY: verifyVersion
+verifyVersion: build
+	@if [ "$$(./thriftrw-go --version)" != "thriftrw $(WANT_VERSION)" ]; then \
+		echo "Version number in version.go does not match CHANGELOG.md"; \
+		echo "Want: thriftrw $(WANT_VERSION)"; \
+		echo " Got: $$(./thriftrw-go --version)"; \
+		exit 1; \
+	else \
+		echo "thriftrw $(WANT_VERSION)"; \
+	fi
+
 .PHONY: test
-test: build
+test: build verifyVersion
 	go test -race $(PACKAGES)
 
 .PHONY: cover
@@ -89,6 +102,7 @@ endif
 	go get -u github.com/wadey/gocovmerge
 	go get -u github.com/mattn/goveralls
 	go get -u golang.org/x/tools/cmd/cover
+	go install .
 
 .PHONY: build_ci
 build_ci: build
@@ -97,5 +111,5 @@ build_ci: build
 lint_ci: lint
 
 .PHONY: test_ci
-test_ci: build_ci
+test_ci: build_ci verifyVersion
 	./scripts/cover.sh $(shell go list $(PACKAGES))

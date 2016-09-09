@@ -1,4 +1,4 @@
-package plugin
+package plugin_test // because import cycle
 
 import (
 	"errors"
@@ -9,9 +9,9 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	. "github.com/thriftrw/thriftrw-go/internal/plugin"
 	"github.com/thriftrw/thriftrw-go/internal/plugin/handletest"
 	"github.com/thriftrw/thriftrw-go/plugin/api"
-	"github.com/thriftrw/thriftrw-go/plugin/plugintest"
 )
 
 func TestMultiHandleClose(t *testing.T) {
@@ -19,13 +19,13 @@ func TestMultiHandleClose(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	handles := make([]*handletest.MockHandle, 1000)
-	mh := make(MultiHandle)
+	var mh MultiHandle
 
 	for i := range handles {
 		handle := handletest.NewMockHandle(mockCtrl)
 		handle.EXPECT().Close().Return(nil)
 		handles[i] = handle
-		mh[fmt.Sprintf("plugin-%d", i)] = handle
+		mh = append(mh, handle)
 	}
 
 	assert.NoError(t, mh.Close())
@@ -46,12 +46,12 @@ func TestMultiHandleCloseError(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	handles := make([]*handletest.MockHandle, 1000)
-	mh := make(MultiHandle)
+	var mh MultiHandle
 
 	for i := range handles {
 		handle := handletest.NewMockHandle(mockCtrl)
 		handles[i] = handle
-		mh[fmt.Sprintf("plugin-%d", i)] = handle
+		mh = append(mh, handle)
 
 		// fail only odd plugins
 		if i%2 == 0 {
@@ -79,15 +79,15 @@ func TestMultiHandleNoServiceGenerators(t *testing.T) {
 	defer mockCtrl.Finish()
 
 	handles := make([]*handletest.MockHandle, 1000)
-	mh := make(MultiHandle)
+	var mh MultiHandle
 	for i := range handles {
 		handle := handletest.NewMockHandle(mockCtrl)
 		handles[i] = handle
-		mh[fmt.Sprintf("plugin-%d", i)] = handle
+		mh = append(mh, handle)
 		handle.EXPECT().ServiceGenerator().Return(nil)
 	}
 
-	assert.Nil(t, mh.ServiceGenerator())
+	assert.Empty(t, mh.ServiceGenerator())
 }
 
 func TestMultiHandleServiceGenerator(t *testing.T) {
@@ -96,11 +96,11 @@ func TestMultiHandleServiceGenerator(t *testing.T) {
 
 	handles := make([]*handletest.MockHandle, 1000)
 
-	mh := make(MultiHandle)
+	var mh MultiHandle
 	for i := range handles {
 		handle := handletest.NewMockHandle(mockCtrl)
 		handles[i] = handle
-		mh[fmt.Sprintf("plugin-%d", i)] = handle
+		mh = append(mh, handle)
 
 		// only odd handles have a ServiceGenerator
 		if i%2 == 0 {
@@ -109,7 +109,7 @@ func TestMultiHandleServiceGenerator(t *testing.T) {
 		}
 
 		handle.EXPECT().ServiceGenerator().Return(
-			plugintest.NewMockServiceGenerator(mockCtrl))
+			handletest.NewMockServiceGenerator(mockCtrl))
 	}
 
 	assert.NotNil(t, mh.ServiceGenerator())
@@ -164,18 +164,18 @@ func TestMultiServiceGeneratorGenerate(t *testing.T) {
 		{
 			desc: "no conflicts; with errors",
 			responses: []response{
-				{failure: errors.New("great sadness")},
+				{failure: errors.New("foo: great sadness")},
 				{success: &api.GenerateServiceResponse{Files: map[string][]byte{
 					"foo/a.go": {1, 2, 3},
 				}}},
 				{success: &api.GenerateServiceResponse{Files: map[string][]byte{
 					"foo/b.go": {4, 5, 6},
 				}}},
-				{failure: errors.New("great sadness")},
+				{failure: errors.New("bar: great sadness")},
 			},
 			wantErrors: []string{
-				`plugin "plugin-0" failed to generate service code: great sadness`,
-				`plugin "plugin-3" failed to generate service code: great sadness`,
+				`foo: great sadness`,
+				`bar: great sadness`,
 			},
 		},
 		{
@@ -222,11 +222,15 @@ func TestMultiServiceGeneratorGenerate(t *testing.T) {
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
 
-			msg := make(MultiServiceGenerator)
+			var msg MultiServiceGenerator
 			for i, res := range tt.responses {
-				sg := plugintest.NewMockServiceGenerator(mockCtrl)
-				msg[fmt.Sprintf("plugin-%d", i)] = sg
+				handle := handletest.NewMockHandle(mockCtrl)
+				handle.EXPECT().Name().Return(fmt.Sprintf("plugin-%d", i)).AnyTimes()
+
+				sg := handletest.NewMockServiceGenerator(mockCtrl)
+				msg = append(msg, sg)
 				sg.EXPECT().Generate(req).Return(res.success, res.failure)
+				sg.EXPECT().Handle().Return(handle).AnyTimes()
 			}
 
 			res, err := msg.Generate(req)

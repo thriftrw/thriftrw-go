@@ -20,31 +20,35 @@
 
 package plugin
 
-import (
-	"io"
+import "github.com/thriftrw/thriftrw-go/plugin/api"
 
-	"github.com/thriftrw/thriftrw-go/plugin/api"
-)
+// EmptyHandle is a no-op Handle that does not do anything.
+var EmptyHandle Handle = emptyHandle{}
 
-// Handle is a handle to ThriftRW plugin.
-type Handle interface {
-	io.Closer
+type emptyHandle struct{}
 
-	// Name is the name of this plugin.
-	Name() string
-
-	// ServiceGenerator returns a ServiceGenerator for this plugin or nil if
-	// this plugin does not implement that feature.
-	//
-	// Note that the ServiceGenerator is valid only as long as Close is not
-	// called on the Handle.
-	ServiceGenerator() ServiceGenerator
+func (emptyHandle) Name() string {
+	return "empty"
 }
 
-// ServiceGenerator generates files for Thrift services.
-type ServiceGenerator interface {
-	api.ServiceGenerator
+func (emptyHandle) Close() error {
+	return nil
+}
 
-	// Handle returns the Handle that owns this ServiceGenerator.
-	Handle() Handle
+func (emptyHandle) ServiceGenerator() ServiceGenerator {
+	return EmptyServiceGenerator
+}
+
+// EmptyServiceGenerator is a no-op service generator that does not generate
+// any new files.
+var EmptyServiceGenerator ServiceGenerator = emptyServiceGenerator{}
+
+type emptyServiceGenerator struct{}
+
+func (emptyServiceGenerator) Handle() Handle {
+	return EmptyHandle
+}
+
+func (emptyServiceGenerator) Generate(Request *api.GenerateServiceRequest) (*api.GenerateServiceResponse, error) {
+	return &api.GenerateServiceResponse{Files: make(map[string][]byte)}, nil
 }

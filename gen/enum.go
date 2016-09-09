@@ -20,7 +20,11 @@
 
 package gen
 
-import "github.com/thriftrw/thriftrw-go/compile"
+import (
+	"strings"
+
+	"github.com/thriftrw/thriftrw-go/compile"
+)
 
 // enumGenerator generates code to serialize and deserialize enums.
 type enumGenerator struct {
@@ -67,8 +71,9 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 
 		<if .Spec.Items>
 			const (
+			<$enum := .Spec>
 			<range .Spec.Items>
-				<$enumName><goCase .Name> <$enumName> = <.Value>
+				<enumItemName $enum .Name> <$enumName> = <.Value>
 			<end>
 			)
 		<end>
@@ -90,7 +95,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch <$w> {
 				<range .UniqueItems>
 					case <.Value>:
-						return "<goCase .Name>"
+						return "<.Name>"
 				<end>
 				}
 			<end>
@@ -103,9 +108,21 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		}{
 			Spec:        spec,
 			UniqueItems: items,
-		})
+		},
+		TemplateFunc("enumItemName", enumItemName),
+	)
 
 	return wrapGenerateError(spec.Name, err)
+}
+
+// enumItemName returns the Go name that should be used for an enum item with
+// the given Thrift name.
+func enumItemName(g Generator, spec compile.TypeSpec, itemName string) (string, error) {
+	enumName, err := typeName(g, spec)
+	if err != nil {
+		return "", err
+	}
+	return enumName + pascalCase(false /* all caps */, strings.Split(itemName, "_")...), nil
 }
 
 // enumUniqueItems returns a subset of the given list of enum items where

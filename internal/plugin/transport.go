@@ -40,7 +40,8 @@ var _proto = protocol.Binary
 
 // transportHandle is a Handle to a plugin which is behind an envelope.Transport.
 type transportHandle struct {
-	Name      string
+	name string
+
 	Transport envelope.Transport
 	Client    api.Plugin
 	Running   *atomic.Bool
@@ -81,12 +82,16 @@ func NewTransportHandle(name string, t envelope.Transport) (Handle, error) {
 	}
 
 	return &transportHandle{
-		Name:      name,
+		name:      name,
 		Transport: t,
 		Client:    client,
 		Running:   atomic.NewBool(true),
 		Features:  features,
 	}, nil
+}
+
+func (h *transportHandle) Name() string {
+	return h.name
 }
 
 func (h *transportHandle) Close() error {
@@ -101,9 +106,9 @@ func (h *transportHandle) Close() error {
 	return err
 }
 
-func (h *transportHandle) ServiceGenerator() api.ServiceGenerator {
+func (h *transportHandle) ServiceGenerator() ServiceGenerator {
 	if !h.Running.Load() {
-		panic(fmt.Sprintf("handle for plugin %q has already been closed", h.Name))
+		panic(fmt.Sprintf("handle for plugin %q has already been closed", h.name))
 	}
 
 	if _, hasFeature := h.Features[api.FeatureServiceGenerator]; !hasFeature {
@@ -111,7 +116,7 @@ func (h *transportHandle) ServiceGenerator() api.ServiceGenerator {
 	}
 
 	return &serviceGenerator{
-		Name:    h.Name,
+		handle:  h,
 		Running: h.Running,
 		ServiceGenerator: servicegenerator.NewClient(multiplex.NewClient(
 			"ServiceGenerator",
@@ -120,30 +125,36 @@ func (h *transportHandle) ServiceGenerator() api.ServiceGenerator {
 	}
 }
 
-// serviceGenerator is a ServiceGenerator that validates the output of an api.ServiceGenerator.
+// serviceGenerator is a ServiceGenerator that validates the output of an ServiceGenerator.
 //
 // It also panics if a request is made to it after it has been closed.
 type serviceGenerator struct {
-	Name             string
+	handle *transportHandle
+
 	ServiceGenerator api.ServiceGenerator
 	Running          *atomic.Bool
 }
 
+func (sg *serviceGenerator) Handle() Handle {
+	return sg.handle
+}
+
 func (sg *serviceGenerator) Generate(req *api.GenerateServiceRequest) (*api.GenerateServiceResponse, error) {
+	name := sg.handle.name
 	if !sg.Running.Load() {
-		panic(fmt.Sprintf("handle for plugin %q has already been closed", sg.Name))
+		panic(fmt.Sprintf("handle for plugin %q has already been closed", name))
 	}
 
 	res, err := sg.ServiceGenerator.Generate(req)
 	if err != nil {
-		return res, err
+		return res, fmt.Errorf("plugin %q failed to generate service code: %v", name, err)
 	}
 
 	for path := range res.Files {
 		if strings.Contains(path, "..") {
 			return res, fmt.Errorf(
 				"plugin %q is attempting to write to a parent directory: "+
-					`path %q contains ".."`, sg.Name, path)
+					`path %q contains ".."`, name, path)
 		}
 	}
 

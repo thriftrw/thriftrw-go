@@ -47,6 +47,10 @@ func fakeEnvelopeClient() (envelope.Client, func()) {
 	return envelope.NewClient(_proto, frame.NewClient(in, out)), done
 }
 
+func TestEmptyPluginName(t *testing.T) {
+	assert.Panics(t, func() { Main(&Plugin{}) })
+}
+
 func TestEmptyPlugin(t *testing.T) {
 	transport, done := fakeEnvelopeClient()
 	defer done()

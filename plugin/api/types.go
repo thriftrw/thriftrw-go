@@ -128,7 +128,7 @@ func (v Feature) String() string {
 	w := int32(v)
 	switch w {
 	case 1:
-		return "ServiceGenerator"
+		return "SERVICE_GENERATOR"
 	}
 	return fmt.Sprintf("Feature(%d)", w)
 }
@@ -1234,23 +1234,23 @@ func (v SimpleType) String() string {
 	w := int32(v)
 	switch w {
 	case 1:
-		return "Bool"
+		return "BOOL"
 	case 2:
-		return "Byte"
+		return "BYTE"
 	case 3:
-		return "Int8"
+		return "INT8"
 	case 4:
-		return "Int16"
+		return "INT16"
 	case 5:
-		return "Int32"
+		return "INT32"
 	case 6:
-		return "Int64"
+		return "INT64"
 	case 7:
-		return "Float64"
+		return "FLOAT64"
 	case 8:
-		return "String"
+		return "STRING"
 	case 9:
-		return "StructEmpty"
+		return "STRUCT_EMPTY"
 	}
 	return fmt.Sprintf("SimpleType(%d)", w)
 }

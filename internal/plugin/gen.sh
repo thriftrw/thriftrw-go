@@ -17,7 +17,7 @@ set -x
 #   go install github.com/thriftrw/thriftrw-go/vendor/github.com/golang/mock/mockgen
 
 PACKAGE=github.com/thriftrw/thriftrw-go/internal/plugin
-INTERFACES=Handle
+INTERFACES=Handle,ServiceGenerator
 DESTINATION=handletest/mock.go
 PACKAGENAME=handletest
 
