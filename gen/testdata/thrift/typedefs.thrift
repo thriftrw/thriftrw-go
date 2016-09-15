@@ -19,8 +19,8 @@ struct Event {
 }
 
 struct Transition {
-    1: required State from
-    2: required State to
+    1: required State fromState
+    2: required State toState
     3: optional EventGroup events
 }
 

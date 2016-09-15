@@ -46,8 +46,8 @@ struct Frame {
 }
 
 struct Edge {
-    1: required Point start
-    2: required Point end
+    1: required Point startPoint
+    2: required Point endPoint
 }
 
 struct Graph {
@@ -73,7 +73,7 @@ typedef Node List
 
 struct Node {
     1: required i32 value
-    2: optional List next
+    2: optional List tail
 }
 
 
@@ -95,7 +95,7 @@ struct DefaultsStruct {
         "size": {"width": 100, "height": 200},
     }
     8: optional Edge optionalStruct = {
-        "start": {"x": 1, "y": 2},
-        "end":   {"x": 3, "y": 4},
+        "startPoint": {"x": 1, "y": 2},
+        "endPoint":   {"x": 3, "y": 4},
     }
 }

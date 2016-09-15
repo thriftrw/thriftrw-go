@@ -266,16 +266,16 @@ func TestListOfStructs(t *testing.T) {
 		{
 			ts.Graph{Edges: []*ts.Edge{
 				{
-					Start: &ts.Point{X: 1.0, Y: 2.0},
-					End:   &ts.Point{X: 3.0, Y: 4.0},
+					StartPoint: &ts.Point{X: 1.0, Y: 2.0},
+					EndPoint:   &ts.Point{X: 3.0, Y: 4.0},
 				},
 				{
-					Start: &ts.Point{X: 5.0, Y: 6.0},
-					End:   &ts.Point{X: 7.0, Y: 8.0},
+					StartPoint: &ts.Point{X: 5.0, Y: 6.0},
+					EndPoint:   &ts.Point{X: 7.0, Y: 8.0},
 				},
 				{
-					Start: &ts.Point{X: 9.0, Y: 10.0},
-					End:   &ts.Point{X: 11.0, Y: 12.0},
+					StartPoint: &ts.Point{X: 9.0, Y: 10.0},
+					EndPoint:   &ts.Point{X: 11.0, Y: 12.0},
 				},
 			}},
 			singleFieldStruct(1, wire.NewValueList(
@@ -748,9 +748,9 @@ func TestContainerValidate(t *testing.T) {
 		{
 			value: &ts.Graph{
 				Edges: []*ts.Edge{
-					{Start: &ts.Point{X: 1, Y: 2}, End: &ts.Point{X: 3, Y: 4}},
+					{StartPoint: &ts.Point{X: 1, Y: 2}, EndPoint: &ts.Point{X: 3, Y: 4}},
 					nil,
-					{Start: &ts.Point{X: 5, Y: 6}, End: &ts.Point{X: 7, Y: 8}},
+					{StartPoint: &ts.Point{X: 5, Y: 6}, EndPoint: &ts.Point{X: 7, Y: 8}},
 				},
 			},
 			wantError: "invalid [1]: value is nil",

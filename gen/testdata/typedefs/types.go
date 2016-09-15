@@ -608,9 +608,9 @@ func (v *Timestamp) FromWire(w wire.Value) error {
 }
 
 type Transition struct {
-	From   State      `json:"from"`
-	To     State      `json:"to"`
-	Events EventGroup `json:"events"`
+	FromState State      `json:"fromState"`
+	ToState   State      `json:"toState"`
+	Events    EventGroup `json:"events"`
 }
 
 func (v *Transition) ToWire() (wire.Value, error) {
@@ -620,13 +620,13 @@ func (v *Transition) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
-	w, err = v.From.ToWire()
+	w, err = v.FromState.ToWire()
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	w, err = v.To.ToWire()
+	w, err = v.ToState.ToWire()
 	if err != nil {
 		return w, err
 	}
@@ -657,25 +657,25 @@ func _EventGroup_Read(w wire.Value) (EventGroup, error) {
 
 func (v *Transition) FromWire(w wire.Value) error {
 	var err error
-	fromIsSet := false
-	toIsSet := false
+	fromStateIsSet := false
+	toStateIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
-				v.From, err = _State_Read(field.Value)
+				v.FromState, err = _State_Read(field.Value)
 				if err != nil {
 					return err
 				}
-				fromIsSet = true
+				fromStateIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				v.To, err = _State_Read(field.Value)
+				v.ToState, err = _State_Read(field.Value)
 				if err != nil {
 					return err
 				}
-				toIsSet = true
+				toStateIsSet = true
 			}
 		case 3:
 			if field.Value.Type() == wire.TList {
@@ -686,11 +686,11 @@ func (v *Transition) FromWire(w wire.Value) error {
 			}
 		}
 	}
-	if !fromIsSet {
-		return errors.New("field From of Transition is required")
+	if !fromStateIsSet {
+		return errors.New("field FromState of Transition is required")
 	}
-	if !toIsSet {
-		return errors.New("field To of Transition is required")
+	if !toStateIsSet {
+		return errors.New("field ToState of Transition is required")
 	}
 	return nil
 }
@@ -698,9 +698,9 @@ func (v *Transition) FromWire(w wire.Value) error {
 func (v *Transition) String() string {
 	var fields [3]string
 	i := 0
-	fields[i] = fmt.Sprintf("From: %v", v.From)
+	fields[i] = fmt.Sprintf("FromState: %v", v.FromState)
 	i++
-	fields[i] = fmt.Sprintf("To: %v", v.To)
+	fields[i] = fmt.Sprintf("ToState: %v", v.ToState)
 	i++
 	if v.Events != nil {
 		fields[i] = fmt.Sprintf("Events: %v", v.Events)

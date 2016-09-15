@@ -64,15 +64,15 @@ const exceptions.EmptyException emptyException = {}
 
 const structs.Graph graph = {
     "edges": [
-        {"start": other_constants.some_point, "end": {"x": 3, "y": 4}},
-        {"start": {"x": 5, "y": 6}, "end": {"x": 7, "y": 8}},
+        {"startPoint": other_constants.some_point, "endPoint": {"x": 3, "y": 4}},
+        {"startPoint": {"x": 5, "y": 6}, "endPoint": {"x": 7, "y": 8}},
     ]
 }
 
 const structs.Node lastNode = {"value": 3}
 const structs.Node node = {
     "value": 1,
-    "next": {"value": 2, "next": lastNode},
+    "tail": {"value": 2, "tail": lastNode},
 }
 
 const unions.ArbitraryValue arbitraryValue = {

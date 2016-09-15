@@ -48,6 +48,8 @@ func newLexer(data []byte) *lexer {
 }
 
 func (lex *lexer) Lex(out *yySymType) int {
+    var reservedKeyword string
+
     eof := lex.pe
     tok := 0
 
@@ -80,6 +82,116 @@ func (lex *lexer) Lex(out *yySymType) int {
 
         double = integer '.' digit* ([Ee] integer)?;
 
+        # The following keywords are reserved in different languages and are
+        # disallowed as identifiers in the IDL.
+        #
+        # From: https://github.com/apache/thrift/blob/775671aea41ea55427dd78d7ce68e282cc9b8487/compiler/cpp/src/thriftl.ll#L266
+        reservedKeyword =
+            ( 'BEGIN'
+            | 'END'
+            | '__CLASS__'
+            | '__DIR__'
+            | '__FILE__'
+            | '__FUNCTION__'
+            | '__LINE__'
+            | '__METHOD__'
+            | '__NAMESPACE__'
+            | 'abstract'
+            | 'alias'
+            | 'and'
+            | 'args'
+            | 'as'
+            | 'assert'
+            | 'begin'
+            | 'break'
+            | 'case'
+            | 'catch'
+            | 'class'
+            | 'clone'
+            | 'continue'
+            | 'declare'
+            | 'def'
+            | 'default'
+            | 'del'
+            | 'delete'
+            | 'do'
+            | 'dynamic'
+            | 'elif'
+            | 'else'
+            | 'elseif'
+            | 'elsif'
+            | 'end'
+            | 'enddeclare'
+            | 'endfor'
+            | 'endforeach'
+            | 'endif'
+            | 'endswitch'
+            | 'endwhile'
+            | 'ensure'
+            | 'except'
+            | 'exec'
+            | 'finally'
+            | 'float'
+            | 'for'
+            | 'foreach'
+            | 'from'
+            | 'function'
+            | 'global'
+            | 'goto'
+            | 'if'
+            | 'implements'
+            | 'import'
+            | 'in'
+            | 'inline'
+            | 'instanceof'
+            | 'interface'
+            | 'is'
+            | 'lambda'
+            | 'module'
+            | 'native'
+            | 'new'
+            | 'next'
+            | 'nil'
+            | 'not'
+            | 'or'
+            | 'package'
+            | 'pass'
+            | 'public'
+            | 'print'
+            | 'private'
+            | 'protected'
+            | 'raise'
+            | 'redo'
+            | 'rescue'
+            | 'retry'
+            | 'register'
+            | 'return'
+            | 'self'
+            | 'sizeof'
+            | 'static'
+            | 'super'
+            | 'switch'
+            | 'synchronized'
+            | 'then'
+            | 'this'
+            | 'throw'
+            | 'transient'
+            | 'try'
+            | 'undef'
+            | 'unless'
+            | 'unsigned'
+            | 'until'
+            | 'use'
+            | 'var'
+            | 'virtual'
+            | 'volatile'
+            | 'when'
+            | 'while'
+            | 'with'
+            | 'xor'
+            | 'yield'
+            ) @{ reservedKeyword = string(lex.data[lex.ts:lex.te]) }
+            ;
 
         main := |*
             # A note about the scanner:
@@ -185,6 +297,11 @@ func (lex *lexer) Lex(out *yySymType) int {
                     tok = LITERAL
                 }
 
+                fbreak;
+            };
+
+            reservedKeyword __ => {
+                lex.Error(fmt.Sprintf("%q is a reserved keyword", reservedKeyword))
                 fbreak;
             };
 

@@ -216,12 +216,12 @@ func TestConstants(t *testing.T) {
 			&ts.Graph{
 				Edges: []*ts.Edge{
 					{
-						Start: &ts.Point{X: 1, Y: 2},
-						End:   &ts.Point{X: 3, Y: 4},
+						StartPoint: &ts.Point{X: 1, Y: 2},
+						EndPoint:   &ts.Point{X: 3, Y: 4},
 					},
 					{
-						Start: &ts.Point{X: 5, Y: 6},
-						End:   &ts.Point{X: 7, Y: 8},
+						StartPoint: &ts.Point{X: 5, Y: 6},
+						EndPoint:   &ts.Point{X: 7, Y: 8},
 					},
 				},
 			},
@@ -250,7 +250,7 @@ func TestConstants(t *testing.T) {
 		{
 			"node",
 			tk.Node,
-			&ts.Node{Value: 1, Next: &ts.List{Value: 2, Next: &ts.List{Value: 3}}},
+			&ts.Node{Value: 1, Tail: &ts.List{Value: 2, Tail: &ts.List{Value: 3}}},
 		},
 		{
 			"i128",
