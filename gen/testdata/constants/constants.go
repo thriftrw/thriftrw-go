@@ -52,7 +52,7 @@ var EnumContainers *containers.EnumContainers = &containers.EnumContainers{ListO
 
 var FrameGroup typedefs.FrameGroup = typedefs.FrameGroup{&structs.Frame{Size: &structs.Size{Height: 200, Width: 100}, TopLeft: &structs.Point{X: 1, Y: 2}}, &structs.Frame{Size: &structs.Size{Height: 400, Width: 300}, TopLeft: &structs.Point{X: 3, Y: 4}}}
 
-var Graph *structs.Graph = &structs.Graph{Edges: []*structs.Edge{&structs.Edge{End: &structs.Point{X: 3, Y: 4}, Start: other_constants.SomePoint}, &structs.Edge{End: &structs.Point{X: 7, Y: 8}, Start: &structs.Point{X: 5, Y: 6}}}}
+var Graph *structs.Graph = &structs.Graph{Edges: []*structs.Edge{&structs.Edge{EndPoint: &structs.Point{X: 3, Y: 4}, StartPoint: other_constants.SomePoint}, &structs.Edge{EndPoint: &structs.Point{X: 7, Y: 8}, StartPoint: &structs.Point{X: 5, Y: 6}}}}
 
 var I128 *typedefs.I128 = &typedefs.I128{High: 1234, Low: 5678}
 
@@ -62,7 +62,7 @@ const Lower enums.LowerCaseEnum = enums.LowerCaseEnumItems
 
 const MyEnum typedefs.MyEnum = typedefs.MyEnum(enums.EnumWithValuesY)
 
-var Node *structs.Node = &structs.Node{Next: &structs.List{Next: &structs.List{Value: 3}, Value: 2}, Value: 1}
+var Node *structs.Node = &structs.Node{Tail: &structs.List{Tail: &structs.List{Value: 3}, Value: 2}, Value: 1}
 
 var PrimitiveContainers *containers.PrimitiveContainers = &containers.PrimitiveContainers{ListOfInts: []int64{1, 2, 3}, MapOfIntToString: map[int32]string{1: "1", 2: "2", 3: "3"}, MapOfStringToBool: map[string]bool{"1": false, "2": true, "3": true}, SetOfBytes: map[int8]struct{}{1: struct{}{}, 2: struct{}{}, 3: struct{}{}}, SetOfStrings: map[string]struct{}{"foo": struct{}{}, "bar": struct{}{}}}
 

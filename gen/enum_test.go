@@ -163,8 +163,8 @@ func TestEnumString(t *testing.T) {
 			"Q",
 		},
 		{
-			te.LowerCaseEnumWith,
-			"with",
+			te.LowerCaseEnumContaining,
+			"containing",
 		},
 		{
 			te.LowerCaseEnumLowerCase,

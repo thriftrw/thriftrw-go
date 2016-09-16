@@ -236,7 +236,7 @@ func TestStructRoundTripAndString(t *testing.T) {
 		},
 		{
 			"List: self-referential struct",
-			&ts.List{Value: 1, Next: &ts.List{Value: 2}},
+			&ts.List{Value: 1, Tail: &ts.List{Value: 2}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueI32(1)},
 				{
@@ -246,7 +246,7 @@ func TestStructRoundTripAndString(t *testing.T) {
 					}}),
 				},
 			}}),
-			"Node{Value: 1, Next: Node{Value: 2}}",
+			"Node{Value: 1, Tail: Node{Value: 2}}",
 		},
 		{
 			"Document: PDF",
@@ -510,12 +510,12 @@ func TestStructStringWithMissingRequiredFields(t *testing.T) {
 			"Frame{TopLeft: <nil>, Size: Size{Width: 0, Height: 0}}",
 		},
 		{
-			&ts.Edge{Start: &ts.Point{X: 1, Y: 2}},
-			"Edge{Start: Point{X: 1, Y: 2}, End: <nil>}",
+			&ts.Edge{StartPoint: &ts.Point{X: 1, Y: 2}},
+			"Edge{StartPoint: Point{X: 1, Y: 2}, EndPoint: <nil>}",
 		},
 		{
-			&ts.Edge{End: &ts.Point{X: 3, Y: 4}},
-			"Edge{Start: <nil>, End: Point{X: 3, Y: 4}}",
+			&ts.Edge{EndPoint: &ts.Point{X: 3, Y: 4}},
+			"Edge{StartPoint: <nil>, EndPoint: Point{X: 3, Y: 4}}",
 		},
 		{
 			&ts.Graph{},
@@ -753,8 +753,8 @@ func TestStructWithDefaults(t *testing.T) {
 					Size:    &ts.Size{Width: 100.0, Height: 200.0},
 				},
 				OptionalStruct: &ts.Edge{
-					Start: &ts.Point{X: 1.0, Y: 2.0},
-					End:   &ts.Point{X: 3.0, Y: 4.0},
+					StartPoint: &ts.Point{X: 1.0, Y: 2.0},
+					EndPoint:   &ts.Point{X: 3.0, Y: 4.0},
 				},
 			},
 		},
@@ -847,8 +847,8 @@ func TestStructWithDefaults(t *testing.T) {
 					Size:    &ts.Size{Width: 100.0, Height: 200.0},
 				},
 				OptionalStruct: &ts.Edge{
-					Start: &ts.Point{X: 1.0, Y: 2.0},
-					End:   &ts.Point{X: 3.0, Y: 4.0},
+					StartPoint: &ts.Point{X: 1.0, Y: 2.0},
+					EndPoint:   &ts.Point{X: 3.0, Y: 4.0},
 				},
 			},
 		},
@@ -878,14 +878,14 @@ func TestStructJSON(t *testing.T) {
 		{&ts.Point{X: 1, Y: 2}, `{"x":1,"y":2}`},
 		{
 			&ts.Edge{
-				Start: &ts.Point{X: 1, Y: 2},
-				End:   &ts.Point{X: 3, Y: 4},
+				StartPoint: &ts.Point{X: 1, Y: 2},
+				EndPoint:   &ts.Point{X: 3, Y: 4},
 			},
-			`{"start":{"x":1,"y":2},"end":{"x":3,"y":4}}`,
+			`{"startPoint":{"x":1,"y":2},"endPoint":{"x":3,"y":4}}`,
 		},
 		{
-			&ts.Edge{Start: &ts.Point{X: 1, Y: 1}},
-			`{"start":{"x":1,"y":1},"end":null}`,
+			&ts.Edge{StartPoint: &ts.Point{X: 1, Y: 1}},
+			`{"startPoint":{"x":1,"y":1},"endPoint":null}`,
 		},
 		{&ts.User{Name: ""}, `{"name":""}`},
 		{&ts.User{Name: "foo"}, `{"name":"foo"}`},
@@ -960,8 +960,8 @@ func TestStructJSON(t *testing.T) {
 				`}}`,
 		},
 		{
-			&ts.List{Value: 0, Next: &ts.List{Value: 1}},
-			`{"value":0,"next":{"value":1}}`,
+			&ts.List{Value: 0, Tail: &ts.List{Value: 1}},
+			`{"value":0,"tail":{"value":1}}`,
 		},
 	}
 
@@ -1076,8 +1076,8 @@ func TestStructValidation(t *testing.T) {
 			desc: "Graph: edges: misssing end",
 			serialize: &ts.Graph{
 				Edges: []*ts.Edge{
-					{Start: &ts.Point{X: 1, Y: 2}, End: &ts.Point{X: 3, Y: 4}},
-					{Start: &ts.Point{X: 5, Y: 6}},
+					{StartPoint: &ts.Point{X: 1, Y: 2}, EndPoint: &ts.Point{X: 3, Y: 4}},
+					{StartPoint: &ts.Point{X: 5, Y: 6}},
 				},
 			},
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -1114,7 +1114,7 @@ func TestStructValidation(t *testing.T) {
 					),
 				},
 			}}),
-			wantError: "field End of Edge is required",
+			wantError: "field EndPoint of Edge is required",
 		},
 		{
 			desc: "User: contact: missing emailAddress",
@@ -1456,8 +1456,8 @@ func TestStructValidation(t *testing.T) {
 			desc: "EdgeMap: error inside a map key",
 			serialize: &td.EdgeMap{
 				{
-					Key:   &ts.Edge{Start: &ts.Point{X: 1, Y: 2}},
-					Value: &ts.Edge{Start: &ts.Point{X: 3, Y: 4}, End: &ts.Point{X: 5, Y: 6}},
+					Key:   &ts.Edge{StartPoint: &ts.Point{X: 1, Y: 2}},
+					Value: &ts.Edge{StartPoint: &ts.Point{X: 3, Y: 4}, EndPoint: &ts.Point{X: 5, Y: 6}},
 				},
 			},
 			deserialize: wire.NewValueMap(
@@ -1491,7 +1491,7 @@ func TestStructValidation(t *testing.T) {
 					},
 				}),
 			),
-			wantError: "field End of Edge is required",
+			wantError: "field EndPoint of Edge is required",
 		},
 	}
 

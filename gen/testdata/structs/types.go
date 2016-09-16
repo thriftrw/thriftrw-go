@@ -218,7 +218,7 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 		i++
 	}
 	if v.OptionalStruct == nil {
-		v.OptionalStruct = &Edge{End: &Point{X: 3, Y: 4}, Start: &Point{X: 1, Y: 2}}
+		v.OptionalStruct = &Edge{EndPoint: &Point{X: 3, Y: 4}, StartPoint: &Point{X: 1, Y: 2}}
 	}
 	{
 		w, err = v.OptionalStruct.ToWire()
@@ -375,7 +375,7 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 		v.RequiredStruct = &Frame{Size: &Size{Height: 200, Width: 100}, TopLeft: &Point{X: 1, Y: 2}}
 	}
 	if v.OptionalStruct == nil {
-		v.OptionalStruct = &Edge{End: &Point{X: 3, Y: 4}, Start: &Point{X: 1, Y: 2}}
+		v.OptionalStruct = &Edge{EndPoint: &Point{X: 3, Y: 4}, StartPoint: &Point{X: 1, Y: 2}}
 	}
 	return nil
 }
@@ -419,8 +419,8 @@ func (v *DefaultsStruct) String() string {
 }
 
 type Edge struct {
-	Start *Point `json:"start"`
-	End   *Point `json:"end"`
+	StartPoint *Point `json:"startPoint"`
+	EndPoint   *Point `json:"endPoint"`
 }
 
 func (v *Edge) ToWire() (wire.Value, error) {
@@ -430,19 +430,19 @@ func (v *Edge) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
-	if v.Start == nil {
-		return w, errors.New("field Start of Edge is required")
+	if v.StartPoint == nil {
+		return w, errors.New("field StartPoint of Edge is required")
 	}
-	w, err = v.Start.ToWire()
+	w, err = v.StartPoint.ToWire()
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	if v.End == nil {
-		return w, errors.New("field End of Edge is required")
+	if v.EndPoint == nil {
+		return w, errors.New("field EndPoint of Edge is required")
 	}
-	w, err = v.End.ToWire()
+	w, err = v.EndPoint.ToWire()
 	if err != nil {
 		return w, err
 	}
@@ -459,33 +459,33 @@ func _Point_Read(w wire.Value) (*Point, error) {
 
 func (v *Edge) FromWire(w wire.Value) error {
 	var err error
-	startIsSet := false
-	endIsSet := false
+	startPointIsSet := false
+	endPointIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.Start, err = _Point_Read(field.Value)
+				v.StartPoint, err = _Point_Read(field.Value)
 				if err != nil {
 					return err
 				}
-				startIsSet = true
+				startPointIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
-				v.End, err = _Point_Read(field.Value)
+				v.EndPoint, err = _Point_Read(field.Value)
 				if err != nil {
 					return err
 				}
-				endIsSet = true
+				endPointIsSet = true
 			}
 		}
 	}
-	if !startIsSet {
-		return errors.New("field Start of Edge is required")
+	if !startPointIsSet {
+		return errors.New("field StartPoint of Edge is required")
 	}
-	if !endIsSet {
-		return errors.New("field End of Edge is required")
+	if !endPointIsSet {
+		return errors.New("field EndPoint of Edge is required")
 	}
 	return nil
 }
@@ -493,9 +493,9 @@ func (v *Edge) FromWire(w wire.Value) error {
 func (v *Edge) String() string {
 	var fields [2]string
 	i := 0
-	fields[i] = fmt.Sprintf("Start: %v", v.Start)
+	fields[i] = fmt.Sprintf("StartPoint: %v", v.StartPoint)
 	i++
-	fields[i] = fmt.Sprintf("End: %v", v.End)
+	fields[i] = fmt.Sprintf("EndPoint: %v", v.EndPoint)
 	i++
 	return fmt.Sprintf("Edge{%v}", strings.Join(fields[:i], ", "))
 }
@@ -723,7 +723,7 @@ func (v *List) FromWire(w wire.Value) error {
 
 type Node struct {
 	Value int32 `json:"value"`
-	Next  *List `json:"next,omitempty"`
+	Tail  *List `json:"tail,omitempty"`
 }
 
 func (v *Node) ToWire() (wire.Value, error) {
@@ -739,8 +739,8 @@ func (v *Node) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	if v.Next != nil {
-		w, err = v.Next.ToWire()
+	if v.Tail != nil {
+		w, err = v.Tail.ToWire()
 		if err != nil {
 			return w, err
 		}
@@ -771,7 +771,7 @@ func (v *Node) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
-				v.Next, err = _List_Read(field.Value)
+				v.Tail, err = _List_Read(field.Value)
 				if err != nil {
 					return err
 				}
@@ -789,8 +789,8 @@ func (v *Node) String() string {
 	i := 0
 	fields[i] = fmt.Sprintf("Value: %v", v.Value)
 	i++
-	if v.Next != nil {
-		fields[i] = fmt.Sprintf("Next: %v", v.Next)
+	if v.Tail != nil {
+		fields[i] = fmt.Sprintf("Tail: %v", v.Tail)
 		i++
 	}
 	return fmt.Sprintf("Node{%v}", strings.Join(fields[:i], ", "))

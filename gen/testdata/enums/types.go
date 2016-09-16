@@ -250,9 +250,9 @@ func (v *StructWithOptionalEnum) String() string {
 type LowerCaseEnum int32
 
 const (
-	LowerCaseEnumWith      LowerCaseEnum = 0
-	LowerCaseEnumLowerCase LowerCaseEnum = 1
-	LowerCaseEnumItems     LowerCaseEnum = 2
+	LowerCaseEnumContaining LowerCaseEnum = 0
+	LowerCaseEnumLowerCase  LowerCaseEnum = 1
+	LowerCaseEnumItems      LowerCaseEnum = 2
 )
 
 func (v LowerCaseEnum) ToWire() (wire.Value, error) {
@@ -268,7 +268,7 @@ func (v LowerCaseEnum) String() string {
 	w := int32(v)
 	switch w {
 	case 0:
-		return "with"
+		return "containing"
 	case 1:
 		return "lower_case"
 	case 2:

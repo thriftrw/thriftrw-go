@@ -65,27 +65,74 @@ func TestParseComments(t *testing.T) {
 }
 
 func TestParseErrors(t *testing.T) {
-	tests := []string{
-		"namespace foo \x00",
-		`const string 42 = "foo"`,
-		`typedef foo bar baz`,
-		`typedef foo`,
-		`enum Foo {`,
-		`enum { }`,
-		`
-			enum Foo {}
-			include "bar.thrift"
-		`,
-		`service Foo extends {}`,
-		`service Foo Bar {}`,
-		`service Foo { void foo() () (foo = "bar") }`,
-		`service Foo { void foo() throws }`,
-		`typedef string (foo =) UUID`,
+	tests := []struct {
+		give       string
+		wantErrors []string
+	}{
+		{
+			give:       "namespace foo \x00",
+			wantErrors: []string{"line 1: unknown token at index 14"},
+		},
+		{
+			give:       `const string 42 = "foo"`,
+			wantErrors: []string{"line 1:", "unexpected INTCONSTANT, expecting IDENTIFIER"},
+		},
+		{
+			give:       `typedef foo bar baz`,
+			wantErrors: []string{"line 1:", "unexpected IDENTIFIER"},
+		},
+		{
+			give:       `typedef foo`,
+			wantErrors: []string{"line 1:", "unexpected $end"},
+		},
+		{
+			give:       `enum Foo {`,
+			wantErrors: []string{"line 1:", "unexpected $end"},
+		},
+		{
+			give:       `enum { }`,
+			wantErrors: []string{"line 1:", "unexpected '{'"},
+		},
+		{
+			give: `
+				enum Foo {}
+				include "bar.thrift"
+			`,
+			wantErrors: []string{"line 3:", "unexpected INCLUDE"},
+		},
+		{
+			give:       `service Foo extends {}`,
+			wantErrors: []string{"line 1:", "unexpected '{'"},
+		},
+		{
+			give:       `service Foo Bar {}`,
+			wantErrors: []string{"line 1:", "unexpected IDENTIFIER"},
+		},
+		{
+			give:       `service Foo { void foo() () (foo = "bar") }`,
+			wantErrors: []string{"line 1:", "unexpected '('"},
+		},
+		{
+			give:       `service Foo { void foo() throws }`,
+			wantErrors: []string{"line 1:", "unexpected '}'"},
+		},
+		{
+			give:       `typedef string (foo =) UUID`,
+			wantErrors: []string{"line 1:", "unexpected ')'"},
+		},
+		{
+			give:       `union Operation { 1: Insert insert; 2: Delete delete }`,
+			wantErrors: []string{"line 1:", `"delete" is a reserved keyword`},
+		},
 	}
 
 	for _, tt := range tests {
-		_, err := Parse([]byte(tt))
-		assert.Error(t, err, "Expected error while parsing:\n%s", tt)
+		_, err := Parse([]byte(tt.give))
+		if assert.Error(t, err, "expected error while parsing:\n%s", tt.give) {
+			for _, msg := range tt.wantErrors {
+				assert.Contains(t, err.Error(), msg, "error for %q must contain %q", tt.give, err.Error(), msg)
+			}
+		}
 	}
 }
 
@@ -148,6 +195,9 @@ func TestParseConstants(t *testing.T) {
 				const string baz = "hello world";
 
 				const double qux = 3.141592
+
+				// def is reserved but def_ is not
+				const double def_ = 1.23
 			`,
 			&Program{Definitions: []Definition{
 				&Constant{
@@ -176,6 +226,12 @@ func TestParseConstants(t *testing.T) {
 					Type:  BaseType{ID: DoubleTypeID},
 					Value: ConstantDouble(3.141592),
 					Line:  7,
+				},
+				&Constant{
+					Name:  "def_",
+					Type:  BaseType{ID: DoubleTypeID},
+					Value: ConstantDouble(1.23),
+					Line:  10,
 				},
 			}},
 		},

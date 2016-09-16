@@ -33,5 +33,5 @@ enum RecordType {
 }
 
 enum lowerCaseEnum {
-    with, lower_case, items
+    containing, lower_case, items
 }
