@@ -4,7 +4,7 @@ Releases
 v0.3.0 (unreleased)
 ------------------
 
--   **Breaking**: Most keywords reserved by Apache Thrift are now disallowed as
+-   **Breaking**: Keywords reserved by Apache Thrift are now disallowed as
     identifiers in Thrift files.
 
 
