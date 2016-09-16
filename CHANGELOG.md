@@ -1,7 +1,14 @@
 Releases
 ========
 
-v0.2.0 (unreleased)
+v0.3.0 (unreleased)
+------------------
+
+-   **Breaking**: Most keywords reserved by Apache Thrift are now disallowed as
+    identifiers in Thrift files.
+
+
+v0.2.0 (2016-09-09)
 -------------------
 
 -   Added a `-v`/`--version` flag.
