@@ -57,6 +57,8 @@ type genOptions struct {
 }
 
 func main() {
+	log.SetFlags(0) // don't include timestamps, etc. in the output
+
 	var opts options
 
 	parser := flags.NewParser(&opts, flags.Default)
@@ -80,9 +82,9 @@ func main() {
 	inputFile := args[0]
 	if _, err := os.Stat(inputFile); err != nil {
 		if os.IsNotExist(err) {
-			log.Fatalf("file %q does not exist: %v", inputFile, err)
+			log.Fatalf("File %q does not exist: %v", inputFile, err)
 		}
-		log.Fatalf("error describing file %q: %v", inputFile, err)
+		log.Fatalf("Could not stat file %q: %v", inputFile, err)
 	}
 
 	gopts := opts.GOpts
@@ -91,39 +93,50 @@ func main() {
 	}
 	gopts.OutputDirectory, err = filepath.Abs(gopts.OutputDirectory)
 	if err != nil {
-		log.Fatalf("could not resolve path %q: %v", gopts.OutputDirectory, err)
+		log.Fatalf("Unable to resolve absolute path for %q: %v", gopts.OutputDirectory, err)
 	}
 
 	if gopts.PackagePrefix == "" {
 		gopts.PackagePrefix, err = determinePackagePrefix(gopts.OutputDirectory)
 		if err != nil {
-			log.Fatalf("could not determine the package prefix: %v", err)
+			log.Fatalf(
+				"Could not determine a package prefix automatically: %v\n"+
+					"A package prefix is required to use correct import paths in the generated code.\n"+
+					"Use the --pkg-prefix option to provide a package prefix manually.", err)
 		}
 	}
 
 	module, err := compile.Compile(inputFile)
 	if err != nil {
-		log.Fatal(err)
+		// TODO(abg): For nested compile errors, split causal chain across
+		// multiple lines.
+		log.Fatalf("Failed to compile %q: %v", inputFile, err)
 	}
 
 	if gopts.ThriftRoot == "" {
 		gopts.ThriftRoot, err = findCommonAncestor(module)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf(
+				"Could not find a common parent directory for %q and the Thrift files "+
+					"imported by it.\nThis directory is required to generate a consistent "+
+					"hierarchy for generated packages.\nUse the --thrift-root option to "+
+					"provide this path.", err)
 		}
 	} else {
 		gopts.ThriftRoot, err = filepath.Abs(gopts.ThriftRoot)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatalf("Unable to resolve absolute path for %q: %v", gopts.ThriftRoot, err)
 		}
 		if err := verifyAncestry(module, gopts.ThriftRoot); err != nil {
-			log.Fatal(err)
+			log.Fatalf(
+				"An included Thrift file is not contained in the %q directory tree: %v",
+				gopts.ThriftRoot, err)
 		}
 	}
 
 	pluginHandle, err := gopts.Plugins.Handle()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to initialize plugins: %v", err)
 	}
 
 	if gopts.GeneratePluginAPI {
@@ -141,7 +154,7 @@ func main() {
 		Plugin:        pluginHandle,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {
-		log.Fatal(err)
+		log.Fatalf("Failed to generate code: %v", err)
 	}
 }
 
