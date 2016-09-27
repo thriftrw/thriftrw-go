@@ -23,6 +23,7 @@ package goast
 import (
 	"go/build"
 	"path/filepath"
+	"strings"
 )
 
 // DeterminePackageName determines the name of the package at the given import
@@ -35,7 +36,15 @@ func DeterminePackageName(importPath string) string {
 
 	pkg, err := build.Import(importPath, "", 0)
 	if err != nil {
-		return filepath.Base(importPath)
+		return guessPackageName(importPath)
 	}
 	return pkg.Name
+}
+
+func guessPackageName(importPath string) string {
+	packageName := filepath.Base(importPath)
+	if strings.HasSuffix(packageName, "-go") {
+		packageName = packageName[:len(packageName)-3]
+	}
+	return strings.Replace(packageName, "-", "_", -1)
 }

@@ -26,6 +26,7 @@ import (
 	"go/parser"
 	"go/printer"
 	"go/token"
+	"path/filepath"
 	"sort"
 	"text/template"
 
@@ -124,8 +125,9 @@ func (g *goFileGenerator) Import(path string) string {
 		importedName = fmt.Sprintf("%s%d", name, i)
 	}
 
-	if importedName == name {
-		// Package name is available so no named import
+	if importedName == name && name == filepath.Base(path) {
+		// Package name is available and matches the base name, so we won't do
+		// a named import. We'll use named imports for all other cases.
 		g.imports[path] = ""
 	} else {
 		g.imports[path] = importedName
