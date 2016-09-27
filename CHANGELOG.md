@@ -1,7 +1,17 @@
 Releases
 ========
 
-v0.2.0 (unreleased)
+v0.2.1 (2016-09-27)
+-------------------
+
+-   Plugin templates: Fixed a bug where imports in templates would use the base
+    name of the package even if it had a hyphen in it if it wasn't available on
+    the `GOPATH`.
+-   Plugin templates: Imports in generated code are now always qualified if the
+    package name doesn't match the base name.
+
+
+v0.2.0 (2016-09-09)
 -------------------
 
 -   Added a `-v`/`--version` flag.

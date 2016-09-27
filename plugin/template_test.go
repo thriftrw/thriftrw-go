@@ -182,6 +182,48 @@ func TestGoFileFromTemplate(t *testing.T) {
 				`}`,
 			),
 		},
+		{
+			desc: "import with dash",
+			template: `
+				package hello
+
+				<$yarpc := import "github.com/yarpc/yarpc-go">
+
+				func Hello() <$yarpc>.ReqMeta {
+					return nil
+				}
+			`,
+			wantBody: unlines(
+				`package hello`,
+				``,
+				`import yarpc "github.com/yarpc/yarpc-go"`,
+				``,
+				`func Hello() yarpc.ReqMeta {`,
+				`	return nil`,
+				`}`,
+			),
+		},
+		{
+			desc: "import with dash and conflict",
+			template: `
+				package hello
+
+				<$foo1 := import "github.com/thriftrw/thriftrw-go/foo-bar">
+				<$foo2 := import "github.com/thriftrw/thriftrw-go/foo_bar">
+
+				var x <$foo1>.Foo1 = <$foo2>.Foo2
+			`,
+			wantBody: unlines(
+				`package hello`,
+				``,
+				`import (`,
+				`	foo_bar "github.com/thriftrw/thriftrw-go/foo-bar"`,
+				`	foo_bar2 "github.com/thriftrw/thriftrw-go/foo_bar"`,
+				`)`,
+				``,
+				`var x foo_bar.Foo1 = foo_bar2.Foo2`,
+			),
+		},
 	}
 
 	for _, tt := range tests {
