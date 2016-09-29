@@ -184,12 +184,12 @@ func (g *goFileGenerator) FormatType(t *api.Type) (string, error) {
 		v, err := g.FormatType(t.MapType.Right)
 		return fmt.Sprintf("map[%v]%v", k, v), err
 	case t.ReferenceType != nil:
-		if g.importPath == t.ReferenceType.Package {
+		if g.importPath == t.ReferenceType.ImportPath {
 			// Target is in the same package. No need to import.
 			return t.ReferenceType.Name, nil
 		}
 
-		importName := g.Import(t.ReferenceType.Package)
+		importName := g.Import(t.ReferenceType.ImportPath)
 		return importName + "." + t.ReferenceType.Name, nil
 	case t.PointerType != nil:
 		v, err := g.FormatType(t.PointerType)

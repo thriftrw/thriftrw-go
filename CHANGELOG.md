@@ -7,6 +7,8 @@ v0.3.0 (unreleased)
 -   **Breaking**: Renamed project to `go.uber.org/thriftrw`.
 -   **Breaking**: Keywords reserved by Apache Thrift are now disallowed as
     identifiers in Thrift files.
+-   **Breaking**: The `Package` field of the `plugin.TypeReference`,
+    `plugin.Service`, and `plugin.Module` structs was renamed to `ImportPath`.
 
 
 v0.2.1 (2016-09-27)
