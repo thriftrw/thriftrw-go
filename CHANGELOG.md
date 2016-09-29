@@ -4,6 +4,7 @@ Releases
 v0.3.0 (unreleased)
 ------------------
 
+-   **Breaking**: Renamed project to `go.uber.org/thriftrw`.
 -   **Breaking**: Keywords reserved by Apache Thrift are now disallowed as
     identifiers in Thrift files.
 
