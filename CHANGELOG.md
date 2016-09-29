@@ -1,7 +1,7 @@
 Releases
 ========
 
-v0.3.0 (unreleased)
+v0.3.0 (2016-11-29)
 ------------------
 
 -   **Breaking**: Renamed project to `go.uber.org/thriftrw`.
