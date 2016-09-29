@@ -1,7 +1,7 @@
 WANT_VERSION = $(shell grep '^v[0-9]' CHANGELOG.md | head -n1 | cut -d' ' -f1)
 
 # Minor versions of Go for which the lint check should be run.
-LINTABLE_MINOR_VERSIONS := 6
+LINTABLE_MINOR_VERSIONS := 7
 
 # Paths besides auto-detected generated files that should be excluded from
 # lint results. If generated code uses '//line' directives with a different
