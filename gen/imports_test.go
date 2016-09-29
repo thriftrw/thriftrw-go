@@ -31,11 +31,11 @@ func TestImport(t *testing.T) {
 	tests := [][]struct{ Path, Name string }{
 		{
 			{
-				Path: "github.com/thriftrw/thriftrw-go/wire",
+				Path: "go.uber.org/thriftrw/wire",
 				Name: "wire",
 			},
 			{
-				Path: "github.com/thriftrw/thriftrw-go/another/wire",
+				Path: "go.uber.org/thriftrw/another/wire",
 				Name: "wire2",
 			},
 		},
@@ -55,7 +55,7 @@ func TestImport(t *testing.T) {
 				Name: "yarpc",
 			},
 			{
-				Path: "github.com/thriftrw/thriftrw-go/yarpc",
+				Path: "go.uber.org/thriftrw/yarpc",
 				Name: "yarpc2",
 			},
 		},

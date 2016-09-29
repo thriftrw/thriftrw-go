@@ -20,7 +20,7 @@
 
 package plugin
 
-import "github.com/thriftrw/thriftrw-go/plugin/api"
+import "go.uber.org/thriftrw/plugin/api"
 
 // EmptyHandle is a no-op Handle that does not do anything.
 var EmptyHandle Handle = emptyHandle{}

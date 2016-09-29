@@ -20,7 +20,7 @@
 
 package gen
 
-import "github.com/thriftrw/thriftrw-go/compile"
+import "go.uber.org/thriftrw/compile"
 
 // listGenerator generates logic to convert lists of arbitrary Thrift types to
 // and from ValueLists.
@@ -49,7 +49,7 @@ func (l *listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, 
 
 	err := g.DeclareFromTemplate(
 		`
-			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+			<$wire := import "go.uber.org/thriftrw/wire">
 			type <.Name> <typeReference .Spec>
 
 			<$i := newVar "i">
@@ -114,7 +114,7 @@ func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, err
 
 	err := g.DeclareFromTemplate(
 		`
-			<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+			<$wire := import "go.uber.org/thriftrw/wire">
 			<$listType := typeReference .Spec>
 
 			<$l := newVar "l">

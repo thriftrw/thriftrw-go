@@ -25,7 +25,7 @@ package envelopetest
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	wire "github.com/thriftrw/thriftrw-go/wire"
+	wire "go.uber.org/thriftrw/wire"
 )
 
 // Mock of Handler interface

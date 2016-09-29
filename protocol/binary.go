@@ -23,8 +23,8 @@ package protocol
 import (
 	"io"
 
-	"github.com/thriftrw/thriftrw-go/protocol/binary"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/protocol/binary"
+	"go.uber.org/thriftrw/wire"
 )
 
 // Binary implements the Thrift Binary Protocol.

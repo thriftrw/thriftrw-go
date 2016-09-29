@@ -25,7 +25,7 @@ import (
 	"io"
 	"math"
 
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/wire"
 )
 
 // Requests for byte slices longer than this will use a dynamically resizing

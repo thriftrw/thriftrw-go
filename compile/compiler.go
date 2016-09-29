@@ -23,8 +23,8 @@ package compile
 import (
 	"path/filepath"
 
-	"github.com/thriftrw/thriftrw-go/ast"
-	"github.com/thriftrw/thriftrw-go/idl"
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/idl"
 )
 
 // Compile parses and compiles the Thrift file at the given path and any other

@@ -9,9 +9,9 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	. "github.com/thriftrw/thriftrw-go/internal/plugin"
-	"github.com/thriftrw/thriftrw-go/internal/plugin/handletest"
-	"github.com/thriftrw/thriftrw-go/plugin/api"
+	. "go.uber.org/thriftrw/internal/plugin"
+	"go.uber.org/thriftrw/internal/plugin/handletest"
+	"go.uber.org/thriftrw/plugin/api"
 )
 
 func TestMultiHandleClose(t *testing.T) {
@@ -203,7 +203,7 @@ func TestMultiServiceGeneratorGenerate(t *testing.T) {
 		Services: map[api.ServiceID]*api.Service{
 			1: {
 				Name:      "KeyValue",
-				Package:   "github.com/thriftrw/thriftrw-go/foo/keyvalue",
+				Package:   "go.uber.org/thriftrw/foo/keyvalue",
 				Directory: "foo/keyvalue",
 				Functions: []*api.Function{},
 				ModuleID:  api.ModuleID(1),
@@ -211,7 +211,7 @@ func TestMultiServiceGeneratorGenerate(t *testing.T) {
 		},
 		Modules: map[api.ModuleID]*api.Module{
 			1: {
-				Package:   "github.com/thriftrw/thriftrw-go/foo",
+				Package:   "go.uber.org/thriftrw/foo",
 				Directory: "foo",
 			},
 		},

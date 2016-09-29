@@ -29,9 +29,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/thriftrw/thriftrw-go/compile"
-	"github.com/thriftrw/thriftrw-go/internal"
-	"github.com/thriftrw/thriftrw-go/internal/plugin"
+	"go.uber.org/thriftrw/compile"
+	"go.uber.org/thriftrw/internal"
+	"go.uber.org/thriftrw/internal/plugin"
 )
 
 // Options controls how code gets generated.

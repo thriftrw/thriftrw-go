@@ -1,7 +1,7 @@
 %{
 package internal
 
-import "github.com/thriftrw/thriftrw-go/ast"
+import "go.uber.org/thriftrw/ast"
 %}
 
 %union {

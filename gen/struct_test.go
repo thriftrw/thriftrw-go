@@ -26,13 +26,13 @@ import (
 	"reflect"
 	"testing"
 
-	tc "github.com/thriftrw/thriftrw-go/gen/testdata/containers"
-	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
-	tx "github.com/thriftrw/thriftrw-go/gen/testdata/exceptions"
-	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
-	td "github.com/thriftrw/thriftrw-go/gen/testdata/typedefs"
-	tu "github.com/thriftrw/thriftrw-go/gen/testdata/unions"
-	"github.com/thriftrw/thriftrw-go/wire"
+	tc "go.uber.org/thriftrw/gen/testdata/containers"
+	te "go.uber.org/thriftrw/gen/testdata/enums"
+	tx "go.uber.org/thriftrw/gen/testdata/exceptions"
+	ts "go.uber.org/thriftrw/gen/testdata/structs"
+	td "go.uber.org/thriftrw/gen/testdata/typedefs"
+	tu "go.uber.org/thriftrw/gen/testdata/unions"
+	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
 )

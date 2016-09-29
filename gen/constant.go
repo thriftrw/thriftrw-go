@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/compile"
 )
 
 // Constant generates code for `const` expressions in Thrift files.

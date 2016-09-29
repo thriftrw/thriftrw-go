@@ -25,7 +25,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/thriftrw/thriftrw-go/internal"
+	"go.uber.org/thriftrw/internal"
 )
 
 var (

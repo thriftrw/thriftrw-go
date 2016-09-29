@@ -23,7 +23,7 @@ package gen
 import (
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/compile"
 )
 
 // WireGenerator is responsible for generating code that knows how to convert
@@ -41,7 +41,7 @@ type WireGenerator struct {
 // ToWire generates an expression of type (Value, error) object containing the
 // wire representation of the variable $varName of type $spec or an error.
 func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName string) (string, error) {
-	wire := g.Import("github.com/thriftrw/thriftrw-go/wire")
+	wire := g.Import("go.uber.org/thriftrw/wire")
 	switch spec {
 	case compile.BoolSpec:
 		return fmt.Sprintf("%s.NewValueBool(%s), error(nil)", wire, varName), nil
@@ -227,7 +227,7 @@ func (w *WireGenerator) FromWirePtr(g Generator, spec compile.TypeSpec, lhs stri
 // TypeCode gets an expression of type 'wire.Type' that represents the
 // over-the-wire type code for the given TypeSpec.
 func TypeCode(g Generator, spec compile.TypeSpec) string {
-	wire := g.Import("github.com/thriftrw/thriftrw-go/wire")
+	wire := g.Import("go.uber.org/thriftrw/wire")
 	spec = compile.RootTypeSpec(spec)
 
 	switch spec {

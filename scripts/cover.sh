@@ -3,7 +3,7 @@
 set -e
 
 COVER=cover
-ROOT_PKG=github.com/thriftrw/thriftrw-go/
+ROOT_PKG=go.uber.org/thriftrw
 
 if [[ -d "$COVER" ]]; then
 	rm -rf "$COVER"

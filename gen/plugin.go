@@ -24,8 +24,8 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/thriftrw/thriftrw-go/compile"
-	"github.com/thriftrw/thriftrw-go/plugin/api"
+	"go.uber.org/thriftrw/compile"
+	"go.uber.org/thriftrw/plugin/api"
 )
 
 type serviceName string

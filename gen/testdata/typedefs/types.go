@@ -6,9 +6,9 @@ package typedefs
 import (
 	"errors"
 	"fmt"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/enums"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/structs"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/gen/testdata/enums"
+	"go.uber.org/thriftrw/gen/testdata/structs"
+	"go.uber.org/thriftrw/wire"
 	"strings"
 )
 

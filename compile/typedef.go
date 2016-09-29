@@ -21,8 +21,8 @@
 package compile
 
 import (
-	"github.com/thriftrw/thriftrw-go/ast"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/wire"
 )
 
 // TypedefSpec represents an alias to another type in the Thrift file.

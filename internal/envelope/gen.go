@@ -20,4 +20,4 @@
 
 package envelope
 
-//go:generate thriftrw-go exception.thrift
+//go:generate thriftrw exception.thrift

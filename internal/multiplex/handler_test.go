@@ -3,9 +3,9 @@ package multiplex
 import (
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/internal/envelope"
-	"github.com/thriftrw/thriftrw-go/internal/envelope/envelopetest"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/internal/envelope"
+	"go.uber.org/thriftrw/internal/envelope/envelopetest"
+	"go.uber.org/thriftrw/wire"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"

@@ -23,7 +23,7 @@ package compile
 import (
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/ast"
+	"go.uber.org/thriftrw/ast"
 )
 
 // fieldRequiredness controls how fields treat required/optional specifiers.

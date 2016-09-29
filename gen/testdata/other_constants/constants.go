@@ -3,7 +3,7 @@
 
 package other_constants
 
-import "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
+import "go.uber.org/thriftrw/gen/testdata/structs"
 
 var ListOfInts []int32 = []int32{1, 2, 3}
 

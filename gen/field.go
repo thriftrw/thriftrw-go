@@ -23,7 +23,7 @@ package gen
 import (
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/compile"
 )
 
 // fieldGroupGenerator is responsible for generating code for FieldGroups.
@@ -88,7 +88,7 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 func (f fieldGroupGenerator) ToWire(g Generator) error {
 	return g.DeclareFromTemplate(
 		`
-		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$v := newVar "v">
 		func (<$v> *<.Name>) ToWire() (<$wire>.Value, error) {
@@ -177,7 +177,7 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 func (f fieldGroupGenerator) FromWire(g Generator) error {
 	return g.DeclareFromTemplate(
 		`
-		<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$v := newVar "v">
 		<$w := newVar "w">
