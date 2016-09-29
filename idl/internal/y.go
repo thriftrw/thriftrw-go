@@ -27,7 +27,7 @@ package internal
 import __yyfmt__ "fmt"
 
 //line thrift.y:2
-import "github.com/thriftrw/thriftrw-go/ast"
+import "go.uber.org/thriftrw/ast"
 
 //line thrift.y:7
 type yySymType struct {

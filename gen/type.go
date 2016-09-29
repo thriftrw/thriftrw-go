@@ -23,7 +23,7 @@ package gen
 import (
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/compile"
 )
 
 // TypeDefinition generates code for the given TypeSpec.
@@ -41,7 +41,7 @@ func TypeDefinition(g Generator, spec compile.TypeSpec) error {
 }
 
 // isHashable returns true if the given type is considered hashable by
-// thriftrw-go.
+// thriftrw.
 //
 // Only primitive types, enums, and typedefs of other hashable types are
 // considered hashable.

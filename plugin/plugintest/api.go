@@ -19,13 +19,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-// Source: github.com/thriftrw/thriftrw-go/plugin/api (interfaces: Plugin,ServiceGenerator)
+// Source: go.uber.org/thriftrw/plugin/api (interfaces: Plugin,ServiceGenerator)
 
 package plugintest
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	api "github.com/thriftrw/thriftrw-go/plugin/api"
+	api "go.uber.org/thriftrw/plugin/api"
 )
 
 // Mock of Plugin interface

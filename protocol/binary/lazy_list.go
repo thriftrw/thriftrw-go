@@ -23,7 +23,7 @@ package binary
 import (
 	"sync"
 
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/wire"
 )
 
 var (

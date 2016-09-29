@@ -20,4 +20,4 @@
 
 package plugintest
 
-//go:generate mockgen -destination plugintest/api.go -package plugintest github.com/thriftrw/thriftrw-go/plugin/api Plugin,ServiceGenerator
+//go:generate mockgen -destination plugintest/api.go -package plugintest go.uber.org/thriftrw/plugin/api Plugin,ServiceGenerator

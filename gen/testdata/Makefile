@@ -1,5 +1,5 @@
 ROOT = ../..
-THRIFTRW = $(ROOT)/thriftrw-go
+THRIFTRW = $(ROOT)/thriftrw
 THRIFT_FILES = $(wildcard thrift/*.thrift)
 PACKAGES = $(patsubst %.thrift, %, $(notdir $(THRIFT_FILES)))
 

@@ -23,10 +23,10 @@ package gen
 import (
 	"testing"
 
-	tc "github.com/thriftrw/thriftrw-go/gen/testdata/containers"
-	te "github.com/thriftrw/thriftrw-go/gen/testdata/enums"
-	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
-	"github.com/thriftrw/thriftrw-go/wire"
+	tc "go.uber.org/thriftrw/gen/testdata/containers"
+	te "go.uber.org/thriftrw/gen/testdata/enums"
+	ts "go.uber.org/thriftrw/gen/testdata/structs"
+	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

@@ -27,10 +27,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/thriftrw/thriftrw-go/compile"
-	"github.com/thriftrw/thriftrw-go/internal/plugin"
-	"github.com/thriftrw/thriftrw-go/internal/plugin/handletest"
-	"github.com/thriftrw/thriftrw-go/plugin/api"
+	"go.uber.org/thriftrw/compile"
+	"go.uber.org/thriftrw/internal/plugin"
+	"go.uber.org/thriftrw/internal/plugin/handletest"
+	"go.uber.org/thriftrw/plugin/api"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -61,12 +61,12 @@ func TestGenerateWithRelativePaths(t *testing.T) {
 	opts := []*Options{
 		{
 			OutputDir:     outputDir,
-			PackagePrefix: "github.com/thriftrw/thriftrw-go/gen",
+			PackagePrefix: "go.uber.org/thriftrw/gen",
 			ThriftRoot:    "testdata",
 		},
 		{
 			OutputDir:     "testdata",
-			PackagePrefix: "github.com/thriftrw/thriftrw-go/gen",
+			PackagePrefix: "go.uber.org/thriftrw/gen",
 			ThriftRoot:    thriftRoot,
 		},
 	}
@@ -227,7 +227,7 @@ func TestGenerate(t *testing.T) {
 
 			err = Generate(module, &Options{
 				OutputDir:     outputDir,
-				PackagePrefix: "github.com/thriftrw/thriftrw-go/gen/testdata",
+				PackagePrefix: "go.uber.org/thriftrw/gen/testdata",
 				ThriftRoot:    testdata(t, "thrift"),
 				Plugin:        p,
 				NoRecurse:     tt.noRecurse,

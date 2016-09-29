@@ -24,7 +24,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/ast"
+	"go.uber.org/thriftrw/ast"
 )
 
 // ConstantValue represents a compiled constant value or a reference to one.

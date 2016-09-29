@@ -24,9 +24,9 @@
 package servicegenerator
 
 import (
-	"github.com/thriftrw/thriftrw-go/internal/envelope"
-	"github.com/thriftrw/thriftrw-go/wire"
-	"github.com/thriftrw/thriftrw-go/plugin/api"
+	"go.uber.org/thriftrw/internal/envelope"
+	"go.uber.org/thriftrw/wire"
+	"go.uber.org/thriftrw/plugin/api"
 )
 
 // Client implements a ServiceGenerator client.

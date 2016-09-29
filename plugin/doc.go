@@ -26,7 +26,7 @@
 // 	// thriftrw-plugin-myfancyplugin/main.go
 // 	package main
 //
-// 	import "github.com/thriftrw/thriftrw-go/plugin"
+// 	import "go.uber.org/thriftrw/plugin"
 //
 // 	func main() {
 // 		plugin.Main(&plugin.Plugin{
@@ -39,10 +39,10 @@
 // struct. Plugins must be installed and available on the $PATH before they
 // can be used. To use a plugin, pass its name in with the -p/--plugin option.
 //
-// 	thriftrw-go --plugin=myfancyplugin foo.thrift
+// 	thriftrw --plugin=myfancyplugin foo.thrift
 //
 // Arguments may be sent to plugins by including them in the name. These are
 // passed through to the plugin process as command line arguments.
 //
-// 	thriftrw-go --plugin='myfancyplugin --useContext'
+// 	thriftrw --plugin='myfancyplugin --useContext'
 package plugin

@@ -6,8 +6,8 @@ package containers
 import (
 	"errors"
 	"fmt"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/enums"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/gen/testdata/enums"
+	"go.uber.org/thriftrw/wire"
 	"strings"
 )
 

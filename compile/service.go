@@ -21,8 +21,8 @@
 package compile
 
 import (
-	"github.com/thriftrw/thriftrw-go/ast"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/wire"
 )
 
 // ServiceSpec is a collection of named functions.

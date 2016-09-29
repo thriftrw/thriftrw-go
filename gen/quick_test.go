@@ -27,8 +27,8 @@ import (
 	"testing/quick"
 	"time"
 
-	tc "github.com/thriftrw/thriftrw-go/gen/testdata/containers"
-	ts "github.com/thriftrw/thriftrw-go/gen/testdata/structs"
+	tc "go.uber.org/thriftrw/gen/testdata/containers"
+	ts "go.uber.org/thriftrw/gen/testdata/structs"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -4,15 +4,15 @@ A Thrift encoding code generator and library for Go.
 
 ## Installation
 
-`go get -u github.com/thriftrw/thriftrw-go`
+`go get -u go.uber.org/thriftrw`
 
 ## Development Status: Alpha
 
 Ready for adventurous users and early adopters, but there will likely be a few
 breaking changes and features required before releasing version 1.0.
 
-[doc-img]: https://godoc.org/github.com/thriftrw/thriftrw-go?status.svg
-[doc]: https://godoc.org/github.com/thriftrw/thriftrw-go
+[doc-img]: https://godoc.org/go.uber.org/thriftrw?status.svg
+[doc]: https://godoc.org/go.uber.org/thriftrw
 [ci-img]: https://travis-ci.org/thriftrw/thriftrw-go.svg?branch=master
 [cov-img]: https://coveralls.io/repos/github/thriftrw/thriftrw-go/badge.svg?branch=master
 [ci]: https://travis-ci.org/thriftrw/thriftrw-go

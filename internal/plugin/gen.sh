@@ -9,14 +9,14 @@ set -x
 #
 # If you see an error like,
 #
-#   2016/08/26 15:13:45 Loading input failed: gob: name not registered for interface: "github.com/thriftrw/thriftrw-go/vendor/github.com/golang/mock/mockgen/model.PredeclaredType"
+#   2016/08/26 15:13:45 Loading input failed: gob: name not registered for interface: "go.uber.org/thriftrw/vendor/github.com/golang/mock/mockgen/model.PredeclaredType"
 #
 # Make sure that the mockgen you're using is the one vendored in your copy of
 # this repo. In the example above, you'll have to do,
 #
-#   go install github.com/thriftrw/thriftrw-go/vendor/github.com/golang/mock/mockgen
+#   go install go.uber.org/thriftrw/vendor/github.com/golang/mock/mockgen
 
-PACKAGE=github.com/thriftrw/thriftrw-go/internal/plugin
+PACKAGE=go.uber.org/thriftrw/internal/plugin
 INTERFACES=Handle,ServiceGenerator
 DESTINATION=handletest/mock.go
 PACKAGENAME=handletest

@@ -63,10 +63,10 @@ endif
 
 .PHONY: verifyVersion
 verifyVersion: build
-	@if [ "$$(./thriftrw-go --version)" != "thriftrw $(WANT_VERSION)" ]; then \
+	@if [ "$$(./thriftrw --version)" != "thriftrw $(WANT_VERSION)" ]; then \
 		echo "Version number in version.go does not match CHANGELOG.md"; \
 		echo "Want: thriftrw $(WANT_VERSION)"; \
-		echo " Got: $$(./thriftrw-go --version)"; \
+		echo " Got: $$(./thriftrw --version)"; \
 		exit 1; \
 	else \
 		echo "thriftrw $(WANT_VERSION)"; \

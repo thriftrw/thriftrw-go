@@ -1,4 +1,4 @@
-package: github.com/thriftrw/thriftrw-go
+package: go.uber.org/thriftrw
 import:
 - package: github.com/uber-go/atomic
 - package: github.com/stretchr/testify

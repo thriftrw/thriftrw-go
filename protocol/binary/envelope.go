@@ -24,7 +24,7 @@ package binary
 import (
 	"fmt"
 
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/wire"
 )
 
 const (

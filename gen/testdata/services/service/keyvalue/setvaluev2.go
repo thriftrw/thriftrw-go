@@ -6,9 +6,9 @@ package keyvalue
 import (
 	"errors"
 	"fmt"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/services"
-	"github.com/thriftrw/thriftrw-go/gen/testdata/unions"
-	"github.com/thriftrw/thriftrw-go/wire"
+	"go.uber.org/thriftrw/gen/testdata/services"
+	"go.uber.org/thriftrw/gen/testdata/unions"
+	"go.uber.org/thriftrw/wire"
 	"strings"
 )
 

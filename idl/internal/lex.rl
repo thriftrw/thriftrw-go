@@ -8,7 +8,7 @@ import (
     "strconv"
     "strings"
 
-    "github.com/thriftrw/thriftrw-go/ast"
+    "go.uber.org/thriftrw/ast"
 )
 
 %%{

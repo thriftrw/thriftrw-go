@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/thriftrw/thriftrw-go/ast"
+	"go.uber.org/thriftrw/ast"
 )
 
 // fileReadError is raised when there's an error reading a file.

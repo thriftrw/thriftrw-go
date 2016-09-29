@@ -28,10 +28,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/thriftrw/thriftrw-go/compile"
-	"github.com/thriftrw/thriftrw-go/gen"
-	"github.com/thriftrw/thriftrw-go/internal/plugin"
-	"github.com/thriftrw/thriftrw-go/internal/plugin/builtin/pluginapigen"
+	"go.uber.org/thriftrw/compile"
+	"go.uber.org/thriftrw/gen"
+	"go.uber.org/thriftrw/internal/plugin"
+	"go.uber.org/thriftrw/internal/plugin/builtin/pluginapigen"
 
 	"github.com/jessevdk/go-flags"
 )

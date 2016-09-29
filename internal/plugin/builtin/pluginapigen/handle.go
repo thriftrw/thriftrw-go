@@ -28,9 +28,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	intplugin "github.com/thriftrw/thriftrw-go/internal/plugin"
-	"github.com/thriftrw/thriftrw-go/plugin"
-	"github.com/thriftrw/thriftrw-go/plugin/api"
+	intplugin "go.uber.org/thriftrw/internal/plugin"
+	"go.uber.org/thriftrw/plugin"
+	"go.uber.org/thriftrw/plugin/api"
 )
 
 // Handle is a plugin.Handle that generates code for the plugin system API.
@@ -141,7 +141,7 @@ const clientTemplate = `
 
 package <basename .Service.Package>
 
-<$envelope := import "github.com/thriftrw/thriftrw-go/internal/envelope">
+<$envelope := import "go.uber.org/thriftrw/internal/envelope">
 <$module   := import (index .Request.Modules .Service.ModuleID).Package>
 
 // Client implements a <.Service.Name> client.
@@ -166,7 +166,7 @@ func NewClient(c <$envelope>.Client) <$module>.<.Service.Name> {
 }
 
 <range .Service.Functions>
-<$wire := import "github.com/thriftrw/thriftrw-go/wire">
+<$wire := import "go.uber.org/thriftrw/wire">
 
 func (c *client) <.Name>(<range .Arguments>
 	_<.Name> <formatType .Type>,<end>
@@ -201,9 +201,9 @@ const handlerTemplate = `
 
 package <basename .Service.Package>
 
-<$envelope := import "github.com/thriftrw/thriftrw-go/internal/envelope">
+<$envelope := import "go.uber.org/thriftrw/internal/envelope">
 <$module   := import (index .Request.Modules .Service.ModuleID).Package>
-<$wire     := import "github.com/thriftrw/thriftrw-go/wire">
+<$wire     := import "go.uber.org/thriftrw/wire">
 
 // Handler serves an implementation of the <.Service.Name> service.
 type Handler struct {

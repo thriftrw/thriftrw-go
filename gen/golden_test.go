@@ -28,7 +28,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/thriftrw/thriftrw-go/compile"
+	"go.uber.org/thriftrw/compile"
 )
 
 func TestCodeIsUpToDate(t *testing.T) {
@@ -59,7 +59,7 @@ func TestCodeIsUpToDate(t *testing.T) {
 
 		err = Generate(module, &Options{
 			OutputDir:     outputDir,
-			PackagePrefix: "github.com/thriftrw/thriftrw-go/gen/testdata",
+			PackagePrefix: "go.uber.org/thriftrw/gen/testdata",
 			ThriftRoot:    thriftRoot,
 			NoRecurse:     true,
 		})
