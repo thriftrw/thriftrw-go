@@ -20,5 +20,5 @@
 
 package plugin
 
-//go:generate thriftrw-go --generate-plugin-api api.thrift
+//go:generate thriftrw --generate-plugin-api api.thrift
 //go:generate ../scripts/updateLicenses.sh
