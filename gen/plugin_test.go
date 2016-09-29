@@ -27,17 +27,17 @@ func TestAddRootService(t *testing.T) {
 				RootServices: []api.ServiceID{1},
 				Services: map[api.ServiceID]*api.Service{
 					1: {
-						Name:      "EmptyService",
-						Package:   "go.uber.org/thriftrw/gen/testdata/empty/service/emptyservice",
-						Directory: "empty/service/emptyservice",
-						Functions: []*api.Function{}, // must be non-nil
-						ModuleID:  1,
+						Name:       "EmptyService",
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/empty/service/emptyservice",
+						Directory:  "empty/service/emptyservice",
+						Functions:  []*api.Function{}, // must be non-nil
+						ModuleID:   1,
 					},
 				},
 				Modules: map[api.ModuleID]*api.Module{
 					1: {
-						Package:   "go.uber.org/thriftrw/gen/testdata/empty",
-						Directory: "empty",
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/empty",
+						Directory:  "empty",
 					},
 				},
 			},
@@ -56,29 +56,29 @@ func TestAddRootService(t *testing.T) {
 				RootServices: []api.ServiceID{2},
 				Services: map[api.ServiceID]*api.Service{
 					1: {
-						Name:      "AbstractService",
-						Package:   "go.uber.org/thriftrw/gen/testdata/common/abstract/service/abstractservice",
-						Directory: "common/abstract/service/abstractservice",
-						Functions: []*api.Function{}, // must be non-nil
-						ModuleID:  1,
+						Name:       "AbstractService",
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/common/abstract/service/abstractservice",
+						Directory:  "common/abstract/service/abstractservice",
+						Functions:  []*api.Function{}, // must be non-nil
+						ModuleID:   1,
 					},
 					2: {
-						Name:      "KeyValue",
-						Package:   "go.uber.org/thriftrw/gen/testdata/kv/service/keyvalue",
-						Directory: "kv/service/keyvalue",
-						ParentID:  (*api.ServiceID)(ptr.Int32(1)),
-						Functions: []*api.Function{}, // must be non-nil
-						ModuleID:  2,
+						Name:       "KeyValue",
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/kv/service/keyvalue",
+						Directory:  "kv/service/keyvalue",
+						ParentID:   (*api.ServiceID)(ptr.Int32(1)),
+						Functions:  []*api.Function{}, // must be non-nil
+						ModuleID:   2,
 					},
 				},
 				Modules: map[api.ModuleID]*api.Module{
 					1: {
-						Package:   "go.uber.org/thriftrw/gen/testdata/common/abstract",
-						Directory: "common/abstract",
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/common/abstract",
+						Directory:  "common/abstract",
 					},
 					2: {
-						Package:   "go.uber.org/thriftrw/gen/testdata/kv",
-						Directory: "kv",
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/kv",
+						Directory:  "kv",
 					},
 				},
 			},
@@ -159,8 +159,8 @@ func TestBuildFunction(t *testing.T) {
 						Type: &api.Type{
 							PointerType: &api.Type{
 								ReferenceType: &api.TypeReference{
-									Name:    "KeyDoesNotExist",
-									Package: "go.uber.org/thriftrw/gen/testdata/keyvalue",
+									Name:       "KeyDoesNotExist",
+									ImportPath: "go.uber.org/thriftrw/gen/testdata/keyvalue",
 								},
 							},
 						},
@@ -381,8 +381,8 @@ func TestBuildType(t *testing.T) {
 				SliceType: &api.Type{
 					PointerType: &api.Type{
 						ReferenceType: &api.TypeReference{
-							Name:    "Foo",
-							Package: "go.uber.org/thriftrw/gen/testdata/foo",
+							Name:       "Foo",
+							ImportPath: "go.uber.org/thriftrw/gen/testdata/foo",
 						},
 					},
 				},
@@ -422,8 +422,8 @@ func TestBuildType(t *testing.T) {
 			required: true,
 			want: &api.Type{
 				ReferenceType: &api.TypeReference{
-					Name:    "Foo",
-					Package: "go.uber.org/thriftrw/gen/testdata/bar",
+					Name:       "Foo",
+					ImportPath: "go.uber.org/thriftrw/gen/testdata/bar",
 				},
 			},
 		},
@@ -441,8 +441,8 @@ func TestBuildType(t *testing.T) {
 			want: &api.Type{
 				PointerType: &api.Type{
 					ReferenceType: &api.TypeReference{
-						Name:    "Foo",
-						Package: "go.uber.org/thriftrw/gen/testdata/bar",
+						Name:       "Foo",
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/bar",
 					},
 				},
 			},
@@ -466,8 +466,8 @@ func TestBuildType(t *testing.T) {
 			want: &api.Type{
 				PointerType: &api.Type{
 					ReferenceType: &api.TypeReference{
-						Name:    "Foo",
-						Package: "go.uber.org/thriftrw/gen/testdata/foo",
+						Name:       "Foo",
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/foo",
 					},
 				},
 			},
@@ -482,8 +482,8 @@ func TestBuildType(t *testing.T) {
 			required: true,
 			want: &api.Type{
 				ReferenceType: &api.TypeReference{
-					Name:    "Foo",
-					Package: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+					Name:       "Foo",
+					ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
 				},
 			},
 		},
@@ -497,8 +497,8 @@ func TestBuildType(t *testing.T) {
 			want: &api.Type{
 				PointerType: &api.Type{
 					ReferenceType: &api.TypeReference{
-						Name:    "Foo",
-						Package: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+						Name:       "Foo",
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
 					},
 				},
 			},
@@ -513,8 +513,8 @@ func TestBuildType(t *testing.T) {
 			required: true,
 			want: &api.Type{
 				ReferenceType: &api.TypeReference{
-					Name:    "Foo",
-					Package: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+					Name:       "Foo",
+					ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
 				},
 			},
 		},
@@ -527,8 +527,8 @@ func TestBuildType(t *testing.T) {
 			},
 			want: &api.Type{
 				ReferenceType: &api.TypeReference{
-					Name:    "Foo",
-					Package: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+					Name:       "Foo",
+					ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
 				},
 			},
 		},

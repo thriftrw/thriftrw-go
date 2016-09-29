@@ -32,8 +32,8 @@ func TestGoFileFromTemplate(t *testing.T) {
 			`,
 			data: &api.Type{
 				ReferenceType: &api.TypeReference{
-					Name:    "Foo",
-					Package: "go.uber.org/thriftrw/bar",
+					Name:       "Foo",
+					ImportPath: "go.uber.org/thriftrw/bar",
 				},
 			},
 			wantBody: unlines(
@@ -55,8 +55,8 @@ func TestGoFileFromTemplate(t *testing.T) {
 			`,
 			data: &api.Type{
 				ReferenceType: &api.TypeReference{
-					Name:    "Foo",
-					Package: "go.uber.org/thriftrw/bar",
+					Name:       "Foo",
+					ImportPath: "go.uber.org/thriftrw/bar",
 				},
 			},
 			options: []TemplateOption{

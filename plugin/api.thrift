@@ -30,7 +30,7 @@ struct TypeReference {
     /**
      * Import path for the package defining this type.
      */
-    2: required string package
+    2: required string importPath
 
     // TODO(abg): Should this just be using ModuleID instead of a package?
 }
@@ -157,7 +157,7 @@ struct Service {
     /**
      * Import path for the package defining this service.
      */
-    2: required string package
+    2: required string importPath
     /**
      * Path to the directory containing code for this service.
      *
@@ -189,7 +189,7 @@ struct Module {
     /**
      * Import path for the package defining the types for this module.
      */
-    1: required string package
+    1: required string importPath
     /**
      * Path to the directory containing the code for this module.
      *

@@ -104,8 +104,8 @@ func (g *generateServiceBuilder) addModule(thriftPath string) (api.ModuleID, err
 	}
 
 	g.Modules[id] = &api.Module{
-		Package:   importPath,
-		Directory: dir,
+		ImportPath: importPath,
+		Directory:  dir,
 	}
 	return id, nil
 }
@@ -162,12 +162,12 @@ func (g *generateServiceBuilder) addService(spec *compile.ServiceSpec) (api.Serv
 	}
 
 	g.Services[serviceID] = &api.Service{
-		Name:      spec.Name,
-		Package:   importPath,
-		Directory: dir,
-		ParentID:  parentID,
-		Functions: functions,
-		ModuleID:  moduleID,
+		Name:       spec.Name,
+		ImportPath: importPath,
+		Directory:  dir,
+		ParentID:   parentID,
+		Functions:  functions,
+		ModuleID:   moduleID,
 	}
 	return serviceID, nil
 }
@@ -300,8 +300,8 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 
 		t = &api.Type{
 			ReferenceType: &api.TypeReference{
-				Name:    goCase(s.Name),
-				Package: importPath,
+				Name:       goCase(s.Name),
+				ImportPath: importPath,
 			},
 		}
 		if !required {
@@ -318,8 +318,8 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 		return &api.Type{
 			PointerType: &api.Type{
 				ReferenceType: &api.TypeReference{
-					Name:    goCase(s.Name),
-					Package: importPath,
+					Name:       goCase(s.Name),
+					ImportPath: importPath,
 				},
 			},
 		}, nil
@@ -332,8 +332,8 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 
 		t = &api.Type{
 			ReferenceType: &api.TypeReference{
-				Name:    goCase(s.Name),
-				Package: importPath,
+				Name:       goCase(s.Name),
+				ImportPath: importPath,
 			},
 		}
 

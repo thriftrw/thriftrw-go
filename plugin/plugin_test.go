@@ -96,17 +96,17 @@ func TestServiceGenerator(t *testing.T) {
 		RootServices: []api.ServiceID{1},
 		Services: map[api.ServiceID]*api.Service{
 			1: {
-				Name:      "MyService",
-				Package:   "go.uber.org/thriftrw/plugin/fake/myservice",
-				Directory: "fake/myservice",
-				Functions: []*api.Function{},
-				ParentID:  (*api.ServiceID)(ptr.Int32(2)),
-				ModuleID:  1,
+				Name:       "MyService",
+				ImportPath: "go.uber.org/thriftrw/plugin/fake/myservice",
+				Directory:  "fake/myservice",
+				Functions:  []*api.Function{},
+				ParentID:   (*api.ServiceID)(ptr.Int32(2)),
+				ModuleID:   1,
 			},
 			2: {
-				Name:      "BaseService",
-				Package:   "go.uber.org/thriftrw/plugin/fake/baseservice",
-				Directory: "fake/baseservice",
+				Name:       "BaseService",
+				ImportPath: "go.uber.org/thriftrw/plugin/fake/baseservice",
+				Directory:  "fake/baseservice",
 				Functions: []*api.Function{
 					{
 						Name:       "Healthy",
@@ -119,8 +119,8 @@ func TestServiceGenerator(t *testing.T) {
 		},
 		Modules: map[api.ModuleID]*api.Module{
 			1: {
-				Package:   "go.uber.org/thriftrw/plugin/fake",
-				Directory: "fake",
+				ImportPath: "go.uber.org/thriftrw/plugin/fake",
+				Directory:  "fake",
 			},
 		},
 	}

@@ -891,8 +891,8 @@ func (v *HandshakeResponse) String() string {
 }
 
 type Module struct {
-	Package   string `json:"package"`
-	Directory string `json:"directory"`
+	ImportPath string `json:"importPath"`
+	Directory  string `json:"directory"`
 }
 
 func (v *Module) ToWire() (wire.Value, error) {
@@ -902,7 +902,7 @@ func (v *Module) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
-	w, err = wire.NewValueString(v.Package), error(nil)
+	w, err = wire.NewValueString(v.ImportPath), error(nil)
 	if err != nil {
 		return w, err
 	}
@@ -919,17 +919,17 @@ func (v *Module) ToWire() (wire.Value, error) {
 
 func (v *Module) FromWire(w wire.Value) error {
 	var err error
-	packageIsSet := false
+	importPathIsSet := false
 	directoryIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
-				v.Package, err = field.Value.GetString(), error(nil)
+				v.ImportPath, err = field.Value.GetString(), error(nil)
 				if err != nil {
 					return err
 				}
-				packageIsSet = true
+				importPathIsSet = true
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
@@ -941,8 +941,8 @@ func (v *Module) FromWire(w wire.Value) error {
 			}
 		}
 	}
-	if !packageIsSet {
-		return errors.New("field Package of Module is required")
+	if !importPathIsSet {
+		return errors.New("field ImportPath of Module is required")
 	}
 	if !directoryIsSet {
 		return errors.New("field Directory of Module is required")
@@ -953,7 +953,7 @@ func (v *Module) FromWire(w wire.Value) error {
 func (v *Module) String() string {
 	var fields [2]string
 	i := 0
-	fields[i] = fmt.Sprintf("Package: %v", v.Package)
+	fields[i] = fmt.Sprintf("ImportPath: %v", v.ImportPath)
 	i++
 	fields[i] = fmt.Sprintf("Directory: %v", v.Directory)
 	i++
@@ -979,12 +979,12 @@ func (v *ModuleID) FromWire(w wire.Value) error {
 }
 
 type Service struct {
-	Name      string      `json:"name"`
-	Package   string      `json:"package"`
-	Directory string      `json:"directory"`
-	ParentID  *ServiceID  `json:"parentID,omitempty"`
-	Functions []*Function `json:"functions"`
-	ModuleID  ModuleID    `json:"moduleID"`
+	Name       string      `json:"name"`
+	ImportPath string      `json:"importPath"`
+	Directory  string      `json:"directory"`
+	ParentID   *ServiceID  `json:"parentID,omitempty"`
+	Functions  []*Function `json:"functions"`
+	ModuleID   ModuleID    `json:"moduleID"`
 }
 
 type _List_Function_ValueList []*Function
@@ -1030,7 +1030,7 @@ func (v *Service) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	w, err = wire.NewValueString(v.Package), error(nil)
+	w, err = wire.NewValueString(v.ImportPath), error(nil)
 	if err != nil {
 		return w, err
 	}
@@ -1094,7 +1094,7 @@ func _List_Function_Read(l wire.ValueList) ([]*Function, error) {
 func (v *Service) FromWire(w wire.Value) error {
 	var err error
 	nameIsSet := false
-	packageIsSet := false
+	importPathIsSet := false
 	directoryIsSet := false
 	functionsIsSet := false
 	moduleIDIsSet := false
@@ -1110,11 +1110,11 @@ func (v *Service) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				v.Package, err = field.Value.GetString(), error(nil)
+				v.ImportPath, err = field.Value.GetString(), error(nil)
 				if err != nil {
 					return err
 				}
-				packageIsSet = true
+				importPathIsSet = true
 			}
 		case 3:
 			if field.Value.Type() == wire.TBinary {
@@ -1154,8 +1154,8 @@ func (v *Service) FromWire(w wire.Value) error {
 	if !nameIsSet {
 		return errors.New("field Name of Service is required")
 	}
-	if !packageIsSet {
-		return errors.New("field Package of Service is required")
+	if !importPathIsSet {
+		return errors.New("field ImportPath of Service is required")
 	}
 	if !directoryIsSet {
 		return errors.New("field Directory of Service is required")
@@ -1174,7 +1174,7 @@ func (v *Service) String() string {
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
-	fields[i] = fmt.Sprintf("Package: %v", v.Package)
+	fields[i] = fmt.Sprintf("ImportPath: %v", v.ImportPath)
 	i++
 	fields[i] = fmt.Sprintf("Directory: %v", v.Directory)
 	i++
@@ -1525,8 +1525,8 @@ func (v *TypePair) String() string {
 }
 
 type TypeReference struct {
-	Name    string `json:"name"`
-	Package string `json:"package"`
+	Name       string `json:"name"`
+	ImportPath string `json:"importPath"`
 }
 
 func (v *TypeReference) ToWire() (wire.Value, error) {
@@ -1542,7 +1542,7 @@ func (v *TypeReference) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	w, err = wire.NewValueString(v.Package), error(nil)
+	w, err = wire.NewValueString(v.ImportPath), error(nil)
 	if err != nil {
 		return w, err
 	}
@@ -1554,7 +1554,7 @@ func (v *TypeReference) ToWire() (wire.Value, error) {
 func (v *TypeReference) FromWire(w wire.Value) error {
 	var err error
 	nameIsSet := false
-	packageIsSet := false
+	importPathIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -1567,19 +1567,19 @@ func (v *TypeReference) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				v.Package, err = field.Value.GetString(), error(nil)
+				v.ImportPath, err = field.Value.GetString(), error(nil)
 				if err != nil {
 					return err
 				}
-				packageIsSet = true
+				importPathIsSet = true
 			}
 		}
 	}
 	if !nameIsSet {
 		return errors.New("field Name of TypeReference is required")
 	}
-	if !packageIsSet {
-		return errors.New("field Package of TypeReference is required")
+	if !importPathIsSet {
+		return errors.New("field ImportPath of TypeReference is required")
 	}
 	return nil
 }
@@ -1589,7 +1589,7 @@ func (v *TypeReference) String() string {
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
-	fields[i] = fmt.Sprintf("Package: %v", v.Package)
+	fields[i] = fmt.Sprintf("ImportPath: %v", v.ImportPath)
 	i++
 	return fmt.Sprintf("TypeReference{%v}", strings.Join(fields[:i], ", "))
 }
