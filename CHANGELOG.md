@@ -1,7 +1,13 @@
 Releases
 ========
 
-v0.3.0 (2016-11-29)
+v0.3.1 (2016-09-30)
+-------------------
+
+-   Fix missing canonical import path to `go.uber.org/thriftrw`.
+
+
+v0.3.0 (2016-09-29)
 ------------------
 
 -   **Breaking**: Renamed project to `go.uber.org/thriftrw`.
