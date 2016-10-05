@@ -20,4 +20,4 @@
 
 package main // import "go.uber.org/thriftrw"
 
-var version = "v0.3.2"
+var version = "v0.4.0"

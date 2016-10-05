@@ -1,8 +1,14 @@
 Releases
 ========
 
+v0.4.0 (unreleased)
+-------------------
+
+-   No changes yet.
+
+
 v0.3.2 (2016-10-05)
-------------------
+-------------------
 
 -   Fix import paths for code generated using `--yarpc`. Note that this flag
     will be removed in a future version.
@@ -15,7 +21,7 @@ v0.3.1 (2016-09-30)
 
 
 v0.3.0 (2016-09-29)
-------------------
+-------------------
 
 -   **Breaking**: Renamed project to `go.uber.org/thriftrw`.
 -   **Breaking**: Keywords reserved by Apache Thrift are now disallowed as
