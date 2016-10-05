@@ -79,6 +79,13 @@ func main() {
 		os.Exit(1)
 	}
 
+	if opts.GOpts.YARPC {
+		log.Println("Warning: The --yarpc flag will be removed in a future version. " +
+			"You should use --plugin=yarpc instead. " +
+			"You will need to install the YARPC ThriftRW plugin:\n\n" +
+			"\tgo get go.uber.org/yarpc/encoding/thrift/thriftrw-plugin-yarpc")
+	}
+
 	inputFile := args[0]
 	if _, err := os.Stat(inputFile); err != nil {
 		if os.IsNotExist(err) {
