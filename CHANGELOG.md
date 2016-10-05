@@ -1,10 +1,11 @@
 Releases
 ========
 
-v0.4.0 (unreleased)
+v0.3.2 (unreleased)
 ------------------
 
--   Nothing yet.
+-   Fix import paths for code generated using `--yarpc`. Note that this flag
+    will be removed in a future version.
 
 
 v0.3.1 (2016-09-30)

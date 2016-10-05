@@ -78,8 +78,8 @@ func (yg yarpcGenerator) server(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 
 	err := yg.g.DeclareFromTemplate(
 		`
-		<$yarpc := import "github.com/yarpc/yarpc-go">
-		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
+		<$yarpc := import "go.uber.org/yarpc">
+		<$thrift := import "go.uber.org/yarpc/encoding/thrift">
 		<$protocol := import "go.uber.org/thriftrw/protocol">
 		<$wire := import "go.uber.org/thriftrw/wire">
 		<$context := import "golang.org/x/net/context">
@@ -184,9 +184,9 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 
 	err := yg.g.DeclareFromTemplate(
 		`
-		<$yarpc := import "github.com/yarpc/yarpc-go">
-		<$transport := import "github.com/yarpc/yarpc-go/transport">
-		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
+		<$yarpc := import "go.uber.org/yarpc">
+		<$transport := import "go.uber.org/yarpc/transport">
+		<$thrift := import "go.uber.org/yarpc/encoding/thrift">
 		<$protocol := import "go.uber.org/thriftrw/protocol">
 		<$context := import "golang.org/x/net/context">
 
@@ -279,8 +279,8 @@ func (yg yarpcGenerator) client(s *compile.ServiceSpec) (*bytes.Buffer, error) {
 func (yg yarpcGenerator) iface(s *compile.ServiceSpec, isServer bool) error {
 	return yg.g.DeclareFromTemplate(
 		`
-		<$yarpc := import "github.com/yarpc/yarpc-go">
-		<$thrift := import "github.com/yarpc/yarpc-go/encoding/thrift">
+		<$yarpc := import "go.uber.org/yarpc">
+		<$thrift := import "go.uber.org/yarpc/encoding/thrift">
 		<$context := import "golang.org/x/net/context">
 
 		type Interface interface {
