@@ -52,9 +52,6 @@ type Options struct {
 	// This must be an absolute path.
 	ThriftRoot string
 
-	// Whether we should generate code for YARPC.
-	YARPC bool
-
 	// NoRecurse determines whether code should be generated for included Thrift
 	// files as well. If true, code gets generated only for the first module.
 	NoRecurse bool
@@ -286,21 +283,6 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 			for name, buff := range serviceFiles {
 				filename := filepath.Join("service", packageName, name)
 				files[filename] = buff.Bytes()
-			}
-
-			// TODO(abg): Delete this once the YARPC plugin is landed.
-			if o.YARPC {
-				yarpcFiles, err := YARPC(i, service)
-				if err != nil {
-					return nil, fmt.Errorf(
-						"could not generate YARPC code for service %q: %v",
-						serviceName, err)
-				}
-
-				for name, buff := range yarpcFiles {
-					filename := filepath.Join("yarpc", name)
-					files[filename] = buff.Bytes()
-				}
 			}
 		}
 	}

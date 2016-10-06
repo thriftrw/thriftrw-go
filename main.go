@@ -47,10 +47,8 @@ type genOptions struct {
 	ThriftRoot      string `long:"thrift-root" value-name:"DIR" description:"Directory whose descendants contain all Thrift files. The structure of the generated Go packages mirrors the paths to the Thrift files relative to this directory. By default, this is the deepest common ancestor directory of the Thrift files."`
 
 	NoRecurse         bool         `long:"no-recurse" description:"Don't generate code for included Thrift files."`
-	YARPC             bool         `long:"yarpc" description:"Generate code for YARPC. Defaults to false."`
 	Plugins           plugin.Flags `long:"plugin" short:"p" value-name:"PLUGIN" description:"Code generation plugin for ThriftRW. This option may be provided multiple times to apply multiple plugins."`
 	GeneratePluginAPI bool         `long:"generate-plugin-api" hidden:"true" description:"Generates code for the plugin API"`
-	// TODO(abg): Drop --yarpc flag
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
 
@@ -77,13 +75,6 @@ func main() {
 	if len(args) != 1 {
 		parser.WriteHelp(os.Stdout)
 		os.Exit(1)
-	}
-
-	if opts.GOpts.YARPC {
-		log.Println("Warning: The --yarpc flag will be removed in a future version. " +
-			"You should use --plugin=yarpc instead. " +
-			"You will need to install the YARPC ThriftRW plugin:\n\n" +
-			"\tgo get go.uber.org/yarpc/encoding/thrift/thriftrw-plugin-yarpc")
 	}
 
 	inputFile := args[0]
@@ -157,7 +148,6 @@ func main() {
 		PackagePrefix: gopts.PackagePrefix,
 		ThriftRoot:    gopts.ThriftRoot,
 		NoRecurse:     gopts.NoRecurse,
-		YARPC:         gopts.YARPC,
 		Plugin:        pluginHandle,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {

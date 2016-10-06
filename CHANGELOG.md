@@ -4,7 +4,9 @@ Releases
 v0.4.0 (unreleased)
 -------------------
 
--   No changes yet.
+-   **Breaking**: Remove the `--yarpc` flag. Install the ThriftRW YARPC plugin
+    from `go.uber.org/yarpc/encoding/thrift/thriftrw-plugin-yarpc` and use
+    `--plugin=yarpc` instead.
 
 
 v0.3.2 (2016-10-05)
