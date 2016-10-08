@@ -38,6 +38,8 @@ type Annotation struct {
 	Line  int
 }
 
+func (*Annotation) node() {}
+
 func (ann *Annotation) String() string {
 	return fmt.Sprintf("%s = %q", ann.Name, ann.Value)
 }

@@ -27,6 +27,8 @@ type HeaderInfo struct {
 
 // Header unifies types representing header in the AST.
 type Header interface {
+	Node
+
 	Info() HeaderInfo
 	header()
 }
@@ -45,7 +47,8 @@ type Include struct {
 	Line int
 }
 
-func (i *Include) header() {}
+func (*Include) node()   {}
+func (*Include) header() {}
 
 // Info for Include.
 func (i *Include) Info() HeaderInfo {
@@ -62,7 +65,8 @@ type Namespace struct {
 	Line  int
 }
 
-func (n *Namespace) header() {}
+func (*Namespace) node()   {}
+func (*Namespace) header() {}
 
 // Info for Namespace.
 func (n *Namespace) Info() HeaderInfo {

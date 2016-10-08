@@ -24,6 +24,7 @@ import "fmt"
 
 // Type unifies the different types representing Thrift field types.
 type Type interface {
+	Node
 	fmt.Stringer
 
 	fieldType()
@@ -63,6 +64,7 @@ type BaseType struct {
 	Line        int
 }
 
+func (BaseType) node()      {}
 func (BaseType) fieldType() {}
 
 func (bt BaseType) String() string {
@@ -105,6 +107,7 @@ type MapType struct {
 	Line               int
 }
 
+func (MapType) node()      {}
 func (MapType) fieldType() {}
 
 func (mt MapType) String() string {
@@ -127,6 +130,7 @@ type ListType struct {
 	Line        int
 }
 
+func (ListType) node()      {}
 func (ListType) fieldType() {}
 
 func (lt ListType) String() string {
@@ -149,6 +153,7 @@ type SetType struct {
 	Line        int
 }
 
+func (SetType) node()      {}
 func (SetType) fieldType() {}
 
 func (st SetType) String() string {
@@ -164,6 +169,7 @@ type TypeReference struct {
 	Line int
 }
 
+func (TypeReference) node()      {}
 func (TypeReference) fieldType() {}
 
 func (tr TypeReference) String() string {

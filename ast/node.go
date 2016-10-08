@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Uber Technologies, Inc.
+// Copyright (c) 2017 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,10 +20,37 @@
 
 package ast
 
-// Program represents the full syntax tree for a single .thrift file.
-type Program struct {
-	Headers     []Header
-	Definitions []Definition
+// Node is a single element in the Thrift AST.
+//
+// In addition to all Header, ConstantValue, Type, and Definition types, the
+// following types are also AST nodes: *Annotation, ConstantMapItem,
+// *EnumItem, *Field, *Function, *Program.
+type Node interface {
+	node()
 }
 
-func (*Program) node() {}
+var _ Node = (*Annotation)(nil)
+var _ Node = BaseType{}
+var _ Node = (*Constant)(nil)
+var _ Node = ConstantBoolean(true)
+var _ Node = ConstantDouble(1.0)
+var _ Node = ConstantInteger(1)
+var _ Node = ConstantList{}
+var _ Node = ConstantMap{}
+var _ Node = ConstantMapItem{}
+var _ Node = ConstantReference{}
+var _ Node = ConstantString("hi")
+var _ Node = (*Enum)(nil)
+var _ Node = (*EnumItem)(nil)
+var _ Node = (*Field)(nil)
+var _ Node = (*Function)(nil)
+var _ Node = (*Include)(nil)
+var _ Node = ListType{}
+var _ Node = MapType{}
+var _ Node = (*Namespace)(nil)
+var _ Node = (*Program)(nil)
+var _ Node = (*Service)(nil)
+var _ Node = SetType{}
+var _ Node = (*Struct)(nil)
+var _ Node = TypeReference{}
+var _ Node = (*Typedef)(nil)
