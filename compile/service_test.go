@@ -69,12 +69,12 @@ func TestCompileService(t *testing.T) {
 					{
 						ID:   1,
 						Name: "key",
-						Type: StringSpec,
+						Type: &StringSpec{},
 					},
 					{
 						ID:   2,
 						Name: "value",
-						Type: BinarySpec,
+						Type: &BinarySpec{},
 					},
 				},
 				ResultSpec: &ResultSpec{},
@@ -85,11 +85,11 @@ func TestCompileService(t *testing.T) {
 					{
 						ID:   1,
 						Name: "key",
-						Type: StringSpec,
+						Type: &StringSpec{},
 					},
 				},
 				ResultSpec: &ResultSpec{
-					ReturnType: BinarySpec,
+					ReturnType: &BinarySpec{},
 					Exceptions: FieldGroup{
 						{
 							ID:   1,
@@ -117,12 +117,12 @@ func TestCompileService(t *testing.T) {
 					{
 						ID:   1,
 						Name: "key",
-						Type: StringSpec,
+						Type: &StringSpec{},
 					},
 					{
 						ID:   2,
 						Name: "value",
-						Type: BinarySpec,
+						Type: &BinarySpec{},
 					},
 				},
 				Annotations: Annotations{
@@ -200,8 +200,8 @@ func TestCompileService(t *testing.T) {
 								ID:   1,
 								Name: "items",
 								Type: &MapSpec{
-									KeySpec:   StringSpec,
-									ValueSpec: BinarySpec,
+									KeySpec:   &StringSpec{},
+									ValueSpec: &BinarySpec{},
 								},
 							},
 						},

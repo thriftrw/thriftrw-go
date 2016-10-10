@@ -40,13 +40,13 @@ func TestLinkConstantReference(t *testing.T) {
 
 	version := &Constant{
 		Name:  "Version",
-		Type:  I32Spec,
+		Type:  &I32Spec{},
 		Value: ConstantInt(42),
 	}
 
 	defaultUser := &Constant{
 		Name:  "DefaultUser",
-		Type:  StringSpec,
+		Type:  &StringSpec{},
 		Value: ConstantString("anonymous"),
 	}
 
@@ -63,14 +63,14 @@ func TestLinkConstantReference(t *testing.T) {
 			scope("Version", version),
 			"Version",
 			ConstReference{Target: version},
-			I32Spec,
+			&I32Spec{},
 		},
 		{
 			"included constant lookup",
 			scope("shared", scope("DefaultUser", defaultUser)),
 			"shared.DefaultUser",
 			ConstReference{Target: defaultUser},
-			StringSpec,
+			&StringSpec{},
 		},
 		{
 			"enum constant lookup",
@@ -124,18 +124,18 @@ func TestCastConstants(t *testing.T) {
 				ID:       1,
 				Name:     "someRequiredField",
 				Required: true,
-				Type:     I32Spec,
+				Type:     &I32Spec{},
 			},
 			{
 				ID:   2,
 				Name: "someOptionalField",
-				Type: StringSpec,
+				Type: &StringSpec{},
 			},
 			{
 				ID:       3,
 				Name:     "someFieldWithADefault",
 				Required: true,
-				Type:     I64Spec,
+				Type:     &I64Spec{},
 				Default:  ConstantInt(42),
 			},
 		},
@@ -152,55 +152,55 @@ func TestCastConstants(t *testing.T) {
 	}{
 		{
 			desc: "ConstantBool",
-			typ:  BoolSpec,
+			typ:  &BoolSpec{},
 			give: ConstantBool(true),
 			want: ConstantBool(true),
 		},
 		{
 			desc: "ConstantInt: bool (false)",
-			typ:  BoolSpec,
+			typ:  &BoolSpec{},
 			give: ConstantInt(0),
 			want: ConstantBool(false),
 		},
 		{
 			desc: "ConstantInt: bool (true)",
-			typ:  BoolSpec,
+			typ:  &BoolSpec{},
 			give: ConstantInt(1),
 			want: ConstantBool(true),
 		},
 		{
 			desc:      "ConstantInt: bool (failure)",
-			typ:       BoolSpec,
+			typ:       &BoolSpec{},
 			give:      ConstantInt(2),
 			wantError: "the value must be 0 or 1",
 		},
 		{
 			desc: "ConstantInt: i8",
-			typ:  I8Spec,
+			typ:  &I8Spec{},
 			give: ConstantInt(42),
 			want: ConstantInt(42),
 		},
 		{
 			desc: "ConstantInt: i16",
-			typ:  I16Spec,
+			typ:  &I16Spec{},
 			give: ConstantInt(42),
 			want: ConstantInt(42),
 		},
 		{
 			desc: "ConstantInt: i32",
-			typ:  I32Spec,
+			typ:  &I32Spec{},
 			give: ConstantInt(42),
 			want: ConstantInt(42),
 		},
 		{
 			desc: "ConstantInt: i64",
-			typ:  I64Spec,
+			typ:  &I64Spec{},
 			give: ConstantInt(42),
 			want: ConstantInt(42),
 		},
 		{
 			desc: "ConstantInt: double",
-			typ:  DoubleSpec,
+			typ:  &DoubleSpec{},
 			give: ConstantInt(42),
 			want: ConstantDouble(42.0),
 		},
@@ -230,19 +230,19 @@ func TestCastConstants(t *testing.T) {
 		},
 		{
 			desc:      "ConstantInt: failure",
-			typ:       StringSpec,
+			typ:       &StringSpec{},
 			give:      ConstantInt(1),
 			wantError: `cannot cast 1 to "string"`,
 		},
 		{
 			desc: "ConstantString",
-			typ:  StringSpec,
+			typ:  &StringSpec{},
 			give: ConstantString("foo"),
 			want: ConstantString("foo"),
 		},
 		{
 			desc: "ConstantDouble",
-			typ:  DoubleSpec,
+			typ:  &DoubleSpec{},
 			give: ConstantDouble(42.0),
 			want: ConstantDouble(42.0),
 		},
@@ -297,7 +297,7 @@ func TestCastConstants(t *testing.T) {
 		},
 		{
 			desc: "ConstantMap",
-			typ:  &MapSpec{KeySpec: StringSpec, ValueSpec: I32Spec},
+			typ:  &MapSpec{KeySpec: &StringSpec{}, ValueSpec: &I32Spec{}},
 			give: ConstantMap{
 				{Key: ConstantString("hello"), Value: ConstantInt(100)},
 				{Key: ConstantString("world"), Value: ConstantInt(200)},
@@ -336,36 +336,36 @@ func TestCastConstants(t *testing.T) {
 		},
 		{
 			desc: "ConstantSet",
-			typ:  &SetSpec{ValueSpec: I32Spec},
+			typ:  &SetSpec{ValueSpec: &I32Spec{}},
 			give: ConstantSet{ConstantInt(1), ConstantInt(2), ConstantInt(3)},
 			want: ConstantSet{ConstantInt(1), ConstantInt(2), ConstantInt(3)},
 		},
 		{
 			desc: "ConstantList",
-			typ:  &ListSpec{ValueSpec: I32Spec},
+			typ:  &ListSpec{ValueSpec: &I32Spec{}},
 			give: ConstantList{ConstantInt(1), ConstantInt(2), ConstantInt(3)},
 			want: ConstantList{ConstantInt(1), ConstantInt(2), ConstantInt(3)},
 		},
 		{
 			desc: "ConstantReference",
-			typ:  I32Spec,
+			typ:  &I32Spec{},
 			give: ConstReference{Target: &Constant{
 				Name:  "Version",
-				Type:  I32Spec,
+				Type:  &I32Spec{},
 				Value: ConstantInt(42),
 			}},
 			want: ConstReference{Target: &Constant{
 				Name:  "Version",
-				Type:  I32Spec,
+				Type:  &I32Spec{},
 				Value: ConstantInt(42),
 			}},
 		},
 		{
 			desc: "ConstantReference: mismatch",
-			typ:  DoubleSpec,
+			typ:  &DoubleSpec{},
 			give: ConstReference{Target: &Constant{
 				Name:  "Version",
-				Type:  I32Spec,
+				Type:  &I32Spec{},
 				Value: ConstantInt(42),
 			}},
 			want: ConstantDouble(42.0),
@@ -416,7 +416,7 @@ func TestLinkConstantReferenceFailure(t *testing.T) {
 			scope("bar"),
 			"foo",
 			[]string{`could not resolve reference "foo" in "bar"`},
-			StringSpec,
+			&StringSpec{},
 		},
 		{
 			"unknown module",
@@ -426,7 +426,7 @@ func TestLinkConstantReferenceFailure(t *testing.T) {
 				`could not resolve reference "shared.DEFAULT_UUID" in "bar"`,
 				`unknown module "shared"`,
 			},
-			StringSpec,
+			&StringSpec{},
 		},
 		{
 			"unknown identifier in included module",
@@ -436,7 +436,7 @@ func TestLinkConstantReferenceFailure(t *testing.T) {
 				`could not resolve reference "shared.DEFAULT_UUID" in "foo"`,
 				`could not resolve reference "DEFAULT_UUID" in "shared"`,
 			},
-			StringSpec,
+			&StringSpec{},
 		},
 		{
 			"unknown item in enum",

@@ -63,7 +63,7 @@ func TestCompileStructSuccess(t *testing.T) {
 					{
 						ID:       1,
 						Name:     "healthy",
-						Type:     BoolSpec,
+						Type:     &BoolSpec{},
 						Required: false,
 						Default:  ConstantBool(true),
 					},
@@ -82,7 +82,7 @@ func TestCompileStructSuccess(t *testing.T) {
 					{
 						ID:       1,
 						Name:     "healthy",
-						Type:     BoolSpec,
+						Type:     &BoolSpec{},
 						Required: false,
 						Default:  ConstantBool(true),
 					},
@@ -94,7 +94,7 @@ func TestCompileStructSuccess(t *testing.T) {
 				1: required string message
 				2: optional Key key
 			}`,
-			scope("Key", &TypedefSpec{Name: "Key", Target: StringSpec}),
+			scope("Key", &TypedefSpec{Name: "Key", Target: &StringSpec{}}),
 			explicitRequiredness,
 			&StructSpec{
 				Name: "KeyNotFoundError",
@@ -104,13 +104,13 @@ func TestCompileStructSuccess(t *testing.T) {
 					{
 						ID:       1,
 						Name:     "message",
-						Type:     StringSpec,
+						Type:     &StringSpec{},
 						Required: true,
 					},
 					{
 						ID:       2,
 						Name:     "key",
-						Type:     &TypedefSpec{Name: "Key", Target: StringSpec},
+						Type:     &TypedefSpec{Name: "Key", Target: &StringSpec{}},
 						Required: false,
 					},
 				},
@@ -131,13 +131,13 @@ func TestCompileStructSuccess(t *testing.T) {
 					{
 						ID:       1234,
 						Name:     "plainText",
-						Type:     StringSpec,
+						Type:     &StringSpec{},
 						Required: false,
 					},
 					{
 						ID:       5678,
 						Name:     "richText",
-						Type:     BinarySpec,
+						Type:     &BinarySpec{},
 						Required: false,
 					},
 				},

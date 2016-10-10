@@ -118,11 +118,11 @@ func TestBuildFunction(t *testing.T) {
 					{
 						ID:   1,
 						Name: "key",
-						Type: compile.StringSpec,
+						Type: &compile.StringSpec{},
 					},
 				},
 				ResultSpec: &compile.ResultSpec{
-					ReturnType: compile.BinarySpec,
+					ReturnType: &compile.BinarySpec{},
 					Exceptions: compile.FieldGroup{
 						{
 							ID:   1,
@@ -135,7 +135,7 @@ func TestBuildFunction(t *testing.T) {
 									{
 										ID:   1,
 										Name: "message",
-										Type: compile.StringSpec,
+										Type: &compile.StringSpec{},
 									},
 								},
 							},
@@ -176,12 +176,12 @@ func TestBuildFunction(t *testing.T) {
 					{
 						ID:   1,
 						Name: "key",
-						Type: compile.StringSpec,
+						Type: &compile.StringSpec{},
 					},
 					{
 						ID:   2,
 						Name: "value",
-						Type: compile.BinarySpec,
+						Type: &compile.BinarySpec{},
 					},
 				},
 				ResultSpec: &compile.ResultSpec{},
@@ -259,49 +259,49 @@ func TestBuildType(t *testing.T) {
 		// required primitives
 		{
 			desc:     "bool",
-			spec:     compile.BoolSpec,
+			spec:     &compile.BoolSpec{},
 			required: true,
 			want:     &api.Type{SimpleType: simpleType(api.SimpleTypeBool)},
 		},
 		{
 			desc:     "int8",
-			spec:     compile.I8Spec,
+			spec:     &compile.I8Spec{},
 			required: true,
 			want:     &api.Type{SimpleType: simpleType(api.SimpleTypeInt8)},
 		},
 		{
 			desc:     "int16",
-			spec:     compile.I16Spec,
+			spec:     &compile.I16Spec{},
 			required: true,
 			want:     &api.Type{SimpleType: simpleType(api.SimpleTypeInt16)},
 		},
 		{
 			desc:     "int32",
-			spec:     compile.I32Spec,
+			spec:     &compile.I32Spec{},
 			required: true,
 			want:     &api.Type{SimpleType: simpleType(api.SimpleTypeInt32)},
 		},
 		{
 			desc:     "int64",
-			spec:     compile.I64Spec,
+			spec:     &compile.I64Spec{},
 			required: true,
 			want:     &api.Type{SimpleType: simpleType(api.SimpleTypeInt64)},
 		},
 		{
 			desc:     "float64",
-			spec:     compile.DoubleSpec,
+			spec:     &compile.DoubleSpec{},
 			required: true,
 			want:     &api.Type{SimpleType: simpleType(api.SimpleTypeFloat64)},
 		},
 		{
 			desc:     "string",
-			spec:     compile.StringSpec,
+			spec:     &compile.StringSpec{},
 			required: true,
 			want:     &api.Type{SimpleType: simpleType(api.SimpleTypeString)},
 		},
 		{
 			desc:     "[]byte",
-			spec:     compile.BinarySpec,
+			spec:     &compile.BinarySpec{},
 			required: true,
 			want:     &api.Type{SliceType: &api.Type{SimpleType: simpleType(api.SimpleTypeByte)}},
 		},
@@ -309,42 +309,42 @@ func TestBuildType(t *testing.T) {
 		// optional primitives
 		{
 			desc: "*bool",
-			spec: compile.BoolSpec,
+			spec: &compile.BoolSpec{},
 			want: &api.Type{PointerType: &api.Type{SimpleType: simpleType(api.SimpleTypeBool)}},
 		},
 		{
 			desc: "*int8",
-			spec: compile.I8Spec,
+			spec: &compile.I8Spec{},
 			want: &api.Type{PointerType: &api.Type{SimpleType: simpleType(api.SimpleTypeInt8)}},
 		},
 		{
 			desc: "*int16",
-			spec: compile.I16Spec,
+			spec: &compile.I16Spec{},
 			want: &api.Type{PointerType: &api.Type{SimpleType: simpleType(api.SimpleTypeInt16)}},
 		},
 		{
 			desc: "*int32",
-			spec: compile.I32Spec,
+			spec: &compile.I32Spec{},
 			want: &api.Type{PointerType: &api.Type{SimpleType: simpleType(api.SimpleTypeInt32)}},
 		},
 		{
 			desc: "*int64",
-			spec: compile.I64Spec,
+			spec: &compile.I64Spec{},
 			want: &api.Type{PointerType: &api.Type{SimpleType: simpleType(api.SimpleTypeInt64)}},
 		},
 		{
 			desc: "*float64",
-			spec: compile.DoubleSpec,
+			spec: &compile.DoubleSpec{},
 			want: &api.Type{PointerType: &api.Type{SimpleType: simpleType(api.SimpleTypeFloat64)}},
 		},
 		{
 			desc: "*string",
-			spec: compile.StringSpec,
+			spec: &compile.StringSpec{},
 			want: &api.Type{PointerType: &api.Type{SimpleType: simpleType(api.SimpleTypeString)}},
 		},
 		{
 			desc: "[]byte",
-			spec: compile.BinarySpec,
+			spec: &compile.BinarySpec{},
 			want: &api.Type{SliceType: &api.Type{SimpleType: simpleType(api.SimpleTypeByte)}},
 		},
 
@@ -353,8 +353,8 @@ func TestBuildType(t *testing.T) {
 			// hashable map key
 			desc: "map[string]int32",
 			spec: &compile.MapSpec{
-				KeySpec:   compile.StringSpec,
-				ValueSpec: compile.I32Spec,
+				KeySpec:   &compile.StringSpec{},
+				ValueSpec: &compile.I32Spec{},
 			},
 			want: &api.Type{MapType: &api.TypePair{
 				Left:  &api.Type{SimpleType: simpleType(api.SimpleTypeString)},
@@ -365,8 +365,8 @@ func TestBuildType(t *testing.T) {
 			// unhashable map key
 			desc: "[]struct{Key []byte; Value int32}",
 			spec: &compile.MapSpec{
-				KeySpec:   compile.BinarySpec,
-				ValueSpec: compile.I32Spec,
+				KeySpec:   &compile.BinarySpec{},
+				ValueSpec: &compile.I32Spec{},
 			},
 			want: &api.Type{KeyValueSliceType: &api.TypePair{
 				Left: &api.Type{
@@ -378,7 +378,7 @@ func TestBuildType(t *testing.T) {
 		{
 			// hashable set item
 			desc: "map[float64]struct{}",
-			spec: &compile.SetSpec{ValueSpec: compile.DoubleSpec},
+			spec: &compile.SetSpec{ValueSpec: &compile.DoubleSpec{}},
 			want: &api.Type{MapType: &api.TypePair{
 				Left:  &api.Type{SimpleType: simpleType(api.SimpleTypeFloat64)},
 				Right: &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
@@ -396,7 +396,7 @@ func TestBuildType(t *testing.T) {
 						{
 							ID:       1,
 							Name:     "value",
-							Type:     compile.StringSpec,
+							Type:     &compile.StringSpec{},
 							Required: true,
 						},
 					},
@@ -418,8 +418,8 @@ func TestBuildType(t *testing.T) {
 			desc: "[]map[string][]byte",
 			spec: &compile.ListSpec{
 				ValueSpec: &compile.MapSpec{
-					KeySpec:   compile.StringSpec,
-					ValueSpec: compile.BinarySpec,
+					KeySpec:   &compile.StringSpec{},
+					ValueSpec: &compile.BinarySpec{},
 				},
 			},
 			want: &api.Type{
@@ -483,7 +483,7 @@ func TestBuildType(t *testing.T) {
 					{
 						ID:       1,
 						Name:     "value",
-						Type:     compile.StringSpec,
+						Type:     &compile.StringSpec{},
 						Required: true,
 					},
 				},
@@ -502,7 +502,7 @@ func TestBuildType(t *testing.T) {
 			spec: &compile.TypedefSpec{
 				Name:   "Foo",
 				File:   "idl/foo/bar.thrift",
-				Target: compile.I64Spec,
+				Target: &compile.I64Spec{},
 			},
 			required: true,
 			want: &api.Type{
@@ -517,7 +517,7 @@ func TestBuildType(t *testing.T) {
 			spec: &compile.TypedefSpec{
 				Name:   "Foo",
 				File:   "idl/foo/bar.thrift",
-				Target: compile.I64Spec,
+				Target: &compile.I64Spec{},
 			},
 			want: &api.Type{
 				PointerType: &api.Type{
@@ -533,7 +533,7 @@ func TestBuildType(t *testing.T) {
 			spec: &compile.TypedefSpec{
 				Name:   "Foo",
 				File:   "idl/foo/bar.thrift",
-				Target: compile.BinarySpec,
+				Target: &compile.BinarySpec{},
 			},
 			required: true,
 			want: &api.Type{
@@ -548,7 +548,7 @@ func TestBuildType(t *testing.T) {
 			spec: &compile.TypedefSpec{
 				Name:   "Foo",
 				File:   "idl/foo/bar.thrift",
-				Target: &compile.ListSpec{ValueSpec: compile.StringSpec},
+				Target: &compile.ListSpec{ValueSpec: &compile.StringSpec{}},
 			},
 			want: &api.Type{
 				ReferenceType: &api.TypeReference{

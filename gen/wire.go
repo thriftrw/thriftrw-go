@@ -42,28 +42,23 @@ type WireGenerator struct {
 // wire representation of the variable $varName of type $spec or an error.
 func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName string) (string, error) {
 	wire := g.Import("go.uber.org/thriftrw/wire")
-	switch spec {
-	case compile.BoolSpec:
-		return fmt.Sprintf("%s.NewValueBool(%s), error(nil)", wire, varName), nil
-	case compile.I8Spec:
-		return fmt.Sprintf("%s.NewValueI8(%s), error(nil)", wire, varName), nil
-	case compile.I16Spec:
-		return fmt.Sprintf("%s.NewValueI16(%s), error(nil)", wire, varName), nil
-	case compile.I32Spec:
-		return fmt.Sprintf("%s.NewValueI32(%s), error(nil)", wire, varName), nil
-	case compile.I64Spec:
-		return fmt.Sprintf("%s.NewValueI64(%s), error(nil)", wire, varName), nil
-	case compile.DoubleSpec:
-		return fmt.Sprintf("%s.NewValueDouble(%s), error(nil)", wire, varName), nil
-	case compile.StringSpec:
-		return fmt.Sprintf("%s.NewValueString(%s), error(nil)", wire, varName), nil
-	case compile.BinarySpec:
-		return fmt.Sprintf("%s.NewValueBinary(%s), error(nil)", wire, varName), nil
-	default:
-		// Not a primitive type. It's probably a container or a custom type.
-	}
-
 	switch s := spec.(type) {
+	case *compile.BoolSpec:
+		return fmt.Sprintf("%s.NewValueBool(%s), error(nil)", wire, varName), nil
+	case *compile.I8Spec:
+		return fmt.Sprintf("%s.NewValueI8(%s), error(nil)", wire, varName), nil
+	case *compile.I16Spec:
+		return fmt.Sprintf("%s.NewValueI16(%s), error(nil)", wire, varName), nil
+	case *compile.I32Spec:
+		return fmt.Sprintf("%s.NewValueI32(%s), error(nil)", wire, varName), nil
+	case *compile.I64Spec:
+		return fmt.Sprintf("%s.NewValueI64(%s), error(nil)", wire, varName), nil
+	case *compile.DoubleSpec:
+		return fmt.Sprintf("%s.NewValueDouble(%s), error(nil)", wire, varName), nil
+	case *compile.StringSpec:
+		return fmt.Sprintf("%s.NewValueString(%s), error(nil)", wire, varName), nil
+	case *compile.BinarySpec:
+		return fmt.Sprintf("%s.NewValueBinary(%s), error(nil)", wire, varName), nil
 	case *compile.MapSpec:
 		mapItemList, err := w.mapG.ItemList(g, s)
 		if err != nil {
@@ -118,9 +113,9 @@ func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName strin
 // ToWirePtr is the same as ToWire expect `varName` is expected to be a
 // reference to a value of the given type.
 func (w *WireGenerator) ToWirePtr(g Generator, spec compile.TypeSpec, varName string) (string, error) {
-	switch spec {
-	case compile.BoolSpec, compile.I8Spec, compile.I16Spec, compile.I32Spec,
-		compile.I64Spec, compile.DoubleSpec, compile.StringSpec:
+	switch spec.(type) {
+	case *compile.BoolSpec, *compile.I8Spec, *compile.I16Spec, *compile.I32Spec,
+		*compile.I64Spec, *compile.DoubleSpec, *compile.StringSpec:
 		return w.ToWire(g, spec, fmt.Sprintf("*(%s)", varName))
 	default:
 		// Everything else is either a reference type or has a ToWire method
@@ -132,28 +127,23 @@ func (w *WireGenerator) ToWirePtr(g Generator, spec compile.TypeSpec, varName st
 // FromWire generates an expression of type ($spec, error) which reads the Value
 // at $value into a $spec.
 func (w *WireGenerator) FromWire(g Generator, spec compile.TypeSpec, value string) (string, error) {
-	switch spec {
-	case compile.BoolSpec:
-		return fmt.Sprintf("%s.GetBool(), error(nil)", value), nil
-	case compile.I8Spec:
-		return fmt.Sprintf("%s.GetI8(), error(nil)", value), nil
-	case compile.I16Spec:
-		return fmt.Sprintf("%s.GetI16(), error(nil)", value), nil
-	case compile.I32Spec:
-		return fmt.Sprintf("%s.GetI32(), error(nil)", value), nil
-	case compile.I64Spec:
-		return fmt.Sprintf("%s.GetI64(), error(nil)", value), nil
-	case compile.DoubleSpec:
-		return fmt.Sprintf("%s.GetDouble(), error(nil)", value), nil
-	case compile.StringSpec:
-		return fmt.Sprintf("%s.GetString(), error(nil)", value), nil
-	case compile.BinarySpec:
-		return fmt.Sprintf("%s.GetBinary(), error(nil)", value), nil
-	default:
-		// Not a primitive type. It's probably a container or a custom type.
-	}
-
 	switch s := spec.(type) {
+	case *compile.BoolSpec:
+		return fmt.Sprintf("%s.GetBool(), error(nil)", value), nil
+	case *compile.I8Spec:
+		return fmt.Sprintf("%s.GetI8(), error(nil)", value), nil
+	case *compile.I16Spec:
+		return fmt.Sprintf("%s.GetI16(), error(nil)", value), nil
+	case *compile.I32Spec:
+		return fmt.Sprintf("%s.GetI32(), error(nil)", value), nil
+	case *compile.I64Spec:
+		return fmt.Sprintf("%s.GetI64(), error(nil)", value), nil
+	case *compile.DoubleSpec:
+		return fmt.Sprintf("%s.GetDouble(), error(nil)", value), nil
+	case *compile.StringSpec:
+		return fmt.Sprintf("%s.GetString(), error(nil)", value), nil
+	case *compile.BinarySpec:
+		return fmt.Sprintf("%s.GetBinary(), error(nil)", value), nil
 	case *compile.MapSpec:
 		reader, err := w.mapG.Reader(g, s)
 		if err != nil {
@@ -230,26 +220,21 @@ func TypeCode(g Generator, spec compile.TypeSpec) string {
 	wire := g.Import("go.uber.org/thriftrw/wire")
 	spec = compile.RootTypeSpec(spec)
 
-	switch spec {
-	case compile.BoolSpec:
-		return fmt.Sprintf("%s.TBool", wire)
-	case compile.I8Spec:
-		return fmt.Sprintf("%s.TI8", wire)
-	case compile.I16Spec:
-		return fmt.Sprintf("%s.TI16", wire)
-	case compile.I32Spec:
-		return fmt.Sprintf("%s.TI32", wire)
-	case compile.I64Spec:
-		return fmt.Sprintf("%s.TI64", wire)
-	case compile.DoubleSpec:
-		return fmt.Sprintf("%s.TDouble", wire)
-	case compile.StringSpec, compile.BinarySpec:
-		return fmt.Sprintf("%s.TBinary", wire)
-	default:
-		// Not a primitive type
-	}
-
 	switch spec.(type) {
+	case *compile.BoolSpec:
+		return fmt.Sprintf("%s.TBool", wire)
+	case *compile.I8Spec:
+		return fmt.Sprintf("%s.TI8", wire)
+	case *compile.I16Spec:
+		return fmt.Sprintf("%s.TI16", wire)
+	case *compile.I32Spec:
+		return fmt.Sprintf("%s.TI32", wire)
+	case *compile.I64Spec:
+		return fmt.Sprintf("%s.TI64", wire)
+	case *compile.DoubleSpec:
+		return fmt.Sprintf("%s.TDouble", wire)
+	case *compile.StringSpec, *compile.BinarySpec:
+		return fmt.Sprintf("%s.TBinary", wire)
 	case *compile.MapSpec:
 		return fmt.Sprintf("%s.TMap", wire)
 	case *compile.ListSpec:

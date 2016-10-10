@@ -227,25 +227,35 @@ func (g *generateServiceBuilder) buildFieldGroup(fs compile.FieldGroup) ([]*api.
 func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool) (*api.Type, error) {
 	simpleType := func(t api.SimpleType) *api.SimpleType { return &t }
 
+	// try primitives first since they have to be wrapped inside a pointer if
+	// optional.
 	var t *api.Type
-	switch spec {
-	case compile.BoolSpec:
+	switch s := spec.(type) {
+	case *compile.BoolSpec:
 		t = &api.Type{SimpleType: simpleType(api.SimpleTypeBool)}
-	case compile.I8Spec:
+	case *compile.I8Spec:
 		t = &api.Type{SimpleType: simpleType(api.SimpleTypeInt8)}
-	case compile.I16Spec:
+	case *compile.I16Spec:
 		t = &api.Type{SimpleType: simpleType(api.SimpleTypeInt16)}
-	case compile.I32Spec:
+	case *compile.I32Spec:
 		t = &api.Type{SimpleType: simpleType(api.SimpleTypeInt32)}
-	case compile.I64Spec:
+	case *compile.I64Spec:
 		t = &api.Type{SimpleType: simpleType(api.SimpleTypeInt64)}
-	case compile.DoubleSpec:
+	case *compile.DoubleSpec:
 		t = &api.Type{SimpleType: simpleType(api.SimpleTypeFloat64)}
-	case compile.StringSpec:
+	case *compile.StringSpec:
 		t = &api.Type{SimpleType: simpleType(api.SimpleTypeString)}
-	case compile.BinarySpec:
-		// Don't need to wrap into a ptr
-		return &api.Type{SliceType: &api.Type{SimpleType: simpleType(api.SimpleTypeByte)}}, nil
+	case *compile.EnumSpec:
+		importPath, err := g.importer.Package(s.ThriftFile())
+		if err != nil {
+			return nil, err
+		}
+		t = &api.Type{
+			ReferenceType: &api.TypeReference{
+				Name:       goCase(s.Name),
+				ImportPath: importPath,
+			},
+		}
 	}
 
 	if t != nil {
@@ -256,6 +266,9 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 	}
 
 	switch s := spec.(type) {
+	case *compile.BinarySpec:
+		return &api.Type{SliceType: &api.Type{SimpleType: simpleType(api.SimpleTypeByte)}}, nil
+
 	case *compile.MapSpec:
 		k, err := g.buildType(s.KeySpec, true)
 		if err != nil {
@@ -296,18 +309,6 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 			Right: &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
 		}}, nil
 
-	case *compile.EnumSpec:
-		importPath, err := g.importer.Package(s.ThriftFile())
-		if err != nil {
-			return nil, err
-		}
-
-		t = &api.Type{
-			ReferenceType: &api.TypeReference{
-				Name:       goCase(s.Name),
-				ImportPath: importPath,
-			},
-		}
 		if !required {
 			t = &api.Type{PointerType: t}
 		}

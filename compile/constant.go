@@ -37,13 +37,18 @@ type Constant struct {
 }
 
 // compileConstant builds a Constant from the given AST constant.
-func compileConstant(file string, src *ast.Constant) *Constant {
+func compileConstant(file string, src *ast.Constant) (*Constant, error) {
+	typ, err := compileTypeReference(src.Type)
+	if err != nil {
+		return nil, err
+	}
+
 	return &Constant{
 		Name:  src.Name,
 		File:  file,
-		Type:  compileTypeReference(src.Type),
+		Type:  typ,
 		Value: compileConstantValue(src.Value),
-	}
+	}, nil
 }
 
 // Link resolves any references made by the constant.

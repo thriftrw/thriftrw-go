@@ -57,9 +57,9 @@ func isHashable(t compile.TypeSpec) bool {
 // represented as []byte in Go.
 func isPrimitiveType(spec compile.TypeSpec) bool {
 	spec = compile.RootTypeSpec(spec)
-	switch spec {
-	case compile.BoolSpec, compile.I8Spec, compile.I16Spec, compile.I32Spec,
-		compile.I64Spec, compile.DoubleSpec, compile.StringSpec:
+	switch spec.(type) {
+	case *compile.BoolSpec, *compile.I8Spec, *compile.I16Spec, *compile.I32Spec,
+		*compile.I64Spec, *compile.DoubleSpec, *compile.StringSpec:
 		return true
 	}
 
@@ -72,7 +72,7 @@ func isPrimitiveType(spec compile.TypeSpec) bool {
 // Sets, maps, lists, and slices are reference types.
 func isReferenceType(spec compile.TypeSpec) bool {
 	spec = compile.RootTypeSpec(spec)
-	if spec == compile.BinarySpec {
+	if _, ok := spec.(*compile.BinarySpec); ok {
 		return true
 	}
 
@@ -123,28 +123,23 @@ func typeReferencePtr(g Generator, spec compile.TypeSpec) (string, error) {
 // typeName returns the name of the given type, whether it's a custom type or
 // native.
 func typeName(g Generator, spec compile.TypeSpec) (string, error) {
-	switch spec {
-	case compile.BoolSpec:
-		return "bool", nil
-	case compile.I8Spec:
-		return "int8", nil
-	case compile.I16Spec:
-		return "int16", nil
-	case compile.I32Spec:
-		return "int32", nil
-	case compile.I64Spec:
-		return "int64", nil
-	case compile.DoubleSpec:
-		return "float64", nil
-	case compile.StringSpec:
-		return "string", nil
-	case compile.BinarySpec:
-		return "[]byte", nil
-	default:
-		// Not a primitive type. Try checking if it's a container.
-	}
-
 	switch s := spec.(type) {
+	case *compile.BoolSpec:
+		return "bool", nil
+	case *compile.I8Spec:
+		return "int8", nil
+	case *compile.I16Spec:
+		return "int16", nil
+	case *compile.I32Spec:
+		return "int32", nil
+	case *compile.I64Spec:
+		return "int64", nil
+	case *compile.DoubleSpec:
+		return "float64", nil
+	case *compile.StringSpec:
+		return "string", nil
+	case *compile.BinarySpec:
+		return "[]byte", nil
 	case *compile.MapSpec:
 		k, err := typeReference(g, s.KeySpec)
 		if err != nil {

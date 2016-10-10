@@ -84,7 +84,7 @@ func constantBool(g Generator, v compile.ConstantBool, t compile.TypeSpec) (_ st
 	if v {
 		s = "true"
 	}
-	if t != compile.BoolSpec {
+	if _, ok := t.(*compile.BoolSpec); !ok {
 		s, err = castConstant(g, t, s)
 	}
 	return s, err
@@ -92,7 +92,7 @@ func constantBool(g Generator, v compile.ConstantBool, t compile.TypeSpec) (_ st
 
 func constantDouble(g Generator, v compile.ConstantDouble, t compile.TypeSpec) (_ string, err error) {
 	s := fmt.Sprint(float64(v))
-	if t != compile.DoubleSpec {
+	if _, ok := t.(*compile.DoubleSpec); !ok {
 		s, err = castConstant(g, t, s)
 	}
 	return s, err
@@ -100,8 +100,8 @@ func constantDouble(g Generator, v compile.ConstantDouble, t compile.TypeSpec) (
 
 func constantInt(g Generator, v compile.ConstantInt, t compile.TypeSpec) (_ string, err error) {
 	s := fmt.Sprint(int(v))
-	switch t {
-	case compile.I8Spec, compile.I16Spec, compile.I32Spec, compile.I64Spec:
+	switch t.(type) {
+	case *compile.I8Spec, *compile.I16Spec, *compile.I32Spec, *compile.I64Spec:
 		// do nothing
 	default:
 		s, err = castConstant(g, t, s)

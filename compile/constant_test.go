@@ -47,7 +47,7 @@ func parseConstant(s string) *ast.Constant {
 func TestCompileConstant(t *testing.T) {
 	y := &Constant{
 		Name:  "y",
-		Type:  StringSpec,
+		Type:  &StringSpec{},
 		Value: ConstantString("bar"),
 	}
 
@@ -62,7 +62,7 @@ func TestCompileConstant(t *testing.T) {
 			&Constant{
 				Name:  "version",
 				File:  "test.thrift",
-				Type:  I32Spec,
+				Type:  &I32Spec{},
 				Value: ConstantInt(1),
 			},
 		},
@@ -72,7 +72,7 @@ func TestCompileConstant(t *testing.T) {
 			&Constant{
 				Name:  "foo",
 				File:  "test.thrift",
-				Type:  StringSpec,
+				Type:  &StringSpec{},
 				Value: ConstantString("hello world"),
 			},
 		},
@@ -82,7 +82,7 @@ func TestCompileConstant(t *testing.T) {
 			&Constant{
 				Name: "foo",
 				File: "test.thrift",
-				Type: &ListSpec{ValueSpec: StringSpec},
+				Type: &ListSpec{ValueSpec: &StringSpec{}},
 				Value: ConstantList{
 					ConstantString("hello"),
 					ConstantString("world"),
@@ -95,7 +95,7 @@ func TestCompileConstant(t *testing.T) {
 			&Constant{
 				Name: "foo",
 				File: "test.thrift",
-				Type: &ListSpec{ValueSpec: StringSpec},
+				Type: &ListSpec{ValueSpec: &StringSpec{}},
 				Value: ConstantList{
 					ConstantString("x"),
 					ConstReference{Target: y},
@@ -113,8 +113,8 @@ func TestCompileConstant(t *testing.T) {
 			"invalid test: expected spec failed to link",
 		)
 
-		constant := compileConstant("test.thrift", src)
-		if assert.NoError(t, constant.Link(scope)) {
+		constant, err := compileConstant("test.thrift", src)
+		if assert.NoError(t, err) && assert.NoError(t, constant.Link(scope)) {
 			assert.Equal(t, tt.constant, constant)
 		}
 	}
@@ -123,7 +123,7 @@ func TestCompileConstant(t *testing.T) {
 func TestCompileConstantFailure(t *testing.T) {
 	y := &Constant{
 		Name:  "y",
-		Type:  StringSpec,
+		Type:  &StringSpec{},
 		Value: ConstantString("bar"),
 	}
 
@@ -169,12 +169,13 @@ func TestCompileConstantFailure(t *testing.T) {
 	for _, tt := range tests {
 		src := parseConstant(tt.src)
 		scope := scopeOrDefault(tt.scope)
-		constant := compileConstant("test.thrift", src)
-
-		err := constant.Link(scope)
-		if assert.Error(t, err) {
-			for _, msg := range tt.messages {
-				assert.Contains(t, err.Error(), msg)
+		constant, err := compileConstant("test.thrift", src)
+		if assert.NoError(t, err) {
+			err := constant.Link(scope)
+			if assert.Error(t, err) {
+				for _, msg := range tt.messages {
+					assert.Contains(t, err.Error(), msg)
+				}
 			}
 		}
 	}

@@ -84,7 +84,7 @@ func TestGenerate(t *testing.T) {
 		ts compile.TypeSpec = &compile.TypedefSpec{
 			Name:   "Timestamp",
 			File:   testdata(t, "thrift/common/bar.thrift"),
-			Target: compile.I64Spec,
+			Target: &compile.I64Spec{},
 		}
 		ts2 compile.TypeSpec = &compile.TypedefSpec{
 			Name:   "Timestamp",

@@ -122,11 +122,20 @@ func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
 		}
 	}
 
+	typ, err := compileTypeReference(src.Type)
+	if err != nil {
+		return nil, compileError{
+			Target: src.Name,
+			Line:   src.Line,
+			Reason: err,
+		}
+	}
+
 	return &FieldSpec{
 		// TODO(abg): perform bounds check on field ID
 		ID:          int16(src.ID),
 		Name:        src.Name,
-		Type:        compileTypeReference(src.Type),
+		Type:        typ,
 		Required:    required,
 		Default:     compileConstantValue(src.Default),
 		Annotations: annotations,

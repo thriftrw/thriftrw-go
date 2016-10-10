@@ -78,7 +78,7 @@ type (
 
 // Link for ConstantBool
 func (c ConstantBool) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	if RootTypeSpec(t) != BoolSpec {
+	if _, ok := RootTypeSpec(t).(*BoolSpec); !ok {
 		return nil, constantValueCastError{Value: c, Type: t}
 	}
 	return c, nil
@@ -87,13 +87,13 @@ func (c ConstantBool) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 // Link for ConstantInt.
 func (c ConstantInt) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 	rt := RootTypeSpec(t)
-	switch rt {
-	case I8Spec, I16Spec, I32Spec, I64Spec:
+	switch spec := rt.(type) {
+	case *I8Spec, *I16Spec, *I32Spec, *I64Spec:
 		// TODO bounds checks?
 		return c, nil
-	case DoubleSpec:
+	case *DoubleSpec:
 		return ConstantDouble(float64(c)).Link(scope, t)
-	case BoolSpec:
+	case *BoolSpec:
 		switch v := int64(c); v {
 		case 0, 1:
 			return ConstantBool(v == 1).Link(scope, t)
@@ -104,15 +104,10 @@ func (c ConstantInt) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 				Reason: errors.New("the value must be 0 or 1"),
 			}
 		}
-	default:
-		// fall through
-	}
-
-	// Used for an enum
-	if e, ok := rt.(*EnumSpec); ok {
-		for _, item := range e.Items {
+	case *EnumSpec:
+		for _, item := range spec.Items {
 			if item.Value == int32(c) {
-				return EnumItemReference{Enum: e, Item: item}, nil
+				return EnumItemReference{Enum: spec, Item: item}, nil
 			}
 		}
 
@@ -120,7 +115,7 @@ func (c ConstantInt) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 			Value: c,
 			Type:  t,
 			Reason: fmt.Errorf(
-				"%v is not a valid value for enum %q", int32(c), e.ThriftName()),
+				"%v is not a valid value for enum %q", int32(c), spec.ThriftName()),
 		}
 	}
 
@@ -132,7 +127,7 @@ func (c ConstantInt) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 // Link for ConstantString.
 func (c ConstantString) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 	// TODO(abg): Are binary literals a thing?
-	if RootTypeSpec(t) != StringSpec {
+	if _, ok := RootTypeSpec(t).(*StringSpec); !ok {
 		return nil, constantValueCastError{Value: c, Type: t}
 	}
 	return c, nil
@@ -140,7 +135,7 @@ func (c ConstantString) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 
 // Link for ConstantDouble.
 func (c ConstantDouble) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
-	if RootTypeSpec(t) != DoubleSpec {
+	if _, ok := RootTypeSpec(t).(*DoubleSpec); !ok {
 		return nil, constantValueCastError{Value: c, Type: t}
 	}
 	return c, nil

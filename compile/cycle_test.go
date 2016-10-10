@@ -75,7 +75,7 @@ func TestFindTypeCycles(t *testing.T) {
 			typ: withTypedef(func(t *TypedefSpec) {
 				t.Name = "foo"
 				t.Target = &MapSpec{
-					KeySpec:   StringSpec,
+					KeySpec:   &StringSpec{},
 					ValueSpec: t,
 				}
 			}),
