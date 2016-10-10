@@ -35,3 +35,8 @@ service KeyValue {
 
     i64 size()  // < primitve return value
 }
+
+service Cache {
+    oneway void clear()
+    oneway void clearAfter(1: i64 durationMS)
+}

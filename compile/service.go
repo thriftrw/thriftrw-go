@@ -163,7 +163,7 @@ type FunctionSpec struct {
 
 	Name        string
 	ArgsSpec    ArgsSpec
-	ResultSpec  *ResultSpec
+	ResultSpec  *ResultSpec // nil if OneWay is true
 	OneWay      bool
 	Annotations Annotations
 }

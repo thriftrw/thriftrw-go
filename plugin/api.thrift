@@ -144,6 +144,12 @@ struct Function {
      * This list is in the order specified by the user in the Thrift file.
      */
     5: optional list<Argument> exceptions
+    /**
+     * Whether this function is oneway or not. This should be assumed to be
+     * false unless explicitly stated otherwise. If this is true, the
+     * returnType and exceptions will be null or empty.
+     */
+    6: optional bool oneWay
 }
 
 /**

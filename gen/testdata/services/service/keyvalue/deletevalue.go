@@ -76,6 +76,58 @@ func (v *DeleteValueArgs) EnvelopeType() wire.EnvelopeType {
 	return wire.Call
 }
 
+var DeleteValueHelper = struct {
+	Args           func(key *services.Key) *DeleteValueArgs
+	IsException    func(error) bool
+	WrapResponse   func(error) (*DeleteValueResult, error)
+	UnwrapResponse func(*DeleteValueResult) error
+}{}
+
+func init() {
+	DeleteValueHelper.Args = func(key *services.Key) *DeleteValueArgs {
+		return &DeleteValueArgs{Key: key}
+	}
+	DeleteValueHelper.IsException = func(err error) bool {
+		switch err.(type) {
+		case *exceptions.DoesNotExistException:
+			return true
+		case *services.InternalError:
+			return true
+		default:
+			return false
+		}
+	}
+	DeleteValueHelper.WrapResponse = func(err error) (*DeleteValueResult, error) {
+		if err == nil {
+			return &DeleteValueResult{}, nil
+		}
+		switch e := err.(type) {
+		case *exceptions.DoesNotExistException:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for DeleteValueResult.DoesNotExist")
+			}
+			return &DeleteValueResult{DoesNotExist: e}, nil
+		case *services.InternalError:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for DeleteValueResult.InternalError")
+			}
+			return &DeleteValueResult{InternalError: e}, nil
+		}
+		return nil, err
+	}
+	DeleteValueHelper.UnwrapResponse = func(result *DeleteValueResult) (err error) {
+		if result.DoesNotExist != nil {
+			err = result.DoesNotExist
+			return
+		}
+		if result.InternalError != nil {
+			err = result.InternalError
+			return
+		}
+		return
+	}
+}
+
 type DeleteValueResult struct {
 	DoesNotExist  *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
 	InternalError *services.InternalError           `json:"internalError,omitempty"`
@@ -175,56 +227,4 @@ func (v *DeleteValueResult) MethodName() string {
 
 func (v *DeleteValueResult) EnvelopeType() wire.EnvelopeType {
 	return wire.Reply
-}
-
-var DeleteValueHelper = struct {
-	IsException    func(error) bool
-	Args           func(key *services.Key) *DeleteValueArgs
-	WrapResponse   func(error) (*DeleteValueResult, error)
-	UnwrapResponse func(*DeleteValueResult) error
-}{}
-
-func init() {
-	DeleteValueHelper.IsException = func(err error) bool {
-		switch err.(type) {
-		case *exceptions.DoesNotExistException:
-			return true
-		case *services.InternalError:
-			return true
-		default:
-			return false
-		}
-	}
-	DeleteValueHelper.Args = func(key *services.Key) *DeleteValueArgs {
-		return &DeleteValueArgs{Key: key}
-	}
-	DeleteValueHelper.WrapResponse = func(err error) (*DeleteValueResult, error) {
-		if err == nil {
-			return &DeleteValueResult{}, nil
-		}
-		switch e := err.(type) {
-		case *exceptions.DoesNotExistException:
-			if e == nil {
-				return nil, errors.New("WrapResponse received non-nil error type with nil value for DeleteValueResult.DoesNotExist")
-			}
-			return &DeleteValueResult{DoesNotExist: e}, nil
-		case *services.InternalError:
-			if e == nil {
-				return nil, errors.New("WrapResponse received non-nil error type with nil value for DeleteValueResult.InternalError")
-			}
-			return &DeleteValueResult{InternalError: e}, nil
-		}
-		return nil, err
-	}
-	DeleteValueHelper.UnwrapResponse = func(result *DeleteValueResult) (err error) {
-		if result.DoesNotExist != nil {
-			err = result.DoesNotExist
-			return
-		}
-		if result.InternalError != nil {
-			err = result.InternalError
-			return
-		}
-		return
-	}
 }

@@ -26,6 +26,7 @@ import (
 
 	"go.uber.org/thriftrw/compile"
 	"go.uber.org/thriftrw/plugin/api"
+	"go.uber.org/thriftrw/ptr"
 )
 
 type serviceName string
@@ -182,6 +183,9 @@ func (g *generateServiceBuilder) buildFunction(spec *compile.FunctionSpec) (*api
 		Name:       goCase(spec.Name),
 		ThriftName: spec.Name,
 		Arguments:  args,
+	}
+	if spec.OneWay {
+		function.OneWay = ptr.Bool(spec.OneWay)
 	}
 
 	if spec.ResultSpec != nil {
