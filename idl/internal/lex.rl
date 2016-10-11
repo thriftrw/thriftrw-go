@@ -25,6 +25,9 @@ type lexer struct {
     line int
     program *ast.Program
 
+    docstringStart int
+    lastDocstring string
+
     err parseError
     parseFailed bool
 
@@ -48,12 +51,19 @@ func newLexer(data []byte) *lexer {
 }
 
 func (lex *lexer) Lex(out *yySymType) int {
-    var reservedKeyword string
+    var (
+        reservedKeyword string
 
-    eof := lex.pe
-    tok := 0
+        eof = lex.pe
+        tok = 0
+    )
 
     %%{
+       docstring =
+            '/**' @{ lex.docstringStart = lex.p - 2 }
+            (any* - (any* '*/' any*))
+            '*/' @{ lex.lastDocstring = string(lex.data[lex.docstringStart:lex.p + 1]) };
+
         ws = [ \t\r];
 
         # All uses of \n MUST use this instead if we want accurate line
@@ -248,6 +258,7 @@ func (lex *lexer) Lex(out *yySymType) int {
             # Ignore comments and whitespace
             ws;
             newline;
+            docstring;
             line_comment;
             multiline_comment;
 

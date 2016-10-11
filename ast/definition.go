@@ -44,6 +44,7 @@ type Constant struct {
 	Type  Type
 	Value ConstantValue
 	Line  int
+	Doc   string
 }
 
 func (*Constant) node()       {}
@@ -70,6 +71,7 @@ type Typedef struct {
 	Type        Type
 	Annotations []*Annotation
 	Line        int
+	Doc         string
 }
 
 // Definition implementation for Typedef.
@@ -104,6 +106,7 @@ type Enum struct {
 	Items       []*EnumItem
 	Annotations []*Annotation
 	Line        int
+	Doc         string
 }
 
 func (*Enum) node()       {}
@@ -133,6 +136,7 @@ type EnumItem struct {
 	Value       *int
 	Annotations []*Annotation
 	Line        int
+	Doc         string
 }
 
 func (*EnumItem) node() {}
@@ -182,6 +186,7 @@ type Struct struct {
 	Fields      []*Field
 	Annotations []*Annotation
 	Line        int
+	Doc         string
 }
 
 func (*Struct) node()       {}
@@ -217,6 +222,7 @@ type Service struct {
 	Parent      *ServiceReference
 	Annotations []*Annotation
 	Line        int
+	Doc         string
 }
 
 func (*Service) node()       {}
@@ -252,6 +258,7 @@ type Function struct {
 	OneWay      bool
 	Annotations []*Annotation
 	Line        int
+	Doc         string
 }
 
 func (*Function) node() {}
@@ -297,6 +304,7 @@ type Field struct {
 	Default      ConstantValue
 	Annotations  []*Annotation
 	Line         int
+	Doc          string
 }
 
 func (*Field) node() {}
