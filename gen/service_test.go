@@ -29,20 +29,30 @@ import (
 	"go.uber.org/thriftrw/envelope"
 	tx "go.uber.org/thriftrw/gen/testdata/exceptions"
 	tv "go.uber.org/thriftrw/gen/testdata/services"
+	"go.uber.org/thriftrw/gen/testdata/services/service/cache"
 	"go.uber.org/thriftrw/gen/testdata/services/service/keyvalue"
 	tu "go.uber.org/thriftrw/gen/testdata/unions"
 	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
+// serviceType is the args or result struct for a thrift function.
+type serviceType interface {
+	envelope.Enveloper
+	FromWire(wire.Value) error
+}
+
 func TestServiceArgsAndResult(t *testing.T) {
 	tests := []struct {
-		desc string
-		x    thriftType
-		v    wire.Value
+		desc         string
+		x            serviceType
+		value        wire.Value
+		methodName   string
+		envelopeType wire.EnvelopeType
 	}{
 		{
 			desc: "setValue args",
@@ -50,7 +60,7 @@ func TestServiceArgsAndResult(t *testing.T) {
 				Key:   (*tv.Key)(stringp("foo")),
 				Value: &tu.ArbitraryValue{BoolValue: boolp(true)},
 			},
-			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("foo")},
 				{
 					ID: 2,
@@ -59,25 +69,31 @@ func TestServiceArgsAndResult(t *testing.T) {
 					}}),
 				},
 			}}),
+			methodName:   "setValue",
+			envelopeType: wire.Call,
 		},
 		{
-			desc: "setValue result",
-			x:    &keyvalue.SetValueResult{},
-			v:    wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			desc:         "setValue result",
+			x:            &keyvalue.SetValueResult{},
+			value:        wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			methodName:   "setValue",
+			envelopeType: wire.Reply,
 		},
 		{
 			desc: "getValue args",
 			x:    &keyvalue.GetValueArgs{Key: (*tv.Key)(stringp("foo"))},
-			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("foo")},
 			}}),
+			methodName:   "getValue",
+			envelopeType: wire.Call,
 		},
 		{
 			desc: "getValue result success",
 			x: &keyvalue.GetValueResult{
 				Success: &tu.ArbitraryValue{Int64Value: int64p(42)},
 			},
-			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 0,
 					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -85,13 +101,15 @@ func TestServiceArgsAndResult(t *testing.T) {
 					}}),
 				},
 			}}),
+			methodName:   "getValue",
+			envelopeType: wire.Reply,
 		},
 		{
 			desc: "getValue result failure",
 			x: &keyvalue.GetValueResult{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 			},
-			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 1,
 					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -99,25 +117,31 @@ func TestServiceArgsAndResult(t *testing.T) {
 					}}),
 				},
 			}}),
+			methodName:   "getValue",
+			envelopeType: wire.Reply,
 		},
 		{
 			desc: "deleteValue args",
 			x:    &keyvalue.DeleteValueArgs{Key: (*tv.Key)(stringp("foo"))},
-			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("foo")},
 			}}),
+			methodName:   "deleteValue",
+			envelopeType: wire.Call,
 		},
 		{
-			desc: "deleteValue result success",
-			x:    &keyvalue.DeleteValueResult{},
-			v:    wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			desc:         "deleteValue result success",
+			x:            &keyvalue.DeleteValueResult{},
+			value:        wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			methodName:   "deleteValue",
+			envelopeType: wire.Reply,
 		},
 		{
 			desc: "deleteValue result failure",
 			x: &keyvalue.DeleteValueResult{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 			},
-			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 1,
 					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -125,13 +149,15 @@ func TestServiceArgsAndResult(t *testing.T) {
 					}}),
 				},
 			}}),
+			methodName:   "deleteValue",
+			envelopeType: wire.Reply,
 		},
 		{
 			desc: "deleteValue result failure 2",
 			x: &keyvalue.DeleteValueResult{
 				InternalError: &tv.InternalError{Message: stringp("foo")},
 			},
-			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 2,
 					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -139,18 +165,40 @@ func TestServiceArgsAndResult(t *testing.T) {
 					}}),
 				},
 			}}),
+			methodName:   "deleteValue",
+			envelopeType: wire.Reply,
 		},
 		{
 			desc: "size result",
 			x:    &keyvalue.SizeResult{Success: int64p(42)},
-			v: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 0, Value: wire.NewValueI64(42)},
 			}}),
+			methodName:   "size",
+			envelopeType: wire.Reply,
+		},
+		{
+			desc:         "oneway empty args",
+			x:            &cache.ClearArgs{},
+			value:        wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			methodName:   "clear",
+			envelopeType: wire.OneWay,
+		},
+		{
+			desc: "oneway with args",
+			x:    &cache.ClearAfterArgs{DurationMS: ptr.Int64(42)},
+			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueI64(42)},
+			}}),
+			methodName:   "clearAfter",
+			envelopeType: wire.OneWay,
 		},
 	}
 
 	for _, tt := range tests {
-		assertRoundTrip(t, tt.x, tt.v, tt.desc)
+		assertRoundTrip(t, tt.x, tt.value, tt.desc)
+		assert.Equal(t, tt.methodName, tt.x.MethodName(), tt.desc)
+		assert.Equal(t, tt.envelopeType, tt.x.EnvelopeType(), tt.desc)
 	}
 }
 
@@ -176,6 +224,14 @@ func TestServiceArgs(t *testing.T) {
 		{
 			input:  keyvalue.DeleteValueHelper.Args((*tv.Key)(stringp("foo"))),
 			output: &keyvalue.DeleteValueArgs{Key: (*tv.Key)(stringp("foo"))},
+		},
+		{
+			input:  cache.ClearHelper.Args(),
+			output: &cache.ClearArgs{},
+		},
+		{
+			input:  cache.ClearAfterHelper.Args(ptr.Int64(42)),
+			output: &cache.ClearAfterArgs{DurationMS: ptr.Int64(42)},
 		},
 	}
 

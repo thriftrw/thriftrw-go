@@ -36,8 +36,6 @@ import (
 func Service(g Generator, s *compile.ServiceSpec) (map[string]*bytes.Buffer, error) {
 	files := make(map[string]*bytes.Buffer)
 
-	// TODO inherited service functions
-
 	for _, functionName := range sortStringKeys(s.Functions) {
 		function := s.Functions[functionName]
 		if err := ServiceFunction(g, s, function); err != nil {
@@ -60,12 +58,6 @@ func Service(g Generator, s *compile.ServiceSpec) (map[string]*bytes.Buffer, err
 
 // ServiceFunction generates code for the given function of the given service.
 func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) error {
-	if f.OneWay {
-		return fmt.Errorf(
-			"oneway functions are not yet supported: %s.%s is oneway",
-			s.Name, f.Name)
-	}
-
 	argsGen := fieldGroupGenerator{
 		Name:   goCase(f.Name) + "Args",
 		Fields: compile.FieldGroup(f.ArgsSpec),
@@ -75,6 +67,14 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 	}
 	if err := functionArgsEnveloper(g, f); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
+	}
+
+	if err := functionHelper(g, f); err != nil {
+		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
+	}
+
+	if f.ResultSpec == nil {
+		return nil
 	}
 
 	resultFields := make(compile.FieldGroup, 0, len(f.ResultSpec.Exceptions)+1)
@@ -97,10 +97,6 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
 	if err := functionResponseEnveloper(g, f); err != nil {
-		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
-	}
-
-	if err := functionHelper(g, f); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
 
@@ -130,27 +126,29 @@ func functionHelper(g Generator, f *compile.FunctionSpec) error {
 		<$name := goCase .Name>
 
 		var <$name>Helper = struct{
-			IsException func(error) bool
-
 			Args func(<params .>) *<$name>Args
-
-			<if .ResultSpec.ReturnType>
-				WrapResponse func(
-					<typeReference .ResultSpec.ReturnType>,
-					error) (*<$name>Result, error)
-				UnwrapResponse func(*<$name>Result) (
-					<typeReference .ResultSpec.ReturnType>, error)
-			<else>
-				WrapResponse func(error) (*<$name>Result, error)
-				UnwrapResponse func(*<$name>Result) error
+			<if not .OneWay>
+				IsException func(error) bool
+				<if .ResultSpec.ReturnType>
+					WrapResponse func(
+						<typeReference .ResultSpec.ReturnType>,
+						error) (*<$name>Result, error)
+					UnwrapResponse func(*<$name>Result) (
+						<typeReference .ResultSpec.ReturnType>, error)
+				<else>
+					WrapResponse func(error) (*<$name>Result, error)
+					UnwrapResponse func(*<$name>Result) error
+				<end>
 			<end>
 		}{}
 
 		func init() {
-			<$name>Helper.IsException = <isException .>
 			<$name>Helper.Args = <newArgs .>
-			<$name>Helper.WrapResponse = <wrapResponse .>
-			<$name>Helper.UnwrapResponse = <unwrapResponse .>
+			<if not .OneWay>
+				<$name>Helper.IsException = <isException .>
+				<$name>Helper.WrapResponse = <wrapResponse .>
+				<$name>Helper.UnwrapResponse = <unwrapResponse .>
+			<end>
 		}
 		`,
 		f,

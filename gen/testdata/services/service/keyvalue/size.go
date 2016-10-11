@@ -42,6 +42,39 @@ func (v *SizeArgs) EnvelopeType() wire.EnvelopeType {
 	return wire.Call
 }
 
+var SizeHelper = struct {
+	Args           func() *SizeArgs
+	IsException    func(error) bool
+	WrapResponse   func(int64, error) (*SizeResult, error)
+	UnwrapResponse func(*SizeResult) (int64, error)
+}{}
+
+func init() {
+	SizeHelper.Args = func() *SizeArgs {
+		return &SizeArgs{}
+	}
+	SizeHelper.IsException = func(err error) bool {
+		switch err.(type) {
+		default:
+			return false
+		}
+	}
+	SizeHelper.WrapResponse = func(success int64, err error) (*SizeResult, error) {
+		if err == nil {
+			return &SizeResult{Success: &success}, nil
+		}
+		return nil, err
+	}
+	SizeHelper.UnwrapResponse = func(result *SizeResult) (success int64, err error) {
+		if result.Success != nil {
+			success = *result.Success
+			return
+		}
+		err = errors.New("expected a non-void result")
+		return
+	}
+}
+
 type SizeResult struct {
 	Success *int64 `json:"success,omitempty"`
 }
@@ -108,37 +141,4 @@ func (v *SizeResult) MethodName() string {
 
 func (v *SizeResult) EnvelopeType() wire.EnvelopeType {
 	return wire.Reply
-}
-
-var SizeHelper = struct {
-	IsException    func(error) bool
-	Args           func() *SizeArgs
-	WrapResponse   func(int64, error) (*SizeResult, error)
-	UnwrapResponse func(*SizeResult) (int64, error)
-}{}
-
-func init() {
-	SizeHelper.IsException = func(err error) bool {
-		switch err.(type) {
-		default:
-			return false
-		}
-	}
-	SizeHelper.Args = func() *SizeArgs {
-		return &SizeArgs{}
-	}
-	SizeHelper.WrapResponse = func(success int64, err error) (*SizeResult, error) {
-		if err == nil {
-			return &SizeResult{Success: &success}, nil
-		}
-		return nil, err
-	}
-	SizeHelper.UnwrapResponse = func(result *SizeResult) (success int64, err error) {
-		if result.Success != nil {
-			success = *result.Success
-			return
-		}
-		err = errors.New("expected a non-void result")
-		return
-	}
 }

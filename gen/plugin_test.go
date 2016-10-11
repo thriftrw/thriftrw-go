@@ -201,6 +201,31 @@ func TestBuildFunction(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "oneway",
+			spec: &compile.FunctionSpec{
+				Name:   "clearCache",
+				OneWay: true,
+				ArgsSpec: compile.ArgsSpec{
+					{
+						ID:   1,
+						Name: "delayMS",
+						Type: compile.I64Spec,
+					},
+				},
+			},
+			want: &api.Function{
+				Name:       "ClearCache",
+				ThriftName: "clearCache",
+				OneWay:     ptr.Bool(true),
+				Arguments: []*api.Argument{
+					{
+						Name: "DelayMS",
+						Type: &api.Type{PointerType: &api.Type{SimpleType: simpleType(api.SimpleTypeInt64)}},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

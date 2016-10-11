@@ -71,6 +71,52 @@ func (v *GetValueArgs) EnvelopeType() wire.EnvelopeType {
 	return wire.Call
 }
 
+var GetValueHelper = struct {
+	Args           func(key *services.Key) *GetValueArgs
+	IsException    func(error) bool
+	WrapResponse   func(*unions.ArbitraryValue, error) (*GetValueResult, error)
+	UnwrapResponse func(*GetValueResult) (*unions.ArbitraryValue, error)
+}{}
+
+func init() {
+	GetValueHelper.Args = func(key *services.Key) *GetValueArgs {
+		return &GetValueArgs{Key: key}
+	}
+	GetValueHelper.IsException = func(err error) bool {
+		switch err.(type) {
+		case *exceptions.DoesNotExistException:
+			return true
+		default:
+			return false
+		}
+	}
+	GetValueHelper.WrapResponse = func(success *unions.ArbitraryValue, err error) (*GetValueResult, error) {
+		if err == nil {
+			return &GetValueResult{Success: success}, nil
+		}
+		switch e := err.(type) {
+		case *exceptions.DoesNotExistException:
+			if e == nil {
+				return nil, errors.New("WrapResponse received non-nil error type with nil value for GetValueResult.DoesNotExist")
+			}
+			return &GetValueResult{DoesNotExist: e}, nil
+		}
+		return nil, err
+	}
+	GetValueHelper.UnwrapResponse = func(result *GetValueResult) (success *unions.ArbitraryValue, err error) {
+		if result.DoesNotExist != nil {
+			err = result.DoesNotExist
+			return
+		}
+		if result.Success != nil {
+			success = result.Success
+			return
+		}
+		err = errors.New("expected a non-void result")
+		return
+	}
+}
+
 type GetValueResult struct {
 	Success      *unions.ArbitraryValue            `json:"success,omitempty"`
 	DoesNotExist *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
@@ -158,50 +204,4 @@ func (v *GetValueResult) MethodName() string {
 
 func (v *GetValueResult) EnvelopeType() wire.EnvelopeType {
 	return wire.Reply
-}
-
-var GetValueHelper = struct {
-	IsException    func(error) bool
-	Args           func(key *services.Key) *GetValueArgs
-	WrapResponse   func(*unions.ArbitraryValue, error) (*GetValueResult, error)
-	UnwrapResponse func(*GetValueResult) (*unions.ArbitraryValue, error)
-}{}
-
-func init() {
-	GetValueHelper.IsException = func(err error) bool {
-		switch err.(type) {
-		case *exceptions.DoesNotExistException:
-			return true
-		default:
-			return false
-		}
-	}
-	GetValueHelper.Args = func(key *services.Key) *GetValueArgs {
-		return &GetValueArgs{Key: key}
-	}
-	GetValueHelper.WrapResponse = func(success *unions.ArbitraryValue, err error) (*GetValueResult, error) {
-		if err == nil {
-			return &GetValueResult{Success: success}, nil
-		}
-		switch e := err.(type) {
-		case *exceptions.DoesNotExistException:
-			if e == nil {
-				return nil, errors.New("WrapResponse received non-nil error type with nil value for GetValueResult.DoesNotExist")
-			}
-			return &GetValueResult{DoesNotExist: e}, nil
-		}
-		return nil, err
-	}
-	GetValueHelper.UnwrapResponse = func(result *GetValueResult) (success *unions.ArbitraryValue, err error) {
-		if result.DoesNotExist != nil {
-			err = result.DoesNotExist
-			return
-		}
-		if result.Success != nil {
-			success = result.Success
-			return
-		}
-		err = errors.New("expected a non-void result")
-		return
-	}
 }

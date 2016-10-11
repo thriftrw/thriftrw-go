@@ -89,6 +89,34 @@ func (v *SetValueArgs) EnvelopeType() wire.EnvelopeType {
 	return wire.Call
 }
 
+var SetValueHelper = struct {
+	Args           func(key *services.Key, value *unions.ArbitraryValue) *SetValueArgs
+	IsException    func(error) bool
+	WrapResponse   func(error) (*SetValueResult, error)
+	UnwrapResponse func(*SetValueResult) error
+}{}
+
+func init() {
+	SetValueHelper.Args = func(key *services.Key, value *unions.ArbitraryValue) *SetValueArgs {
+		return &SetValueArgs{Key: key, Value: value}
+	}
+	SetValueHelper.IsException = func(err error) bool {
+		switch err.(type) {
+		default:
+			return false
+		}
+	}
+	SetValueHelper.WrapResponse = func(err error) (*SetValueResult, error) {
+		if err == nil {
+			return &SetValueResult{}, nil
+		}
+		return nil, err
+	}
+	SetValueHelper.UnwrapResponse = func(result *SetValueResult) (err error) {
+		return
+	}
+}
+
 type SetValueResult struct{}
 
 func (v *SetValueResult) ToWire() (wire.Value, error) {
@@ -119,32 +147,4 @@ func (v *SetValueResult) MethodName() string {
 
 func (v *SetValueResult) EnvelopeType() wire.EnvelopeType {
 	return wire.Reply
-}
-
-var SetValueHelper = struct {
-	IsException    func(error) bool
-	Args           func(key *services.Key, value *unions.ArbitraryValue) *SetValueArgs
-	WrapResponse   func(error) (*SetValueResult, error)
-	UnwrapResponse func(*SetValueResult) error
-}{}
-
-func init() {
-	SetValueHelper.IsException = func(err error) bool {
-		switch err.(type) {
-		default:
-			return false
-		}
-	}
-	SetValueHelper.Args = func(key *services.Key, value *unions.ArbitraryValue) *SetValueArgs {
-		return &SetValueArgs{Key: key, Value: value}
-	}
-	SetValueHelper.WrapResponse = func(err error) (*SetValueResult, error) {
-		if err == nil {
-			return &SetValueResult{}, nil
-		}
-		return nil, err
-	}
-	SetValueHelper.UnwrapResponse = func(result *SetValueResult) (err error) {
-		return
-	}
 }

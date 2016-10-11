@@ -7,6 +7,8 @@ v0.4.0 (unreleased)
 -   **Breaking**: Remove the `--yarpc` flag. Install the ThriftRW YARPC plugin
     from `go.uber.org/yarpc/encoding/thrift/thriftrw-plugin-yarpc` and use
     `--plugin=yarpc` instead.
+-   Generate args structs and helpers for oneway functions.
+-   Expose whether a function is oneway to plugins.
 
 
 v0.3.2 (2016-10-05)

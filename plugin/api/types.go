@@ -139,6 +139,7 @@ type Function struct {
 	Arguments  []*Argument `json:"arguments"`
 	ReturnType *Type       `json:"returnType,omitempty"`
 	Exceptions []*Argument `json:"exceptions"`
+	OneWay     *bool       `json:"oneWay,omitempty"`
 }
 
 type _List_Argument_ValueList []*Argument
@@ -173,7 +174,7 @@ func (_List_Argument_ValueList) Close() {
 
 func (v *Function) ToWire() (wire.Value, error) {
 	var (
-		fields [5]wire.Field
+		fields [6]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -213,6 +214,14 @@ func (v *Function) ToWire() (wire.Value, error) {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 5, Value: w}
+		i++
+	}
+	if v.OneWay != nil {
+		w, err = wire.NewValueBool(*(v.OneWay)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 6, Value: w}
 		i++
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
@@ -286,6 +295,15 @@ func (v *Function) FromWire(w wire.Value) error {
 					return err
 				}
 			}
+		case 6:
+			if field.Value.Type() == wire.TBool {
+				var x bool
+				x, err = field.Value.GetBool(), error(nil)
+				v.OneWay = &x
+				if err != nil {
+					return err
+				}
+			}
 		}
 	}
 	if !nameIsSet {
@@ -301,7 +319,7 @@ func (v *Function) FromWire(w wire.Value) error {
 }
 
 func (v *Function) String() string {
-	var fields [5]string
+	var fields [6]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
@@ -315,6 +333,10 @@ func (v *Function) String() string {
 	}
 	if v.Exceptions != nil {
 		fields[i] = fmt.Sprintf("Exceptions: %v", v.Exceptions)
+		i++
+	}
+	if v.OneWay != nil {
+		fields[i] = fmt.Sprintf("OneWay: %v", *(v.OneWay))
 		i++
 	}
 	return fmt.Sprintf("Function{%v}", strings.Join(fields[:i], ", "))
