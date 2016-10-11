@@ -210,7 +210,7 @@ func TestBuildFunction(t *testing.T) {
 					{
 						ID:   1,
 						Name: "delayMS",
-						Type: compile.I64Spec,
+						Type: &compile.I64Spec{},
 					},
 				},
 			},
