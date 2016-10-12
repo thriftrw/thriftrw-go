@@ -12,7 +12,7 @@ v0.4.0 (unreleased)
     types from values to types.
 -   Generate args structs and helpers for oneway functions.
 -   Expose whether a function is oneway to plugins.
-
+-   Expose the version of the library under `go.uber.org/thriftrw/version.Version`.
 
 v0.3.2 (2016-10-05)
 -------------------

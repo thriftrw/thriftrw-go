@@ -32,6 +32,7 @@ import (
 	"go.uber.org/thriftrw/gen"
 	"go.uber.org/thriftrw/internal/plugin"
 	"go.uber.org/thriftrw/internal/plugin/builtin/pluginapigen"
+	"go.uber.org/thriftrw/version"
 
 	"github.com/jessevdk/go-flags"
 )
@@ -68,7 +69,7 @@ func main() {
 	}
 
 	if opts.DisplayVersion {
-		fmt.Println("thriftrw", version)
+		fmt.Println("thriftrw", version.Version)
 		os.Exit(0)
 	}
 

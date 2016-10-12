@@ -18,6 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package main // import "go.uber.org/thriftrw"
+package version
 
-var version = "v0.4.0"
+const Version = "0.4.0"
