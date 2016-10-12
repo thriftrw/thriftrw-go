@@ -31,6 +31,12 @@ import (
 	"go.uber.org/thriftrw/wire"
 )
 
+func mustCompileTypeReference(t *testing.T, typ ast.Type) TypeSpec {
+	result, err := compileTypeReference(typ)
+	require.NoError(t, err, "failed to compile type reference %v: %v", typ, err)
+	return result
+}
+
 // mustLink links the given TypeSpec inside the given scope, failing the test
 // if the spec does not link successfully.
 func mustLink(t *testing.T, spec TypeSpec, scope Scope) TypeSpec {
@@ -41,7 +47,7 @@ func mustLink(t *testing.T, spec TypeSpec, scope Scope) TypeSpec {
 
 func TestCompileTypeWithNil(t *testing.T) {
 	// make sure compileType(nil) doesn't explode.
-	assert.Nil(t, compileTypeReference(nil))
+	assert.Nil(t, mustCompileTypeReference(t, nil))
 }
 
 func TestResolveBaseType(t *testing.T) {
@@ -60,9 +66,12 @@ func TestResolveBaseType(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		spec := compileTypeReference(tt.input)
-		linked, err := spec.Link(defaultScope)
+		spec, err := compileTypeReference(tt.input)
+		if !assert.NoError(t, err) {
+			continue
+		}
 
+		linked, err := spec.Link(defaultScope)
 		assert.NoError(t, err)
 		assert.Equal(t, tt.wireType, spec.TypeCode())
 		assert.Equal(t, tt.wireType, linked.TypeCode())
@@ -80,7 +89,7 @@ func TestLinkTypeReference(t *testing.T) {
 		Name: "Foo",
 		Type: ast.StructType,
 		Fields: FieldGroup{
-			{ID: 1, Name: "value", Type: I32Spec},
+			{ID: 1, Name: "value", Type: &I32Spec{}},
 		},
 	}
 
@@ -170,33 +179,33 @@ func TestRootTypeSpec(t *testing.T) {
 		give TypeSpec
 	}{
 		// Primitives
-		{desc: "BoolSpec", give: BoolSpec},
-		{desc: "I8Spec", give: I8Spec},
-		{desc: "I16Spec", give: I16Spec},
-		{desc: "I32Spec", give: I32Spec},
-		{desc: "I64Spec", give: I64Spec},
-		{desc: "DoubleSpec", give: DoubleSpec},
-		{desc: "StringSpec", give: StringSpec},
-		{desc: "BinarySpec", give: BinarySpec},
+		{desc: "BoolSpec", give: &BoolSpec{}},
+		{desc: "I8Spec", give: &I8Spec{}},
+		{desc: "I16Spec", give: &I16Spec{}},
+		{desc: "I32Spec", give: &I32Spec{}},
+		{desc: "I64Spec", give: &I64Spec{}},
+		{desc: "DoubleSpec", give: &DoubleSpec{}},
+		{desc: "StringSpec", give: &StringSpec{}},
+		{desc: "BinarySpec", give: &BinarySpec{}},
 
 		// Containers
 		{
 			desc: "ListSpec",
 			give: &ListSpec{
-				ValueSpec: &TypedefSpec{Name: "UUID", Target: StringSpec},
+				ValueSpec: &TypedefSpec{Name: "UUID", Target: &StringSpec{}},
 			},
 		},
 		{
 			desc: "SetSpec",
 			give: &SetSpec{
-				ValueSpec: &TypedefSpec{Name: "UUID", Target: StringSpec},
+				ValueSpec: &TypedefSpec{Name: "UUID", Target: &StringSpec{}},
 			},
 		},
 		{
 			desc: "MapSpec",
 			give: &MapSpec{
-				KeySpec:   StringSpec,
-				ValueSpec: &TypedefSpec{Name: "UUID", Target: StringSpec},
+				KeySpec:   &StringSpec{},
+				ValueSpec: &TypedefSpec{Name: "UUID", Target: &StringSpec{}},
 			},
 		},
 
@@ -210,12 +219,12 @@ func TestRootTypeSpec(t *testing.T) {
 					{
 						ID:   1,
 						Name: "a",
-						Type: StringSpec,
+						Type: &StringSpec{},
 					},
 					{
 						ID:   2,
 						Name: "b",
-						Type: &TypedefSpec{Name: "UUID", Target: StringSpec},
+						Type: &TypedefSpec{Name: "UUID", Target: &StringSpec{}},
 					},
 				},
 			},

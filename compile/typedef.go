@@ -37,12 +37,17 @@ type TypedefSpec struct {
 }
 
 // compileTypedef compiles the given Typedef AST into a TypedefSpec.
-func compileTypedef(file string, src *ast.Typedef) *TypedefSpec {
+func compileTypedef(file string, src *ast.Typedef) (*TypedefSpec, error) {
+	typ, err := compileTypeReference(src.Type)
+	if err != nil {
+		return nil, err
+	}
+
 	return &TypedefSpec{
 		Name:   src.Name,
 		File:   file,
-		Target: compileTypeReference(src.Type),
-	}
+		Target: typ,
+	}, nil
 }
 
 // TypeCode gets the wire type for the typedef.

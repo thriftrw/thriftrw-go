@@ -28,6 +28,10 @@ import (
 type Annotations map[string]string
 
 func compileAnnotations(astAnnotations []*ast.Annotation) (Annotations, error) {
+	if len(astAnnotations) == 0 {
+		return nil, nil
+	}
+
 	namespace := newNamespace(caseSensitive)
 	annotations := make(Annotations, len(astAnnotations))
 

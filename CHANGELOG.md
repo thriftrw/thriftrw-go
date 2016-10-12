@@ -7,6 +7,9 @@ v0.4.0 (unreleased)
 -   **Breaking**: Remove the `--yarpc` flag. Install the ThriftRW YARPC plugin
     from `go.uber.org/yarpc/encoding/thrift/thriftrw-plugin-yarpc` and use
     `--plugin=yarpc` instead.
+-   **Breaking**: The `compile` API now exposes annotations made while
+    referencing native Thrift types. This changes the `TypeSpec`s for primitive
+    types from values to types.
 -   Generate args structs and helpers for oneway functions.
 -   Expose whether a function is oneway to plugins.
 

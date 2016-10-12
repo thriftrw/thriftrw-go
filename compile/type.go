@@ -150,9 +150,9 @@ func (r typeSpecReference) ThriftName() string {
 // compileTypeReference compiles the given AST type reference into a TypeSpec.
 //
 // The returned TypeSpec may need to be linked eventually.
-func compileTypeReference(typ ast.Type) TypeSpec {
+func compileTypeReference(typ ast.Type) (TypeSpec, error) {
 	if typ == nil {
-		return nil
+		return nil, nil
 	}
 	switch t := typ.(type) {
 	case ast.BaseType:
@@ -164,7 +164,7 @@ func compileTypeReference(typ ast.Type) TypeSpec {
 	case ast.SetType:
 		return compileSetType(t)
 	case ast.TypeReference:
-		return typeSpecReference(t)
+		return typeSpecReference(t), nil
 	default:
 		panic(fmt.Sprintf("unknown type %v", typ))
 	}

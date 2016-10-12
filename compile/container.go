@@ -33,14 +33,31 @@ type MapSpec struct {
 	nativeThriftType
 
 	KeySpec, ValueSpec TypeSpec
+	Annotations        Annotations
 }
 
 // compileMapType compiles the given MapType AST into a MapSpec.
-func compileMapType(src ast.MapType) *MapSpec {
-	return &MapSpec{
-		KeySpec:   compileTypeReference(src.KeyType),
-		ValueSpec: compileTypeReference(src.ValueType),
+func compileMapType(src ast.MapType) (*MapSpec, error) {
+	annots, err := compileAnnotations(src.Annotations)
+	if err != nil {
+		return nil, err
 	}
+
+	keySpec, err := compileTypeReference(src.KeyType)
+	if err != nil {
+		return nil, err
+	}
+
+	valueSpec, err := compileTypeReference(src.ValueType)
+	if err != nil {
+		return nil, err
+	}
+
+	return &MapSpec{
+		KeySpec:     keySpec,
+		ValueSpec:   valueSpec,
+		Annotations: annots,
+	}, nil
 }
 
 // Link resolves the type references in the MapSpec.
@@ -93,12 +110,26 @@ type ListSpec struct {
 	linkOnce
 	nativeThriftType
 
-	ValueSpec TypeSpec
+	ValueSpec   TypeSpec
+	Annotations Annotations
 }
 
 // compileListSpec compiles the given ListType AST into a ListSpec.
-func compileListType(src ast.ListType) *ListSpec {
-	return &ListSpec{ValueSpec: compileTypeReference(src.ValueType)}
+func compileListType(src ast.ListType) (*ListSpec, error) {
+	annots, err := compileAnnotations(src.Annotations)
+	if err != nil {
+		return nil, err
+	}
+
+	valueSpec, err := compileTypeReference(src.ValueType)
+	if err != nil {
+		return nil, err
+	}
+
+	return &ListSpec{
+		ValueSpec:   valueSpec,
+		Annotations: annots,
+	}, nil
 }
 
 // Link resolves the type references in the ListSpec.
@@ -134,12 +165,26 @@ type SetSpec struct {
 	linkOnce
 	nativeThriftType
 
-	ValueSpec TypeSpec
+	ValueSpec   TypeSpec
+	Annotations Annotations
 }
 
 // compileSetSpec compiles the given SetType AST into a SetSpec.
-func compileSetType(src ast.SetType) *SetSpec {
-	return &SetSpec{ValueSpec: compileTypeReference(src.ValueType)}
+func compileSetType(src ast.SetType) (*SetSpec, error) {
+	annots, err := compileAnnotations(src.Annotations)
+	if err != nil {
+		return nil, err
+	}
+
+	valueSpec, err := compileTypeReference(src.ValueType)
+	if err != nil {
+		return nil, err
+	}
+
+	return &SetSpec{
+		ValueSpec:   valueSpec,
+		Annotations: annots,
+	}, nil
 }
 
 // Link resolves the type references in the SetSpec.

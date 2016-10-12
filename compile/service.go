@@ -285,8 +285,13 @@ func compileResultSpec(returnType ast.Type, exceptions []*ast.Field) (*ResultSpe
 		}
 	}
 
+	typ, err := compileTypeReference(returnType)
+	if err != nil {
+		return nil, err
+	}
+
 	return &ResultSpec{
-		ReturnType: compileTypeReference(returnType),
+		ReturnType: typ,
 		Exceptions: excFields,
 	}, nil
 }
