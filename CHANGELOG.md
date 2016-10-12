@@ -12,6 +12,7 @@ v0.4.0 (unreleased)
     types from values to types.
 -   Generate args structs and helpers for oneway functions.
 -   Expose whether a function is oneway to plugins.
+-   Library version is exposed via the subpackage version (version.Version).
 
 
 v0.3.2 (2016-10-05)
