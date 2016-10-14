@@ -69,7 +69,7 @@ func main() {
 	}
 
 	if opts.DisplayVersion {
-		fmt.Println("thriftrw", version.Version)
+		fmt.Printf("thriftrw v%s\n", version.Version)
 		os.Exit(0)
 	}
 
