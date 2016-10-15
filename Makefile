@@ -1,4 +1,4 @@
-WANT_VERSION = $(shell grep '^v[0-9]' CHANGELOG.md | head -n1 | cut -d' ' -f1 | sed 's/^v//')
+WANT_VERSION = $(shell grep '^v[0-9]' CHANGELOG.md | head -n1 | cut -d' ' -f1)
 
 # Minor versions of Go for which the lint check should be run.
 LINTABLE_MINOR_VERSIONS := 7
