@@ -67,6 +67,14 @@ func parseSemVer(v string) (semVer, error) {
 	return r, nil
 }
 
+func parseSemVerOrPanic(v string) semVer {
+	semVer, err := parseSemVer(v)
+	if err != nil {
+		panic(err)
+	}
+	return semVer
+}
+
 func parseUint(s string) (uint, error) {
 	var v uint64
 	var err error

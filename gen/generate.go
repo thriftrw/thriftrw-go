@@ -219,15 +219,17 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 
 		data := struct {
 			Version string
+			Package string
 		}{
 			Version: version.Version,
+			Package: importPath,
 		}
 
 		if err := g.DeclareFromTemplate(`
 		<$version := import "go.uber.org/thriftrw/version">
 
 		func init() {
-			<$version>.CheckCompatibilityWithGeneratedCodeAt("<.Version>")
+			<$version>.CheckCompatibilityWithGeneratedCodeAt("<.Version>", "<.Package>")
 		}
 
 		`, data); err != nil {

@@ -25,10 +25,9 @@ import "log"
 // Version is the current thriftrw version.
 const Version = "0.4.0"
 
-// CheckCompatibilityWithGeneratedCodeAt will panics if the thriftrw version
+// CheckCompatibilityWithGeneratedCodeAt will panic if the thriftrw version
 // used to generated code (given by `genCodeVer`) is not compatible with the
-// current version of thriftrw. This function is intended to be called from the
-// generated code.
+// current version of thriftrw.
 // This function is designed to be called during initialization of the
 // generated code.
 //
@@ -36,7 +35,30 @@ const Version = "0.4.0"
 // Later on, you imports the stubs, but also thriftrw in version 1.2. Maybe
 // thriftrw 1.2 is not compatible in subtle ways with the generated code from
 // version 1.0. This function will make sure to panic during initialization
-// preventing potential subtle bugs.
-func CheckCompatibilityWithGeneratedCodeAt(genCodeVer string) {
-	log.Printf("#### %s - %s", Version, genCodeVer)
+// preventing potential bugs.
+func CheckCompatibilityWithGeneratedCodeAt(genCodeVersion string, fromPkg string) {
+	genv := parseSemVerOrPanic(genCodeVersion)
+	compatible := (genv.Compare(&genCodeCompatbilityRange.begin) >= 0 &&
+		genv.Compare(&genCodeCompatbilityRange.end) < 0)
+	if !compatible {
+		log.Panicf(`incompatible version from generaged package "%s", expected >=%s and <%s, got %s`,
+			fromPkg, &genCodeCompatbilityRange.begin,
+			&genCodeCompatbilityRange.end, &genv)
+	}
+}
+
+var genCodeCompatbilityRange = computeGenCodeCompabilityRange()
+
+type genCodeCompatbilityRangeHolder struct {
+	begin semVer
+	end   semVer
+}
+
+func computeGenCodeCompabilityRange() (r genCodeCompatbilityRangeHolder) {
+	r.begin = parseSemVerOrPanic(Version)
+	r.begin.Patch = 0
+	r.end = r.begin
+	r.end.Minor++
+	r.end.Pre = nil
+	return r
 }

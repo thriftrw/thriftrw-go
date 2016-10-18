@@ -6,5 +6,5 @@ package exceptions
 import "go.uber.org/thriftrw/version"
 
 func init() {
-	version.CheckCompatibilityWithGeneratedCodeAt("0.4.0")
+	version.CheckCompatibilityWithGeneratedCodeAt("0.4.0", "go.uber.org/thriftrw/gen/testdata/exceptions")
 }
