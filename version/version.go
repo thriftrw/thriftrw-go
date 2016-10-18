@@ -20,4 +20,23 @@
 
 package version
 
+import "log"
+
+// Version is the current thriftrw version.
 const Version = "0.4.0"
+
+// CheckCompatibilityWithGeneratedCodeAt will panics if the thriftrw version
+// used to generated code (given by `genCodeVer`) is not compatible with the
+// current version of thriftrw. This function is intended to be called from the
+// generated code.
+// This function is designed to be called during initialization of the
+// generated code.
+//
+// Rational: Let's say you use thriftrw version 1.0 to generate some stubs.
+// Later on, you imports the stubs, but also thriftrw in version 1.2. Maybe
+// thriftrw 1.2 is not compatible in subtle ways with the generated code from
+// version 1.0. This function will make sure to panic during initialization
+// preventing potential subtle bugs.
+func CheckCompatibilityWithGeneratedCodeAt(genCodeVer string) {
+	log.Printf("#### %s - %s", Version, genCodeVer)
+}

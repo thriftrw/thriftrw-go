@@ -32,6 +32,7 @@ import (
 	"go.uber.org/thriftrw/compile"
 	"go.uber.org/thriftrw/internal"
 	"go.uber.org/thriftrw/internal/plugin"
+	"go.uber.org/thriftrw/version"
 )
 
 // Options controls how code gets generated.
@@ -212,6 +213,34 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 	// Note that we need to return a mapping relative to o.OutputDir so we
 	// will prepend $packageRelPath/ to all these paths.
 	files := make(map[string][]byte)
+
+	{
+		g := NewGenerator(i, importPath, packageName)
+
+		data := struct {
+			Version string
+		}{
+			Version: version.Version,
+		}
+
+		if err := g.DeclareFromTemplate(`
+		<$version := import "go.uber.org/thriftrw/version">
+
+		func init() {
+			<$version>.CheckCompatibilityWithGeneratedCodeAt("<.Version>")
+		}
+
+		`, data); err != nil {
+			return nil, err
+		}
+
+		buff := new(bytes.Buffer)
+		if err := g.Write(buff, token.NewFileSet()); err != nil {
+			return nil, fmt.Errorf(
+				"could not generate version check for %q: %v", m.ThriftPath, err)
+		}
+		files["versioncheck.go"] = buff.Bytes()
+	}
 
 	if len(m.Constants) > 0 {
 		g := NewGenerator(i, importPath, packageName)
