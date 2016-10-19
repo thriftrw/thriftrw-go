@@ -62,22 +62,23 @@ func TestCompare(t *testing.T) {
 		{"3.0.0-hello.42+foobar.meta.39", "3.0.0-42.42+barfoo.tame.93"},
 	}
 	for _, test := range tests {
-		gv, err := parseSemVer(test.GreaterVersion)
-		require.NoError(t, err)
-		lv, err := parseSemVer(test.LesserVersion)
-		require.NoError(t, err)
-		msg := fmt.Sprintf("%s > %s", test.GreaterVersion, test.LesserVersion)
-		assert.Equal(t, test.GreaterVersion, gv.String(), msg)
-		assert.Equal(t, test.LesserVersion, lv.String(), msg)
-		assert.Equal(t, 1, gv.Compare(&lv), msg)
-		assert.Equal(t, -1, lv.Compare(&gv), msg)
+		t.Run(fmt.Sprintf("%s > %s", test.GreaterVersion, test.LesserVersion), func(t *testing.T) {
+			gv, err := parseSemVer(test.GreaterVersion)
+			require.NoError(t, err)
+			lv, err := parseSemVer(test.LesserVersion)
+			require.NoError(t, err)
+			assert.Equal(t, test.GreaterVersion, gv.String(), "GreaterVersion input != parsed output")
+			assert.Equal(t, test.LesserVersion, lv.String(), "LesserVersion input != parsed output")
+			assert.Equal(t, 1, gv.Compare(&lv), "Greater version must be greater than")
+			assert.Equal(t, -1, lv.Compare(&gv), "Lesser version must be less than")
+		})
 	}
 }
 
 func TestCompareEqual(t *testing.T) {
 	tests := []struct {
-		GreaterVersion string
-		LesserVersion  string
+		A string
+		B string
 	}{
 		{"0.0.0", "0.0.0"},
 		{"0.0.0-foo", "0.0.0-foo"},
@@ -92,14 +93,15 @@ func TestCompareEqual(t *testing.T) {
 		{"3.0.0-hello.42+foobar.meta.39", "3.0.0-hello.42+barfoo.tame.93"},
 	}
 	for _, test := range tests {
-		gv, err := parseSemVer(test.GreaterVersion)
-		require.NoError(t, err)
-		lv, err := parseSemVer(test.LesserVersion)
-		require.NoError(t, err)
-		msg := fmt.Sprintf("%s > %s", test.GreaterVersion, test.LesserVersion)
-		assert.Equal(t, test.GreaterVersion, gv.String(), msg)
-		assert.Equal(t, test.LesserVersion, lv.String(), msg)
-		assert.Equal(t, 0, gv.Compare(&lv), msg)
-		assert.Equal(t, 0, lv.Compare(&gv), msg)
+		t.Run(fmt.Sprintf("%s == %s", test.A, test.B), func(t *testing.T) {
+			av, err := parseSemVer(test.A)
+			require.NoError(t, err)
+			bv, err := parseSemVer(test.B)
+			require.NoError(t, err)
+			assert.Equal(t, test.A, av.String(), "a input != parsed output")
+			assert.Equal(t, test.B, bv.String(), "b input != parsed output")
+			assert.Equal(t, 0, av.Compare(&bv), "a must be equal to b")
+			assert.Equal(t, 0, bv.Compare(&av), "b must be equal to a")
+		})
 	}
 }
