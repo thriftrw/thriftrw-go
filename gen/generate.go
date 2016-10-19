@@ -220,8 +220,8 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 			return nil, err
 		}
 
-		buff := new(bytes.Buffer)
-		if err := g.Write(buff, token.NewFileSet()); err != nil {
+		var buff bytes.Buffer
+		if err := g.Write(&buff, token.NewFileSet()); err != nil {
 			return nil, fmt.Errorf(
 				"could not generate version check for %q: %v", m.ThriftPath, err)
 		}

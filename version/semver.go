@@ -36,20 +36,20 @@ type semVer struct {
 }
 
 // Following http://semver.org/spec/v2.0.0.html
-const numPart = `([0-9]+)\.([0-9]+)\.([0-9]+)`
-const preReleasePart = `-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)`
-const metaPart = `\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)`
+const (
+	numPart        = `(\d+)\.(\d+)\.(\d+)`
+	preReleasePart = `-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)`
+	metaPart       = `\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)`
+)
 
 var semVerRegex = regexp.MustCompile(`^` + numPart + `(?:` + preReleasePart + `)?(?:` + metaPart + `)?$`)
 
-func parseSemVer(v string) (semVer, error) {
-	r := semVer{}
+func parseSemVer(v string) (r semVer, err error) {
 	parts := semVerRegex.FindStringSubmatch(v)
 	if parts == nil {
-		return r, fmt.Errorf(`cannot parse as semantic version: "%s"`, v)
+		return r, fmt.Errorf(`cannot parse as semantic version: %q`, v)
 	}
 
-	var err error
 	if r.Major, err = parseUint(parts[1]); err != nil {
 		return r, err
 	}
@@ -76,21 +76,17 @@ func parseSemVerOrPanic(v string) semVer {
 }
 
 func parseUint(s string) (uint, error) {
-	var v uint64
-	var err error
-	if v, err = strconv.ParseUint(s, 10, 31); err != nil {
-		return 0, err
-	}
-	return uint(v), nil
+	v, err := strconv.ParseUint(s, 10, 31)
+	return uint(v), err
 }
 
 func (v *semVer) String() string {
 	r := fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
-	if v.Pre != nil {
-		r = fmt.Sprintf("%s-%s", r, strings.Join(v.Pre, "."))
+	if len(v.Pre) > 0 {
+		r += "-" + strings.Join(v.Pre, ".")
 	}
 	if v.Meta != "" {
-		r = fmt.Sprintf("%s+%s", r, v.Meta)
+		r += "+" + v.Meta
 	}
 	return r
 }
