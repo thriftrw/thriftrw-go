@@ -22,18 +22,18 @@ package version
 
 import "log"
 
-// Version is the current thriftrw version.
+// Version is the current ThriftRW version.
 const Version = "0.4.0"
 
-// CheckCompatWithGeneratedCodeAt will panic if the thriftrw version used to
+// CheckCompatWithGeneratedCodeAt will panic if the ThriftRW version used to
 // generated code (given by `genCodeVer`) is not compatible with the current
-// version of thriftrw.
+// version of ThriftRW.
 // This function is designed to be called during initialization of the
 // generated code.
 //
-// Rational: Let's say you use thriftrw version 1.0 to generate some stubs.
-// Later on, you imports the stubs, but also thriftrw in version 1.2. Maybe
-// thriftrw 1.2 is not compatible in subtle ways with the generated code from
+// Rational: Let's say you use ThriftRW version 1.0 to generate some stubs.
+// Later on, you imports the stubs, but also ThriftRW in version 1.2. Maybe
+// ThriftRW 1.2 is not compatible in subtle ways with the generated code from
 // version 1.0. This function will make sure to panic during initialization
 // preventing potential bugs.
 func CheckCompatWithGeneratedCodeAt(genCodeVersion string, fromPkg string) {
