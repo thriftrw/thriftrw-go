@@ -26,22 +26,21 @@ import "log"
 const Version = "0.4.0"
 
 // CheckCompatWithGeneratedCodeAt will panic if the ThriftRW version used to
-// generated code (given by `genCodeVer`) is not compatible with the current
-// version of ThriftRW.
+// generated code (given by `genCodeVersion`) is not compatible with the
+// current version of ThriftRW.
 // This function is designed to be called during initialization of the
 // generated code.
 //
-// Rational: Let's say you use ThriftRW version 1.0 to generate some stubs.
-// Later on, you imports the stubs, but also ThriftRW in version 1.2. Maybe
-// ThriftRW 1.2 is not compatible in subtle ways with the generated code from
-// version 1.0. This function will make sure to panic during initialization
-// preventing potential bugs.
+// Rationale: It is possible that the old generated code is not compatible with
+// the new version of ThriftRW in subtle ways but still compiles successfully.
+// This function will ensure that the version mismatch is detected and help
+// avoid bugs that could be caused by this discrepancy.
 func CheckCompatWithGeneratedCodeAt(genCodeVersion string, fromPkg string) {
 	genv := parseSemVerOrPanic(genCodeVersion)
 	compatible := (genv.Compare(&genCodeCompatbilityRange.begin) >= 0 &&
 		genv.Compare(&genCodeCompatbilityRange.end) < 0)
 	if !compatible {
-		log.Panicf(`incompatible version from generaged package "%s", expected >=%s and <%s, got %s`,
+		log.Panicf(`incompatible version from generated package "%s", expected >=%s and <%s, got %s`,
 			fromPkg, &genCodeCompatbilityRange.begin,
 			&genCodeCompatbilityRange.end, &genv)
 	}
