@@ -101,16 +101,13 @@ func (v *semVer) String() string {
 // +1 if a > b
 func (v *semVer) Compare(b *semVer) int {
 	a := v
-	r := uintCmp(a.Major, b.Major)
-	if r != 0 {
+	if r := uintCmp(a.Major, b.Major); r != 0 {
 		return r
 	}
-	r = uintCmp(a.Minor, b.Minor)
-	if r != 0 {
+	if r := uintCmp(a.Minor, b.Minor); r != 0 {
 		return r
 	}
-	r = uintCmp(a.Patch, b.Patch)
-	if r != 0 {
+	if r := uintCmp(a.Patch, b.Patch); r != 0 {
 		return r
 	}
 
@@ -125,8 +122,7 @@ func (v *semVer) Compare(b *semVer) int {
 	}
 
 	for len(aPre) > 0 && len(bPre) > 0 {
-		r = preCmp(aPre[0], bPre[0])
-		if r != 0 {
+		if r := preCmp(aPre[0], bPre[0]); r != 0 {
 			return r
 		}
 		aPre = aPre[1:]
