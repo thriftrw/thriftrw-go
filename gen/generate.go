@@ -32,7 +32,6 @@ import (
 	"go.uber.org/thriftrw/compile"
 	"go.uber.org/thriftrw/internal"
 	"go.uber.org/thriftrw/internal/plugin"
-	"go.uber.org/thriftrw/version"
 )
 
 // Options controls how code gets generated.
@@ -217,22 +216,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 	{
 		g := NewGenerator(i, importPath, packageName)
 
-		data := struct {
-			Version string
-			Package string
-		}{
-			Version: version.Version,
-			Package: importPath,
-		}
-
-		if err := g.DeclareFromTemplate(`
-		<$version := import "go.uber.org/thriftrw/version">
-
-		func init() {
-			<$version>.CheckCompatWithGeneratedCodeAt("<.Version>", "<.Package>")
-		}
-
-		`, data); err != nil {
+		if err := Version(g, importPath); err != nil {
 			return nil, err
 		}
 
