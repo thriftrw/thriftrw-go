@@ -25,9 +25,9 @@ import "log"
 // Version is the current thriftrw version.
 const Version = "0.4.0"
 
-// CheckCompatibilityWithGeneratedCodeAt will panic if the thriftrw version
-// used to generated code (given by `genCodeVer`) is not compatible with the
-// current version of thriftrw.
+// CheckCompatWithGeneratedCodeAt will panic if the thriftrw version used to
+// generated code (given by `genCodeVer`) is not compatible with the current
+// version of thriftrw.
 // This function is designed to be called during initialization of the
 // generated code.
 //
@@ -36,7 +36,7 @@ const Version = "0.4.0"
 // thriftrw 1.2 is not compatible in subtle ways with the generated code from
 // version 1.0. This function will make sure to panic during initialization
 // preventing potential bugs.
-func CheckCompatibilityWithGeneratedCodeAt(genCodeVersion string, fromPkg string) {
+func CheckCompatWithGeneratedCodeAt(genCodeVersion string, fromPkg string) {
 	genv := parseSemVerOrPanic(genCodeVersion)
 	compatible := (genv.Compare(&genCodeCompatbilityRange.begin) >= 0 &&
 		genv.Compare(&genCodeCompatbilityRange.end) < 0)

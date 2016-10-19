@@ -229,7 +229,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		<$version := import "go.uber.org/thriftrw/version">
 
 		func init() {
-			<$version>.CheckCompatibilityWithGeneratedCodeAt("<.Version>", "<.Package>")
+			<$version>.CheckCompatWithGeneratedCodeAt("<.Version>", "<.Package>")
 		}
 
 		`, data); err != nil {

@@ -6,5 +6,5 @@ package other_constants
 import "go.uber.org/thriftrw/version"
 
 func init() {
-	version.CheckCompatibilityWithGeneratedCodeAt("0.4.0", "go.uber.org/thriftrw/gen/testdata/other_constants")
+	version.CheckCompatWithGeneratedCodeAt("0.4.0", "go.uber.org/thriftrw/gen/testdata/other_constants")
 }
