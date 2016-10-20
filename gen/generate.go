@@ -213,6 +213,21 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 	// will prepend $packageRelPath/ to all these paths.
 	files := make(map[string][]byte)
 
+	{
+		g := NewGenerator(i, importPath, packageName)
+
+		if err := Version(g, importPath); err != nil {
+			return nil, err
+		}
+
+		var buff bytes.Buffer
+		if err := g.Write(&buff, token.NewFileSet()); err != nil {
+			return nil, fmt.Errorf(
+				"could not generate version check for %q: %v", m.ThriftPath, err)
+		}
+		files["versioncheck.go"] = buff.Bytes()
+	}
+
 	if len(m.Constants) > 0 {
 		g := NewGenerator(i, importPath, packageName)
 
