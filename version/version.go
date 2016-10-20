@@ -40,7 +40,7 @@ func CheckCompatWithGeneratedCodeAt(genCodeVersion string, fromPkg string) {
 	compatible := (genv.Compare(&genCodeCompatbilityRange.begin) >= 0 &&
 		genv.Compare(&genCodeCompatbilityRange.end) < 0)
 	if !compatible {
-		log.Panicf(`incompatible version from generated package "%s", expected >=%s and <%s, got %s`,
+		log.Panicf(`incompatible version from generated package %q, expected >=%s and <%s, got %s`,
 			fromPkg, &genCodeCompatbilityRange.begin,
 			&genCodeCompatbilityRange.end, &genv)
 	}

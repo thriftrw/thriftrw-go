@@ -14,7 +14,7 @@ v0.4.0 (unreleased)
 -   Expose whether a function is oneway to plugins.
 -   Expose the version of the library under `go.uber.org/thriftrw/version.Version`.
 -   Generated code will test for version compatibility with the current version
-    of thriftrw during initialization.
+    of ThriftRW during initialization.
 
 v0.3.2 (2016-10-05)
 -------------------
