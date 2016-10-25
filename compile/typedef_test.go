@@ -120,6 +120,7 @@ func TestCompileTypedefFailure(t *testing.T) {
 			`typedef i32 bar (a = "b", a, b)`,
 			nil,
 			[]string{
+				`cannot compile "bar" on line 1:`,
 				`annotation conflict: the name "a" has already been used on line 1`,
 			},
 		},
