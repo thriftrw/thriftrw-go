@@ -52,13 +52,14 @@ func TestCompileTypedef(t *testing.T) {
 		spec  *TypedefSpec
 	}{
 		{
-			"typedef i64 timestamp",
+			`typedef i64 (js.type = "Long") timestamp (foo = "bar")`,
 			nil,
 			wire.TI64,
 			&TypedefSpec{
-				Name:   "timestamp",
-				File:   "test.thrift",
-				Target: &I64Spec{},
+				Name:        "timestamp",
+				File:        "test.thrift",
+				Target:      &I64Spec{Annotations: Annotations{"js.type": "Long"}},
+				Annotations: Annotations{"foo": "bar"},
 			},
 		},
 		{
@@ -114,6 +115,15 @@ func TestCompileTypedefFailure(t *testing.T) {
 				`could not resolve reference "foo"`,
 			},
 		},
+		{
+			"conflicting annotations",
+			`typedef i32 bar (a = "b", a, b)`,
+			nil,
+			[]string{
+				`cannot compile "bar" on line 1:`,
+				`annotation conflict: the name "a" has already been used on line 1`,
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -121,15 +131,13 @@ func TestCompileTypedefFailure(t *testing.T) {
 		scope := scopeOrDefault(tt.scope)
 
 		spec, err := compileTypedef("test.thrift", src)
-		if !assert.NoError(t, err, tt.desc) {
-			continue
+		if err == nil {
+			_, err = spec.Link(scope)
 		}
 
-		_, err = spec.Link(scope)
-		if assert.Error(t, err, tt.desc) {
-			for _, msg := range tt.messages {
-				assert.Contains(t, err.Error(), msg, tt.desc)
-			}
+		assert.Error(t, err, tt.desc)
+		for _, msg := range tt.messages {
+			assert.Contains(t, err.Error(), msg, tt.desc)
 		}
 	}
 }

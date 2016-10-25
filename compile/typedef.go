@@ -29,9 +29,10 @@ import (
 type TypedefSpec struct {
 	linkOnce
 
-	Name   string
-	File   string
-	Target TypeSpec
+	Name        string
+	File        string
+	Target      TypeSpec
+	Annotations Annotations
 
 	root TypeSpec
 }
@@ -43,10 +44,20 @@ func compileTypedef(file string, src *ast.Typedef) (*TypedefSpec, error) {
 		return nil, err
 	}
 
+	annotations, err := compileAnnotations(src.Annotations)
+	if err != nil {
+		return nil, compileError{
+			Target: src.Name,
+			Line:   src.Line,
+			Reason: err,
+		}
+	}
+
 	return &TypedefSpec{
-		Name:   src.Name,
-		File:   file,
-		Target: typ,
+		Name:        src.Name,
+		File:        file,
+		Target:      typ,
+		Annotations: annotations,
 	}, nil
 }
 

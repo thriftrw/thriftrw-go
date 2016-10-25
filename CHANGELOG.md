@@ -10,6 +10,7 @@ v0.4.0 (unreleased)
 -   **Breaking**: The `compile` API now exposes annotations made while
     referencing native Thrift types. This changes the `TypeSpec`s for primitive
     types from values to types.
+-   The `compile` API now also exposes annotations for `typedef` declarations.
 -   Generate args structs and helpers for oneway functions.
 -   Expose whether a function is oneway to plugins.
 -   Expose the version of the library under `go.uber.org/thriftrw/version.Version`.
