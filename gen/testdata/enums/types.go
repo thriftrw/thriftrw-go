@@ -6,6 +6,7 @@ package enums
 import (
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"strconv"
 	"strings"
 )
 
@@ -23,6 +24,23 @@ func (v *EmptyEnum) FromWire(w wire.Value) error {
 func (v EmptyEnum) String() string {
 	w := int32(v)
 	return fmt.Sprintf("EmptyEnum(%d)", w)
+}
+
+func (v EmptyEnum) MarshalText() (text []byte, err error) {
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v EmptyEnum) UnmarshalText(text []byte) error {
+	w, err := strconv.ParseInt(string(text), 10, 32)
+	if err == nil {
+		v = (EmptyEnum)(w)
+		return err
+	}
+	e := err.(*strconv.NumError)
+	if e.Err != strconv.ErrSyntax {
+		return err
+	}
+	return fmt.Errorf("impossible to unmarshal %q from %q", "EmptyEnum", text)
 }
 
 type EnumDefault int32
@@ -53,6 +71,43 @@ func (v EnumDefault) String() string {
 		return "Baz"
 	}
 	return fmt.Sprintf("EnumDefault(%d)", w)
+}
+
+func (v EnumDefault) MarshalText() (text []byte, err error) {
+	w := int32(v)
+	switch w {
+	case 0:
+		return ([]byte)("Foo"), nil
+	case 1:
+		return ([]byte)("Bar"), nil
+	case 2:
+		return ([]byte)("Baz"), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v EnumDefault) UnmarshalText(text []byte) error {
+	w, err := strconv.ParseInt(string(text), 10, 32)
+	if err == nil {
+		v = (EnumDefault)(w)
+		return err
+	}
+	e := err.(*strconv.NumError)
+	if e.Err != strconv.ErrSyntax {
+		return err
+	}
+	switch string(text) {
+	case "Foo":
+		v = (EnumDefault)(0)
+		return nil
+	case "Bar":
+		v = (EnumDefault)(1)
+		return nil
+	case "Baz":
+		v = (EnumDefault)(2)
+		return nil
+	}
+	return fmt.Errorf("impossible to unmarshal %q from %q", "EnumDefault", text)
 }
 
 type EnumWithDuplicateName int32
@@ -103,6 +158,73 @@ func (v EnumWithDuplicateName) String() string {
 	return fmt.Sprintf("EnumWithDuplicateName(%d)", w)
 }
 
+func (v EnumWithDuplicateName) MarshalText() (text []byte, err error) {
+	w := int32(v)
+	switch w {
+	case 0:
+		return ([]byte)("A"), nil
+	case 1:
+		return ([]byte)("B"), nil
+	case 2:
+		return ([]byte)("C"), nil
+	case 3:
+		return ([]byte)("P"), nil
+	case 4:
+		return ([]byte)("Q"), nil
+	case 5:
+		return ([]byte)("R"), nil
+	case 6:
+		return ([]byte)("X"), nil
+	case 7:
+		return ([]byte)("Y"), nil
+	case 8:
+		return ([]byte)("Z"), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v EnumWithDuplicateName) UnmarshalText(text []byte) error {
+	w, err := strconv.ParseInt(string(text), 10, 32)
+	if err == nil {
+		v = (EnumWithDuplicateName)(w)
+		return err
+	}
+	e := err.(*strconv.NumError)
+	if e.Err != strconv.ErrSyntax {
+		return err
+	}
+	switch string(text) {
+	case "A":
+		v = (EnumWithDuplicateName)(0)
+		return nil
+	case "B":
+		v = (EnumWithDuplicateName)(1)
+		return nil
+	case "C":
+		v = (EnumWithDuplicateName)(2)
+		return nil
+	case "P":
+		v = (EnumWithDuplicateName)(3)
+		return nil
+	case "Q":
+		v = (EnumWithDuplicateName)(4)
+		return nil
+	case "R":
+		v = (EnumWithDuplicateName)(5)
+		return nil
+	case "X":
+		v = (EnumWithDuplicateName)(6)
+		return nil
+	case "Y":
+		v = (EnumWithDuplicateName)(7)
+		return nil
+	case "Z":
+		v = (EnumWithDuplicateName)(8)
+		return nil
+	}
+	return fmt.Errorf("impossible to unmarshal %q from %q", "EnumWithDuplicateName", text)
+}
+
 type EnumWithDuplicateValues int32
 
 const (
@@ -129,6 +251,41 @@ func (v EnumWithDuplicateValues) String() string {
 		return "Q"
 	}
 	return fmt.Sprintf("EnumWithDuplicateValues(%d)", w)
+}
+
+func (v EnumWithDuplicateValues) MarshalText() (text []byte, err error) {
+	w := int32(v)
+	switch w {
+	case 0:
+		return ([]byte)("P"), nil
+	case -1:
+		return ([]byte)("Q"), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v EnumWithDuplicateValues) UnmarshalText(text []byte) error {
+	w, err := strconv.ParseInt(string(text), 10, 32)
+	if err == nil {
+		v = (EnumWithDuplicateValues)(w)
+		return err
+	}
+	e := err.(*strconv.NumError)
+	if e.Err != strconv.ErrSyntax {
+		return err
+	}
+	switch string(text) {
+	case "P":
+		v = (EnumWithDuplicateValues)(0)
+		return nil
+	case "Q":
+		v = (EnumWithDuplicateValues)(-1)
+		return nil
+	case "R":
+		v = (EnumWithDuplicateValues)(0)
+		return nil
+	}
+	return fmt.Errorf("impossible to unmarshal %q from %q", "EnumWithDuplicateValues", text)
 }
 
 type EnumWithValues int32
@@ -161,6 +318,43 @@ func (v EnumWithValues) String() string {
 	return fmt.Sprintf("EnumWithValues(%d)", w)
 }
 
+func (v EnumWithValues) MarshalText() (text []byte, err error) {
+	w := int32(v)
+	switch w {
+	case 123:
+		return ([]byte)("X"), nil
+	case 456:
+		return ([]byte)("Y"), nil
+	case 789:
+		return ([]byte)("Z"), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v EnumWithValues) UnmarshalText(text []byte) error {
+	w, err := strconv.ParseInt(string(text), 10, 32)
+	if err == nil {
+		v = (EnumWithValues)(w)
+		return err
+	}
+	e := err.(*strconv.NumError)
+	if e.Err != strconv.ErrSyntax {
+		return err
+	}
+	switch string(text) {
+	case "X":
+		v = (EnumWithValues)(123)
+		return nil
+	case "Y":
+		v = (EnumWithValues)(456)
+		return nil
+	case "Z":
+		v = (EnumWithValues)(789)
+		return nil
+	}
+	return fmt.Errorf("impossible to unmarshal %q from %q", "EnumWithValues", text)
+}
+
 type RecordType int32
 
 const (
@@ -189,6 +383,43 @@ func (v RecordType) String() string {
 		return "WORK_ADDRESS"
 	}
 	return fmt.Sprintf("RecordType(%d)", w)
+}
+
+func (v RecordType) MarshalText() (text []byte, err error) {
+	w := int32(v)
+	switch w {
+	case 0:
+		return ([]byte)("NAME"), nil
+	case 1:
+		return ([]byte)("HOME_ADDRESS"), nil
+	case 2:
+		return ([]byte)("WORK_ADDRESS"), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v RecordType) UnmarshalText(text []byte) error {
+	w, err := strconv.ParseInt(string(text), 10, 32)
+	if err == nil {
+		v = (RecordType)(w)
+		return err
+	}
+	e := err.(*strconv.NumError)
+	if e.Err != strconv.ErrSyntax {
+		return err
+	}
+	switch string(text) {
+	case "NAME":
+		v = (RecordType)(0)
+		return nil
+	case "HOME_ADDRESS":
+		v = (RecordType)(1)
+		return nil
+	case "WORK_ADDRESS":
+		v = (RecordType)(2)
+		return nil
+	}
+	return fmt.Errorf("impossible to unmarshal %q from %q", "RecordType", text)
 }
 
 type StructWithOptionalEnum struct {
@@ -275,4 +506,41 @@ func (v LowerCaseEnum) String() string {
 		return "items"
 	}
 	return fmt.Sprintf("LowerCaseEnum(%d)", w)
+}
+
+func (v LowerCaseEnum) MarshalText() (text []byte, err error) {
+	w := int32(v)
+	switch w {
+	case 0:
+		return ([]byte)("containing"), nil
+	case 1:
+		return ([]byte)("lower_case"), nil
+	case 2:
+		return ([]byte)("items"), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v LowerCaseEnum) UnmarshalText(text []byte) error {
+	w, err := strconv.ParseInt(string(text), 10, 32)
+	if err == nil {
+		v = (LowerCaseEnum)(w)
+		return err
+	}
+	e := err.(*strconv.NumError)
+	if e.Err != strconv.ErrSyntax {
+		return err
+	}
+	switch string(text) {
+	case "containing":
+		v = (LowerCaseEnum)(0)
+		return nil
+	case "lower_case":
+		v = (LowerCaseEnum)(1)
+		return nil
+	case "items":
+		v = (LowerCaseEnum)(2)
+		return nil
+	}
+	return fmt.Errorf("impossible to unmarshal %q from %q", "LowerCaseEnum", text)
 }

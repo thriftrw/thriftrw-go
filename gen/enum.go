@@ -69,6 +69,8 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$wire := import "go.uber.org/thriftrw/wire">
+		<$strconv := import "strconv">
+		<$fmt := import "fmt">
 
 		<$enumName := goName .Spec>
 		type <$enumName> int32
@@ -104,6 +106,48 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			<end>
 			return fmt.Sprintf("<$enumName>(%d)", <$w>)
 		}
+
+		func (<$v> <$enumName>) MarshalText() (text []byte, err error) {
+			<if len .Spec.Items>
+				<$w> := int32(<$v>)
+				switch <$w> {
+				<range .UniqueItems>
+					case <.Value>:
+						return ([]byte)("<.Name>"), nil
+				<end>
+				}
+			<end>
+			return ([]byte)(<$strconv>.FormatInt(int64(<$v>), 10)), nil
+		}
+
+		func (<$v> <$enumName>) UnmarshalText(text []byte) error {
+			<$err := newVar "err">
+			<$e := newVar "e">
+
+			<$w>, <$err> := <$strconv>.ParseInt(string(text), 10, 32)
+			if <$err> == nil {
+				<$v> = (<$enumName>)(<$w>)
+				return <$err>
+			}
+
+			<$e> := <$err>.(*strconv.NumError)
+			if <$e>.Err != <$strconv>.ErrSyntax {
+				return <$err>
+			}
+
+			<if len .Spec.Items>
+				switch string(text) {
+				<range .Spec.Items>
+					case "<.Name>":
+						<$v> = (<$enumName>)(<.Value>)
+						return nil
+				<end>
+				}
+			<end>
+
+			return <$fmt>.Errorf("impossible to unmarshal %q from %q", "<$enumName>", text)
+		}
+
 		`,
 		struct {
 			Spec        *compile.EnumSpec
