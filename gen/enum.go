@@ -32,12 +32,16 @@ type enumGenerator struct {
 }
 
 func (e *enumGenerator) Reader(g Generator, spec *compile.EnumSpec) (string, error) {
-	name := "_" + goCase(spec.ThriftName()) + "_Read"
+	name, err := readerFuncName(spec)
+	if err != nil {
+		return "", err
+	}
+
 	if e.HasReader(name) {
 		return name, nil
 	}
 
-	err := g.DeclareFromTemplate(
+	err = g.DeclareFromTemplate(
 		`
 		<$wire := import "go.uber.org/thriftrw/wire">
 
@@ -66,14 +70,13 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		`
 		<$wire := import "go.uber.org/thriftrw/wire">
 
-		<$enumName := typeName .Spec>
+		<$enumName := goName .Spec>
 		type <$enumName> int32
 
 		<if .Spec.Items>
 			const (
-			<$enum := .Spec>
 			<range .Spec.Items>
-				<enumItemName $enum .Name> <$enumName> = <.Value>
+				<enumItemName $enumName .> <$enumName> = <.Value>
 			<end>
 			)
 		<end>
@@ -116,13 +119,17 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 }
 
 // enumItemName returns the Go name that should be used for an enum item with
-// the given Thrift name.
-func enumItemName(g Generator, spec compile.TypeSpec, itemName string) (string, error) {
-	enumName, err := typeName(g, spec)
+// the given (potentially import qualified) enumName and EnumItem.
+func enumItemName(enumName string, spec *compile.EnumItem) (string, error) {
+	name, err := goNameAnnotation(spec)
 	if err != nil {
 		return "", err
 	}
-	return enumName + pascalCase(false /* all caps */, strings.Split(itemName, "_")...), nil
+	if name == "" {
+		name = pascalCase(false, /* all caps */
+			strings.Split(spec.ThriftName(), "_")...)
+	}
+	return enumName + name, err
 }
 
 // enumUniqueItems returns a subset of the given list of enum items where

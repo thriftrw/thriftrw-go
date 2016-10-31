@@ -31,12 +31,16 @@ type structGenerator struct {
 }
 
 func (s *structGenerator) Reader(g Generator, spec *compile.StructSpec) (string, error) {
-	name := "_" + goCase(spec.ThriftName()) + "_Read"
+	name, err := readerFuncName(spec)
+	if err != nil {
+		return "", err
+	}
+
 	if s.HasReader(name) {
 		return name, nil
 	}
 
-	err := g.DeclareFromTemplate(
+	err = g.DeclareFromTemplate(
 		`
 		<$wire := import "go.uber.org/thriftrw/wire">
 
@@ -58,10 +62,16 @@ func (s *structGenerator) Reader(g Generator, spec *compile.StructSpec) (string,
 }
 
 func structure(g Generator, spec *compile.StructSpec) error {
+	name, err := goName(spec)
+	if err != nil {
+		return err
+	}
+
 	fg := fieldGroupGenerator{
-		Name:    goCase(spec.Name),
-		Fields:  spec.Fields,
-		IsUnion: spec.Type == ast.UnionType,
+		Namespace: NewNamespace(),
+		Name:      name,
+		Fields:    spec.Fields,
+		IsUnion:   spec.Type == ast.UnionType,
 	}
 
 	if err := fg.Generate(g); err != nil {

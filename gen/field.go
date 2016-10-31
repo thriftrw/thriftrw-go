@@ -28,6 +28,8 @@ import (
 
 // fieldGroupGenerator is responsible for generating code for FieldGroups.
 type fieldGroupGenerator struct {
+	Namespace
+
 	Name   string
 	Fields compile.FieldGroup
 
@@ -58,13 +60,13 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 }
 
 func (f fieldGroupGenerator) DefineStruct(g Generator) error {
-	return g.DeclareFromTemplate(
+	err := g.DeclareFromTemplate(
 		`type <.Name> struct {
 			<range .Fields>
 				<if .Required>
-					<goCase .Name> <typeReference .Type> <tag .>
+					<declFieldName .> <typeReference .Type> <tag .>
 				<else>
-					<goCase .Name> <typeReferencePtr .Type> <tag .>
+					<declFieldName .> <typeReferencePtr .Type> <tag .>
 				<end>
 			<end>
 		}`,
@@ -82,7 +84,31 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 			return fmt.Sprintf("`json:%q`", f.Name)
 			// TODO(abg): Take go.tag and js.name annotations into account
 		}),
+		TemplateFunc("declFieldName", f.declFieldName),
 	)
+	return err
+}
+
+// declFieldName replaces goName during generation of a structure's definition.
+// It replicates goName but also register all field names in the
+// fieldGroupGenerator namespace, enforcing single field definition when
+// generating Go code. TL;DR: will fail during generation, before compilation.
+func (f *fieldGroupGenerator) declFieldName(fs *compile.FieldSpec) (string, error) {
+	name, err := goNameAnnotation(fs)
+	if err != nil {
+		return "", err
+	}
+	fromAnnotation := (name != "")
+	if !fromAnnotation {
+		name = goCase(fs.ThriftName())
+	}
+	if err := f.Reserve(name); err != nil {
+		if fromAnnotation {
+			return "", fmt.Errorf("could not declare field %q (from go.name annotation): %v", name, err)
+		}
+		return "", fmt.Errorf("could not declare field %q (from %q): %v", name, fs.ThriftName(), err)
+	}
+	return name, nil
 }
 
 func (f fieldGroupGenerator) ToWire(g Generator) error {
@@ -107,14 +133,14 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 
 			<$structName := .Name>
 			<range .Fields>
-				<$f := printf "%s.%s" $v (goCase .Name)>
+				<$f := printf "%s.%s" $v (goName .)>
 				<if .Required>
 					<if not (isPrimitiveType .Type)>
 						if <$f> == nil {
 							// TODO: Include names of all missing fields in
 							// the error message.
 							return <$wVal>, <import "errors">.New(
-								"field <goCase .Name> of <$structName> is required")
+								"field <goName .> of <$structName> is required")
 						}
 					<end>
 						<$wVal>, err = <toWire .Type $f>
@@ -199,7 +225,7 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				<range .Fields>
 				case <.ID>:
 					if <$f>.Value.Type() == <typeCode .Type> {
-						<$lhs := printf "%s.%s" $v (goCase .Name)>
+						<$lhs := printf "%s.%s" $v (goName .)>
 						<$value := printf "%s.Value" $f>
 						<if .Required>
 							<$lhs>, err = <fromWire .Type $value>
@@ -221,7 +247,7 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 
 			<$structName := .Name>
 			<range .Fields>
-				<$f := printf "%s.%s" $v (goCase .Name)>
+				<$f := printf "%s.%s" $v (goName .)>
 				<if .Default>
 					if <$f> == nil {
 						<$f> = <constantValuePtr .Default .Type>
@@ -230,7 +256,7 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 					<if .Required>
 						if !<$isSet.Rotate (printf "%sIsSet" .Name)> {
 							return <import "errors">.New(
-								"field <goCase .Name> of <$structName> is required")
+								"field <goName .> of <$structName> is required")
 						}
 						// TODO: Include names of all missing fields in the
 						// error message.
@@ -243,7 +269,7 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				<$count := newVar "count">
 				<$count> := 0
 				<range .Fields>
-					if <$v>.<goCase .Name> != nil { <$count>++ }
+					if <$v>.<goName .> != nil { <$count>++ }
 				<end>
 				<if .AllowEmptyUnion>
 					if <$count> > 1 {
@@ -276,19 +302,19 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			var <$fields> [<len .Fields>]string
 			<$i> := 0
 			<range .Fields>
-				<$f := printf "%s.%s" $v (goCase .Name)>
+				<$f := printf "%s.%s" $v (goName .)>
 
 				<if not .Required>
 					if <$f> != nil {
 						<if isPrimitiveType .Type>
-							<$fields>[<$i>] = <$fmt>.Sprintf("<goCase .Name>: %v", *(<$f>))
+							<$fields>[<$i>] = <$fmt>.Sprintf("<goName .>: %v", *(<$f>))
 						<else>
-							<$fields>[<$i>] = <$fmt>.Sprintf("<goCase .Name>: %v", <$f>)
+							<$fields>[<$i>] = <$fmt>.Sprintf("<goName .>: %v", <$f>)
 						<end>
 						<$i>++
 					}
 				<else>
-					<$fields>[<$i>] = <$fmt>.Sprintf("<goCase .Name>: %v", <$f>)
+					<$fields>[<$i>] = <$fmt>.Sprintf("<goName .>: %v", <$f>)
 					<$i>++
 				<end>
 			<end>

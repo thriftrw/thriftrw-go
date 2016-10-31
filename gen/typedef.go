@@ -28,12 +28,16 @@ type typedefGenerator struct {
 }
 
 func (t *typedefGenerator) Reader(g Generator, spec *compile.TypedefSpec) (string, error) {
-	name := "_" + goCase(spec.ThriftName()) + "_Read"
+	name, err := readerFuncName(spec)
+	if err != nil {
+		return "", err
+	}
+
 	if t.HasReader(name) {
 		return name, nil
 	}
 
-	err := g.DeclareFromTemplate(
+	err = g.DeclareFromTemplate(
 		`
 		<$wire := import "go.uber.org/thriftrw/wire">
 

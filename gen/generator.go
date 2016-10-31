@@ -148,7 +148,10 @@ func (g *generator) LookupTypeName(t compile.TypeSpec) (string, error) {
 		return "", err
 	}
 
-	name := goCase(t.ThriftName())
+	name, err := goName(t)
+	if err != nil {
+		return "", err
+	}
 	if importPath != g.ImportPath {
 		pkg := g.Import(importPath)
 		name = pkg + "." + name
@@ -185,6 +188,7 @@ func (g *generator) servicePackage(s *compile.ServiceSpec) (string, error) {
 func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOption) (string, error) {
 	templateFuncs := template.FuncMap{
 		"goCase":           goCase,
+		"goName":           goName,
 		"import":           g.Import,
 		"isHashable":       isHashable,
 		"isPrimitiveType":  isPrimitiveType,
@@ -303,6 +307,10 @@ func (g *generator) recordGenDeclNames(ignoreConflicts bool, d *ast.GenDecl) err
 // first character upper-cased. The string may be ALLCAPS, snake_case, or
 // already camelCase.
 //
+// goName(ItemSpec): Accepts any Thrift items offering a Name and Annotations.
+// It returns the annotated name if available (after some sanity check) or
+// returns the Thrift name trough goCase.
+//
 // import(str): Accepts a string and returns the name that should be used in
 // the template to refer to that imported module. This helps avoid naming
 // conflicts with imports.
@@ -334,7 +342,7 @@ func (g *generator) recordGenDeclNames(ignoreConflicts bool, d *ast.GenDecl) err
 // the wire module if necessary.
 //
 // typeName(TypeSpec): Returns the Go name of the given type, regardless of
-// whether it's native or custom.
+// whether it's native or custom. It will call goName() on custom type.
 //
 // typeReference(TypeSpec): Takes any TypeSpec. Returns a string representing
 // a reference to that type.

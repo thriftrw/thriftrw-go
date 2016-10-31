@@ -120,6 +120,22 @@ func goNameAnnotation(spec ItemSpec) (string, error) {
 	return name, nil
 }
 
+func goName(spec ItemSpec) (string, error) {
+	name, err := goNameAnnotation(spec)
+	if err == nil && name == "" {
+		name = goCase(spec.ThriftName())
+	}
+	return name, err
+}
+
+func readerFuncName(spec ItemSpec) (string, error) {
+	name, err := goName(spec)
+	if err == nil {
+		name = "_" + name + "_Read"
+	}
+	return name, err
+}
+
 // This set is taken from https://github.com/golang/lint/blob/master/lint.go#L692
 var commonInitialisms = map[string]bool{
 	"API":   true,
