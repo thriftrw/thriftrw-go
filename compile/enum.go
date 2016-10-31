@@ -122,3 +122,18 @@ func (e *EnumSpec) ForEachTypeReference(func(TypeSpec) error) error {
 func (e *EnumSpec) TypeCode() wire.Type {
 	return wire.TI32
 }
+
+// ThriftAnnotations returns all associated annotations.
+func (e *EnumSpec) ThriftAnnotations() Annotations {
+	return e.Annotations
+}
+
+// ThriftName for EnumItem
+func (e *EnumItem) ThriftName() string {
+	return e.Name
+}
+
+// ThriftAnnotations returns all associated annotations.
+func (e *EnumItem) ThriftAnnotations() Annotations {
+	return e.Annotations
+}

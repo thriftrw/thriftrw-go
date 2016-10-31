@@ -25,7 +25,18 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"go.uber.org/thriftrw/compile"
 )
+
+// ItemSpec is any Thrift compile items with a name and annotations.
+type ItemSpec interface {
+	// ThriftName is the name of the type as it appears in the Thrift file.
+	ThriftName() string
+
+	// ThriftAnnotations is the map of all associated annotations from the Thrift file.
+	ThriftAnnotations() compile.Annotations
+}
 
 // isAllCaps checks if a string contains all capital letters only. Non-letters
 // are not considered.
@@ -88,6 +99,25 @@ func goCase(s string) string {
 	return pascalCase(len(words) == 1 /* all caps */, words...)
 	// goCase allows all caps only if the string is a single all caps word.
 	// That is, "FOO" is allowed but "FOO_BAR" is changed to "FooBar".
+}
+
+// goNameAnnotation returns ("", nil) if there is no "go.name" annotation.
+func goNameAnnotation(spec ItemSpec) (string, error) {
+	name, ok := spec.ThriftAnnotations()["go.name"]
+
+	if !ok {
+		return "", nil
+	}
+
+	c, _ := utf8.DecodeRuneInString(name)
+	capitalized := unicode.IsLetter(c) && unicode.IsUpper(c)
+	undescores := strings.Contains(name, "_")
+
+	if !capitalized || undescores {
+		return "", fmt.Errorf("%q is not a go style identifier (suggestion: %q)", name, goCase(name))
+	}
+
+	return name, nil
 }
 
 // This set is taken from https://github.com/golang/lint/blob/master/lint.go#L692

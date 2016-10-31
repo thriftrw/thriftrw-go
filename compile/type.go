@@ -51,6 +51,11 @@ type TypeSpec interface {
 	//
 	// Returns the first error returned by the function call or nil.
 	ForEachTypeReference(func(TypeSpec) error) error
+
+	// ThriftAnnotations is the map of all associated annotations from the Thrift file.
+	// TODO(fx) should we have ThriftAnnotations() part of this interface?
+	// typeSpecReference doesn't seem to support Annotations?
+	ThriftAnnotations() Annotations
 }
 
 // RootTypeSpec returns the TypeSpec that the given linked TypeSpec points to.
@@ -145,6 +150,12 @@ func (r typeSpecReference) ForEachTypeReference(func(TypeSpec) error) error {
 // file.
 func (r typeSpecReference) ThriftName() string {
 	return r.Name
+}
+
+// ThriftAnnotations returns all associated annotations.
+// TODO(fx) should we have ThriftAnnotations part of the TypeSpec interface?
+func (r typeSpecReference) ThriftAnnotations() Annotations {
+	return Annotations{}
 }
 
 // compileTypeReference compiles the given AST type reference into a TypeSpec.
