@@ -1,7 +1,7 @@
 Releases
 ========
 
-v0.4.0 (unreleased)
+v0.4.0 (2016-11-01)
 -------------------
 
 -   **Breaking**: Remove the `--yarpc` flag. Install the ThriftRW YARPC plugin
