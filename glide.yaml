@@ -1,6 +1,6 @@
 package: go.uber.org/thriftrw
 import:
-- package: github.com/uber-go/atomic
+- package: go.uber.org/atomic
 - package: github.com/stretchr/testify
 - package: github.com/golang/mock
   subpackages:
