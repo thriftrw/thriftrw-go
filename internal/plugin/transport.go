@@ -33,7 +33,7 @@ import (
 	"go.uber.org/thriftrw/plugin/api/service/servicegenerator"
 	"go.uber.org/thriftrw/protocol"
 
-	"github.com/uber-go/atomic"
+	"go.uber.org/atomic"
 )
 
 var _proto = protocol.Binary

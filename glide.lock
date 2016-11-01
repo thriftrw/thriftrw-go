@@ -1,24 +1,35 @@
-hash: 9916ba39872b835d00fed77e42ba4fe85d64c0892501f60f3452ff19840ed369
-updated: 2016-08-29T10:57:58.892748056-07:00
+hash: 6cf6e00e62723d428870ad1cc6e7a7891464c9e0e7b06eb52321ee02fa9dac35
+updated: 2016-11-01T13:16:12.641441702-07:00
 imports:
 - name: github.com/anmitsu/go-shlex
-  version: 53a3d8a8a362cca54fd6825caf2216aa6d8139fc
+  version: 648efa622239a2f6ff949fed78ee37b48d499ba4
 - name: github.com/golang/mock
   version: bd3c8e81be01eef76d4b503f5e687d2d1354d2d9
   subpackages:
   - gomock
 - name: github.com/jessevdk/go-flags
-  version: a8cab0163d48558ffd77076c9c99388529766f63
+  version: 0648c820cd4e564706597268ae2d2c7d9e6900c6
 - name: github.com/kr/pretty
-  version: 737b74a46c4bf788349f72cb256fed10aea4d0ac
+  version: cfb55aafdaf3ec08f0db22699ab822c50091b1c4
 - name: github.com/kr/text
   version: 7cafcd837844e784b526369c9bce262804aebc60
 - name: github.com/stretchr/testify
-  version: d77da356e56a7428ad25149ca77381849a6a5232
-- name: github.com/uber-go/atomic
-  version: 0c9e689d64f004564b79d9a663634756df322902
+  version: 976c720a22c8eb4eb6a0b4348ad85ad12491a506
+  subpackages:
+  - assert
+  - require
+- name: go.uber.org/atomic
+  version: 9e99152552a6ce13fa3b2ce4a9c4fb117cca4506
 - name: golang.org/x/tools
-  version: 8ea9d4606980305f7f46cabde046adbb530e71c8
+  version: 1529f889eb4b594d1f047f2fb8d5b3cc85c8f006
   subpackages:
   - go/ast/astutil
-devImports: []
+testImports:
+- name: github.com/davecgh/go-spew
+  version: 346938d642f2ec3594ed81d874461961cd0faa76
+  subpackages:
+  - spew
+- name: github.com/pmezard/go-difflib
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  subpackages:
+  - difflib

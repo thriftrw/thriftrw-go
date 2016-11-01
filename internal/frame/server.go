@@ -24,7 +24,7 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/uber-go/atomic"
+	"go.uber.org/atomic"
 )
 
 // Handler handles incoming framed requests.
