@@ -68,9 +68,12 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 	// TODO(abg) define an error type in the library for unrecognized enums.
 	err := g.DeclareFromTemplate(
 		`
-		<$wire := import "go.uber.org/thriftrw/wire">
+		<$bytes := import "bytes">
 		<$strconv := import "strconv">
 		<$fmt := import "fmt">
+		<$json := import "encoding/json">
+
+		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$enumName := goName .Spec>
 		type <$enumName> int32
@@ -107,27 +110,73 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			return fmt.Sprintf("<$enumName>(%d)", <$w>)
 		}
 
-		func (<$v> <$enumName>) MarshalText() (text []byte, err error) {
+		func (<$v> <$enumName>) MarshalJSON() ([]byte, error) {
 			<if len .Spec.Items>
 				<$w> := int32(<$v>)
 				switch <$w> {
 				<range .UniqueItems>
 					case <.Value>:
-						return ([]byte)("<.Name>"), nil
+						return ([]byte)("\"<.Name>\""), nil
 				<end>
 				}
 			<end>
 			return ([]byte)(<$strconv>.FormatInt(int64(<$v>), 10)), nil
 		}
 
-		func (<$v> <$enumName>) UnmarshalText(text []byte) error {
+		func (<$v> *<$enumName>) UnmarshalJSON(text []byte) error {
+			<$d := newVar "d">
+			<$t := newVar "t">
+			<$err := newVar "err">
+
+			<$d> := <$json>.NewDecoder(<$bytes>.NewReader(text))
+			<$d>.UseNumber()
+			<$t>, <$err> := <$d>.Token()
+
+			if <$err> != nil {
+				return <$err>
+			}
+
+			<$ok := newVar "ok">
+			if <$w>, <$ok> := <$t>.(<$json>.Number); <$ok> {
+				<$x := newVar "x">
+				<$x>, <$err> := <$w>.Int64()
+				if <$err> != nil {
+					return <$err>
+				}
+				if <$x> <">="> 0x80000000 {
+					return <$fmt>.Errorf("enum overflow from JSON %q for \"<$enumName>\"", text)
+				}
+				if <$x> <"<"> -0x80000000 {
+					return <$fmt>.Errorf("enum underflow from JSON %q for \"<$enumName>\"", text)
+				}
+				*<$v> = (<$enumName>)(<$x>)
+				return nil
+			}
+
+			if <$w>, <$ok> := <$t>.(string); <$ok> {
+				switch string(<$w>) {
+				<$enum := .Spec>
+				<range .Spec.Items>
+					case "<.Name>":
+						*<$v> = <enumItemName $enum .Name>
+						return nil
+				<end>
+					default:
+						return <$fmt>.Errorf("unknown enum value %q for \"<$enumName>\"", <$w>)
+				}
+			}
+
+			return <$fmt>.Errorf("invalid JSON value %T $q to unmarshal into \"<$enumName>\"", <$t>, <$t>)
+		}
+
+		func (<$v> *<$enumName>) UnmarshalJSON2(text []byte) error {
 			<$err := newVar "err">
 			<$e := newVar "e">
 
 			<$w>, <$err> := <$strconv>.ParseInt(string(text), 10, 32)
 			if <$err> == nil {
-				<$v> = (<$enumName>)(<$w>)
-				return <$err>
+				*<$v> = (<$enumName>)(<$w>)
+				return nil
 			}
 
 			<$e> := <$err>.(*strconv.NumError)
@@ -135,19 +184,24 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				return <$err>
 			}
 
+			<$s := newVar "s">
+			var <$s> string
+			if <$err> := <$json>.Unmarshal(text, &<$s>); <$err> != nil {
+				return <$err>
+			}
+
 			<if len .Spec.Items>
-				switch string(text) {
+				switch string(<$s>) {
 				<range .Spec.Items>
 					case "<.Name>":
-						<$v> = (<$enumName>)(<.Value>)
+						*<$v> = (<$enumName>)(<.Value>)
 						return nil
 				<end>
 				}
 			<end>
 
-			return <$fmt>.Errorf("impossible to unmarshal %q from %q", "<$enumName>", text)
+			return <$fmt>.Errorf("unknown enum value %q for \"<$enumName>\"", <$s>)
 		}
-
 		`,
 		struct {
 			Spec        *compile.EnumSpec
