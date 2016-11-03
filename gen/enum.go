@@ -144,10 +144,10 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 					return <$err>
 				}
 				if <$x> <">="> 0x80000000 {
-					return <$fmt>.Errorf("enum overflow from JSON %q for \"<$enumName>\"", text)
+					return <$fmt>.Errorf("enum overflow from JSON %q for %q", text, "<$enumName>")
 				}
 				if <$x> <"<"> -0x80000000 {
-					return <$fmt>.Errorf("enum underflow from JSON %q for \"<$enumName>\"", text)
+					return <$fmt>.Errorf("enum underflow from JSON %q for %q", text, "<$enumName>")
 				}
 				*<$v> = (<$enumName>)(<$x>)
 				return nil
@@ -162,11 +162,11 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 						return nil
 				<end>
 					default:
-						return <$fmt>.Errorf("unknown enum value %q for \"<$enumName>\"", <$w>)
+						return <$fmt>.Errorf("unknown enum value %q for %q", <$w>, "<$enumName>")
 				}
 			}
 
-			return <$fmt>.Errorf("invalid JSON value %T $q to unmarshal into \"<$enumName>\"", <$t>, <$t>)
+			return <$fmt>.Errorf("invalid JSON value $q (%T) to unmarshal into %q", <$t>, <$t>, "<$enumName>")
 		}
 
 		func (<$v> *<$enumName>) UnmarshalJSON2(text []byte) error {

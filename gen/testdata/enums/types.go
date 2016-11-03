@@ -45,10 +45,10 @@ func (v *EmptyEnum) UnmarshalJSON(text []byte) error {
 			return err
 		}
 		if x >= 0x80000000 {
-			return fmt.Errorf("enum overflow from JSON %q for \"EmptyEnum\"", text)
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EmptyEnum")
 		}
 		if x < -0x80000000 {
-			return fmt.Errorf("enum underflow from JSON %q for \"EmptyEnum\"", text)
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EmptyEnum")
 		}
 		*v = (EmptyEnum)(x)
 		return nil
@@ -56,10 +56,10 @@ func (v *EmptyEnum) UnmarshalJSON(text []byte) error {
 	if w, ok := t.(string); ok {
 		switch string(w) {
 		default:
-			return fmt.Errorf("unknown enum value %q for \"EmptyEnum\"", w)
+			return fmt.Errorf("unknown enum value %q for %q", w, "EmptyEnum")
 		}
 	}
-	return fmt.Errorf("invalid JSON value %T $q to unmarshal into \"EmptyEnum\"", t, t)
+	return fmt.Errorf("invalid JSON value $q (%T) to unmarshal into %q", t, t, "EmptyEnum")
 }
 
 func (v *EmptyEnum) UnmarshalJSON2(text []byte) error {
@@ -135,10 +135,10 @@ func (v *EnumDefault) UnmarshalJSON(text []byte) error {
 			return err
 		}
 		if x >= 0x80000000 {
-			return fmt.Errorf("enum overflow from JSON %q for \"EnumDefault\"", text)
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumDefault")
 		}
 		if x < -0x80000000 {
-			return fmt.Errorf("enum underflow from JSON %q for \"EnumDefault\"", text)
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumDefault")
 		}
 		*v = (EnumDefault)(x)
 		return nil
@@ -155,10 +155,10 @@ func (v *EnumDefault) UnmarshalJSON(text []byte) error {
 			*v = EnumDefaultBaz
 			return nil
 		default:
-			return fmt.Errorf("unknown enum value %q for \"EnumDefault\"", w)
+			return fmt.Errorf("unknown enum value %q for %q", w, "EnumDefault")
 		}
 	}
-	return fmt.Errorf("invalid JSON value %T $q to unmarshal into \"EnumDefault\"", t, t)
+	return fmt.Errorf("invalid JSON value $q (%T) to unmarshal into %q", t, t, "EnumDefault")
 }
 
 func (v *EnumDefault) UnmarshalJSON2(text []byte) error {
@@ -275,10 +275,10 @@ func (v *EnumWithDuplicateName) UnmarshalJSON(text []byte) error {
 			return err
 		}
 		if x >= 0x80000000 {
-			return fmt.Errorf("enum overflow from JSON %q for \"EnumWithDuplicateName\"", text)
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumWithDuplicateName")
 		}
 		if x < -0x80000000 {
-			return fmt.Errorf("enum underflow from JSON %q for \"EnumWithDuplicateName\"", text)
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumWithDuplicateName")
 		}
 		*v = (EnumWithDuplicateName)(x)
 		return nil
@@ -313,10 +313,10 @@ func (v *EnumWithDuplicateName) UnmarshalJSON(text []byte) error {
 			*v = EnumWithDuplicateNameZ
 			return nil
 		default:
-			return fmt.Errorf("unknown enum value %q for \"EnumWithDuplicateName\"", w)
+			return fmt.Errorf("unknown enum value %q for %q", w, "EnumWithDuplicateName")
 		}
 	}
-	return fmt.Errorf("invalid JSON value %T $q to unmarshal into \"EnumWithDuplicateName\"", t, t)
+	return fmt.Errorf("invalid JSON value $q (%T) to unmarshal into %q", t, t, "EnumWithDuplicateName")
 }
 
 func (v *EnumWithDuplicateName) UnmarshalJSON2(text []byte) error {
@@ -417,10 +417,10 @@ func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
 			return err
 		}
 		if x >= 0x80000000 {
-			return fmt.Errorf("enum overflow from JSON %q for \"EnumWithDuplicateValues\"", text)
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumWithDuplicateValues")
 		}
 		if x < -0x80000000 {
-			return fmt.Errorf("enum underflow from JSON %q for \"EnumWithDuplicateValues\"", text)
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumWithDuplicateValues")
 		}
 		*v = (EnumWithDuplicateValues)(x)
 		return nil
@@ -437,10 +437,10 @@ func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
 			*v = EnumWithDuplicateValuesR
 			return nil
 		default:
-			return fmt.Errorf("unknown enum value %q for \"EnumWithDuplicateValues\"", w)
+			return fmt.Errorf("unknown enum value %q for %q", w, "EnumWithDuplicateValues")
 		}
 	}
-	return fmt.Errorf("invalid JSON value %T $q to unmarshal into \"EnumWithDuplicateValues\"", t, t)
+	return fmt.Errorf("invalid JSON value $q (%T) to unmarshal into %q", t, t, "EnumWithDuplicateValues")
 }
 
 func (v *EnumWithDuplicateValues) UnmarshalJSON2(text []byte) error {
@@ -527,10 +527,10 @@ func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
 			return err
 		}
 		if x >= 0x80000000 {
-			return fmt.Errorf("enum overflow from JSON %q for \"EnumWithValues\"", text)
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumWithValues")
 		}
 		if x < -0x80000000 {
-			return fmt.Errorf("enum underflow from JSON %q for \"EnumWithValues\"", text)
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumWithValues")
 		}
 		*v = (EnumWithValues)(x)
 		return nil
@@ -547,10 +547,10 @@ func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
 			*v = EnumWithValuesZ
 			return nil
 		default:
-			return fmt.Errorf("unknown enum value %q for \"EnumWithValues\"", w)
+			return fmt.Errorf("unknown enum value %q for %q", w, "EnumWithValues")
 		}
 	}
-	return fmt.Errorf("invalid JSON value %T $q to unmarshal into \"EnumWithValues\"", t, t)
+	return fmt.Errorf("invalid JSON value $q (%T) to unmarshal into %q", t, t, "EnumWithValues")
 }
 
 func (v *EnumWithValues) UnmarshalJSON2(text []byte) error {
@@ -637,10 +637,10 @@ func (v *RecordType) UnmarshalJSON(text []byte) error {
 			return err
 		}
 		if x >= 0x80000000 {
-			return fmt.Errorf("enum overflow from JSON %q for \"RecordType\"", text)
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "RecordType")
 		}
 		if x < -0x80000000 {
-			return fmt.Errorf("enum underflow from JSON %q for \"RecordType\"", text)
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "RecordType")
 		}
 		*v = (RecordType)(x)
 		return nil
@@ -657,10 +657,10 @@ func (v *RecordType) UnmarshalJSON(text []byte) error {
 			*v = RecordTypeWorkAddress
 			return nil
 		default:
-			return fmt.Errorf("unknown enum value %q for \"RecordType\"", w)
+			return fmt.Errorf("unknown enum value %q for %q", w, "RecordType")
 		}
 	}
-	return fmt.Errorf("invalid JSON value %T $q to unmarshal into \"RecordType\"", t, t)
+	return fmt.Errorf("invalid JSON value $q (%T) to unmarshal into %q", t, t, "RecordType")
 }
 
 func (v *RecordType) UnmarshalJSON2(text []byte) error {
@@ -803,10 +803,10 @@ func (v *LowerCaseEnum) UnmarshalJSON(text []byte) error {
 			return err
 		}
 		if x >= 0x80000000 {
-			return fmt.Errorf("enum overflow from JSON %q for \"LowerCaseEnum\"", text)
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "LowerCaseEnum")
 		}
 		if x < -0x80000000 {
-			return fmt.Errorf("enum underflow from JSON %q for \"LowerCaseEnum\"", text)
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "LowerCaseEnum")
 		}
 		*v = (LowerCaseEnum)(x)
 		return nil
@@ -823,10 +823,10 @@ func (v *LowerCaseEnum) UnmarshalJSON(text []byte) error {
 			*v = LowerCaseEnumItems
 			return nil
 		default:
-			return fmt.Errorf("unknown enum value %q for \"LowerCaseEnum\"", w)
+			return fmt.Errorf("unknown enum value %q for %q", w, "LowerCaseEnum")
 		}
 	}
-	return fmt.Errorf("invalid JSON value %T $q to unmarshal into \"LowerCaseEnum\"", t, t)
+	return fmt.Errorf("invalid JSON value $q (%T) to unmarshal into %q", t, t, "LowerCaseEnum")
 }
 
 func (v *LowerCaseEnum) UnmarshalJSON2(text []byte) error {
