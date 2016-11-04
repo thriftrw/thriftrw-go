@@ -60,7 +60,7 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 }
 
 func (f fieldGroupGenerator) DefineStruct(g Generator) error {
-	err := g.DeclareFromTemplate(
+	return g.DeclareFromTemplate(
 		`type <.Name> struct {
 			<range .Fields>
 				<if .Required>
@@ -86,7 +86,6 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 		}),
 		TemplateFunc("declFieldName", f.declFieldName),
 	)
-	return err
 }
 
 // declFieldName replaces goName during generation of a structure's definition.
@@ -94,13 +93,9 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 // fieldGroupGenerator namespace, enforcing single field definition when
 // generating Go code. TL;DR: will fail during generation, before compilation.
 func (f *fieldGroupGenerator) declFieldName(fs *compile.FieldSpec) (string, error) {
-	name, err := goNameAnnotation(fs)
+	name, fromAnnotation, err := goNameForNamedEntity(fs)
 	if err != nil {
 		return "", err
-	}
-	fromAnnotation := (name != "")
-	if !fromAnnotation {
-		name = goCase(fs.ThriftName())
 	}
 	if err := f.Reserve(name); err != nil {
 		if fromAnnotation {

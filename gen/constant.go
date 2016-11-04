@@ -201,9 +201,8 @@ func constantStruct(g Generator, v *compile.ConstantStruct, t compile.TypeSpec) 
 }
 
 func enumItemReference(g Generator, v compile.EnumItemReference, t compile.TypeSpec) (_ string, err error) {
-	s, err := g.TextTemplate(`
-	<$enumName := typeName .Enum>
-	<enumItemName $enumName .Item>`, v, TemplateFunc("enumItemName", enumItemName))
+	s, err := g.TextTemplate(`<enumItemName (typeName .Enum) .Item>`,
+		v, TemplateFunc("enumItemName", enumItemName))
 	if err != nil {
 		return "", err
 	}

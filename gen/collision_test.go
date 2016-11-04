@@ -22,17 +22,16 @@ package gen
 
 import (
 	"bytes"
-	"fmt"
 	"reflect"
 	"testing"
 
 	tc "go.uber.org/thriftrw/gen/testdata/collision"
+	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/ptr"
+	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"go.uber.org/thriftrw/protocol"
-	"go.uber.org/thriftrw/wire"
 )
 
 func TestStruct(t *testing.T) {
@@ -116,9 +115,11 @@ func TestWithDefault(t *testing.T) {
 	}
 	b := &tc.WithDefault{}
 
-	a = troughWire(t, a, "WithDefault{filled in}").(*tc.WithDefault)
-	b = troughWire(t, b, "WithDefault{}").(*tc.WithDefault)
-	require.Equal(t, a, b)
+	a = roundTrip(t, a, "WithDefault{filled in}").(*tc.WithDefault)
+	b = roundTrip(t, b, "WithDefault{}").(*tc.WithDefault)
+	if a != nil && b != nil {
+		require.Equal(t, a, b)
+	}
 }
 
 func TestMyEnum(t *testing.T) {
@@ -149,10 +150,26 @@ func TestMyEnum2(t *testing.T) {
 	}
 }
 
-func troughWire(t *testing.T, x thriftType, msg string, args ...interface{}) thriftType {
-	message := fmt.Sprintf(msg, args...)
+func roundTrip(t *testing.T, x thriftType, msg string) thriftType {
 	v, err := x.ToWire()
-	require.NoError(t, err, "failed to serialize: %v", x)
+	if !assert.NoError(t, err, "failed to serialize: %v", x) {
+		return nil
+	}
+
+	var buff bytes.Buffer
+	if !assert.NoError(t, protocol.Binary.Encode(v, &buff), "%v: failed to serialize", msg) {
+		return nil
+	}
+
+	newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), v.Type())
+	if !assert.NoError(t, err, "%v: failed to deserialize", msg) {
+		return nil
+	}
+
+	if !assert.True(
+		t, wire.ValuesAreEqual(newV, v), "%v: deserialize(serialize(%v.ToWire())) != %v", msg, x, v) {
+		return nil
+	}
 
 	xType := reflect.TypeOf(x)
 	if xType.Kind() == reflect.Ptr {
@@ -161,45 +178,13 @@ func troughWire(t *testing.T, x thriftType, msg string, args ...interface{}) thr
 
 	gotX := reflect.New(xType)
 	errval := gotX.MethodByName("FromWire").
-		Call([]reflect.Value{reflect.ValueOf(v)})[0].
+		Call([]reflect.Value{reflect.ValueOf(newV)})[0].
 		Interface()
 
-	require.Nil(t, errval, "FromWire: %v", message)
-	require.Equal(t, x, gotX.Interface(), "FromWire: %v", message)
-	return gotX.Interface().(thriftType)
-}
-
-func roundTrip(t *testing.T, x thriftType, msg string, args ...interface{}) bool {
-	message := fmt.Sprintf(msg, args...)
-	if v, err := x.ToWire(); assert.NoError(t, err, "failed to serialize: %v", x) {
-		var buff bytes.Buffer
-		if !assert.NoError(t, protocol.Binary.Encode(v, &buff), "%v: failed to serialize", message) {
-			return false
-		}
-
-		newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), v.Type())
-		if !assert.NoError(t, err, "%v: failed to deserialize", message) {
-			return false
-		}
-
-		if !assert.True(
-			t, wire.ValuesAreEqual(newV, v), "%v: deserialize(serialize(%v.ToWire())) != %v", message, x, v) {
-			return false
-		}
-
-		xType := reflect.TypeOf(x)
-		if xType.Kind() == reflect.Ptr {
-			xType = xType.Elem()
-		}
-
-		gotX := reflect.New(xType)
-		errval := gotX.MethodByName("FromWire").
-			Call([]reflect.Value{reflect.ValueOf(newV)})[0].
-			Interface()
-
-		if assert.Nil(t, errval, "FromWire: %v", message) {
-			return assert.Equal(t, x, gotX.Interface(), "FromWire: %v", message)
-		}
+	if !assert.Nil(t, errval, "FromWire: %v", msg) {
+		return nil
 	}
-	return false
+
+	assert.Equal(t, x, gotX.Interface(), "FromWire: %v", msg)
+	return gotX.Interface().(thriftType)
 }

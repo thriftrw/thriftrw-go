@@ -29,15 +29,6 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
-// ItemSpec is any Thrift compile items with a name and annotations.
-type ItemSpec interface {
-	// ThriftName is the name of the type as it appears in the Thrift file.
-	ThriftName() string
-
-	// ThriftAnnotations is the map of all associated annotations from the Thrift file.
-	ThriftAnnotations() compile.Annotations
-}
-
 // isAllCaps checks if a string contains all capital letters only. Non-letters
 // are not considered.
 func isAllCaps(s string) bool {
@@ -102,8 +93,8 @@ func goCase(s string) string {
 }
 
 // goNameAnnotation returns ("", nil) if there is no "go.name" annotation.
-func goNameAnnotation(spec ItemSpec) (string, error) {
-	name, ok := spec.ThriftAnnotations()["go.name"]
+func goNameAnnotation(e compile.NamedEntity) (string, error) {
+	name, ok := e.ThriftAnnotations()["go.name"]
 
 	if !ok {
 		return "", nil
@@ -120,16 +111,23 @@ func goNameAnnotation(spec ItemSpec) (string, error) {
 	return name, nil
 }
 
-func goName(spec ItemSpec) (string, error) {
-	name, err := goNameAnnotation(spec)
+func goNameForNamedEntity(e compile.NamedEntity) (name string, fromAnnotation bool, err error) {
+	fromAnnotation = true
+	name, err = goNameAnnotation(e)
 	if err == nil && name == "" {
-		name = goCase(spec.ThriftName())
+		name = goCase(e.ThriftName())
+		fromAnnotation = false
 	}
+	return name, fromAnnotation, err
+}
+
+func goName(e compile.NamedEntity) (string, error) {
+	name, _, err := goNameForNamedEntity(e)
 	return name, err
 }
 
-func readerFuncName(spec ItemSpec) (string, error) {
-	name, err := goName(spec)
+func readerFuncName(e compile.NamedEntity) (string, error) {
+	name, err := goName(e)
 	if err == nil {
 		name = "_" + name + "_Read"
 	}

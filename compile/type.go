@@ -27,17 +27,26 @@ import (
 	"go.uber.org/thriftrw/wire"
 )
 
+// NamedEntity is any Thrift entity with a name and annotations. Not all
+// entities are TypeSpecs.
+type NamedEntity interface {
+	// ThriftName is the name of the type as it appears in the Thrift file.
+	ThriftName() string
+
+	// ThriftAnnotations is the map of all associated annotations from the Thrift file.
+	ThriftAnnotations() Annotations
+}
+
 // TypeSpec contains information about Thrift types.
 type TypeSpec interface {
+	NamedEntity
+
 	// Link resolves references to other types in this TypeSpecs to actual
 	// TypeSpecs from the given Scope.
 	Link(scope Scope) (TypeSpec, error)
 
 	// TypeCode is the wire-level Thrift Type associated with this Type.
 	TypeCode() wire.Type
-
-	// ThriftName is the name of the type as it appears in the Thrift file.
-	ThriftName() string
 
 	// ThriftFile is the path to the Thrift file in which this TypeSpec was
 	// defined. This may be an empty string if this type is a native Thrift
@@ -51,11 +60,6 @@ type TypeSpec interface {
 	//
 	// Returns the first error returned by the function call or nil.
 	ForEachTypeReference(func(TypeSpec) error) error
-
-	// ThriftAnnotations is the map of all associated annotations from the Thrift file.
-	// TODO(fx) should we have ThriftAnnotations() part of this interface?
-	// typeSpecReference doesn't seem to support Annotations?
-	ThriftAnnotations() Annotations
 }
 
 // RootTypeSpec returns the TypeSpec that the given linked TypeSpec points to.
@@ -152,10 +156,13 @@ func (r typeSpecReference) ThriftName() string {
 	return r.Name
 }
 
-// ThriftAnnotations returns all associated annotations.
-// TODO(fx) should we have ThriftAnnotations part of the TypeSpec interface?
+// ForEachTypeReference on an unresolved typeSpecReference will cause a system
+// panic.
 func (r typeSpecReference) ThriftAnnotations() Annotations {
-	return Annotations{}
+	panic(fmt.Sprintf(
+		"ThriftAnnotations() called on unresolved TypeSpec reference %v."+
+			"Make sure you called Link().", r,
+	))
 }
 
 // compileTypeReference compiles the given AST type reference into a TypeSpec.
