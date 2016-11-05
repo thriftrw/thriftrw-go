@@ -112,8 +112,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 
 		func (<$v> <$enumName>) MarshalJSON() ([]byte, error) {
 			<if len .Spec.Items>
-				<$w> := int32(<$v>)
-				switch <$w> {
+				switch int32(<$v>) {
 				<range .UniqueItems>
 					case <.Value>:
 						return ([]byte)("\"<.Name>\""), nil
@@ -123,31 +122,30 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			return ([]byte)(<$strconv>.FormatInt(int64(<$v>), 10)), nil
 		}
 
-		func (<$v> *<$enumName>) UnmarshalJSON(text []byte) error {
+		<$text := newVar "text">
+		func (<$v> *<$enumName>) UnmarshalJSON(<$text> []byte) error {
 			<$d := newVar "d">
 			<$t := newVar "t">
-			<$err := newVar "err">
 
-			<$d> := <$json>.NewDecoder(<$bytes>.NewReader(text))
+			<$d> := <$json>.NewDecoder(<$bytes>.NewReader(<$text>))
 			<$d>.UseNumber()
-			<$t>, <$err> := <$d>.Token()
-
-			if <$err> != nil {
-				return <$err>
+			<$t>, err := <$d>.Token()
+			if err != nil {
+				return err
 			}
 
 			<$ok := newVar "ok">
 			if <$w>, <$ok> := <$t>.(<$json>.Number); <$ok> {
 				<$x := newVar "x">
-				<$x>, <$err> := <$w>.Int64()
-				if <$err> != nil {
-					return <$err>
+				<$x>, err := <$w>.Int64()
+				if err != nil {
+					return err
 				}
 				if <$x> <">="> 0x80000000 {
-					return <$fmt>.Errorf("enum overflow from JSON %q for %q", text, "<$enumName>")
+					return <$fmt>.Errorf("enum overflow from JSON %q for %q", <$text>, "<$enumName>")
 				}
 				if <$x> <"<"> -0x80000000 {
-					return <$fmt>.Errorf("enum underflow from JSON %q for %q", text, "<$enumName>")
+					return <$fmt>.Errorf("enum underflow from JSON %q for %q", <$text>, "<$enumName>")
 				}
 				*<$v> = (<$enumName>)(<$x>)
 				return nil
@@ -166,28 +164,27 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				}
 			}
 
-			return <$fmt>.Errorf("invalid JSON value $q (%T) to unmarshal into %q", <$t>, <$t>, "<$enumName>")
+			return <$fmt>.Errorf("invalid JSON value %q (%T) to unmarshal into %q", <$t>, <$t>, "<$enumName>")
 		}
 
-		func (<$v> *<$enumName>) UnmarshalJSON2(text []byte) error {
-			<$err := newVar "err">
+		func (<$v> *<$enumName>) UnmarshalJSON2(<$text> []byte) error {
 			<$e := newVar "e">
 
-			<$w>, <$err> := <$strconv>.ParseInt(string(text), 10, 32)
-			if <$err> == nil {
+			<$w>, err := <$strconv>.ParseInt(string(<$text>), 10, 32)
+			if err == nil {
 				*<$v> = (<$enumName>)(<$w>)
 				return nil
 			}
 
-			<$e> := <$err>.(*strconv.NumError)
+			<$e> := err.(*strconv.NumError)
 			if <$e>.Err != <$strconv>.ErrSyntax {
-				return <$err>
+				return err
 			}
 
 			<$s := newVar "s">
 			var <$s> string
-			if <$err> := <$json>.Unmarshal(text, &<$s>); <$err> != nil {
-				return <$err>
+			if err := <$json>.Unmarshal(<$text>, &<$s>); err != nil {
+				return err
 			}
 
 			<if len .Spec.Items>
