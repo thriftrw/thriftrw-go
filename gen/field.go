@@ -128,14 +128,15 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 
 			<$structName := .Name>
 			<range .Fields>
-				<$f := printf "%s.%s" $v (goName .)>
+				<$fname := goName .>
+				<$f := printf "%s.%s" $v $fname>
 				<if .Required>
 					<if not (isPrimitiveType .Type)>
 						if <$f> == nil {
 							// TODO: Include names of all missing fields in
 							// the error message.
 							return <$wVal>, <import "errors">.New(
-								"field <goName .> of <$structName> is required")
+								"field <$fname> of <$structName> is required")
 						}
 					<end>
 						<$wVal>, err = <toWire .Type $f>
@@ -242,7 +243,8 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 
 			<$structName := .Name>
 			<range .Fields>
-				<$f := printf "%s.%s" $v (goName .)>
+				<$fname := goName .>
+				<$f := printf "%s.%s" $v $fname>
 				<if .Default>
 					if <$f> == nil {
 						<$f> = <constantValuePtr .Default .Type>
@@ -251,7 +253,7 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 					<if .Required>
 						if !<$isSet.Rotate (printf "%sIsSet" .Name)> {
 							return <import "errors">.New(
-								"field <goName .> of <$structName> is required")
+								"field <$fname> of <$structName> is required")
 						}
 						// TODO: Include names of all missing fields in the
 						// error message.
@@ -297,19 +299,20 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			var <$fields> [<len .Fields>]string
 			<$i> := 0
 			<range .Fields>
-				<$f := printf "%s.%s" $v (goName .)>
+				<$fname := goName .>
+				<$f := printf "%s.%s" $v $fname>
 
 				<if not .Required>
 					if <$f> != nil {
 						<if isPrimitiveType .Type>
-							<$fields>[<$i>] = <$fmt>.Sprintf("<goName .>: %v", *(<$f>))
+							<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", *(<$f>))
 						<else>
-							<$fields>[<$i>] = <$fmt>.Sprintf("<goName .>: %v", <$f>)
+							<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
 						<end>
 						<$i>++
 					}
 				<else>
-					<$fields>[<$i>] = <$fmt>.Sprintf("<goName .>: %v", <$f>)
+					<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
 					<$i>++
 				<end>
 			<end>

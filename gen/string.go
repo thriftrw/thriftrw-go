@@ -95,17 +95,24 @@ func goCase(s string) string {
 // goNameAnnotation returns ("", nil) if there is no "go.name" annotation.
 func goNameAnnotation(e compile.NamedEntity) (string, error) {
 	name, ok := e.ThriftAnnotations()["go.name"]
-
 	if !ok {
 		return "", nil
 	}
 
 	c, _ := utf8.DecodeRuneInString(name)
 	capitalized := unicode.IsLetter(c) && unicode.IsUpper(c)
-	undescores := strings.Contains(name, "_")
+	underscore := strings.Contains(name, "_")
 
-	if !capitalized || undescores {
-		return "", fmt.Errorf("%q is not a go style identifier (suggestion: %q)", name, goCase(name))
+	if !capitalized || underscore {
+		var emsg []string
+		if underscore {
+			emsg = append(emsg, "contains underscores")
+		}
+		if !capitalized {
+			emsg = append(emsg, "is not capitalized")
+		}
+
+		return "", fmt.Errorf("%q (from go.name annotation) is not a Go style public identifier (%s), suggestion: %q)", name, strings.Join(emsg, ", "), goCase(name))
 	}
 
 	return name, nil
