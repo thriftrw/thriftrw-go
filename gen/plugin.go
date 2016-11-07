@@ -255,6 +255,9 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 			return nil, err
 		}
 		name, err := goName(s)
+		if err != nil {
+			return nil, err
+		}
 		t = &api.Type{
 			ReferenceType: &api.TypeReference{
 				Name:       name,
