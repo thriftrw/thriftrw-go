@@ -62,23 +62,6 @@ func (v *EmptyEnum) UnmarshalJSON(text []byte) error {
 	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EmptyEnum")
 }
 
-func (v *EmptyEnum) UnmarshalJSON2(text []byte) error {
-	w, err := strconv.ParseInt(string(text), 10, 32)
-	if err == nil {
-		*v = (EmptyEnum)(w)
-		return nil
-	}
-	e := err.(*strconv.NumError)
-	if e.Err != strconv.ErrSyntax {
-		return err
-	}
-	var s string
-	if err := json.Unmarshal(text, &s); err != nil {
-		return err
-	}
-	return fmt.Errorf("unknown enum value %q for \"EmptyEnum\"", s)
-}
-
 type EnumDefault int32
 
 const (
@@ -158,34 +141,6 @@ func (v *EnumDefault) UnmarshalJSON(text []byte) error {
 		}
 	}
 	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumDefault")
-}
-
-func (v *EnumDefault) UnmarshalJSON2(text []byte) error {
-	w, err := strconv.ParseInt(string(text), 10, 32)
-	if err == nil {
-		*v = (EnumDefault)(w)
-		return nil
-	}
-	e := err.(*strconv.NumError)
-	if e.Err != strconv.ErrSyntax {
-		return err
-	}
-	var s string
-	if err := json.Unmarshal(text, &s); err != nil {
-		return err
-	}
-	switch string(s) {
-	case "Foo":
-		*v = (EnumDefault)(0)
-		return nil
-	case "Bar":
-		*v = (EnumDefault)(1)
-		return nil
-	case "Baz":
-		*v = (EnumDefault)(2)
-		return nil
-	}
-	return fmt.Errorf("unknown enum value %q for \"EnumDefault\"", s)
 }
 
 type EnumWithDuplicateName int32
@@ -317,52 +272,6 @@ func (v *EnumWithDuplicateName) UnmarshalJSON(text []byte) error {
 	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithDuplicateName")
 }
 
-func (v *EnumWithDuplicateName) UnmarshalJSON2(text []byte) error {
-	w, err := strconv.ParseInt(string(text), 10, 32)
-	if err == nil {
-		*v = (EnumWithDuplicateName)(w)
-		return nil
-	}
-	e := err.(*strconv.NumError)
-	if e.Err != strconv.ErrSyntax {
-		return err
-	}
-	var s string
-	if err := json.Unmarshal(text, &s); err != nil {
-		return err
-	}
-	switch string(s) {
-	case "A":
-		*v = (EnumWithDuplicateName)(0)
-		return nil
-	case "B":
-		*v = (EnumWithDuplicateName)(1)
-		return nil
-	case "C":
-		*v = (EnumWithDuplicateName)(2)
-		return nil
-	case "P":
-		*v = (EnumWithDuplicateName)(3)
-		return nil
-	case "Q":
-		*v = (EnumWithDuplicateName)(4)
-		return nil
-	case "R":
-		*v = (EnumWithDuplicateName)(5)
-		return nil
-	case "X":
-		*v = (EnumWithDuplicateName)(6)
-		return nil
-	case "Y":
-		*v = (EnumWithDuplicateName)(7)
-		return nil
-	case "Z":
-		*v = (EnumWithDuplicateName)(8)
-		return nil
-	}
-	return fmt.Errorf("unknown enum value %q for \"EnumWithDuplicateName\"", s)
-}
-
 type EnumWithDuplicateValues int32
 
 const (
@@ -438,34 +347,6 @@ func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
 		}
 	}
 	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithDuplicateValues")
-}
-
-func (v *EnumWithDuplicateValues) UnmarshalJSON2(text []byte) error {
-	w, err := strconv.ParseInt(string(text), 10, 32)
-	if err == nil {
-		*v = (EnumWithDuplicateValues)(w)
-		return nil
-	}
-	e := err.(*strconv.NumError)
-	if e.Err != strconv.ErrSyntax {
-		return err
-	}
-	var s string
-	if err := json.Unmarshal(text, &s); err != nil {
-		return err
-	}
-	switch string(s) {
-	case "P":
-		*v = (EnumWithDuplicateValues)(0)
-		return nil
-	case "Q":
-		*v = (EnumWithDuplicateValues)(-1)
-		return nil
-	case "R":
-		*v = (EnumWithDuplicateValues)(0)
-		return nil
-	}
-	return fmt.Errorf("unknown enum value %q for \"EnumWithDuplicateValues\"", s)
 }
 
 type EnumWithValues int32
@@ -549,34 +430,6 @@ func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
 	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithValues")
 }
 
-func (v *EnumWithValues) UnmarshalJSON2(text []byte) error {
-	w, err := strconv.ParseInt(string(text), 10, 32)
-	if err == nil {
-		*v = (EnumWithValues)(w)
-		return nil
-	}
-	e := err.(*strconv.NumError)
-	if e.Err != strconv.ErrSyntax {
-		return err
-	}
-	var s string
-	if err := json.Unmarshal(text, &s); err != nil {
-		return err
-	}
-	switch string(s) {
-	case "X":
-		*v = (EnumWithValues)(123)
-		return nil
-	case "Y":
-		*v = (EnumWithValues)(456)
-		return nil
-	case "Z":
-		*v = (EnumWithValues)(789)
-		return nil
-	}
-	return fmt.Errorf("unknown enum value %q for \"EnumWithValues\"", s)
-}
-
 type RecordType int32
 
 const (
@@ -656,34 +509,6 @@ func (v *RecordType) UnmarshalJSON(text []byte) error {
 		}
 	}
 	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "RecordType")
-}
-
-func (v *RecordType) UnmarshalJSON2(text []byte) error {
-	w, err := strconv.ParseInt(string(text), 10, 32)
-	if err == nil {
-		*v = (RecordType)(w)
-		return nil
-	}
-	e := err.(*strconv.NumError)
-	if e.Err != strconv.ErrSyntax {
-		return err
-	}
-	var s string
-	if err := json.Unmarshal(text, &s); err != nil {
-		return err
-	}
-	switch string(s) {
-	case "NAME":
-		*v = (RecordType)(0)
-		return nil
-	case "HOME_ADDRESS":
-		*v = (RecordType)(1)
-		return nil
-	case "WORK_ADDRESS":
-		*v = (RecordType)(2)
-		return nil
-	}
-	return fmt.Errorf("unknown enum value %q for \"RecordType\"", s)
 }
 
 type StructWithOptionalEnum struct {
@@ -821,32 +646,4 @@ func (v *LowerCaseEnum) UnmarshalJSON(text []byte) error {
 		}
 	}
 	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "LowerCaseEnum")
-}
-
-func (v *LowerCaseEnum) UnmarshalJSON2(text []byte) error {
-	w, err := strconv.ParseInt(string(text), 10, 32)
-	if err == nil {
-		*v = (LowerCaseEnum)(w)
-		return nil
-	}
-	e := err.(*strconv.NumError)
-	if e.Err != strconv.ErrSyntax {
-		return err
-	}
-	var s string
-	if err := json.Unmarshal(text, &s); err != nil {
-		return err
-	}
-	switch string(s) {
-	case "containing":
-		*v = (LowerCaseEnum)(0)
-		return nil
-	case "lower_case":
-		*v = (LowerCaseEnum)(1)
-		return nil
-	case "items":
-		*v = (LowerCaseEnum)(2)
-		return nil
-	}
-	return fmt.Errorf("unknown enum value %q for \"LowerCaseEnum\"", s)
 }

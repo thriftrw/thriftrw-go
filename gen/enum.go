@@ -156,7 +156,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				<$enum := .Spec>
 				<range .Spec.Items>
 					case "<.Name>":
-						*<$v> = <enumItemName $enum .Name>
+						*<$v> = <enumItemName $enumName .>
 						return nil
 				<end>
 					default:

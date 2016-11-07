@@ -4,9 +4,12 @@
 package collision
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"strconv"
 	"strings"
 )
 
@@ -62,6 +65,67 @@ func (v MyEnum) String() string {
 		return "foo_bar"
 	}
 	return fmt.Sprintf("MyEnum(%d)", w)
+}
+
+func (v MyEnum) MarshalJSON() ([]byte, error) {
+	switch int32(v) {
+	case 123:
+		return ([]byte)("\"X\""), nil
+	case 456:
+		return ([]byte)("\"Y\""), nil
+	case 789:
+		return ([]byte)("\"Z\""), nil
+	case 790:
+		return ([]byte)("\"FooBar\""), nil
+	case 791:
+		return ([]byte)("\"foo_bar\""), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v *MyEnum) UnmarshalJSON(text []byte) error {
+	d := json.NewDecoder(bytes.NewReader(text))
+	d.UseNumber()
+	t, err := d.Token()
+	if err != nil {
+		return err
+	}
+	if w, ok := t.(json.Number); ok {
+		x, err := w.Int64()
+		if err != nil {
+			return err
+		}
+		if x >= 0x80000000 {
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "MyEnum")
+		}
+		if x < -0x80000000 {
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "MyEnum")
+		}
+		*v = (MyEnum)(x)
+		return nil
+	}
+	if w, ok := t.(string); ok {
+		switch string(w) {
+		case "X":
+			*v = MyEnumX
+			return nil
+		case "Y":
+			*v = MyEnumY
+			return nil
+		case "Z":
+			*v = MyEnumZ
+			return nil
+		case "FooBar":
+			*v = MyEnumFooBar
+			return nil
+		case "foo_bar":
+			*v = MyEnumFooBar2
+			return nil
+		default:
+			return fmt.Errorf("unknown enum value %q for %q", w, "MyEnum")
+		}
+	}
+	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "MyEnum")
 }
 
 type PrimitiveContainers struct {
@@ -560,6 +624,57 @@ func (v MyEnum2) String() string {
 		return "Z"
 	}
 	return fmt.Sprintf("MyEnum2(%d)", w)
+}
+
+func (v MyEnum2) MarshalJSON() ([]byte, error) {
+	switch int32(v) {
+	case 12:
+		return ([]byte)("\"X\""), nil
+	case 34:
+		return ([]byte)("\"Y\""), nil
+	case 56:
+		return ([]byte)("\"Z\""), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v *MyEnum2) UnmarshalJSON(text []byte) error {
+	d := json.NewDecoder(bytes.NewReader(text))
+	d.UseNumber()
+	t, err := d.Token()
+	if err != nil {
+		return err
+	}
+	if w, ok := t.(json.Number); ok {
+		x, err := w.Int64()
+		if err != nil {
+			return err
+		}
+		if x >= 0x80000000 {
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "MyEnum2")
+		}
+		if x < -0x80000000 {
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "MyEnum2")
+		}
+		*v = (MyEnum2)(x)
+		return nil
+	}
+	if w, ok := t.(string); ok {
+		switch string(w) {
+		case "X":
+			*v = MyEnum2X
+			return nil
+		case "Y":
+			*v = MyEnum2Y
+			return nil
+		case "Z":
+			*v = MyEnum2Z
+			return nil
+		default:
+			return fmt.Errorf("unknown enum value %q for %q", w, "MyEnum2")
+		}
+	}
+	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "MyEnum2")
 }
 
 type StructCollision2 struct {
