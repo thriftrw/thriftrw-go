@@ -185,9 +185,9 @@ func constantStruct(g Generator, v *compile.ConstantStruct, t compile.TypeSpec) 
 			<range $name, $value := .Value.Fields>
 				<$field := $fields.FindByName $name>
 				<if and (not $field.Required) (isPrimitiveType $field.Type)>
-					<goCase $field.Name>: <constantValuePtr $value $field.Type>,
+					<goName $field>: <constantValuePtr $value $field.Type>,
 				<else>
-					<goCase $field.Name>: <constantValue $value $field.Type>,
+					<goName $field>: <constantValue $value $field.Type>,
 				<end>
 			<end>
 		}`, struct {
@@ -201,7 +201,8 @@ func constantStruct(g Generator, v *compile.ConstantStruct, t compile.TypeSpec) 
 }
 
 func enumItemReference(g Generator, v compile.EnumItemReference, t compile.TypeSpec) (_ string, err error) {
-	s, err := g.TextTemplate(`<enumItemName .Enum .Item.Name>`, v, TemplateFunc("enumItemName", enumItemName))
+	s, err := g.TextTemplate(`<enumItemName (typeName .Enum) .Item>`,
+		v, TemplateFunc("enumItemName", enumItemName))
 	if err != nil {
 		return "", err
 	}

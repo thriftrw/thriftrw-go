@@ -25,6 +25,8 @@ import (
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"go.uber.org/thriftrw/compile"
 )
 
 // isAllCaps checks if a string contains all capital letters only. Non-letters
@@ -88,6 +90,55 @@ func goCase(s string) string {
 	return pascalCase(len(words) == 1 /* all caps */, words...)
 	// goCase allows all caps only if the string is a single all caps word.
 	// That is, "FOO" is allowed but "FOO_BAR" is changed to "FooBar".
+}
+
+// goNameAnnotation returns ("", nil) if there is no "go.name" annotation.
+func goNameAnnotation(e compile.NamedEntity) (string, error) {
+	name, ok := e.ThriftAnnotations()["go.name"]
+	if !ok {
+		return "", nil
+	}
+
+	c, _ := utf8.DecodeRuneInString(name)
+	capitalized := unicode.IsLetter(c) && unicode.IsUpper(c)
+	underscore := strings.Contains(name, "_")
+
+	if !capitalized || underscore {
+		var emsg []string
+		if underscore {
+			emsg = append(emsg, "contains underscores")
+		}
+		if !capitalized {
+			emsg = append(emsg, "is not capitalized")
+		}
+
+		return "", fmt.Errorf("%q (from go.name annotation) is not a Go style public identifier (%s), suggestion: %q)", name, strings.Join(emsg, ", "), goCase(name))
+	}
+
+	return name, nil
+}
+
+func goNameForNamedEntity(e compile.NamedEntity) (name string, fromAnnotation bool, err error) {
+	fromAnnotation = true
+	name, err = goNameAnnotation(e)
+	if err == nil && name == "" {
+		name = goCase(e.ThriftName())
+		fromAnnotation = false
+	}
+	return name, fromAnnotation, err
+}
+
+func goName(e compile.NamedEntity) (string, error) {
+	name, _, err := goNameForNamedEntity(e)
+	return name, err
+}
+
+func readerFuncName(e compile.NamedEntity) (string, error) {
+	name, err := goName(e)
+	if err == nil {
+		name = "_" + name + "_Read"
+	}
+	return name, err
 }
 
 // This set is taken from https://github.com/golang/lint/blob/master/lint.go#L692

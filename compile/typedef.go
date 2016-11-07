@@ -94,3 +94,8 @@ func (t *TypedefSpec) ThriftFile() string {
 func (t *TypedefSpec) ForEachTypeReference(f func(TypeSpec) error) error {
 	return f(t.Target)
 }
+
+// ThriftAnnotations returns all associated annotations.
+func (t *TypedefSpec) ThriftAnnotations() Annotations {
+	return t.Annotations
+}

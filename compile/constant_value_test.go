@@ -78,7 +78,7 @@ func TestLinkConstantReference(t *testing.T) {
 			"Role.Moderator",
 			EnumItemReference{
 				Enum: role,
-				Item: EnumItem{Name: "Moderator", Value: 2},
+				Item: &EnumItem{Name: "Moderator", Value: 2},
 			},
 			role,
 		},
@@ -88,7 +88,7 @@ func TestLinkConstantReference(t *testing.T) {
 			"shared.Role.Disabled",
 			EnumItemReference{
 				Enum: role,
-				Item: EnumItem{Name: "Disabled", Value: -1},
+				Item: &EnumItem{Name: "Disabled", Value: -1},
 			},
 			role,
 		},
@@ -210,7 +210,7 @@ func TestCastConstants(t *testing.T) {
 			give: ConstantInt(-1),
 			want: EnumItemReference{
 				Enum: role,
-				Item: role.Items[0], // Disabled
+				Item: &role.Items[0], // Disabled
 			},
 		},
 		{
@@ -219,7 +219,7 @@ func TestCastConstants(t *testing.T) {
 			give: ConstantInt(2),
 			want: EnumItemReference{
 				Enum: role,
-				Item: role.Items[2], // Moderator
+				Item: &role.Items[2], // Moderator
 			},
 		},
 		{

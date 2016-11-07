@@ -16,6 +16,10 @@ v0.4.0 (2016-11-01)
 -   Expose the version of the library under `go.uber.org/thriftrw/version.Version`.
 -   Generated code will test for version compatibility with the current version
     of ThriftRW during initialization.
+-   Code generation will abort if struct fields, after conversion to Go style
+    names, are not unique in the structure.
+-   go.name annotation (ie: `(go.name="FooBar")`) is supported for struct,
+    fields, enums, enum items, typedef and union.
 
 v0.3.2 (2016-10-05)
 -------------------

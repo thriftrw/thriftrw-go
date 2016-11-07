@@ -87,13 +87,13 @@ func compileEnum(file string, src *ast.Enum) (*EnumSpec, error) {
 // LookupItem retrieves the item with the given name from the enum.
 //
 // Returns true or false indicating whether the result is valid or not.
-func (e *EnumSpec) LookupItem(name string) (EnumItem, bool) {
+func (e *EnumSpec) LookupItem(name string) (*EnumItem, bool) {
 	for _, item := range e.Items {
 		if item.Name == name {
-			return item, true
+			return &item, true
 		}
 	}
-	return EnumItem{}, false
+	return nil, false
 }
 
 // Link resolves any references made by the Enum.
@@ -121,4 +121,19 @@ func (e *EnumSpec) ForEachTypeReference(func(TypeSpec) error) error {
 // Enums are represented as i32 over the wire.
 func (e *EnumSpec) TypeCode() wire.Type {
 	return wire.TI32
+}
+
+// ThriftAnnotations returns all associated annotations.
+func (e *EnumSpec) ThriftAnnotations() Annotations {
+	return e.Annotations
+}
+
+// ThriftName for EnumItem
+func (e *EnumItem) ThriftName() string {
+	return e.Name
+}
+
+// ThriftAnnotations returns all associated annotations.
+func (e *EnumItem) ThriftAnnotations() Annotations {
+	return e.Annotations
 }

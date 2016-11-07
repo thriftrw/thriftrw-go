@@ -113,6 +113,15 @@ func (*DoubleSpec) ForEachTypeReference(func(TypeSpec) error) error { return nil
 func (*StringSpec) ForEachTypeReference(func(TypeSpec) error) error { return nil }
 func (*BinarySpec) ForEachTypeReference(func(TypeSpec) error) error { return nil }
 
+func (t *BoolSpec) ThriftAnnotations() Annotations   { return t.Annotations }
+func (t *I8Spec) ThriftAnnotations() Annotations     { return t.Annotations }
+func (t *I16Spec) ThriftAnnotations() Annotations    { return t.Annotations }
+func (t *I32Spec) ThriftAnnotations() Annotations    { return t.Annotations }
+func (t *I64Spec) ThriftAnnotations() Annotations    { return t.Annotations }
+func (t *DoubleSpec) ThriftAnnotations() Annotations { return t.Annotations }
+func (t *StringSpec) ThriftAnnotations() Annotations { return t.Annotations }
+func (t *BinarySpec) ThriftAnnotations() Annotations { return t.Annotations }
+
 // compileBaseType compiles a base type reference in the AST to a primitive
 // TypeSpec.
 func compileBaseType(t ast.BaseType) (TypeSpec, error) {

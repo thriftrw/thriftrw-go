@@ -59,8 +59,9 @@ func Service(g Generator, s *compile.ServiceSpec) (map[string]*bytes.Buffer, err
 // ServiceFunction generates code for the given function of the given service.
 func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) error {
 	argsGen := fieldGroupGenerator{
-		Name:   goCase(f.Name) + "Args",
-		Fields: compile.FieldGroup(f.ArgsSpec),
+		Namespace: NewNamespace(),
+		Name:      goCase(f.Name) + "Args",
+		Fields:    compile.FieldGroup(f.ArgsSpec),
 	}
 	if err := argsGen.Generate(g); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
@@ -88,6 +89,7 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 	resultFields = append(resultFields, f.ResultSpec.Exceptions...)
 
 	resultGen := fieldGroupGenerator{
+		Namespace:       NewNamespace(),
 		Name:            goCase(f.Name) + "Result",
 		Fields:          resultFields,
 		IsUnion:         true,

@@ -107,7 +107,7 @@ func (c ConstantInt) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 	case *EnumSpec:
 		for _, item := range spec.Items {
 			if item.Value == int32(c) {
-				return EnumItemReference{Enum: spec, Item: item}, nil
+				return EnumItemReference{Enum: spec, Item: &item}, nil
 			}
 		}
 
@@ -338,7 +338,7 @@ func (c ConstReference) Link(scope Scope, t TypeSpec) (ConstantValue, error) {
 // THrift file.
 type EnumItemReference struct {
 	Enum *EnumSpec
-	Item EnumItem
+	Item *EnumItem
 }
 
 // Link for EnumItemReference.

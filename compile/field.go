@@ -158,6 +158,11 @@ func (f *FieldSpec) Link(scope Scope) (err error) {
 	return err
 }
 
+// ThriftAnnotations returns all associated annotations.
+func (f *FieldSpec) ThriftAnnotations() Annotations {
+	return f.Annotations
+}
+
 // FieldGroup represents a collection of fields for struct-like types.
 type FieldGroup []*FieldSpec
 

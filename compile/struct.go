@@ -107,3 +107,8 @@ func (s *StructSpec) IsExceptionType() bool {
 func (s *StructSpec) ForEachTypeReference(f func(TypeSpec) error) error {
 	return s.Fields.ForEachTypeReference(f)
 }
+
+// ThriftAnnotations returns all associated annotations.
+func (s *StructSpec) ThriftAnnotations() Annotations {
+	return s.Annotations
+}

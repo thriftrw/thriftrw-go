@@ -103,6 +103,11 @@ func (m *MapSpec) ForEachTypeReference(f func(TypeSpec) error) error {
 	return nil
 }
 
+// ThriftAnnotations returns all associated annotations.
+func (m *MapSpec) ThriftAnnotations() Annotations {
+	return m.Annotations
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // ListSpec represents lists of values of the same type.
@@ -158,6 +163,11 @@ func (l *ListSpec) ForEachTypeReference(f func(TypeSpec) error) error {
 	return f(l.ValueSpec)
 }
 
+// ThriftAnnotations returns all associated annotations.
+func (l *ListSpec) ThriftAnnotations() Annotations {
+	return l.Annotations
+}
+
 //////////////////////////////////////////////////////////////////////////////
 
 // SetSpec represents sets of values of the same type.
@@ -211,4 +221,9 @@ func (s *SetSpec) ThriftName() string {
 // ForEachTypeReference for SetSpec
 func (s *SetSpec) ForEachTypeReference(f func(TypeSpec) error) error {
 	return f(s.ValueSpec)
+}
+
+// ThriftAnnotations returns all associated annotations.
+func (s *SetSpec) ThriftAnnotations() Annotations {
+	return s.Annotations
 }
