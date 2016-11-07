@@ -69,9 +69,10 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$bytes := import "bytes">
-		<$strconv := import "strconv">
 		<$fmt := import "fmt">
 		<$json := import "encoding/json">
+		<$math := import "math">
+		<$strconv := import "strconv">
 
 		<$wire := import "go.uber.org/thriftrw/wire">
 
@@ -134,24 +135,22 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				return err
 			}
 
-			<$ok := newVar "ok">
-			if <$w>, <$ok> := <$t>.(<$json>.Number); <$ok> {
+			switch <$w> := <$t>.(type) {
+			case <$json>.Number:
 				<$x := newVar "x">
 				<$x>, err := <$w>.Int64()
 				if err != nil {
 					return err
 				}
-				if <$x> <">="> 0x80000000 {
+				if <$x> <">"> <$math>.MaxInt32 {
 					return <$fmt>.Errorf("enum overflow from JSON %q for %q", <$text>, "<$enumName>")
 				}
-				if <$x> <"<"> -0x80000000 {
+				if <$x> <"<"> <$math>.MinInt32 {
 					return <$fmt>.Errorf("enum underflow from JSON %q for %q", <$text>, "<$enumName>")
 				}
 				*<$v> = (<$enumName>)(<$x>)
 				return nil
-			}
-
-			if <$w>, <$ok> := <$t>.(string); <$ok> {
+			case string:
 				switch string(<$w>) {
 				<$enum := .Spec>
 				<range .Spec.Items>
@@ -162,9 +161,9 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 					default:
 						return <$fmt>.Errorf("unknown enum value %q for %q", <$w>, "<$enumName>")
 				}
+			default:
+				return <$fmt>.Errorf("invalid JSON value %q (%T) to unmarshal into %q", <$t>, <$t>, "<$enumName>")
 			}
-
-			return <$fmt>.Errorf("invalid JSON value %q (%T) to unmarshal into %q", <$t>, <$t>, "<$enumName>")
 		}
 		`,
 		struct {

@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -39,27 +40,28 @@ func (v *EmptyEnum) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
-	if w, ok := t.(json.Number); ok {
+	switch w := t.(type) {
+	case json.Number:
 		x, err := w.Int64()
 		if err != nil {
 			return err
 		}
-		if x >= 0x80000000 {
+		if x > math.MaxInt32 {
 			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EmptyEnum")
 		}
-		if x < -0x80000000 {
+		if x < math.MinInt32 {
 			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EmptyEnum")
 		}
 		*v = (EmptyEnum)(x)
 		return nil
-	}
-	if w, ok := t.(string); ok {
+	case string:
 		switch string(w) {
 		default:
 			return fmt.Errorf("unknown enum value %q for %q", w, "EmptyEnum")
 		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EmptyEnum")
 	}
-	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EmptyEnum")
 }
 
 type EnumDefault int32
@@ -111,21 +113,21 @@ func (v *EnumDefault) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
-	if w, ok := t.(json.Number); ok {
+	switch w := t.(type) {
+	case json.Number:
 		x, err := w.Int64()
 		if err != nil {
 			return err
 		}
-		if x >= 0x80000000 {
+		if x > math.MaxInt32 {
 			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumDefault")
 		}
-		if x < -0x80000000 {
+		if x < math.MinInt32 {
 			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumDefault")
 		}
 		*v = (EnumDefault)(x)
 		return nil
-	}
-	if w, ok := t.(string); ok {
+	case string:
 		switch string(w) {
 		case "Foo":
 			*v = EnumDefaultFoo
@@ -139,8 +141,9 @@ func (v *EnumDefault) UnmarshalJSON(text []byte) error {
 		default:
 			return fmt.Errorf("unknown enum value %q for %q", w, "EnumDefault")
 		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumDefault")
 	}
-	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumDefault")
 }
 
 type EnumWithDuplicateName int32
@@ -222,21 +225,21 @@ func (v *EnumWithDuplicateName) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
-	if w, ok := t.(json.Number); ok {
+	switch w := t.(type) {
+	case json.Number:
 		x, err := w.Int64()
 		if err != nil {
 			return err
 		}
-		if x >= 0x80000000 {
+		if x > math.MaxInt32 {
 			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumWithDuplicateName")
 		}
-		if x < -0x80000000 {
+		if x < math.MinInt32 {
 			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumWithDuplicateName")
 		}
 		*v = (EnumWithDuplicateName)(x)
 		return nil
-	}
-	if w, ok := t.(string); ok {
+	case string:
 		switch string(w) {
 		case "A":
 			*v = EnumWithDuplicateNameA
@@ -268,8 +271,9 @@ func (v *EnumWithDuplicateName) UnmarshalJSON(text []byte) error {
 		default:
 			return fmt.Errorf("unknown enum value %q for %q", w, "EnumWithDuplicateName")
 		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithDuplicateName")
 	}
-	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithDuplicateName")
 }
 
 type EnumWithDuplicateValues int32
@@ -317,21 +321,21 @@ func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
-	if w, ok := t.(json.Number); ok {
+	switch w := t.(type) {
+	case json.Number:
 		x, err := w.Int64()
 		if err != nil {
 			return err
 		}
-		if x >= 0x80000000 {
+		if x > math.MaxInt32 {
 			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumWithDuplicateValues")
 		}
-		if x < -0x80000000 {
+		if x < math.MinInt32 {
 			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumWithDuplicateValues")
 		}
 		*v = (EnumWithDuplicateValues)(x)
 		return nil
-	}
-	if w, ok := t.(string); ok {
+	case string:
 		switch string(w) {
 		case "P":
 			*v = EnumWithDuplicateValuesP
@@ -345,8 +349,9 @@ func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
 		default:
 			return fmt.Errorf("unknown enum value %q for %q", w, "EnumWithDuplicateValues")
 		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithDuplicateValues")
 	}
-	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithDuplicateValues")
 }
 
 type EnumWithValues int32
@@ -398,21 +403,21 @@ func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
-	if w, ok := t.(json.Number); ok {
+	switch w := t.(type) {
+	case json.Number:
 		x, err := w.Int64()
 		if err != nil {
 			return err
 		}
-		if x >= 0x80000000 {
+		if x > math.MaxInt32 {
 			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumWithValues")
 		}
-		if x < -0x80000000 {
+		if x < math.MinInt32 {
 			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumWithValues")
 		}
 		*v = (EnumWithValues)(x)
 		return nil
-	}
-	if w, ok := t.(string); ok {
+	case string:
 		switch string(w) {
 		case "X":
 			*v = EnumWithValuesX
@@ -426,8 +431,9 @@ func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
 		default:
 			return fmt.Errorf("unknown enum value %q for %q", w, "EnumWithValues")
 		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithValues")
 	}
-	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithValues")
 }
 
 type RecordType int32
@@ -479,21 +485,21 @@ func (v *RecordType) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
-	if w, ok := t.(json.Number); ok {
+	switch w := t.(type) {
+	case json.Number:
 		x, err := w.Int64()
 		if err != nil {
 			return err
 		}
-		if x >= 0x80000000 {
+		if x > math.MaxInt32 {
 			return fmt.Errorf("enum overflow from JSON %q for %q", text, "RecordType")
 		}
-		if x < -0x80000000 {
+		if x < math.MinInt32 {
 			return fmt.Errorf("enum underflow from JSON %q for %q", text, "RecordType")
 		}
 		*v = (RecordType)(x)
 		return nil
-	}
-	if w, ok := t.(string); ok {
+	case string:
 		switch string(w) {
 		case "NAME":
 			*v = RecordTypeName
@@ -507,8 +513,9 @@ func (v *RecordType) UnmarshalJSON(text []byte) error {
 		default:
 			return fmt.Errorf("unknown enum value %q for %q", w, "RecordType")
 		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "RecordType")
 	}
-	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "RecordType")
 }
 
 type StructWithOptionalEnum struct {
@@ -616,21 +623,21 @@ func (v *LowerCaseEnum) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
-	if w, ok := t.(json.Number); ok {
+	switch w := t.(type) {
+	case json.Number:
 		x, err := w.Int64()
 		if err != nil {
 			return err
 		}
-		if x >= 0x80000000 {
+		if x > math.MaxInt32 {
 			return fmt.Errorf("enum overflow from JSON %q for %q", text, "LowerCaseEnum")
 		}
-		if x < -0x80000000 {
+		if x < math.MinInt32 {
 			return fmt.Errorf("enum underflow from JSON %q for %q", text, "LowerCaseEnum")
 		}
 		*v = (LowerCaseEnum)(x)
 		return nil
-	}
-	if w, ok := t.(string); ok {
+	case string:
 		switch string(w) {
 		case "containing":
 			*v = LowerCaseEnumContaining
@@ -644,6 +651,7 @@ func (v *LowerCaseEnum) UnmarshalJSON(text []byte) error {
 		default:
 			return fmt.Errorf("unknown enum value %q for %q", w, "LowerCaseEnum")
 		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "LowerCaseEnum")
 	}
-	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "LowerCaseEnum")
 }

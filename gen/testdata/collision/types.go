@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -90,21 +91,21 @@ func (v *MyEnum) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
-	if w, ok := t.(json.Number); ok {
+	switch w := t.(type) {
+	case json.Number:
 		x, err := w.Int64()
 		if err != nil {
 			return err
 		}
-		if x >= 0x80000000 {
+		if x > math.MaxInt32 {
 			return fmt.Errorf("enum overflow from JSON %q for %q", text, "MyEnum")
 		}
-		if x < -0x80000000 {
+		if x < math.MinInt32 {
 			return fmt.Errorf("enum underflow from JSON %q for %q", text, "MyEnum")
 		}
 		*v = (MyEnum)(x)
 		return nil
-	}
-	if w, ok := t.(string); ok {
+	case string:
 		switch string(w) {
 		case "X":
 			*v = MyEnumX
@@ -124,8 +125,9 @@ func (v *MyEnum) UnmarshalJSON(text []byte) error {
 		default:
 			return fmt.Errorf("unknown enum value %q for %q", w, "MyEnum")
 		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "MyEnum")
 	}
-	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "MyEnum")
 }
 
 type PrimitiveContainers struct {
@@ -645,21 +647,21 @@ func (v *MyEnum2) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
-	if w, ok := t.(json.Number); ok {
+	switch w := t.(type) {
+	case json.Number:
 		x, err := w.Int64()
 		if err != nil {
 			return err
 		}
-		if x >= 0x80000000 {
+		if x > math.MaxInt32 {
 			return fmt.Errorf("enum overflow from JSON %q for %q", text, "MyEnum2")
 		}
-		if x < -0x80000000 {
+		if x < math.MinInt32 {
 			return fmt.Errorf("enum underflow from JSON %q for %q", text, "MyEnum2")
 		}
 		*v = (MyEnum2)(x)
 		return nil
-	}
-	if w, ok := t.(string); ok {
+	case string:
 		switch string(w) {
 		case "X":
 			*v = MyEnum2X
@@ -673,8 +675,9 @@ func (v *MyEnum2) UnmarshalJSON(text []byte) error {
 		default:
 			return fmt.Errorf("unknown enum value %q for %q", w, "MyEnum2")
 		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "MyEnum2")
 	}
-	return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "MyEnum2")
 }
 
 type StructCollision2 struct {
