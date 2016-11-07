@@ -166,39 +166,6 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 
 			return <$fmt>.Errorf("invalid JSON value %q (%T) to unmarshal into %q", <$t>, <$t>, "<$enumName>")
 		}
-
-		func (<$v> *<$enumName>) UnmarshalJSON2(<$text> []byte) error {
-			<$e := newVar "e">
-
-			<$w>, err := <$strconv>.ParseInt(string(<$text>), 10, 32)
-			if err == nil {
-				*<$v> = (<$enumName>)(<$w>)
-				return nil
-			}
-
-			<$e> := err.(*strconv.NumError)
-			if <$e>.Err != <$strconv>.ErrSyntax {
-				return err
-			}
-
-			<$s := newVar "s">
-			var <$s> string
-			if err := <$json>.Unmarshal(<$text>, &<$s>); err != nil {
-				return err
-			}
-
-			<if len .Spec.Items>
-				switch string(<$s>) {
-				<range .Spec.Items>
-					case "<.Name>":
-						*<$v> = (<$enumName>)(<.Value>)
-						return nil
-				<end>
-				}
-			<end>
-
-			return <$fmt>.Errorf("unknown enum value %q for \"<$enumName>\"", <$s>)
-		}
 		`,
 		struct {
 			Spec        *compile.EnumSpec
