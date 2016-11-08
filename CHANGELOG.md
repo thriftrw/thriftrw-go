@@ -18,8 +18,11 @@ v0.4.0 (2016-11-01)
     of ThriftRW during initialization.
 -   Code generation will abort if struct fields, after conversion to Go style
     names, are not unique in the structure.
--   go.name annotation (ie: `(go.name="FooBar")`) is supported for struct,
-    fields, enums, enum items, typedef and union.
+-   A `go.name` annotation may now be specified to override the names of
+    entities in the generated Go code. The annotation is supported for struct,
+    union, and exception types, and their fields, enum types and enum items,
+    and parameters of functions.
+
 
 v0.3.2 (2016-10-05)
 -------------------
