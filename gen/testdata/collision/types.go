@@ -106,7 +106,7 @@ func (v *MyEnum) UnmarshalJSON(text []byte) error {
 		*v = (MyEnum)(x)
 		return nil
 	case string:
-		switch string(w) {
+		switch w {
 		case "X":
 			*v = MyEnumX
 			return nil
@@ -662,7 +662,7 @@ func (v *MyEnum2) UnmarshalJSON(text []byte) error {
 		*v = (MyEnum2)(x)
 		return nil
 	case string:
-		switch string(w) {
+		switch w {
 		case "X":
 			*v = MyEnum2X
 			return nil

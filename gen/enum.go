@@ -151,7 +151,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				*<$v> = (<$enumName>)(<$x>)
 				return nil
 			case string:
-				switch string(<$w>) {
+				switch <$w> {
 				<$enum := .Spec>
 				<range .Spec.Items>
 					case "<.Name>":

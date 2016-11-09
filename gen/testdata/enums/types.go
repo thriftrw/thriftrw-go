@@ -55,7 +55,7 @@ func (v *EmptyEnum) UnmarshalJSON(text []byte) error {
 		*v = (EmptyEnum)(x)
 		return nil
 	case string:
-		switch string(w) {
+		switch w {
 		default:
 			return fmt.Errorf("unknown enum value %q for %q", w, "EmptyEnum")
 		}
@@ -128,7 +128,7 @@ func (v *EnumDefault) UnmarshalJSON(text []byte) error {
 		*v = (EnumDefault)(x)
 		return nil
 	case string:
-		switch string(w) {
+		switch w {
 		case "Foo":
 			*v = EnumDefaultFoo
 			return nil
@@ -240,7 +240,7 @@ func (v *EnumWithDuplicateName) UnmarshalJSON(text []byte) error {
 		*v = (EnumWithDuplicateName)(x)
 		return nil
 	case string:
-		switch string(w) {
+		switch w {
 		case "A":
 			*v = EnumWithDuplicateNameA
 			return nil
@@ -336,7 +336,7 @@ func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
 		*v = (EnumWithDuplicateValues)(x)
 		return nil
 	case string:
-		switch string(w) {
+		switch w {
 		case "P":
 			*v = EnumWithDuplicateValuesP
 			return nil
@@ -418,7 +418,7 @@ func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
 		*v = (EnumWithValues)(x)
 		return nil
 	case string:
-		switch string(w) {
+		switch w {
 		case "X":
 			*v = EnumWithValuesX
 			return nil
@@ -500,7 +500,7 @@ func (v *RecordType) UnmarshalJSON(text []byte) error {
 		*v = (RecordType)(x)
 		return nil
 	case string:
-		switch string(w) {
+		switch w {
 		case "NAME":
 			*v = RecordTypeName
 			return nil
@@ -638,7 +638,7 @@ func (v *LowerCaseEnum) UnmarshalJSON(text []byte) error {
 		*v = (LowerCaseEnum)(x)
 		return nil
 	case string:
-		switch string(w) {
+		switch w {
 		case "containing":
 			*v = LowerCaseEnumContaining
 			return nil
