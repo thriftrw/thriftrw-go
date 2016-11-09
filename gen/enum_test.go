@@ -21,6 +21,7 @@
 package gen
 
 import (
+	"encoding/json"
 	"fmt"
 	"testing"
 
@@ -178,5 +179,65 @@ func TestEnumString(t *testing.T) {
 
 	for _, tt := range tests {
 		assert.Equal(t, tt.want, tt.give.String())
+	}
+}
+
+func TestJson(t *testing.T) {
+	tests := []struct {
+		title string
+		e     te.EnumWithDuplicateValues
+		json  string
+	}{
+		{`Q <-> "Q"`, te.EnumWithDuplicateValuesQ, `"Q"`},
+		{`P <-> "P"`, te.EnumWithDuplicateValuesP, `"P"`},
+		{`Q <-> "P"`, te.EnumWithDuplicateValuesR, `"P"`}, // not a typo.
+		{`42 <-> 42`, 42, `42`},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.title, func(t *testing.T) {
+			b, err := json.Marshal(tt.e)
+			if assert.NoError(t, err, "unabled to marshal enum") {
+				assert.Equal(t, b, []byte(tt.json), "json output doesn't match")
+
+				var e te.EnumWithDuplicateValues = 99
+				err = json.Unmarshal([]byte(tt.json), &e)
+				if assert.NoError(t, err, "unabled to unmarshal enum") {
+					assert.Equal(t, tt.e, e, "parsed json doesn't match")
+				}
+			}
+		})
+	}
+}
+
+func TestInvalidJSON(t *testing.T) {
+	tests := []struct {
+		title       string
+		json        string
+		errContains string
+	}{
+		{`empty`, ``, "unexpected end of JSON input"},
+		{`ident`, `P`, "invalid character 'P'"},
+		{`not terminated`, `"P`, "unexpected end of JSON input"},
+		{`not started`, `P"`, "invalid character 'P'"},
+		{`notint`, `42.`, "invalid character"},
+		{`toobig`, ` 2147483648`, "overflow"},
+		{`toosmall`, `-2147483649`, "underflow"},
+		{`justbigenough`, ` 2147483647`, ""},
+		{`justsmallenough`, `-2147483648`, ""},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.title, func(t *testing.T) {
+			var e te.EnumWithDuplicateValues
+			err := json.Unmarshal([]byte(tt.json), &e)
+			if tt.errContains != "" {
+				if assert.Error(t, err, "must NOT be able to unmarshal this") {
+					assert.Contains(t, err.Error(), tt.errContains)
+				}
+			} else {
+				assert.NoError(t, err, "must be able to unmarshal this")
+			}
+		})
 	}
 }

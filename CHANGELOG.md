@@ -10,6 +10,9 @@ v0.4.0 (2016-11-01)
 -   **Breaking**: The `compile` API now exposes annotations made while
     referencing native Thrift types. This changes the `TypeSpec`s for primitive
     types from values to types.
+-   **Breaking**: Generated enums now have first class JSON support. Enums are
+    (un)marshalled from/to strings if possible with fallback to integer for
+	unrecognized values.
 -   The `compile` API now also exposes annotations for `typedef` declarations.
 -   Generate args structs and helpers for oneway functions.
 -   Expose whether a function is oneway to plugins.

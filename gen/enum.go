@@ -68,6 +68,12 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 	// TODO(abg) define an error type in the library for unrecognized enums.
 	err := g.DeclareFromTemplate(
 		`
+		<$bytes := import "bytes">
+		<$fmt := import "fmt">
+		<$json := import "encoding/json">
+		<$math := import "math">
+		<$strconv := import "strconv">
+
 		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$enumName := goName .Spec>
@@ -103,6 +109,61 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				}
 			<end>
 			return fmt.Sprintf("<$enumName>(%d)", <$w>)
+		}
+
+		func (<$v> <$enumName>) MarshalJSON() ([]byte, error) {
+			<if len .Spec.Items>
+				switch int32(<$v>) {
+				<range .UniqueItems>
+					case <.Value>:
+						return ([]byte)("\"<.Name>\""), nil
+				<end>
+				}
+			<end>
+			return ([]byte)(<$strconv>.FormatInt(int64(<$v>), 10)), nil
+		}
+
+		<$text := newVar "text">
+		func (<$v> *<$enumName>) UnmarshalJSON(<$text> []byte) error {
+			<$d := newVar "d">
+			<$t := newVar "t">
+
+			<$d> := <$json>.NewDecoder(<$bytes>.NewReader(<$text>))
+			<$d>.UseNumber()
+			<$t>, err := <$d>.Token()
+			if err != nil {
+				return err
+			}
+
+			switch <$w> := <$t>.(type) {
+			case <$json>.Number:
+				<$x := newVar "x">
+				<$x>, err := <$w>.Int64()
+				if err != nil {
+					return err
+				}
+				if <$x> <">"> <$math>.MaxInt32 {
+					return <$fmt>.Errorf("enum overflow from JSON %q for %q", <$text>, "<$enumName>")
+				}
+				if <$x> <"<"> <$math>.MinInt32 {
+					return <$fmt>.Errorf("enum underflow from JSON %q for %q", <$text>, "<$enumName>")
+				}
+				*<$v> = (<$enumName>)(<$x>)
+				return nil
+			case string:
+				switch <$w> {
+				<$enum := .Spec>
+				<range .Spec.Items>
+					case "<.Name>":
+						*<$v> = <enumItemName $enumName .>
+						return nil
+				<end>
+					default:
+						return <$fmt>.Errorf("unknown enum value %q for %q", <$w>, "<$enumName>")
+				}
+			default:
+				return <$fmt>.Errorf("invalid JSON value %q (%T) to unmarshal into %q", <$t>, <$t>, "<$enumName>")
+			}
 		}
 		`,
 		struct {
