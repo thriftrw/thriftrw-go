@@ -23,7 +23,7 @@ package version
 import "log"
 
 // Version is the current ThriftRW version.
-const Version = "0.4.0"
+const Version = "0.5.0"
 
 // CheckCompatWithGeneratedCodeAt will panic if the ThriftRW version used to
 // generated code (given by `genCodeVersion`) is not compatible with the
