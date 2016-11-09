@@ -27,11 +27,13 @@ import (
 	tc "go.uber.org/thriftrw/gen/testdata/containers"
 	te "go.uber.org/thriftrw/gen/testdata/enums"
 	tx "go.uber.org/thriftrw/gen/testdata/exceptions"
+	tok "go.uber.org/thriftrw/gen/testdata/other_constants"
 	ts "go.uber.org/thriftrw/gen/testdata/structs"
 	td "go.uber.org/thriftrw/gen/testdata/typedefs"
 	tu "go.uber.org/thriftrw/gen/testdata/unions"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestConstants(t *testing.T) {
@@ -291,4 +293,25 @@ func TestConstants(t *testing.T) {
 	for _, tt := range tests {
 		assert.Equal(t, tt.o, tt.i, tt.name)
 	}
+}
+
+func TestConstantsMutation(t *testing.T) {
+	originalX := tok.SomePoint.X
+
+	wireVal, err := tk.Graph.ToWire()
+	require.NoError(t, err)
+	var g ts.Graph
+	err = g.FromWire(wireVal)
+	require.NoError(t, err)
+	assert.Equal(t, g.Edges[0].StartPoint.X, originalX)
+
+	tok.SomePoint.X += 42.0
+	assert.Equal(t, tok.SomePoint.X, originalX+42.0)
+
+	wireVal, err = tk.Graph.ToWire()
+	require.NoError(t, err)
+	g = ts.Graph{}
+	err = g.FromWire(wireVal)
+	require.NoError(t, err)
+	assert.Equal(t, g.Edges[0].StartPoint.X, originalX)
 }

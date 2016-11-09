@@ -13,6 +13,11 @@ v0.5.0 (unreleased)
     entities in the generated Go code. The annotation is supported for struct,
     union, and exception types, and their fields, enum types and enum items,
     and parameters of functions.
+-   Non-primitive types constants are now inlined in the generated Go code
+    instead of being referenced in an effort to reduce the impact of user
+    errors on the generated code. This is because non-primitive constants were
+    previously implemented as global `var`s which might be modified by
+    user code.
 
 
 v0.4.0 (2016-11-01)
