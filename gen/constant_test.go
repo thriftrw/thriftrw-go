@@ -300,13 +300,13 @@ func TestConstantsMutation(t *testing.T) {
 
 	wireVal, err := tk.Graph.ToWire()
 	require.NoError(t, err)
-	g := ts.Graph{}
+	var g ts.Graph
 	err = g.FromWire(wireVal)
 	require.NoError(t, err)
 	assert.Equal(t, g.Edges[0].StartPoint.X, originalX)
 
-	tok.SomePoint.X += 42
-	assert.Equal(t, tok.SomePoint.X, originalX+42.)
+	tok.SomePoint.X += 42.0
+	assert.Equal(t, tok.SomePoint.X, originalX+42.0)
 
 	wireVal, err = tk.Graph.ToWire()
 	require.NoError(t, err)
