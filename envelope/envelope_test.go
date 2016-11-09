@@ -30,7 +30,6 @@ import (
 	. "go.uber.org/thriftrw/envelope"
 
 	tv "go.uber.org/thriftrw/gen/testdata/services"
-	"go.uber.org/thriftrw/gen/testdata/services/service/keyvalue"
 	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/wire"
 
@@ -61,7 +60,7 @@ func TestWrite(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			e: keyvalue.GetValueHelper.Args((*tv.Key)(stringp("foo"))),
+			e: tv.KeyValue_GetValue_Helper.Args((*tv.Key)(stringp("foo"))),
 			want: []byte{
 				0x80, 0x01, 0x00, 0x01, // version|type:4 = 1 | call
 				0x00, 0x00, 0x00, 0x08, // name length = 8
@@ -151,7 +150,7 @@ func TestReadReply(t *testing.T) {
 			},
 			want: wire.NewValueStruct(wire.Struct{
 				Fields: []wire.Field{
-					{1, wire.NewValueI32(1)},
+					{ID: 1, Value: wire.NewValueI32(1)},
 				},
 			}),
 			wantSeqID: 1234,
@@ -179,8 +178,8 @@ func TestReadReply(t *testing.T) {
 			},
 			want: wire.NewValueStruct(wire.Struct{
 				Fields: []wire.Field{
-					{1, wire.NewValueString("errMsg")},
-					{2, wire.NewValueI32(1)},
+					{ID: 1, Value: wire.NewValueString("errMsg")},
+					{ID: 2, Value: wire.NewValueI32(1)},
 				},
 			}),
 			wantSeqID: 1234,

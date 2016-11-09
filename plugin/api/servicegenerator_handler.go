@@ -21,37 +21,37 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package servicegenerator
+package api
 
 import (
 	"go.uber.org/thriftrw/internal/envelope"
 	"go.uber.org/thriftrw/wire"
-	"go.uber.org/thriftrw/plugin/api"
 )
 
-// Handler serves an implementation of the ServiceGenerator service.
-type Handler struct {
-	impl api.ServiceGenerator
+// ServiceGeneratorHandler serves an implementation of the ServiceGenerator service.
+type ServiceGeneratorHandler struct {
+	impl ServiceGenerator
 }
 
-// NewHandler builds a new ServiceGenerator handler.
-func NewHandler(service api.ServiceGenerator) Handler {
-	return Handler{
+// NewServiceGeneratorHandler builds a new ServiceGenerator handler.
+func NewServiceGeneratorHandler(service ServiceGenerator) ServiceGeneratorHandler {
+	return ServiceGeneratorHandler{
 		impl: service,
 	}
 }
 
 // Handle receives and handles a request for the ServiceGenerator service.
-func (h Handler) Handle(name string, reqValue wire.Value) (wire.Value, error) {
+func (h ServiceGeneratorHandler) Handle(name string, reqValue wire.Value) (wire.Value, error) {
 	switch name {
 
 	case "generate":
-		var args GenerateArgs
+
+		var args ServiceGenerator_Generate_Args
 		if err := args.FromWire(reqValue); err != nil {
 			return wire.Value{}, err
 		}
 
-		result, err := GenerateHelper.WrapResponse(
+		result, err := ServiceGenerator_Generate_Helper.WrapResponse(
 			h.impl.Generate(args.Request),
 		)
 		if err != nil {

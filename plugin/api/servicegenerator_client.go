@@ -21,63 +21,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package plugin
+package api
 
 import (
 	"go.uber.org/thriftrw/internal/envelope"
 	"go.uber.org/thriftrw/wire"
-	"go.uber.org/thriftrw/plugin/api"
 )
 
-// Handler serves an implementation of the Plugin service.
-type Handler struct {
-	impl api.Plugin
+// Client implements a ServiceGenerator client.
+type _ServiceGenerator_client struct {
+	client envelope.Client
 }
 
-// NewHandler builds a new Plugin handler.
-func NewHandler(service api.Plugin) Handler {
-	return Handler{
-		impl: service,
+// NewServiceGeneratorClient builds a new ServiceGenerator client.
+func NewServiceGeneratorClient(c envelope.Client) ServiceGenerator {
+	return &_ServiceGenerator_client{
+		client: c,
 	}
 }
 
-// Handle receives and handles a request for the Plugin service.
-func (h Handler) Handle(name string, reqValue wire.Value) (wire.Value, error) {
-	switch name {
+func (c *_ServiceGenerator_client) Generate(
+	_Request *GenerateServiceRequest,
+) (success *GenerateServiceResponse, err error) {
+	args := ServiceGenerator_Generate_Helper.Args(_Request)
 
-	case "goodbye":
-		var args GoodbyeArgs
-		if err := args.FromWire(reqValue); err != nil {
-			return wire.Value{}, err
-		}
-
-		result, err := GoodbyeHelper.WrapResponse(
-			h.impl.Goodbye(),
-		)
-		if err != nil {
-			return wire.Value{}, err
-		}
-
-		return result.ToWire()
-
-	case "handshake":
-		var args HandshakeArgs
-		if err := args.FromWire(reqValue); err != nil {
-			return wire.Value{}, err
-		}
-
-		result, err := HandshakeHelper.WrapResponse(
-			h.impl.Handshake(args.Request),
-		)
-		if err != nil {
-			return wire.Value{}, err
-		}
-
-		return result.ToWire()
-
-	default:
-
-		return wire.Value{}, envelope.ErrUnknownMethod(name)
-
+	var body wire.Value
+	body, err = args.ToWire()
+	if err != nil {
+		return
 	}
+
+	body, err = c.client.Send("generate", body)
+	if err != nil {
+		return
+	}
+
+	var result ServiceGenerator_Generate_Result
+	if err = result.FromWire(body); err != nil {
+		return
+	}
+
+	success, err = ServiceGenerator_Generate_Helper.UnwrapResponse(&result)
+	return
 }

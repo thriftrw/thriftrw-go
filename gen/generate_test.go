@@ -257,15 +257,14 @@ func TestThriftPackageImporter(t *testing.T) {
 		File, ServiceName string // Inputs
 
 		// If non-empty, these are the expected outputs for RelativePackage,
-		// Package, and ServicePackage.
-		Relative, Package, ServicePackage string
+		// Package
+		Relative, Package string
 	}{
 		{
-			File:           "/src/thrift/foo.thrift",
-			Relative:       "foo",
-			Package:        "github.com/myteam/myservice/foo",
-			ServiceName:    "MyService",
-			ServicePackage: "github.com/myteam/myservice/foo/service/myservice",
+			File:        "/src/thrift/foo.thrift",
+			Relative:    "foo",
+			Package:     "github.com/myteam/myservice/foo",
+			ServiceName: "MyService",
 		},
 		{
 			File:     "/src/thrift/shared/common.thrift",
@@ -286,14 +285,6 @@ func TestThriftPackageImporter(t *testing.T) {
 			got, err := importer.Package(tt.File)
 			if assert.NoError(t, err, "Package(%q)", tt.File) {
 				assert.Equal(t, tt.Package, got, "Package(%q)", tt.File)
-			}
-		}
-
-		if tt.ServicePackage != "" {
-			got, err := importer.ServicePackage(tt.File, tt.ServiceName)
-			if assert.NoError(t, err, "ServicePackage(%q, %q)", tt.File, tt.ServiceName) {
-				assert.Equal(t, tt.ServicePackage, got,
-					"ServicePackage(%q, %q)", tt.File, tt.ServiceName)
 			}
 		}
 	}

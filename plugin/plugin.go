@@ -29,8 +29,6 @@ import (
 	"go.uber.org/thriftrw/internal/frame"
 	"go.uber.org/thriftrw/internal/multiplex"
 	"go.uber.org/thriftrw/plugin/api"
-	"go.uber.org/thriftrw/plugin/api/service/plugin"
-	"go.uber.org/thriftrw/plugin/api/service/servicegenerator"
 	"go.uber.org/thriftrw/protocol"
 )
 
@@ -79,13 +77,13 @@ func Main(p *Plugin) {
 
 	if p.ServiceGenerator != nil {
 		features = append(features, api.FeatureServiceGenerator)
-		mainHandler.Put("ServiceGenerator", servicegenerator.NewHandler(p.ServiceGenerator))
+		mainHandler.Put("ServiceGenerator", api.NewServiceGeneratorHandler(p.ServiceGenerator))
 	}
 
 	// TODO(abg): Check for other features and register handlers here.
 
 	server := frame.NewServer(_in, _out)
-	mainHandler.Put("Plugin", plugin.NewHandler(pluginHandler{
+	mainHandler.Put("Plugin", api.NewPluginHandler(pluginHandler{
 		server:   server,
 		plugin:   p,
 		features: features,

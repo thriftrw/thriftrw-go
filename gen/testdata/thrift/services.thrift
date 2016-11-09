@@ -40,3 +40,16 @@ service Cache {
     oneway void clear()
     oneway void clearAfter(1: i64 durationMS)
 }
+
+struct ConflictingNames_SetValue_Args {
+    1: required string key
+    2: required binary value
+}
+
+service ConflictingNames {
+    void setValue(1: ConflictingNames_SetValue_Args request)
+}
+
+service non_standard_service_name {
+    void non_standard_function_name()
+}

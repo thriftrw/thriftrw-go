@@ -8,7 +8,7 @@
  * provided in HandshakeResponses to specify which version of the API the
  * plugin implements.
  */
-const i32 VERSION = 1
+const i32 VERSION = 2
 
 /**
  * ServiceID is an arbitrary unique identifier to reference the different
@@ -157,21 +157,13 @@ struct Function {
  */
 struct Service {
     /**
+     * Name of the Thrift service in Go code.
+     */
+    7: required string name
+    /**
      * Name of the service as defined in the Thrift file.
      */
-    1: required string name
-    /**
-     * Import path for the package defining this service.
-     */
-    2: required string importPath
-    /**
-     * Path to the directory containing code for this service.
-     *
-     * The path is relative to the output directory into which ThriftRW is
-     * generating code. Plugins SHOULD NOT make any assumptions about the
-     * absolute location of the directory.
-     */
-    3: required string directory
+    1: required string thriftName
     /**
      * ID of the parent service.
      */
@@ -181,7 +173,7 @@ struct Service {
      */
     5: required list<Function> functions
     /**
-     * ID of the module which declared this service.
+     * ID of the module where this service was declared.
      */
     6: required ModuleID moduleID
 }

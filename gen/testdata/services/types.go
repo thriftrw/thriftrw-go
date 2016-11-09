@@ -4,10 +4,84 @@
 package services
 
 import (
+	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
 	"strings"
 )
+
+type ConflictingNamesSetValueArgs struct {
+	Key   string `json:"key"`
+	Value []byte `json:"value"`
+}
+
+func (v *ConflictingNamesSetValueArgs) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueString(v.Key), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+	if v.Value == nil {
+		return w, errors.New("field Value of ConflictingNamesSetValueArgs is required")
+	}
+	w, err = wire.NewValueBinary(v.Value), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func (v *ConflictingNamesSetValueArgs) FromWire(w wire.Value) error {
+	var err error
+	keyIsSet := false
+	valueIsSet := false
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TBinary {
+				v.Key, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				keyIsSet = true
+			}
+		case 2:
+			if field.Value.Type() == wire.TBinary {
+				v.Value, err = field.Value.GetBinary(), error(nil)
+				if err != nil {
+					return err
+				}
+				valueIsSet = true
+			}
+		}
+	}
+	if !keyIsSet {
+		return errors.New("field Key of ConflictingNamesSetValueArgs is required")
+	}
+	if !valueIsSet {
+		return errors.New("field Value of ConflictingNamesSetValueArgs is required")
+	}
+	return nil
+}
+
+func (v *ConflictingNamesSetValueArgs) String() string {
+	var fields [2]string
+	i := 0
+	fields[i] = fmt.Sprintf("Key: %v", v.Key)
+	i++
+	fields[i] = fmt.Sprintf("Value: %v", v.Value)
+	i++
+	return fmt.Sprintf("ConflictingNamesSetValueArgs{%v}", strings.Join(fields[:i], ", "))
+}
 
 type InternalError struct {
 	Message *string `json:"message,omitempty"`

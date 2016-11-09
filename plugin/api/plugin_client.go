@@ -21,30 +21,27 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package servicegenerator
+package api
 
 import (
 	"go.uber.org/thriftrw/internal/envelope"
 	"go.uber.org/thriftrw/wire"
-	"go.uber.org/thriftrw/plugin/api"
 )
 
-// Client implements a ServiceGenerator client.
-type client struct {
+// Client implements a Plugin client.
+type _Plugin_client struct {
 	client envelope.Client
 }
 
-// NewClient builds a new ServiceGenerator client.
-func NewClient(c envelope.Client) api.ServiceGenerator {
-	return &client{
+// NewPluginClient builds a new Plugin client.
+func NewPluginClient(c envelope.Client) Plugin {
+	return &_Plugin_client{
 		client: c,
 	}
 }
 
-func (c *client) Generate(
-	_Request *api.GenerateServiceRequest,
-) (success *api.GenerateServiceResponse, err error) {
-	args := GenerateHelper.Args(_Request)
+func (c *_Plugin_client) Goodbye() (err error) {
+	args := Plugin_Goodbye_Helper.Args()
 
 	var body wire.Value
 	body, err = args.ToWire()
@@ -52,16 +49,41 @@ func (c *client) Generate(
 		return
 	}
 
-	body, err = c.client.Send("generate", body)
+	body, err = c.client.Send("goodbye", body)
 	if err != nil {
 		return
 	}
 
-	var result GenerateResult
+	var result Plugin_Goodbye_Result
 	if err = result.FromWire(body); err != nil {
 		return
 	}
 
-	success, err = GenerateHelper.UnwrapResponse(&result)
+	err = Plugin_Goodbye_Helper.UnwrapResponse(&result)
+	return
+}
+
+func (c *_Plugin_client) Handshake(
+	_Request *HandshakeRequest,
+) (success *HandshakeResponse, err error) {
+	args := Plugin_Handshake_Helper.Args(_Request)
+
+	var body wire.Value
+	body, err = args.ToWire()
+	if err != nil {
+		return
+	}
+
+	body, err = c.client.Send("handshake", body)
+	if err != nil {
+		return
+	}
+
+	var result Plugin_Handshake_Result
+	if err = result.FromWire(body); err != nil {
+		return
+	}
+
+	success, err = Plugin_Handshake_Helper.UnwrapResponse(&result)
 	return
 }

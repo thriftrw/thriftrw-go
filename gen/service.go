@@ -37,6 +37,8 @@ func Service(g Generator, s *compile.ServiceSpec) (map[string]*bytes.Buffer, err
 	files := make(map[string]*bytes.Buffer)
 
 	for _, functionName := range sortStringKeys(s.Functions) {
+		fileName := fmt.Sprintf("%s_%s.go", strings.ToLower(s.Name), strings.ToLower(functionName))
+
 		function := s.Functions[functionName]
 		if err := ServiceFunction(g, s, function); err != nil {
 			return nil, fmt.Errorf(
@@ -50,7 +52,7 @@ func Service(g Generator, s *compile.ServiceSpec) (map[string]*bytes.Buffer, err
 		}
 
 		// TODO check for conflicts
-		files[strings.ToLower(functionName)+".go"] = buff
+		files[fileName] = buff
 	}
 
 	return files, nil
@@ -60,17 +62,17 @@ func Service(g Generator, s *compile.ServiceSpec) (map[string]*bytes.Buffer, err
 func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) error {
 	argsGen := fieldGroupGenerator{
 		Namespace: NewNamespace(),
-		Name:      goCase(f.Name) + "Args",
+		Name:      functionNamePrefix(s, f) + "Args",
 		Fields:    compile.FieldGroup(f.ArgsSpec),
 	}
 	if err := argsGen.Generate(g); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
-	if err := functionArgsEnveloper(g, f); err != nil {
+	if err := functionArgsEnveloper(g, s, f); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
 
-	if err := functionHelper(g, f); err != nil {
+	if err := functionHelper(g, s, f); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
 
@@ -90,7 +92,7 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 
 	resultGen := fieldGroupGenerator{
 		Namespace:       NewNamespace(),
-		Name:            goCase(f.Name) + "Result",
+		Name:            functionNamePrefix(s, f) + "Result",
 		Fields:          resultFields,
 		IsUnion:         true,
 		AllowEmptyUnion: f.ResultSpec.ReturnType == nil,
@@ -98,7 +100,7 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 	if err := resultGen.Generate(g); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
-	if err := functionResponseEnveloper(g, f); err != nil {
+	if err := functionResponseEnveloper(g, s, f); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
 	}
 
@@ -122,43 +124,51 @@ func functionParams(g Generator, f *compile.FunctionSpec) (string, error) {
         `, f)
 }
 
-func functionHelper(g Generator, f *compile.FunctionSpec) error {
+func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) error {
 	return g.DeclareFromTemplate(
 		`
-		<$name := goCase .Name>
+		<$f := .Function>
+		<$prefix := namePrefix .Service $f>
 
-		var <$name>Helper = struct{
-			Args func(<params .>) *<$name>Args
-			<if not .OneWay>
+		var <$prefix>Helper = struct{
+			Args func(<params $f>) *<$prefix>Args
+			<if not $f.OneWay>
 				IsException func(error) bool
-				<if .ResultSpec.ReturnType>
+				<if $f.ResultSpec.ReturnType>
 					WrapResponse func(
-						<typeReference .ResultSpec.ReturnType>,
-						error) (*<$name>Result, error)
-					UnwrapResponse func(*<$name>Result) (
-						<typeReference .ResultSpec.ReturnType>, error)
+						<typeReference $f.ResultSpec.ReturnType>,
+						error) (*<$prefix>Result, error)
+					UnwrapResponse func(*<$prefix>Result) (
+						<typeReference $f.ResultSpec.ReturnType>, error)
 				<else>
-					WrapResponse func(error) (*<$name>Result, error)
-					UnwrapResponse func(*<$name>Result) error
+					WrapResponse func(error) (*<$prefix>Result, error)
+					UnwrapResponse func(*<$prefix>Result) error
 				<end>
 			<end>
 		}{}
 
 		func init() {
-			<$name>Helper.Args = <newArgs .>
-			<if not .OneWay>
-				<$name>Helper.IsException = <isException .>
-				<$name>Helper.WrapResponse = <wrapResponse .>
-				<$name>Helper.UnwrapResponse = <unwrapResponse .>
+			<$prefix>Helper.Args = <newArgs .Service $f>
+			<if not $f.OneWay>
+				<$prefix>Helper.IsException = <isException $f>
+				<$prefix>Helper.WrapResponse = <wrapResponse .Service $f>
+				<$prefix>Helper.UnwrapResponse = <unwrapResponse .Service $f>
 			<end>
 		}
 		`,
-		f,
+		struct {
+			Service  *compile.ServiceSpec
+			Function *compile.FunctionSpec
+		}{
+			Service:  s,
+			Function: f,
+		},
 		TemplateFunc("params", functionParams),
 		TemplateFunc("isException", functionIsException),
 		TemplateFunc("newArgs", functionNewArgs),
 		TemplateFunc("wrapResponse", functionWrapResponse),
 		TemplateFunc("unwrapResponse", functionUnwrapResponse),
+		TemplateFunc("namePrefix", functionNamePrefix),
 	)
 }
 
@@ -182,21 +192,23 @@ func functionIsException(g Generator, f *compile.FunctionSpec) (string, error) {
 
 // functionNewArgs generates an expression which provides the NewArgs function
 // for the given Thrift function.
-func functionNewArgs(g Generator, f *compile.FunctionSpec) (string, error) {
+func functionNewArgs(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
 		`
+		<$f := .Function>
+		<$prefix := namePrefix .Service $f>
 		<$params := newNamespace>
 		func(
-			<range .ArgsSpec>
+			<range $f.ArgsSpec>
 				<if .Required>
 					<$params.NewName .Name> <typeReference .Type>,
 				<else>
 					<$params.NewName .Name> <typeReferencePtr .Type>,
 				<end>
 			<end>
-		) *<goCase .Name>Args {
-			return &<goCase .Name>Args{
-			<range .ArgsSpec>
+		) *<$prefix>Args {
+			return &<$prefix>Args{
+			<range $f.ArgsSpec>
 				<if .Required>
 					<goCase .Name>: <$params.Rotate .Name>,
 				<else>
@@ -205,61 +217,82 @@ func functionNewArgs(g Generator, f *compile.FunctionSpec) (string, error) {
 			<end>
 			}
 		}
-		`, f)
+		`,
+		struct {
+			Service  *compile.ServiceSpec
+			Function *compile.FunctionSpec
+		}{
+			Service:  s,
+			Function: f,
+		},
+		TemplateFunc("namePrefix", functionNamePrefix))
 }
 
 // functionWrapResponse generates an expression that provides the WrapResponse
 // function for the given Thrift function.
-func functionWrapResponse(g Generator, f *compile.FunctionSpec) (string, error) {
+func functionWrapResponse(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
 		`
-		<$name := goCase .Name>
-		<if .ResultSpec.ReturnType>
-			func(success <typeReference .ResultSpec.ReturnType>,
-				err error) (*<$name>Result, error) {
+		<$f := .Function>
+		<$prefix := namePrefix .Service $f>
+
+		<if $f.ResultSpec.ReturnType>
+			func(success <typeReference $f.ResultSpec.ReturnType>,
+				err error) (*<$prefix>Result, error) {
 				if err == nil {
-					<if isPrimitiveType .ResultSpec.ReturnType>
-						return &<$name>Result{Success: &success}, nil
+					<if isPrimitiveType $f.ResultSpec.ReturnType>
+						return &<$prefix>Result{Success: &success}, nil
 					<else>
-						return &<$name>Result{Success: success}, nil
+						return &<$prefix>Result{Success: success}, nil
 					<end>
 				}
 		<else>
-			func(err error) (*<$name>Result, error) {
+			func(err error) (*<$prefix>Result, error) {
 				if err == nil {
-					return &<$name>Result{}, nil
+					return &<$prefix>Result{}, nil
 				}
 		<end>
-				<if .ResultSpec.Exceptions>
+				<if $f.ResultSpec.Exceptions>
 					switch e := err.(type) {
-						<range .ResultSpec.Exceptions>
+						<range $f.ResultSpec.Exceptions>
 						case <typeReferencePtr .Type>:
 							if e == nil {
 								return nil, <import "errors">.New(
-									"WrapResponse received non-nil error type with nil value for <$name>Result.<goCase .Name>")
+									"WrapResponse received non-nil error type with nil value for <$prefix>Result.<goCase .Name>")
 							}
-							return &<$name>Result{<goCase .Name>: e}, nil
+							return &<$prefix>Result{<goCase .Name>: e}, nil
 						<end>
 					}
 				<end>
 				return nil, err
 			}
-		`, f)
+		`,
+		struct {
+			Service  *compile.ServiceSpec
+			Function *compile.FunctionSpec
+		}{
+			Service:  s,
+			Function: f,
+		},
+		TemplateFunc("namePrefix", functionNamePrefix))
 }
 
 // functionUnwrapResponse generates an expression that provides the
 // UnwrapResponse function for the given Thrift function.
-func functionUnwrapResponse(g Generator, f *compile.FunctionSpec) (string, error) {
+func functionUnwrapResponse(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
 		`
-		<if .ResultSpec.ReturnType>
-			func(result *<goCase .Name>Result) (
-				success <typeReference .ResultSpec.ReturnType>,
+		<$f := .Function>
+		<$prefix := namePrefix .Service $f>
+
+		<if $f.ResultSpec.ReturnType>
+			func(result *<$prefix>Result) (
+				success <typeReference $f.ResultSpec.ReturnType>,
 				err error) {
 		<else>
-			func(result *<goCase .Name>Result) (err error) {
+			func(result *<$prefix>Result) (err error) {
 		<end>
-				<range .ResultSpec.Exceptions>
+				<range $f.ResultSpec.Exceptions>
 					if result.<goCase .Name> != nil {
 						err = result.<goCase .Name>
 						return
@@ -268,9 +301,9 @@ func functionUnwrapResponse(g Generator, f *compile.FunctionSpec) (string, error
 
 				// TODO unrecognized exceptions
 
-				<if .ResultSpec.ReturnType>
+				<if $f.ResultSpec.ReturnType>
 					if result.Success != nil {
-						<if isPrimitiveType .ResultSpec.ReturnType>
+						<if isPrimitiveType $f.ResultSpec.ReturnType>
 							success = *result.Success
 						<else>
 							success = result.Success
@@ -286,40 +319,71 @@ func functionUnwrapResponse(g Generator, f *compile.FunctionSpec) (string, error
 				<end>
 
 			}
-		`, f)
+		`, struct {
+			Service  *compile.ServiceSpec
+			Function *compile.FunctionSpec
+		}{
+			Service:  s,
+			Function: f,
+		},
+		TemplateFunc("namePrefix", functionNamePrefix))
 }
 
-func functionArgsEnveloper(g Generator, f *compile.FunctionSpec) error {
+func functionArgsEnveloper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) error {
 	// TODO: Figure out naming conflicts with user fields.
 	return g.DeclareFromTemplate(
 		`
+		<$f := .Function>
+		<$prefix := namePrefix .Service $f>
+
 		<$wire := import "go.uber.org/thriftrw/wire">
-		<$argType := printf "%v%v" (goCase .Name) "Args">
 		<$v := newVar "v">
 
-		func (<$v> *<$argType>) MethodName() string {
-			return "<.MethodName>"
+		func (<$v> *<$prefix>Args) MethodName() string {
+			return "<$f.MethodName>"
 		}
 
-		func (<$v> *<$argType>) EnvelopeType() <$wire>.EnvelopeType {
-			return <$wire>.<.CallType.String>
+		func (<$v> *<$prefix>Args) EnvelopeType() <$wire>.EnvelopeType {
+			return <$wire>.<$f.CallType.String>
 		}
-		`, f)
+		`, struct {
+			Service  *compile.ServiceSpec
+			Function *compile.FunctionSpec
+		}{
+			Service:  s,
+			Function: f,
+		},
+		TemplateFunc("namePrefix", functionNamePrefix))
+
 }
 
-func functionResponseEnveloper(g Generator, f *compile.FunctionSpec) error {
+func functionResponseEnveloper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) error {
 	return g.DeclareFromTemplate(
 		`
+		<$f := .Function>
+		<$prefix := namePrefix .Service $f>
+
 		<$wire := import "go.uber.org/thriftrw/wire">
-		<$resType := printf "%v%v" (goCase .Name) "Result">
 		<$v := newVar "v">
 
-		func (<$v> *<$resType>) MethodName() string {
-			return "<.MethodName>"
+		func (<$v> *<$prefix>Result) MethodName() string {
+			return "<$f.MethodName>"
 		}
 
-		func (<$v> *<$resType>) EnvelopeType() <$wire>.EnvelopeType {
+		func (<$v> *<$prefix>Result) EnvelopeType() <$wire>.EnvelopeType {
 			return <$wire>.Reply
 		}
-		`, f)
+		`, struct {
+			Service  *compile.ServiceSpec
+			Function *compile.FunctionSpec
+		}{
+			Service:  s,
+			Function: f,
+		},
+		TemplateFunc("namePrefix", functionNamePrefix))
+
+}
+
+func functionNamePrefix(s *compile.ServiceSpec, f *compile.FunctionSpec) string {
+	return fmt.Sprintf("%s_%s_", goCase(s.Name), goCase(f.Name))
 }
