@@ -56,6 +56,9 @@ type Options struct {
 	// files as well. If true, code gets generated only for the first module.
 	NoRecurse bool
 
+	// If true, we will not generate versioncheck.go files.
+	NoVersionCheck bool
+
 	// Code generation plugin
 	Plugin plugin.Handle
 }
@@ -203,7 +206,8 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 	files := make(map[string][]byte)
 
 	g := NewGenerator(i, importPath, packageName)
-	{
+
+	if !o.NoVersionCheck {
 		if err := Version(g, importPath); err != nil {
 			return nil, err
 		}
