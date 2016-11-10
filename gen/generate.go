@@ -162,17 +162,6 @@ func (i thriftPackageImporter) Package(file string) (string, error) {
 	return filepath.Join(i.ImportPrefix, pkg), nil
 }
 
-// ServicePackage returns the import path for the package for the Thrift service
-// with the given name defined in the given file.
-func (i thriftPackageImporter) ServicePackage(file, name string) (string, error) {
-	topPackage, err := i.Package(file)
-	if err != nil {
-		return "", err
-	}
-
-	return filepath.Join(topPackage, "service", strings.ToLower(name)), nil
-}
-
 func mergeFiles(dest, src map[string][]byte) error {
 	var errors []error
 	for path, contents := range src {
@@ -185,8 +174,8 @@ func mergeFiles(dest, src map[string][]byte) error {
 	return internal.MultiError(errors)
 }
 
-// generateModule returns a mapping from filename to file contents of files
-// that should be generated relative to o.OutputDir.
+// generateModule returns a mapping from filename to file contents of files that
+// should be generated relative to o.OutputDir.
 func generateModule(m *compile.Module, i thriftPackageImporter, builder *generateServiceBuilder, o *Options) (map[string][]byte, error) {
 	// packageRelPath is the path relative to outputDir into which we'll be
 	// writing the package for this Thrift file. For $thriftRoot/foo/bar.thrift,
@@ -213,9 +202,8 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 	// will prepend $packageRelPath/ to all these paths.
 	files := make(map[string][]byte)
 
+	g := NewGenerator(i, importPath, packageName)
 	{
-		g := NewGenerator(i, importPath, packageName)
-
 		if err := Version(g, importPath); err != nil {
 			return nil, err
 		}
@@ -229,8 +217,6 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 	}
 
 	if len(m.Constants) > 0 {
-		g := NewGenerator(i, importPath, packageName)
-
 		for _, constantName := range sortStringKeys(m.Constants) {
 			if err := Constant(g, m.Constants[constantName]); err != nil {
 				return nil, err
@@ -248,8 +234,6 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 	}
 
 	if len(m.Types) > 0 {
-		g := NewGenerator(i, importPath, packageName)
-
 		for _, typeName := range sortStringKeys(m.Types) {
 			if err := TypeDefinition(g, m.Types[typeName]); err != nil {
 				return nil, err
@@ -266,6 +250,8 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		files["types.go"] = buff.Bytes()
 	}
 
+	// Services must be generated last because names of user-defined types take
+	// precedence over the names we pick for the service types.
 	if len(m.Services) > 0 {
 		for _, serviceName := range sortStringKeys(m.Services) {
 			service := m.Services[serviceName]
@@ -281,13 +267,6 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 				return nil, err
 			}
 
-			importPath, err := i.ServicePackage(service.ThriftFile(), service.Name)
-			if err != nil {
-				return nil, err
-			}
-			packageName := filepath.Base(importPath)
-
-			g := NewGenerator(i, importPath, packageName)
 			serviceFiles, err := Service(g, service)
 			if err != nil {
 				return nil, fmt.Errorf(
@@ -296,8 +275,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 			}
 
 			for name, buff := range serviceFiles {
-				filename := filepath.Join("service", packageName, name)
-				files[filename] = buff.Bytes()
+				files[name] = buff.Bytes()
 			}
 		}
 	}

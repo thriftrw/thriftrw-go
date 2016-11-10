@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"testing"
 
@@ -10,8 +11,6 @@ import (
 	"go.uber.org/thriftrw/internal/frame"
 	"go.uber.org/thriftrw/internal/multiplex"
 	"go.uber.org/thriftrw/plugin/api"
-	"go.uber.org/thriftrw/plugin/api/service/plugin"
-	"go.uber.org/thriftrw/plugin/api/service/servicegenerator"
 	"go.uber.org/thriftrw/plugin/plugintest"
 	"go.uber.org/thriftrw/protocol"
 
@@ -40,8 +39,8 @@ func newFakePluginServer(mockCtrl *gomock.Controller) *fakePluginServer {
 	mockServiceGenerator := plugintest.NewMockServiceGenerator(mockCtrl)
 
 	handler := multiplex.NewHandler()
-	handler.Put("Plugin", plugin.NewHandler(mockPlugin))
-	handler.Put("ServiceGenerator", servicegenerator.NewHandler(mockServiceGenerator))
+	handler.Put("Plugin", api.NewPluginHandler(mockPlugin))
+	handler.Put("ServiceGenerator", api.NewServiceGeneratorHandler(mockServiceGenerator))
 
 	done := make(chan error)
 	go func() {
@@ -138,7 +137,7 @@ func TestTransportHandleHandshakeError(t *testing.T) {
 				Features:   []api.Feature{},
 			},
 			wantError: `handshake with plugin "foo" failed: ` +
-				"plugin API version mismatch: expected 1 but got 42",
+				fmt.Sprintf("plugin API version mismatch: expected %d but got 42", api.Version),
 		},
 	}
 
@@ -352,8 +351,7 @@ func TestServiceGeneratorGenerate(t *testing.T) {
 				Services: map[api.ServiceID]*api.Service{
 					1: {
 						Name:       "KeyValue",
-						ImportPath: "go.uber.org/thriftrw/foo/keyvalue",
-						Directory:  "foo/keyvalue",
+						ThriftName: "KeyValue",
 						Functions:  []*api.Function{},
 						ModuleID:   api.ModuleID(1),
 					},

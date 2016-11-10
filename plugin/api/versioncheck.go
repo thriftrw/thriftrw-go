@@ -23,6 +23,8 @@
 
 package api
 
+import "go.uber.org/thriftrw/version"
 
-
-const Version int32 = 2
+func init() {
+	version.CheckCompatWithGeneratedCodeAt("0.5.0", "go.uber.org/thriftrw/plugin/api")
+}

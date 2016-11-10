@@ -203,8 +203,7 @@ func TestMultiServiceGeneratorGenerate(t *testing.T) {
 		Services: map[api.ServiceID]*api.Service{
 			1: {
 				Name:       "KeyValue",
-				ImportPath: "go.uber.org/thriftrw/foo/keyvalue",
-				Directory:  "foo/keyvalue",
+				ThriftName: "KeyValue",
 				Functions:  []*api.Function{},
 				ModuleID:   api.ModuleID(1),
 			},

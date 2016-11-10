@@ -22,7 +22,6 @@ package gen
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"go.uber.org/thriftrw/compile"
 	"go.uber.org/thriftrw/plugin/api"
@@ -138,21 +137,6 @@ func (g *generateServiceBuilder) addService(spec *compile.ServiceSpec) (api.Serv
 		return 0, err
 	}
 
-	// kv.thrift (service Foo) => .../kv/service/foo
-	importPath, err := g.importer.ServicePackage(spec.ThriftFile(), spec.Name)
-	if err != nil {
-		return 0, err
-	}
-
-	// kv.thrift => kv/
-	dir, err := g.importer.RelativePackage(spec.ThriftFile())
-	if err != nil {
-		return 0, err
-	}
-
-	// kv.thrift => kv/service/foo/
-	dir = filepath.Join(dir, "service", filepath.Base(importPath))
-
 	functions := make([]*api.Function, 0, len(spec.Functions))
 	for _, functionName := range sortStringKeys(spec.Functions) {
 		function, err := g.buildFunction(spec.Functions[functionName])
@@ -163,9 +147,8 @@ func (g *generateServiceBuilder) addService(spec *compile.ServiceSpec) (api.Serv
 	}
 
 	g.Services[serviceID] = &api.Service{
-		Name:       spec.Name,
-		ImportPath: importPath,
-		Directory:  dir,
+		ThriftName: spec.Name,
+		Name:       goCase(spec.Name),
 		ParentID:   parentID,
 		Functions:  functions,
 		ModuleID:   moduleID,
@@ -316,11 +299,6 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 			Left:  v,
 			Right: &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
 		}}, nil
-
-		if !required {
-			t = &api.Type{PointerType: t}
-		}
-		return t, nil
 
 	case *compile.StructSpec:
 		importPath, err := g.importer.Package(s.ThriftFile())

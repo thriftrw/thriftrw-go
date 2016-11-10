@@ -28,8 +28,7 @@ func TestAddRootService(t *testing.T) {
 				Services: map[api.ServiceID]*api.Service{
 					1: {
 						Name:       "EmptyService",
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/empty/service/emptyservice",
-						Directory:  "empty/service/emptyservice",
+						ThriftName: "EmptyService",
 						Functions:  []*api.Function{}, // must be non-nil
 						ModuleID:   1,
 					},
@@ -38,6 +37,30 @@ func TestAddRootService(t *testing.T) {
 					1: {
 						ImportPath: "go.uber.org/thriftrw/gen/testdata/empty",
 						Directory:  "empty",
+					},
+				},
+			},
+		},
+		{
+			desc: "Non standard names",
+			spec: &compile.ServiceSpec{
+				Name: "non_standard_service_name",
+				File: "idl/service.thrift",
+			},
+			want: &api.GenerateServiceRequest{
+				RootServices: []api.ServiceID{1},
+				Services: map[api.ServiceID]*api.Service{
+					1: {
+						Name:       "NonStandardServiceName",
+						ThriftName: "non_standard_service_name",
+						Functions:  []*api.Function{}, // must be non-nil
+						ModuleID:   1,
+					},
+				},
+				Modules: map[api.ModuleID]*api.Module{
+					1: {
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/service",
+						Directory:  "service",
 					},
 				},
 			},
@@ -57,15 +80,13 @@ func TestAddRootService(t *testing.T) {
 				Services: map[api.ServiceID]*api.Service{
 					1: {
 						Name:       "AbstractService",
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/common/abstract/service/abstractservice",
-						Directory:  "common/abstract/service/abstractservice",
+						ThriftName: "AbstractService",
 						Functions:  []*api.Function{}, // must be non-nil
 						ModuleID:   1,
 					},
 					2: {
 						Name:       "KeyValue",
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/kv/service/keyvalue",
-						Directory:  "kv/service/keyvalue",
+						ThriftName: "KeyValue",
 						ParentID:   (*api.ServiceID)(ptr.Int32(1)),
 						Functions:  []*api.Function{}, // must be non-nil
 						ModuleID:   2,

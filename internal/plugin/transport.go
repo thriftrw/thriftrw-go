@@ -29,8 +29,6 @@ import (
 	"go.uber.org/thriftrw/internal/envelope"
 	"go.uber.org/thriftrw/internal/multiplex"
 	"go.uber.org/thriftrw/plugin/api"
-	"go.uber.org/thriftrw/plugin/api/service/plugin"
-	"go.uber.org/thriftrw/plugin/api/service/servicegenerator"
 	"go.uber.org/thriftrw/protocol"
 
 	"go.uber.org/atomic"
@@ -52,7 +50,7 @@ type transportHandle struct {
 //
 // If the transport is an io.Closer, it will be closed when the handle is closed.
 func NewTransportHandle(name string, t envelope.Transport) (Handle, error) {
-	client := plugin.NewClient(multiplex.NewClient(
+	client := api.NewPluginClient(multiplex.NewClient(
 		"Plugin",
 		envelope.NewClient(_proto, t),
 	))
@@ -118,7 +116,7 @@ func (h *transportHandle) ServiceGenerator() ServiceGenerator {
 	return &serviceGenerator{
 		handle:  h,
 		Running: h.Running,
-		ServiceGenerator: servicegenerator.NewClient(multiplex.NewClient(
+		ServiceGenerator: api.NewServiceGeneratorClient(multiplex.NewClient(
 			"ServiceGenerator",
 			envelope.NewClient(_proto, h.Transport),
 		)),

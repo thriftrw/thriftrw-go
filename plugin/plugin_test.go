@@ -8,8 +8,6 @@ import (
 	"go.uber.org/thriftrw/internal/frame"
 	"go.uber.org/thriftrw/internal/multiplex"
 	"go.uber.org/thriftrw/plugin/api"
-	"go.uber.org/thriftrw/plugin/api/service/plugin"
-	"go.uber.org/thriftrw/plugin/api/service/servicegenerator"
 	"go.uber.org/thriftrw/plugin/plugintest"
 	"go.uber.org/thriftrw/ptr"
 
@@ -57,7 +55,7 @@ func TestEmptyPlugin(t *testing.T) {
 
 	go Main(&Plugin{Name: "hello"})
 
-	client := plugin.NewClient(multiplex.NewClient("Plugin", transport))
+	client := api.NewPluginClient(multiplex.NewClient("Plugin", transport))
 
 	response, err := client.Handshake(&api.HandshakeRequest{})
 	require.NoError(t, err)
@@ -82,7 +80,7 @@ func TestServiceGenerator(t *testing.T) {
 		ServiceGenerator: serviceGenerator,
 	})
 
-	pluginClient := plugin.NewClient(multiplex.NewClient("Plugin", transport))
+	pluginClient := api.NewPluginClient(multiplex.NewClient("Plugin", transport))
 	defer pluginClient.Goodbye()
 
 	handshake, err := pluginClient.Handshake(&api.HandshakeRequest{})
@@ -91,22 +89,20 @@ func TestServiceGenerator(t *testing.T) {
 	assert.Equal(t, "hello", handshake.Name)
 	assert.Contains(t, handshake.Features, api.FeatureServiceGenerator)
 
-	sgClient := servicegenerator.NewClient(multiplex.NewClient("ServiceGenerator", transport))
+	sgClient := api.NewServiceGeneratorClient(multiplex.NewClient("ServiceGenerator", transport))
 	req := &api.GenerateServiceRequest{
 		RootServices: []api.ServiceID{1},
 		Services: map[api.ServiceID]*api.Service{
 			1: {
 				Name:       "MyService",
-				ImportPath: "go.uber.org/thriftrw/plugin/fake/myservice",
-				Directory:  "fake/myservice",
+				ThriftName: "MyService",
 				Functions:  []*api.Function{},
 				ParentID:   (*api.ServiceID)(ptr.Int32(2)),
 				ModuleID:   1,
 			},
 			2: {
 				Name:       "BaseService",
-				ImportPath: "go.uber.org/thriftrw/plugin/fake/baseservice",
-				Directory:  "fake/baseservice",
+				ThriftName: "BaseService",
 				Functions: []*api.Function{
 					{
 						Name:       "Healthy",

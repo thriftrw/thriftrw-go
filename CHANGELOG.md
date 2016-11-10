@@ -7,12 +7,27 @@ v0.5.0 (unreleased)
 -   **Breaking**: Generated enums now have first class JSON support. Enums are
     (un)marshalled from/to strings if possible with fallback to integer for
 	unrecognized values.
+-   **Breaking**: `Args`, `Result`, and `Helper` types for service functions
+    are now generated in the same package as the user-defined types. These
+    types are now named similarly to `$service_$function_Args` where `$service`
+    and `$function` are the names of the Thrift service and function normalized
+    based on Go naming conventions.
 -   Code generation will abort if struct fields, after conversion to Go style
     names, are not unique in the structure.
 -   A `go.name` annotation may now be specified to override the names of
     entities in the generated Go code. The annotation is supported for struct,
     union, and exception types, and their fields, enum types and enum items,
     and parameters of functions.
+-   Plugins: Renamed `Service.Name` to `Service.ThriftName` since it contains
+    the name of the service as it appeared in the Thrift file.
+-   Plugins: Added a new `Service.Name` field which contains the name of field
+    normalized per Go naming conventions. This, along with `Function.Name` may
+    be used to build the names of the `Args`, `Result`, and `Helper` types for
+    a function.
+-   Plugins: Removed `Service.Directory` and `Service.ImportPath` because these
+    are now same as the corresponding module.
+-   Plugins: Constructors for `Plugin` and `ServiceGenerator` clients and
+    handlers are now exposed in the same package as the interfaces.
 -   Non-primitive types constants are now inlined in the generated Go code
     instead of being referenced in an effort to reduce the impact of user
     errors on the generated code. This is because non-primitive constants were

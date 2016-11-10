@@ -29,8 +29,6 @@ import (
 	"go.uber.org/thriftrw/envelope"
 	tx "go.uber.org/thriftrw/gen/testdata/exceptions"
 	tv "go.uber.org/thriftrw/gen/testdata/services"
-	"go.uber.org/thriftrw/gen/testdata/services/service/cache"
-	"go.uber.org/thriftrw/gen/testdata/services/service/keyvalue"
 	tu "go.uber.org/thriftrw/gen/testdata/unions"
 	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/ptr"
@@ -56,7 +54,7 @@ func TestServiceArgsAndResult(t *testing.T) {
 	}{
 		{
 			desc: "setValue args",
-			x: &keyvalue.SetValueArgs{
+			x: &tv.KeyValue_SetValue_Args{
 				Key:   (*tv.Key)(stringp("foo")),
 				Value: &tu.ArbitraryValue{BoolValue: boolp(true)},
 			},
@@ -74,14 +72,14 @@ func TestServiceArgsAndResult(t *testing.T) {
 		},
 		{
 			desc:         "setValue result",
-			x:            &keyvalue.SetValueResult{},
+			x:            &tv.KeyValue_SetValue_Result{},
 			value:        wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
 			methodName:   "setValue",
 			envelopeType: wire.Reply,
 		},
 		{
 			desc: "getValue args",
-			x:    &keyvalue.GetValueArgs{Key: (*tv.Key)(stringp("foo"))},
+			x:    &tv.KeyValue_GetValue_Args{Key: (*tv.Key)(stringp("foo"))},
 			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("foo")},
 			}}),
@@ -90,7 +88,7 @@ func TestServiceArgsAndResult(t *testing.T) {
 		},
 		{
 			desc: "getValue result success",
-			x: &keyvalue.GetValueResult{
+			x: &tv.KeyValue_GetValue_Result{
 				Success: &tu.ArbitraryValue{Int64Value: int64p(42)},
 			},
 			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -106,7 +104,7 @@ func TestServiceArgsAndResult(t *testing.T) {
 		},
 		{
 			desc: "getValue result failure",
-			x: &keyvalue.GetValueResult{
+			x: &tv.KeyValue_GetValue_Result{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 			},
 			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -122,7 +120,7 @@ func TestServiceArgsAndResult(t *testing.T) {
 		},
 		{
 			desc: "deleteValue args",
-			x:    &keyvalue.DeleteValueArgs{Key: (*tv.Key)(stringp("foo"))},
+			x:    &tv.KeyValue_DeleteValue_Args{Key: (*tv.Key)(stringp("foo"))},
 			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("foo")},
 			}}),
@@ -131,14 +129,14 @@ func TestServiceArgsAndResult(t *testing.T) {
 		},
 		{
 			desc:         "deleteValue result success",
-			x:            &keyvalue.DeleteValueResult{},
+			x:            &tv.KeyValue_DeleteValue_Result{},
 			value:        wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
 			methodName:   "deleteValue",
 			envelopeType: wire.Reply,
 		},
 		{
 			desc: "deleteValue result failure",
-			x: &keyvalue.DeleteValueResult{
+			x: &tv.KeyValue_DeleteValue_Result{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 			},
 			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -154,7 +152,7 @@ func TestServiceArgsAndResult(t *testing.T) {
 		},
 		{
 			desc: "deleteValue result failure 2",
-			x: &keyvalue.DeleteValueResult{
+			x: &tv.KeyValue_DeleteValue_Result{
 				InternalError: &tv.InternalError{Message: stringp("foo")},
 			},
 			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -170,7 +168,7 @@ func TestServiceArgsAndResult(t *testing.T) {
 		},
 		{
 			desc: "size result",
-			x:    &keyvalue.SizeResult{Success: int64p(42)},
+			x:    &tv.KeyValue_Size_Result{Success: int64p(42)},
 			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 0, Value: wire.NewValueI64(42)},
 			}}),
@@ -179,14 +177,14 @@ func TestServiceArgsAndResult(t *testing.T) {
 		},
 		{
 			desc:         "oneway empty args",
-			x:            &cache.ClearArgs{},
+			x:            &tv.Cache_Clear_Args{},
 			value:        wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
 			methodName:   "clear",
 			envelopeType: wire.OneWay,
 		},
 		{
 			desc: "oneway with args",
-			x:    &cache.ClearAfterArgs{DurationMS: ptr.Int64(42)},
+			x:    &tv.Cache_ClearAfter_Args{DurationMS: ptr.Int64(42)},
 			value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueI64(42)},
 			}}),
@@ -208,30 +206,30 @@ func TestServiceArgs(t *testing.T) {
 		output interface{}
 	}{
 		{
-			input: keyvalue.SetValueHelper.Args(
+			input: tv.KeyValue_SetValue_Helper.Args(
 				(*tv.Key)(stringp("foo")),
 				&tu.ArbitraryValue{BoolValue: boolp(true)},
 			),
-			output: &keyvalue.SetValueArgs{
+			output: &tv.KeyValue_SetValue_Args{
 				Key:   (*tv.Key)(stringp("foo")),
 				Value: &tu.ArbitraryValue{BoolValue: boolp(true)},
 			},
 		},
 		{
-			input:  keyvalue.GetValueHelper.Args((*tv.Key)(stringp("foo"))),
-			output: &keyvalue.GetValueArgs{Key: (*tv.Key)(stringp("foo"))},
+			input:  tv.KeyValue_GetValue_Helper.Args((*tv.Key)(stringp("foo"))),
+			output: &tv.KeyValue_GetValue_Args{Key: (*tv.Key)(stringp("foo"))},
 		},
 		{
-			input:  keyvalue.DeleteValueHelper.Args((*tv.Key)(stringp("foo"))),
-			output: &keyvalue.DeleteValueArgs{Key: (*tv.Key)(stringp("foo"))},
+			input:  tv.KeyValue_DeleteValue_Helper.Args((*tv.Key)(stringp("foo"))),
+			output: &tv.KeyValue_DeleteValue_Args{Key: (*tv.Key)(stringp("foo"))},
 		},
 		{
-			input:  cache.ClearHelper.Args(),
-			output: &cache.ClearArgs{},
+			input:  tv.Cache_Clear_Helper.Args(),
+			output: &tv.Cache_Clear_Args{},
 		},
 		{
-			input:  cache.ClearAfterHelper.Args(ptr.Int64(42)),
-			output: &cache.ClearAfterArgs{DurationMS: ptr.Int64(42)},
+			input:  tv.Cache_ClearAfter_Helper.Args(ptr.Int64(42)),
+			output: &tv.Cache_ClearAfter_Args{DurationMS: ptr.Int64(42)},
 		},
 	}
 
@@ -247,42 +245,42 @@ func TestServiceIsException(t *testing.T) {
 		expected    bool
 	}{
 		{
-			isException: keyvalue.SetValueHelper.IsException,
+			isException: tv.KeyValue_SetValue_Helper.IsException,
 			err:         &tx.DoesNotExistException{Key: "foo"},
 			expected:    false,
 		},
 		{
-			isException: keyvalue.SetValueHelper.IsException,
+			isException: tv.KeyValue_SetValue_Helper.IsException,
 			err:         errors.New("some error"),
 			expected:    false,
 		},
 		{
-			isException: keyvalue.GetValueHelper.IsException,
+			isException: tv.KeyValue_GetValue_Helper.IsException,
 			err:         &tx.DoesNotExistException{Key: "foo"},
 			expected:    true,
 		},
 		{
-			isException: keyvalue.GetValueHelper.IsException,
+			isException: tv.KeyValue_GetValue_Helper.IsException,
 			err:         errors.New("some error"),
 			expected:    false,
 		},
 		{
-			isException: keyvalue.DeleteValueHelper.IsException,
+			isException: tv.KeyValue_DeleteValue_Helper.IsException,
 			err:         &tv.InternalError{},
 			expected:    true,
 		},
 		{
-			isException: keyvalue.DeleteValueHelper.IsException,
+			isException: tv.KeyValue_DeleteValue_Helper.IsException,
 			err:         &tv.InternalError{Message: stringp("foo")},
 			expected:    true,
 		},
 		{
-			isException: keyvalue.DeleteValueHelper.IsException,
+			isException: tv.KeyValue_DeleteValue_Helper.IsException,
 			err:         &tx.DoesNotExistException{Key: "foo"},
 			expected:    true,
 		},
 		{
-			isException: keyvalue.DeleteValueHelper.IsException,
+			isException: tv.KeyValue_DeleteValue_Helper.IsException,
 			err:         errors.New("some error"),
 			expected:    false,
 		},
@@ -303,85 +301,85 @@ func TestWrapResponse(t *testing.T) {
 		{
 			desc: "setValue success",
 			run: func() (interface{}, error) {
-				return keyvalue.SetValueHelper.WrapResponse(nil)
+				return tv.KeyValue_SetValue_Helper.WrapResponse(nil)
 			},
-			expectedResult: &keyvalue.SetValueResult{},
+			expectedResult: &tv.KeyValue_SetValue_Result{},
 		},
 		{
 			desc: "setValue failure",
 			run: func() (interface{}, error) {
-				return keyvalue.SetValueHelper.WrapResponse(errors.New("foo"))
+				return tv.KeyValue_SetValue_Helper.WrapResponse(errors.New("foo"))
 			},
 			expectedError: errors.New("foo"),
 		},
 		{
 			desc: "getValue success",
 			run: func() (interface{}, error) {
-				return keyvalue.GetValueHelper.WrapResponse(&tu.ArbitraryValue{BoolValue: boolp(true)}, nil)
+				return tv.KeyValue_GetValue_Helper.WrapResponse(&tu.ArbitraryValue{BoolValue: boolp(true)}, nil)
 			},
-			expectedResult: &keyvalue.GetValueResult{
+			expectedResult: &tv.KeyValue_GetValue_Result{
 				Success: &tu.ArbitraryValue{BoolValue: boolp(true)},
 			},
 		},
 		{
 			desc: "getValue application error",
 			run: func() (interface{}, error) {
-				return keyvalue.GetValueHelper.WrapResponse(nil, &tx.DoesNotExistException{Key: "foo"})
+				return tv.KeyValue_GetValue_Helper.WrapResponse(nil, &tx.DoesNotExistException{Key: "foo"})
 			},
-			expectedResult: &keyvalue.GetValueResult{
+			expectedResult: &tv.KeyValue_GetValue_Result{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 			},
 		},
 		{
 			desc: "getValue failure",
 			run: func() (interface{}, error) {
-				return keyvalue.GetValueHelper.WrapResponse(nil, errors.New("foo"))
+				return tv.KeyValue_GetValue_Helper.WrapResponse(nil, errors.New("foo"))
 			},
 			expectedError: errors.New("foo"),
 		},
 		{
 			desc: "deleteValue success",
 			run: func() (interface{}, error) {
-				return keyvalue.DeleteValueHelper.WrapResponse(nil)
+				return tv.KeyValue_DeleteValue_Helper.WrapResponse(nil)
 			},
-			expectedResult: &keyvalue.DeleteValueResult{},
+			expectedResult: &tv.KeyValue_DeleteValue_Result{},
 		},
 		{
 			desc: "deleteValue application error (1)",
 			run: func() (interface{}, error) {
-				return keyvalue.DeleteValueHelper.WrapResponse(&tx.DoesNotExistException{Key: "foo"})
+				return tv.KeyValue_DeleteValue_Helper.WrapResponse(&tx.DoesNotExistException{Key: "foo"})
 			},
-			expectedResult: &keyvalue.DeleteValueResult{
+			expectedResult: &tv.KeyValue_DeleteValue_Result{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 			},
 		},
 		{
 			desc: "deleteValue application error (2)",
 			run: func() (interface{}, error) {
-				return keyvalue.DeleteValueHelper.WrapResponse(&tv.InternalError{})
+				return tv.KeyValue_DeleteValue_Helper.WrapResponse(&tv.InternalError{})
 			},
-			expectedResult: &keyvalue.DeleteValueResult{
+			expectedResult: &tv.KeyValue_DeleteValue_Result{
 				InternalError: &tv.InternalError{},
 			},
 		},
 		{
 			desc: "deleteValue failure",
 			run: func() (interface{}, error) {
-				return keyvalue.DeleteValueHelper.WrapResponse(errors.New("foo"))
+				return tv.KeyValue_DeleteValue_Helper.WrapResponse(errors.New("foo"))
 			},
 			expectedError: errors.New("foo"),
 		},
 		{
 			desc: "size success",
 			run: func() (interface{}, error) {
-				return keyvalue.SizeHelper.WrapResponse(42, nil)
+				return tv.KeyValue_Size_Helper.WrapResponse(42, nil)
 			},
-			expectedResult: &keyvalue.SizeResult{Success: int64p(42)},
+			expectedResult: &tv.KeyValue_Size_Result{Success: int64p(42)},
 		},
 		{
 			desc: "size failure",
 			run: func() (interface{}, error) {
-				return keyvalue.SizeHelper.WrapResponse(42, errors.New("foo"))
+				return tv.KeyValue_Size_Helper.WrapResponse(42, errors.New("foo"))
 			},
 			expectedError: errors.New("foo"),
 		},
@@ -398,10 +396,10 @@ func TestWrapResponse(t *testing.T) {
 }
 
 func TestWrapResponseTypedNilError(t *testing.T) {
-	_, err := keyvalue.GetValueHelper.WrapResponse(nil, (*tx.DoesNotExistException)(nil))
+	_, err := tv.KeyValue_GetValue_Helper.WrapResponse(nil, (*tx.DoesNotExistException)(nil))
 	if assert.Error(t, err) {
 		assert.Contains(t, err.Error(),
-			"received non-nil error type with nil value for GetValueResult.DoesNotExist")
+			"received non-nil error type with nil value for KeyValue_GetValue_Result.DoesNotExist")
 	}
 }
 
@@ -416,29 +414,29 @@ func TestUnwrapResponse(t *testing.T) {
 	}{
 		{
 			desc:           "setValue success",
-			unwrapResponse: keyvalue.SetValueHelper.UnwrapResponse,
-			resultArg:      &keyvalue.SetValueResult{},
+			unwrapResponse: tv.KeyValue_SetValue_Helper.UnwrapResponse,
+			resultArg:      &tv.KeyValue_SetValue_Result{},
 		},
 		{
 			desc:           "getValue success",
-			unwrapResponse: keyvalue.GetValueHelper.UnwrapResponse,
-			resultArg: &keyvalue.GetValueResult{
+			unwrapResponse: tv.KeyValue_GetValue_Helper.UnwrapResponse,
+			resultArg: &tv.KeyValue_GetValue_Result{
 				Success: &tu.ArbitraryValue{BoolValue: boolp(true)},
 			},
 			expectedReturn: &tu.ArbitraryValue{BoolValue: boolp(true)},
 		},
 		{
 			desc:           "getValue failure",
-			unwrapResponse: keyvalue.GetValueHelper.UnwrapResponse,
-			resultArg: &keyvalue.GetValueResult{
+			unwrapResponse: tv.KeyValue_GetValue_Helper.UnwrapResponse,
+			resultArg: &tv.KeyValue_GetValue_Result{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 			},
 			expectedError: &tx.DoesNotExistException{Key: "foo"},
 		},
 		{
 			desc:           "getValue failure with success set",
-			unwrapResponse: keyvalue.GetValueHelper.UnwrapResponse,
-			resultArg: &keyvalue.GetValueResult{
+			unwrapResponse: tv.KeyValue_GetValue_Helper.UnwrapResponse,
+			resultArg: &tv.KeyValue_GetValue_Result{
 				Success:      &tu.ArbitraryValue{BoolValue: boolp(true)},
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 			},
@@ -447,29 +445,29 @@ func TestUnwrapResponse(t *testing.T) {
 		},
 		{
 			desc:           "deleteValue success",
-			unwrapResponse: keyvalue.DeleteValueHelper.UnwrapResponse,
-			resultArg:      &keyvalue.DeleteValueResult{},
+			unwrapResponse: tv.KeyValue_DeleteValue_Helper.UnwrapResponse,
+			resultArg:      &tv.KeyValue_DeleteValue_Result{},
 		},
 		{
 			desc:           "deleteValue failure (1)",
-			unwrapResponse: keyvalue.DeleteValueHelper.UnwrapResponse,
-			resultArg: &keyvalue.DeleteValueResult{
+			unwrapResponse: tv.KeyValue_DeleteValue_Helper.UnwrapResponse,
+			resultArg: &tv.KeyValue_DeleteValue_Result{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 			},
 			expectedError: &tx.DoesNotExistException{Key: "foo"},
 		},
 		{
 			desc:           "deleteValue failure (2)",
-			unwrapResponse: keyvalue.DeleteValueHelper.UnwrapResponse,
-			resultArg: &keyvalue.DeleteValueResult{
+			unwrapResponse: tv.KeyValue_DeleteValue_Helper.UnwrapResponse,
+			resultArg: &tv.KeyValue_DeleteValue_Result{
 				InternalError: &tv.InternalError{},
 			},
 			expectedError: &tv.InternalError{},
 		},
 		{
 			desc:           "deleteValue failure multiple values set",
-			unwrapResponse: keyvalue.DeleteValueHelper.UnwrapResponse,
-			resultArg: &keyvalue.DeleteValueResult{
+			unwrapResponse: tv.KeyValue_DeleteValue_Helper.UnwrapResponse,
+			resultArg: &tv.KeyValue_DeleteValue_Result{
 				DoesNotExist:  &tx.DoesNotExistException{Key: "foo"},
 				InternalError: &tv.InternalError{},
 			},
@@ -478,8 +476,8 @@ func TestUnwrapResponse(t *testing.T) {
 		},
 		{
 			desc:           "size success",
-			unwrapResponse: keyvalue.SizeHelper.UnwrapResponse,
-			resultArg:      &keyvalue.SizeResult{Success: int64p(42)},
+			unwrapResponse: tv.KeyValue_Size_Helper.UnwrapResponse,
+			resultArg:      &tv.KeyValue_Size_Result{Success: int64p(42)},
 			expectedReturn: int64(42),
 		},
 	}
@@ -505,7 +503,7 @@ func TestUnwrapResponse(t *testing.T) {
 }
 
 func TestServiceTypesEnveloper(t *testing.T) {
-	getResponse, err := keyvalue.GetValueHelper.WrapResponse(&tu.ArbitraryValue{BoolValue: boolp(true)}, nil)
+	getResponse, err := tv.KeyValue_GetValue_Helper.WrapResponse(&tu.ArbitraryValue{BoolValue: boolp(true)}, nil)
 	require.NoError(t, err, "Failed to get successful GetValue response")
 
 	tests := []struct {
@@ -513,7 +511,7 @@ func TestServiceTypesEnveloper(t *testing.T) {
 		wantEnvelope wire.Envelope
 	}{
 		{
-			s: keyvalue.GetValueHelper.Args((*tv.Key)(stringp("foo"))),
+			s: tv.KeyValue_GetValue_Helper.Args((*tv.Key)(stringp("foo"))),
 			wantEnvelope: wire.Envelope{
 				Name: "getValue",
 				Type: wire.Call,
@@ -527,7 +525,7 @@ func TestServiceTypesEnveloper(t *testing.T) {
 			},
 		},
 		{
-			s: keyvalue.DeleteValueHelper.Args((*tv.Key)(stringp("foo"))),
+			s: tv.KeyValue_DeleteValue_Helper.Args((*tv.Key)(stringp("foo"))),
 			wantEnvelope: wire.Envelope{
 				Name: "deleteValue",
 				Type: wire.Call,
@@ -564,7 +562,7 @@ func TestArgsAndResultValidation(t *testing.T) {
 	}{
 		{
 			desc: "SetValue: args: value: empty",
-			serialize: keyvalue.SetValueHelper.Args(
+			serialize: tv.KeyValue_SetValue_Helper.Args(
 				(*tv.Key)(stringp("foo")),
 				&tu.ArbitraryValue{},
 			),
@@ -579,7 +577,7 @@ func TestArgsAndResultValidation(t *testing.T) {
 		},
 		{
 			desc: "SetValueV2: args: missing value",
-			typ:  reflect.TypeOf(keyvalue.SetValueV2Args{}),
+			typ:  reflect.TypeOf(tv.KeyValue_SetValueV2_Args{}),
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
 					ID: 2,
@@ -588,25 +586,25 @@ func TestArgsAndResultValidation(t *testing.T) {
 					}}),
 				},
 			}}),
-			wantError: "field Key of SetValueV2Args is required",
+			wantError: "field Key of KeyValue_SetValueV2_Args is required",
 		},
 		{
 			desc: "SetValueV2: args: missing key",
-			typ:  reflect.TypeOf(keyvalue.SetValueV2Args{}),
+			typ:  reflect.TypeOf(tv.KeyValue_SetValueV2_Args{}),
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueString("foo")},
 			}}),
-			wantError: "field Value of SetValueV2Args is required",
+			wantError: "field Value of KeyValue_SetValueV2_Args is required",
 		},
 		{
 			desc:        "getValue: result: empty",
-			serialize:   &keyvalue.GetValueResult{},
+			serialize:   &tv.KeyValue_GetValue_Result{},
 			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
-			wantError:   "GetValueResult should have exactly one field: got 0 fields",
+			wantError:   "KeyValue_GetValue_Result should have exactly one field: got 0 fields",
 		},
 		{
 			desc: "getValue: result: multiple",
-			serialize: &keyvalue.GetValueResult{
+			serialize: &tv.KeyValue_GetValue_Result{
 				DoesNotExist: &tx.DoesNotExistException{Key: "foo"},
 				Success:      &tu.ArbitraryValue{BoolValue: boolp(true)},
 			},
@@ -624,11 +622,11 @@ func TestArgsAndResultValidation(t *testing.T) {
 					}}),
 				},
 			}}),
-			wantError: "GetValueResult should have exactly one field: got 2 fields",
+			wantError: "KeyValue_GetValue_Result should have exactly one field: got 2 fields",
 		},
 		{
 			desc: "deleteValue: result: multiple",
-			serialize: &keyvalue.DeleteValueResult{
+			serialize: &tv.KeyValue_DeleteValue_Result{
 				DoesNotExist:  &tx.DoesNotExistException{Key: "foo"},
 				InternalError: &tv.InternalError{},
 			},
@@ -644,7 +642,7 @@ func TestArgsAndResultValidation(t *testing.T) {
 					Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
 				},
 			}}),
-			wantError: "DeleteValueResult should have at most one field: got 2 fields",
+			wantError: "KeyValue_DeleteValue_Result should have at most one field: got 2 fields",
 		},
 	}
 

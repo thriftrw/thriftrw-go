@@ -21,70 +21,64 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package plugin
+package api
 
 import (
 	"go.uber.org/thriftrw/internal/envelope"
 	"go.uber.org/thriftrw/wire"
-	"go.uber.org/thriftrw/plugin/api"
 )
 
-// Client implements a Plugin client.
-type client struct {
-	client envelope.Client
+// PluginHandler serves an implementation of the Plugin service.
+type PluginHandler struct {
+	impl Plugin
 }
 
-// NewClient builds a new Plugin client.
-func NewClient(c envelope.Client) api.Plugin {
-	return &client{
-		client: c,
+// NewPluginHandler builds a new Plugin handler.
+func NewPluginHandler(service Plugin) PluginHandler {
+	return PluginHandler{
+		impl: service,
 	}
 }
 
-func (c *client) Goodbye() (err error) {
-	args := GoodbyeHelper.Args()
+// Handle receives and handles a request for the Plugin service.
+func (h PluginHandler) Handle(name string, reqValue wire.Value) (wire.Value, error) {
+	switch name {
 
-	var body wire.Value
-	body, err = args.ToWire()
-	if err != nil {
-		return
+	case "goodbye":
+
+		var args Plugin_Goodbye_Args
+		if err := args.FromWire(reqValue); err != nil {
+			return wire.Value{}, err
+		}
+
+		result, err := Plugin_Goodbye_Helper.WrapResponse(
+			h.impl.Goodbye(),
+		)
+		if err != nil {
+			return wire.Value{}, err
+		}
+
+		return result.ToWire()
+
+	case "handshake":
+
+		var args Plugin_Handshake_Args
+		if err := args.FromWire(reqValue); err != nil {
+			return wire.Value{}, err
+		}
+
+		result, err := Plugin_Handshake_Helper.WrapResponse(
+			h.impl.Handshake(args.Request),
+		)
+		if err != nil {
+			return wire.Value{}, err
+		}
+
+		return result.ToWire()
+
+	default:
+
+		return wire.Value{}, envelope.ErrUnknownMethod(name)
+
 	}
-
-	body, err = c.client.Send("goodbye", body)
-	if err != nil {
-		return
-	}
-
-	var result GoodbyeResult
-	if err = result.FromWire(body); err != nil {
-		return
-	}
-
-	err = GoodbyeHelper.UnwrapResponse(&result)
-	return
-}
-
-func (c *client) Handshake(
-	_Request *api.HandshakeRequest,
-) (success *api.HandshakeResponse, err error) {
-	args := HandshakeHelper.Args(_Request)
-
-	var body wire.Value
-	body, err = args.ToWire()
-	if err != nil {
-		return
-	}
-
-	body, err = c.client.Send("handshake", body)
-	if err != nil {
-		return
-	}
-
-	var result HandshakeResult
-	if err = result.FromWire(body); err != nil {
-		return
-	}
-
-	success, err = HandshakeHelper.UnwrapResponse(&result)
-	return
 }
