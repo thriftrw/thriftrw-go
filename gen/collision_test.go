@@ -58,8 +58,8 @@ func TestStruct(t *testing.T) {
 			&tc.PrimitiveContainers{
 				A: []string{"arbre", "fleur"},
 				B: map[string]struct{}{
-					"croissant": struct{}{},
-					"baguette":  struct{}{},
+					"croissant": {},
+					"baguette":  {},
 				},
 				C: map[string]string{
 					"voiture": "bleue",
