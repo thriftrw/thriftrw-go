@@ -328,7 +328,7 @@ func TestServiceGeneratorGenerate(t *testing.T) {
 			desc:          "call error",
 			generateError: errors.New("great sadness"),
 			wantError: `plugin "foo" failed to generate service code: ` +
-				"TApplicationException{Message: great sadness, Type: InternalError}",
+				"TApplicationException{Message: great sadness, Type: INTERNAL_ERROR}",
 		},
 	}
 
