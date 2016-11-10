@@ -183,7 +183,7 @@ func TestReadReply(t *testing.T) {
 				},
 			}),
 			wantSeqID: 1234,
-			wantErr:   "TApplicationException{Message: errMsg, Type: UnknownMethod}",
+			wantErr:   "TApplicationException{Message: errMsg, Type: UNKNOWN_METHOD}",
 		},
 	}
 
