@@ -125,11 +125,11 @@ func (f *fieldGroupGenerator) declFieldName(fs *compile.FieldSpec) (string, erro
 		var note string
 		switch {
 		case originalName && fromAnnotation:
-			note = "(from go.name annotation)"
+			note = " (from go.name annotation)"
 		case !originalName && fromAnnotation:
-			note = fmt.Sprintf(" (from %q go.name annotation): %v", fs.ThriftName())
+			note = fmt.Sprintf(" (from %q go.name annotation)", fs.ThriftName())
 		case !originalName && !fromAnnotation:
-			note = fmt.Sprintf(" (from %q): %v", fs.ThriftName())
+			note = fmt.Sprintf(" (from %q)", fs.ThriftName())
 		}
 		return "", fmt.Errorf("could not declare field %q%s: %v", name, note, err)
 	}
