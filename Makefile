@@ -38,9 +38,18 @@ LINT_EXCLUDES := $(GENERATED_GO_FILES) $(LINT_EXCLUDES_EXTRAS)
 # Pipe lint output into this to filter out ignored files.
 FILTER_LINT := grep -v $(patsubst %,-e %, $(LINT_EXCLUDES))
 
+BUILD_FLAGS ?=
+
 .PHONY: build
 build:
-	go build -i
+	go build -i $(BUILD_FLAGS)
+
+.PHONY: generate
+generate:
+	go build -i -tags disableVersionCheck
+	PATH=$$(pwd):$$PATH go generate $$(glide nv)
+	make -C ./gen/testdata
+	./scripts/updateLicenses.sh
 
 .PHONY: lint
 lint:
