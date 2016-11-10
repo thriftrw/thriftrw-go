@@ -10,6 +10,7 @@ import (
 	"go.uber.org/thriftrw/gen/testdata/structs"
 	"go.uber.org/thriftrw/gen/testdata/typedefs"
 	"go.uber.org/thriftrw/gen/testdata/unions"
+	"go.uber.org/thriftrw/ptr"
 )
 
 const Home enums.RecordType = enums.RecordTypeHomeAddress
@@ -18,19 +19,7 @@ const Name enums.RecordType = enums.RecordTypeName
 
 const WorkAddress enums.RecordType = enums.RecordTypeWorkAddress
 
-func _bool_ptr(v bool) *bool {
-	return &v
-}
-
-func _i64_ptr(v int64) *int64 {
-	return &v
-}
-
-func _string_ptr(v string) *string {
-	return &v
-}
-
-var ArbitraryValue *unions.ArbitraryValue = &unions.ArbitraryValue{ListValue: []*unions.ArbitraryValue{&unions.ArbitraryValue{BoolValue: _bool_ptr(true)}, &unions.ArbitraryValue{Int64Value: _i64_ptr(2)}, &unions.ArbitraryValue{StringValue: _string_ptr("hello")}, &unions.ArbitraryValue{MapValue: map[string]*unions.ArbitraryValue{"foo": &unions.ArbitraryValue{StringValue: _string_ptr("bar")}}}}}
+var ArbitraryValue *unions.ArbitraryValue = &unions.ArbitraryValue{ListValue: []*unions.ArbitraryValue{&unions.ArbitraryValue{BoolValue: ptr.Bool(true)}, &unions.ArbitraryValue{Int64Value: ptr.Int64(2)}, &unions.ArbitraryValue{StringValue: ptr.String("hello")}, &unions.ArbitraryValue{MapValue: map[string]*unions.ArbitraryValue{"foo": &unions.ArbitraryValue{StringValue: ptr.String("bar")}}}}}
 
 const BeginningOfTime typedefs.Timestamp = typedefs.Timestamp(0)
 
