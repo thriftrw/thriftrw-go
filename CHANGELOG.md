@@ -28,6 +28,11 @@ v0.5.0 (unreleased)
     are now same as the corresponding module.
 -   Plugins: Constructors for `Plugin` and `ServiceGenerator` clients and
     handlers are now exposed in the same package as the interfaces.
+-   Non-primitive types constants are now inlined in the generated Go code
+    instead of being referenced in an effort to reduce the impact of user
+    errors on the generated code. This is because non-primitive constants were
+    previously implemented as global `var`s which might be modified by
+    user code.
 
 
 v0.4.0 (2016-11-01)

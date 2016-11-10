@@ -532,7 +532,7 @@ func (v *WithDefault) ToWire() (wire.Value, error) {
 		err    error
 	)
 	if v.Pouet == nil {
-		v.Pouet = StructConstant
+		v.Pouet = &StructCollision2{CollisionField: false, CollisionField2: "false indeed"}
 	}
 	{
 		w, err = v.Pouet.ToWire()
@@ -565,7 +565,7 @@ func (v *WithDefault) FromWire(w wire.Value) error {
 		}
 	}
 	if v.Pouet == nil {
-		v.Pouet = StructConstant
+		v.Pouet = &StructCollision2{CollisionField: false, CollisionField2: "false indeed"}
 	}
 	return nil
 }

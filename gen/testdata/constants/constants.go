@@ -7,7 +7,6 @@ import (
 	"go.uber.org/thriftrw/gen/testdata/containers"
 	"go.uber.org/thriftrw/gen/testdata/enums"
 	"go.uber.org/thriftrw/gen/testdata/exceptions"
-	"go.uber.org/thriftrw/gen/testdata/other_constants"
 	"go.uber.org/thriftrw/gen/testdata/structs"
 	"go.uber.org/thriftrw/gen/testdata/typedefs"
 	"go.uber.org/thriftrw/gen/testdata/unions"
@@ -52,7 +51,7 @@ var EnumContainers *containers.EnumContainers = &containers.EnumContainers{ListO
 
 var FrameGroup typedefs.FrameGroup = typedefs.FrameGroup{&structs.Frame{Size: &structs.Size{Height: 200, Width: 100}, TopLeft: &structs.Point{X: 1, Y: 2}}, &structs.Frame{Size: &structs.Size{Height: 400, Width: 300}, TopLeft: &structs.Point{X: 3, Y: 4}}}
 
-var Graph *structs.Graph = &structs.Graph{Edges: []*structs.Edge{&structs.Edge{EndPoint: &structs.Point{X: 3, Y: 4}, StartPoint: other_constants.SomePoint}, &structs.Edge{EndPoint: &structs.Point{X: 7, Y: 8}, StartPoint: &structs.Point{X: 5, Y: 6}}}}
+var Graph *structs.Graph = &structs.Graph{Edges: []*structs.Edge{&structs.Edge{EndPoint: &structs.Point{X: 3, Y: 4}, StartPoint: &structs.Point{X: 1, Y: 2}}, &structs.Edge{EndPoint: &structs.Point{X: 7, Y: 8}, StartPoint: &structs.Point{X: 5, Y: 6}}}}
 
 var I128 *typedefs.I128 = &typedefs.I128{High: 1234, Low: 5678}
 

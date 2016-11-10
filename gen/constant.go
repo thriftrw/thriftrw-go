@@ -64,7 +64,10 @@ func ConstantValue(g Generator, c compile.ConstantValue, t compile.TypeSpec) (st
 	case compile.EnumItemReference:
 		return enumItemReference(g, v, t)
 	case compile.ConstReference:
-		return g.LookupConstantName(v.Target)
+		if canBeConstant(v.Target.Type) {
+			return g.LookupConstantName(v.Target)
+		}
+		return ConstantValue(g, v.Target.Value, v.Target.Type)
 	default:
 		panic(fmt.Sprintf("Unknown constant value %v (%T)", c, c))
 	}
