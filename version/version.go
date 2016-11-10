@@ -34,7 +34,12 @@ func computeGenCodeCompabilityRange() (r genCodeCompatbilityRangeHolder) {
 	r.begin = parseSemVerOrPanic(Version)
 	r.begin.Patch = 0
 	r.end = r.begin
-	r.end.Minor++
+	if r.begin.Major == 0 {
+		r.end.Minor++
+	} else {
+		r.end.Minor = 0
+		r.end.Major++
+	}
 	r.end.Pre = nil
 	return r
 }
