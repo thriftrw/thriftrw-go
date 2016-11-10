@@ -24,9 +24,13 @@
 package api
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"math"
+	"strconv"
 	"strings"
 )
 
@@ -131,6 +135,48 @@ func (v Feature) String() string {
 		return "SERVICE_GENERATOR"
 	}
 	return fmt.Sprintf("Feature(%d)", w)
+}
+
+func (v Feature) MarshalJSON() ([]byte, error) {
+	switch int32(v) {
+	case 1:
+		return ([]byte)("\"SERVICE_GENERATOR\""), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v *Feature) UnmarshalJSON(text []byte) error {
+	d := json.NewDecoder(bytes.NewReader(text))
+	d.UseNumber()
+	t, err := d.Token()
+	if err != nil {
+		return err
+	}
+	switch w := t.(type) {
+	case json.Number:
+		x, err := w.Int64()
+		if err != nil {
+			return err
+		}
+		if x > math.MaxInt32 {
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "Feature")
+		}
+		if x < math.MinInt32 {
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "Feature")
+		}
+		*v = (Feature)(x)
+		return nil
+	case string:
+		switch w {
+		case "SERVICE_GENERATOR":
+			*v = FeatureServiceGenerator
+			return nil
+		default:
+			return fmt.Errorf("unknown enum value %q for %q", w, "Feature")
+		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "Feature")
+	}
 }
 
 type Function struct {
@@ -1254,6 +1300,88 @@ func (v SimpleType) String() string {
 		return "STRUCT_EMPTY"
 	}
 	return fmt.Sprintf("SimpleType(%d)", w)
+}
+
+func (v SimpleType) MarshalJSON() ([]byte, error) {
+	switch int32(v) {
+	case 1:
+		return ([]byte)("\"BOOL\""), nil
+	case 2:
+		return ([]byte)("\"BYTE\""), nil
+	case 3:
+		return ([]byte)("\"INT8\""), nil
+	case 4:
+		return ([]byte)("\"INT16\""), nil
+	case 5:
+		return ([]byte)("\"INT32\""), nil
+	case 6:
+		return ([]byte)("\"INT64\""), nil
+	case 7:
+		return ([]byte)("\"FLOAT64\""), nil
+	case 8:
+		return ([]byte)("\"STRING\""), nil
+	case 9:
+		return ([]byte)("\"STRUCT_EMPTY\""), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v *SimpleType) UnmarshalJSON(text []byte) error {
+	d := json.NewDecoder(bytes.NewReader(text))
+	d.UseNumber()
+	t, err := d.Token()
+	if err != nil {
+		return err
+	}
+	switch w := t.(type) {
+	case json.Number:
+		x, err := w.Int64()
+		if err != nil {
+			return err
+		}
+		if x > math.MaxInt32 {
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "SimpleType")
+		}
+		if x < math.MinInt32 {
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "SimpleType")
+		}
+		*v = (SimpleType)(x)
+		return nil
+	case string:
+		switch w {
+		case "BOOL":
+			*v = SimpleTypeBool
+			return nil
+		case "BYTE":
+			*v = SimpleTypeByte
+			return nil
+		case "INT8":
+			*v = SimpleTypeInt8
+			return nil
+		case "INT16":
+			*v = SimpleTypeInt16
+			return nil
+		case "INT32":
+			*v = SimpleTypeInt32
+			return nil
+		case "INT64":
+			*v = SimpleTypeInt64
+			return nil
+		case "FLOAT64":
+			*v = SimpleTypeFloat64
+			return nil
+		case "STRING":
+			*v = SimpleTypeString
+			return nil
+		case "STRUCT_EMPTY":
+			*v = SimpleTypeStructEmpty
+			return nil
+		default:
+			return fmt.Errorf("unknown enum value %q for %q", w, "SimpleType")
+		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "SimpleType")
+	}
 }
 
 type Type struct {
