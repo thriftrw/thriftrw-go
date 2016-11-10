@@ -26,6 +26,12 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
+var reservedIdentifiers = map[string]struct{}{
+	"ToWire":   {},
+	"FromWire": {},
+	"String":   {},
+}
+
 // fieldGroupGenerator is responsible for generating code for FieldGroups.
 type fieldGroupGenerator struct {
 	Namespace
@@ -37,6 +43,18 @@ type fieldGroupGenerator struct {
 	// must be set for it to be valid.
 	IsUnion         bool
 	AllowEmptyUnion bool
+
+	// This field group represents a Thrift exception.
+	IsException bool
+}
+
+func (f fieldGroupGenerator) checkReservedIdentifier(name string) error {
+	_, match := reservedIdentifiers[name]
+	match = match || (f.IsException && name == "Error")
+	if match {
+		return fmt.Errorf("%q is a reserved ThriftRW identifier", name)
+	}
+	return nil
 }
 
 func (f fieldGroupGenerator) Generate(g Generator) error {
@@ -97,11 +115,23 @@ func (f *fieldGroupGenerator) declFieldName(fs *compile.FieldSpec) (string, erro
 	if err != nil {
 		return "", err
 	}
-	if err := f.Reserve(name); err != nil {
-		if fromAnnotation {
-			return "", fmt.Errorf("could not declare field %q (from go.name annotation): %v", name, err)
+
+	if err = f.checkReservedIdentifier(name); err == nil {
+		err = f.Reserve(name)
+	}
+
+	if err != nil {
+		originalName := (name == fs.ThriftName())
+		var note string
+		switch {
+		case originalName && fromAnnotation:
+			note = "(from go.name annotation)"
+		case !originalName && fromAnnotation:
+			note = fmt.Sprintf(" (from %q go.name annotation): %v", fs.ThriftName())
+		case !originalName && !fromAnnotation:
+			note = fmt.Sprintf(" (from %q): %v", fs.ThriftName())
 		}
-		return "", fmt.Errorf("could not declare field %q (from %q): %v", name, fs.ThriftName(), err)
+		return "", fmt.Errorf("could not declare field %q%s: %v", name, note, err)
 	}
 	return name, nil
 }
