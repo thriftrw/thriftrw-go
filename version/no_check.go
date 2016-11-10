@@ -18,23 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+// +build thriftrw.disableVersionCheck
+
 package version
 
-// Version is the current ThriftRW version.
-const Version = "0.5.0"
-
-var genCodeCompatbilityRange = computeGenCodeCompabilityRange()
-
-type genCodeCompatbilityRangeHolder struct {
-	begin semVer
-	end   semVer
-}
-
-func computeGenCodeCompabilityRange() (r genCodeCompatbilityRangeHolder) {
-	r.begin = parseSemVerOrPanic(Version)
-	r.begin.Patch = 0
-	r.end = r.begin
-	r.end.Minor++
-	r.end.Pre = nil
-	return r
+// CheckCompatWithGeneratedCodeAt will panic if the ThriftRW version used to
+// generated code (given by `genCodeVersion`) is not compatible with the
+// current version of ThriftRW.
+// This function is designed to be called during initialization of the
+// generated code.
+//
+// Rationale: It is possible that the old generated code is not compatible with
+// the new version of ThriftRW in subtle ways but still compiles successfully.
+// This function will ensure that the version mismatch is detected and help
+// avoid bugs that could be caused by this discrepancy.
+func CheckCompatWithGeneratedCodeAt(string, string) {
+	// This version does not do anything. It is used only when the
+	// disableVersionCheck is used. Use the following command to build a
+	// binary with this tag.
+	//
+	// 	go build -tags thriftrw.disableVersionCheck
 }
