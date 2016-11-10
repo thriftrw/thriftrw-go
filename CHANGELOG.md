@@ -1,7 +1,7 @@
 Releases
 ========
 
-v0.5.0 (unreleased)
+v0.5.0 (2016-11-10)
 -------------------
 
 -   **Breaking**: Generated enums now have first class JSON support. Enums are
