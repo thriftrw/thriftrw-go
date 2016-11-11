@@ -68,10 +68,11 @@ func structure(g Generator, spec *compile.StructSpec) error {
 	}
 
 	fg := fieldGroupGenerator{
-		Namespace: NewNamespace(),
-		Name:      name,
-		Fields:    spec.Fields,
-		IsUnion:   spec.Type == ast.UnionType,
+		Namespace:   NewNamespace(),
+		Name:        name,
+		Fields:      spec.Fields,
+		IsUnion:     spec.Type == ast.UnionType,
+		IsException: spec.Type == ast.ExceptionType,
 	}
 
 	if err := fg.Generate(g); err != nil {
