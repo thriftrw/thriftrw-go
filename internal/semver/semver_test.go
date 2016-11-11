@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package version
+package semver
 
 import (
 	"fmt"
@@ -63,9 +63,9 @@ func TestCompare(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%s > %s", test.GreaterVersion, test.LesserVersion), func(t *testing.T) {
-			gv, err := parseSemVer(test.GreaterVersion)
+			gv, err := Parse(test.GreaterVersion)
 			require.NoError(t, err)
-			lv, err := parseSemVer(test.LesserVersion)
+			lv, err := Parse(test.LesserVersion)
 			require.NoError(t, err)
 			assert.Equal(t, test.GreaterVersion, gv.String(), "GreaterVersion input != parsed output")
 			assert.Equal(t, test.LesserVersion, lv.String(), "LesserVersion input != parsed output")
@@ -94,9 +94,9 @@ func TestCompareEqual(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("%s == %s", test.A, test.B), func(t *testing.T) {
-			av, err := parseSemVer(test.A)
+			av, err := Parse(test.A)
 			require.NoError(t, err)
-			bv, err := parseSemVer(test.B)
+			bv, err := Parse(test.B)
 			require.NoError(t, err)
 			assert.Equal(t, test.A, av.String(), "a input != parsed output")
 			assert.Equal(t, test.B, bv.String(), "b input != parsed output")
