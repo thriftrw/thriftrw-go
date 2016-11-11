@@ -36,9 +36,7 @@ import "log"
 // avoid bugs that could be caused by this discrepancy.
 func CheckCompatWithGeneratedCodeAt(genCodeVersion string, fromPkg string) {
 	genv := parseSemVerOrPanic(genCodeVersion)
-	compatible := (genv.Compare(&genCodeCompatbilityRange.begin) >= 0 &&
-		genv.Compare(&genCodeCompatbilityRange.end) < 0)
-	if !compatible {
+	if !genCodeCompatbilityRange.IsCompatibleWith(genv) {
 		log.Panicf(`incompatible version from generated package %q, expected >=%s and <%s, got %s`,
 			fromPkg, &genCodeCompatbilityRange.begin,
 			&genCodeCompatbilityRange.end, &genv)

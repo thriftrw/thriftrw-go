@@ -23,23 +23,30 @@ package version
 // Version is the current ThriftRW version.
 const Version = "0.5.0"
 
-var genCodeCompatbilityRange = computeGenCodeCompabilityRange()
+var genCodeCompatbilityRange = computeGenCodeCompabilityRange(Version)
 
 type genCodeCompatbilityRangeHolder struct {
 	begin semVer
 	end   semVer
 }
 
-func computeGenCodeCompabilityRange() (r genCodeCompatbilityRangeHolder) {
-	r.begin = parseSemVerOrPanic(Version)
-	r.begin.Patch = 0
+// computeGenCodeCompabilityRange generates the compatibility range for generated code.
+// Assuming current Version is 1.2.3-pre we get:
+// begin >= 1.0.0
+//   end  < 1.3.0-pre
+func computeGenCodeCompabilityRange(version string) (r genCodeCompatbilityRangeHolder) {
+	r.begin = parseSemVerOrPanic(version)
 	r.end = r.begin
-	if r.begin.Major == 0 {
-		r.end.Minor++
-	} else {
-		r.end.Minor = 0
-		r.end.Major++
-	}
-	r.end.Pre = nil
+
+	r.begin.Pre = nil
+	r.begin.Patch = 0
+	r.begin.Minor = 0
+
+	r.end.Patch = 0
+	r.end.Minor++
 	return r
+}
+
+func (r *genCodeCompatbilityRangeHolder) IsCompatibleWith(other semVer) bool {
+	return (other.Compare(&r.begin) >= 0 && other.Compare(&r.end) < 0)
 }
