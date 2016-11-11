@@ -21,7 +21,7 @@
 package version
 
 // Version is the current ThriftRW version.
-const Version = "0.5.0"
+const Version = "0.6.0"
 
 var genCodeCompatbilityRange = computeGenCodeCompabilityRange()
 
