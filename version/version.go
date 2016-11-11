@@ -20,14 +20,18 @@
 
 package version
 
+import (
+	"go.uber.org/thriftrw/internal/semver"
+)
+
 // Version is the current ThriftRW version.
 const Version = "0.6.0"
 
 var genCodeCompatbilityRange = computeGenCodeCompabilityRange()
 
 type genCodeCompatbilityRangeHolder struct {
-	begin semVer
-	end   semVer
+	begin semver.Version
+	end   semver.Version
 }
 
 func computeGenCodeCompabilityRange() (r genCodeCompatbilityRangeHolder) {
@@ -37,4 +41,12 @@ func computeGenCodeCompabilityRange() (r genCodeCompatbilityRangeHolder) {
 	r.end.Minor++
 	r.end.Pre = nil
 	return r
+}
+
+func parseSemVerOrPanic(v string) semver.Version {
+	semVer, err := semver.Parse(v)
+	if err != nil {
+		panic(err)
+	}
+	return semVer
 }
