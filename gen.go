@@ -18,36 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package version
+package main
 
-import (
-	"go.uber.org/thriftrw/internal/semver"
-	"go.uber.org/thriftrw/version/internal"
-)
-
-// Version is the current ThriftRW version.
-const Version = internal.Version
-
-var genCodeCompatbilityRange = computeGenCodeCompabilityRange()
-
-type genCodeCompatbilityRangeHolder struct {
-	begin semver.Version
-	end   semver.Version
-}
-
-func computeGenCodeCompabilityRange() (r genCodeCompatbilityRangeHolder) {
-	r.begin = parseSemVerOrPanic(Version)
-	r.begin.Patch = 0
-	r.end = r.begin
-	r.end.Minor++
-	r.end.Pre = nil
-	return r
-}
-
-func parseSemVerOrPanic(v string) semver.Version {
-	semVer, err := semver.Parse(v)
-	if err != nil {
-		panic(err)
-	}
-	return semVer
-}
+//go:generate thriftrw --thrift-root=. --generate-plugin-api --no-recurse plugin/api.thrift
+//go:generate thriftrw --thrift-root=. --no-version-check version/internal.thrift
+//go:generate ./scripts/updateLicenses.sh
