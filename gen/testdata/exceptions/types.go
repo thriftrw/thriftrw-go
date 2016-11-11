@@ -11,12 +11,13 @@ import (
 )
 
 type DoesNotExistException struct {
-	Key string `json:"key"`
+	Key    string  `json:"key"`
+	Error2 *string `json:"Error,omitempty"`
 }
 
 func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 	var (
-		fields [1]wire.Field
+		fields [2]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -27,6 +28,14 @@ func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
+	if v.Error2 != nil {
+		w, err = wire.NewValueString(*(v.Error2)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -43,6 +52,15 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 				}
 				keyIsSet = true
 			}
+		case 2:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.Error2 = &x
+				if err != nil {
+					return err
+				}
+			}
 		}
 	}
 	if !keyIsSet {
@@ -52,10 +70,14 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 }
 
 func (v *DoesNotExistException) String() string {
-	var fields [1]string
+	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("Key: %v", v.Key)
 	i++
+	if v.Error2 != nil {
+		fields[i] = fmt.Sprintf("Error2: %v", *(v.Error2))
+		i++
+	}
 	return fmt.Sprintf("DoesNotExistException{%v}", strings.Join(fields[:i], ", "))
 }
 
