@@ -25,4 +25,4 @@ package api
 
 
 
-const Version int32 = 2
+const APIVersion int32 = 3

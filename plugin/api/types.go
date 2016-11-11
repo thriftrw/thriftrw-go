@@ -816,8 +816,9 @@ func (v *HandshakeRequest) String() string {
 
 type HandshakeResponse struct {
 	Name       string    `json:"name"`
-	ApiVersion int32     `json:"apiVersion"`
+	APIVersion int32     `json:"apiVersion"`
 	Features   []Feature `json:"features"`
+	Version    string    `json:"version"`
 }
 
 type _List_Feature_ValueList []Feature
@@ -849,7 +850,7 @@ func (_List_Feature_ValueList) Close() {
 
 func (v *HandshakeResponse) ToWire() (wire.Value, error) {
 	var (
-		fields [3]wire.Field
+		fields [4]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -860,7 +861,7 @@ func (v *HandshakeResponse) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
-	w, err = wire.NewValueI32(v.ApiVersion), error(nil)
+	w, err = wire.NewValueI32(v.APIVersion), error(nil)
 	if err != nil {
 		return w, err
 	}
@@ -874,6 +875,12 @@ func (v *HandshakeResponse) ToWire() (wire.Value, error) {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 3, Value: w}
+	i++
+	w, err = wire.NewValueString(v.Version), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 4, Value: w}
 	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
@@ -906,6 +913,7 @@ func (v *HandshakeResponse) FromWire(w wire.Value) error {
 	nameIsSet := false
 	apiVersionIsSet := false
 	featuresIsSet := false
+	versionIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -918,7 +926,7 @@ func (v *HandshakeResponse) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TI32 {
-				v.ApiVersion, err = field.Value.GetI32(), error(nil)
+				v.APIVersion, err = field.Value.GetI32(), error(nil)
 				if err != nil {
 					return err
 				}
@@ -932,28 +940,41 @@ func (v *HandshakeResponse) FromWire(w wire.Value) error {
 				}
 				featuresIsSet = true
 			}
+		case 4:
+			if field.Value.Type() == wire.TBinary {
+				v.Version, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				versionIsSet = true
+			}
 		}
 	}
 	if !nameIsSet {
 		return errors.New("field Name of HandshakeResponse is required")
 	}
 	if !apiVersionIsSet {
-		return errors.New("field ApiVersion of HandshakeResponse is required")
+		return errors.New("field APIVersion of HandshakeResponse is required")
 	}
 	if !featuresIsSet {
 		return errors.New("field Features of HandshakeResponse is required")
+	}
+	if !versionIsSet {
+		return errors.New("field Version of HandshakeResponse is required")
 	}
 	return nil
 }
 
 func (v *HandshakeResponse) String() string {
-	var fields [3]string
+	var fields [4]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
-	fields[i] = fmt.Sprintf("ApiVersion: %v", v.ApiVersion)
+	fields[i] = fmt.Sprintf("APIVersion: %v", v.APIVersion)
 	i++
 	fields[i] = fmt.Sprintf("Features: %v", v.Features)
+	i++
+	fields[i] = fmt.Sprintf("Version: %v", v.Version)
 	i++
 	return fmt.Sprintf("HandshakeResponse{%v}", strings.Join(fields[:i], ", "))
 }
