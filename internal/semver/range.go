@@ -26,7 +26,7 @@ type Range struct {
 	End   Version
 }
 
-// Matches returns true if the given semver version number is in this range.
-func (r *Range) Matches(other Version) bool {
+// Contains returns true if the given semver version number is in this range.
+func (r *Range) Contains(other Version) bool {
 	return other.Compare(&r.Begin) >= 0 && other.Compare(&r.End) < 0
 }

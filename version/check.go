@@ -55,7 +55,7 @@ func CheckCompatWithGeneratedCodeAt(genCodeVersion string, fromPkg string) {
 		panic(err)
 	}
 
-	if !compatRange.Matches(v) {
+	if !compatRange.Contains(v) {
 		log.Panicf(`incompatible version from generated package %q, expected >=%s and <%s, got %s`,
 			fromPkg, &compatRange.Begin, &compatRange.End, &v)
 	}

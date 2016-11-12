@@ -55,7 +55,7 @@ func TestCompatibleRange(t *testing.T) {
 				t.Run(v, func(t *testing.T) {
 					version, err := Parse(v)
 					require.NoError(t, err)
-					assert.True(t, compatRange.Matches(version))
+					assert.True(t, compatRange.Contains(version))
 				})
 			}
 
@@ -63,7 +63,7 @@ func TestCompatibleRange(t *testing.T) {
 				t.Run(v, func(t *testing.T) {
 					version, err := Parse(v)
 					require.NoError(t, err)
-					assert.False(t, compatRange.Matches(version))
+					assert.False(t, compatRange.Contains(version))
 				})
 			}
 		})
