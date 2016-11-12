@@ -218,19 +218,37 @@ func enumItemReference(g Generator, v compile.EnumItemReference, t compile.TypeS
 // ConstantValuePtr generates an expression which is a pointer to a value of
 // type $t.
 func ConstantValuePtr(g Generator, c compile.ConstantValue, t compile.TypeSpec) (string, error) {
-	if !isPrimitiveType(t) {
-		return ConstantValue(g, c, t)
-	}
+	var ptrFunc string
 
-	err := g.EnsureDeclared(
-		`func _<.ThriftName>_ptr(v <typeReference .>) *<typeReference .> {
-			return &v
-		}`, t)
-	if err != nil {
-		return "", err
+	switch compile.RootTypeSpec(t).(type) {
+	case *compile.BoolSpec:
+		ptrFunc = fmt.Sprintf("%v.Bool", g.Import("go.uber.org/thriftrw/ptr"))
+	case *compile.I8Spec:
+		ptrFunc = fmt.Sprintf("%v.Int8", g.Import("go.uber.org/thriftrw/ptr"))
+	case *compile.I16Spec:
+		ptrFunc = fmt.Sprintf("%v.Int16", g.Import("go.uber.org/thriftrw/ptr"))
+	case *compile.I32Spec:
+		ptrFunc = fmt.Sprintf("%v.Int32", g.Import("go.uber.org/thriftrw/ptr"))
+	case *compile.I64Spec:
+		ptrFunc = fmt.Sprintf("%v.Int64", g.Import("go.uber.org/thriftrw/ptr"))
+	case *compile.DoubleSpec:
+		ptrFunc = fmt.Sprintf("%v.Float64", g.Import("go.uber.org/thriftrw/ptr"))
+	case *compile.StringSpec:
+		ptrFunc = fmt.Sprintf("%v.String", g.Import("go.uber.org/thriftrw/ptr"))
+	case *compile.EnumSpec:
+		ptrFunc = fmt.Sprintf("_%v_ptr", t.ThriftName())
+		err := g.EnsureDeclared(
+			`func _<.ThriftName>_ptr(v <typeReference .>) *<typeReference .> {
+				return &v
+			}`, t)
+		if err != nil {
+			return "", err
+		}
+	default:
+		return ConstantValue(g, c, t) // not a primitive
 	}
 
 	s, err := ConstantValue(g, c, t)
-	s = fmt.Sprintf("_%v_ptr(%v)", t.ThriftName(), s)
+	s = fmt.Sprintf("%v(%v)", ptrFunc, s)
 	return s, err
 }

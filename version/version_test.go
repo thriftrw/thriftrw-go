@@ -23,6 +23,8 @@ package version
 import (
 	"testing"
 
+	"go.uber.org/thriftrw/internal/semver"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -49,14 +51,14 @@ func TestCodeCompatRange(t *testing.T) {
 			compatRange := computeGenCodeCompabilityRange(tt.libVer)
 			for _, compatVer := range tt.compatVer {
 				t.Run(compatVer, func(t *testing.T) {
-					genv, err := parseSemVer(compatVer)
+					genv, err := semver.Parse(compatVer)
 					require.NoError(t, err)
 					assert.True(t, compatRange.IsCompatibleWith(genv))
 				})
 			}
 			for _, invalidVer := range tt.invalidVer {
 				t.Run(invalidVer, func(t *testing.T) {
-					genv, err := parseSemVer(invalidVer)
+					genv, err := semver.Parse(invalidVer)
 					require.NoError(t, err)
 					assert.False(t, compatRange.IsCompatibleWith(genv))
 				})
