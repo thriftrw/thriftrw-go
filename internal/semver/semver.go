@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package version
+package semver
 
 import (
 	"fmt"
@@ -27,7 +27,8 @@ import (
 	"strings"
 )
 
-type semVer struct {
+// Version is a parsed semantic version representation.
+type Version struct {
 	Major uint
 	Minor uint
 	Patch uint
@@ -44,7 +45,8 @@ const (
 
 var semVerRegex = regexp.MustCompile(`^` + numPart + `(?:` + preReleasePart + `)?(?:` + metaPart + `)?$`)
 
-func parseSemVer(v string) (r semVer, err error) {
+// Parse a semantic version string.
+func Parse(v string) (r Version, err error) {
 	parts := semVerRegex.FindStringSubmatch(v)
 	if parts == nil {
 		return r, fmt.Errorf(`cannot parse as semantic version: %q`, v)
@@ -67,20 +69,12 @@ func parseSemVer(v string) (r semVer, err error) {
 	return r, nil
 }
 
-func parseSemVerOrPanic(v string) semVer {
-	semVer, err := parseSemVer(v)
-	if err != nil {
-		panic(err)
-	}
-	return semVer
-}
-
 func parseUint(s string) (uint, error) {
 	v, err := strconv.ParseUint(s, 10, 31)
 	return uint(v), err
 }
 
-func (v *semVer) String() string {
+func (v *Version) String() string {
 	r := fmt.Sprintf("%d.%d.%d", v.Major, v.Minor, v.Patch)
 	if len(v.Pre) > 0 {
 		r += "-" + strings.Join(v.Pre, ".")
@@ -95,7 +89,7 @@ func (v *semVer) String() string {
 //  0 if a == b
 // -1 if a < b
 // +1 if a > b
-func (v *semVer) Compare(b *semVer) int {
+func (v *Version) Compare(b *Version) int {
 	a := v
 	if r := uintCmp(a.Major, b.Major); r != 0 {
 		return r
