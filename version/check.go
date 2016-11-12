@@ -22,7 +22,22 @@
 
 package version
 
-import "log"
+import (
+	"log"
+
+	"go.uber.org/thriftrw/internal/semver"
+)
+
+var compatRange = computeCompatibleRange()
+
+func computeCompatibleRange() semver.Range {
+	v, err := semver.Parse(Version)
+	if err != nil {
+		panic(err)
+	}
+
+	return semver.CompatibleRange(v)
+}
 
 // CheckCompatWithGeneratedCodeAt will panic if the ThriftRW version used to
 // generated code (given by `genCodeVersion`) is not compatible with the
@@ -35,10 +50,13 @@ import "log"
 // This function will ensure that the version mismatch is detected and help
 // avoid bugs that could be caused by this discrepancy.
 func CheckCompatWithGeneratedCodeAt(genCodeVersion string, fromPkg string) {
-	genv := parseSemVerOrPanic(genCodeVersion)
-	if !genCodeCompatbilityRange.IsCompatibleWith(genv) {
+	v, err := semver.Parse(genCodeVersion)
+	if err != nil {
+		panic(err)
+	}
+
+	if !compatRange.Contains(v) {
 		log.Panicf(`incompatible version from generated package %q, expected >=%s and <%s, got %s`,
-			fromPkg, &genCodeCompatbilityRange.begin,
-			&genCodeCompatbilityRange.end, &genv)
+			fromPkg, &compatRange.Begin, &compatRange.End, &v)
 	}
 }

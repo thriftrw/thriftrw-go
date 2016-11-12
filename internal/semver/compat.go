@@ -18,7 +18,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package version
+package semver
 
-// Version is the current ThriftRW version.
-const Version = "0.6.0"
+// CompatibleRange generates the compatibility range for generated code and
+// plugins.
+//
+// Assuming current Version is 1.2.3-pre we get:
+//
+// begin >= 1.0.0
+//   end  < 1.3.0-pre
+func CompatibleRange(v Version) (r Range) {
+	r.Begin = v
+	r.End = v
+
+	r.Begin.Pre = nil
+	r.Begin.Patch = 0
+	r.Begin.Minor = 0
+
+	r.End.Patch = 0
+	r.End.Minor++
+	return r
+}
