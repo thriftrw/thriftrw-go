@@ -30,6 +30,7 @@ import (
 	"go.uber.org/thriftrw/internal/multiplex"
 	"go.uber.org/thriftrw/plugin/api"
 	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/version"
 )
 
 const _fastPathFrameSize = 10 * 1024 * 1024 // 10 MB
@@ -104,8 +105,9 @@ type pluginHandler struct {
 func (h pluginHandler) Handshake(request *api.HandshakeRequest) (*api.HandshakeResponse, error) {
 	return &api.HandshakeResponse{
 		Name:       h.plugin.Name,
-		ApiVersion: api.Version,
+		APIVersion: api.APIVersion,
 		Features:   h.features,
+		Version:    version.Version,
 	}, nil
 }
 

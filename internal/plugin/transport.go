@@ -67,10 +67,10 @@ func NewTransportHandle(name string, t envelope.Transport) (Handle, error) {
 		}
 	}
 
-	if handshake.ApiVersion != api.Version {
+	if handshake.APIVersion != api.APIVersion {
 		return nil, errHandshakeFailed{
 			Name:   name,
-			Reason: errVersionMismatch{Want: api.Version, Got: handshake.ApiVersion},
+			Reason: errVersionMismatch{Want: api.APIVersion, Got: handshake.APIVersion},
 		}
 	}
 

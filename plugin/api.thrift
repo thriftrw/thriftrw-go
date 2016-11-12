@@ -1,14 +1,9 @@
 /**
- * Package api defines the core interface which plugins use to talk to
- * ThriftRW.
+ * API_VERSION is the version of the plugin API.
+ *
+ * This MUST be provided in the HandshakeResponse.
  */
-
-/**
- * Version is the plugin API version specified in this IDL. This MUST be
- * provided in HandshakeResponses to specify which version of the API the
- * plugin implements.
- */
-const i32 VERSION = 2
+const i32 API_VERSION = 3
 
 /**
  * ServiceID is an arbitrary unique identifier to reference the different
@@ -235,15 +230,20 @@ struct HandshakeResponse {
     /**
      * Version of the plugin API.
      *
-     * This is NOT the version of the plugin but the version of the plugin API
-     * which the plugin respects. This MUST match the version that ThriftRW
-     * expects or the program will fail.
+     * This MUST be set to API_VERSION by the plugin.
      */
-    2: required i32 apiVersion
+    2: required i32 apiVersion (go.name = "APIVersion")
     /**
      * List of features the plugin provides.
      */
     3: required list<Feature> features
+    /**
+     * Version of ThriftRW with which the plugin was built.
+     *
+     * This MUST be set to go.uber.org/thriftrw/version.Version by the plugin
+     * explicitly.
+     */
+    4: required string version
 }
 
 service Plugin {
