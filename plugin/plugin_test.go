@@ -10,6 +10,7 @@ import (
 	"go.uber.org/thriftrw/plugin/api"
 	"go.uber.org/thriftrw/plugin/plugintest"
 	"go.uber.org/thriftrw/ptr"
+	"go.uber.org/thriftrw/version"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -59,8 +60,9 @@ func TestEmptyPlugin(t *testing.T) {
 
 	response, err := client.Handshake(&api.HandshakeRequest{})
 	require.NoError(t, err)
-	assert.Equal(t, api.Version, response.ApiVersion)
+	assert.Equal(t, api.APIVersion, response.APIVersion)
 	assert.Equal(t, "hello", response.Name)
+	assert.Equal(t, version.Version, response.Version)
 	assert.Empty(t, response.Features)
 
 	assert.NoError(t, client.Goodbye())
@@ -85,7 +87,8 @@ func TestServiceGenerator(t *testing.T) {
 
 	handshake, err := pluginClient.Handshake(&api.HandshakeRequest{})
 	require.NoError(t, err)
-	assert.Equal(t, api.Version, handshake.ApiVersion)
+	assert.Equal(t, api.APIVersion, handshake.APIVersion)
+	assert.Equal(t, version.Version, handshake.Version)
 	assert.Equal(t, "hello", handshake.Name)
 	assert.Contains(t, handshake.Features, api.FeatureServiceGenerator)
 

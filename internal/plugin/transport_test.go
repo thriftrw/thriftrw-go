@@ -13,6 +13,7 @@ import (
 	"go.uber.org/thriftrw/plugin/api"
 	"go.uber.org/thriftrw/plugin/plugintest"
 	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/version"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -65,7 +66,8 @@ func (s *fakePluginServer) Handshake(t *testing.T, pluginName string, features [
 	s.Plugin.EXPECT().Handshake(&api.HandshakeRequest{}).
 		Return(&api.HandshakeResponse{
 			Name:       pluginName,
-			ApiVersion: api.Version,
+			APIVersion: api.APIVersion,
+			Version:    version.Version,
 			Features:   features,
 		}, nil)
 
@@ -122,7 +124,8 @@ func TestTransportHandleHandshakeError(t *testing.T) {
 			name: "foo",
 			response: &api.HandshakeResponse{
 				Name:       "bar",
-				ApiVersion: api.Version,
+				APIVersion: api.APIVersion,
+				Version:    version.Version,
 				Features:   []api.Feature{},
 			},
 			wantError: `handshake with plugin "foo" failed: ` +
@@ -133,11 +136,12 @@ func TestTransportHandleHandshakeError(t *testing.T) {
 			name: "foo",
 			response: &api.HandshakeResponse{
 				Name:       "foo",
-				ApiVersion: 42,
+				APIVersion: 42,
+				Version:    version.Version,
 				Features:   []api.Feature{},
 			},
 			wantError: `handshake with plugin "foo" failed: ` +
-				fmt.Sprintf("plugin API version mismatch: expected %d but got 42", api.Version),
+				fmt.Sprintf("plugin API version mismatch: expected %d but got 42", api.APIVersion),
 		},
 	}
 
