@@ -18,7 +18,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package version
+package semver
 
-// Version is the current ThriftRW version.
-const Version = "0.6.0"
+// Range is the range of version numbers that lie in [Begin, End).
+type Range struct {
+	Begin Version
+	End   Version
+}
+
+// Contains returns true if the given semver version number is in this range.
+func (r *Range) Contains(other Version) bool {
+	return other.Compare(&r.Begin) >= 0 && other.Compare(&r.End) < 0
+}

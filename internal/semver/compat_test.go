@@ -18,7 +18,54 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package version
+package semver
 
-// Version is the current ThriftRW version.
-const Version = "0.6.0"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+)
+
+func TestCompatibleRange(t *testing.T) {
+	test := []struct {
+		library      string
+		compatible   []string
+		incompatible []string
+	}{
+		{
+			library:      "1.2.3",
+			compatible:   []string{"1.2.3", "1.2.4", "1.0.0"},
+			incompatible: []string{"1.3.0", "0.9.9"},
+		},
+		{
+			library:      "2.0.0",
+			compatible:   []string{"2.0.0", "2.0.9", "2.1.0-pre"},
+			incompatible: []string{"2.1.0", "1.9.9", "2.0.0-pre"},
+		},
+	}
+	for _, tt := range test {
+		t.Run(tt.library, func(t *testing.T) {
+			libVersion, err := Parse(tt.library)
+			require.NoError(t, err)
+
+			compatRange := CompatibleRange(libVersion)
+
+			for _, v := range tt.compatible {
+				t.Run(v, func(t *testing.T) {
+					version, err := Parse(v)
+					require.NoError(t, err)
+					assert.True(t, compatRange.Contains(version))
+				})
+			}
+
+			for _, v := range tt.incompatible {
+				t.Run(v, func(t *testing.T) {
+					version, err := Parse(v)
+					require.NoError(t, err)
+					assert.False(t, compatRange.Contains(version))
+				})
+			}
+		})
+	}
+}
