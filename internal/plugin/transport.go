@@ -88,12 +88,18 @@ func NewTransportHandle(name string, t envelope.Transport) (Handle, error) {
 		}
 	}
 
-	version, err := semver.Parse(handshake.Version)
-	if err != nil {
-		return nil, errMalformedVersion{
-			Version: handshake.Version,
-			Reason:  err,
+	// If we got here, the API version matches so the plugin must have
+	// provided the Version
+	if handshake.Version == nil {
+		return nil, errHandshakeFailed{
+			Name:   name,
+			Reason: errVersionIsRequired,
 		}
+	}
+
+	version, err := semver.Parse(*handshake.Version)
+	if err != nil {
+		return nil, errHandshakeFailed{Name: name, Reason: err}
 	}
 
 	if !compatRange.Contains(version) {
@@ -101,7 +107,7 @@ func NewTransportHandle(name string, t envelope.Transport) (Handle, error) {
 			Name: name,
 			Reason: errVersionMismatch{
 				Want: compatRange,
-				Got:  handshake.Version,
+				Got:  *handshake.Version,
 			},
 		}
 	}

@@ -21,6 +21,7 @@
 package plugin
 
 import (
+	"errors"
 	"fmt"
 
 	"go.uber.org/thriftrw/internal/semver"
@@ -51,14 +52,7 @@ func (e errAPIVersionMismatch) Error() string {
 	return fmt.Sprintf("plugin API version mismatch: expected %v but got %v", e.Want, e.Got)
 }
 
-type errMalformedVersion struct {
-	Version string
-	Reason  error
-}
-
-func (e errMalformedVersion) Error() string {
-	return fmt.Sprintf("could not parse a version number from %q: %v", e.Version, e.Reason)
-}
+var errVersionIsRequired = errors.New("Version is required")
 
 type errVersionMismatch struct {
 	Want semver.Range
