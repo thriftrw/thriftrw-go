@@ -13,6 +13,7 @@ import (
 	"go.uber.org/thriftrw/plugin/api"
 	"go.uber.org/thriftrw/plugin/plugintest"
 	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/version"
 
 	"github.com/golang/mock/gomock"
@@ -67,7 +68,7 @@ func (s *fakePluginServer) Handshake(t *testing.T, pluginName string, features [
 		Return(&api.HandshakeResponse{
 			Name:       pluginName,
 			APIVersion: api.APIVersion,
-			Version:    version.Version,
+			Version:    ptr.String(version.Version),
 			Features:   features,
 		}, nil)
 
@@ -125,7 +126,7 @@ func TestTransportHandleHandshakeError(t *testing.T) {
 			response: &api.HandshakeResponse{
 				Name:       "bar",
 				APIVersion: api.APIVersion,
-				Version:    version.Version,
+				Version:    ptr.String(version.Version),
 				Features:   []api.Feature{},
 			},
 			wantError: `handshake with plugin "foo" failed: ` +
@@ -137,7 +138,7 @@ func TestTransportHandleHandshakeError(t *testing.T) {
 			response: &api.HandshakeResponse{
 				Name:       "foo",
 				APIVersion: 42,
-				Version:    version.Version,
+				Version:    ptr.String(version.Version),
 				Features:   []api.Feature{},
 			},
 			wantError: `handshake with plugin "foo" failed: ` +

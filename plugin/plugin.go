@@ -30,6 +30,7 @@ import (
 	"go.uber.org/thriftrw/internal/multiplex"
 	"go.uber.org/thriftrw/plugin/api"
 	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/version"
 )
 
@@ -107,7 +108,7 @@ func (h pluginHandler) Handshake(request *api.HandshakeRequest) (*api.HandshakeR
 		Name:       h.plugin.Name,
 		APIVersion: api.APIVersion,
 		Features:   h.features,
-		Version:    version.Version,
+		Version:    ptr.String(version.Version),
 	}, nil
 }
 
