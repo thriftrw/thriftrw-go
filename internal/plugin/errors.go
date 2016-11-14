@@ -20,7 +20,12 @@
 
 package plugin
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+
+	"go.uber.org/thriftrw/internal/semver"
+)
 
 type errHandshakeFailed struct {
 	Name   string
@@ -39,10 +44,23 @@ func (e errNameMismatch) Error() string {
 	return fmt.Sprintf("plugin name mismatch: expected %q but got %q", e.Want, e.Got)
 }
 
-type errVersionMismatch struct {
+type errAPIVersionMismatch struct {
 	Want, Got int32
 }
 
-func (e errVersionMismatch) Error() string {
+func (e errAPIVersionMismatch) Error() string {
 	return fmt.Sprintf("plugin API version mismatch: expected %v but got %v", e.Want, e.Got)
+}
+
+var errVersionIsRequired = errors.New("Version is required")
+
+type errVersionMismatch struct {
+	Want semver.Range
+	Got  string
+}
+
+func (e errVersionMismatch) Error() string {
+	return fmt.Sprintf(
+		"plugin compiled with the wrong version of ThriftRW: "+
+			"expected >=%v and <%v but got %v", &e.Want.Begin, &e.Want.End, e.Got)
 }

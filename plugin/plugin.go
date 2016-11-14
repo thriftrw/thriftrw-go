@@ -105,10 +105,10 @@ type pluginHandler struct {
 
 func (h pluginHandler) Handshake(request *api.HandshakeRequest) (*api.HandshakeResponse, error) {
 	return &api.HandshakeResponse{
-		Name:       h.plugin.Name,
-		APIVersion: api.APIVersion,
-		Features:   h.features,
-		Version:    ptr.String(version.Version),
+		Name:           h.plugin.Name,
+		APIVersion:     api.APIVersion,
+		Features:       h.features,
+		LibraryVersion: ptr.String(version.Version),
 	}, nil
 }
 
