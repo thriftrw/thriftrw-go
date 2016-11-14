@@ -66,10 +66,10 @@ func newFakePluginServer(mockCtrl *gomock.Controller) *fakePluginServer {
 func (s *fakePluginServer) Handshake(t *testing.T, pluginName string, features []api.Feature) Handle {
 	s.Plugin.EXPECT().Handshake(&api.HandshakeRequest{}).
 		Return(&api.HandshakeResponse{
-			Name:       pluginName,
-			APIVersion: api.APIVersion,
-			Version:    ptr.String(version.Version),
-			Features:   features,
+			Name:           pluginName,
+			APIVersion:     api.APIVersion,
+			LibraryVersion: ptr.String(version.Version),
+			Features:       features,
 		}, nil)
 
 	handle, err := NewTransportHandle(pluginName, s.ClientTransport)
@@ -124,10 +124,10 @@ func TestTransportHandleHandshakeError(t *testing.T) {
 			desc: "name mismatch",
 			name: "foo",
 			response: &api.HandshakeResponse{
-				Name:       "bar",
-				APIVersion: api.APIVersion,
-				Version:    ptr.String(version.Version),
-				Features:   []api.Feature{},
+				Name:           "bar",
+				APIVersion:     api.APIVersion,
+				LibraryVersion: ptr.String(version.Version),
+				Features:       []api.Feature{},
 			},
 			wantError: `handshake with plugin "foo" failed: ` +
 				`plugin name mismatch: expected "foo" but got "bar"`,
@@ -136,10 +136,10 @@ func TestTransportHandleHandshakeError(t *testing.T) {
 			desc: "version mismatch",
 			name: "foo",
 			response: &api.HandshakeResponse{
-				Name:       "foo",
-				APIVersion: 42,
-				Version:    ptr.String(version.Version),
-				Features:   []api.Feature{},
+				Name:           "foo",
+				APIVersion:     42,
+				LibraryVersion: ptr.String(version.Version),
+				Features:       []api.Feature{},
 			},
 			wantError: `handshake with plugin "foo" failed: ` +
 				fmt.Sprintf("plugin API version mismatch: expected %d but got 42", api.APIVersion),
@@ -148,10 +148,10 @@ func TestTransportHandleHandshakeError(t *testing.T) {
 			desc: "missing version",
 			name: "foo",
 			response: &api.HandshakeResponse{
-				Name:       "foo",
-				APIVersion: api.APIVersion,
-				Version:    nil,
-				Features:   []api.Feature{},
+				Name:           "foo",
+				APIVersion:     api.APIVersion,
+				LibraryVersion: nil,
+				Features:       []api.Feature{},
 			},
 			wantError: `handshake with plugin "foo" failed: Version is required`,
 		},
@@ -159,10 +159,10 @@ func TestTransportHandleHandshakeError(t *testing.T) {
 			desc: "unparseable version",
 			name: "foo",
 			response: &api.HandshakeResponse{
-				Name:       "foo",
-				APIVersion: api.APIVersion,
-				Version:    ptr.String("hello"),
-				Features:   []api.Feature{},
+				Name:           "foo",
+				APIVersion:     api.APIVersion,
+				LibraryVersion: ptr.String("hello"),
+				Features:       []api.Feature{},
 			},
 			wantError: `handshake with plugin "foo" failed: ` +
 				`cannot parse as semantic version: "hello"`,
@@ -171,10 +171,10 @@ func TestTransportHandleHandshakeError(t *testing.T) {
 			desc: "semver mismatch",
 			name: "foo",
 			response: &api.HandshakeResponse{
-				Name:       "foo",
-				APIVersion: api.APIVersion,
-				Version:    ptr.String("12.3.4"),
-				Features:   []api.Feature{},
+				Name:           "foo",
+				APIVersion:     api.APIVersion,
+				LibraryVersion: ptr.String("12.3.4"),
+				Features:       []api.Feature{},
 			},
 			wantError: `handshake with plugin "foo" failed: ` +
 				"plugin compiled with the wrong version of ThriftRW: " +
