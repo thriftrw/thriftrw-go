@@ -818,7 +818,7 @@ type HandshakeResponse struct {
 	Name       string    `json:"name"`
 	APIVersion int32     `json:"apiVersion"`
 	Features   []Feature `json:"features"`
-	Version    string    `json:"version"`
+	Version    *string   `json:"version,omitempty"`
 }
 
 type _List_Feature_ValueList []Feature
@@ -876,12 +876,14 @@ func (v *HandshakeResponse) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 3, Value: w}
 	i++
-	w, err = wire.NewValueString(v.Version), error(nil)
-	if err != nil {
-		return w, err
+	if v.Version != nil {
+		w, err = wire.NewValueString(*(v.Version)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 4, Value: w}
+		i++
 	}
-	fields[i] = wire.Field{ID: 4, Value: w}
-	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -913,7 +915,6 @@ func (v *HandshakeResponse) FromWire(w wire.Value) error {
 	nameIsSet := false
 	apiVersionIsSet := false
 	featuresIsSet := false
-	versionIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -942,11 +943,12 @@ func (v *HandshakeResponse) FromWire(w wire.Value) error {
 			}
 		case 4:
 			if field.Value.Type() == wire.TBinary {
-				v.Version, err = field.Value.GetString(), error(nil)
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.Version = &x
 				if err != nil {
 					return err
 				}
-				versionIsSet = true
 			}
 		}
 	}
@@ -958,9 +960,6 @@ func (v *HandshakeResponse) FromWire(w wire.Value) error {
 	}
 	if !featuresIsSet {
 		return errors.New("field Features of HandshakeResponse is required")
-	}
-	if !versionIsSet {
-		return errors.New("field Version of HandshakeResponse is required")
 	}
 	return nil
 }
@@ -974,8 +973,10 @@ func (v *HandshakeResponse) String() string {
 	i++
 	fields[i] = fmt.Sprintf("Features: %v", v.Features)
 	i++
-	fields[i] = fmt.Sprintf("Version: %v", v.Version)
-	i++
+	if v.Version != nil {
+		fields[i] = fmt.Sprintf("Version: %v", *(v.Version))
+		i++
+	}
 	return fmt.Sprintf("HandshakeResponse{%v}", strings.Join(fields[:i], ", "))
 }
 

@@ -243,7 +243,7 @@ struct HandshakeResponse {
      * This MUST be set to go.uber.org/thriftrw/version.Version by the plugin
      * explicitly.
      */
-    4: required string version
+    4: optional string version
 }
 
 service Plugin {
