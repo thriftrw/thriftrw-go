@@ -14,13 +14,13 @@ If using [Glide](https://github.com/Masterminds/glide), *at least* `glide versio
 $ glide --version
 glide version 0.12.2
 
-$ glide get 'go.uber.org/thriftrw#~0.3'
+$ glide get 'go.uber.org/thriftrw#^1'
 ```
 
-## Development Status: Alpha
+## Development Status: Stable
 
-Ready for adventurous users and early adopters, but there will likely be a few
-breaking changes and features required before releasing version 1.0.
+Ready for most users. No breaking changes will be made within the same major
+release.
 
 [doc-img]: https://godoc.org/go.uber.org/thriftrw?status.svg
 [doc]: https://godoc.org/go.uber.org/thriftrw
