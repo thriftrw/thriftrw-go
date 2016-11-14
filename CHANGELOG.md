@@ -1,12 +1,14 @@
 Releases
 ========
 
-v0.6.0 (unreleased)
+v1.0.0 (2016-11-14)
 -------------------
 
 -   Field names `ToWire`, `FromWire`, `String`, and for exceptions `Error` are
     now reserved. Override the names of these fields in the generated code with
     the `go.name` annotation.
+-   Plugins: The version of ThriftRW used to compile the plugin is now matched
+    against the version actually generating code.
 
 
 v0.5.0 (2016-11-10)
