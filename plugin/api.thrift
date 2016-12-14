@@ -27,7 +27,34 @@ struct TypeReference {
      */
     2: required string importPath
 
+    3: optional Type type
     // TODO(abg): Should this just be using ModuleID instead of a package?
+}
+
+enum Requiredness {
+  UNSPECIFIED = 1,
+  OPTIONAL,
+  REQUIRED
+}
+
+struct Field {
+  1: optional string name
+  2: optional i64 tag
+  3: optional Type type
+  4: optional Requiredness requiredness
+  5: optional map<string, string> annotations
+}
+
+struct StructType {
+  1: optional list<Field> fields
+}
+
+struct ExceptionType {
+  1: optional list<Field> fields
+}
+
+struct EnumType {
+  1: optional map<i64, string> values
 }
 
 /**
@@ -84,6 +111,21 @@ union Type {
      * Pointer to a type.
      */
     6: Type pointerType
+
+    /**
+    * A struct type, embeddded within a TypeReference.
+    */
+    7: StructType structType
+
+    /**
+    * An exception type, embeddded within a TypeReference.
+    */
+    8: ExceptionType exceptionType
+
+    /**
+    * An exception type, embeddded within a TypeReference.
+    */
+    9: EnumType enumType
 }
 
 /**
