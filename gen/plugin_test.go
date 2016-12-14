@@ -39,6 +39,8 @@ func TestAddRootService(t *testing.T) {
 						Directory:  "empty",
 					},
 				},
+				Structs: map[api.StructID]*api.Struct{},
+				Enums:   map[api.EnumID]*api.Enum{},
 			},
 		},
 		{
@@ -63,6 +65,8 @@ func TestAddRootService(t *testing.T) {
 						Directory:  "service",
 					},
 				},
+				Structs: map[api.StructID]*api.Struct{},
+				Enums:   map[api.EnumID]*api.Enum{},
 			},
 		},
 		{
@@ -102,6 +106,8 @@ func TestAddRootService(t *testing.T) {
 						Directory:  "kv",
 					},
 				},
+				Structs: map[api.StructID]*api.Struct{},
+				Enums:   map[api.EnumID]*api.Enum{},
 			},
 		},
 	}
@@ -182,6 +188,9 @@ func TestBuildFunction(t *testing.T) {
 								ReferenceType: &api.TypeReference{
 									Name:       "KeyDoesNotExist",
 									ImportPath: "go.uber.org/thriftrw/gen/testdata/keyvalue",
+									Type: &api.Type{
+										StructID: structID(1),
+									},
 								},
 							},
 						},
@@ -429,6 +438,9 @@ func TestBuildType(t *testing.T) {
 						ReferenceType: &api.TypeReference{
 							Name:       "Foo",
 							ImportPath: "go.uber.org/thriftrw/gen/testdata/foo",
+							Type: &api.Type{
+								StructID: structID(1),
+							},
 						},
 					},
 				},
@@ -471,12 +483,7 @@ func TestBuildType(t *testing.T) {
 					Name:       "Foo",
 					ImportPath: "go.uber.org/thriftrw/gen/testdata/bar",
 					Type: &api.Type{
-						EnumType: &api.EnumType{
-							Values: map[int32]string{
-								0: "A",
-								2: "B",
-							},
-						},
+						EnumID: enumID(1),
 					},
 				},
 			},
@@ -498,12 +505,7 @@ func TestBuildType(t *testing.T) {
 						Name:       "Foo",
 						ImportPath: "go.uber.org/thriftrw/gen/testdata/bar",
 						Type: &api.Type{
-							EnumType: &api.EnumType{
-								Values: map[int32]string{
-									0: "A",
-									2: "B",
-								},
-							},
+							EnumID: enumID(1),
 						},
 					},
 				},
@@ -530,6 +532,9 @@ func TestBuildType(t *testing.T) {
 					ReferenceType: &api.TypeReference{
 						Name:       "Foo",
 						ImportPath: "go.uber.org/thriftrw/gen/testdata/foo",
+						Type: &api.Type{
+							StructID: structID(1),
+						},
 					},
 				},
 			},
@@ -546,6 +551,9 @@ func TestBuildType(t *testing.T) {
 				ReferenceType: &api.TypeReference{
 					Name:       "Foo",
 					ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+					Type: &api.Type{
+						SimpleType: simpleType(api.SimpleTypeInt64),
+					},
 				},
 			},
 		},
@@ -561,6 +569,11 @@ func TestBuildType(t *testing.T) {
 					ReferenceType: &api.TypeReference{
 						Name:       "Foo",
 						ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+						Type: &api.Type{
+							PointerType: &api.Type{
+								SimpleType: simpleType(api.SimpleTypeInt64),
+							},
+						},
 					},
 				},
 			},
@@ -577,6 +590,11 @@ func TestBuildType(t *testing.T) {
 				ReferenceType: &api.TypeReference{
 					Name:       "Foo",
 					ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+					Type: &api.Type{
+						SliceType: &api.Type{
+							SimpleType: simpleType(api.SimpleTypeByte),
+						},
+					},
 				},
 			},
 		},
@@ -591,6 +609,11 @@ func TestBuildType(t *testing.T) {
 				ReferenceType: &api.TypeReference{
 					Name:       "Foo",
 					ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+					Type: &api.Type{
+						SliceType: &api.Type{
+							SimpleType: simpleType(api.SimpleTypeString),
+						},
+					},
 				},
 			},
 		},
@@ -617,4 +640,12 @@ func TestBuildType(t *testing.T) {
 
 func simpleType(s api.SimpleType) *api.SimpleType {
 	return &s
+}
+
+func enumID(i int32) *api.EnumID {
+	return (*api.EnumID)(ptr.Int32(i))
+}
+
+func structID(i int32) *api.StructID {
+	return (*api.StructID)(ptr.Int32(i))
 }

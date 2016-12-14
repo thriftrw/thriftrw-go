@@ -17,6 +17,36 @@ typedef i32 ServiceID
  */
 typedef i32 ModuleID
 
+typedef i32 StructID
+
+typedef i32 EnumID
+
+struct Field {
+  1: optional string name
+  2: optional i16 tag
+  3: optional Type type
+  4: optional bool isRequired
+  5: optional map<string, string> annotations
+}
+
+// heh
+enum StructType {
+  STRUCT = 1,
+  UNION,
+  EXCEPTION,
+}
+
+struct Struct {
+  1: optional string name
+  2: optional StructType type
+  3: optional list<Field> fields
+}
+
+struct Enum {
+  1: optional string name
+  2: optional map<i32, string> values
+}
+
 /**
  * TypeReference is a reference to a user-defined type.
  */
@@ -29,32 +59,6 @@ struct TypeReference {
 
     3: optional Type type
     // TODO(abg): Should this just be using ModuleID instead of a package?
-}
-
-enum Requiredness {
-  UNSPECIFIED = 1,
-  OPTIONAL,
-  REQUIRED
-}
-
-struct Field {
-  1: optional string name
-  2: optional i64 tag
-  3: optional Type type
-  4: optional Requiredness requiredness
-  5: optional map<string, string> annotations
-}
-
-struct StructType {
-  1: optional list<Field> fields
-}
-
-struct ExceptionType {
-  1: optional list<Field> fields
-}
-
-struct EnumType {
-  1: optional map<i32, string> values
 }
 
 /**
@@ -113,19 +117,14 @@ union Type {
     6: Type pointerType
 
     /**
-    * A struct type, embeddded within a TypeReference.
+    * A struct id, embeddded within a TypeReference.
     */
-    7: StructType structType
+    7: StructID structID
 
     /**
-    * An exception type, embeddded within a TypeReference.
+    * An enum id, embeddded within a TypeReference.
     */
-    8: ExceptionType exceptionType
-
-    /**
-    * An exception type, embeddded within a TypeReference.
-    */
-    9: EnumType enumType
+    8: EnumID enumID
 }
 
 /**
@@ -332,6 +331,10 @@ struct GenerateServiceRequest {
      * definition in this map.
      */
     3: required map<ModuleID, Module> modules
+
+    4: optional map<StructID, Struct> structs
+
+    5: optional map<EnumID, Enum> enums
 }
 
 /**

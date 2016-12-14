@@ -194,11 +194,9 @@ func (g *goFileGenerator) FormatType(t *api.Type) (string, error) {
 	case t.PointerType != nil:
 		v, err := g.FormatType(t.PointerType)
 		return "*" + v, err
-	case t.StructType != nil:
+	case t.StructID != nil:
 		fallthrough
-	case t.ExceptionType != nil:
-		fallthrough
-	case t.EnumType != nil:
+	case t.EnumID != nil:
 		return "", fmt.Errorf("FormatType should not recursively get to type: %v", t)
 	default:
 		return "", fmt.Errorf("unknown type: %v", t)

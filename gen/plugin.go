@@ -23,6 +23,7 @@ package gen
 import (
 	"fmt"
 
+	"go.uber.org/thriftrw/ast"
 	"go.uber.org/thriftrw/compile"
 	"go.uber.org/thriftrw/plugin/api"
 	"go.uber.org/thriftrw/ptr"
@@ -37,12 +38,20 @@ type generateServiceBuilder struct {
 
 	nextModuleID  api.ModuleID
 	nextServiceID api.ServiceID
+	nextStructID  api.StructID
+	nextEnumID    api.EnumID
 
 	// ThriftFile -> Module ID
 	moduleIDs map[string]api.ModuleID
 
 	// ThriftFile -> Service name -> Service ID
 	serviceIDs map[string]map[serviceName]api.ServiceID
+
+	// ThriftFile -> Struct name -> Struct ID
+	structIDs map[string]map[string]api.StructID
+
+	// ThriftFile -> Enum name -> Enum ID
+	enumIDs map[string]map[string]api.EnumID
 
 	// To ensure there are no duplicates
 	rootServices map[api.ServiceID]struct{}
@@ -54,12 +63,18 @@ func newGenerateServiceBuilder(i thriftPackageImporter) *generateServiceBuilder 
 			RootServices: make([]api.ServiceID, 0, 10),
 			Services:     make(map[api.ServiceID]*api.Service),
 			Modules:      make(map[api.ModuleID]*api.Module),
+			Structs:      make(map[api.StructID]*api.Struct),
+			Enums:        make(map[api.EnumID]*api.Enum),
 		},
 		importer:      i,
 		nextModuleID:  1,
 		nextServiceID: 1,
+		nextStructID:  1,
+		nextEnumID:    1,
 		moduleIDs:     make(map[string]api.ModuleID),
 		serviceIDs:    make(map[string]map[serviceName]api.ServiceID),
+		structIDs:     make(map[string]map[string]api.StructID),
+		enumIDs:       make(map[string]map[string]api.EnumID),
 		rootServices:  make(map[api.ServiceID]struct{}),
 	}
 }
@@ -108,6 +123,47 @@ func (g *generateServiceBuilder) addModule(thriftPath string) (api.ModuleID, err
 		Directory:  dir,
 	}
 	return id, nil
+}
+
+func (g *generateServiceBuilder) addOrGetEnumID(spec *compile.EnumSpec) (api.EnumID, error) {
+	thriftFileMap, ok := g.enumIDs[spec.ThriftFile()]
+	if !ok {
+		thriftFileMap = make(map[string]api.EnumID)
+		g.enumIDs[spec.ThriftFile()] = thriftFileMap
+	}
+	enumID, ok := thriftFileMap[spec.Name]
+	if !ok {
+		enumID = g.nextEnumID
+		g.nextEnumID++
+		thriftFileMap[spec.Name] = enumID
+		enum, err := g.buildEnum(spec)
+		if err != nil {
+			return 0, err
+		}
+		g.Enums[enumID] = enum
+	}
+	return enumID, nil
+}
+
+func (g *generateServiceBuilder) addOrGetStructID(spec *compile.StructSpec) (api.StructID, error) {
+	thriftFileMap, ok := g.structIDs[spec.ThriftFile()]
+	if !ok {
+		thriftFileMap = make(map[string]api.StructID)
+		g.structIDs[spec.ThriftFile()] = thriftFileMap
+	}
+	structID, ok := thriftFileMap[spec.Name]
+	if !ok {
+		structID = g.nextStructID
+		g.nextStructID++
+		thriftFileMap[spec.Name] = structID
+		// must come after struct id is set in case of recursive types
+		s, err := g.buildStruct(spec)
+		if err != nil {
+			return 0, err
+		}
+		g.Structs[structID] = s
+	}
+	return structID, nil
 }
 
 func (g *generateServiceBuilder) addService(spec *compile.ServiceSpec) (api.ServiceID, error) {
@@ -241,21 +297,16 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 		if err != nil {
 			return nil, err
 		}
-		values := make(map[int32]string)
-		for _, enumItem := range spec.(*compile.EnumSpec).Items {
-			if _, ok := values[enumItem.Value]; ok {
-				return nil, fmt.Errorf("duplicate enum value for enum %s: %d", name, enumItem.Value)
-			}
-			values[enumItem.Value] = enumItem.Name
+		enumID, err := g.addOrGetEnumID(spec.(*compile.EnumSpec))
+		if err != nil {
+			return nil, err
 		}
 		t = &api.Type{
 			ReferenceType: &api.TypeReference{
 				Name:       name,
 				ImportPath: importPath,
 				Type: &api.Type{
-					EnumType: &api.EnumType{
-						Values: values,
-					},
+					EnumID: &enumID,
 				},
 			},
 		}
@@ -323,11 +374,18 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 			return nil, err
 		}
 
+		structID, err := g.addOrGetStructID(spec.(*compile.StructSpec))
+		if err != nil {
+			return nil, err
+		}
 		return &api.Type{
 			PointerType: &api.Type{
 				ReferenceType: &api.TypeReference{
 					Name:       name,
 					ImportPath: importPath,
+					Type: &api.Type{
+						StructID: &structID,
+					},
 				},
 			},
 		}, nil
@@ -343,10 +401,16 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 			return nil, err
 		}
 
+		targetType, err := g.buildType(spec.(*compile.TypedefSpec).Target, required)
+		if err != nil {
+			return nil, err
+		}
+
 		t = &api.Type{
 			ReferenceType: &api.TypeReference{
 				Name:       name,
 				ImportPath: importPath,
+				Type:       targetType,
 			},
 		}
 
@@ -357,5 +421,74 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 		return t, nil
 	default:
 		panic(fmt.Sprintf("Unknown type (%T) %v", spec, spec))
+	}
+}
+
+func (g *generateServiceBuilder) buildEnum(spec *compile.EnumSpec) (*api.Enum, error) {
+	values := make(map[int32]string)
+	for _, enumItem := range spec.Items {
+		if _, ok := values[enumItem.Value]; ok {
+			return nil, fmt.Errorf("duplicate enum value for enum %s: %d", spec.Name, enumItem.Value)
+		}
+		values[enumItem.Value] = enumItem.Name
+	}
+	return &api.Enum{
+		Name:   &spec.Name,
+		Values: values,
+	}, nil
+}
+
+func (g *generateServiceBuilder) buildStruct(spec *compile.StructSpec) (*api.Struct, error) {
+	structType, err := structureTypeToStructType(spec.Type)
+	if err != nil {
+		return nil, err
+	}
+	fields, err := g.buildFields(spec.Fields)
+	if err != nil {
+		return nil, err
+	}
+	return &api.Struct{
+		Name:   &spec.Name,
+		Type:   &structType,
+		Fields: fields,
+	}, nil
+}
+
+func (g *generateServiceBuilder) buildFields(fieldSpecs []*compile.FieldSpec) ([]*api.Field, error) {
+	fields := make([]*api.Field, len(fieldSpecs))
+	for i, fieldSpec := range fieldSpecs {
+		field, err := g.buildField(fieldSpec)
+		if err != nil {
+			return nil, err
+		}
+		fields[i] = field
+	}
+	return fields, nil
+}
+
+func (g *generateServiceBuilder) buildField(fieldSpec *compile.FieldSpec) (*api.Field, error) {
+	t, err := g.buildType(fieldSpec.Type, fieldSpec.Required)
+	if err != nil {
+		return nil, err
+	}
+	return &api.Field{
+		Name:        &fieldSpec.Name,
+		Tag:         &fieldSpec.ID,
+		Type:        t,
+		IsRequired:  &fieldSpec.Required,
+		Annotations: fieldSpec.Annotations,
+	}, nil
+}
+
+func structureTypeToStructType(structureType ast.StructureType) (api.StructType, error) {
+	switch structureType {
+	case ast.StructType:
+		return api.StructTypeStruct, nil
+	case ast.UnionType:
+		return api.StructTypeUnion, nil
+	case ast.ExceptionType:
+		return api.StructTypeException, nil
+	default:
+		return api.StructTypeStruct, fmt.Errorf("unknown ast.StructureType: %v", structureType)
 	}
 }

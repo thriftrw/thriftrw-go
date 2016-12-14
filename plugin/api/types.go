@@ -113,7 +113,8 @@ func (v *Argument) String() string {
 	return fmt.Sprintf("Argument{%v}", strings.Join(fields[:i], ", "))
 }
 
-type EnumType struct {
+type Enum struct {
+	Name   *string          `json:"name,omitempty"`
 	Values map[int32]string `json:"values"`
 }
 
@@ -152,19 +153,27 @@ func (_Map_I32_String_MapItemList) ValueType() wire.Type {
 func (_Map_I32_String_MapItemList) Close() {
 }
 
-func (v *EnumType) ToWire() (wire.Value, error) {
+func (v *Enum) ToWire() (wire.Value, error) {
 	var (
-		fields [1]wire.Field
+		fields [2]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
 	)
+	if v.Name != nil {
+		w, err = wire.NewValueString(*(v.Name)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
 	if v.Values != nil {
 		w, err = wire.NewValueMap(_Map_I32_String_MapItemList(v.Values)), error(nil)
 		if err != nil {
 			return w, err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
@@ -194,11 +203,20 @@ func _Map_I32_String_Read(m wire.MapItemList) (map[int32]string, error) {
 	return o, err
 }
 
-func (v *EnumType) FromWire(w wire.Value) error {
+func (v *Enum) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.Name = &x
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
 			if field.Value.Type() == wire.TMap {
 				v.Values, err = _Map_I32_String_Read(field.Value.GetMap())
 				if err != nil {
@@ -210,115 +228,36 @@ func (v *EnumType) FromWire(w wire.Value) error {
 	return nil
 }
 
-func (v *EnumType) String() string {
-	var fields [1]string
+func (v *Enum) String() string {
+	var fields [2]string
 	i := 0
+	if v.Name != nil {
+		fields[i] = fmt.Sprintf("Name: %v", *(v.Name))
+		i++
+	}
 	if v.Values != nil {
 		fields[i] = fmt.Sprintf("Values: %v", v.Values)
 		i++
 	}
-	return fmt.Sprintf("EnumType{%v}", strings.Join(fields[:i], ", "))
+	return fmt.Sprintf("Enum{%v}", strings.Join(fields[:i], ", "))
 }
 
-type ExceptionType struct {
-	Fields []*Field `json:"fields"`
+type EnumID int32
+
+func (v EnumID) ToWire() (wire.Value, error) {
+	x := (int32)(v)
+	return wire.NewValueI32(x), error(nil)
 }
 
-type _List_Field_ValueList []*Field
-
-func (v _List_Field_ValueList) ForEach(f func(wire.Value) error) error {
-	for i, x := range v {
-		if x == nil {
-			return fmt.Errorf("invalid [%v]: value is nil", i)
-		}
-		w, err := x.ToWire()
-		if err != nil {
-			return err
-		}
-		err = f(w)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+func (v EnumID) String() string {
+	x := (int32)(v)
+	return fmt.Sprint(x)
 }
 
-func (v _List_Field_ValueList) Size() int {
-	return len(v)
-}
-
-func (_List_Field_ValueList) ValueType() wire.Type {
-	return wire.TStruct
-}
-
-func (_List_Field_ValueList) Close() {
-}
-
-func (v *ExceptionType) ToWire() (wire.Value, error) {
-	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
-	)
-	if v.Fields != nil {
-		w, err = wire.NewValueList(_List_Field_ValueList(v.Fields)), error(nil)
-		if err != nil {
-			return w, err
-		}
-		fields[i] = wire.Field{ID: 1, Value: w}
-		i++
-	}
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
-}
-
-func _Field_Read(w wire.Value) (*Field, error) {
-	var v Field
-	err := v.FromWire(w)
-	return &v, err
-}
-
-func _List_Field_Read(l wire.ValueList) ([]*Field, error) {
-	if l.ValueType() != wire.TStruct {
-		return nil, nil
-	}
-	o := make([]*Field, 0, l.Size())
-	err := l.ForEach(func(x wire.Value) error {
-		i, err := _Field_Read(x)
-		if err != nil {
-			return err
-		}
-		o = append(o, i)
-		return nil
-	})
-	l.Close()
-	return o, err
-}
-
-func (v *ExceptionType) FromWire(w wire.Value) error {
-	var err error
-	for _, field := range w.GetStruct().Fields {
-		switch field.ID {
-		case 1:
-			if field.Value.Type() == wire.TList {
-				v.Fields, err = _List_Field_Read(field.Value.GetList())
-				if err != nil {
-					return err
-				}
-			}
-		}
-	}
-	return nil
-}
-
-func (v *ExceptionType) String() string {
-	var fields [1]string
-	i := 0
-	if v.Fields != nil {
-		fields[i] = fmt.Sprintf("Fields: %v", v.Fields)
-		i++
-	}
-	return fmt.Sprintf("ExceptionType{%v}", strings.Join(fields[:i], ", "))
+func (v *EnumID) FromWire(w wire.Value) error {
+	x, err := w.GetI32(), error(nil)
+	*v = (EnumID)(x)
+	return err
 }
 
 type Feature int32
@@ -388,11 +327,11 @@ func (v *Feature) UnmarshalJSON(text []byte) error {
 }
 
 type Field struct {
-	Name         *string           `json:"name,omitempty"`
-	Tag          *int64            `json:"tag,omitempty"`
-	Type         *Type             `json:"type,omitempty"`
-	Requiredness *Requiredness     `json:"requiredness,omitempty"`
-	Annotations  map[string]string `json:"annotations"`
+	Name        *string           `json:"name,omitempty"`
+	Tag         *int16            `json:"tag,omitempty"`
+	Type        *Type             `json:"type,omitempty"`
+	IsRequired  *bool             `json:"isRequired,omitempty"`
+	Annotations map[string]string `json:"annotations"`
 }
 
 type _Map_String_String_MapItemList map[string]string
@@ -446,7 +385,7 @@ func (v *Field) ToWire() (wire.Value, error) {
 		i++
 	}
 	if v.Tag != nil {
-		w, err = wire.NewValueI64(*(v.Tag)), error(nil)
+		w, err = wire.NewValueI16(*(v.Tag)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -461,8 +400,8 @@ func (v *Field) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 3, Value: w}
 		i++
 	}
-	if v.Requiredness != nil {
-		w, err = v.Requiredness.ToWire()
+	if v.IsRequired != nil {
+		w, err = wire.NewValueBool(*(v.IsRequired)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -478,12 +417,6 @@ func (v *Field) ToWire() (wire.Value, error) {
 		i++
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
-}
-
-func _Requiredness_Read(w wire.Value) (Requiredness, error) {
-	var v Requiredness
-	err := v.FromWire(w)
-	return v, err
 }
 
 func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
@@ -524,9 +457,9 @@ func (v *Field) FromWire(w wire.Value) error {
 				}
 			}
 		case 2:
-			if field.Value.Type() == wire.TI64 {
-				var x int64
-				x, err = field.Value.GetI64(), error(nil)
+			if field.Value.Type() == wire.TI16 {
+				var x int16
+				x, err = field.Value.GetI16(), error(nil)
 				v.Tag = &x
 				if err != nil {
 					return err
@@ -540,10 +473,10 @@ func (v *Field) FromWire(w wire.Value) error {
 				}
 			}
 		case 4:
-			if field.Value.Type() == wire.TI32 {
-				var x Requiredness
-				x, err = _Requiredness_Read(field.Value)
-				v.Requiredness = &x
+			if field.Value.Type() == wire.TBool {
+				var x bool
+				x, err = field.Value.GetBool(), error(nil)
+				v.IsRequired = &x
 				if err != nil {
 					return err
 				}
@@ -575,8 +508,8 @@ func (v *Field) String() string {
 		fields[i] = fmt.Sprintf("Type: %v", v.Type)
 		i++
 	}
-	if v.Requiredness != nil {
-		fields[i] = fmt.Sprintf("Requiredness: %v", *(v.Requiredness))
+	if v.IsRequired != nil {
+		fields[i] = fmt.Sprintf("IsRequired: %v", *(v.IsRequired))
 		i++
 	}
 	if v.Annotations != nil {
@@ -799,6 +732,8 @@ type GenerateServiceRequest struct {
 	RootServices []ServiceID            `json:"rootServices"`
 	Services     map[ServiceID]*Service `json:"services"`
 	Modules      map[ModuleID]*Module   `json:"modules"`
+	Structs      map[StructID]*Struct   `json:"structs"`
+	Enums        map[EnumID]*Enum       `json:"enums"`
 }
 
 type _List_ServiceID_ValueList []ServiceID
@@ -904,9 +839,85 @@ func (_Map_ModuleID_Module_MapItemList) ValueType() wire.Type {
 func (_Map_ModuleID_Module_MapItemList) Close() {
 }
 
+type _Map_StructID_Struct_MapItemList map[StructID]*Struct
+
+func (m _Map_StructID_Struct_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for k, v := range m {
+		if v == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", k)
+		}
+		kw, err := k.ToWire()
+		if err != nil {
+			return err
+		}
+		vw, err := v.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(wire.MapItem{Key: kw, Value: vw})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_StructID_Struct_MapItemList) Size() int {
+	return len(m)
+}
+
+func (_Map_StructID_Struct_MapItemList) KeyType() wire.Type {
+	return wire.TI32
+}
+
+func (_Map_StructID_Struct_MapItemList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_Map_StructID_Struct_MapItemList) Close() {
+}
+
+type _Map_EnumID_Enum_MapItemList map[EnumID]*Enum
+
+func (m _Map_EnumID_Enum_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for k, v := range m {
+		if v == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", k)
+		}
+		kw, err := k.ToWire()
+		if err != nil {
+			return err
+		}
+		vw, err := v.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(wire.MapItem{Key: kw, Value: vw})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_EnumID_Enum_MapItemList) Size() int {
+	return len(m)
+}
+
+func (_Map_EnumID_Enum_MapItemList) KeyType() wire.Type {
+	return wire.TI32
+}
+
+func (_Map_EnumID_Enum_MapItemList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_Map_EnumID_Enum_MapItemList) Close() {
+}
+
 func (v *GenerateServiceRequest) ToWire() (wire.Value, error) {
 	var (
-		fields [3]wire.Field
+		fields [5]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -938,6 +949,22 @@ func (v *GenerateServiceRequest) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 3, Value: w}
 	i++
+	if v.Structs != nil {
+		w, err = wire.NewValueMap(_Map_StructID_Struct_MapItemList(v.Structs)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 4, Value: w}
+		i++
+	}
+	if v.Enums != nil {
+		w, err = wire.NewValueMap(_Map_EnumID_Enum_MapItemList(v.Enums)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 5, Value: w}
+		i++
+	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -1030,6 +1057,78 @@ func _Map_ModuleID_Module_Read(m wire.MapItemList) (map[ModuleID]*Module, error)
 	return o, err
 }
 
+func _StructID_Read(w wire.Value) (StructID, error) {
+	var x StructID
+	err := x.FromWire(w)
+	return x, err
+}
+
+func _Struct_Read(w wire.Value) (*Struct, error) {
+	var v Struct
+	err := v.FromWire(w)
+	return &v, err
+}
+
+func _Map_StructID_Struct_Read(m wire.MapItemList) (map[StructID]*Struct, error) {
+	if m.KeyType() != wire.TI32 {
+		return nil, nil
+	}
+	if m.ValueType() != wire.TStruct {
+		return nil, nil
+	}
+	o := make(map[StructID]*Struct, m.Size())
+	err := m.ForEach(func(x wire.MapItem) error {
+		k, err := _StructID_Read(x.Key)
+		if err != nil {
+			return err
+		}
+		v, err := _Struct_Read(x.Value)
+		if err != nil {
+			return err
+		}
+		o[k] = v
+		return nil
+	})
+	m.Close()
+	return o, err
+}
+
+func _EnumID_Read(w wire.Value) (EnumID, error) {
+	var x EnumID
+	err := x.FromWire(w)
+	return x, err
+}
+
+func _Enum_Read(w wire.Value) (*Enum, error) {
+	var v Enum
+	err := v.FromWire(w)
+	return &v, err
+}
+
+func _Map_EnumID_Enum_Read(m wire.MapItemList) (map[EnumID]*Enum, error) {
+	if m.KeyType() != wire.TI32 {
+		return nil, nil
+	}
+	if m.ValueType() != wire.TStruct {
+		return nil, nil
+	}
+	o := make(map[EnumID]*Enum, m.Size())
+	err := m.ForEach(func(x wire.MapItem) error {
+		k, err := _EnumID_Read(x.Key)
+		if err != nil {
+			return err
+		}
+		v, err := _Enum_Read(x.Value)
+		if err != nil {
+			return err
+		}
+		o[k] = v
+		return nil
+	})
+	m.Close()
+	return o, err
+}
+
 func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
 	var err error
 	rootServicesIsSet := false
@@ -1061,6 +1160,20 @@ func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
 				}
 				modulesIsSet = true
 			}
+		case 4:
+			if field.Value.Type() == wire.TMap {
+				v.Structs, err = _Map_StructID_Struct_Read(field.Value.GetMap())
+				if err != nil {
+					return err
+				}
+			}
+		case 5:
+			if field.Value.Type() == wire.TMap {
+				v.Enums, err = _Map_EnumID_Enum_Read(field.Value.GetMap())
+				if err != nil {
+					return err
+				}
+			}
 		}
 	}
 	if !rootServicesIsSet {
@@ -1076,7 +1189,7 @@ func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
 }
 
 func (v *GenerateServiceRequest) String() string {
-	var fields [3]string
+	var fields [5]string
 	i := 0
 	fields[i] = fmt.Sprintf("RootServices: %v", v.RootServices)
 	i++
@@ -1084,6 +1197,14 @@ func (v *GenerateServiceRequest) String() string {
 	i++
 	fields[i] = fmt.Sprintf("Modules: %v", v.Modules)
 	i++
+	if v.Structs != nil {
+		fields[i] = fmt.Sprintf("Structs: %v", v.Structs)
+		i++
+	}
+	if v.Enums != nil {
+		fields[i] = fmt.Sprintf("Enums: %v", v.Enums)
+		i++
+	}
 	return fmt.Sprintf("GenerateServiceRequest{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -1475,88 +1596,6 @@ func (v *ModuleID) FromWire(w wire.Value) error {
 	return err
 }
 
-type Requiredness int32
-
-const (
-	RequirednessUnspecified Requiredness = 1
-	RequirednessOptional    Requiredness = 2
-	RequirednessRequired    Requiredness = 3
-)
-
-func (v Requiredness) ToWire() (wire.Value, error) {
-	return wire.NewValueI32(int32(v)), nil
-}
-
-func (v *Requiredness) FromWire(w wire.Value) error {
-	*v = (Requiredness)(w.GetI32())
-	return nil
-}
-
-func (v Requiredness) String() string {
-	w := int32(v)
-	switch w {
-	case 1:
-		return "UNSPECIFIED"
-	case 2:
-		return "OPTIONAL"
-	case 3:
-		return "REQUIRED"
-	}
-	return fmt.Sprintf("Requiredness(%d)", w)
-}
-
-func (v Requiredness) MarshalJSON() ([]byte, error) {
-	switch int32(v) {
-	case 1:
-		return ([]byte)("\"UNSPECIFIED\""), nil
-	case 2:
-		return ([]byte)("\"OPTIONAL\""), nil
-	case 3:
-		return ([]byte)("\"REQUIRED\""), nil
-	}
-	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
-}
-
-func (v *Requiredness) UnmarshalJSON(text []byte) error {
-	d := json.NewDecoder(bytes.NewReader(text))
-	d.UseNumber()
-	t, err := d.Token()
-	if err != nil {
-		return err
-	}
-	switch w := t.(type) {
-	case json.Number:
-		x, err := w.Int64()
-		if err != nil {
-			return err
-		}
-		if x > math.MaxInt32 {
-			return fmt.Errorf("enum overflow from JSON %q for %q", text, "Requiredness")
-		}
-		if x < math.MinInt32 {
-			return fmt.Errorf("enum underflow from JSON %q for %q", text, "Requiredness")
-		}
-		*v = (Requiredness)(x)
-		return nil
-	case string:
-		switch w {
-		case "UNSPECIFIED":
-			*v = RequirednessUnspecified
-			return nil
-		case "OPTIONAL":
-			*v = RequirednessOptional
-			return nil
-		case "REQUIRED":
-			*v = RequirednessRequired
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "Requiredness")
-		}
-	default:
-		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "Requiredness")
-	}
-}
-
 type Service struct {
 	Name       string      `json:"name"`
 	ThriftName string      `json:"thriftName"`
@@ -1895,33 +1934,128 @@ func (v *SimpleType) UnmarshalJSON(text []byte) error {
 	}
 }
 
-type StructType struct {
-	Fields []*Field `json:"fields"`
+type Struct struct {
+	Name   *string     `json:"name,omitempty"`
+	Type   *StructType `json:"type,omitempty"`
+	Fields []*Field    `json:"fields"`
 }
 
-func (v *StructType) ToWire() (wire.Value, error) {
+type _List_Field_ValueList []*Field
+
+func (v _List_Field_ValueList) ForEach(f func(wire.Value) error) error {
+	for i, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", i)
+		}
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_Field_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_Field_ValueList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_List_Field_ValueList) Close() {
+}
+
+func (v *Struct) ToWire() (wire.Value, error) {
 	var (
-		fields [1]wire.Field
+		fields [3]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
 	)
-	if v.Fields != nil {
-		w, err = wire.NewValueList(_List_Field_ValueList(v.Fields)), error(nil)
+	if v.Name != nil {
+		w, err = wire.NewValueString(*(v.Name)), error(nil)
 		if err != nil {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
+	if v.Type != nil {
+		w, err = v.Type.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
+	if v.Fields != nil {
+		w, err = wire.NewValueList(_List_Field_ValueList(v.Fields)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
+		i++
+	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func (v *StructType) FromWire(w wire.Value) error {
+func _StructType_Read(w wire.Value) (StructType, error) {
+	var v StructType
+	err := v.FromWire(w)
+	return v, err
+}
+
+func _Field_Read(w wire.Value) (*Field, error) {
+	var v Field
+	err := v.FromWire(w)
+	return &v, err
+}
+
+func _List_Field_Read(l wire.ValueList) ([]*Field, error) {
+	if l.ValueType() != wire.TStruct {
+		return nil, nil
+	}
+	o := make([]*Field, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
+		i, err := _Field_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Close()
+	return o, err
+}
+
+func (v *Struct) FromWire(w wire.Value) error {
 	var err error
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.Name = &x
+				if err != nil {
+					return err
+				}
+			}
+		case 2:
+			if field.Value.Type() == wire.TI32 {
+				var x StructType
+				x, err = _StructType_Read(field.Value)
+				v.Type = &x
+				if err != nil {
+					return err
+				}
+			}
+		case 3:
 			if field.Value.Type() == wire.TList {
 				v.Fields, err = _List_Field_Read(field.Value.GetList())
 				if err != nil {
@@ -1933,14 +2067,122 @@ func (v *StructType) FromWire(w wire.Value) error {
 	return nil
 }
 
-func (v *StructType) String() string {
-	var fields [1]string
+func (v *Struct) String() string {
+	var fields [3]string
 	i := 0
+	if v.Name != nil {
+		fields[i] = fmt.Sprintf("Name: %v", *(v.Name))
+		i++
+	}
+	if v.Type != nil {
+		fields[i] = fmt.Sprintf("Type: %v", *(v.Type))
+		i++
+	}
 	if v.Fields != nil {
 		fields[i] = fmt.Sprintf("Fields: %v", v.Fields)
 		i++
 	}
-	return fmt.Sprintf("StructType{%v}", strings.Join(fields[:i], ", "))
+	return fmt.Sprintf("Struct{%v}", strings.Join(fields[:i], ", "))
+}
+
+type StructID int32
+
+func (v StructID) ToWire() (wire.Value, error) {
+	x := (int32)(v)
+	return wire.NewValueI32(x), error(nil)
+}
+
+func (v StructID) String() string {
+	x := (int32)(v)
+	return fmt.Sprint(x)
+}
+
+func (v *StructID) FromWire(w wire.Value) error {
+	x, err := w.GetI32(), error(nil)
+	*v = (StructID)(x)
+	return err
+}
+
+type StructType int32
+
+const (
+	StructTypeStruct    StructType = 1
+	StructTypeUnion     StructType = 2
+	StructTypeException StructType = 3
+)
+
+func (v StructType) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
+}
+
+func (v *StructType) FromWire(w wire.Value) error {
+	*v = (StructType)(w.GetI32())
+	return nil
+}
+
+func (v StructType) String() string {
+	w := int32(v)
+	switch w {
+	case 1:
+		return "STRUCT"
+	case 2:
+		return "UNION"
+	case 3:
+		return "EXCEPTION"
+	}
+	return fmt.Sprintf("StructType(%d)", w)
+}
+
+func (v StructType) MarshalJSON() ([]byte, error) {
+	switch int32(v) {
+	case 1:
+		return ([]byte)("\"STRUCT\""), nil
+	case 2:
+		return ([]byte)("\"UNION\""), nil
+	case 3:
+		return ([]byte)("\"EXCEPTION\""), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v *StructType) UnmarshalJSON(text []byte) error {
+	d := json.NewDecoder(bytes.NewReader(text))
+	d.UseNumber()
+	t, err := d.Token()
+	if err != nil {
+		return err
+	}
+	switch w := t.(type) {
+	case json.Number:
+		x, err := w.Int64()
+		if err != nil {
+			return err
+		}
+		if x > math.MaxInt32 {
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "StructType")
+		}
+		if x < math.MinInt32 {
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "StructType")
+		}
+		*v = (StructType)(x)
+		return nil
+	case string:
+		switch w {
+		case "STRUCT":
+			*v = StructTypeStruct
+			return nil
+		case "UNION":
+			*v = StructTypeUnion
+			return nil
+		case "EXCEPTION":
+			*v = StructTypeException
+			return nil
+		default:
+			return fmt.Errorf("unknown enum value %q for %q", w, "StructType")
+		}
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "StructType")
+	}
 }
 
 type Type struct {
@@ -1950,14 +2192,13 @@ type Type struct {
 	MapType           *TypePair      `json:"mapType,omitempty"`
 	ReferenceType     *TypeReference `json:"referenceType,omitempty"`
 	PointerType       *Type          `json:"pointerType,omitempty"`
-	StructType        *StructType    `json:"structType,omitempty"`
-	ExceptionType     *ExceptionType `json:"exceptionType,omitempty"`
-	EnumType          *EnumType      `json:"enumType,omitempty"`
+	StructID          *StructID      `json:"structID,omitempty"`
+	EnumID            *EnumID        `json:"enumID,omitempty"`
 }
 
 func (v *Type) ToWire() (wire.Value, error) {
 	var (
-		fields [9]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -2010,28 +2251,20 @@ func (v *Type) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 6, Value: w}
 		i++
 	}
-	if v.StructType != nil {
-		w, err = v.StructType.ToWire()
+	if v.StructID != nil {
+		w, err = v.StructID.ToWire()
 		if err != nil {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
 		i++
 	}
-	if v.ExceptionType != nil {
-		w, err = v.ExceptionType.ToWire()
+	if v.EnumID != nil {
+		w, err = v.EnumID.ToWire()
 		if err != nil {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 8, Value: w}
-		i++
-	}
-	if v.EnumType != nil {
-		w, err = v.EnumType.ToWire()
-		if err != nil {
-			return w, err
-		}
-		fields[i] = wire.Field{ID: 9, Value: w}
 		i++
 	}
 	if i != 1 {
@@ -2054,24 +2287,6 @@ func _TypePair_Read(w wire.Value) (*TypePair, error) {
 
 func _TypeReference_Read(w wire.Value) (*TypeReference, error) {
 	var v TypeReference
-	err := v.FromWire(w)
-	return &v, err
-}
-
-func _StructType_Read(w wire.Value) (*StructType, error) {
-	var v StructType
-	err := v.FromWire(w)
-	return &v, err
-}
-
-func _ExceptionType_Read(w wire.Value) (*ExceptionType, error) {
-	var v ExceptionType
-	err := v.FromWire(w)
-	return &v, err
-}
-
-func _EnumType_Read(w wire.Value) (*EnumType, error) {
-	var v EnumType
 	err := v.FromWire(w)
 	return &v, err
 }
@@ -2125,22 +2340,19 @@ func (v *Type) FromWire(w wire.Value) error {
 				}
 			}
 		case 7:
-			if field.Value.Type() == wire.TStruct {
-				v.StructType, err = _StructType_Read(field.Value)
+			if field.Value.Type() == wire.TI32 {
+				var x StructID
+				x, err = _StructID_Read(field.Value)
+				v.StructID = &x
 				if err != nil {
 					return err
 				}
 			}
 		case 8:
-			if field.Value.Type() == wire.TStruct {
-				v.ExceptionType, err = _ExceptionType_Read(field.Value)
-				if err != nil {
-					return err
-				}
-			}
-		case 9:
-			if field.Value.Type() == wire.TStruct {
-				v.EnumType, err = _EnumType_Read(field.Value)
+			if field.Value.Type() == wire.TI32 {
+				var x EnumID
+				x, err = _EnumID_Read(field.Value)
+				v.EnumID = &x
 				if err != nil {
 					return err
 				}
@@ -2166,13 +2378,10 @@ func (v *Type) FromWire(w wire.Value) error {
 	if v.PointerType != nil {
 		count++
 	}
-	if v.StructType != nil {
+	if v.StructID != nil {
 		count++
 	}
-	if v.ExceptionType != nil {
-		count++
-	}
-	if v.EnumType != nil {
+	if v.EnumID != nil {
 		count++
 	}
 	if count != 1 {
@@ -2182,7 +2391,7 @@ func (v *Type) FromWire(w wire.Value) error {
 }
 
 func (v *Type) String() string {
-	var fields [9]string
+	var fields [8]string
 	i := 0
 	if v.SimpleType != nil {
 		fields[i] = fmt.Sprintf("SimpleType: %v", *(v.SimpleType))
@@ -2208,16 +2417,12 @@ func (v *Type) String() string {
 		fields[i] = fmt.Sprintf("PointerType: %v", v.PointerType)
 		i++
 	}
-	if v.StructType != nil {
-		fields[i] = fmt.Sprintf("StructType: %v", v.StructType)
+	if v.StructID != nil {
+		fields[i] = fmt.Sprintf("StructID: %v", *(v.StructID))
 		i++
 	}
-	if v.ExceptionType != nil {
-		fields[i] = fmt.Sprintf("ExceptionType: %v", v.ExceptionType)
-		i++
-	}
-	if v.EnumType != nil {
-		fields[i] = fmt.Sprintf("EnumType: %v", v.EnumType)
+	if v.EnumID != nil {
+		fields[i] = fmt.Sprintf("EnumID: %v", *(v.EnumID))
 		i++
 	}
 	return fmt.Sprintf("Type{%v}", strings.Join(fields[:i], ", "))
