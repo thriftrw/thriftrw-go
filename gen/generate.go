@@ -61,6 +61,9 @@ type Options struct {
 
 	// Code generation plugin
 	Plugin plugin.Handle
+
+	// Only run the plugin, do not generate the standard golang code.
+	PluginOnly bool
 }
 
 // Generate generates code based on the given options.
@@ -114,14 +117,19 @@ func Generate(m *compile.Module, o *Options) error {
 	if plug == nil {
 		plug = plugin.EmptyHandle
 	}
-
+	var pluginFiles map[string][]byte
 	if sgen := plug.ServiceGenerator(); sgen != nil {
 		res, err := sgen.Generate(genBuilder.Build())
 		if err != nil {
 			return err
 		}
+		pluginFiles = res.Files
+	}
 
-		if err := mergeFiles(files, res.Files); err != nil {
+	if o.PluginOnly {
+		files = pluginFiles
+	} else if pluginFiles != nil {
+		if err := mergeFiles(files, pluginFiles); err != nil {
 			return err
 		}
 	}

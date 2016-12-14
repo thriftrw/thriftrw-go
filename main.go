@@ -52,6 +52,7 @@ type genOptions struct {
 
 	GeneratePluginAPI bool `long:"generate-plugin-api" hidden:"true" description:"Generates code for the plugin API"`
 	NoVersionCheck    bool `long:"no-version-check" hidden:"true" description:"Does not add library version checks to generated code."`
+	PluginOnly        bool `long:"plugin-only" description:"Only run the plugins, do not generate golang code from thriftrw."`
 
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
@@ -154,6 +155,7 @@ func main() {
 		NoRecurse:      gopts.NoRecurse,
 		NoVersionCheck: gopts.NoVersionCheck,
 		Plugin:         pluginHandle,
+		PluginOnly:     gopts.PluginOnly,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {
 		log.Fatalf("Failed to generate code: %v", err)
