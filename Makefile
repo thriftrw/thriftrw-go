@@ -11,6 +11,8 @@ LINT_EXCLUDES_EXTRAS = \
 	idl/internal/thrift.y \
 	idl/internal/yaccpar
 
+ERRCHECK_FLAGS ?= -ignoretests
+
 ##############################################################################
 export GO15VENDOREXPERIMENT=1
 
@@ -66,6 +68,11 @@ ifdef SHOULD_LINT
 	@cat /dev/null > $(LINT_LOG)
 	@$(foreach pkg, $(PACKAGES), golint $(pkg) | $(FILTER_LINT) >> $(LINT_LOG) || true;)
 	@[ ! -s "$(LINT_LOG)" ] || (echo "golint failed:" | cat - $(LINT_LOG) && false)
+
+	$(eval ERRCHECK_LOG := $(shell mktemp -t errcheck.XXXXX))
+	@cat /dev/null > $(ERRCHECK_LOG)
+	@$(foreach pkg, $(PACKAGES), errcheck $(ERRCHECK_FLAGS) $(pkg) | $(FILTER_LINT) >> $(ERRCHECK_LOG) || true;)
+	@[ ! -s "$(ERRCHECK_LOG)" ] || (echo "errcheck failed:" | cat - $(ERRCHECK_LOG) && false)
 else
 	@echo "Skipping linters for $(GO_VERSION)"
 endif
@@ -107,6 +114,7 @@ install:
 install_ci: install
 ifdef SHOULD_LINT
 	go get -u -f github.com/golang/lint/golint
+	go get -u -f github.com/kisielk/errcheck
 endif
 	go get -u github.com/wadey/gocovmerge
 	go get -u github.com/mattn/goveralls

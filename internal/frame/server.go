@@ -59,13 +59,21 @@ func NewServer(r io.Reader, w io.Writer) *Server {
 // there is an IO error or an unhandled error is received from the Handler.
 //
 // This blocks until the server is stopped using Stop.
-func (s *Server) Serve(h Handler) error {
+func (s *Server) Serve(h Handler) (retErr error) {
 	if s.running.Swap(true) {
 		return fmt.Errorf("server is already running")
 	}
 
-	defer s.r.Close()
-	defer s.w.Close()
+	defer func() {
+		if err := s.r.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
+	defer func() {
+		if err := s.w.Close(); err != nil && retErr == nil {
+			retErr = err
+		}
+	}()
 
 	for s.running.Load() {
 		req, err := s.r.Read()

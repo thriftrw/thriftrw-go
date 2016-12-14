@@ -59,6 +59,16 @@ type genOptions struct {
 }
 
 func main() {
+	if err := do(); err != nil {
+		if errString := err.Error(); errString != "" {
+			log.Fatalln(errString)
+		}
+		os.Exit(1)
+	}
+	os.Exit(1)
+}
+
+func do() error {
 	log.SetFlags(0) // don't include timestamps, etc. in the output
 
 	var opts options
@@ -68,25 +78,25 @@ func main() {
 
 	args, err := parser.Parse()
 	if err != nil {
-		return // message already printed by go-flags
+		return nil // message already printed by go-flags
 	}
 
 	if opts.DisplayVersion {
 		fmt.Printf("thriftrw v%s\n", version.Version)
-		os.Exit(0)
+		return nil
 	}
 
 	if len(args) != 1 {
 		parser.WriteHelp(os.Stdout)
-		os.Exit(1)
+		return errors.New("") // will return non-nil error but print nothing
 	}
 
 	inputFile := args[0]
 	if _, err := os.Stat(inputFile); err != nil {
 		if os.IsNotExist(err) {
-			log.Fatalf("File %q does not exist: %v", inputFile, err)
+			return fmt.Errorf("File %q does not exist: %v", inputFile, err)
 		}
-		log.Fatalf("Could not stat file %q: %v", inputFile, err)
+		return fmt.Errorf("Could not stat file %q: %v", inputFile, err)
 	}
 
 	gopts := opts.GOpts
@@ -95,13 +105,13 @@ func main() {
 	}
 	gopts.OutputDirectory, err = filepath.Abs(gopts.OutputDirectory)
 	if err != nil {
-		log.Fatalf("Unable to resolve absolute path for %q: %v", gopts.OutputDirectory, err)
+		return fmt.Errorf("Unable to resolve absolute path for %q: %v", gopts.OutputDirectory, err)
 	}
 
 	if gopts.PackagePrefix == "" {
 		gopts.PackagePrefix, err = determinePackagePrefix(gopts.OutputDirectory)
 		if err != nil {
-			log.Fatalf(
+			return fmt.Errorf(
 				"Could not determine a package prefix automatically: %v\n"+
 					"A package prefix is required to use correct import paths in the generated code.\n"+
 					"Use the --pkg-prefix option to provide a package prefix manually.", err)
@@ -112,13 +122,13 @@ func main() {
 	if err != nil {
 		// TODO(abg): For nested compile errors, split causal chain across
 		// multiple lines.
-		log.Fatalf("Failed to compile %q: %v", inputFile, err)
+		return fmt.Errorf("Failed to compile %q: %v", inputFile, err)
 	}
 
 	if gopts.ThriftRoot == "" {
 		gopts.ThriftRoot, err = findCommonAncestor(module)
 		if err != nil {
-			log.Fatalf(
+			return fmt.Errorf(
 				"Could not find a common parent directory for %q and the Thrift files "+
 					"imported by it.\nThis directory is required to generate a consistent "+
 					"hierarchy for generated packages.\nUse the --thrift-root option to "+
@@ -127,10 +137,10 @@ func main() {
 	} else {
 		gopts.ThriftRoot, err = filepath.Abs(gopts.ThriftRoot)
 		if err != nil {
-			log.Fatalf("Unable to resolve absolute path for %q: %v", gopts.ThriftRoot, err)
+			return fmt.Errorf("Unable to resolve absolute path for %q: %v", gopts.ThriftRoot, err)
 		}
 		if err := verifyAncestry(module, gopts.ThriftRoot); err != nil {
-			log.Fatalf(
+			return fmt.Errorf(
 				"An included Thrift file is not contained in the %q directory tree: %v",
 				gopts.ThriftRoot, err)
 		}
@@ -138,14 +148,19 @@ func main() {
 
 	pluginHandle, err := gopts.Plugins.Handle()
 	if err != nil {
-		log.Fatalf("Failed to initialize plugins: %v", err)
+		return fmt.Errorf("Failed to initialize plugins: %v", err)
 	}
 
 	if gopts.GeneratePluginAPI {
 		pluginHandle = append(pluginHandle, pluginapigen.Handle)
 	}
 
-	defer pluginHandle.Close()
+	defer func() {
+		// TODO: should this be an error that results in a non-zero exit status?
+		if err := pluginHandle.Close(); err != nil {
+			log.Println(err.Error())
+		}
+	}()
 
 	generatorOptions := gen.Options{
 		OutputDir:      gopts.OutputDirectory,
@@ -156,8 +171,9 @@ func main() {
 		Plugin:         pluginHandle,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {
-		log.Fatalf("Failed to generate code: %v", err)
+		return fmt.Errorf("Failed to generate code: %v", err)
 	}
+	return nil
 }
 
 // verifyAncestry verifies that the Thrift file for the given module and the

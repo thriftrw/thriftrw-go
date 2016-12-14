@@ -113,6 +113,5 @@ func (h pluginHandler) Handshake(request *api.HandshakeRequest) (*api.HandshakeR
 }
 
 func (h pluginHandler) Goodbye() error {
-	h.server.Stop()
-	return nil
+	return h.server.Stop()
 }
