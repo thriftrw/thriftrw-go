@@ -114,14 +114,14 @@ func (v *Argument) String() string {
 }
 
 type EnumType struct {
-	Values map[int64]string `json:"values"`
+	Values map[int32]string `json:"values"`
 }
 
-type _Map_I64_String_MapItemList map[int64]string
+type _Map_I32_String_MapItemList map[int32]string
 
-func (m _Map_I64_String_MapItemList) ForEach(f func(wire.MapItem) error) error {
+func (m _Map_I32_String_MapItemList) ForEach(f func(wire.MapItem) error) error {
 	for k, v := range m {
-		kw, err := wire.NewValueI64(k), error(nil)
+		kw, err := wire.NewValueI32(k), error(nil)
 		if err != nil {
 			return err
 		}
@@ -137,19 +137,19 @@ func (m _Map_I64_String_MapItemList) ForEach(f func(wire.MapItem) error) error {
 	return nil
 }
 
-func (m _Map_I64_String_MapItemList) Size() int {
+func (m _Map_I32_String_MapItemList) Size() int {
 	return len(m)
 }
 
-func (_Map_I64_String_MapItemList) KeyType() wire.Type {
-	return wire.TI64
+func (_Map_I32_String_MapItemList) KeyType() wire.Type {
+	return wire.TI32
 }
 
-func (_Map_I64_String_MapItemList) ValueType() wire.Type {
+func (_Map_I32_String_MapItemList) ValueType() wire.Type {
 	return wire.TBinary
 }
 
-func (_Map_I64_String_MapItemList) Close() {
+func (_Map_I32_String_MapItemList) Close() {
 }
 
 func (v *EnumType) ToWire() (wire.Value, error) {
@@ -160,7 +160,7 @@ func (v *EnumType) ToWire() (wire.Value, error) {
 		err    error
 	)
 	if v.Values != nil {
-		w, err = wire.NewValueMap(_Map_I64_String_MapItemList(v.Values)), error(nil)
+		w, err = wire.NewValueMap(_Map_I32_String_MapItemList(v.Values)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -170,16 +170,16 @@ func (v *EnumType) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _Map_I64_String_Read(m wire.MapItemList) (map[int64]string, error) {
-	if m.KeyType() != wire.TI64 {
+func _Map_I32_String_Read(m wire.MapItemList) (map[int32]string, error) {
+	if m.KeyType() != wire.TI32 {
 		return nil, nil
 	}
 	if m.ValueType() != wire.TBinary {
 		return nil, nil
 	}
-	o := make(map[int64]string, m.Size())
+	o := make(map[int32]string, m.Size())
 	err := m.ForEach(func(x wire.MapItem) error {
-		k, err := x.Key.GetI64(), error(nil)
+		k, err := x.Key.GetI32(), error(nil)
 		if err != nil {
 			return err
 		}
@@ -200,7 +200,7 @@ func (v *EnumType) FromWire(w wire.Value) error {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TMap {
-				v.Values, err = _Map_I64_String_Read(field.Value.GetMap())
+				v.Values, err = _Map_I32_String_Read(field.Value.GetMap())
 				if err != nil {
 					return err
 				}

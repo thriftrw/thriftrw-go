@@ -241,10 +241,22 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 		if err != nil {
 			return nil, err
 		}
+		values := make(map[int32]string)
+		for _, enumItem := range spec.(*compile.EnumSpec).Items {
+			if _, ok := values[enumItem.Value]; ok {
+				return nil, fmt.Errorf("duplicate enum value for enum %s: %d", name, enumItem.Value)
+			}
+			values[enumItem.Value] = enumItem.Name
+		}
 		t = &api.Type{
 			ReferenceType: &api.TypeReference{
 				Name:       name,
 				ImportPath: importPath,
+				Type: &api.Type{
+					EnumType: &api.EnumType{
+						Values: values,
+					},
+				},
 			},
 		}
 	}

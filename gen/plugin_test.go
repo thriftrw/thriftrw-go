@@ -470,6 +470,14 @@ func TestBuildType(t *testing.T) {
 				ReferenceType: &api.TypeReference{
 					Name:       "Foo",
 					ImportPath: "go.uber.org/thriftrw/gen/testdata/bar",
+					Type: &api.Type{
+						EnumType: &api.EnumType{
+							Values: map[int32]string{
+								0: "A",
+								2: "B",
+							},
+						},
+					},
 				},
 			},
 		},
@@ -489,6 +497,14 @@ func TestBuildType(t *testing.T) {
 					ReferenceType: &api.TypeReference{
 						Name:       "Foo",
 						ImportPath: "go.uber.org/thriftrw/gen/testdata/bar",
+						Type: &api.Type{
+							EnumType: &api.EnumType{
+								Values: map[int32]string{
+									0: "A",
+									2: "B",
+								},
+							},
+						},
 					},
 				},
 			},

@@ -54,7 +54,7 @@ struct ExceptionType {
 }
 
 struct EnumType {
-  1: optional map<i64, string> values
+  1: optional map<i32, string> values
 }
 
 /**
