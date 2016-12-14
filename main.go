@@ -21,6 +21,7 @@
 package main
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"log"
@@ -30,6 +31,7 @@ import (
 
 	"go.uber.org/thriftrw/compile"
 	"go.uber.org/thriftrw/gen"
+	"go.uber.org/thriftrw/internal"
 	"go.uber.org/thriftrw/internal/plugin"
 	"go.uber.org/thriftrw/internal/plugin/builtin/pluginapigen"
 	"go.uber.org/thriftrw/version"
@@ -68,7 +70,7 @@ func main() {
 	os.Exit(0)
 }
 
-func do() error {
+func do() (err error) {
 	log.SetFlags(0) // don't include timestamps, etc. in the output
 
 	var opts options
@@ -87,8 +89,9 @@ func do() error {
 	}
 
 	if len(args) != 1 {
-		parser.WriteHelp(os.Stdout)
-		return errors.New("") // will return non-nil error but print nothing
+		var buffer bytes.Buffer
+		parser.WriteHelp(&buffer)
+		return errors.New(buffer.String())
 	}
 
 	inputFile := args[0]
@@ -156,10 +159,7 @@ func do() error {
 	}
 
 	defer func() {
-		// TODO: should this be an error that results in a non-zero exit status?
-		if err := pluginHandle.Close(); err != nil {
-			log.Println(err.Error())
-		}
+		err = internal.CombineErrors(err, pluginHandle.Close())
 	}()
 
 	generatorOptions := gen.Options{

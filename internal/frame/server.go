@@ -25,6 +25,7 @@ import (
 	"io"
 
 	"go.uber.org/atomic"
+	"go.uber.org/thriftrw/internal"
 )
 
 // Handler handles incoming framed requests.
@@ -59,24 +60,13 @@ func NewServer(r io.Reader, w io.Writer) *Server {
 // there is an IO error or an unhandled error is received from the Handler.
 //
 // This blocks until the server is stopped using Stop.
-func (s *Server) Serve(h Handler) (retErr error) {
+func (s *Server) Serve(h Handler) (err error) {
 	if s.running.Swap(true) {
 		return fmt.Errorf("server is already running")
 	}
 
 	defer func() {
-		if err := s.r.Close(); err != nil && retErr == nil {
-			// TODO: by returning this error, internal/plugin/flag_test.go fails
-			// we should be able to handle this error appropriately
-			//retErr = err
-		}
-	}()
-	defer func() {
-		if err := s.w.Close(); err != nil && retErr == nil {
-			// TODO: by returning this error, internal/plugin/flag_test.go fails
-			// we should be able to handle this error appropriately
-			//retErr = err
-		}
+		err = internal.CombineErrors(err, s.r.Close(), s.w.Close())
 	}()
 
 	for s.running.Load() {
