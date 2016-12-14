@@ -9,7 +9,8 @@ LINTABLE_MINOR_VERSIONS := 7
 LINT_EXCLUDES_EXTRAS = \
 	idl/internal/lex.rl \
 	idl/internal/thrift.y \
-	idl/internal/yaccpar
+	idl/internal/yaccpar \
+	compile/primitive.go
 
 ##############################################################################
 export GO15VENDOREXPERIMENT=1
