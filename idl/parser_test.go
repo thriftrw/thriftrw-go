@@ -154,8 +154,8 @@ func TestParseHeaders(t *testing.T) {
 				namespace * foo
 			`,
 			&Program{Headers: []Header{
-				&Namespace{"py", "bar", 2},
-				&Namespace{"*", "foo", 3},
+				&Namespace{Scope: "py", Name: "bar", Line: 2},
+				&Namespace{Scope: "*", Name: "foo", Line: 3},
 			}},
 		},
 		{
@@ -175,9 +175,9 @@ func TestParseHeaders(t *testing.T) {
 			&Program{
 				Headers: []Header{
 					&Include{Path: "shared.thrift", Line: 3},
-					&Namespace{"go", "foo_service", 4},
+					&Namespace{Scope: "go", Name: "foo_service", Line: 4},
 					&Include{Path: "errors.thrift", Line: 9},
-					&Namespace{"py", "services.foo", 12},
+					&Namespace{Scope: "py", Name: "services.foo", Line: 12},
 				},
 			},
 		},
