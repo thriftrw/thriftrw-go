@@ -4,7 +4,8 @@ Releases
 v1.1.0 (unreleased)
 -------------------
 
--   No changes yet.
+-   Plugins: Fail code generation if communication with a plugin fails to
+    disconnect properly.
 
 
 v1.0.0 (2016-11-14)
