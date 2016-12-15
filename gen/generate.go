@@ -62,8 +62,14 @@ type Options struct {
 	// Code generation plugin
 	Plugin plugin.Handle
 
-	// Only run the plugin, do not generate the standard golang code.
-	PluginOnly bool
+	// Do not generate types.go
+	NoTypes bool
+
+	// Do not generate constants.go
+	NoConstants bool
+
+	// Do not generate service helpers
+	NoServiceHelpers bool
 }
 
 // Generate generates code based on the given options.
@@ -117,19 +123,14 @@ func Generate(m *compile.Module, o *Options) error {
 	if plug == nil {
 		plug = plugin.EmptyHandle
 	}
-	var pluginFiles map[string][]byte
+
 	if sgen := plug.ServiceGenerator(); sgen != nil {
 		res, err := sgen.Generate(genBuilder.Build())
 		if err != nil {
 			return err
 		}
-		pluginFiles = res.Files
-	}
 
-	if o.PluginOnly {
-		files = pluginFiles
-	} else if pluginFiles != nil {
-		if err := mergeFiles(files, pluginFiles); err != nil {
+		if err := mergeFiles(files, res.Files); err != nil {
 			return err
 		}
 	}
@@ -242,7 +243,9 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		}
 
 		// TODO(abg): Verify no file collisions
-		files["constants.go"] = buff.Bytes()
+		if !o.NoConstants {
+			files["constants.go"] = buff.Bytes()
+		}
 	}
 
 	if len(m.Types) > 0 {
@@ -259,7 +262,9 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		}
 
 		// TODO(abg): Verify no file collisions
-		files["types.go"] = buff.Bytes()
+		if !o.NoTypes {
+			files["types.go"] = buff.Bytes()
+		}
 	}
 
 	// Services must be generated last because names of user-defined types take
@@ -286,8 +291,10 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 					serviceName, err)
 			}
 
-			for name, buff := range serviceFiles {
-				files[name] = buff.Bytes()
+			if !o.NoServiceHelpers {
+				for name, buff := range serviceFiles {
+					files[name] = buff.Bytes()
+				}
 			}
 		}
 	}

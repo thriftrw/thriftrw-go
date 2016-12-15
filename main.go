@@ -52,7 +52,9 @@ type genOptions struct {
 
 	GeneratePluginAPI bool `long:"generate-plugin-api" hidden:"true" description:"Generates code for the plugin API"`
 	NoVersionCheck    bool `long:"no-version-check" hidden:"true" description:"Does not add library version checks to generated code."`
-	PluginOnly        bool `long:"plugin-only" description:"Only run the plugins, do not generate golang code from thriftrw."`
+	NoTypes           bool `long:"no-types" description:"Do not generate types.go, implies --no-service-helpers."`
+	NoConstants       bool `long:"no-constants" description:"Do not generate constants.go."`
+	NoServiceHelpers  bool `long:"no-service-helpers" description:"Do not generate service helper go files."`
 
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
@@ -149,13 +151,15 @@ func main() {
 	defer pluginHandle.Close()
 
 	generatorOptions := gen.Options{
-		OutputDir:      gopts.OutputDirectory,
-		PackagePrefix:  gopts.PackagePrefix,
-		ThriftRoot:     gopts.ThriftRoot,
-		NoRecurse:      gopts.NoRecurse,
-		NoVersionCheck: gopts.NoVersionCheck,
-		Plugin:         pluginHandle,
-		PluginOnly:     gopts.PluginOnly,
+		OutputDir:        gopts.OutputDirectory,
+		PackagePrefix:    gopts.PackagePrefix,
+		ThriftRoot:       gopts.ThriftRoot,
+		NoRecurse:        gopts.NoRecurse,
+		NoVersionCheck:   gopts.NoVersionCheck,
+		Plugin:           pluginHandle,
+		NoTypes:          gopts.NoTypes,
+		NoConstants:      gopts.NoConstants,
+		NoServiceHelpers: gopts.NoServiceHelpers || gopts.NoTypes,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {
 		log.Fatalf("Failed to generate code: %v", err)
