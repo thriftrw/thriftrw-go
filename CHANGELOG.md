@@ -4,7 +4,7 @@ Releases
 v1.1.0 (unreleased)
 -------------------
 
--   No changes yet.
+-   Added flags `--no-types`, `--no-constants`, `--no-service-helpers`
 
 
 v1.0.0 (2016-11-14)
