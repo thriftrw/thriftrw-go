@@ -52,9 +52,9 @@ type genOptions struct {
 
 	GeneratePluginAPI bool `long:"generate-plugin-api" hidden:"true" description:"Generates code for the plugin API"`
 	NoVersionCheck    bool `long:"no-version-check" hidden:"true" description:"Does not add library version checks to generated code."`
-	NoTypes           bool `long:"no-types" description:"Do not generate types.go, implies --no-service-helpers."`
-	NoConstants       bool `long:"no-constants" description:"Do not generate constants.go."`
-	NoServiceHelpers  bool `long:"no-service-helpers" description:"Do not generate service helper go files."`
+	NoTypes           bool `long:"no-types" description:"Do not generate code for types, implies --no-service-helpers."`
+	NoConstants       bool `long:"no-constants" description:"Do not generate code for const declarations."`
+	NoServiceHelpers  bool `long:"no-service-helpers" description:"Do not generate service helpers."`
 
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
