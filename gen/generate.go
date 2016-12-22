@@ -61,6 +61,15 @@ type Options struct {
 
 	// Code generation plugin
 	Plugin plugin.Handle
+
+	// Do not generate types.go
+	NoTypes bool
+
+	// Do not generate constants.go
+	NoConstants bool
+
+	// Do not generate service helpers
+	NoServiceHelpers bool
 }
 
 // Generate generates code based on the given options.
@@ -234,7 +243,9 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		}
 
 		// TODO(abg): Verify no file collisions
-		files["constants.go"] = buff.Bytes()
+		if !o.NoConstants {
+			files["constants.go"] = buff.Bytes()
+		}
 	}
 
 	if len(m.Types) > 0 {
@@ -251,7 +262,9 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		}
 
 		// TODO(abg): Verify no file collisions
-		files["types.go"] = buff.Bytes()
+		if !o.NoTypes {
+			files["types.go"] = buff.Bytes()
+		}
 	}
 
 	// Services must be generated last because names of user-defined types take
@@ -278,8 +291,10 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 					serviceName, err)
 			}
 
-			for name, buff := range serviceFiles {
-				files[name] = buff.Bytes()
+			if !o.NoServiceHelpers {
+				for name, buff := range serviceFiles {
+					files[name] = buff.Bytes()
+				}
 			}
 		}
 	}

@@ -54,6 +54,9 @@ type genOptions struct {
 
 	GeneratePluginAPI bool `long:"generate-plugin-api" hidden:"true" description:"Generates code for the plugin API"`
 	NoVersionCheck    bool `long:"no-version-check" hidden:"true" description:"Does not add library version checks to generated code."`
+	NoTypes           bool `long:"no-types" description:"Do not generate code for types, implies --no-service-helpers."`
+	NoConstants       bool `long:"no-constants" description:"Do not generate code for const declarations."`
+	NoServiceHelpers  bool `long:"no-service-helpers" description:"Do not generate service helpers."`
 
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
@@ -163,12 +166,15 @@ func do() (err error) {
 	}()
 
 	generatorOptions := gen.Options{
-		OutputDir:      gopts.OutputDirectory,
-		PackagePrefix:  gopts.PackagePrefix,
-		ThriftRoot:     gopts.ThriftRoot,
-		NoRecurse:      gopts.NoRecurse,
-		NoVersionCheck: gopts.NoVersionCheck,
-		Plugin:         pluginHandle,
+		OutputDir:        gopts.OutputDirectory,
+		PackagePrefix:    gopts.PackagePrefix,
+		ThriftRoot:       gopts.ThriftRoot,
+		NoRecurse:        gopts.NoRecurse,
+		NoVersionCheck:   gopts.NoVersionCheck,
+		Plugin:           pluginHandle,
+		NoTypes:          gopts.NoTypes,
+		NoConstants:      gopts.NoConstants,
+		NoServiceHelpers: gopts.NoServiceHelpers || gopts.NoTypes,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {
 		return fmt.Errorf("Failed to generate code: %v", err)
