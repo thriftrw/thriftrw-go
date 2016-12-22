@@ -133,7 +133,8 @@ func (sliceMapItemList) Close() {}
 // ValueListToSlice builds a slice of values from the given ValueList.
 func ValueListToSlice(l ValueList) []Value {
 	items := make([]Value, 0, l.Size())
-	l.ForEach(func(v Value) error {
+	// explicitly ignoring since we know there will not be an error
+	_ = l.ForEach(func(v Value) error {
 		items = append(items, v)
 		return nil
 	})
@@ -143,7 +144,8 @@ func ValueListToSlice(l ValueList) []Value {
 // MapItemListToSlice builds a slice of values from the given MapItemList.
 func MapItemListToSlice(l MapItemList) []MapItem {
 	items := make([]MapItem, 0, l.Size())
-	l.ForEach(func(v MapItem) error {
+	// explicitly ignoring since we know there will not be an error
+	_ = l.ForEach(func(v MapItem) error {
 		items = append(items, v)
 		return nil
 	})

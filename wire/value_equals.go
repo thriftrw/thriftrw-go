@@ -107,7 +107,8 @@ func SetsAreEqual(left, right ValueList) bool {
 // as keys in a map.
 func setsArEqualHashable(size int, l, r ValueList) bool {
 	m := make(map[interface{}]bool, size)
-	l.ForEach(func(v Value) error {
+	// explicitly ignoring since we know there will not be an error
+	_ = l.ForEach(func(v Value) error {
 		m[toHashable(v)] = true
 		return nil
 	})
@@ -161,7 +162,8 @@ func MapsAreEqual(left, right MapItemList) bool {
 func mapsAreEqualHashable(size int, l, r MapItemList) bool {
 	m := make(map[interface{}]Value, size)
 
-	l.ForEach(func(item MapItem) error {
+	// explicitly ignoring since we know there will not be an error
+	_ = l.ForEach(func(item MapItem) error {
 		m[toHashable(item.Key)] = item.Value
 		return nil
 	})

@@ -24,14 +24,17 @@ import (
 	"encoding/binary"
 	"io"
 	"sync"
+
+	"go.uber.org/atomic"
 )
 
 // Writer is a writer for framed messages.
 type Writer struct {
 	sync.Mutex
 
-	w    io.Writer
-	buff [4]byte
+	closed atomic.Bool
+	w      io.Writer
+	buff   [4]byte
 }
 
 // NewWriter builds a new Writer which writes frames to the given io.Writer.
@@ -63,6 +66,9 @@ func (w *Writer) Write(b []byte) error {
 
 // Close closes the given Writeer.
 func (w *Writer) Close() error {
+	if w.closed.Swap(true) {
+		return nil // already closed
+	}
 	if c, ok := w.w.(io.Closer); ok {
 		return c.Close()
 	}

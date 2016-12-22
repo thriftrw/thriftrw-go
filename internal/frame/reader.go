@@ -25,6 +25,8 @@ import (
 	"encoding/binary"
 	"io"
 	"sync"
+
+	"go.uber.org/atomic"
 )
 
 // Maximum frame size for which we pre-allocate buffers.
@@ -34,8 +36,9 @@ var _fastPathFrameSize int64 = 10 * 1024 * 1024 // 10 MB
 type Reader struct {
 	sync.Mutex
 
-	r    io.Reader
-	buff [4]byte
+	closed atomic.Bool
+	r      io.Reader
+	buff   [4]byte
 }
 
 // NewReader builds a new Reader which reads frames from the given io.Reader.
@@ -80,6 +83,10 @@ func (r *Reader) readFastPath(l int64) ([]byte, error) {
 
 // Close closes the given Reader.
 func (r *Reader) Close() error {
+	if r.closed.Swap(true) {
+		return nil // already closed
+	}
+
 	if c, ok := r.r.(io.Closer); ok {
 		return c.Close()
 	}

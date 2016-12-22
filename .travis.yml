@@ -16,9 +16,7 @@ install:
     - make install_ci
 
 script:
-    # TODO lint_ci fails on 1.7 due to https://github.com/stretchr/testify/issues/339
-    # uncomment once the fix for testify is out.
-    #- make lint_ci
+    - make lint_ci
     - make test_ci
     - travis_retry goveralls -coverprofile=cover.out -service=travis-ci
     - rm -rf vendor/*

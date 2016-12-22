@@ -5,6 +5,8 @@ v1.1.0 (unreleased)
 -------------------
 
 -   Added flags `--no-types`, `--no-constants`, `--no-service-helpers`
+-   Plugins: Fail code generation if communication with a plugin fails to
+    disconnect properly.
 
 
 v1.0.0 (2016-11-14)
