@@ -12,6 +12,7 @@ v1.1.0 (unreleased)
     numbers on which they were specified.
 -   AST: Added a Node interface to unify different AST object types.
 -   Handle `nil` values in generated `String()` methods.
+-   AST: Added Walk to traverse the AST using a Visitor.
 
 
 v1.0.0 (2016-11-14)
