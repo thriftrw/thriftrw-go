@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Uber Technologies, Inc.
+// Copyright (c) 2017 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -62,11 +62,13 @@ type ConstantDouble float64
 // Note that map literals can also be used to build structs.
 type ConstantMap struct {
 	Items []ConstantMapItem
+	Line  int
 }
 
 // ConstantMapItem is a single item in a ConstantMap.
 type ConstantMapItem struct {
 	Key, Value ConstantValue
+	Line       int
 }
 
 // ConstantList is a list literal from the Thrift file.
@@ -74,6 +76,7 @@ type ConstantMapItem struct {
 // 	[1, 2, 3]
 type ConstantList struct {
 	Items []ConstantValue
+	Line  int
 }
 
 // ConstantReference is a reference to another constant value defined in the
