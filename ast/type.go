@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Uber Technologies, Inc.
+// Copyright (c) 2017 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -60,6 +60,7 @@ type BaseType struct {
 
 	// Type annotations associated with this reference.
 	Annotations []*Annotation
+	Line        int
 }
 
 func (BaseType) fieldType() {}
@@ -101,6 +102,7 @@ func (bt BaseType) String() string {
 type MapType struct {
 	KeyType, ValueType Type
 	Annotations        []*Annotation
+	Line               int
 }
 
 func (MapType) fieldType() {}
@@ -122,6 +124,7 @@ func (mt MapType) String() string {
 type ListType struct {
 	ValueType   Type
 	Annotations []*Annotation
+	Line        int
 }
 
 func (ListType) fieldType() {}
@@ -143,6 +146,7 @@ func (lt ListType) String() string {
 type SetType struct {
 	ValueType   Type
 	Annotations []*Annotation
+	Line        int
 }
 
 func (SetType) fieldType() {}

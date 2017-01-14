@@ -323,18 +323,18 @@ throws
  ***************************************************************************/
 
 type
-    : base_type_name type_annotations
-        { $$ = ast.BaseType{ID: $1, Annotations: $2} }
+    : lineno base_type_name type_annotations
+        { $$ = ast.BaseType{ID: $2, Annotations: $3, Line: $1} }
 
     /* container types */
-    | MAP '<' type ',' type '>' type_annotations
-        { $$ = ast.MapType{KeyType: $3, ValueType: $5, Annotations: $7} }
-    | LIST '<' type '>' type_annotations
-        { $$ = ast.ListType{ValueType: $3, Annotations: $5} }
-    | SET '<' type '>' type_annotations
-        { $$ = ast.SetType{ValueType: $3, Annotations: $5} }
+    | lineno MAP '<' type ',' type '>' type_annotations
+        { $$ = ast.MapType{KeyType: $4, ValueType: $6, Annotations: $8, Line: $1} }
+    | lineno LIST '<' type '>' type_annotations
+        { $$ = ast.ListType{ValueType: $4, Annotations: $6, Line: $1} }
+    | lineno SET '<' type '>' type_annotations
+        { $$ = ast.SetType{ValueType: $4, Annotations: $6, Line: $1} }
     | lineno IDENTIFIER
-        { $$ = ast.TypeReference{Name: $2, Line: $1 } }
+        { $$ = ast.TypeReference{Name: $2, Line: $1} }
     ;
 
 base_type_name
@@ -362,8 +362,8 @@ const_value
     | lineno IDENTIFIER
         { $$ = ast.ConstantReference{Name: $2, Line: $1} }
 
-    | '[' const_list_items ']' { $$ = ast.ConstantList{Items: $2} }
-    | '{' const_map_items  '}' { $$ =  ast.ConstantMap{Items: $2} }
+    | lineno '[' const_list_items ']' { $$ = ast.ConstantList{Items: $3, Line: $1} }
+    | lineno '{' const_map_items  '}' { $$ =  ast.ConstantMap{Items: $3, Line: $1} }
     ;
 
 const_list_items
@@ -374,8 +374,8 @@ const_list_items
 
 const_map_items
     : /* nothing */ { $$ = nil }
-    | const_map_items const_value ':' const_value optional_sep
-        { $$ = append($1, ast.ConstantMapItem{Key: $2, Value: $4}) }
+    | const_map_items lineno const_value ':' const_value optional_sep
+        { $$ = append($1, ast.ConstantMapItem{Key: $3, Value: $5, Line: $2}) }
     ;
 
 /***************************************************************************

@@ -7,6 +7,8 @@ v1.1.0 (unreleased)
 -   Added flags `--no-types`, `--no-constants`, `--no-service-helpers`.
 -   Plugins: Fail code generation if communication with a plugin fails to
     disconnect properly.
+-   AST: All type references and complex constant values now record the line
+    numbers on which they were specified.
 
 
 v1.0.0 (2016-11-14)
