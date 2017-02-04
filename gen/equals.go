@@ -1,0 +1,110 @@
+// Copyright (c) 2017 Uber Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+package gen
+
+import (
+	"fmt"
+
+	"go.uber.org/thriftrw/compile"
+)
+
+// EqualsGenerator is responsible for generating code that knows how
+// to compare the equality of two Thrift types and their Value representations.
+type EqualsGenerator struct {
+	mapG  mapGenerator
+	setG  setGenerator
+	listG listGenerator
+}
+
+// Equals generates a string comparing rhs to the given lhs
+func (e *EqualsGenerator) Equals(g Generator, spec compile.TypeSpec, lhs, rhs string) (string, error) {
+	switch s := spec.(type) {
+	case *compile.BoolSpec, *compile.I8Spec, *compile.I16Spec, *compile.I32Spec,
+		*compile.I64Spec, *compile.DoubleSpec, *compile.StringSpec:
+		return fmt.Sprintf("%s == %s", lhs, rhs), nil
+	case *compile.BinarySpec:
+		bytes := g.Import("bytes")
+		return fmt.Sprintf("%s.Equal(%s, %s)", bytes, lhs, rhs), nil
+	case *compile.MapSpec:
+		equals, err := e.mapG.Equals(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s, %s)", equals, lhs, rhs), nil
+	case *compile.ListSpec:
+		equals, err := e.listG.Equals(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s, %s)", equals, lhs, rhs), nil
+	case *compile.SetSpec:
+		equals, err := e.setG.Equals(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s, %s)", equals, lhs, rhs), nil
+	default:
+		// Custom defined type
+		return fmt.Sprintf("%s.Equals(%s)", lhs, rhs), nil
+	}
+}
+
+// EqualsPtr is the same as Equals expect `lhs` and `rhs` are expected to be a
+// reference to a value of the given type.
+func (e *EqualsGenerator) EqualsPtr(g Generator, spec compile.TypeSpec, lhs, rhs string) (string, error) {
+	if isPrimitiveType(spec) {
+		equalsPtrFunc := fmt.Sprintf("_%v_EqualsPtr", spec.ThriftName())
+		err := g.EnsureDeclared(
+			`
+				<$type := typeReference .Spec>
+
+				<$lhs := newVar "lhs">
+				<$rhs := newVar "rhs">
+				<$x := newVar "x">
+				<$y := newVar "y">
+				func <.Name>(<$lhs>, <$rhs> *<$type>) bool {
+					// Make sure that both the pointers are non nil.
+					if <$lhs> != nil && <$rhs> != nil {
+						// Call Equals method after dereferencing the pointers
+						<$x> := *<$lhs>
+						<$y> := *<$rhs>
+						return <equals .Spec $x $y>
+					} else if <$lhs> == nil && <$rhs> == nil {
+						return true
+					} else {
+						return false
+					}
+				}
+			`,
+			struct {
+				Name string
+				Spec compile.TypeSpec
+			}{Name: equalsPtrFunc, Spec: spec},
+		)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s, %s)", equalsPtrFunc, lhs, rhs), nil
+	}
+
+	// Everything else is a reference type that has a Equals method on it.
+	return e.Equals(g, spec, lhs, rhs)
+}

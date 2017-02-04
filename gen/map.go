@@ -31,6 +31,7 @@ import (
 type mapGenerator struct {
 	hasReaders
 	hasLazyLists
+	hasEquals
 }
 
 // MapItemList generates a new MapItemList type alias for the given map.
@@ -181,6 +182,83 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 				return <$o>, err
 			}
 		`,
+		struct {
+			Name string
+			Spec *compile.MapSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
+// Equals generates a function to compare maps of the given type
+//
+// func $name(lhs, rhs $mapType) bool {
+//      ...
+// }
+//
+// And returns its name.
+func (m *mapGenerator) Equals(g Generator, spec *compile.MapSpec) (string, error) {
+	name := "_" + valueName(spec) + "_Equals"
+	if m.HasEquals(name) {
+		return name, nil
+	}
+
+	err := g.DeclareFromTemplate(
+		`
+            <$mapType := typeReference .Spec>
+
+            <$lhs := newVar "lhs">
+            <$rhs := newVar "rhs">
+            <$i := newVar "i">
+            <$j := newVar "j">
+            <$lk := newVar "lk">
+            <$lv := newVar "lv">
+            <$rk := newVar "rk">
+            <$rv := newVar "rv">
+            <$ok := newVar "ok">
+			func <.Name>(<$lhs>, <$rhs> <$mapType>) bool {
+				if len(<$lhs>) != len(<$rhs>) {
+					return false
+				}
+
+				<if isHashable .Spec.KeySpec>
+					for <$lk>, <$lv> := range <$lhs> {
+						<$rv>, <$ok> := <$rhs>[<$lk>]
+						if !<$ok> {
+							return false
+						}
+						if !(<equals .Spec.ValueSpec $lv $rv>) {
+							return false
+						}
+					}
+				<else>
+					// Note if keys are not hashable then this is O(n^2) in time complexity.
+					for _, <$i> := range <$lhs> {
+						<$lk> := <$i>.Key
+						<$lv> := <$i>.Value
+						<$ok> := false
+						for _, <$j> := range <$rhs> {
+							<$rk> := <$j>.Key
+							<$rv> := <$j>.Value
+							if !(<equals .Spec.KeySpec $lk $rk>) {
+								continue
+							}
+							if !(<equals .Spec.ValueSpec $lv $rv>) {
+								continue
+							}
+							<$ok> = true
+							break
+						}
+
+						if !<$ok> {
+							return false
+						}
+					}
+				<end>
+				return true
+			}
+        `,
 		struct {
 			Name string
 			Spec *compile.MapSpec

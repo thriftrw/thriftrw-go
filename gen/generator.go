@@ -118,6 +118,7 @@ type generator struct {
 	ImportPath  string
 
 	w              WireGenerator
+	e              EqualsGenerator
 	decls          []ast.Decl
 	thriftImporter thriftPackageImporter
 
@@ -192,6 +193,8 @@ func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOpt
 		"toWire":           curryGenerator(g.w.ToWire, g),
 		"toWirePtr":        curryGenerator(g.w.ToWirePtr, g),
 		"typeCode":         curryGenerator(TypeCode, g),
+		"equals":           curryGenerator(g.e.Equals, g),
+		"equalsPtr":        curryGenerator(g.e.EqualsPtr, g),
 	}
 
 	tmpl := template.New("thriftrw").Delims("<", ">").Funcs(templateFuncs)
@@ -342,6 +345,14 @@ func (g *generator) recordGenDeclNames(ignoreConflicts bool, d *ast.GenDecl) err
 // itself is not a reference type.
 //
 // 	<typeReferencePtr $someType>
+//
+//  equals(TypeSpec, lhs, rhs): Compares lhs and rhs of given TypeSpec for equality.
+//
+//  <equals $someType $lhs $rhs>
+//
+//  equalsPtr(TypeSpec, lhs, rhs): Compares reference to a value of the given type for equality.
+//
+//  <equalsPtr $someType $lhs $rhs>
 func (g *generator) declare(ignoreConflicts bool, s string, data interface{}, opts ...TemplateOption) error {
 	bs, err := g.renderTemplate(s, data, opts...)
 	if err != nil {

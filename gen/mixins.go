@@ -59,3 +59,23 @@ func (r *hasLazyLists) HasLazyList(name string) bool {
 	r.have[name] = struct{}{}
 	return false
 }
+
+// hasEquals helps generators track whether a reader for the given name was
+// already generated.
+type hasEquals struct{ have map[string]struct{} }
+
+// HasEquals returns true if a equals with the given name was already generated,
+// otherwise it returns false for this call but marks the equals as generated
+// for all consecutive calls.
+func (r *hasEquals) HasEquals(name string) bool {
+	if r.have == nil {
+		r.have = make(map[string]struct{})
+	}
+
+	if _, ok := r.have[name]; ok {
+		return ok
+	}
+
+	r.have[name] = struct{}{}
+	return false
+}
