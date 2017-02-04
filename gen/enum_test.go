@@ -45,6 +45,23 @@ func TestValueOfEnumDefault(t *testing.T) {
 	}
 }
 
+func TestEqualsEnumDefault(t *testing.T) {
+	tests := []struct {
+		lhs, rhs te.EnumDefault
+		want     bool
+	}{
+		{te.EnumDefaultFoo, te.EnumDefaultFoo, true},
+		{te.EnumDefaultBar, te.EnumDefaultBar, true},
+		{te.EnumDefaultBaz, te.EnumDefaultBaz, true},
+		{te.EnumDefaultFoo, te.EnumDefaultBar, false},
+		{te.EnumDefaultBaz, te.EnumDefaultBar, false},
+		{te.EnumDefaultBaz, te.EnumDefaultFoo, false},
+	}
+	for _, tt := range tests {
+		assert.Equal(t, tt.lhs.Equals(tt.rhs), tt.want)
+	}
+}
+
 func TestValueOfEnumWithValues(t *testing.T) {
 	tests := []struct {
 		e te.EnumWithValues
@@ -56,6 +73,23 @@ func TestValueOfEnumWithValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		assert.Equal(t, int32(tt.e), tt.i, "Value for %v does not match", tt.e)
+	}
+}
+
+func TestEqualsEnumWithValues(t *testing.T) {
+	tests := []struct {
+		lhs, rhs te.EnumWithValues
+		want     bool
+	}{
+		{te.EnumWithValuesX, te.EnumWithValuesX, true},
+		{te.EnumWithValuesY, te.EnumWithValuesY, true},
+		{te.EnumWithValuesZ, te.EnumWithValuesZ, true},
+		{te.EnumWithValuesX, te.EnumWithValuesY, false},
+		{te.EnumWithValuesY, te.EnumWithValuesZ, false},
+		{te.EnumWithValuesZ, te.EnumWithValuesX, false},
+	}
+	for _, tt := range tests {
+		assert.Equal(t, tt.lhs.Equals(tt.rhs), tt.want)
 	}
 }
 
@@ -85,6 +119,23 @@ func TestValueOfEnumWithDuplicateValues(t *testing.T) {
 	}
 	for _, tt := range tests {
 		assert.Equal(t, int32(tt.e), tt.i, "Value for %v does not match", tt.e)
+	}
+}
+
+func TestEqualsEnumWithDuplicateValues(t *testing.T) {
+	tests := []struct {
+		lhs, rhs te.EnumWithDuplicateValues
+		want     bool
+	}{
+		{te.EnumWithDuplicateValuesP, te.EnumWithDuplicateValuesP, true},
+		{te.EnumWithDuplicateValuesQ, te.EnumWithDuplicateValuesQ, true},
+		{te.EnumWithDuplicateValuesR, te.EnumWithDuplicateValuesR, true},
+		{te.EnumWithDuplicateValuesP, te.EnumWithDuplicateValuesQ, false},
+		{te.EnumWithDuplicateValuesQ, te.EnumWithDuplicateValuesR, false},
+		{te.EnumWithDuplicateValuesR, te.EnumWithDuplicateValuesP, true},
+	}
+	for _, tt := range tests {
+		assert.Equal(t, tt.lhs.Equals(tt.rhs), tt.want)
 	}
 }
 
@@ -131,6 +182,24 @@ func TestOptionalEnum(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.s, tt.v, "StructWithOptionalEnum")
+	}
+}
+
+func TestEqualsOptionalEnum(t *testing.T) {
+	foo := te.EnumDefaultFoo
+	bar := te.EnumDefaultBar
+
+	tests := []struct {
+		lhs, rhs te.StructWithOptionalEnum
+		want     bool
+	}{
+		{te.StructWithOptionalEnum{}, te.StructWithOptionalEnum{}, true},
+		{te.StructWithOptionalEnum{E: &foo}, te.StructWithOptionalEnum{E: &foo}, true},
+		{te.StructWithOptionalEnum{E: &foo}, te.StructWithOptionalEnum{E: &bar}, false},
+		{te.StructWithOptionalEnum{E: &foo}, te.StructWithOptionalEnum{}, false},
+	}
+	for _, tt := range tests {
+		assert.Equal(t, tt.lhs.Equals(&tt.rhs), tt.want)
 	}
 }
 

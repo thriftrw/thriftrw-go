@@ -23,6 +23,7 @@ package gen
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	ts "go.uber.org/thriftrw/gen/testdata/structs"
 	td "go.uber.org/thriftrw/gen/testdata/typedefs"
 	"go.uber.org/thriftrw/wire"
@@ -30,67 +31,79 @@ import (
 
 func TestTypedefI64(t *testing.T) {
 	tests := []struct {
-		x td.Timestamp
-		v wire.Value
+		x, y td.Timestamp
+		v    wire.Value
 	}{
 		{
 			td.Timestamp(1),
+			td.Timestamp(-1),
 			wire.NewValueI64(1),
 		},
 		{
 			td.Timestamp(-1),
+			td.Timestamp(1),
 			wire.NewValueI64(-1),
 		},
 	}
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "Timestamp")
+		assert.True(t, tt.x.Equals(tt.x), "Timestamp equal")
+		assert.False(t, tt.x.Equals(tt.y), "Timestamp unequal")
 	}
 }
 
 func TestTypedefString(t *testing.T) {
 	tests := []struct {
-		x td.State
-		v wire.Value
+		x, y td.State
+		v    wire.Value
 	}{
 		{
 			td.State("hello"),
+			td.State("world"),
 			wire.NewValueString("hello"),
 		},
 		{
 			td.State("world"),
+			td.State("hello"),
 			wire.NewValueString("world"),
 		},
 	}
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "State")
+		assert.True(t, tt.x.Equals(tt.x), "State equal")
+		assert.False(t, tt.x.Equals(tt.y), "State unequal")
 	}
 }
 
 func TestTypedefBinary(t *testing.T) {
 	tests := []struct {
-		x td.PDF
-		v wire.Value
+		x, y td.PDF
+		v    wire.Value
 	}{
 		{
 			td.PDF{1, 2, 3},
+			td.PDF{1, 3, 5},
 			wire.NewValueBinary([]byte{1, 2, 3}),
 		},
 	}
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "PDF")
+		assert.True(t, tt.x.Equals(tt.x))
+		assert.False(t, tt.x.Equals(tt.y))
 	}
 }
 
 func TestTypedefStruct(t *testing.T) {
 	tests := []struct {
-		x *td.UUID
-		v wire.Value
+		x, y *td.UUID
+		v    wire.Value
 	}{
 		{
 			(*td.UUID)(&td.I128{1, 2}),
+			(*td.UUID)(&td.I128{3, 1}),
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueI64(1)},
 				{ID: 2, Value: wire.NewValueI64(2)},
@@ -100,13 +113,15 @@ func TestTypedefStruct(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, tt.x, tt.v, "UUID")
+		assert.True(t, tt.x.Equals(tt.x), "UUID equal")
+		assert.False(t, tt.x.Equals(tt.y), "UUID unequal")
 	}
 }
 
 func TestTypedefContainer(t *testing.T) {
 	tests := []struct {
-		x td.EventGroup
-		v wire.Value
+		x, y td.EventGroup
+		v    wire.Value
 	}{
 		{
 			td.EventGroup{
@@ -117,6 +132,16 @@ func TestTypedefContainer(t *testing.T) {
 				&td.Event{
 					UUID: &td.UUID{High: 0, Low: 42},
 					Time: (*td.Timestamp)(int64p(100)),
+				},
+			},
+			td.EventGroup{
+				&td.Event{
+					UUID: &td.UUID{High: 100, Low: 200},
+					Time: (*td.Timestamp)(int64p(42)),
+				},
+				&td.Event{
+					UUID: &td.UUID{High: 0, Low: 42},
+					Time: (*td.Timestamp)(int64p(99)),
 				},
 			},
 			wire.NewValueList(
@@ -142,16 +167,21 @@ func TestTypedefContainer(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "EventGroup")
+		assert.True(t, tt.x.Equals(tt.x), "EventGroup equal")
+		assert.False(t, tt.x.Equals(tt.y), "EventGroup unequal")
 	}
 }
 
 func TestUnhashableSetAlias(t *testing.T) {
 	tests := []struct {
-		x td.FrameGroup
-		v wire.Value
+		x, y td.FrameGroup
+		v    wire.Value
 	}{
 		{
 			td.FrameGroup{},
+			td.FrameGroup{
+				&ts.Frame{TopLeft: &ts.Point{X: 1, Y: 2}, Size: &ts.Size{Width: 3, Height: 4}},
+			},
 			wire.NewValueSet(
 				wire.ValueListFromSlice(wire.TStruct, []wire.Value{}),
 			),
@@ -159,6 +189,10 @@ func TestUnhashableSetAlias(t *testing.T) {
 		{
 			td.FrameGroup{
 				&ts.Frame{TopLeft: &ts.Point{X: 1, Y: 2}, Size: &ts.Size{Width: 3, Height: 4}},
+				&ts.Frame{TopLeft: &ts.Point{X: 5, Y: 6}, Size: &ts.Size{Width: 7, Height: 8}},
+			},
+			td.FrameGroup{
+				&ts.Frame{TopLeft: &ts.Point{X: 1, Y: 2}, Size: &ts.Size{Width: 30, Height: 40}},
 				&ts.Frame{TopLeft: &ts.Point{X: 5, Y: 6}, Size: &ts.Size{Width: 7, Height: 8}},
 			},
 			wire.NewValueSet(
@@ -190,16 +224,24 @@ func TestUnhashableSetAlias(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "FrameGroup")
+		assert.True(t, tt.x.Equals(tt.x), "FrameGroup equal")
+		assert.False(t, tt.x.Equals(tt.y), "FrameGroup unequal")
 	}
 }
 
 func TestUnhashableMapKeyAlias(t *testing.T) {
 	tests := []struct {
-		x td.PointMap
-		v wire.Value
+		x, y td.PointMap
+		v    wire.Value
 	}{
 		{
 			td.PointMap{},
+			td.PointMap{
+				{
+					Key:   &ts.Point{X: 1, Y: 2},
+					Value: &ts.Point{X: 3, Y: 4},
+				},
+			},
 			wire.NewValueMap(
 				wire.MapItemListFromSlice(wire.TStruct, wire.TStruct, []wire.MapItem{}),
 			),
@@ -213,6 +255,20 @@ func TestUnhashableMapKeyAlias(t *testing.T) {
 				{
 					Key:   &ts.Point{X: 5, Y: 6},
 					Value: &ts.Point{X: 7, Y: 8},
+				},
+				{
+					Key:   &ts.Point{X: 9, Y: 10},
+					Value: &ts.Point{X: 11, Y: 12},
+				},
+			},
+			td.PointMap{
+				{
+					Key:   &ts.Point{X: 1, Y: 2},
+					Value: &ts.Point{X: 3, Y: 4},
+				},
+				{
+					Key:   &ts.Point{X: 5, Y: 6},
+					Value: &ts.Point{X: 70, Y: 80},
 				},
 				{
 					Key:   &ts.Point{X: 9, Y: 10},
@@ -258,16 +314,21 @@ func TestUnhashableMapKeyAlias(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "PointMap")
+		assert.True(t, tt.x.Equals(tt.x), "PointMap equal")
+		assert.False(t, tt.x.Equals(tt.y), "PointMap unequal")
 	}
 }
 
 func TestBinarySet(t *testing.T) {
 	tests := []struct {
-		x td.BinarySet
-		v wire.Value
+		x, y td.BinarySet
+		v    wire.Value
 	}{
 		{
 			td.BinarySet{},
+			td.BinarySet{
+				{1, 2, 3},
+			},
 			wire.NewValueSet(
 				wire.ValueListFromSlice(wire.TBinary, []wire.Value{}),
 			),
@@ -276,6 +337,9 @@ func TestBinarySet(t *testing.T) {
 			td.BinarySet{
 				{1, 2, 3},
 				{4, 5, 6},
+			},
+			td.BinarySet{
+				{10, 20, 30},
 			},
 			wire.NewValueSet(
 				wire.ValueListFromSlice(wire.TBinary, []wire.Value{
@@ -288,5 +352,7 @@ func TestBinarySet(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "BinarySet")
+		assert.True(t, tt.x.Equals(tt.x), "BinarySet equal")
+		assert.False(t, tt.x.Equals(tt.y), "BinarySet unequal")
 	}
 }
