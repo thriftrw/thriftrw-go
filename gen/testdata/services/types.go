@@ -4,6 +4,7 @@
 package services
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
@@ -83,6 +84,16 @@ func (v *ConflictingNamesSetValueArgs) String() string {
 	return fmt.Sprintf("ConflictingNamesSetValueArgs{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (lhs *ConflictingNamesSetValueArgs) Equals(rhs *ConflictingNamesSetValueArgs) bool {
+	if !(lhs.Key == rhs.Key) {
+		return false
+	}
+	if !(bytes.Equal(lhs.Value, rhs.Value)) {
+		return false
+	}
+	return true
+}
+
 type InternalError struct {
 	Message *string `json:"message,omitempty"`
 }
@@ -133,6 +144,27 @@ func (v *InternalError) String() string {
 	return fmt.Sprintf("InternalError{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _string_EqualsPtr(lhs, rhs *string) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x == y
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (lhs *InternalError) Equals(rhs *InternalError) bool {
+	{
+		if !(_string_EqualsPtr(lhs.Message, rhs.Message)) {
+			return false
+		}
+	}
+	return true
+}
+
 func (v *InternalError) Error() string {
 	return v.String()
 }
@@ -153,4 +185,8 @@ func (v *Key) FromWire(w wire.Value) error {
 	x, err := w.GetString(), error(nil)
 	*v = (Key)(x)
 	return err
+}
+
+func (lhs Key) Equals(rhs Key) bool {
+	return lhs == rhs
 }

@@ -4,6 +4,7 @@
 package structs
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/gen/testdata/enums"
@@ -59,6 +60,13 @@ func (v *ContactInfo) String() string {
 	fields[i] = fmt.Sprintf("EmailAddress: %v", v.EmailAddress)
 	i++
 	return fmt.Sprintf("ContactInfo{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (lhs *ContactInfo) Equals(rhs *ContactInfo) bool {
+	if !(lhs.EmailAddress == rhs.EmailAddress) {
+		return false
+	}
+	return true
 }
 
 type DefaultsStruct struct {
@@ -415,6 +423,108 @@ func (v *DefaultsStruct) String() string {
 	return fmt.Sprintf("DefaultsStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _i32_EqualsPtr(lhs, rhs *int32) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x == y
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func _EnumDefault_EqualsPtr(lhs, rhs *enums.EnumDefault) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x.Equals(y)
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func _List_String_Equals(lhs, rhs []string) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _List_Double_Equals(lhs, rhs []float64) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (lhs *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
+	{
+		if !(_i32_EqualsPtr(lhs.RequiredPrimitive, rhs.RequiredPrimitive)) {
+			return false
+		}
+	}
+	{
+		if !(_i32_EqualsPtr(lhs.OptionalPrimitive, rhs.OptionalPrimitive)) {
+			return false
+		}
+	}
+	{
+		if !(_EnumDefault_EqualsPtr(lhs.RequiredEnum, rhs.RequiredEnum)) {
+			return false
+		}
+	}
+	{
+		if !(_EnumDefault_EqualsPtr(lhs.OptionalEnum, rhs.OptionalEnum)) {
+			return false
+		}
+	}
+	if (lhs.RequiredList == nil && rhs.RequiredList != nil) || (lhs.RequiredList != nil && rhs.RequiredList == nil) {
+		return false
+	} else if lhs.RequiredList != nil && rhs.RequiredList != nil {
+		if !(_List_String_Equals(lhs.RequiredList, rhs.RequiredList)) {
+			return false
+		}
+	}
+	if (lhs.OptionalList == nil && rhs.OptionalList != nil) || (lhs.OptionalList != nil && rhs.OptionalList == nil) {
+		return false
+	} else if lhs.OptionalList != nil && rhs.OptionalList != nil {
+		if !(_List_Double_Equals(lhs.OptionalList, rhs.OptionalList)) {
+			return false
+		}
+	}
+	if (lhs.RequiredStruct == nil && rhs.RequiredStruct != nil) || (lhs.RequiredStruct != nil && rhs.RequiredStruct == nil) {
+		return false
+	} else if lhs.RequiredStruct != nil && rhs.RequiredStruct != nil {
+		if !(lhs.RequiredStruct.Equals(rhs.RequiredStruct)) {
+			return false
+		}
+	}
+	if (lhs.OptionalStruct == nil && rhs.OptionalStruct != nil) || (lhs.OptionalStruct != nil && rhs.OptionalStruct == nil) {
+		return false
+	} else if lhs.OptionalStruct != nil && rhs.OptionalStruct != nil {
+		if !(lhs.OptionalStruct.Equals(rhs.OptionalStruct)) {
+			return false
+		}
+	}
+	return true
+}
+
 type Edge struct {
 	StartPoint *Point `json:"startPoint"`
 	EndPoint   *Point `json:"endPoint"`
@@ -497,6 +607,16 @@ func (v *Edge) String() string {
 	return fmt.Sprintf("Edge{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (lhs *Edge) Equals(rhs *Edge) bool {
+	if !(lhs.StartPoint.Equals(rhs.StartPoint)) {
+		return false
+	}
+	if !(lhs.EndPoint.Equals(rhs.EndPoint)) {
+		return false
+	}
+	return true
+}
+
 type EmptyStruct struct{}
 
 func (v *EmptyStruct) ToWire() (wire.Value, error) {
@@ -519,6 +639,10 @@ func (v *EmptyStruct) String() string {
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("EmptyStruct{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (lhs *EmptyStruct) Equals(rhs *EmptyStruct) bool {
+	return true
 }
 
 type Frame struct {
@@ -601,6 +725,16 @@ func (v *Frame) String() string {
 	fields[i] = fmt.Sprintf("Size: %v", v.Size)
 	i++
 	return fmt.Sprintf("Frame{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (lhs *Frame) Equals(rhs *Frame) bool {
+	if !(lhs.TopLeft.Equals(rhs.TopLeft)) {
+		return false
+	}
+	if !(lhs.Size.Equals(rhs.Size)) {
+		return false
+	}
+	return true
 }
 
 type Graph struct {
@@ -702,6 +836,26 @@ func (v *Graph) String() string {
 	return fmt.Sprintf("Graph{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _List_Edge_Equals(lhs, rhs []*Edge) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv.Equals(rv)) {
+			return false
+		}
+	}
+	return true
+}
+
+func (lhs *Graph) Equals(rhs *Graph) bool {
+	if !(_List_Edge_Equals(lhs.Edges, rhs.Edges)) {
+		return false
+	}
+	return true
+}
+
 type List Node
 
 func (v *List) ToWire() (wire.Value, error) {
@@ -716,6 +870,10 @@ func (v *List) String() string {
 
 func (v *List) FromWire(w wire.Value) error {
 	return (*Node)(v).FromWire(w)
+}
+
+func (lhs *List) Equals(rhs *List) bool {
+	return (*Node)(lhs).Equals((*Node)(rhs))
 }
 
 type Node struct {
@@ -793,6 +951,20 @@ func (v *Node) String() string {
 	return fmt.Sprintf("Node{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (lhs *Node) Equals(rhs *Node) bool {
+	if !(lhs.Value == rhs.Value) {
+		return false
+	}
+	if (lhs.Tail == nil && rhs.Tail != nil) || (lhs.Tail != nil && rhs.Tail == nil) {
+		return false
+	} else if lhs.Tail != nil && rhs.Tail != nil {
+		if !(lhs.Tail.Equals(rhs.Tail)) {
+			return false
+		}
+	}
+	return true
+}
+
 type Point struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
@@ -861,6 +1033,16 @@ func (v *Point) String() string {
 	fields[i] = fmt.Sprintf("Y: %v", v.Y)
 	i++
 	return fmt.Sprintf("Point{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (lhs *Point) Equals(rhs *Point) bool {
+	if !(lhs.X == rhs.X) {
+		return false
+	}
+	if !(lhs.Y == rhs.Y) {
+		return false
+	}
+	return true
 }
 
 type PrimitiveOptionalStruct struct {
@@ -1065,6 +1247,124 @@ func (v *PrimitiveOptionalStruct) String() string {
 	return fmt.Sprintf("PrimitiveOptionalStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _bool_EqualsPtr(lhs, rhs *bool) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x == y
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func _byte_EqualsPtr(lhs, rhs *int8) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x == y
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func _i16_EqualsPtr(lhs, rhs *int16) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x == y
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func _i64_EqualsPtr(lhs, rhs *int64) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x == y
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func _double_EqualsPtr(lhs, rhs *float64) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x == y
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func _string_EqualsPtr(lhs, rhs *string) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x == y
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (lhs *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
+	{
+		if !(_bool_EqualsPtr(lhs.BoolField, rhs.BoolField)) {
+			return false
+		}
+	}
+	{
+		if !(_byte_EqualsPtr(lhs.ByteField, rhs.ByteField)) {
+			return false
+		}
+	}
+	{
+		if !(_i16_EqualsPtr(lhs.Int16Field, rhs.Int16Field)) {
+			return false
+		}
+	}
+	{
+		if !(_i32_EqualsPtr(lhs.Int32Field, rhs.Int32Field)) {
+			return false
+		}
+	}
+	{
+		if !(_i64_EqualsPtr(lhs.Int64Field, rhs.Int64Field)) {
+			return false
+		}
+	}
+	{
+		if !(_double_EqualsPtr(lhs.DoubleField, rhs.DoubleField)) {
+			return false
+		}
+	}
+	{
+		if !(_string_EqualsPtr(lhs.StringField, rhs.StringField)) {
+			return false
+		}
+	}
+	if (lhs.BinaryField == nil && rhs.BinaryField != nil) || (lhs.BinaryField != nil && rhs.BinaryField == nil) {
+		return false
+	} else if lhs.BinaryField != nil && rhs.BinaryField != nil {
+		if !(bytes.Equal(lhs.BinaryField, rhs.BinaryField)) {
+			return false
+		}
+	}
+	return true
+}
+
 type PrimitiveRequiredStruct struct {
 	BoolField   bool    `json:"boolField"`
 	ByteField   int8    `json:"byteField"`
@@ -1264,6 +1564,34 @@ func (v *PrimitiveRequiredStruct) String() string {
 	return fmt.Sprintf("PrimitiveRequiredStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (lhs *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
+	if !(lhs.BoolField == rhs.BoolField) {
+		return false
+	}
+	if !(lhs.ByteField == rhs.ByteField) {
+		return false
+	}
+	if !(lhs.Int16Field == rhs.Int16Field) {
+		return false
+	}
+	if !(lhs.Int32Field == rhs.Int32Field) {
+		return false
+	}
+	if !(lhs.Int64Field == rhs.Int64Field) {
+		return false
+	}
+	if !(lhs.DoubleField == rhs.DoubleField) {
+		return false
+	}
+	if !(lhs.StringField == rhs.StringField) {
+		return false
+	}
+	if !(bytes.Equal(lhs.BinaryField, rhs.BinaryField)) {
+		return false
+	}
+	return true
+}
+
 type Size struct {
 	Width  float64 `json:"width"`
 	Height float64 `json:"height"`
@@ -1332,6 +1660,16 @@ func (v *Size) String() string {
 	fields[i] = fmt.Sprintf("Height: %v", v.Height)
 	i++
 	return fmt.Sprintf("Size{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (lhs *Size) Equals(rhs *Size) bool {
+	if !(lhs.Width == rhs.Width) {
+		return false
+	}
+	if !(lhs.Height == rhs.Height) {
+		return false
+	}
+	return true
 }
 
 type User struct {
@@ -1407,4 +1745,18 @@ func (v *User) String() string {
 		i++
 	}
 	return fmt.Sprintf("User{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (lhs *User) Equals(rhs *User) bool {
+	if !(lhs.Name == rhs.Name) {
+		return false
+	}
+	if (lhs.Contact == nil && rhs.Contact != nil) || (lhs.Contact != nil && rhs.Contact == nil) {
+		return false
+	} else if lhs.Contact != nil && rhs.Contact != nil {
+		if !(lhs.Contact.Equals(rhs.Contact)) {
+			return false
+		}
+	}
+	return true
 }

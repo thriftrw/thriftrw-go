@@ -4,6 +4,7 @@
 package containers
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/gen/testdata/enums"
@@ -1185,6 +1186,394 @@ func (v *ContainersOfContainers) String() string {
 	return fmt.Sprintf("ContainersOfContainers{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _List_I32_Equals(lhs, rhs []int32) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _List_List_I32_Equals(lhs, rhs [][]int32) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(_List_I32_Equals(lv, rv)) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Set_I32_Equals(lhs, rhs map[int32]struct{}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	o := make(map[int32]struct{}, len(lhs))
+	for x := range lhs {
+		o[x] = struct{}{}
+	}
+	for y := range rhs {
+		if _, ok := o[y]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _List_Set_I32_Equals(lhs, rhs []map[int32]struct{}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(_Set_I32_Equals(lv, rv)) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_I32_I32_Equals(lhs, rhs map[int32]int32) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _List_Map_I32_I32_Equals(lhs, rhs []map[int32]int32) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(_Map_I32_I32_Equals(lv, rv)) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Set_String_Equals(lhs, rhs map[string]struct{}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	o := make(map[string]struct{}, len(lhs))
+	for x := range lhs {
+		o[x] = struct{}{}
+	}
+	for y := range rhs {
+		if _, ok := o[y]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _Set_Set_String_Equals(lhs, rhs []map[string]struct{}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for _, x := range lhs {
+		ok := false
+		for _, y := range rhs {
+			if _Set_String_Equals(x, y) {
+				ok = true
+				break
+			}
+		}
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _List_String_Equals(lhs, rhs []string) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Set_List_String_Equals(lhs, rhs [][]string) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for _, x := range lhs {
+		ok := false
+		for _, y := range rhs {
+			if _List_String_Equals(x, y) {
+				ok = true
+				break
+			}
+		}
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Set_Map_String_String_Equals(lhs, rhs []map[string]string) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for _, x := range lhs {
+		ok := false
+		for _, y := range rhs {
+			if _Map_String_String_Equals(x, y) {
+				ok = true
+				break
+			}
+		}
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_String_I32_Equals(lhs, rhs map[string]int32) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_Map_String_I32_I64_Equals(lhs, rhs []struct {
+	Key   map[string]int32
+	Value int64
+}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for _, i := range lhs {
+		lk := i.Key
+		lv := i.Value
+		ok := false
+		for _, j := range rhs {
+			rk := j.Key
+			rv := j.Value
+			if !(_Map_String_I32_Equals(lk, rk)) {
+				continue
+			}
+			if !(lv == rv) {
+				continue
+			}
+			ok = true
+			break
+		}
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _Set_I64_Equals(lhs, rhs map[int64]struct{}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	o := make(map[int64]struct{}, len(lhs))
+	for x := range lhs {
+		o[x] = struct{}{}
+	}
+	for y := range rhs {
+		if _, ok := o[y]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_List_I32_Set_I64_Equals(lhs, rhs []struct {
+	Key   []int32
+	Value map[int64]struct{}
+}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for _, i := range lhs {
+		lk := i.Key
+		lv := i.Value
+		ok := false
+		for _, j := range rhs {
+			rk := j.Key
+			rv := j.Value
+			if !(_List_I32_Equals(lk, rk)) {
+				continue
+			}
+			if !(_Set_I64_Equals(lv, rv)) {
+				continue
+			}
+			ok = true
+			break
+		}
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _List_Double_Equals(lhs, rhs []float64) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_Set_I32_List_Double_Equals(lhs, rhs []struct {
+	Key   map[int32]struct{}
+	Value []float64
+}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for _, i := range lhs {
+		lk := i.Key
+		lv := i.Value
+		ok := false
+		for _, j := range rhs {
+			rk := j.Key
+			rv := j.Value
+			if !(_Set_I32_Equals(lk, rk)) {
+				continue
+			}
+			if !(_List_Double_Equals(lv, rv)) {
+				continue
+			}
+			ok = true
+			break
+		}
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func (lhs *ContainersOfContainers) Equals(rhs *ContainersOfContainers) bool {
+	if (lhs.ListOfLists == nil && rhs.ListOfLists != nil) || (lhs.ListOfLists != nil && rhs.ListOfLists == nil) {
+		return false
+	} else if lhs.ListOfLists != nil && rhs.ListOfLists != nil {
+		if !(_List_List_I32_Equals(lhs.ListOfLists, rhs.ListOfLists)) {
+			return false
+		}
+	}
+	if (lhs.ListOfSets == nil && rhs.ListOfSets != nil) || (lhs.ListOfSets != nil && rhs.ListOfSets == nil) {
+		return false
+	} else if lhs.ListOfSets != nil && rhs.ListOfSets != nil {
+		if !(_List_Set_I32_Equals(lhs.ListOfSets, rhs.ListOfSets)) {
+			return false
+		}
+	}
+	if (lhs.ListOfMaps == nil && rhs.ListOfMaps != nil) || (lhs.ListOfMaps != nil && rhs.ListOfMaps == nil) {
+		return false
+	} else if lhs.ListOfMaps != nil && rhs.ListOfMaps != nil {
+		if !(_List_Map_I32_I32_Equals(lhs.ListOfMaps, rhs.ListOfMaps)) {
+			return false
+		}
+	}
+	if (lhs.SetOfSets == nil && rhs.SetOfSets != nil) || (lhs.SetOfSets != nil && rhs.SetOfSets == nil) {
+		return false
+	} else if lhs.SetOfSets != nil && rhs.SetOfSets != nil {
+		if !(_Set_Set_String_Equals(lhs.SetOfSets, rhs.SetOfSets)) {
+			return false
+		}
+	}
+	if (lhs.SetOfLists == nil && rhs.SetOfLists != nil) || (lhs.SetOfLists != nil && rhs.SetOfLists == nil) {
+		return false
+	} else if lhs.SetOfLists != nil && rhs.SetOfLists != nil {
+		if !(_Set_List_String_Equals(lhs.SetOfLists, rhs.SetOfLists)) {
+			return false
+		}
+	}
+	if (lhs.SetOfMaps == nil && rhs.SetOfMaps != nil) || (lhs.SetOfMaps != nil && rhs.SetOfMaps == nil) {
+		return false
+	} else if lhs.SetOfMaps != nil && rhs.SetOfMaps != nil {
+		if !(_Set_Map_String_String_Equals(lhs.SetOfMaps, rhs.SetOfMaps)) {
+			return false
+		}
+	}
+	if (lhs.MapOfMapToInt == nil && rhs.MapOfMapToInt != nil) || (lhs.MapOfMapToInt != nil && rhs.MapOfMapToInt == nil) {
+		return false
+	} else if lhs.MapOfMapToInt != nil && rhs.MapOfMapToInt != nil {
+		if !(_Map_Map_String_I32_I64_Equals(lhs.MapOfMapToInt, rhs.MapOfMapToInt)) {
+			return false
+		}
+	}
+	if (lhs.MapOfListToSet == nil && rhs.MapOfListToSet != nil) || (lhs.MapOfListToSet != nil && rhs.MapOfListToSet == nil) {
+		return false
+	} else if lhs.MapOfListToSet != nil && rhs.MapOfListToSet != nil {
+		if !(_Map_List_I32_Set_I64_Equals(lhs.MapOfListToSet, rhs.MapOfListToSet)) {
+			return false
+		}
+	}
+	if (lhs.MapOfSetToListOfDouble == nil && rhs.MapOfSetToListOfDouble != nil) || (lhs.MapOfSetToListOfDouble != nil && rhs.MapOfSetToListOfDouble == nil) {
+		return false
+	} else if lhs.MapOfSetToListOfDouble != nil && rhs.MapOfSetToListOfDouble != nil {
+		if !(_Map_Set_I32_List_Double_Equals(lhs.MapOfSetToListOfDouble, rhs.MapOfSetToListOfDouble)) {
+			return false
+		}
+	}
+	return true
+}
+
 type EnumContainers struct {
 	ListOfEnums []enums.EnumDefault                     `json:"listOfEnums"`
 	SetOfEnums  map[enums.EnumWithValues]struct{}       `json:"setOfEnums"`
@@ -1438,6 +1827,76 @@ func (v *EnumContainers) String() string {
 	return fmt.Sprintf("EnumContainers{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _List_EnumDefault_Equals(lhs, rhs []enums.EnumDefault) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv.Equals(rv)) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Set_EnumWithValues_Equals(lhs, rhs map[enums.EnumWithValues]struct{}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	o := make(map[enums.EnumWithValues]struct{}, len(lhs))
+	for x := range lhs {
+		o[x] = struct{}{}
+	}
+	for y := range rhs {
+		if _, ok := o[y]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_EnumWithDuplicateValues_I32_Equals(lhs, rhs map[enums.EnumWithDuplicateValues]int32) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (lhs *EnumContainers) Equals(rhs *EnumContainers) bool {
+	if (lhs.ListOfEnums == nil && rhs.ListOfEnums != nil) || (lhs.ListOfEnums != nil && rhs.ListOfEnums == nil) {
+		return false
+	} else if lhs.ListOfEnums != nil && rhs.ListOfEnums != nil {
+		if !(_List_EnumDefault_Equals(lhs.ListOfEnums, rhs.ListOfEnums)) {
+			return false
+		}
+	}
+	if (lhs.SetOfEnums == nil && rhs.SetOfEnums != nil) || (lhs.SetOfEnums != nil && rhs.SetOfEnums == nil) {
+		return false
+	} else if lhs.SetOfEnums != nil && rhs.SetOfEnums != nil {
+		if !(_Set_EnumWithValues_Equals(lhs.SetOfEnums, rhs.SetOfEnums)) {
+			return false
+		}
+	}
+	if (lhs.MapOfEnums == nil && rhs.MapOfEnums != nil) || (lhs.MapOfEnums != nil && rhs.MapOfEnums == nil) {
+		return false
+	} else if lhs.MapOfEnums != nil && rhs.MapOfEnums != nil {
+		if !(_Map_EnumWithDuplicateValues_I32_Equals(lhs.MapOfEnums, rhs.MapOfEnums)) {
+			return false
+		}
+	}
+	return true
+}
+
 type MapOfBinaryAndString struct {
 	BinaryToString []struct {
 		Key   []byte
@@ -1645,6 +2104,70 @@ func (v *MapOfBinaryAndString) String() string {
 		i++
 	}
 	return fmt.Sprintf("MapOfBinaryAndString{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _Map_Binary_String_Equals(lhs, rhs []struct {
+	Key   []byte
+	Value string
+}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for _, i := range lhs {
+		lk := i.Key
+		lv := i.Value
+		ok := false
+		for _, j := range rhs {
+			rk := j.Key
+			rv := j.Value
+			if !(bytes.Equal(lk, rk)) {
+				continue
+			}
+			if !(lv == rv) {
+				continue
+			}
+			ok = true
+			break
+		}
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_String_Binary_Equals(lhs, rhs map[string][]byte) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(bytes.Equal(lv, rv)) {
+			return false
+		}
+	}
+	return true
+}
+
+func (lhs *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
+	if (lhs.BinaryToString == nil && rhs.BinaryToString != nil) || (lhs.BinaryToString != nil && rhs.BinaryToString == nil) {
+		return false
+	} else if lhs.BinaryToString != nil && rhs.BinaryToString != nil {
+		if !(_Map_Binary_String_Equals(lhs.BinaryToString, rhs.BinaryToString)) {
+			return false
+		}
+	}
+	if (lhs.StringToBinary == nil && rhs.StringToBinary != nil) || (lhs.StringToBinary != nil && rhs.StringToBinary == nil) {
+		return false
+	} else if lhs.StringToBinary != nil && rhs.StringToBinary != nil {
+		if !(_Map_String_Binary_Equals(lhs.StringToBinary, rhs.StringToBinary)) {
+			return false
+		}
+	}
+	return true
 }
 
 type PrimitiveContainers struct {
@@ -2048,6 +2571,126 @@ func (v *PrimitiveContainers) String() string {
 	return fmt.Sprintf("PrimitiveContainers{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _List_Binary_Equals(lhs, rhs [][]byte) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(bytes.Equal(lv, rv)) {
+			return false
+		}
+	}
+	return true
+}
+
+func _List_I64_Equals(lhs, rhs []int64) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Set_Byte_Equals(lhs, rhs map[int8]struct{}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	o := make(map[int8]struct{}, len(lhs))
+	for x := range lhs {
+		o[x] = struct{}{}
+	}
+	for y := range rhs {
+		if _, ok := o[y]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_I32_String_Equals(lhs, rhs map[int32]string) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_String_Bool_Equals(lhs, rhs map[string]bool) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (lhs *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
+	if (lhs.ListOfBinary == nil && rhs.ListOfBinary != nil) || (lhs.ListOfBinary != nil && rhs.ListOfBinary == nil) {
+		return false
+	} else if lhs.ListOfBinary != nil && rhs.ListOfBinary != nil {
+		if !(_List_Binary_Equals(lhs.ListOfBinary, rhs.ListOfBinary)) {
+			return false
+		}
+	}
+	if (lhs.ListOfInts == nil && rhs.ListOfInts != nil) || (lhs.ListOfInts != nil && rhs.ListOfInts == nil) {
+		return false
+	} else if lhs.ListOfInts != nil && rhs.ListOfInts != nil {
+		if !(_List_I64_Equals(lhs.ListOfInts, rhs.ListOfInts)) {
+			return false
+		}
+	}
+	if (lhs.SetOfStrings == nil && rhs.SetOfStrings != nil) || (lhs.SetOfStrings != nil && rhs.SetOfStrings == nil) {
+		return false
+	} else if lhs.SetOfStrings != nil && rhs.SetOfStrings != nil {
+		if !(_Set_String_Equals(lhs.SetOfStrings, rhs.SetOfStrings)) {
+			return false
+		}
+	}
+	if (lhs.SetOfBytes == nil && rhs.SetOfBytes != nil) || (lhs.SetOfBytes != nil && rhs.SetOfBytes == nil) {
+		return false
+	} else if lhs.SetOfBytes != nil && rhs.SetOfBytes != nil {
+		if !(_Set_Byte_Equals(lhs.SetOfBytes, rhs.SetOfBytes)) {
+			return false
+		}
+	}
+	if (lhs.MapOfIntToString == nil && rhs.MapOfIntToString != nil) || (lhs.MapOfIntToString != nil && rhs.MapOfIntToString == nil) {
+		return false
+	} else if lhs.MapOfIntToString != nil && rhs.MapOfIntToString != nil {
+		if !(_Map_I32_String_Equals(lhs.MapOfIntToString, rhs.MapOfIntToString)) {
+			return false
+		}
+	}
+	if (lhs.MapOfStringToBool == nil && rhs.MapOfStringToBool != nil) || (lhs.MapOfStringToBool != nil && rhs.MapOfStringToBool == nil) {
+		return false
+	} else if lhs.MapOfStringToBool != nil && rhs.MapOfStringToBool != nil {
+		if !(_Map_String_Bool_Equals(lhs.MapOfStringToBool, rhs.MapOfStringToBool)) {
+			return false
+		}
+	}
+	return true
+}
+
 type PrimitiveContainersRequired struct {
 	ListOfStrings      []string           `json:"listOfStrings"`
 	SetOfInts          map[int32]struct{} `json:"setOfInts"`
@@ -2205,4 +2848,33 @@ func (v *PrimitiveContainersRequired) String() string {
 	fields[i] = fmt.Sprintf("MapOfIntsToDoubles: %v", v.MapOfIntsToDoubles)
 	i++
 	return fmt.Sprintf("PrimitiveContainersRequired{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _Map_I64_Double_Equals(lhs, rhs map[int64]float64) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (lhs *PrimitiveContainersRequired) Equals(rhs *PrimitiveContainersRequired) bool {
+	if !(_List_String_Equals(lhs.ListOfStrings, rhs.ListOfStrings)) {
+		return false
+	}
+	if !(_Set_I32_Equals(lhs.SetOfInts, rhs.SetOfInts)) {
+		return false
+	}
+	if !(_Map_I64_Double_Equals(lhs.MapOfIntsToDoubles, rhs.MapOfIntsToDoubles)) {
+		return false
+	}
+	return true
 }

@@ -59,6 +59,27 @@ func (v *Cache_ClearAfter_Args) String() string {
 	return fmt.Sprintf("Cache_ClearAfter_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _i64_EqualsPtr(lhs, rhs *int64) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x == y
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (lhs *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
+	{
+		if !(_i64_EqualsPtr(lhs.DurationMS, rhs.DurationMS)) {
+			return false
+		}
+	}
+	return true
+}
+
 func (v *Cache_ClearAfter_Args) MethodName() string {
 	return "clearAfter"
 }

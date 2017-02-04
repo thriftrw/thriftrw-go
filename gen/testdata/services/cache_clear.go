@@ -33,6 +33,10 @@ func (v *Cache_Clear_Args) String() string {
 	return fmt.Sprintf("Cache_Clear_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (lhs *Cache_Clear_Args) Equals(rhs *Cache_Clear_Args) bool {
+	return true
+}
+
 func (v *Cache_Clear_Args) MethodName() string {
 	return "clear"
 }

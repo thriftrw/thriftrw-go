@@ -81,6 +81,30 @@ func (v *DoesNotExistException) String() string {
 	return fmt.Sprintf("DoesNotExistException{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _string_EqualsPtr(lhs, rhs *string) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x == y
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (lhs *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
+	if !(lhs.Key == rhs.Key) {
+		return false
+	}
+	{
+		if !(_string_EqualsPtr(lhs.Error2, rhs.Error2)) {
+			return false
+		}
+	}
+	return true
+}
+
 func (v *DoesNotExistException) Error() string {
 	return v.String()
 }
@@ -107,6 +131,10 @@ func (v *EmptyException) String() string {
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("EmptyException{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (lhs *EmptyException) Equals(rhs *EmptyException) bool {
+	return true
 }
 
 func (v *EmptyException) Error() string {

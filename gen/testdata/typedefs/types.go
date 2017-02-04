@@ -4,6 +4,7 @@
 package typedefs
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/gen/testdata/enums"
@@ -59,6 +60,25 @@ func _Set_Binary_Read(s wire.ValueList) ([][]byte, error) {
 	return o, err
 }
 
+func _Set_Binary_Equals(lhs, rhs [][]byte) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for _, x := range lhs {
+		ok := false
+		for _, y := range rhs {
+			if bytes.Equal(x, y) {
+				ok = true
+				break
+			}
+		}
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
 type BinarySet [][]byte
 
 func (v BinarySet) ToWire() (wire.Value, error) {
@@ -75,6 +95,10 @@ func (v *BinarySet) FromWire(w wire.Value) error {
 	x, err := _Set_Binary_Read(w.GetSet())
 	*v = (BinarySet)(x)
 	return err
+}
+
+func (lhs BinarySet) Equals(rhs BinarySet) bool {
+	return _Set_Binary_Equals(lhs, rhs)
 }
 
 type _Map_Edge_Edge_MapItemList []struct {
@@ -162,6 +186,36 @@ func _Map_Edge_Edge_Read(m wire.MapItemList) ([]struct {
 	return o, err
 }
 
+func _Map_Edge_Edge_Equals(lhs, rhs []struct {
+	Key   *structs.Edge
+	Value *structs.Edge
+}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for _, i := range lhs {
+		lk := i.Key
+		lv := i.Value
+		ok := false
+		for _, j := range rhs {
+			rk := j.Key
+			rv := j.Value
+			if !(lk.Equals(rk)) {
+				continue
+			}
+			if !(lv.Equals(rv)) {
+				continue
+			}
+			ok = true
+			break
+		}
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
 type EdgeMap []struct {
 	Key   *structs.Edge
 	Value *structs.Edge
@@ -187,6 +241,10 @@ func (v *EdgeMap) FromWire(w wire.Value) error {
 	x, err := _Map_Edge_Edge_Read(w.GetMap())
 	*v = (EdgeMap)(x)
 	return err
+}
+
+func (lhs EdgeMap) Equals(rhs EdgeMap) bool {
+	return _Map_Edge_Edge_Equals(lhs, rhs)
 }
 
 type Event struct {
@@ -275,6 +333,30 @@ func (v *Event) String() string {
 	return fmt.Sprintf("Event{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _Timestamp_EqualsPtr(lhs, rhs *Timestamp) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x.Equals(y)
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (lhs *Event) Equals(rhs *Event) bool {
+	if !(lhs.UUID.Equals(rhs.UUID)) {
+		return false
+	}
+	{
+		if !(_Timestamp_EqualsPtr(lhs.Time, rhs.Time)) {
+			return false
+		}
+	}
+	return true
+}
+
 type _List_Event_ValueList []*Event
 
 func (v _List_Event_ValueList) ForEach(f func(wire.Value) error) error {
@@ -328,6 +410,19 @@ func _List_Event_Read(l wire.ValueList) ([]*Event, error) {
 	return o, err
 }
 
+func _List_Event_Equals(lhs, rhs []*Event) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv.Equals(rv)) {
+			return false
+		}
+	}
+	return true
+}
+
 type EventGroup []*Event
 
 func (v EventGroup) ToWire() (wire.Value, error) {
@@ -344,6 +439,10 @@ func (v *EventGroup) FromWire(w wire.Value) error {
 	x, err := _List_Event_Read(w.GetList())
 	*v = (EventGroup)(x)
 	return err
+}
+
+func (lhs EventGroup) Equals(rhs EventGroup) bool {
+	return _List_Event_Equals(lhs, rhs)
 }
 
 type _Set_Frame_ValueList []*structs.Frame
@@ -399,6 +498,25 @@ func _Set_Frame_Read(s wire.ValueList) ([]*structs.Frame, error) {
 	return o, err
 }
 
+func _Set_Frame_Equals(lhs, rhs []*structs.Frame) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for _, x := range lhs {
+		ok := false
+		for _, y := range rhs {
+			if x.Equals(y) {
+				ok = true
+				break
+			}
+		}
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
 type FrameGroup []*structs.Frame
 
 func (v FrameGroup) ToWire() (wire.Value, error) {
@@ -415,6 +533,10 @@ func (v *FrameGroup) FromWire(w wire.Value) error {
 	x, err := _Set_Frame_Read(w.GetSet())
 	*v = (FrameGroup)(x)
 	return err
+}
+
+func (lhs FrameGroup) Equals(rhs FrameGroup) bool {
+	return _Set_Frame_Equals(lhs, rhs)
 }
 
 func _EnumWithValues_Read(w wire.Value) (enums.EnumWithValues, error) {
@@ -441,6 +563,10 @@ func (v *MyEnum) FromWire(w wire.Value) error {
 	return err
 }
 
+func (lhs MyEnum) Equals(rhs MyEnum) bool {
+	return lhs.Equals(rhs)
+}
+
 type PDF []byte
 
 func (v PDF) ToWire() (wire.Value, error) {
@@ -457,6 +583,10 @@ func (v *PDF) FromWire(w wire.Value) error {
 	x, err := w.GetBinary(), error(nil)
 	*v = (PDF)(x)
 	return err
+}
+
+func (lhs PDF) Equals(rhs PDF) bool {
+	return bytes.Equal(lhs, rhs)
 }
 
 type _Map_Point_Point_MapItemList []struct {
@@ -544,6 +674,36 @@ func _Map_Point_Point_Read(m wire.MapItemList) ([]struct {
 	return o, err
 }
 
+func _Map_Point_Point_Equals(lhs, rhs []struct {
+	Key   *structs.Point
+	Value *structs.Point
+}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for _, i := range lhs {
+		lk := i.Key
+		lv := i.Value
+		ok := false
+		for _, j := range rhs {
+			rk := j.Key
+			rv := j.Value
+			if !(lk.Equals(rk)) {
+				continue
+			}
+			if !(lv.Equals(rv)) {
+				continue
+			}
+			ok = true
+			break
+		}
+		if !ok {
+			return false
+		}
+	}
+	return true
+}
+
 type PointMap []struct {
 	Key   *structs.Point
 	Value *structs.Point
@@ -571,6 +731,10 @@ func (v *PointMap) FromWire(w wire.Value) error {
 	return err
 }
 
+func (lhs PointMap) Equals(rhs PointMap) bool {
+	return _Map_Point_Point_Equals(lhs, rhs)
+}
+
 type State string
 
 func (v State) ToWire() (wire.Value, error) {
@@ -589,6 +753,10 @@ func (v *State) FromWire(w wire.Value) error {
 	return err
 }
 
+func (lhs State) Equals(rhs State) bool {
+	return lhs == rhs
+}
+
 type Timestamp int64
 
 func (v Timestamp) ToWire() (wire.Value, error) {
@@ -605,6 +773,10 @@ func (v *Timestamp) FromWire(w wire.Value) error {
 	x, err := w.GetI64(), error(nil)
 	*v = (Timestamp)(x)
 	return err
+}
+
+func (lhs Timestamp) Equals(rhs Timestamp) bool {
+	return lhs == rhs
 }
 
 type Transition struct {
@@ -709,6 +881,23 @@ func (v *Transition) String() string {
 	return fmt.Sprintf("Transition{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (lhs *Transition) Equals(rhs *Transition) bool {
+	if !(lhs.FromState.Equals(rhs.FromState)) {
+		return false
+	}
+	if !(lhs.ToState.Equals(rhs.ToState)) {
+		return false
+	}
+	if (lhs.Events == nil && rhs.Events != nil) || (lhs.Events != nil && rhs.Events == nil) {
+		return false
+	} else if lhs.Events != nil && rhs.Events != nil {
+		if !(lhs.Events.Equals(rhs.Events)) {
+			return false
+		}
+	}
+	return true
+}
+
 type UUID I128
 
 func (v *UUID) ToWire() (wire.Value, error) {
@@ -723,6 +912,10 @@ func (v *UUID) String() string {
 
 func (v *UUID) FromWire(w wire.Value) error {
 	return (*I128)(v).FromWire(w)
+}
+
+func (lhs *UUID) Equals(rhs *UUID) bool {
+	return (*I128)(lhs).Equals((*I128)(rhs))
 }
 
 type I128 struct {
@@ -793,4 +986,14 @@ func (v *I128) String() string {
 	fields[i] = fmt.Sprintf("Low: %v", v.Low)
 	i++
 	return fmt.Sprintf("I128{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (lhs *I128) Equals(rhs *I128) bool {
+	if !(lhs.High == rhs.High) {
+		return false
+	}
+	if !(lhs.Low == rhs.Low) {
+		return false
+	}
+	return true
 }

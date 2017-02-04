@@ -67,6 +67,27 @@ func (v *KeyValue_DeleteValue_Args) String() string {
 	return fmt.Sprintf("KeyValue_DeleteValue_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _Key_EqualsPtr(lhs, rhs *Key) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x.Equals(y)
+	} else if lhs == nil && rhs == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+func (lhs *KeyValue_DeleteValue_Args) Equals(rhs *KeyValue_DeleteValue_Args) bool {
+	{
+		if !(_Key_EqualsPtr(lhs.Key, rhs.Key)) {
+			return false
+		}
+	}
+	return true
+}
+
 func (v *KeyValue_DeleteValue_Args) MethodName() string {
 	return "deleteValue"
 }
@@ -218,6 +239,24 @@ func (v *KeyValue_DeleteValue_Result) String() string {
 		i++
 	}
 	return fmt.Sprintf("KeyValue_DeleteValue_Result{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (lhs *KeyValue_DeleteValue_Result) Equals(rhs *KeyValue_DeleteValue_Result) bool {
+	if (lhs.DoesNotExist == nil && rhs.DoesNotExist != nil) || (lhs.DoesNotExist != nil && rhs.DoesNotExist == nil) {
+		return false
+	} else if lhs.DoesNotExist != nil && rhs.DoesNotExist != nil {
+		if !(lhs.DoesNotExist.Equals(rhs.DoesNotExist)) {
+			return false
+		}
+	}
+	if (lhs.InternalError == nil && rhs.InternalError != nil) || (lhs.InternalError != nil && rhs.InternalError == nil) {
+		return false
+	} else if lhs.InternalError != nil && rhs.InternalError != nil {
+		if !(lhs.InternalError.Equals(rhs.InternalError)) {
+			return false
+		}
+	}
+	return true
 }
 
 func (v *KeyValue_DeleteValue_Result) MethodName() string {
