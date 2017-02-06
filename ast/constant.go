@@ -23,8 +23,18 @@ package ast
 // ConstantValue unifies the different types representing constant values in
 // Thrift files.
 type ConstantValue interface {
+	Node
+
 	constantValue()
 }
+
+func (ConstantBoolean) node()   {}
+func (ConstantInteger) node()   {}
+func (ConstantString) node()    {}
+func (ConstantDouble) node()    {}
+func (ConstantReference) node() {}
+func (ConstantMap) node()       {}
+func (ConstantList) node()      {}
 
 func (ConstantBoolean) constantValue()   {}
 func (ConstantInteger) constantValue()   {}
@@ -70,6 +80,8 @@ type ConstantMapItem struct {
 	Key, Value ConstantValue
 	Line       int
 }
+
+func (ConstantMapItem) node() {}
 
 // ConstantList is a list literal from the Thrift file.
 //

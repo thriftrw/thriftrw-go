@@ -30,6 +30,8 @@ type DefinitionInfo struct {
 // Definition unifies the different types representing items defined in the
 // Thrift file.
 type Definition interface {
+	Node
+
 	Info() DefinitionInfo
 	definition()
 }
@@ -44,7 +46,8 @@ type Constant struct {
 	Line  int
 }
 
-func (c *Constant) definition() {}
+func (*Constant) node()       {}
+func (*Constant) definition() {}
 
 // Info for Constant
 func (c *Constant) Info() DefinitionInfo {
@@ -63,7 +66,8 @@ type Typedef struct {
 }
 
 // Definition implementation for Typedef.
-func (t *Typedef) definition() {}
+func (*Typedef) node()       {}
+func (*Typedef) definition() {}
 
 // Info for Typedef.
 func (t *Typedef) Info() DefinitionInfo {
@@ -86,7 +90,8 @@ type Enum struct {
 	Line        int
 }
 
-func (e *Enum) definition() {}
+func (*Enum) node()       {}
+func (*Enum) definition() {}
 
 // Info for Enum.
 func (e *Enum) Info() DefinitionInfo {
@@ -101,6 +106,8 @@ type EnumItem struct {
 	Annotations []*Annotation
 	Line        int
 }
+
+func (*EnumItem) node() {}
 
 // StructureType specifies whether a struct-like type is a struct, union, or
 // exception.
@@ -141,7 +148,8 @@ type Struct struct {
 	Line        int
 }
 
-func (s *Struct) definition() {}
+func (*Struct) node()       {}
+func (*Struct) definition() {}
 
 // Info for Struct.
 func (s *Struct) Info() DefinitionInfo {
@@ -164,7 +172,8 @@ type Service struct {
 	Line        int
 }
 
-func (s *Service) definition() {}
+func (*Service) node()       {}
+func (*Service) definition() {}
 
 // Info for Service.
 func (s *Service) Info() DefinitionInfo {
@@ -186,6 +195,8 @@ type Function struct {
 	Annotations []*Annotation
 	Line        int
 }
+
+func (*Function) node() {}
 
 // Requiredness represents whether a field was marked as required or optional,
 // or if the user did not specify either.
@@ -214,6 +225,8 @@ type Field struct {
 	Annotations  []*Annotation
 	Line         int
 }
+
+func (*Field) node() {}
 
 // ServiceReference is a reference to another service.
 type ServiceReference struct {
