@@ -43,7 +43,8 @@ func (ss nodeStack) Ancestors() []Node {
 }
 
 func walk(stack nodeStack, v Visitor, node Node) {
-	if v = v.Visit(stack, node); v == nil {
+	v = v.Visit(stack, node)
+	if v == nil {
 		return
 	}
 
