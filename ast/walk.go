@@ -20,6 +20,8 @@
 
 package ast
 
+import "fmt"
+
 // Walk walks the AST depth-first with the given visitor, starting at the
 // given node. The visitor's Visit function should return a non-nil visitor if
 // it wants to visit the children of the node it was called with.
@@ -53,11 +55,15 @@ func walk(stack nodeStack, v Visitor, node Node) {
 
 	stack = append(stack, node)
 	switch n := node.(type) {
+	case *Annotation:
+		// nothing to do
 	case BaseType:
 		walkAnnotations(stack, v, n.Annotations)
 	case *Constant:
 		walk(stack, v, n.Type)
 		walk(stack, v, n.Value)
+	case ConstantBoolean, ConstantDouble, ConstantInteger:
+		// nothing to do
 	case ConstantList:
 		for _, item := range n.Items {
 			walk(stack, v, item)
@@ -69,6 +75,8 @@ func walk(stack nodeStack, v Visitor, node Node) {
 	case ConstantMapItem:
 		walk(stack, v, n.Key)
 		walk(stack, v, n.Value)
+	case ConstantReference, ConstantString:
+		// nothing to do
 	case *Enum:
 		for _, item := range n.Items {
 			walk(stack, v, item)
@@ -92,6 +100,8 @@ func walk(stack nodeStack, v Visitor, node Node) {
 		walk(stack, v, n.KeyType)
 		walk(stack, v, n.ValueType)
 		walkAnnotations(stack, v, n.Annotations)
+	case *Namespace:
+		// nothing to do
 	case *Program:
 		for _, h := range n.Headers {
 			walk(stack, v, h)
@@ -110,9 +120,13 @@ func walk(stack nodeStack, v Visitor, node Node) {
 	case *Struct:
 		walkFields(stack, v, n.Fields)
 		walkAnnotations(stack, v, n.Annotations)
+	case TypeReference:
+		// nothing to do
 	case *Typedef:
 		walk(stack, v, n.Type)
 		walkAnnotations(stack, v, n.Annotations)
+	default:
+		panic(fmt.Sprintf("trying to visit unrecognized node: %#v", n))
 	}
 }
 

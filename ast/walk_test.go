@@ -34,9 +34,9 @@ func TestWalk(t *testing.T) {
 		},
 		{
 			desc: "base type",
-			node: &ast.BaseType{ID: ast.BoolTypeID},
+			node: ast.BaseType{ID: ast.BoolTypeID},
 			visits: []visit{
-				{node: &ast.BaseType{ID: ast.BoolTypeID}},
+				{node: ast.BaseType{ID: ast.BoolTypeID}},
 			},
 		},
 		func() (tt test) {
