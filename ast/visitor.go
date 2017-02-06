@@ -46,15 +46,15 @@ func (f VisitorFunc) Visit(w Walker, n Node) Visitor {
 	return f
 }
 
-// CombineVisitors merges the given visitors into a single Visitor.
-func CombineVisitors(visitors ...Visitor) Visitor {
-	return combinedVisitors(visitors)
+// MultiVisitor merges the given visitors into a single Visitor.
+func MultiVisitor(visitors ...Visitor) Visitor {
+	return multiVisitor(visitors)
 }
 
-type combinedVisitors []Visitor
+type multiVisitor []Visitor
 
-func (vs combinedVisitors) Visit(w Walker, n Node) Visitor {
-	newVS := make(combinedVisitors, 0, len(vs))
+func (vs multiVisitor) Visit(w Walker, n Node) Visitor {
+	newVS := make(multiVisitor, 0, len(vs))
 	for _, v := range vs {
 		if v := v.Visit(w, n); v != nil {
 			newVS = append(newVS, v)
