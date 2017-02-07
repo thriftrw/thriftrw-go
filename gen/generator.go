@@ -346,11 +346,13 @@ func (g *generator) recordGenDeclNames(ignoreConflicts bool, d *ast.GenDecl) err
 //
 // 	<typeReferencePtr $someType>
 //
-//  equals(TypeSpec, lhs, rhs): Compares lhs and rhs of given TypeSpec for equality.
+// equals(TypeSpec, lhs, rhs): Returns an expression of type bool that
+// compares lhs and rhs of given TypeSpec for equality.
 //
 //  <equals $someType $lhs $rhs>
 //
-//  equalsPtr(TypeSpec, lhs, rhs): Compares reference to a value of the given type for equality.
+// equalsPtr(TypeSpec, lhs, rhs):  Returns an expression of type bool that
+// compares reference to a value of the given type for equality.
 //
 //  <equalsPtr $someType $lhs $rhs>
 func (g *generator) declare(ignoreConflicts bool, s string, data interface{}, opts ...TemplateOption) error {

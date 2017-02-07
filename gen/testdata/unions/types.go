@@ -285,7 +285,7 @@ func _bool_EqualsPtr(lhs, rhs *bool) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -297,7 +297,7 @@ func _i64_EqualsPtr(lhs, rhs *int64) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -309,7 +309,7 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -323,7 +323,7 @@ func _List_ArbitraryValue_Equals(lhs, rhs []*ArbitraryValue) bool {
 	}
 	for i, lv := range lhs {
 		rv := rhs[i]
-		if !(lv.Equals(rv)) {
+		if !lv.Equals(rv) {
 			return false
 		}
 	}
@@ -339,42 +339,28 @@ func _Map_String_ArbitraryValue_Equals(lhs, rhs map[string]*ArbitraryValue) bool
 		if !ok {
 			return false
 		}
-		if !(lv.Equals(rv)) {
+		if !lv.Equals(rv) {
 			return false
 		}
 	}
 	return true
 }
 
-func (lhs *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
-	{
-		if !(_bool_EqualsPtr(lhs.BoolValue, rhs.BoolValue)) {
-			return false
-		}
-	}
-	{
-		if !(_i64_EqualsPtr(lhs.Int64Value, rhs.Int64Value)) {
-			return false
-		}
-	}
-	{
-		if !(_string_EqualsPtr(lhs.StringValue, rhs.StringValue)) {
-			return false
-		}
-	}
-	if (lhs.ListValue == nil && rhs.ListValue != nil) || (lhs.ListValue != nil && rhs.ListValue == nil) {
+func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
+	if !_bool_EqualsPtr(v.BoolValue, rhs.BoolValue) {
 		return false
-	} else if lhs.ListValue != nil && rhs.ListValue != nil {
-		if !(_List_ArbitraryValue_Equals(lhs.ListValue, rhs.ListValue)) {
-			return false
-		}
 	}
-	if (lhs.MapValue == nil && rhs.MapValue != nil) || (lhs.MapValue != nil && rhs.MapValue == nil) {
+	if !_i64_EqualsPtr(v.Int64Value, rhs.Int64Value) {
 		return false
-	} else if lhs.MapValue != nil && rhs.MapValue != nil {
-		if !(_Map_String_ArbitraryValue_Equals(lhs.MapValue, rhs.MapValue)) {
-			return false
-		}
+	}
+	if !_string_EqualsPtr(v.StringValue, rhs.StringValue) {
+		return false
+	}
+	if !((v.ListValue == nil && rhs.ListValue == nil) || (v.ListValue != nil && rhs.ListValue != nil && _List_ArbitraryValue_Equals(v.ListValue, rhs.ListValue))) {
+		return false
+	}
+	if !((v.MapValue == nil && rhs.MapValue == nil) || (v.MapValue != nil && rhs.MapValue != nil && _Map_String_ArbitraryValue_Equals(v.MapValue, rhs.MapValue))) {
+		return false
 	}
 	return true
 }
@@ -468,18 +454,12 @@ func (v *Document) String() string {
 	return fmt.Sprintf("Document{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *Document) Equals(rhs *Document) bool {
-	if (lhs.Pdf == nil && rhs.Pdf != nil) || (lhs.Pdf != nil && rhs.Pdf == nil) {
+func (v *Document) Equals(rhs *Document) bool {
+	if !((v.Pdf == nil && rhs.Pdf == nil) || (v.Pdf != nil && rhs.Pdf != nil && v.Pdf.Equals(rhs.Pdf))) {
 		return false
-	} else if lhs.Pdf != nil && rhs.Pdf != nil {
-		if !(lhs.Pdf.Equals(rhs.Pdf)) {
-			return false
-		}
 	}
-	{
-		if !(_string_EqualsPtr(lhs.PlainText, rhs.PlainText)) {
-			return false
-		}
+	if !_string_EqualsPtr(v.PlainText, rhs.PlainText) {
+		return false
 	}
 	return true
 }
@@ -508,6 +488,6 @@ func (v *EmptyUnion) String() string {
 	return fmt.Sprintf("EmptyUnion{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *EmptyUnion) Equals(rhs *EmptyUnion) bool {
+func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
 	return true
 }

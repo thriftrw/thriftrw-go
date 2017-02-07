@@ -34,33 +34,28 @@ type EqualsGenerator struct {
 	listG listGenerator
 }
 
-// Equals generates a string comparing rhs to the given lhs
+// Equals generates a string comparing rhs to the given lhs.
+// Equals generates an expression of type bool.
 func (e *EqualsGenerator) Equals(g Generator, spec compile.TypeSpec, lhs, rhs string) (string, error) {
+	if isPrimitiveType(spec) {
+		if _, isEnum := spec.(*compile.EnumSpec); !isEnum {
+			return fmt.Sprintf("(%s == %s)", lhs, rhs), nil
+		}
+	}
+
 	switch s := spec.(type) {
-	case *compile.BoolSpec, *compile.I8Spec, *compile.I16Spec, *compile.I32Spec,
-		*compile.I64Spec, *compile.DoubleSpec, *compile.StringSpec:
-		return fmt.Sprintf("%s == %s", lhs, rhs), nil
 	case *compile.BinarySpec:
 		bytes := g.Import("bytes")
 		return fmt.Sprintf("%s.Equal(%s, %s)", bytes, lhs, rhs), nil
 	case *compile.MapSpec:
 		equals, err := e.mapG.Equals(g, s)
-		if err != nil {
-			return "", err
-		}
-		return fmt.Sprintf("%s(%s, %s)", equals, lhs, rhs), nil
+		return fmt.Sprintf("%s(%s, %s)", equals, lhs, rhs), err
 	case *compile.ListSpec:
 		equals, err := e.listG.Equals(g, s)
-		if err != nil {
-			return "", err
-		}
-		return fmt.Sprintf("%s(%s, %s)", equals, lhs, rhs), nil
+		return fmt.Sprintf("%s(%s, %s)", equals, lhs, rhs), err
 	case *compile.SetSpec:
 		equals, err := e.setG.Equals(g, s)
-		if err != nil {
-			return "", err
-		}
-		return fmt.Sprintf("%s(%s, %s)", equals, lhs, rhs), nil
+		return fmt.Sprintf("%s(%s, %s)", equals, lhs, rhs), err
 	default:
 		// Custom defined type
 		return fmt.Sprintf("%s.Equals(%s)", lhs, rhs), nil
@@ -70,41 +65,44 @@ func (e *EqualsGenerator) Equals(g Generator, spec compile.TypeSpec, lhs, rhs st
 // EqualsPtr is the same as Equals expect `lhs` and `rhs` are expected to be a
 // reference to a value of the given type.
 func (e *EqualsGenerator) EqualsPtr(g Generator, spec compile.TypeSpec, lhs, rhs string) (string, error) {
-	if isPrimitiveType(spec) {
-		equalsPtrFunc := fmt.Sprintf("_%v_EqualsPtr", spec.ThriftName())
-		err := g.EnsureDeclared(
-			`
-				<$type := typeReference .Spec>
-
-				<$lhs := newVar "lhs">
-				<$rhs := newVar "rhs">
-				<$x := newVar "x">
-				<$y := newVar "y">
-				func <.Name>(<$lhs>, <$rhs> *<$type>) bool {
-					// Make sure that both the pointers are non nil.
-					if <$lhs> != nil && <$rhs> != nil {
-						// Call Equals method after dereferencing the pointers
-						<$x> := *<$lhs>
-						<$y> := *<$rhs>
-						return <equals .Spec $x $y>
-					} else if <$lhs> == nil && <$rhs> == nil {
-						return true
-					} else {
-						return false
-					}
-				}
-			`,
+	if !isPrimitiveType(spec) {
+		// Everything else is a reference type that has a Equals method on it.
+		return g.TextTemplate(
+			`((<.LHS> == nil && <.RHS> == nil) || (<.LHS> != nil && <.RHS> != nil && <equals .Spec .LHS .RHS>))`,
 			struct {
-				Name string
 				Spec compile.TypeSpec
-			}{Name: equalsPtrFunc, Spec: spec},
+				LHS  string
+				RHS  string
+			}{Spec: spec, LHS: lhs, RHS: rhs},
 		)
-		if err != nil {
-			return "", err
-		}
-		return fmt.Sprintf("%s(%s, %s)", equalsPtrFunc, lhs, rhs), nil
 	}
 
-	// Everything else is a reference type that has a Equals method on it.
-	return e.Equals(g, spec, lhs, rhs)
+	equalsPtrFunc := fmt.Sprintf("_%v_EqualsPtr", spec.ThriftName())
+	err := g.EnsureDeclared(
+		`
+			<$type := typeReference .Spec>
+			<$lhs := newVar "lhs">
+			<$rhs := newVar "rhs">
+			<$x := newVar "x">
+			<$y := newVar "y">
+			func <.Name>(<$lhs>, <$rhs> *<$type>) bool {
+				// Make sure that both the pointers are non nil.
+				if <$lhs> != nil && <$rhs> != nil {
+					// Call Equals method after dereferencing the pointers
+					<$x> := *<$lhs>
+					<$y> := *<$rhs>
+					return <equals .Spec $x $y>
+				} else if <$lhs> == nil && <$rhs> == nil {
+					return true
+				} else {
+					return false
+				}
+			}
+		`,
+		struct {
+			Name string
+			Spec compile.TypeSpec
+		}{Name: equalsPtrFunc, Spec: spec},
+	)
+	return fmt.Sprintf("%s(%s, %s)", equalsPtrFunc, lhs, rhs), err
 }

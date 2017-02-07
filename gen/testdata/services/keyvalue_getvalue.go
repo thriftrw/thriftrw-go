@@ -62,11 +62,9 @@ func (v *KeyValue_GetValue_Args) String() string {
 	return fmt.Sprintf("KeyValue_GetValue_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
-	{
-		if !(_Key_EqualsPtr(lhs.Key, rhs.Key)) {
-			return false
-		}
+func (v *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
+	if !_Key_EqualsPtr(v.Key, rhs.Key) {
+		return false
 	}
 	return true
 }
@@ -206,20 +204,12 @@ func (v *KeyValue_GetValue_Result) String() string {
 	return fmt.Sprintf("KeyValue_GetValue_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
-	if (lhs.Success == nil && rhs.Success != nil) || (lhs.Success != nil && rhs.Success == nil) {
+func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
+	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
 		return false
-	} else if lhs.Success != nil && rhs.Success != nil {
-		if !(lhs.Success.Equals(rhs.Success)) {
-			return false
-		}
 	}
-	if (lhs.DoesNotExist == nil && rhs.DoesNotExist != nil) || (lhs.DoesNotExist != nil && rhs.DoesNotExist == nil) {
+	if !((v.DoesNotExist == nil && rhs.DoesNotExist == nil) || (v.DoesNotExist != nil && rhs.DoesNotExist != nil && v.DoesNotExist.Equals(rhs.DoesNotExist))) {
 		return false
-	} else if lhs.DoesNotExist != nil && rhs.DoesNotExist != nil {
-		if !(lhs.DoesNotExist.Equals(rhs.DoesNotExist)) {
-			return false
-		}
 	}
 	return true
 }

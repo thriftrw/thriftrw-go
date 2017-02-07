@@ -63,13 +63,9 @@ func (v *ConflictingNames_SetValue_Args) String() string {
 	return fmt.Sprintf("ConflictingNames_SetValue_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_Args) bool {
-	if (lhs.Request == nil && rhs.Request != nil) || (lhs.Request != nil && rhs.Request == nil) {
+func (v *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_Args) bool {
+	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
 		return false
-	} else if lhs.Request != nil && rhs.Request != nil {
-		if !(lhs.Request.Equals(rhs.Request)) {
-			return false
-		}
 	}
 	return true
 }
@@ -134,7 +130,7 @@ func (v *ConflictingNames_SetValue_Result) String() string {
 	return fmt.Sprintf("ConflictingNames_SetValue_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *ConflictingNames_SetValue_Result) Equals(rhs *ConflictingNames_SetValue_Result) bool {
+func (v *ConflictingNames_SetValue_Result) Equals(rhs *ConflictingNames_SetValue_Result) bool {
 	return true
 }
 

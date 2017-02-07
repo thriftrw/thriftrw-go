@@ -34,7 +34,7 @@ func (v *KeyValue_Size_Args) String() string {
 	return fmt.Sprintf("KeyValue_Size_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *KeyValue_Size_Args) Equals(rhs *KeyValue_Size_Args) bool {
+func (v *KeyValue_Size_Args) Equals(rhs *KeyValue_Size_Args) bool {
 	return true
 }
 
@@ -139,11 +139,9 @@ func (v *KeyValue_Size_Result) String() string {
 	return fmt.Sprintf("KeyValue_Size_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *KeyValue_Size_Result) Equals(rhs *KeyValue_Size_Result) bool {
-	{
-		if !(_i64_EqualsPtr(lhs.Success, rhs.Success)) {
-			return false
-		}
+func (v *KeyValue_Size_Result) Equals(rhs *KeyValue_Size_Result) bool {
+	if !_i64_EqualsPtr(v.Success, rhs.Success) {
+		return false
 	}
 	return true
 }

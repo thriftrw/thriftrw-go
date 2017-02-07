@@ -200,11 +200,11 @@ func _Map_Edge_Edge_Equals(lhs, rhs []struct {
 		for _, j := range rhs {
 			rk := j.Key
 			rv := j.Value
-			if !(lk.Equals(rk)) {
+			if !lk.Equals(rk) {
 				continue
 			}
-			if !(lv.Equals(rv)) {
-				continue
+			if !lv.Equals(rv) {
+				return false
 			}
 			ok = true
 			break
@@ -337,7 +337,7 @@ func _Timestamp_EqualsPtr(lhs, rhs *Timestamp) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x.Equals(y)
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -345,14 +345,12 @@ func _Timestamp_EqualsPtr(lhs, rhs *Timestamp) bool {
 	}
 }
 
-func (lhs *Event) Equals(rhs *Event) bool {
-	if !(lhs.UUID.Equals(rhs.UUID)) {
+func (v *Event) Equals(rhs *Event) bool {
+	if !v.UUID.Equals(rhs.UUID) {
 		return false
 	}
-	{
-		if !(_Timestamp_EqualsPtr(lhs.Time, rhs.Time)) {
-			return false
-		}
+	if !_Timestamp_EqualsPtr(v.Time, rhs.Time) {
+		return false
 	}
 	return true
 }
@@ -416,7 +414,7 @@ func _List_Event_Equals(lhs, rhs []*Event) bool {
 	}
 	for i, lv := range lhs {
 		rv := rhs[i]
-		if !(lv.Equals(rv)) {
+		if !lv.Equals(rv) {
 			return false
 		}
 	}
@@ -688,11 +686,11 @@ func _Map_Point_Point_Equals(lhs, rhs []struct {
 		for _, j := range rhs {
 			rk := j.Key
 			rv := j.Value
-			if !(lk.Equals(rk)) {
+			if !lk.Equals(rk) {
 				continue
 			}
-			if !(lv.Equals(rv)) {
-				continue
+			if !lv.Equals(rv) {
+				return false
 			}
 			ok = true
 			break
@@ -754,7 +752,7 @@ func (v *State) FromWire(w wire.Value) error {
 }
 
 func (lhs State) Equals(rhs State) bool {
-	return lhs == rhs
+	return (lhs == rhs)
 }
 
 type Timestamp int64
@@ -776,7 +774,7 @@ func (v *Timestamp) FromWire(w wire.Value) error {
 }
 
 func (lhs Timestamp) Equals(rhs Timestamp) bool {
-	return lhs == rhs
+	return (lhs == rhs)
 }
 
 type Transition struct {
@@ -881,19 +879,15 @@ func (v *Transition) String() string {
 	return fmt.Sprintf("Transition{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *Transition) Equals(rhs *Transition) bool {
-	if !(lhs.FromState.Equals(rhs.FromState)) {
+func (v *Transition) Equals(rhs *Transition) bool {
+	if !(v.FromState == rhs.FromState) {
 		return false
 	}
-	if !(lhs.ToState.Equals(rhs.ToState)) {
+	if !(v.ToState == rhs.ToState) {
 		return false
 	}
-	if (lhs.Events == nil && rhs.Events != nil) || (lhs.Events != nil && rhs.Events == nil) {
+	if !((v.Events == nil && rhs.Events == nil) || (v.Events != nil && rhs.Events != nil && v.Events.Equals(rhs.Events))) {
 		return false
-	} else if lhs.Events != nil && rhs.Events != nil {
-		if !(lhs.Events.Equals(rhs.Events)) {
-			return false
-		}
 	}
 	return true
 }
@@ -988,11 +982,11 @@ func (v *I128) String() string {
 	return fmt.Sprintf("I128{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *I128) Equals(rhs *I128) bool {
-	if !(lhs.High == rhs.High) {
+func (v *I128) Equals(rhs *I128) bool {
+	if !(v.High == rhs.High) {
 		return false
 	}
-	if !(lhs.Low == rhs.Low) {
+	if !(v.Low == rhs.Low) {
 		return false
 	}
 	return true

@@ -63,7 +63,7 @@ func _i64_EqualsPtr(lhs, rhs *int64) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -71,11 +71,9 @@ func _i64_EqualsPtr(lhs, rhs *int64) bool {
 	}
 }
 
-func (lhs *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
-	{
-		if !(_i64_EqualsPtr(lhs.DurationMS, rhs.DurationMS)) {
-			return false
-		}
+func (v *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
+	if !_i64_EqualsPtr(v.DurationMS, rhs.DurationMS) {
+		return false
 	}
 	return true
 }

@@ -29,8 +29,8 @@ func (v EmptyEnum) String() string {
 	return fmt.Sprintf("EmptyEnum(%d)", w)
 }
 
-func (lhs EmptyEnum) Equals(rhs EmptyEnum) bool {
-	return lhs == rhs
+func (v EmptyEnum) Equals(rhs EmptyEnum) bool {
+	return v == rhs
 }
 
 func (v EmptyEnum) MarshalJSON() ([]byte, error) {
@@ -98,8 +98,8 @@ func (v EnumDefault) String() string {
 	return fmt.Sprintf("EnumDefault(%d)", w)
 }
 
-func (lhs EnumDefault) Equals(rhs EnumDefault) bool {
-	return lhs == rhs
+func (v EnumDefault) Equals(rhs EnumDefault) bool {
+	return v == rhs
 }
 
 func (v EnumDefault) MarshalJSON() ([]byte, error) {
@@ -202,8 +202,8 @@ func (v EnumWithDuplicateName) String() string {
 	return fmt.Sprintf("EnumWithDuplicateName(%d)", w)
 }
 
-func (lhs EnumWithDuplicateName) Equals(rhs EnumWithDuplicateName) bool {
-	return lhs == rhs
+func (v EnumWithDuplicateName) Equals(rhs EnumWithDuplicateName) bool {
+	return v == rhs
 }
 
 func (v EnumWithDuplicateName) MarshalJSON() ([]byte, error) {
@@ -316,8 +316,8 @@ func (v EnumWithDuplicateValues) String() string {
 	return fmt.Sprintf("EnumWithDuplicateValues(%d)", w)
 }
 
-func (lhs EnumWithDuplicateValues) Equals(rhs EnumWithDuplicateValues) bool {
-	return lhs == rhs
+func (v EnumWithDuplicateValues) Equals(rhs EnumWithDuplicateValues) bool {
+	return v == rhs
 }
 
 func (v EnumWithDuplicateValues) MarshalJSON() ([]byte, error) {
@@ -400,8 +400,8 @@ func (v EnumWithValues) String() string {
 	return fmt.Sprintf("EnumWithValues(%d)", w)
 }
 
-func (lhs EnumWithValues) Equals(rhs EnumWithValues) bool {
-	return lhs == rhs
+func (v EnumWithValues) Equals(rhs EnumWithValues) bool {
+	return v == rhs
 }
 
 func (v EnumWithValues) MarshalJSON() ([]byte, error) {
@@ -486,8 +486,8 @@ func (v RecordType) String() string {
 	return fmt.Sprintf("RecordType(%d)", w)
 }
 
-func (lhs RecordType) Equals(rhs RecordType) bool {
-	return lhs == rhs
+func (v RecordType) Equals(rhs RecordType) bool {
+	return v == rhs
 }
 
 func (v RecordType) MarshalJSON() ([]byte, error) {
@@ -610,11 +610,9 @@ func _EnumDefault_EqualsPtr(lhs, rhs *EnumDefault) bool {
 	}
 }
 
-func (lhs *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
-	{
-		if !(_EnumDefault_EqualsPtr(lhs.E, rhs.E)) {
-			return false
-		}
+func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
+	if !_EnumDefault_EqualsPtr(v.E, rhs.E) {
+		return false
 	}
 	return true
 }
@@ -649,8 +647,8 @@ func (v LowerCaseEnum) String() string {
 	return fmt.Sprintf("LowerCaseEnum(%d)", w)
 }
 
-func (lhs LowerCaseEnum) Equals(rhs LowerCaseEnum) bool {
-	return lhs == rhs
+func (v LowerCaseEnum) Equals(rhs LowerCaseEnum) bool {
+	return v == rhs
 }
 
 func (v LowerCaseEnum) MarshalJSON() ([]byte, error) {

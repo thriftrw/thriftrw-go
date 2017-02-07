@@ -80,18 +80,12 @@ func (v *KeyValue_SetValue_Args) String() string {
 	return fmt.Sprintf("KeyValue_SetValue_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *KeyValue_SetValue_Args) Equals(rhs *KeyValue_SetValue_Args) bool {
-	{
-		if !(_Key_EqualsPtr(lhs.Key, rhs.Key)) {
-			return false
-		}
-	}
-	if (lhs.Value == nil && rhs.Value != nil) || (lhs.Value != nil && rhs.Value == nil) {
+func (v *KeyValue_SetValue_Args) Equals(rhs *KeyValue_SetValue_Args) bool {
+	if !_Key_EqualsPtr(v.Key, rhs.Key) {
 		return false
-	} else if lhs.Value != nil && rhs.Value != nil {
-		if !(lhs.Value.Equals(rhs.Value)) {
-			return false
-		}
+	}
+	if !((v.Value == nil && rhs.Value == nil) || (v.Value != nil && rhs.Value != nil && v.Value.Equals(rhs.Value))) {
+		return false
 	}
 	return true
 }
@@ -156,7 +150,7 @@ func (v *KeyValue_SetValue_Result) String() string {
 	return fmt.Sprintf("KeyValue_SetValue_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *KeyValue_SetValue_Result) Equals(rhs *KeyValue_SetValue_Result) bool {
+func (v *KeyValue_SetValue_Result) Equals(rhs *KeyValue_SetValue_Result) bool {
 	return true
 }
 

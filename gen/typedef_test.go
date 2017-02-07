@@ -23,10 +23,11 @@ package gen
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	ts "go.uber.org/thriftrw/gen/testdata/structs"
 	td "go.uber.org/thriftrw/gen/testdata/typedefs"
 	"go.uber.org/thriftrw/wire"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestTypedefI64(t *testing.T) {

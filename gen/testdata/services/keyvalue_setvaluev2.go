@@ -84,11 +84,11 @@ func (v *KeyValue_SetValueV2_Args) String() string {
 	return fmt.Sprintf("KeyValue_SetValueV2_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *KeyValue_SetValueV2_Args) Equals(rhs *KeyValue_SetValueV2_Args) bool {
-	if !(lhs.Key.Equals(rhs.Key)) {
+func (v *KeyValue_SetValueV2_Args) Equals(rhs *KeyValue_SetValueV2_Args) bool {
+	if !(v.Key == rhs.Key) {
 		return false
 	}
-	if !(lhs.Value.Equals(rhs.Value)) {
+	if !v.Value.Equals(rhs.Value) {
 		return false
 	}
 	return true
@@ -154,7 +154,7 @@ func (v *KeyValue_SetValueV2_Result) String() string {
 	return fmt.Sprintf("KeyValue_SetValueV2_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *KeyValue_SetValueV2_Result) Equals(rhs *KeyValue_SetValueV2_Result) bool {
+func (v *KeyValue_SetValueV2_Result) Equals(rhs *KeyValue_SetValueV2_Result) bool {
 	return true
 }
 

@@ -110,20 +110,16 @@ func _List_Key_Equals(lhs, rhs []Key) bool {
 	}
 	for i, lv := range lhs {
 		rv := rhs[i]
-		if !(lv.Equals(rv)) {
+		if !(lv == rv) {
 			return false
 		}
 	}
 	return true
 }
 
-func (lhs *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) bool {
-	if (lhs.Range == nil && rhs.Range != nil) || (lhs.Range != nil && rhs.Range == nil) {
+func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) bool {
+	if !((v.Range == nil && rhs.Range == nil) || (v.Range != nil && rhs.Range != nil && _List_Key_Equals(v.Range, rhs.Range))) {
 		return false
-	} else if lhs.Range != nil && rhs.Range != nil {
-		if !(_List_Key_Equals(lhs.Range, rhs.Range)) {
-			return false
-		}
 	}
 	return true
 }
@@ -322,27 +318,19 @@ func _List_ArbitraryValue_Equals(lhs, rhs []*unions.ArbitraryValue) bool {
 	}
 	for i, lv := range lhs {
 		rv := rhs[i]
-		if !(lv.Equals(rv)) {
+		if !lv.Equals(rv) {
 			return false
 		}
 	}
 	return true
 }
 
-func (lhs *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Result) bool {
-	if (lhs.Success == nil && rhs.Success != nil) || (lhs.Success != nil && rhs.Success == nil) {
+func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Result) bool {
+	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && _List_ArbitraryValue_Equals(v.Success, rhs.Success))) {
 		return false
-	} else if lhs.Success != nil && rhs.Success != nil {
-		if !(_List_ArbitraryValue_Equals(lhs.Success, rhs.Success)) {
-			return false
-		}
 	}
-	if (lhs.DoesNotExist == nil && rhs.DoesNotExist != nil) || (lhs.DoesNotExist != nil && rhs.DoesNotExist == nil) {
+	if !((v.DoesNotExist == nil && rhs.DoesNotExist == nil) || (v.DoesNotExist != nil && rhs.DoesNotExist != nil && v.DoesNotExist.Equals(rhs.DoesNotExist))) {
 		return false
-	} else if lhs.DoesNotExist != nil && rhs.DoesNotExist != nil {
-		if !(lhs.DoesNotExist.Equals(rhs.DoesNotExist)) {
-			return false
-		}
 	}
 	return true
 }

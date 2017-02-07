@@ -62,8 +62,8 @@ func (v *ContactInfo) String() string {
 	return fmt.Sprintf("ContactInfo{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *ContactInfo) Equals(rhs *ContactInfo) bool {
-	if !(lhs.EmailAddress == rhs.EmailAddress) {
+func (v *ContactInfo) Equals(rhs *ContactInfo) bool {
+	if !(v.EmailAddress == rhs.EmailAddress) {
 		return false
 	}
 	return true
@@ -427,7 +427,7 @@ func _i32_EqualsPtr(lhs, rhs *int32) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -473,54 +473,30 @@ func _List_Double_Equals(lhs, rhs []float64) bool {
 	return true
 }
 
-func (lhs *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
-	{
-		if !(_i32_EqualsPtr(lhs.RequiredPrimitive, rhs.RequiredPrimitive)) {
-			return false
-		}
-	}
-	{
-		if !(_i32_EqualsPtr(lhs.OptionalPrimitive, rhs.OptionalPrimitive)) {
-			return false
-		}
-	}
-	{
-		if !(_EnumDefault_EqualsPtr(lhs.RequiredEnum, rhs.RequiredEnum)) {
-			return false
-		}
-	}
-	{
-		if !(_EnumDefault_EqualsPtr(lhs.OptionalEnum, rhs.OptionalEnum)) {
-			return false
-		}
-	}
-	if (lhs.RequiredList == nil && rhs.RequiredList != nil) || (lhs.RequiredList != nil && rhs.RequiredList == nil) {
+func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
+	if !_i32_EqualsPtr(v.RequiredPrimitive, rhs.RequiredPrimitive) {
 		return false
-	} else if lhs.RequiredList != nil && rhs.RequiredList != nil {
-		if !(_List_String_Equals(lhs.RequiredList, rhs.RequiredList)) {
-			return false
-		}
 	}
-	if (lhs.OptionalList == nil && rhs.OptionalList != nil) || (lhs.OptionalList != nil && rhs.OptionalList == nil) {
+	if !_i32_EqualsPtr(v.OptionalPrimitive, rhs.OptionalPrimitive) {
 		return false
-	} else if lhs.OptionalList != nil && rhs.OptionalList != nil {
-		if !(_List_Double_Equals(lhs.OptionalList, rhs.OptionalList)) {
-			return false
-		}
 	}
-	if (lhs.RequiredStruct == nil && rhs.RequiredStruct != nil) || (lhs.RequiredStruct != nil && rhs.RequiredStruct == nil) {
+	if !_EnumDefault_EqualsPtr(v.RequiredEnum, rhs.RequiredEnum) {
 		return false
-	} else if lhs.RequiredStruct != nil && rhs.RequiredStruct != nil {
-		if !(lhs.RequiredStruct.Equals(rhs.RequiredStruct)) {
-			return false
-		}
 	}
-	if (lhs.OptionalStruct == nil && rhs.OptionalStruct != nil) || (lhs.OptionalStruct != nil && rhs.OptionalStruct == nil) {
+	if !_EnumDefault_EqualsPtr(v.OptionalEnum, rhs.OptionalEnum) {
 		return false
-	} else if lhs.OptionalStruct != nil && rhs.OptionalStruct != nil {
-		if !(lhs.OptionalStruct.Equals(rhs.OptionalStruct)) {
-			return false
-		}
+	}
+	if !((v.RequiredList == nil && rhs.RequiredList == nil) || (v.RequiredList != nil && rhs.RequiredList != nil && _List_String_Equals(v.RequiredList, rhs.RequiredList))) {
+		return false
+	}
+	if !((v.OptionalList == nil && rhs.OptionalList == nil) || (v.OptionalList != nil && rhs.OptionalList != nil && _List_Double_Equals(v.OptionalList, rhs.OptionalList))) {
+		return false
+	}
+	if !((v.RequiredStruct == nil && rhs.RequiredStruct == nil) || (v.RequiredStruct != nil && rhs.RequiredStruct != nil && v.RequiredStruct.Equals(rhs.RequiredStruct))) {
+		return false
+	}
+	if !((v.OptionalStruct == nil && rhs.OptionalStruct == nil) || (v.OptionalStruct != nil && rhs.OptionalStruct != nil && v.OptionalStruct.Equals(rhs.OptionalStruct))) {
+		return false
 	}
 	return true
 }
@@ -607,11 +583,11 @@ func (v *Edge) String() string {
 	return fmt.Sprintf("Edge{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *Edge) Equals(rhs *Edge) bool {
-	if !(lhs.StartPoint.Equals(rhs.StartPoint)) {
+func (v *Edge) Equals(rhs *Edge) bool {
+	if !v.StartPoint.Equals(rhs.StartPoint) {
 		return false
 	}
-	if !(lhs.EndPoint.Equals(rhs.EndPoint)) {
+	if !v.EndPoint.Equals(rhs.EndPoint) {
 		return false
 	}
 	return true
@@ -641,7 +617,7 @@ func (v *EmptyStruct) String() string {
 	return fmt.Sprintf("EmptyStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *EmptyStruct) Equals(rhs *EmptyStruct) bool {
+func (v *EmptyStruct) Equals(rhs *EmptyStruct) bool {
 	return true
 }
 
@@ -727,11 +703,11 @@ func (v *Frame) String() string {
 	return fmt.Sprintf("Frame{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *Frame) Equals(rhs *Frame) bool {
-	if !(lhs.TopLeft.Equals(rhs.TopLeft)) {
+func (v *Frame) Equals(rhs *Frame) bool {
+	if !v.TopLeft.Equals(rhs.TopLeft) {
 		return false
 	}
-	if !(lhs.Size.Equals(rhs.Size)) {
+	if !v.Size.Equals(rhs.Size) {
 		return false
 	}
 	return true
@@ -842,15 +818,15 @@ func _List_Edge_Equals(lhs, rhs []*Edge) bool {
 	}
 	for i, lv := range lhs {
 		rv := rhs[i]
-		if !(lv.Equals(rv)) {
+		if !lv.Equals(rv) {
 			return false
 		}
 	}
 	return true
 }
 
-func (lhs *Graph) Equals(rhs *Graph) bool {
-	if !(_List_Edge_Equals(lhs.Edges, rhs.Edges)) {
+func (v *Graph) Equals(rhs *Graph) bool {
+	if !_List_Edge_Equals(v.Edges, rhs.Edges) {
 		return false
 	}
 	return true
@@ -951,16 +927,12 @@ func (v *Node) String() string {
 	return fmt.Sprintf("Node{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *Node) Equals(rhs *Node) bool {
-	if !(lhs.Value == rhs.Value) {
+func (v *Node) Equals(rhs *Node) bool {
+	if !(v.Value == rhs.Value) {
 		return false
 	}
-	if (lhs.Tail == nil && rhs.Tail != nil) || (lhs.Tail != nil && rhs.Tail == nil) {
+	if !((v.Tail == nil && rhs.Tail == nil) || (v.Tail != nil && rhs.Tail != nil && v.Tail.Equals(rhs.Tail))) {
 		return false
-	} else if lhs.Tail != nil && rhs.Tail != nil {
-		if !(lhs.Tail.Equals(rhs.Tail)) {
-			return false
-		}
 	}
 	return true
 }
@@ -1035,11 +1007,11 @@ func (v *Point) String() string {
 	return fmt.Sprintf("Point{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *Point) Equals(rhs *Point) bool {
-	if !(lhs.X == rhs.X) {
+func (v *Point) Equals(rhs *Point) bool {
+	if !(v.X == rhs.X) {
 		return false
 	}
-	if !(lhs.Y == rhs.Y) {
+	if !(v.Y == rhs.Y) {
 		return false
 	}
 	return true
@@ -1251,7 +1223,7 @@ func _bool_EqualsPtr(lhs, rhs *bool) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -1263,7 +1235,7 @@ func _byte_EqualsPtr(lhs, rhs *int8) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -1275,7 +1247,7 @@ func _i16_EqualsPtr(lhs, rhs *int16) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -1287,7 +1259,7 @@ func _i64_EqualsPtr(lhs, rhs *int64) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -1299,7 +1271,7 @@ func _double_EqualsPtr(lhs, rhs *float64) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -1311,7 +1283,7 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -1319,48 +1291,30 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 	}
 }
 
-func (lhs *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
-	{
-		if !(_bool_EqualsPtr(lhs.BoolField, rhs.BoolField)) {
-			return false
-		}
-	}
-	{
-		if !(_byte_EqualsPtr(lhs.ByteField, rhs.ByteField)) {
-			return false
-		}
-	}
-	{
-		if !(_i16_EqualsPtr(lhs.Int16Field, rhs.Int16Field)) {
-			return false
-		}
-	}
-	{
-		if !(_i32_EqualsPtr(lhs.Int32Field, rhs.Int32Field)) {
-			return false
-		}
-	}
-	{
-		if !(_i64_EqualsPtr(lhs.Int64Field, rhs.Int64Field)) {
-			return false
-		}
-	}
-	{
-		if !(_double_EqualsPtr(lhs.DoubleField, rhs.DoubleField)) {
-			return false
-		}
-	}
-	{
-		if !(_string_EqualsPtr(lhs.StringField, rhs.StringField)) {
-			return false
-		}
-	}
-	if (lhs.BinaryField == nil && rhs.BinaryField != nil) || (lhs.BinaryField != nil && rhs.BinaryField == nil) {
+func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
+	if !_bool_EqualsPtr(v.BoolField, rhs.BoolField) {
 		return false
-	} else if lhs.BinaryField != nil && rhs.BinaryField != nil {
-		if !(bytes.Equal(lhs.BinaryField, rhs.BinaryField)) {
-			return false
-		}
+	}
+	if !_byte_EqualsPtr(v.ByteField, rhs.ByteField) {
+		return false
+	}
+	if !_i16_EqualsPtr(v.Int16Field, rhs.Int16Field) {
+		return false
+	}
+	if !_i32_EqualsPtr(v.Int32Field, rhs.Int32Field) {
+		return false
+	}
+	if !_i64_EqualsPtr(v.Int64Field, rhs.Int64Field) {
+		return false
+	}
+	if !_double_EqualsPtr(v.DoubleField, rhs.DoubleField) {
+		return false
+	}
+	if !_string_EqualsPtr(v.StringField, rhs.StringField) {
+		return false
+	}
+	if !((v.BinaryField == nil && rhs.BinaryField == nil) || (v.BinaryField != nil && rhs.BinaryField != nil && bytes.Equal(v.BinaryField, rhs.BinaryField))) {
+		return false
 	}
 	return true
 }
@@ -1564,29 +1518,29 @@ func (v *PrimitiveRequiredStruct) String() string {
 	return fmt.Sprintf("PrimitiveRequiredStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
-	if !(lhs.BoolField == rhs.BoolField) {
+func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
+	if !(v.BoolField == rhs.BoolField) {
 		return false
 	}
-	if !(lhs.ByteField == rhs.ByteField) {
+	if !(v.ByteField == rhs.ByteField) {
 		return false
 	}
-	if !(lhs.Int16Field == rhs.Int16Field) {
+	if !(v.Int16Field == rhs.Int16Field) {
 		return false
 	}
-	if !(lhs.Int32Field == rhs.Int32Field) {
+	if !(v.Int32Field == rhs.Int32Field) {
 		return false
 	}
-	if !(lhs.Int64Field == rhs.Int64Field) {
+	if !(v.Int64Field == rhs.Int64Field) {
 		return false
 	}
-	if !(lhs.DoubleField == rhs.DoubleField) {
+	if !(v.DoubleField == rhs.DoubleField) {
 		return false
 	}
-	if !(lhs.StringField == rhs.StringField) {
+	if !(v.StringField == rhs.StringField) {
 		return false
 	}
-	if !(bytes.Equal(lhs.BinaryField, rhs.BinaryField)) {
+	if !bytes.Equal(v.BinaryField, rhs.BinaryField) {
 		return false
 	}
 	return true
@@ -1662,11 +1616,11 @@ func (v *Size) String() string {
 	return fmt.Sprintf("Size{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *Size) Equals(rhs *Size) bool {
-	if !(lhs.Width == rhs.Width) {
+func (v *Size) Equals(rhs *Size) bool {
+	if !(v.Width == rhs.Width) {
 		return false
 	}
-	if !(lhs.Height == rhs.Height) {
+	if !(v.Height == rhs.Height) {
 		return false
 	}
 	return true
@@ -1747,16 +1701,12 @@ func (v *User) String() string {
 	return fmt.Sprintf("User{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *User) Equals(rhs *User) bool {
-	if !(lhs.Name == rhs.Name) {
+func (v *User) Equals(rhs *User) bool {
+	if !(v.Name == rhs.Name) {
 		return false
 	}
-	if (lhs.Contact == nil && rhs.Contact != nil) || (lhs.Contact != nil && rhs.Contact == nil) {
+	if !((v.Contact == nil && rhs.Contact == nil) || (v.Contact != nil && rhs.Contact != nil && v.Contact.Equals(rhs.Contact))) {
 		return false
-	} else if lhs.Contact != nil && rhs.Contact != nil {
-		if !(lhs.Contact.Equals(rhs.Contact)) {
-			return false
-		}
 	}
 	return true
 }

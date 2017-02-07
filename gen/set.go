@@ -27,7 +27,6 @@ import "go.uber.org/thriftrw/compile"
 type setGenerator struct {
 	hasReaders
 	hasLazyLists
-	hasEquals
 }
 
 // ValueList generates a new ValueList type alias for the given set.
@@ -161,20 +160,13 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 // And returns its name.
 func (s *setGenerator) Equals(g Generator, spec *compile.SetSpec) (string, error) {
 	name := "_" + valueName(spec) + "_Equals"
-	if s.HasEquals(name) {
-		return name, nil
-	}
 
-	err := g.DeclareFromTemplate(
+	err := g.EnsureDeclared(
 		`
-            <$setType := typeReference .Spec>
+			<$setType := typeReference .Spec>
 
-            <$lhs := newVar "lhs">
-            <$rhs := newVar "rhs">
-			<$o := newVar "o">
-			<$x := newVar "x">
-			<$y := newVar "y">
-			<$ok := newVar "ok">
+			<$lhs := newVar "lhs">
+			<$rhs := newVar "rhs">
 			func <.Name>(<$lhs>, <$rhs> <$setType>) bool {
 				if len(<$lhs>) != len(<$rhs>) {
 					return false
@@ -182,14 +174,13 @@ func (s *setGenerator) Equals(g Generator, spec *compile.SetSpec) (string, error
 
 				// if the values in the set are hashable they can be used
 				// as keys in a map.
+				<$o := newVar "o">
+				<$x := newVar "x">
+				<$y := newVar "y">
+				<$ok := newVar "ok">
 				<if isHashable .Spec.ValueSpec>
-					<$o> := make(<$setType>, len(<$lhs>))
-					for <$x> := range <$lhs> {
-						<$o>[<$x>] = struct{}{}
-					}
-
-					for <$y> := range <$rhs> {
-						if _, <$ok> := <$o>[<$y>]; !<$ok> {
+					for <$x> := range <$rhs> {
+						if _, <$ok> := <$lhs>[<$x>]; !<$ok> {
 							return false
 						}
 					}
@@ -209,9 +200,9 @@ func (s *setGenerator) Equals(g Generator, spec *compile.SetSpec) (string, error
 					}
 				<end>
 
-                return true
-            }
-        `,
+				return true
+			}
+		`,
 		struct {
 			Name string
 			Spec *compile.SetSpec

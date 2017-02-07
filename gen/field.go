@@ -353,7 +353,7 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			<end>
 
 			return <$fmt>.Sprintf(
-                "<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
+				"<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
 		}
 		`, f)
 }
@@ -361,34 +361,25 @@ func (f fieldGroupGenerator) String(g Generator) error {
 func (f fieldGroupGenerator) Equals(g Generator) error {
 	return g.DeclareFromTemplate(
 		`
-        <$lhs := newVar "lhs">
-        <$rhs := newVar "rhs">
-		func (<$lhs> *<.Name>) Equals(<$rhs> *<.Name>) bool {
-            <range .Fields>
+		<$v := newVar "v">
+		<$rhs := newVar "rhs">
+		func (<$v> *<.Name>) Equals(<$rhs> *<.Name>) bool {
+			<range .Fields>
 				<$fname := goName .>
-				<$lhsField := printf "%s.%s" $lhs $fname>
+				<$lhsField := printf "%s.%s" $v $fname>
 				<$rhsField := printf "%s.%s" $rhs $fname>
 
 				<if .Required>
-					if !(<equals .Type $lhsField $rhsField>) {
+					if !<equals .Type $lhsField $rhsField> {
 						return false
 					}
 				<else>
-					<if not (isPrimitiveType .Type)>
-						if (<$lhsField> == nil && <$rhsField> != nil) ||
-								(<$lhsField> != nil && <$rhsField> == nil) {
-							return false
-						} else if <$lhsField> != nil && <$rhsField> != nil {
-					<else>
-						{
-					<end>
-							if !(<equalsPtr .Type $lhsField $rhsField>) {
-								return false
-							}
-						}
+					if !<equalsPtr .Type $lhsField $rhsField> {
+						return false
+					}
 				<end>
 			<end>
 			return true
-        }
-        `, f)
+		}
+		`, f)
 }

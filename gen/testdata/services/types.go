@@ -84,11 +84,11 @@ func (v *ConflictingNamesSetValueArgs) String() string {
 	return fmt.Sprintf("ConflictingNamesSetValueArgs{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *ConflictingNamesSetValueArgs) Equals(rhs *ConflictingNamesSetValueArgs) bool {
-	if !(lhs.Key == rhs.Key) {
+func (v *ConflictingNamesSetValueArgs) Equals(rhs *ConflictingNamesSetValueArgs) bool {
+	if !(v.Key == rhs.Key) {
 		return false
 	}
-	if !(bytes.Equal(lhs.Value, rhs.Value)) {
+	if !bytes.Equal(v.Value, rhs.Value) {
 		return false
 	}
 	return true
@@ -148,7 +148,7 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -156,11 +156,9 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 	}
 }
 
-func (lhs *InternalError) Equals(rhs *InternalError) bool {
-	{
-		if !(_string_EqualsPtr(lhs.Message, rhs.Message)) {
-			return false
-		}
+func (v *InternalError) Equals(rhs *InternalError) bool {
+	if !_string_EqualsPtr(v.Message, rhs.Message) {
+		return false
 	}
 	return true
 }
@@ -188,5 +186,5 @@ func (v *Key) FromWire(w wire.Value) error {
 }
 
 func (lhs Key) Equals(rhs Key) bool {
-	return lhs == rhs
+	return (lhs == rhs)
 }

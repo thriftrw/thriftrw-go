@@ -85,7 +85,7 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
-		return x == y
+		return (x == y)
 	} else if lhs == nil && rhs == nil {
 		return true
 	} else {
@@ -93,14 +93,12 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 	}
 }
 
-func (lhs *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
-	if !(lhs.Key == rhs.Key) {
+func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
+	if !(v.Key == rhs.Key) {
 		return false
 	}
-	{
-		if !(_string_EqualsPtr(lhs.Error2, rhs.Error2)) {
-			return false
-		}
+	if !_string_EqualsPtr(v.Error2, rhs.Error2) {
+		return false
 	}
 	return true
 }
@@ -133,7 +131,7 @@ func (v *EmptyException) String() string {
 	return fmt.Sprintf("EmptyException{%v}", strings.Join(fields[:i], ", "))
 }
 
-func (lhs *EmptyException) Equals(rhs *EmptyException) bool {
+func (v *EmptyException) Equals(rhs *EmptyException) bool {
 	return true
 }
 
