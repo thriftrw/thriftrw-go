@@ -27,6 +27,7 @@ import (
 	"go/parser"
 	"go/printer"
 	"go/token"
+	"go/types"
 	"io"
 	"reflect"
 	"text/template"
@@ -226,12 +227,12 @@ func (g *generator) renderTemplate(s string, data interface{}, opts ...TemplateO
 	return buff.Bytes(), nil
 }
 
-func (g *generator) recordGenDeclNames(ignoreConflicts bool, d *ast.GenDecl) error {
+func (g *generator) recordGenDeclNames(d *ast.GenDecl) (conflict bool, err error) {
 	switch d.Tok {
 	case token.IMPORT:
 		for _, spec := range d.Specs {
 			if err := g.AddImportSpec(spec.(*ast.ImportSpec)); err != nil {
-				return fmt.Errorf(
+				return false, fmt.Errorf(
 					"could not add explicit import %s: %v", spec, err,
 				)
 			}
@@ -239,8 +240,8 @@ func (g *generator) recordGenDeclNames(ignoreConflicts bool, d *ast.GenDecl) err
 	case token.CONST:
 		for _, spec := range d.Specs {
 			for _, name := range spec.(*ast.ValueSpec).Names {
-				if err := g.Reserve(name.Name); err != nil && !ignoreConflicts {
-					return fmt.Errorf(
+				if err := g.Reserve(name.Name); err != nil {
+					return true, fmt.Errorf(
 						"could not declare constant %q: %v", name.Name, err,
 					)
 				}
@@ -249,24 +250,24 @@ func (g *generator) recordGenDeclNames(ignoreConflicts bool, d *ast.GenDecl) err
 	case token.TYPE:
 		for _, spec := range d.Specs {
 			name := spec.(*ast.TypeSpec).Name.Name
-			if err := g.Reserve(name); err != nil && !ignoreConflicts {
-				return fmt.Errorf("could not declare type %q: %v", name, err)
+			if err := g.Reserve(name); err != nil {
+				return true, fmt.Errorf("could not declare type %q: %v", name, err)
 			}
 		}
 	case token.VAR:
 		for _, spec := range d.Specs {
 			for _, name := range spec.(*ast.ValueSpec).Names {
-				if err := g.Reserve(name.Name); err != nil && !ignoreConflicts {
-					return fmt.Errorf(
+				if err := g.Reserve(name.Name); err != nil {
+					return true, fmt.Errorf(
 						"could not declare var %q: %v", name.Name, err,
 					)
 				}
 			}
 		}
 	default:
-		return fmt.Errorf("unknown declaration: %v", d)
+		return false, fmt.Errorf("unknown declaration: %v", d)
 	}
-	return nil
+	return false, nil
 }
 
 // DeclareFromTemplate renders a template (in the text/template format) that
@@ -356,17 +357,29 @@ func (g *generator) declare(ignoreConflicts bool, s string, data interface{}, op
 	for _, decl := range f.Decls {
 		switch d := decl.(type) {
 		case *ast.FuncDecl:
-			if d.Recv == nil {
-				// top-level function
-				if err := g.Reserve(d.Name.Name); err != nil {
-					if ignoreConflicts {
-						continue
-					}
-					return err
+			name := d.Name.Name
+
+			if d.Recv != nil {
+				// We record methods as ":$receiverType:$method". Although there will only
+				// ever be one receiver in the field list, we'll iterate through them
+				// anyway.
+				for _, field := range d.Recv.List {
+					name = types.ExprString(field.Type) + ":" + name
 				}
 			}
+
+			// top-level function
+			if err := g.Reserve(name); err != nil {
+				if ignoreConflicts {
+					continue
+				}
+				return err
+			}
 		case *ast.GenDecl:
-			if err := g.recordGenDeclNames(ignoreConflicts, d); err != nil {
+			if conflict, err := g.recordGenDeclNames(d); err != nil {
+				if ignoreConflicts && conflict {
+					continue
+				}
 				return err
 			}
 		default:
