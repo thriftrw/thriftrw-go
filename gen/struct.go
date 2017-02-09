@@ -26,21 +26,11 @@ import (
 )
 
 // structGenerator generates code to serialize and deserialize structs.
-type structGenerator struct {
-	hasReaders
-}
+type structGenerator struct{}
 
 func (s *structGenerator) Reader(g Generator, spec *compile.StructSpec) (string, error) {
-	name, err := readerFuncName(spec)
-	if err != nil {
-		return "", err
-	}
-
-	if s.HasReader(name) {
-		return name, nil
-	}
-
-	err = g.DeclareFromTemplate(
+	name := readerFuncName(g, spec)
+	err := g.EnsureDeclared(
 		`
 		<$wire := import "go.uber.org/thriftrw/wire">
 

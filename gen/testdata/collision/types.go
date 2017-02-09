@@ -654,7 +654,7 @@ func (v *WithDefault) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _StructCollision2_Read(w wire.Value) (*StructCollision2, error) {
+func _StructCollision_Read(w wire.Value) (*StructCollision2, error) {
 	var v StructCollision2
 	err := v.FromWire(w)
 	return &v, err
@@ -666,7 +666,7 @@ func (v *WithDefault) FromWire(w wire.Value) error {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.Pouet, err = _StructCollision2_Read(field.Value)
+				v.Pouet, err = _StructCollision_Read(field.Value)
 				if err != nil {
 					return err
 				}

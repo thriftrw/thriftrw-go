@@ -24,10 +24,7 @@ import "go.uber.org/thriftrw/compile"
 
 // listGenerator generates logic to convert lists of arbitrary Thrift types to
 // and from ValueLists.
-type listGenerator struct {
-	hasReaders
-	hasLazyLists
-}
+type listGenerator struct{}
 
 // ValueList generates a new ValueList type alias for the given list.
 //
@@ -42,12 +39,8 @@ type listGenerator struct {
 // And $valueListName is returned. This may be used where a ValueList of the
 // given type is expected.
 func (l *listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, error) {
-	name := "_" + valueName(spec) + "_ValueList"
-	if l.HasLazyList(name) {
-		return name, nil
-	}
-
-	err := g.DeclareFromTemplate(
+	name := valueListName(g, spec)
+	err := g.EnsureDeclared(
 		`
 			<$wire := import "go.uber.org/thriftrw/wire">
 			type <.Name> <typeReference .Spec>
@@ -107,12 +100,8 @@ func (l *listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, 
 //
 // And returns its name.
 func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, error) {
-	name := "_" + valueName(spec) + "_Read"
-	if l.HasReader(name) {
-		return name, nil
-	}
-
-	err := g.DeclareFromTemplate(
+	name := readerFuncName(g, spec)
+	err := g.EnsureDeclared(
 		`
 			<$wire := import "go.uber.org/thriftrw/wire">
 			<$listType := typeReference .Spec>

@@ -7,7 +7,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"go.uber.org/thriftrw/gen/testdata/enum_conflict"
 	"go.uber.org/thriftrw/gen/testdata/enums"
+	"go.uber.org/thriftrw/gen/testdata/typedefs"
+	"go.uber.org/thriftrw/gen/testdata/uuid_conflict"
 	"go.uber.org/thriftrw/wire"
 	"strings"
 )
@@ -1834,6 +1837,413 @@ func (v *EnumContainers) Equals(rhs *EnumContainers) bool {
 		return false
 	}
 	if !((v.MapOfEnums == nil && rhs.MapOfEnums == nil) || (v.MapOfEnums != nil && rhs.MapOfEnums != nil && _Map_EnumWithDuplicateValues_I32_EqualsHashable(v.MapOfEnums, rhs.MapOfEnums))) {
+		return false
+	}
+	return true
+}
+
+type ListOfConflictingEnums struct {
+	Records      []enum_conflict.RecordType `json:"records"`
+	OtherRecords []enums.RecordType         `json:"otherRecords"`
+}
+
+type _List_RecordType_ValueList []enum_conflict.RecordType
+
+func (v _List_RecordType_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_RecordType_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_RecordType_ValueList) ValueType() wire.Type {
+	return wire.TI32
+}
+
+func (_List_RecordType_ValueList) Close() {
+}
+
+type _List_RecordType_1_ValueList []enums.RecordType
+
+func (v _List_RecordType_1_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_RecordType_1_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_RecordType_1_ValueList) ValueType() wire.Type {
+	return wire.TI32
+}
+
+func (_List_RecordType_1_ValueList) Close() {
+}
+
+func (v *ListOfConflictingEnums) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.Records == nil {
+		return w, errors.New("field Records of ListOfConflictingEnums is required")
+	}
+	w, err = wire.NewValueList(_List_RecordType_ValueList(v.Records)), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+	if v.OtherRecords == nil {
+		return w, errors.New("field OtherRecords of ListOfConflictingEnums is required")
+	}
+	w, err = wire.NewValueList(_List_RecordType_1_ValueList(v.OtherRecords)), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _RecordType_Read(w wire.Value) (enum_conflict.RecordType, error) {
+	var v enum_conflict.RecordType
+	err := v.FromWire(w)
+	return v, err
+}
+
+func _List_RecordType_Read(l wire.ValueList) ([]enum_conflict.RecordType, error) {
+	if l.ValueType() != wire.TI32 {
+		return nil, nil
+	}
+	o := make([]enum_conflict.RecordType, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
+		i, err := _RecordType_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Close()
+	return o, err
+}
+
+func _RecordType_1_Read(w wire.Value) (enums.RecordType, error) {
+	var v enums.RecordType
+	err := v.FromWire(w)
+	return v, err
+}
+
+func _List_RecordType_1_Read(l wire.ValueList) ([]enums.RecordType, error) {
+	if l.ValueType() != wire.TI32 {
+		return nil, nil
+	}
+	o := make([]enums.RecordType, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
+		i, err := _RecordType_1_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Close()
+	return o, err
+}
+
+func (v *ListOfConflictingEnums) FromWire(w wire.Value) error {
+	var err error
+	recordsIsSet := false
+	otherRecordsIsSet := false
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TList {
+				v.Records, err = _List_RecordType_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+				recordsIsSet = true
+			}
+		case 2:
+			if field.Value.Type() == wire.TList {
+				v.OtherRecords, err = _List_RecordType_1_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+				otherRecordsIsSet = true
+			}
+		}
+	}
+	if !recordsIsSet {
+		return errors.New("field Records of ListOfConflictingEnums is required")
+	}
+	if !otherRecordsIsSet {
+		return errors.New("field OtherRecords of ListOfConflictingEnums is required")
+	}
+	return nil
+}
+
+func (v *ListOfConflictingEnums) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	var fields [2]string
+	i := 0
+	fields[i] = fmt.Sprintf("Records: %v", v.Records)
+	i++
+	fields[i] = fmt.Sprintf("OtherRecords: %v", v.OtherRecords)
+	i++
+	return fmt.Sprintf("ListOfConflictingEnums{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _List_RecordType_Equals(lhs, rhs []enum_conflict.RecordType) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !lv.Equals(rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (v *ListOfConflictingEnums) Equals(rhs *ListOfConflictingEnums) bool {
+	if !_List_RecordType_Equals(v.Records, rhs.Records) {
+		return false
+	}
+	if !_List_RecordType_Equals(v.OtherRecords, rhs.OtherRecords) {
+		return false
+	}
+	return true
+}
+
+type ListOfConflictingUUIDs struct {
+	Uuids      []*typedefs.UUID     `json:"uuids"`
+	OtherUUIDs []uuid_conflict.UUID `json:"otherUUIDs"`
+}
+
+type _List_UUID_ValueList []*typedefs.UUID
+
+func (v _List_UUID_ValueList) ForEach(f func(wire.Value) error) error {
+	for i, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", i)
+		}
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_UUID_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_UUID_ValueList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_List_UUID_ValueList) Close() {
+}
+
+type _List_UUID_1_ValueList []uuid_conflict.UUID
+
+func (v _List_UUID_1_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_UUID_1_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_UUID_1_ValueList) ValueType() wire.Type {
+	return wire.TBinary
+}
+
+func (_List_UUID_1_ValueList) Close() {
+}
+
+func (v *ListOfConflictingUUIDs) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.Uuids == nil {
+		return w, errors.New("field Uuids of ListOfConflictingUUIDs is required")
+	}
+	w, err = wire.NewValueList(_List_UUID_ValueList(v.Uuids)), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+	if v.OtherUUIDs == nil {
+		return w, errors.New("field OtherUUIDs of ListOfConflictingUUIDs is required")
+	}
+	w, err = wire.NewValueList(_List_UUID_1_ValueList(v.OtherUUIDs)), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _UUID_Read(w wire.Value) (*typedefs.UUID, error) {
+	var x typedefs.UUID
+	err := x.FromWire(w)
+	return &x, err
+}
+
+func _List_UUID_Read(l wire.ValueList) ([]*typedefs.UUID, error) {
+	if l.ValueType() != wire.TStruct {
+		return nil, nil
+	}
+	o := make([]*typedefs.UUID, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
+		i, err := _UUID_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Close()
+	return o, err
+}
+
+func _UUID_1_Read(w wire.Value) (uuid_conflict.UUID, error) {
+	var x uuid_conflict.UUID
+	err := x.FromWire(w)
+	return x, err
+}
+
+func _List_UUID_1_Read(l wire.ValueList) ([]uuid_conflict.UUID, error) {
+	if l.ValueType() != wire.TBinary {
+		return nil, nil
+	}
+	o := make([]uuid_conflict.UUID, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
+		i, err := _UUID_1_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Close()
+	return o, err
+}
+
+func (v *ListOfConflictingUUIDs) FromWire(w wire.Value) error {
+	var err error
+	uuidsIsSet := false
+	otherUUIDsIsSet := false
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TList {
+				v.Uuids, err = _List_UUID_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+				uuidsIsSet = true
+			}
+		case 2:
+			if field.Value.Type() == wire.TList {
+				v.OtherUUIDs, err = _List_UUID_1_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+				otherUUIDsIsSet = true
+			}
+		}
+	}
+	if !uuidsIsSet {
+		return errors.New("field Uuids of ListOfConflictingUUIDs is required")
+	}
+	if !otherUUIDsIsSet {
+		return errors.New("field OtherUUIDs of ListOfConflictingUUIDs is required")
+	}
+	return nil
+}
+
+func (v *ListOfConflictingUUIDs) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	var fields [2]string
+	i := 0
+	fields[i] = fmt.Sprintf("Uuids: %v", v.Uuids)
+	i++
+	fields[i] = fmt.Sprintf("OtherUUIDs: %v", v.OtherUUIDs)
+	i++
+	return fmt.Sprintf("ListOfConflictingUUIDs{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _List_UUID_Equals(lhs, rhs []*typedefs.UUID) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !lv.Equals(rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (v *ListOfConflictingUUIDs) Equals(rhs *ListOfConflictingUUIDs) bool {
+	if !_List_UUID_Equals(v.Uuids, rhs.Uuids) {
+		return false
+	}
+	if !_List_UUID_Equals(v.OtherUUIDs, rhs.OtherUUIDs) {
 		return false
 	}
 	return true

@@ -26,12 +26,13 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
+func mapItemListName(g Generator, spec *compile.MapSpec) string {
+	return fmt.Sprintf("_%s_MapItemList", g.MangleType(spec))
+}
+
 // mapGenerator generates logic to convert lists of arbitrary Thrift types to
 // and from MapItemLists.
-type mapGenerator struct {
-	hasReaders
-	hasLazyLists
-}
+type mapGenerator struct{}
 
 // MapItemList generates a new MapItemList type alias for the given map.
 //
@@ -46,13 +47,8 @@ type mapGenerator struct {
 // And $mapItemListName is returned. This may be used where a MapItemList of the
 // given type is expected.
 func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, error) {
-	// TODO(abg): Unhashable types
-	name := "_" + valueName(spec) + "_MapItemList"
-	if m.HasLazyList(name) {
-		return name, nil
-	}
-
-	err := g.DeclareFromTemplate(
+	name := mapItemListName(g, spec)
+	err := g.EnsureDeclared(
 		`
 			<$wire := import "go.uber.org/thriftrw/wire">
 			type <.Name> <typeReference .Spec>
@@ -127,12 +123,8 @@ func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, err
 }
 
 func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error) {
-	name := "_" + valueName(spec) + "_Read"
-	if m.HasReader(name) {
-		return name, nil
-	}
-
-	err := g.DeclareFromTemplate(
+	name := readerFuncName(g, spec)
+	err := g.EnsureDeclared(
 		`
 			<$wire := import "go.uber.org/thriftrw/wire">
 			<$mapType := typeReference .Spec>

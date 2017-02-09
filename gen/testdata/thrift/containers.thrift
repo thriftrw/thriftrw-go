@@ -1,4 +1,7 @@
 include "./enums.thrift"
+include "./enum_conflict.thrift"
+include "./typedefs.thrift"
+include "./uuid_conflict.thrift"
 
 struct PrimitiveContainers {
     1: optional list<binary> listOfBinary
@@ -38,4 +41,14 @@ struct ContainersOfContainers {
 struct MapOfBinaryAndString {
     1: optional map<binary, string> binaryToString;
     2: optional map<string, binary> stringToBinary;
+}
+
+struct ListOfConflictingEnums {
+    1: required list<enum_conflict.RecordType> records
+    2: required list<enums.RecordType> otherRecords
+}
+
+struct ListOfConflictingUUIDs {
+    1: required list<typedefs.UUID> uuids
+    2: required list<uuid_conflict.UUID> otherUUIDs
 }

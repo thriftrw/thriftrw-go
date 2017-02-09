@@ -236,11 +236,14 @@ func ConstantValuePtr(g Generator, c compile.ConstantValue, t compile.TypeSpec) 
 	case *compile.StringSpec:
 		ptrFunc = fmt.Sprintf("%v.String", g.Import("go.uber.org/thriftrw/ptr"))
 	case *compile.EnumSpec:
-		ptrFunc = fmt.Sprintf("_%v_ptr", t.ThriftName())
+		ptrFunc = fmt.Sprintf("_%s_ptr", g.MangleType(t))
 		err := g.EnsureDeclared(
-			`func _<.ThriftName>_ptr(v <typeReference .>) *<typeReference .> {
+			`func <.Name>(v <typeReference .Spec>) *<typeReference .Spec> {
 				return &v
-			}`, t)
+			}`, struct {
+				Spec compile.TypeSpec
+				Name string
+			}{Spec: t, Name: ptrFunc})
 		if err != nil {
 			return "", err
 		}
