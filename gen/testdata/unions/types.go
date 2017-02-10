@@ -256,6 +256,9 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 }
 
 func (v *ArbitraryValue) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [5]string
 	i := 0
 	if v.BoolValue != nil {
@@ -357,6 +360,9 @@ func (v *Document) FromWire(w wire.Value) error {
 }
 
 func (v *Document) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	if v.Pdf != nil {
@@ -389,6 +395,9 @@ func (v *EmptyUnion) FromWire(w wire.Value) error {
 }
 
 func (v *EmptyUnion) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("EmptyUnion{%v}", strings.Join(fields[:i], ", "))

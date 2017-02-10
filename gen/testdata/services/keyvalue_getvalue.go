@@ -53,6 +53,9 @@ func (v *KeyValue_GetValue_Args) FromWire(w wire.Value) error {
 }
 
 func (v *KeyValue_GetValue_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [1]string
 	i := 0
 	if v.Key != nil {
@@ -184,6 +187,9 @@ func (v *KeyValue_GetValue_Result) FromWire(w wire.Value) error {
 }
 
 func (v *KeyValue_GetValue_Result) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	if v.Success != nil {

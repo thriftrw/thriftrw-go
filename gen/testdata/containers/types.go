@@ -1144,6 +1144,9 @@ func (v *ContainersOfContainers) FromWire(w wire.Value) error {
 }
 
 func (v *ContainersOfContainers) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [9]string
 	i := 0
 	if v.ListOfLists != nil {
@@ -1421,6 +1424,9 @@ func (v *EnumContainers) FromWire(w wire.Value) error {
 }
 
 func (v *EnumContainers) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [3]string
 	i := 0
 	if v.ListOfEnums != nil {
@@ -1634,6 +1640,9 @@ func (v *MapOfBinaryAndString) FromWire(w wire.Value) error {
 }
 
 func (v *MapOfBinaryAndString) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	if v.BinaryToString != nil {
@@ -2019,6 +2028,9 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 }
 
 func (v *PrimitiveContainers) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [6]string
 	i := 0
 	if v.ListOfBinary != nil {
@@ -2196,6 +2208,9 @@ func (v *PrimitiveContainersRequired) FromWire(w wire.Value) error {
 }
 
 func (v *PrimitiveContainersRequired) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [3]string
 	i := 0
 	fields[i] = fmt.Sprintf("ListOfStrings: %v", v.ListOfStrings)

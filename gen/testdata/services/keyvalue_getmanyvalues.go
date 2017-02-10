@@ -95,6 +95,9 @@ func (v *KeyValue_GetManyValues_Args) FromWire(w wire.Value) error {
 }
 
 func (v *KeyValue_GetManyValues_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [1]string
 	i := 0
 	if v.Range != nil {
@@ -279,6 +282,9 @@ func (v *KeyValue_GetManyValues_Result) FromWire(w wire.Value) error {
 }
 
 func (v *KeyValue_GetManyValues_Result) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	if v.Success != nil {

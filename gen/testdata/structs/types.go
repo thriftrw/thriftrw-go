@@ -54,6 +54,9 @@ func (v *ContactInfo) FromWire(w wire.Value) error {
 }
 
 func (v *ContactInfo) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [1]string
 	i := 0
 	fields[i] = fmt.Sprintf("EmailAddress: %v", v.EmailAddress)
@@ -378,6 +381,9 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 }
 
 func (v *DefaultsStruct) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [8]string
 	i := 0
 	if v.RequiredPrimitive != nil {
@@ -488,6 +494,9 @@ func (v *Edge) FromWire(w wire.Value) error {
 }
 
 func (v *Edge) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("StartPoint: %v", v.StartPoint)
@@ -516,6 +525,9 @@ func (v *EmptyStruct) FromWire(w wire.Value) error {
 }
 
 func (v *EmptyStruct) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("EmptyStruct{%v}", strings.Join(fields[:i], ", "))
@@ -594,6 +606,9 @@ func (v *Frame) FromWire(w wire.Value) error {
 }
 
 func (v *Frame) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("TopLeft: %v", v.TopLeft)
@@ -695,6 +710,9 @@ func (v *Graph) FromWire(w wire.Value) error {
 }
 
 func (v *Graph) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [1]string
 	i := 0
 	fields[i] = fmt.Sprintf("Edges: %v", v.Edges)
@@ -782,6 +800,9 @@ func (v *Node) FromWire(w wire.Value) error {
 }
 
 func (v *Node) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("Value: %v", v.Value)
@@ -854,6 +875,9 @@ func (v *Point) FromWire(w wire.Value) error {
 }
 
 func (v *Point) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("X: %v", v.X)
@@ -1028,6 +1052,9 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 }
 
 func (v *PrimitiveOptionalStruct) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [8]string
 	i := 0
 	if v.BoolField != nil {
@@ -1243,6 +1270,9 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 }
 
 func (v *PrimitiveRequiredStruct) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [8]string
 	i := 0
 	fields[i] = fmt.Sprintf("BoolField: %v", v.BoolField)
@@ -1325,6 +1355,9 @@ func (v *Size) FromWire(w wire.Value) error {
 }
 
 func (v *Size) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("Width: %v", v.Width)
@@ -1398,6 +1431,9 @@ func (v *User) FromWire(w wire.Value) error {
 }
 
 func (v *User) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)

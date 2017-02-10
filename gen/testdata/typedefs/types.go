@@ -264,6 +264,9 @@ func (v *Event) FromWire(w wire.Value) error {
 }
 
 func (v *Event) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("UUID: %v", v.UUID)
@@ -696,6 +699,9 @@ func (v *Transition) FromWire(w wire.Value) error {
 }
 
 func (v *Transition) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [3]string
 	i := 0
 	fields[i] = fmt.Sprintf("FromState: %v", v.FromState)
@@ -786,6 +792,9 @@ func (v *I128) FromWire(w wire.Value) error {
 }
 
 func (v *I128) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("High: %v", v.High)

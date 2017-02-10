@@ -29,6 +29,9 @@ func (v *KeyValue_Size_Args) FromWire(w wire.Value) error {
 }
 
 func (v *KeyValue_Size_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("KeyValue_Size_Args{%v}", strings.Join(fields[:i], ", "))
@@ -126,6 +129,9 @@ func (v *KeyValue_Size_Result) FromWire(w wire.Value) error {
 }
 
 func (v *KeyValue_Size_Result) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [1]string
 	i := 0
 	if v.Success != nil {

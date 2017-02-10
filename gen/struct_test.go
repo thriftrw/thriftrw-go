@@ -496,6 +496,11 @@ func TestPrimitiveRequiredMissingFields(t *testing.T) {
 	}
 }
 
+func TestStructStringWithNil(t *testing.T) {
+	var f *ts.Frame
+	assert.Equal(t, "<nil>", f.String())
+}
+
 func TestStructStringWithMissingRequiredFields(t *testing.T) {
 	tests := []struct {
 		i fmt.Stringer

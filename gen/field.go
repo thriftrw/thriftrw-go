@@ -323,8 +323,12 @@ func (f fieldGroupGenerator) String(g Generator) error {
 
 		<$v := newVar "v">
 		func (<$v> *<.Name>) String() string {
-    		<$fields := newVar "fields">
-    		<$i := newVar "i">
+			if <$v> == nil {
+				return "<"<nil>">"
+			}
+
+			<$fields := newVar "fields">
+			<$i := newVar "i">
 
 			var <$fields> [<len .Fields>]string
 			<$i> := 0
