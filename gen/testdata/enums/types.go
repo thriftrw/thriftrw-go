@@ -603,11 +603,8 @@ func _EnumDefault_EqualsPtr(lhs, rhs *EnumDefault) bool {
 		x := *lhs
 		y := *rhs
 		return x.Equals(y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {

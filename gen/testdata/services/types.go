@@ -149,11 +149,8 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func (v *InternalError) Equals(rhs *InternalError) bool {
@@ -186,5 +183,7 @@ func (v *Key) FromWire(w wire.Value) error {
 }
 
 func (lhs Key) Equals(rhs Key) bool {
-	return (lhs == rhs)
+	l := (string)(lhs)
+	r := (string)(rhs)
+	return (l == r)
 }

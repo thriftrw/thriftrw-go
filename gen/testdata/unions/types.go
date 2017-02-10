@@ -286,11 +286,8 @@ func _bool_EqualsPtr(lhs, rhs *bool) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func _i64_EqualsPtr(lhs, rhs *int64) bool {
@@ -298,11 +295,8 @@ func _i64_EqualsPtr(lhs, rhs *int64) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func _string_EqualsPtr(lhs, rhs *string) bool {
@@ -310,11 +304,8 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func _List_ArbitraryValue_Equals(lhs, rhs []*ArbitraryValue) bool {
@@ -330,7 +321,7 @@ func _List_ArbitraryValue_Equals(lhs, rhs []*ArbitraryValue) bool {
 	return true
 }
 
-func _Map_String_ArbitraryValue_Equals(lhs, rhs map[string]*ArbitraryValue) bool {
+func _Map_String_ArbitraryValue_EqualsHashable(lhs, rhs map[string]*ArbitraryValue) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -359,7 +350,7 @@ func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
 	if !((v.ListValue == nil && rhs.ListValue == nil) || (v.ListValue != nil && rhs.ListValue != nil && _List_ArbitraryValue_Equals(v.ListValue, rhs.ListValue))) {
 		return false
 	}
-	if !((v.MapValue == nil && rhs.MapValue == nil) || (v.MapValue != nil && rhs.MapValue != nil && _Map_String_ArbitraryValue_Equals(v.MapValue, rhs.MapValue))) {
+	if !((v.MapValue == nil && rhs.MapValue == nil) || (v.MapValue != nil && rhs.MapValue != nil && _Map_String_ArbitraryValue_EqualsHashable(v.MapValue, rhs.MapValue))) {
 		return false
 	}
 	return true

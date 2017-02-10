@@ -86,11 +86,8 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {

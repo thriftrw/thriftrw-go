@@ -428,11 +428,8 @@ func _i32_EqualsPtr(lhs, rhs *int32) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func _EnumDefault_EqualsPtr(lhs, rhs *enums.EnumDefault) bool {
@@ -440,11 +437,8 @@ func _EnumDefault_EqualsPtr(lhs, rhs *enums.EnumDefault) bool {
 		x := *lhs
 		y := *rhs
 		return x.Equals(y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func _List_String_Equals(lhs, rhs []string) bool {
@@ -849,7 +843,9 @@ func (v *List) FromWire(w wire.Value) error {
 }
 
 func (lhs *List) Equals(rhs *List) bool {
-	return (*Node)(lhs).Equals((*Node)(rhs))
+	l := (*Node)(lhs)
+	r := (*Node)(rhs)
+	return l.Equals(r)
 }
 
 type Node struct {
@@ -1224,11 +1220,8 @@ func _bool_EqualsPtr(lhs, rhs *bool) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func _byte_EqualsPtr(lhs, rhs *int8) bool {
@@ -1236,11 +1229,8 @@ func _byte_EqualsPtr(lhs, rhs *int8) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func _i16_EqualsPtr(lhs, rhs *int16) bool {
@@ -1248,11 +1238,8 @@ func _i16_EqualsPtr(lhs, rhs *int16) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func _i64_EqualsPtr(lhs, rhs *int64) bool {
@@ -1260,11 +1247,8 @@ func _i64_EqualsPtr(lhs, rhs *int64) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func _double_EqualsPtr(lhs, rhs *float64) bool {
@@ -1272,11 +1256,8 @@ func _double_EqualsPtr(lhs, rhs *float64) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func _string_EqualsPtr(lhs, rhs *string) bool {
@@ -1284,11 +1265,8 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {

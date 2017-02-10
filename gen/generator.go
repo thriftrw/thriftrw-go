@@ -118,7 +118,7 @@ type generator struct {
 	ImportPath  string
 
 	w              WireGenerator
-	e              EqualsGenerator
+	e              equalsGenerator
 	decls          []ast.Decl
 	thriftImporter thriftPackageImporter
 

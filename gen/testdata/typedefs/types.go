@@ -98,7 +98,9 @@ func (v *BinarySet) FromWire(w wire.Value) error {
 }
 
 func (lhs BinarySet) Equals(rhs BinarySet) bool {
-	return _Set_Binary_Equals(lhs, rhs)
+	l := ([][]byte)(lhs)
+	r := ([][]byte)(rhs)
+	return _Set_Binary_Equals(l, r)
 }
 
 type _Map_Edge_Edge_MapItemList []struct {
@@ -186,7 +188,7 @@ func _Map_Edge_Edge_Read(m wire.MapItemList) ([]struct {
 	return o, err
 }
 
-func _Map_Edge_Edge_Equals(lhs, rhs []struct {
+func _Map_Edge_Edge_EqualsUnhashable(lhs, rhs []struct {
 	Key   *structs.Edge
 	Value *structs.Edge
 }) bool {
@@ -244,7 +246,15 @@ func (v *EdgeMap) FromWire(w wire.Value) error {
 }
 
 func (lhs EdgeMap) Equals(rhs EdgeMap) bool {
-	return _Map_Edge_Edge_Equals(lhs, rhs)
+	l := ([]struct {
+		Key   *structs.Edge
+		Value *structs.Edge
+	})(lhs)
+	r := ([]struct {
+		Key   *structs.Edge
+		Value *structs.Edge
+	})(rhs)
+	return _Map_Edge_Edge_EqualsUnhashable(l, r)
 }
 
 type Event struct {
@@ -338,11 +348,8 @@ func _Timestamp_EqualsPtr(lhs, rhs *Timestamp) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func (v *Event) Equals(rhs *Event) bool {
@@ -440,7 +447,9 @@ func (v *EventGroup) FromWire(w wire.Value) error {
 }
 
 func (lhs EventGroup) Equals(rhs EventGroup) bool {
-	return _List_Event_Equals(lhs, rhs)
+	l := ([]*Event)(lhs)
+	r := ([]*Event)(rhs)
+	return _List_Event_Equals(l, r)
 }
 
 type _Set_Frame_ValueList []*structs.Frame
@@ -534,7 +543,9 @@ func (v *FrameGroup) FromWire(w wire.Value) error {
 }
 
 func (lhs FrameGroup) Equals(rhs FrameGroup) bool {
-	return _Set_Frame_Equals(lhs, rhs)
+	l := ([]*structs.Frame)(lhs)
+	r := ([]*structs.Frame)(rhs)
+	return _Set_Frame_Equals(l, r)
 }
 
 func _EnumWithValues_Read(w wire.Value) (enums.EnumWithValues, error) {
@@ -562,7 +573,9 @@ func (v *MyEnum) FromWire(w wire.Value) error {
 }
 
 func (lhs MyEnum) Equals(rhs MyEnum) bool {
-	return lhs.Equals(rhs)
+	l := (enums.EnumWithValues)(lhs)
+	r := (enums.EnumWithValues)(rhs)
+	return l.Equals(r)
 }
 
 type PDF []byte
@@ -584,7 +597,9 @@ func (v *PDF) FromWire(w wire.Value) error {
 }
 
 func (lhs PDF) Equals(rhs PDF) bool {
-	return bytes.Equal(lhs, rhs)
+	l := ([]byte)(lhs)
+	r := ([]byte)(rhs)
+	return bytes.Equal(l, r)
 }
 
 type _Map_Point_Point_MapItemList []struct {
@@ -672,7 +687,7 @@ func _Map_Point_Point_Read(m wire.MapItemList) ([]struct {
 	return o, err
 }
 
-func _Map_Point_Point_Equals(lhs, rhs []struct {
+func _Map_Point_Point_EqualsUnhashable(lhs, rhs []struct {
 	Key   *structs.Point
 	Value *structs.Point
 }) bool {
@@ -730,7 +745,15 @@ func (v *PointMap) FromWire(w wire.Value) error {
 }
 
 func (lhs PointMap) Equals(rhs PointMap) bool {
-	return _Map_Point_Point_Equals(lhs, rhs)
+	l := ([]struct {
+		Key   *structs.Point
+		Value *structs.Point
+	})(lhs)
+	r := ([]struct {
+		Key   *structs.Point
+		Value *structs.Point
+	})(rhs)
+	return _Map_Point_Point_EqualsUnhashable(l, r)
 }
 
 type State string
@@ -752,7 +775,9 @@ func (v *State) FromWire(w wire.Value) error {
 }
 
 func (lhs State) Equals(rhs State) bool {
-	return (lhs == rhs)
+	l := (string)(lhs)
+	r := (string)(rhs)
+	return (l == r)
 }
 
 type Timestamp int64
@@ -774,7 +799,9 @@ func (v *Timestamp) FromWire(w wire.Value) error {
 }
 
 func (lhs Timestamp) Equals(rhs Timestamp) bool {
-	return (lhs == rhs)
+	l := (int64)(lhs)
+	r := (int64)(rhs)
+	return (l == r)
 }
 
 type Transition struct {
@@ -909,7 +936,9 @@ func (v *UUID) FromWire(w wire.Value) error {
 }
 
 func (lhs *UUID) Equals(rhs *UUID) bool {
-	return (*I128)(lhs).Equals((*I128)(rhs))
+	l := (*I128)(lhs)
+	r := (*I128)(rhs)
+	return l.Equals(r)
 }
 
 type I128 struct {

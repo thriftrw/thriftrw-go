@@ -28,7 +28,7 @@ import (
 
 // EqualsGenerator is responsible for generating code that knows how
 // to compare the equality of two Thrift types and their Value representations.
-type EqualsGenerator struct {
+type equalsGenerator struct {
 	mapG  mapGenerator
 	setG  setGenerator
 	listG listGenerator
@@ -36,7 +36,7 @@ type EqualsGenerator struct {
 
 // Equals generates a string comparing rhs to the given lhs.
 // Equals generates an expression of type bool.
-func (e *EqualsGenerator) Equals(g Generator, spec compile.TypeSpec, lhs, rhs string) (string, error) {
+func (e *equalsGenerator) Equals(g Generator, spec compile.TypeSpec, lhs, rhs string) (string, error) {
 	if isPrimitiveType(spec) {
 		if _, isEnum := spec.(*compile.EnumSpec); !isEnum {
 			return fmt.Sprintf("(%s == %s)", lhs, rhs), nil
@@ -64,7 +64,7 @@ func (e *EqualsGenerator) Equals(g Generator, spec compile.TypeSpec, lhs, rhs st
 
 // EqualsPtr is the same as Equals expect `lhs` and `rhs` are expected to be a
 // reference to a value of the given type.
-func (e *EqualsGenerator) EqualsPtr(g Generator, spec compile.TypeSpec, lhs, rhs string) (string, error) {
+func (e *equalsGenerator) EqualsPtr(g Generator, spec compile.TypeSpec, lhs, rhs string) (string, error) {
 	if !isPrimitiveType(spec) {
 		// Everything else is a reference type that has a Equals method on it.
 		return g.TextTemplate(
@@ -83,20 +83,17 @@ func (e *EqualsGenerator) EqualsPtr(g Generator, spec compile.TypeSpec, lhs, rhs
 			<$type := typeReference .Spec>
 			<$lhs := newVar "lhs">
 			<$rhs := newVar "rhs">
-			<$x := newVar "x">
-			<$y := newVar "y">
 			func <.Name>(<$lhs>, <$rhs> *<$type>) bool {
 				// Make sure that both the pointers are non nil.
+				<$x := newVar "x">
+				<$y := newVar "y">
 				if <$lhs> != nil && <$rhs> != nil {
 					// Call Equals method after dereferencing the pointers
 					<$x> := *<$lhs>
 					<$y> := *<$rhs>
 					return <equals .Spec $x $y>
-				} else if <$lhs> == nil && <$rhs> == nil {
-					return true
-				} else {
-					return false
 				}
+				return <$lhs> == nil && <$rhs> == nil
 			}
 		`,
 		struct {

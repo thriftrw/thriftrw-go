@@ -198,8 +198,11 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 //
 // And returns its name.
 func (m *mapGenerator) Equals(g Generator, spec *compile.MapSpec) (string, error) {
-	name := "_" + valueName(spec) + "_Equals"
+	if !isHashable(spec.KeySpec) {
+		return m.equalsUnhashable(g, spec)
+	}
 
+	name := "_" + valueName(spec) + "_EqualsHashable"
 	err := g.EnsureDeclared(
 		`
 			<$mapType := typeReference .Spec>
@@ -215,20 +218,15 @@ func (m *mapGenerator) Equals(g Generator, spec *compile.MapSpec) (string, error
 				<$lv := newVar "lv">
 				<$rv := newVar "rv">
 				<$ok := newVar "ok">
-				<if isHashable .Spec.KeySpec>
-					for <$lk>, <$lv> := range <$lhs> {
-						<$rv>, <$ok> := <$rhs>[<$lk>]
-						if !<$ok> {
-							return false
-						}
-						if !<equals .Spec.ValueSpec $lv $rv> {
-							return false
-						}
+				for <$lk>, <$lv> := range <$lhs> {
+					<$rv>, <$ok> := <$rhs>[<$lk>]
+					if !<$ok> {
+						return false
 					}
-				<else>
-					// Note if keys are not hashable then this is O(n^2) in time complexity.
-					<equalsForUnhashableKey .Spec $lhs $rhs>
-				<end>
+					if !<equals .Spec.ValueSpec $lv $rv> {
+						return false
+					}
+				}
 				return true
 			}
 		`,
@@ -236,53 +234,65 @@ func (m *mapGenerator) Equals(g Generator, spec *compile.MapSpec) (string, error
 			Name string
 			Spec *compile.MapSpec
 		}{Name: name, Spec: spec},
-		TemplateFunc("equalsForUnhashableKey", m.equalsForUnhashableKey),
 	)
 
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
-func (m *mapGenerator) equalsForUnhashableKey(g Generator, spec compile.TypeSpec, lhs, rhs string) (string, error) {
-	return g.TextTemplate(
+func (m *mapGenerator) equalsUnhashable(g Generator, spec *compile.MapSpec) (string, error) {
+	name := "_" + valueName(spec) + "_EqualsUnhashable"
+
+	err := g.EnsureDeclared(
 		`
-			<$i := newVar "i">
-			<$j := newVar "j">
-			<$lk := newVar "lk">
-			<$lv := newVar "lv">
-			<$rk := newVar "rk">
-			<$rv := newVar "rv">
-			<$ok := newVar "ok">
-			for _, <$i> := range <.LHS> {
-				<$lk> := <$i>.Key
-				<$lv> := <$i>.Value
-				<$ok> := false
-				for _, <$j> := range <.RHS> {
-					<$rk> := <$j>.Key
-					<$rv> := <$j>.Value
-					if !<equals .Spec.KeySpec $lk $rk> {
-						continue
-					}
+			<$mapType := typeReference .Spec>
 
-					if !<equals .Spec.ValueSpec $lv $rv> {
-						// Caveat: Behavior is undefined if the map contract
-						// (only one instance of each key) isn't satisfied.
-						return false
-					}
-					<$ok> = true
-					break
-				}
-
-				if !<$ok> {
+			<$lhs := newVar "lhs">
+			<$rhs := newVar "rhs">
+			func <.Name>(<$lhs>, <$rhs> <$mapType>) bool {
+				if len(<$lhs>) != len(<$rhs>) {
 					return false
 				}
+
+				<$i := newVar "i">
+				<$j := newVar "j">
+				<$lk := newVar "lk">
+				<$lv := newVar "lv">
+				<$rk := newVar "rk">
+				<$rv := newVar "rv">
+				<$ok := newVar "ok">
+				for _, <$i> := range <$lhs> {
+					<$lk> := <$i>.Key
+					<$lv> := <$i>.Value
+					<$ok> := false
+					for _, <$j> := range <$rhs> {
+						<$rk> := <$j>.Key
+						<$rv> := <$j>.Value
+						if !<equals .Spec.KeySpec $lk $rk> {
+							continue
+						}
+
+						if !<equals .Spec.ValueSpec $lv $rv> {
+							// Caveat: Behavior is undefined if there are multiple entries with the same key.
+							return false
+						}
+						<$ok> = true
+						break
+					}
+
+					if !<$ok> {
+						return false
+					}
+				}
+				return true
 			}
 		`,
 		struct {
-			Spec compile.TypeSpec
-			LHS  string
-			RHS  string
-		}{Spec: spec, LHS: lhs, RHS: rhs},
+			Name string
+			Spec *compile.MapSpec
+		}{Name: name, Spec: spec},
 	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
 func valueName(spec compile.TypeSpec) string {

@@ -33,7 +33,9 @@ func (v *LittlePotatoe) FromWire(w wire.Value) error {
 }
 
 func (lhs LittlePotatoe) Equals(rhs LittlePotatoe) bool {
-	return (lhs == rhs)
+	l := (int64)(lhs)
+	r := (int64)(rhs)
+	return (l == r)
 }
 
 type MyEnum int32
@@ -398,7 +400,7 @@ func _Set_String_Equals(lhs, rhs map[string]struct{}) bool {
 	return true
 }
 
-func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
+func _Map_String_String_EqualsHashable(lhs, rhs map[string]string) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -421,7 +423,7 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	if !((v.B == nil && rhs.B == nil) || (v.B != nil && rhs.B != nil && _Set_String_Equals(v.B, rhs.B))) {
 		return false
 	}
-	if !((v.C == nil && rhs.C == nil) || (v.C != nil && rhs.C != nil && _Map_String_String_Equals(v.C, rhs.C))) {
+	if !((v.C == nil && rhs.C == nil) || (v.C != nil && rhs.C != nil && _Map_String_String_EqualsHashable(v.C, rhs.C))) {
 		return false
 	}
 	return true
@@ -597,11 +599,8 @@ func _bool_EqualsPtr(lhs, rhs *bool) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func _string_EqualsPtr(lhs, rhs *string) bool {
@@ -609,11 +608,8 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
@@ -712,7 +708,9 @@ func (v *LittlePotatoe2) FromWire(w wire.Value) error {
 }
 
 func (lhs LittlePotatoe2) Equals(rhs LittlePotatoe2) bool {
-	return (lhs == rhs)
+	l := (float64)(lhs)
+	r := (float64)(rhs)
+	return (l == r)
 }
 
 type MyEnum2 int32

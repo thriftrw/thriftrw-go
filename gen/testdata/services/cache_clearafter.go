@@ -64,11 +64,8 @@ func _i64_EqualsPtr(lhs, rhs *int64) bool {
 		x := *lhs
 		y := *rhs
 		return (x == y)
-	} else if lhs == nil && rhs == nil {
-		return true
-	} else {
-		return false
 	}
+	return lhs == nil && rhs == nil
 }
 
 func (v *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
