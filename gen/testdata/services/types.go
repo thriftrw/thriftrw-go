@@ -74,6 +74,9 @@ func (v *ConflictingNamesSetValueArgs) FromWire(w wire.Value) error {
 }
 
 func (v *ConflictingNamesSetValueArgs) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("Key: %v", v.Key)
@@ -124,6 +127,9 @@ func (v *InternalError) FromWire(w wire.Value) error {
 }
 
 func (v *InternalError) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [1]string
 	i := 0
 	if v.Message != nil {

@@ -50,6 +50,9 @@ func (v *Cache_ClearAfter_Args) FromWire(w wire.Value) error {
 }
 
 func (v *Cache_ClearAfter_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [1]string
 	i := 0
 	if v.DurationMS != nil {

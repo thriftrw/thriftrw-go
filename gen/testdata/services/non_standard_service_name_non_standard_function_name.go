@@ -28,6 +28,9 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) FromWire(w wire.Va
 }
 
 func (v *NonStandardServiceName_NonStandardFunctionName_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("NonStandardServiceName_NonStandardFunctionName_Args{%v}", strings.Join(fields[:i], ", "))
@@ -88,6 +91,9 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) FromWire(w wire.
 }
 
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("NonStandardServiceName_NonStandardFunctionName_Result{%v}", strings.Join(fields[:i], ", "))

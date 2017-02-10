@@ -70,6 +70,9 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 }
 
 func (v *DoesNotExistException) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("Key: %v", v.Key)
@@ -104,6 +107,9 @@ func (v *EmptyException) FromWire(w wire.Value) error {
 }
 
 func (v *EmptyException) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("EmptyException{%v}", strings.Join(fields[:i], ", "))

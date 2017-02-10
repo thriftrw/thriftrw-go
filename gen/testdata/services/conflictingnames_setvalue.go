@@ -54,6 +54,9 @@ func (v *ConflictingNames_SetValue_Args) FromWire(w wire.Value) error {
 }
 
 func (v *ConflictingNames_SetValue_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [1]string
 	i := 0
 	if v.Request != nil {
@@ -118,6 +121,9 @@ func (v *ConflictingNames_SetValue_Result) FromWire(w wire.Value) error {
 }
 
 func (v *ConflictingNames_SetValue_Result) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("ConflictingNames_SetValue_Result{%v}", strings.Join(fields[:i], ", "))

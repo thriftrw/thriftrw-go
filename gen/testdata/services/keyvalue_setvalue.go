@@ -67,6 +67,9 @@ func (v *KeyValue_SetValue_Args) FromWire(w wire.Value) error {
 }
 
 func (v *KeyValue_SetValue_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	if v.Key != nil {
@@ -135,6 +138,9 @@ func (v *KeyValue_SetValue_Result) FromWire(w wire.Value) error {
 }
 
 func (v *KeyValue_SetValue_Result) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("KeyValue_SetValue_Result{%v}", strings.Join(fields[:i], ", "))

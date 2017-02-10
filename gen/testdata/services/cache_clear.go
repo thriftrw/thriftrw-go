@@ -28,6 +28,9 @@ func (v *Cache_Clear_Args) FromWire(w wire.Value) error {
 }
 
 func (v *Cache_Clear_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("Cache_Clear_Args{%v}", strings.Join(fields[:i], ", "))

@@ -58,6 +58,9 @@ func (v *KeyValue_DeleteValue_Args) FromWire(w wire.Value) error {
 }
 
 func (v *KeyValue_DeleteValue_Args) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [1]string
 	i := 0
 	if v.Key != nil {
@@ -207,6 +210,9 @@ func (v *KeyValue_DeleteValue_Result) FromWire(w wire.Value) error {
 }
 
 func (v *KeyValue_DeleteValue_Result) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	if v.DoesNotExist != nil {

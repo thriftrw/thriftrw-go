@@ -565,6 +565,9 @@ func (v *StructWithOptionalEnum) FromWire(w wire.Value) error {
 }
 
 func (v *StructWithOptionalEnum) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [1]string
 	i := 0
 	if v.E != nil {

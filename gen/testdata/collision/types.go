@@ -348,6 +348,9 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 }
 
 func (v *PrimitiveContainers) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [3]string
 	i := 0
 	if v.A != nil {
@@ -426,6 +429,9 @@ func (v *StructCollision) FromWire(w wire.Value) error {
 }
 
 func (v *StructCollision) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("CollisionField: %v", v.CollisionField)
@@ -507,6 +513,9 @@ func (v *UnionCollision) FromWire(w wire.Value) error {
 }
 
 func (v *UnionCollision) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	if v.CollisionField != nil {
@@ -571,6 +580,9 @@ func (v *WithDefault) FromWire(w wire.Value) error {
 }
 
 func (v *WithDefault) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [1]string
 	i := 0
 	if v.Pouet != nil {
@@ -741,6 +753,9 @@ func (v *StructCollision2) FromWire(w wire.Value) error {
 }
 
 func (v *StructCollision2) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("CollisionField: %v", v.CollisionField)
@@ -822,6 +837,9 @@ func (v *UnionCollision2) FromWire(w wire.Value) error {
 }
 
 func (v *UnionCollision2) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	if v.CollisionField != nil {
