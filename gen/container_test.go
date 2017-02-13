@@ -35,14 +35,13 @@ import (
 func TestCollectionsOfPrimitives(t *testing.T) {
 	tests := []struct {
 		desc string
-		p, q tc.PrimitiveContainers
+		p    tc.PrimitiveContainers
 		v    wire.Value
 	}{
 		// Lists /////////////////////////////////////////////////////////////
 		{
 			"empty list",
 			tc.PrimitiveContainers{ListOfInts: []int64{}},
-			tc.PrimitiveContainers{ListOfInts: []int64{1, 2}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID:    2,
 				Value: wire.NewValueList(wire.ValueListFromSlice(wire.TI64, []wire.Value{})),
@@ -51,7 +50,6 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		{
 			"list of ints",
 			tc.PrimitiveContainers{ListOfInts: []int64{1, 2, 3}},
-			tc.PrimitiveContainers{ListOfInts: []int64{1, 4, 3}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 2,
 				Value: wire.NewValueList(
@@ -70,11 +68,6 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 					[]byte("foo"), {}, []byte("bar"), []byte("baz"),
 				},
 			},
-			tc.PrimitiveContainers{
-				ListOfBinary: [][]byte{
-					[]byte("foo"), {}, []byte("bar"), []byte("bazzinga"),
-				},
-			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 1,
 				Value: wire.NewValueList(
@@ -91,7 +84,6 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		{
 			"empty set",
 			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{}},
-			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{"foo": {}}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 3,
 				Value: wire.NewValueSet(
@@ -105,9 +97,6 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 				"foo": {},
 				"bar": {},
 				"baz": {},
-			}},
-			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{
-				"foobar": {},
 			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 3,
@@ -127,11 +116,6 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 				1:   {},
 				125: {},
 			}},
-			tc.PrimitiveContainers{SetOfBytes: map[int8]struct{}{
-				-1:  {},
-				2:   {},
-				125: {},
-			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 4,
 				Value: wire.NewValueSet(
@@ -147,7 +131,6 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 		{
 			"empty map",
 			tc.PrimitiveContainers{MapOfStringToBool: map[string]bool{}},
-			tc.PrimitiveContainers{MapOfStringToBool: map[string]bool{"foo": false}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 6,
 				Value: wire.NewValueMap(
@@ -161,11 +144,6 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 				-1:    "foo",
 				1234:  "bar",
 				-9876: "baz",
-			}},
-			tc.PrimitiveContainers{MapOfIntToString: map[int32]string{
-				-1:    "foo",
-				1234:  "bar",
-				-9876: "bazzinga",
 			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 5,
@@ -185,11 +163,6 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 				"bar": false,
 				"baz": true,
 			}},
-			tc.PrimitiveContainers{MapOfStringToBool: map[string]bool{
-				"foo":      true,
-				"bazzinga": true,
-				"bar":      false,
-			}},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{{
 				ID: 6,
 				Value: wire.NewValueMap(
@@ -206,25 +179,118 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.p, tt.v, tt.desc)
 		assert.True(t, tt.p.Equals(&tt.p), tt.desc)
+	}
+}
+
+func TestCollectionsOfPrimitivesEquals(t *testing.T) {
+	tests := []struct {
+		desc string
+		p, q tc.PrimitiveContainers
+	}{
+		// Lists /////////////////////////////////////////////////////////////
+		{
+			"empty list",
+			tc.PrimitiveContainers{ListOfInts: []int64{}},
+			tc.PrimitiveContainers{ListOfInts: []int64{1, 2}},
+		},
+		{
+			"list of ints",
+			tc.PrimitiveContainers{ListOfInts: []int64{1, 2, 3}},
+			tc.PrimitiveContainers{ListOfInts: []int64{1, 4, 3}},
+		},
+		{
+			"list of binary",
+			tc.PrimitiveContainers{
+				ListOfBinary: [][]byte{
+					[]byte("foo"), {}, []byte("bar"), []byte("baz"),
+				},
+			},
+			tc.PrimitiveContainers{
+				ListOfBinary: [][]byte{
+					[]byte("foo"), {}, []byte("bar"), []byte("bazzinga"),
+				},
+			},
+		},
+		// Sets //////////////////////////////////////////////////////////////
+		{
+			"empty set",
+			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{}},
+			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{"foo": {}}},
+		},
+		{
+			"set of strings",
+			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{
+				"foo": {},
+				"bar": {},
+				"baz": {},
+			}},
+			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{
+				"foobar": {},
+			}},
+		},
+		{
+			"set of bytes",
+			tc.PrimitiveContainers{SetOfBytes: map[int8]struct{}{
+				-1:  {},
+				1:   {},
+				125: {},
+			}},
+			tc.PrimitiveContainers{SetOfBytes: map[int8]struct{}{
+				-1:  {},
+				2:   {},
+				125: {},
+			}},
+		},
+		// Maps //////////////////////////////////////////////////////////////
+		{
+			"empty map",
+			tc.PrimitiveContainers{MapOfStringToBool: map[string]bool{}},
+			tc.PrimitiveContainers{MapOfStringToBool: map[string]bool{"foo": false}},
+		},
+		{
+			"map of int to string",
+			tc.PrimitiveContainers{MapOfIntToString: map[int32]string{
+				-1:    "foo",
+				1234:  "bar",
+				-9876: "baz",
+			}},
+			tc.PrimitiveContainers{MapOfIntToString: map[int32]string{
+				-1:    "foo",
+				1234:  "bar",
+				-9876: "bazzinga",
+			}},
+		},
+		{
+			"map of string to bool",
+			tc.PrimitiveContainers{MapOfStringToBool: map[string]bool{
+				"foo": true,
+				"bar": false,
+				"baz": true,
+			}},
+			tc.PrimitiveContainers{MapOfStringToBool: map[string]bool{
+				"foo":      true,
+				"bazzinga": true,
+				"bar":      false,
+			}},
+		},
+	}
+
+	for _, tt := range tests {
+		assert.True(t, tt.p.Equals(&tt.p), tt.desc)
 		assert.False(t, tt.p.Equals(&tt.q), tt.desc)
 	}
 }
 
 func TestEnumContainers(t *testing.T) {
 	tests := []struct {
-		r, s tc.EnumContainers
-		v    wire.Value
+		r tc.EnumContainers
+		v wire.Value
 	}{
 		{
 			tc.EnumContainers{
 				ListOfEnums: []te.EnumDefault{
 					te.EnumDefaultFoo,
 					te.EnumDefaultBar,
-				},
-			},
-			tc.EnumContainers{
-				ListOfEnums: []te.EnumDefault{
-					te.EnumDefaultFoo,
 				},
 			},
 			singleFieldStruct(1, wire.NewValueList(
@@ -241,12 +307,6 @@ func TestEnumContainers(t *testing.T) {
 					te.EnumWithValuesZ: {},
 				},
 			},
-			tc.EnumContainers{
-				SetOfEnums: map[te.EnumWithValues]struct{}{
-					te.EnumWithValuesX: {},
-					te.EnumWithValuesY: {},
-				},
-			},
 			singleFieldStruct(2, wire.NewValueSet(
 				wire.ValueListFromSlice(wire.TI32, []wire.Value{
 					wire.NewValueI32(123),
@@ -259,12 +319,6 @@ func TestEnumContainers(t *testing.T) {
 				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
 					te.EnumWithDuplicateValuesP: 123,
 					te.EnumWithDuplicateValuesQ: 456,
-				},
-			},
-			tc.EnumContainers{
-				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
-					te.EnumWithDuplicateValuesP: 123,
-					te.EnumWithDuplicateValuesQ: 789,
 				},
 			},
 			singleFieldStruct(3, wire.NewValueMap(
@@ -283,11 +337,6 @@ func TestEnumContainers(t *testing.T) {
 					te.EnumWithDuplicateValuesQ: 456,
 				},
 			},
-			tc.EnumContainers{
-				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
-					te.EnumWithDuplicateValuesQ: 456,
-				},
-			},
 			singleFieldStruct(3, wire.NewValueMap(
 
 				wire.MapItemListFromSlice(wire.TI32, wire.TI32, []wire.MapItem{
@@ -301,23 +350,84 @@ func TestEnumContainers(t *testing.T) {
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.r, tt.v, "EnumContainers")
 		assert.True(t, tt.r.Equals(&tt.r), "EnumContainers equal")
+	}
+}
+
+func TestEnumContainersEquals(t *testing.T) {
+	tests := []struct {
+		r, s tc.EnumContainers
+	}{
+		{
+			tc.EnumContainers{
+				ListOfEnums: []te.EnumDefault{
+					te.EnumDefaultFoo,
+					te.EnumDefaultBar,
+				},
+			},
+			tc.EnumContainers{
+				ListOfEnums: []te.EnumDefault{
+					te.EnumDefaultFoo,
+				},
+			},
+		},
+		{
+			tc.EnumContainers{
+				SetOfEnums: map[te.EnumWithValues]struct{}{
+					te.EnumWithValuesX: {},
+					te.EnumWithValuesZ: {},
+				},
+			},
+			tc.EnumContainers{
+				SetOfEnums: map[te.EnumWithValues]struct{}{
+					te.EnumWithValuesX: {},
+					te.EnumWithValuesY: {},
+				},
+			},
+		},
+		{
+			tc.EnumContainers{
+				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
+					te.EnumWithDuplicateValuesP: 123,
+					te.EnumWithDuplicateValuesQ: 456,
+				},
+			},
+			tc.EnumContainers{
+				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
+					te.EnumWithDuplicateValuesP: 123,
+					te.EnumWithDuplicateValuesQ: 789,
+				},
+			},
+		},
+		{
+			// this is the same as the one above except we're using "R" intsead
+			// of "P" (they both have the same value)
+			tc.EnumContainers{
+				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
+					te.EnumWithDuplicateValuesR: 123,
+					te.EnumWithDuplicateValuesQ: 456,
+				},
+			},
+			tc.EnumContainers{
+				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
+					te.EnumWithDuplicateValuesQ: 456,
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		assert.True(t, tt.r.Equals(&tt.r), "EnumContainers equal")
 		assert.False(t, tt.r.Equals(&tt.s), "EnumContainers unequal")
 	}
 }
 
 func TestListOfStructs(t *testing.T) {
 	tests := []struct {
-		r, s ts.Graph
-		v    wire.Value
+		r ts.Graph
+		v wire.Value
 	}{
 		{
 			ts.Graph{Edges: []*ts.Edge{}},
-			ts.Graph{Edges: []*ts.Edge{
-				{
-					StartPoint: &ts.Point{X: 1.0, Y: 2.0},
-					EndPoint:   &ts.Point{X: 3.0, Y: 4.0},
-				},
-			}},
 			singleFieldStruct(1, wire.NewValueList(
 				wire.ValueListFromSlice(wire.TStruct, nil),
 			)),
@@ -335,20 +445,6 @@ func TestListOfStructs(t *testing.T) {
 				{
 					StartPoint: &ts.Point{X: 9.0, Y: 10.0},
 					EndPoint:   &ts.Point{X: 11.0, Y: 12.0},
-				},
-			}},
-			ts.Graph{Edges: []*ts.Edge{
-				{
-					StartPoint: &ts.Point{X: 1.0, Y: 2.0},
-					EndPoint:   &ts.Point{X: 3.0, Y: 4.0},
-				},
-				{
-					StartPoint: &ts.Point{X: 5.0, Y: 6.0},
-					EndPoint:   &ts.Point{X: 7.0, Y: 8.0},
-				},
-				{
-					StartPoint: &ts.Point{X: 9.0, Y: 10.0},
-					EndPoint:   &ts.Point{X: 999.0, Y: 1000.0},
 				},
 			}},
 			singleFieldStruct(1, wire.NewValueList(
@@ -409,6 +505,56 @@ func TestListOfStructs(t *testing.T) {
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.r, tt.v, "Graph")
 		assert.True(t, tt.r.Equals(&tt.r), "Graph equal")
+	}
+}
+
+func TestListOfStructsEquals(t *testing.T) {
+	tests := []struct {
+		r, s ts.Graph
+	}{
+		{
+			ts.Graph{Edges: []*ts.Edge{}},
+			ts.Graph{Edges: []*ts.Edge{
+				{
+					StartPoint: &ts.Point{X: 1.0, Y: 2.0},
+					EndPoint:   &ts.Point{X: 3.0, Y: 4.0},
+				},
+			}},
+		},
+		{
+			ts.Graph{Edges: []*ts.Edge{
+				{
+					StartPoint: &ts.Point{X: 1.0, Y: 2.0},
+					EndPoint:   &ts.Point{X: 3.0, Y: 4.0},
+				},
+				{
+					StartPoint: &ts.Point{X: 5.0, Y: 6.0},
+					EndPoint:   &ts.Point{X: 7.0, Y: 8.0},
+				},
+				{
+					StartPoint: &ts.Point{X: 9.0, Y: 10.0},
+					EndPoint:   &ts.Point{X: 11.0, Y: 12.0},
+				},
+			}},
+			ts.Graph{Edges: []*ts.Edge{
+				{
+					StartPoint: &ts.Point{X: 1.0, Y: 2.0},
+					EndPoint:   &ts.Point{X: 3.0, Y: 4.0},
+				},
+				{
+					StartPoint: &ts.Point{X: 5.0, Y: 6.0},
+					EndPoint:   &ts.Point{X: 7.0, Y: 8.0},
+				},
+				{
+					StartPoint: &ts.Point{X: 9.0, Y: 10.0},
+					EndPoint:   &ts.Point{X: 999.0, Y: 1000.0},
+				},
+			}},
+		},
+	}
+
+	for _, tt := range tests {
+		assert.True(t, tt.r.Equals(&tt.r), "Graph equal")
 		assert.False(t, tt.r.Equals(&tt.s), "Graph unequal")
 	}
 }
@@ -416,7 +562,7 @@ func TestListOfStructs(t *testing.T) {
 func TestCrazyTown(t *testing.T) {
 	tests := []struct {
 		desc string
-		x, y tc.ContainersOfContainers
+		x    tc.ContainersOfContainers
 		v    wire.Value
 	}{
 		{
@@ -425,13 +571,6 @@ func TestCrazyTown(t *testing.T) {
 				ListOfLists: [][]int32{
 					{1, 2, 3},
 					{4, 5, 6},
-				},
-			},
-			tc.ContainersOfContainers{
-				ListOfLists: [][]int32{
-					{1, 2, 3},
-					{4, 5, 6},
-					{7, 8, 9},
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -471,20 +610,6 @@ func TestCrazyTown(t *testing.T) {
 					},
 				},
 			},
-			tc.ContainersOfContainers{
-				ListOfSets: []map[int32]struct{}{
-					{
-						1:  struct{}{},
-						2:  struct{}{},
-						30: struct{}{},
-					},
-					{
-						40: struct{}{},
-						50: struct{}{},
-						60: struct{}{},
-					},
-				},
-			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 2, Value: wire.NewValueList(
 					wire.ValueListFromSlice(wire.TSet, []wire.Value{
@@ -518,20 +643,6 @@ func TestCrazyTown(t *testing.T) {
 					{
 						4: 400,
 						5: 500,
-						6: 600,
-					},
-				},
-			},
-			tc.ContainersOfContainers{
-				ListOfMaps: []map[int32]int32{
-					{
-						1: 100,
-						2: 200,
-						3: 300,
-					},
-					{
-						4: 400,
-						5: 500000,
 						6: 600,
 					},
 				},
@@ -573,19 +684,6 @@ func TestCrazyTown(t *testing.T) {
 					},
 				},
 			},
-			tc.ContainersOfContainers{
-				SetOfSets: []map[string]struct{}{
-					{
-						"1": struct{}{},
-						"2": struct{}{},
-						"3": struct{}{},
-					},
-					{
-						"4": struct{}{},
-						"5": struct{}{},
-					},
-				},
-			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 4, Value: wire.NewValueSet(
 					wire.ValueListFromSlice(wire.TSet, []wire.Value{
@@ -613,12 +711,6 @@ func TestCrazyTown(t *testing.T) {
 				SetOfLists: [][]string{
 					{"1", "2", "3"},
 					{"4", "5", "6"},
-				},
-			},
-			tc.ContainersOfContainers{
-				SetOfLists: [][]string{
-					{"1", "2", "3"},
-					{"4", "500", "6"},
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -658,20 +750,6 @@ func TestCrazyTown(t *testing.T) {
 					},
 				},
 			},
-			tc.ContainersOfContainers{
-				SetOfMaps: []map[string]string{
-					{
-						"1": "one",
-						"2": "two",
-						"3": "three",
-					},
-					{
-						"4": "four",
-						"5": "fiftyfive",
-						"6": "six",
-					},
-				},
-			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 6, Value: wire.NewValueSet(
 					wire.ValueListFromSlice(wire.TMap, []wire.Value{
@@ -706,21 +784,6 @@ func TestCrazyTown(t *testing.T) {
 					},
 					{
 						Key:   map[string]int32{"4": 4, "5": 5, "6": 6},
-						Value: 456,
-					},
-				},
-			},
-			tc.ContainersOfContainers{
-				MapOfMapToInt: []struct {
-					Key   map[string]int32
-					Value int64
-				}{
-					{
-						Key:   map[string]int32{"1": 1, "2": 2, "3": 3},
-						Value: 123,
-					},
-					{
-						Key:   map[string]int32{"4": 4, "55": 5, "6": 6},
 						Value: 456,
 					},
 				},
@@ -773,29 +836,6 @@ func TestCrazyTown(t *testing.T) {
 							4: {},
 							5: {},
 							6: {},
-						},
-					},
-				},
-			},
-			tc.ContainersOfContainers{
-				MapOfListToSet: []struct {
-					Key   []int32
-					Value map[int64]struct{}
-				}{
-					{
-						Key: []int32{1, 2, 3},
-						Value: map[int64]struct{}{
-							1: {},
-							2: {},
-							3: {},
-						},
-					},
-					{
-						Key: []int32{4, 5, 6},
-						Value: map[int64]struct{}{
-							404: {},
-							5:   {},
-							6:   {},
 						},
 					},
 				},
@@ -864,29 +904,6 @@ func TestCrazyTown(t *testing.T) {
 					},
 				},
 			},
-			tc.ContainersOfContainers{
-				MapOfSetToListOfDouble: []struct {
-					Key   map[int32]struct{}
-					Value []float64
-				}{
-					{
-						Key: map[int32]struct{}{
-							1: {},
-							2: {},
-							3: {},
-						},
-						Value: []float64{1.0, 3.0},
-					},
-					{
-						Key: map[int32]struct{}{
-							4: {},
-							5: {},
-							6: {},
-						},
-						Value: []float64{4.0, 5.0, 6.0},
-					},
-				},
-			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 9, Value: wire.NewValueMap(
 					wire.MapItemListFromSlice(wire.TSet, wire.TList, []wire.MapItem{
@@ -930,6 +947,303 @@ func TestCrazyTown(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, tt.desc)
+		assert.True(t, tt.x.Equals(&tt.x), tt.desc)
+	}
+}
+
+func TestCrazyTownEquals(t *testing.T) {
+	tests := []struct {
+		desc string
+		x, y tc.ContainersOfContainers
+	}{
+		{
+			"ListOfLists",
+			tc.ContainersOfContainers{
+				ListOfLists: [][]int32{
+					{1, 2, 3},
+					{4, 5, 6},
+				},
+			},
+			tc.ContainersOfContainers{
+				ListOfLists: [][]int32{
+					{1, 2, 3},
+					{4, 5, 6},
+					{7, 8, 9},
+				},
+			},
+		},
+		{
+			"ListOfSets",
+			tc.ContainersOfContainers{
+				ListOfSets: []map[int32]struct{}{
+					{
+						1: struct{}{},
+						2: struct{}{},
+						3: struct{}{},
+					},
+					{
+						4: struct{}{},
+						5: struct{}{},
+						6: struct{}{},
+					},
+				},
+			},
+			tc.ContainersOfContainers{
+				ListOfSets: []map[int32]struct{}{
+					{
+						1:  struct{}{},
+						2:  struct{}{},
+						30: struct{}{},
+					},
+					{
+						40: struct{}{},
+						50: struct{}{},
+						60: struct{}{},
+					},
+				},
+			},
+		},
+		{
+			"ListOfMaps",
+			tc.ContainersOfContainers{
+				ListOfMaps: []map[int32]int32{
+					{
+						1: 100,
+						2: 200,
+						3: 300,
+					},
+					{
+						4: 400,
+						5: 500,
+						6: 600,
+					},
+				},
+			},
+			tc.ContainersOfContainers{
+				ListOfMaps: []map[int32]int32{
+					{
+						1: 100,
+						2: 200,
+						3: 300,
+					},
+					{
+						4: 400,
+						5: 500000,
+						6: 600,
+					},
+				},
+			},
+		},
+		{
+			"SetOfSets",
+			tc.ContainersOfContainers{
+				SetOfSets: []map[string]struct{}{
+					{
+						"1": struct{}{},
+						"2": struct{}{},
+						"3": struct{}{},
+					},
+					{
+						"4": struct{}{},
+						"5": struct{}{},
+						"6": struct{}{},
+					},
+				},
+			},
+			tc.ContainersOfContainers{
+				SetOfSets: []map[string]struct{}{
+					{
+						"1": struct{}{},
+						"2": struct{}{},
+						"3": struct{}{},
+					},
+					{
+						"4": struct{}{},
+						"5": struct{}{},
+					},
+				},
+			},
+		},
+		{
+			"SetOfLists",
+			tc.ContainersOfContainers{
+				SetOfLists: [][]string{
+					{"1", "2", "3"},
+					{"4", "5", "6"},
+				},
+			},
+			tc.ContainersOfContainers{
+				SetOfLists: [][]string{
+					{"1", "2", "3"},
+					{"4", "500", "6"},
+				},
+			},
+		},
+		{
+			"SetOfMaps",
+			tc.ContainersOfContainers{
+				SetOfMaps: []map[string]string{
+					{
+						"1": "one",
+						"2": "two",
+						"3": "three",
+					},
+					{
+						"4": "four",
+						"5": "five",
+						"6": "six",
+					},
+				},
+			},
+			tc.ContainersOfContainers{
+				SetOfMaps: []map[string]string{
+					{
+						"1": "one",
+						"2": "two",
+						"3": "three",
+					},
+					{
+						"4": "four",
+						"5": "fiftyfive",
+						"6": "six",
+					},
+				},
+			},
+		},
+		{
+			"MapOfMapToInt",
+			tc.ContainersOfContainers{
+				MapOfMapToInt: []struct {
+					Key   map[string]int32
+					Value int64
+				}{
+					{
+						Key:   map[string]int32{"1": 1, "2": 2, "3": 3},
+						Value: 123,
+					},
+					{
+						Key:   map[string]int32{"4": 4, "5": 5, "6": 6},
+						Value: 456,
+					},
+				},
+			},
+			tc.ContainersOfContainers{
+				MapOfMapToInt: []struct {
+					Key   map[string]int32
+					Value int64
+				}{
+					{
+						Key:   map[string]int32{"1": 1, "2": 2, "3": 3},
+						Value: 123,
+					},
+					{
+						Key:   map[string]int32{"4": 4, "55": 5, "6": 6},
+						Value: 456,
+					},
+				},
+			},
+		},
+		{
+			"MapOfListToSet",
+			tc.ContainersOfContainers{
+				MapOfListToSet: []struct {
+					Key   []int32
+					Value map[int64]struct{}
+				}{
+					{
+						Key: []int32{1, 2, 3},
+						Value: map[int64]struct{}{
+							1: {},
+							2: {},
+							3: {},
+						},
+					},
+					{
+						Key: []int32{4, 5, 6},
+						Value: map[int64]struct{}{
+							4: {},
+							5: {},
+							6: {},
+						},
+					},
+				},
+			},
+			tc.ContainersOfContainers{
+				MapOfListToSet: []struct {
+					Key   []int32
+					Value map[int64]struct{}
+				}{
+					{
+						Key: []int32{1, 2, 3},
+						Value: map[int64]struct{}{
+							1: {},
+							2: {},
+							3: {},
+						},
+					},
+					{
+						Key: []int32{4, 5, 6},
+						Value: map[int64]struct{}{
+							404: {},
+							5:   {},
+							6:   {},
+						},
+					},
+				},
+			},
+		},
+		{
+			"MapOfSetToListOfDouble",
+			tc.ContainersOfContainers{
+				MapOfSetToListOfDouble: []struct {
+					Key   map[int32]struct{}
+					Value []float64
+				}{
+					{
+						Key: map[int32]struct{}{
+							1: {},
+							2: {},
+							3: {},
+						},
+						Value: []float64{1.0, 2.0, 3.0},
+					},
+					{
+						Key: map[int32]struct{}{
+							4: {},
+							5: {},
+							6: {},
+						},
+						Value: []float64{4.0, 5.0, 6.0},
+					},
+				},
+			},
+			tc.ContainersOfContainers{
+				MapOfSetToListOfDouble: []struct {
+					Key   map[int32]struct{}
+					Value []float64
+				}{
+					{
+						Key: map[int32]struct{}{
+							1: {},
+							2: {},
+							3: {},
+						},
+						Value: []float64{1.0, 3.0},
+					},
+					{
+						Key: map[int32]struct{}{
+							4: {},
+							5: {},
+							6: {},
+						},
+						Value: []float64{4.0, 5.0, 6.0},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
 		assert.True(t, tt.x.Equals(&tt.x), tt.desc)
 		assert.False(t, tt.x.Equals(&tt.y), tt.desc)
 	}
