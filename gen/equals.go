@@ -62,7 +62,7 @@ func (e *equalsGenerator) Equals(g Generator, spec compile.TypeSpec, lhs, rhs st
 	}
 }
 
-// EqualsPtr is the same as Equals expect `lhs` and `rhs` are expected to be a
+// EqualsPtr is the same as Equals except `lhs` and `rhs` are expected to be a
 // reference to a value of the given type.
 func (e *equalsGenerator) EqualsPtr(g Generator, spec compile.TypeSpec, lhs, rhs string) (string, error) {
 	if !isPrimitiveType(spec) {
@@ -84,7 +84,7 @@ func (e *equalsGenerator) EqualsPtr(g Generator, spec compile.TypeSpec, lhs, rhs
 			<$lhs := newVar "lhs">
 			<$rhs := newVar "rhs">
 			func <.Name>(<$lhs>, <$rhs> *<$type>) bool {
-				// Make sure that both the pointers are non nil.
+				// Make sure that both pointers are non nil.
 				<$x := newVar "x">
 				<$y := newVar "y">
 				if <$lhs> != nil && <$rhs> != nil {
