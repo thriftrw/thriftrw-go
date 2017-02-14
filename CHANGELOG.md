@@ -4,6 +4,7 @@ Releases
 v1.1.0 (unreleased)
 -------------------
 
+-   `Equals()` methods are now generated for all custom types.
 -   Added flags `--no-types`, `--no-constants`, `--no-service-helpers`.
 -   Plugins: Fail code generation if communication with a plugin fails to
     disconnect properly.
