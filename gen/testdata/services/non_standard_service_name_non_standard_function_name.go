@@ -36,6 +36,10 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) String() string {
 	return fmt.Sprintf("NonStandardServiceName_NonStandardFunctionName_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (v *NonStandardServiceName_NonStandardFunctionName_Args) Equals(rhs *NonStandardServiceName_NonStandardFunctionName_Args) bool {
+	return true
+}
+
 func (v *NonStandardServiceName_NonStandardFunctionName_Args) MethodName() string {
 	return "non_standard_function_name"
 }
@@ -97,6 +101,10 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) String() string 
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("NonStandardServiceName_NonStandardFunctionName_Result{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *NonStandardServiceName_NonStandardFunctionName_Result) Equals(rhs *NonStandardServiceName_NonStandardFunctionName_Result) bool {
+	return true
 }
 
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) MethodName() string {

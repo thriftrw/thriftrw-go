@@ -284,6 +284,81 @@ func (v *ArbitraryValue) String() string {
 	return fmt.Sprintf("ArbitraryValue{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _bool_EqualsPtr(lhs, rhs *bool) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func _i64_EqualsPtr(lhs, rhs *int64) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func _string_EqualsPtr(lhs, rhs *string) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func _List_ArbitraryValue_Equals(lhs, rhs []*ArbitraryValue) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !lv.Equals(rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_String_ArbitraryValue_EqualsHashable(lhs, rhs map[string]*ArbitraryValue) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !lv.Equals(rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
+	if !_bool_EqualsPtr(v.BoolValue, rhs.BoolValue) {
+		return false
+	}
+	if !_i64_EqualsPtr(v.Int64Value, rhs.Int64Value) {
+		return false
+	}
+	if !_string_EqualsPtr(v.StringValue, rhs.StringValue) {
+		return false
+	}
+	if !((v.ListValue == nil && rhs.ListValue == nil) || (v.ListValue != nil && rhs.ListValue != nil && _List_ArbitraryValue_Equals(v.ListValue, rhs.ListValue))) {
+		return false
+	}
+	if !((v.MapValue == nil && rhs.MapValue == nil) || (v.MapValue != nil && rhs.MapValue != nil && _Map_String_ArbitraryValue_EqualsHashable(v.MapValue, rhs.MapValue))) {
+		return false
+	}
+	return true
+}
+
 type Document struct {
 	Pdf       typedefs.PDF `json:"pdf"`
 	PlainText *string      `json:"plainText,omitempty"`
@@ -376,6 +451,16 @@ func (v *Document) String() string {
 	return fmt.Sprintf("Document{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (v *Document) Equals(rhs *Document) bool {
+	if !((v.Pdf == nil && rhs.Pdf == nil) || (v.Pdf != nil && rhs.Pdf != nil && v.Pdf.Equals(rhs.Pdf))) {
+		return false
+	}
+	if !_string_EqualsPtr(v.PlainText, rhs.PlainText) {
+		return false
+	}
+	return true
+}
+
 type EmptyUnion struct{}
 
 func (v *EmptyUnion) ToWire() (wire.Value, error) {
@@ -401,4 +486,8 @@ func (v *EmptyUnion) String() string {
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("EmptyUnion{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
+	return true
 }

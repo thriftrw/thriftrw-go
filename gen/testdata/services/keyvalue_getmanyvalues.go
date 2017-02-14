@@ -107,6 +107,26 @@ func (v *KeyValue_GetManyValues_Args) String() string {
 	return fmt.Sprintf("KeyValue_GetManyValues_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _List_Key_Equals(lhs, rhs []Key) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) bool {
+	if !((v.Range == nil && rhs.Range == nil) || (v.Range != nil && rhs.Range != nil && _List_Key_Equals(v.Range, rhs.Range))) {
+		return false
+	}
+	return true
+}
+
 func (v *KeyValue_GetManyValues_Args) MethodName() string {
 	return "getManyValues"
 }
@@ -296,6 +316,29 @@ func (v *KeyValue_GetManyValues_Result) String() string {
 		i++
 	}
 	return fmt.Sprintf("KeyValue_GetManyValues_Result{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _List_ArbitraryValue_Equals(lhs, rhs []*unions.ArbitraryValue) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !lv.Equals(rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Result) bool {
+	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && _List_ArbitraryValue_Equals(v.Success, rhs.Success))) {
+		return false
+	}
+	if !((v.DoesNotExist == nil && rhs.DoesNotExist == nil) || (v.DoesNotExist != nil && rhs.DoesNotExist != nil && v.DoesNotExist.Equals(rhs.DoesNotExist))) {
+		return false
+	}
+	return true
 }
 
 func (v *KeyValue_GetManyValues_Result) MethodName() string {

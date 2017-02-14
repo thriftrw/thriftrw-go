@@ -111,6 +111,11 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			return fmt.Sprintf("<$enumName>(%d)", <$w>)
 		}
 
+		<$rhs := newVar "rhs">
+		func (<$v> <$enumName>) Equals(<$rhs> <$enumName>) bool {
+			return <$v> == <$rhs>
+		}
+
 		func (<$v> <$enumName>) MarshalJSON() ([]byte, error) {
 			<if len .Spec.Items>
 				switch int32(<$v>) {

@@ -147,3 +147,46 @@ func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, err
 
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
+
+// Equals generates a function to compare lists of the given type
+//
+// 	func $name(lhs, rhs $listType) bool {
+// 		...
+// 	}
+//
+// And returns its name.
+func (l *listGenerator) Equals(g Generator, spec *compile.ListSpec) (string, error) {
+	name := "_" + valueName(spec) + "_Equals"
+
+	err := g.EnsureDeclared(
+		`
+			<$listType := typeReference .Spec>
+
+			<$lhs := newVar "lhs">
+			<$rhs := newVar "rhs">
+			func <.Name>(<$lhs>, <$rhs> <$listType>) bool {
+				if len(<$lhs>) != len(<$rhs>) {
+					return false
+				}
+
+				<$i := newVar "i">
+				<$lv := newVar "lv">
+				<$rv := newVar "rv">
+				for <$i>, <$lv> := range <$lhs> {
+					<$rv> := <$rhs>[<$i>]
+					if !<equals .Spec.ValueSpec $lv $rv> {
+						return false
+					}
+				}
+
+				return true
+			}
+		`,
+		struct {
+			Name string
+			Spec *compile.ListSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}

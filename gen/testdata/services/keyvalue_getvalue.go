@@ -65,6 +65,13 @@ func (v *KeyValue_GetValue_Args) String() string {
 	return fmt.Sprintf("KeyValue_GetValue_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (v *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
+	if !_Key_EqualsPtr(v.Key, rhs.Key) {
+		return false
+	}
+	return true
+}
+
 func (v *KeyValue_GetValue_Args) MethodName() string {
 	return "getValue"
 }
@@ -201,6 +208,16 @@ func (v *KeyValue_GetValue_Result) String() string {
 		i++
 	}
 	return fmt.Sprintf("KeyValue_GetValue_Result{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
+	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
+		return false
+	}
+	if !((v.DoesNotExist == nil && rhs.DoesNotExist == nil) || (v.DoesNotExist != nil && rhs.DoesNotExist != nil && v.DoesNotExist.Equals(rhs.DoesNotExist))) {
+		return false
+	}
+	return true
 }
 
 func (v *KeyValue_GetValue_Result) MethodName() string {

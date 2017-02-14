@@ -190,6 +190,111 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+// Equals generates a function to compare maps of the given type
+//
+// 	func $name(lhs, rhs $mapType) bool {
+// 		...
+// 	}
+//
+// And returns its name.
+func (m *mapGenerator) Equals(g Generator, spec *compile.MapSpec) (string, error) {
+	if !isHashable(spec.KeySpec) {
+		return m.equalsUnhashable(g, spec)
+	}
+
+	name := "_" + valueName(spec) + "_EqualsHashable"
+	err := g.EnsureDeclared(
+		`
+			<$mapType := typeReference .Spec>
+
+			<$lhs := newVar "lhs">
+			<$rhs := newVar "rhs">
+			func <.Name>(<$lhs>, <$rhs> <$mapType>) bool {
+				if len(<$lhs>) != len(<$rhs>) {
+					return false
+				}
+
+				<$lk := newVar "lk">
+				<$lv := newVar "lv">
+				<$rv := newVar "rv">
+				<$ok := newVar "ok">
+				for <$lk>, <$lv> := range <$lhs> {
+					<$rv>, <$ok> := <$rhs>[<$lk>]
+					if !<$ok> {
+						return false
+					}
+					if !<equals .Spec.ValueSpec $lv $rv> {
+						return false
+					}
+				}
+				return true
+			}
+		`,
+		struct {
+			Name string
+			Spec *compile.MapSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
+func (m *mapGenerator) equalsUnhashable(g Generator, spec *compile.MapSpec) (string, error) {
+	name := "_" + valueName(spec) + "_EqualsUnhashable"
+
+	err := g.EnsureDeclared(
+		`
+			<$mapType := typeReference .Spec>
+
+			<$lhs := newVar "lhs">
+			<$rhs := newVar "rhs">
+			func <.Name>(<$lhs>, <$rhs> <$mapType>) bool {
+				if len(<$lhs>) != len(<$rhs>) {
+					return false
+				}
+
+				<$i := newVar "i">
+				<$j := newVar "j">
+				<$lk := newVar "lk">
+				<$lv := newVar "lv">
+				<$rk := newVar "rk">
+				<$rv := newVar "rv">
+				<$ok := newVar "ok">
+				for _, <$i> := range <$lhs> {
+					<$lk> := <$i>.Key
+					<$lv> := <$i>.Value
+					<$ok> := false
+					for _, <$j> := range <$rhs> {
+						<$rk> := <$j>.Key
+						<$rv> := <$j>.Value
+						if !<equals .Spec.KeySpec $lk $rk> {
+							continue
+						}
+
+						if !<equals .Spec.ValueSpec $lv $rv> {
+							// Caveat: Behavior is undefined if there are multiple entries with the same key.
+							return false
+						}
+						<$ok> = true
+						break
+					}
+
+					if !<$ok> {
+						return false
+					}
+				}
+				return true
+			}
+		`,
+		struct {
+			Name string
+			Spec *compile.MapSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
 func valueName(spec compile.TypeSpec) string {
 	switch s := spec.(type) {
 	case *compile.MapSpec:

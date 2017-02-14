@@ -94,6 +94,16 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 				return err
 			<end>
 		}
+
+		<$lhs := newVar "lhs">
+		<$rhs := newVar "rhs">
+		func (<$lhs> <$typedefType>) Equals(<$rhs> <$typedefType>) bool {
+			<if isStructType .>
+				return (<typeReference .Target>)(<$lhs>).Equals((<typeReference .Target>)(<$rhs>))
+			<else>
+				return <equals .Target $lhs $rhs>
+			<end>
+		}
 		`,
 		spec,
 	)

@@ -32,6 +32,10 @@ func (v *LittlePotatoe) FromWire(w wire.Value) error {
 	return err
 }
 
+func (lhs LittlePotatoe) Equals(rhs LittlePotatoe) bool {
+	return (lhs == rhs)
+}
+
 type MyEnum int32
 
 const (
@@ -66,6 +70,10 @@ func (v MyEnum) String() string {
 		return "foo_bar"
 	}
 	return fmt.Sprintf("MyEnum(%d)", w)
+}
+
+func (v MyEnum) Equals(rhs MyEnum) bool {
+	return v == rhs
 }
 
 func (v MyEnum) MarshalJSON() ([]byte, error) {
@@ -368,6 +376,60 @@ func (v *PrimitiveContainers) String() string {
 	return fmt.Sprintf("PrimitiveContainers{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _List_String_Equals(lhs, rhs []string) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _Set_String_Equals(lhs, rhs map[string]struct{}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for x := range rhs {
+		if _, ok := lhs[x]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func _Map_String_String_EqualsHashable(lhs, rhs map[string]string) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
+	if !((v.A == nil && rhs.A == nil) || (v.A != nil && rhs.A != nil && _List_String_Equals(v.A, rhs.A))) {
+		return false
+	}
+	if !((v.B == nil && rhs.B == nil) || (v.B != nil && rhs.B != nil && _Set_String_Equals(v.B, rhs.B))) {
+		return false
+	}
+	if !((v.C == nil && rhs.C == nil) || (v.C != nil && rhs.C != nil && _Map_String_String_EqualsHashable(v.C, rhs.C))) {
+		return false
+	}
+	return true
+}
+
 type StructCollision struct {
 	CollisionField  bool   `json:"collisionField"`
 	CollisionField2 string `json:"collision_field"`
@@ -439,6 +501,16 @@ func (v *StructCollision) String() string {
 	fields[i] = fmt.Sprintf("CollisionField2: %v", v.CollisionField2)
 	i++
 	return fmt.Sprintf("StructCollision{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *StructCollision) Equals(rhs *StructCollision) bool {
+	if !(v.CollisionField == rhs.CollisionField) {
+		return false
+	}
+	if !(v.CollisionField2 == rhs.CollisionField2) {
+		return false
+	}
+	return true
 }
 
 type UnionCollision struct {
@@ -529,6 +601,34 @@ func (v *UnionCollision) String() string {
 	return fmt.Sprintf("UnionCollision{%v}", strings.Join(fields[:i], ", "))
 }
 
+func _bool_EqualsPtr(lhs, rhs *bool) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func _string_EqualsPtr(lhs, rhs *string) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
+	if !_bool_EqualsPtr(v.CollisionField, rhs.CollisionField) {
+		return false
+	}
+	if !_string_EqualsPtr(v.CollisionField2, rhs.CollisionField2) {
+		return false
+	}
+	return true
+}
+
 type WithDefault struct {
 	Pouet *StructCollision2 `json:"pouet,omitempty"`
 }
@@ -592,6 +692,13 @@ func (v *WithDefault) String() string {
 	return fmt.Sprintf("WithDefault{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (v *WithDefault) Equals(rhs *WithDefault) bool {
+	if !((v.Pouet == nil && rhs.Pouet == nil) || (v.Pouet != nil && rhs.Pouet != nil && v.Pouet.Equals(rhs.Pouet))) {
+		return false
+	}
+	return true
+}
+
 type LittlePotatoe2 float64
 
 func (v LittlePotatoe2) ToWire() (wire.Value, error) {
@@ -608,6 +715,10 @@ func (v *LittlePotatoe2) FromWire(w wire.Value) error {
 	x, err := w.GetDouble(), error(nil)
 	*v = (LittlePotatoe2)(x)
 	return err
+}
+
+func (lhs LittlePotatoe2) Equals(rhs LittlePotatoe2) bool {
+	return (lhs == rhs)
 }
 
 type MyEnum2 int32
@@ -638,6 +749,10 @@ func (v MyEnum2) String() string {
 		return "Z"
 	}
 	return fmt.Sprintf("MyEnum2(%d)", w)
+}
+
+func (v MyEnum2) Equals(rhs MyEnum2) bool {
+	return v == rhs
 }
 
 func (v MyEnum2) MarshalJSON() ([]byte, error) {
@@ -765,6 +880,16 @@ func (v *StructCollision2) String() string {
 	return fmt.Sprintf("StructCollision2{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
+	if !(v.CollisionField == rhs.CollisionField) {
+		return false
+	}
+	if !(v.CollisionField2 == rhs.CollisionField2) {
+		return false
+	}
+	return true
+}
+
 type UnionCollision2 struct {
 	CollisionField  *bool   `json:"collisionField,omitempty"`
 	CollisionField2 *string `json:"collision_field,omitempty"`
@@ -851,4 +976,14 @@ func (v *UnionCollision2) String() string {
 		i++
 	}
 	return fmt.Sprintf("UnionCollision2{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
+	if !_bool_EqualsPtr(v.CollisionField, rhs.CollisionField) {
+		return false
+	}
+	if !_string_EqualsPtr(v.CollisionField2, rhs.CollisionField2) {
+		return false
+	}
+	return true
 }

@@ -150,3 +150,64 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
+
+// Equals generates a function to compare sets of the given type
+//
+// func $name(lhs, rhs $setType) bool {
+//      ...
+// }
+//
+// And returns its name.
+func (s *setGenerator) Equals(g Generator, spec *compile.SetSpec) (string, error) {
+	name := "_" + valueName(spec) + "_Equals"
+
+	err := g.EnsureDeclared(
+		`
+			<$setType := typeReference .Spec>
+
+			<$lhs := newVar "lhs">
+			<$rhs := newVar "rhs">
+			func <.Name>(<$lhs>, <$rhs> <$setType>) bool {
+				if len(<$lhs>) != len(<$rhs>) {
+					return false
+				}
+
+				// if the values in the set are hashable they can be used
+				// as keys in a map.
+				<$o := newVar "o">
+				<$x := newVar "x">
+				<$y := newVar "y">
+				<$ok := newVar "ok">
+				<if isHashable .Spec.ValueSpec>
+					for <$x> := range <$rhs> {
+						if _, <$ok> := <$lhs>[<$x>]; !<$ok> {
+							return false
+						}
+					}
+				<else>
+					// Note if values are not hashable then this is O(n^2) in time complexity.
+					for _, <$x> := range <$lhs> {
+						<$ok> := false
+						for _, <$y> := range <$rhs> {
+							if <equals .Spec.ValueSpec $x $y> {
+								<$ok> = true
+								break
+							}
+						}
+						if !<$ok> {
+							return false
+						}
+					}
+				<end>
+
+				return true
+			}
+		`,
+		struct {
+			Name string
+			Spec *compile.SetSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}

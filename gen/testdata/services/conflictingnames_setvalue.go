@@ -66,6 +66,13 @@ func (v *ConflictingNames_SetValue_Args) String() string {
 	return fmt.Sprintf("ConflictingNames_SetValue_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+func (v *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_Args) bool {
+	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
+		return false
+	}
+	return true
+}
+
 func (v *ConflictingNames_SetValue_Args) MethodName() string {
 	return "setValue"
 }
@@ -127,6 +134,10 @@ func (v *ConflictingNames_SetValue_Result) String() string {
 	var fields [0]string
 	i := 0
 	return fmt.Sprintf("ConflictingNames_SetValue_Result{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *ConflictingNames_SetValue_Result) Equals(rhs *ConflictingNames_SetValue_Result) bool {
+	return true
 }
 
 func (v *ConflictingNames_SetValue_Result) MethodName() string {

@@ -30,6 +30,7 @@ var reservedIdentifiers = map[string]struct{}{
 	"ToWire":   {},
 	"FromWire": {},
 	"String":   {},
+	"Equals":   {},
 }
 
 // fieldGroupGenerator is responsible for generating code for FieldGroups.
@@ -71,6 +72,10 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 	}
 
 	if err := f.String(g); err != nil {
+		return err
+	}
+
+	if err := f.Equals(g); err != nil {
 		return err
 	}
 
@@ -352,7 +357,33 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			<end>
 
 			return <$fmt>.Sprintf(
-                "<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
+				"<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
+		}
+		`, f)
+}
+
+func (f fieldGroupGenerator) Equals(g Generator) error {
+	return g.DeclareFromTemplate(
+		`
+		<$v := newVar "v">
+		<$rhs := newVar "rhs">
+		func (<$v> *<.Name>) Equals(<$rhs> *<.Name>) bool {
+			<range .Fields>
+				<$fname := goName .>
+				<$lhsField := printf "%s.%s" $v $fname>
+				<$rhsField := printf "%s.%s" $rhs $fname>
+
+				<if .Required>
+					if !<equals .Type $lhsField $rhsField> {
+						return false
+					}
+				<else>
+					if !<equalsPtr .Type $lhsField $rhsField> {
+						return false
+					}
+				<end>
+			<end>
+			return true
 		}
 		`, f)
 }
