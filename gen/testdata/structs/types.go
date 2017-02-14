@@ -843,9 +843,7 @@ func (v *List) FromWire(w wire.Value) error {
 }
 
 func (lhs *List) Equals(rhs *List) bool {
-	l := (*Node)(lhs)
-	r := (*Node)(rhs)
-	return l.Equals(r)
+	return (*Node)(lhs).Equals((*Node)(rhs))
 }
 
 type Node struct {

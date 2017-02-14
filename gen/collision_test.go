@@ -466,8 +466,10 @@ func TestWithDefaultEquals(t *testing.T) {
 	}{
 		{a, a, true},
 		{b, b, true},
+		{c, c, true},
 		{a, b, false},
 		{a, c, false},
+		{b, c, false},
 	}
 
 	for _, tt := range tests {
