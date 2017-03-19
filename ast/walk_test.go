@@ -737,6 +737,60 @@ func TestWalk(t *testing.T) {
 			}
 			return
 		}(),
+		{
+			desc: "empty struct",
+			node: &ast.Struct{Name: "Foo"},
+			visits: []visit{
+				{node: &ast.Struct{Name: "Foo"}},
+			},
+		},
+		func() (tt test) {
+			tt.desc = "struct"
+
+			f1Type := ast.TypeReference{Name: "Bar"}
+			f2Type := ast.ListType{ValueType: ast.BaseType{ID: ast.StringTypeID}}
+
+			f1 := &ast.Field{ID: 1, Name: "bar", Type: f1Type}
+			f2 := &ast.Field{ID: 2, Name: "baz", Type: f2Type}
+
+			s := &ast.Struct{
+				Name:   "Foo",
+				Fields: []*ast.Field{f1, f2},
+				Annotations: []*ast.Annotation{
+					{Name: "a", Value: "b"},
+					{Name: "c", Value: "d"},
+				},
+			}
+
+			tt.node = s
+			tt.visits = []visit{
+				{node: s},
+
+				{node: f1, parent: s, ancestors: []ast.Node{s}},
+				{node: f1Type, parent: f1, ancestors: []ast.Node{f1, s}},
+
+				{node: f2, parent: s, ancestors: []ast.Node{s}},
+				{node: f2Type, parent: f2, ancestors: []ast.Node{f2, s}},
+				{
+					node:      ast.BaseType{ID: ast.StringTypeID},
+					parent:    f2Type,
+					ancestors: []ast.Node{f2Type, f2, s},
+				},
+
+				{
+					node:      &ast.Annotation{Name: "a", Value: "b"},
+					parent:    s,
+					ancestors: []ast.Node{s},
+				},
+				{
+					node:      &ast.Annotation{Name: "c", Value: "d"},
+					parent:    s,
+					ancestors: []ast.Node{s},
+				},
+			}
+
+			return
+		}(),
 	}
 
 	for _, tt := range tests {
