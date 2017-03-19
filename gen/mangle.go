@@ -65,14 +65,13 @@ func (m *mangler) MangleType(spec compile.TypeSpec) string {
 		m.names[thriftFile] = namesForFile
 	}
 
-	name, ok := namesForFile[spec.ThriftName()]
-	if ok {
+	if name, ok := namesForFile[spec.ThriftName()]; ok {
 		return name
 	}
 
 	i := 0
 	baseName := goCase(spec.ThriftName())
-	name = baseName
+	name := baseName
 	for _, taken := m.taken[name]; taken; {
 		i++
 		name = fmt.Sprintf("%s_%d", baseName, i)
