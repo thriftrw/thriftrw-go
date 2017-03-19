@@ -791,6 +791,13 @@ func TestWalk(t *testing.T) {
 
 			return
 		}(),
+		{
+			desc: "type reference",
+			node: ast.TypeReference{Name: "foo"},
+			visits: []visit{
+				{node: ast.TypeReference{Name: "foo"}},
+			},
+		},
 	}
 
 	for _, tt := range tests {
