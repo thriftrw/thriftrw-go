@@ -610,6 +610,13 @@ func TestWalk(t *testing.T) {
 			}
 			return
 		}(),
+		{
+			desc: "namespace",
+			node: &ast.Namespace{Scope: "go", Name: "foo"},
+			visits: []visit{
+				{node: &ast.Namespace{Scope: "go", Name: "foo"}},
+			},
+		},
 	}
 
 	for _, tt := range tests {
