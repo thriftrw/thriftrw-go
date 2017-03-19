@@ -342,6 +342,114 @@ func TestWalk(t *testing.T) {
 			}
 			return
 		}(),
+		{
+			desc: "function with nothing",
+			node: &ast.Function{Name: "noop"},
+			visits: []visit{
+				{node: &ast.Function{Name: "noop"}},
+			},
+		},
+		func() (tt test) {
+			tt.desc = "function with everything"
+
+			keyType := ast.BaseType{
+				ID: ast.StringTypeID,
+				Annotations: []*ast.Annotation{
+					{Name: "validator", Value: "alphanumeric"},
+				},
+			}
+			key := &ast.Field{
+				ID:   1,
+				Name: "key",
+				Type: keyType,
+				Annotations: []*ast.Annotation{
+					{Name: "http.param", Value: "key"},
+				},
+			}
+
+			value := &ast.Field{
+				ID:          2,
+				Name:        "value",
+				Type:        ast.TypeReference{Name: "Value"},
+				Annotations: []*ast.Annotation{{Name: "http.body"}},
+			}
+
+			doesNotExist := &ast.Field{
+				ID:   1,
+				Name: "doesNotExist",
+				Type: ast.TypeReference{Name: "DoesNotExistException"},
+				Annotations: []*ast.Annotation{
+					{Name: "http.status", Value: "404"},
+				},
+			}
+
+			function := &ast.Function{
+				Name:       "getAndSet",
+				Parameters: []*ast.Field{key, value},
+				ReturnType: ast.TypeReference{Name: "Value"},
+				Exceptions: []*ast.Field{doesNotExist},
+				Annotations: []*ast.Annotation{
+					{Name: "http.url", Value: "/update/:key"},
+					{Name: "http.method", Value: "POST"},
+				},
+			}
+
+			tt.node = function
+			tt.visits = []visit{
+				{node: function},
+
+				// Return type
+				{
+					node:      ast.TypeReference{Name: "Value"},
+					ancestors: []ast.Node{function},
+				},
+
+				// Key param
+				{node: key, ancestors: []ast.Node{function}},
+				{node: keyType, ancestors: []ast.Node{key, function}},
+				{
+					node:      &ast.Annotation{Name: "validator", Value: "alphanumeric"},
+					ancestors: []ast.Node{keyType, key, function},
+				},
+				{
+					node:      &ast.Annotation{Name: "http.param", Value: "key"},
+					ancestors: []ast.Node{key, function},
+				},
+
+				// Value param
+				{node: value, ancestors: []ast.Node{function}},
+				{
+					node:      ast.TypeReference{Name: "Value"},
+					ancestors: []ast.Node{value, function},
+				},
+				{
+					node:      &ast.Annotation{Name: "http.body"},
+					ancestors: []ast.Node{value, function},
+				},
+
+				// Exception
+				{node: doesNotExist, ancestors: []ast.Node{function}},
+				{
+					node:      ast.TypeReference{Name: "DoesNotExistException"},
+					ancestors: []ast.Node{doesNotExist, function},
+				},
+				{
+					node:      &ast.Annotation{Name: "http.status", Value: "404"},
+					ancestors: []ast.Node{doesNotExist, function},
+				},
+
+				// Annotations
+				{
+					node:      &ast.Annotation{Name: "http.url", Value: "/update/:key"},
+					ancestors: []ast.Node{function},
+				},
+				{
+					node:      &ast.Annotation{Name: "http.method", Value: "POST"},
+					ancestors: []ast.Node{function},
+				},
+			}
+			return
+		}(),
 	}
 
 	for _, tt := range tests {
