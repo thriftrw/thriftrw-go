@@ -32,6 +32,13 @@ func Walk(v Visitor, n Node) {
 // nodeStack of nodes visited in the order they were visited
 type nodeStack []Node
 
+func (ss nodeStack) Parent() Node {
+	if len(ss) == 0 {
+		return nil
+	}
+	return ss[len(ss)-1]
+}
+
 func (ss nodeStack) Ancestors() []Node {
 	if len(ss) == 0 {
 		return nil

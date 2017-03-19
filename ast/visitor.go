@@ -26,6 +26,10 @@ type Walker interface {
 	// of the current node. The first node in the slice is the immediate
 	// parent of the current node, the node after that its parent, and so on.
 	Ancestors() []Node
+
+	// Parent returns the parent node of the current node or nil if this node
+	// does not have a parent node.
+	Parent() Node
 }
 
 //go:generate mockgen -destination mock_visitor_test.go -package ast -self_package go.uber.org/thriftrw/ast go.uber.org/thriftrw/ast Visitor
