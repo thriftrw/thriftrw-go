@@ -27,6 +27,9 @@ package ast
 // *EnumItem, *Field, *Function, *Program.
 type Node interface {
 	node()
+
+	// Must call the given function on each child node.
+	forEachChild(func(Node))
 }
 
 var _ Node = (*Annotation)(nil)

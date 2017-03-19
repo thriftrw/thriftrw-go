@@ -49,6 +49,11 @@ type Constant struct {
 func (*Constant) node()       {}
 func (*Constant) definition() {}
 
+func (c *Constant) forEachChild(f func(Node)) {
+	f(c.Type)
+	f(c.Value)
+}
+
 // Info for Constant
 func (c *Constant) Info() DefinitionInfo {
 	return DefinitionInfo{Name: c.Name, Line: c.Line}
@@ -68,6 +73,13 @@ type Typedef struct {
 // Definition implementation for Typedef.
 func (*Typedef) node()       {}
 func (*Typedef) definition() {}
+
+func (t *Typedef) forEachChild(f func(Node)) {
+	f(t.Type)
+	for _, ann := range t.Annotations {
+		f(ann)
+	}
+}
 
 // Info for Typedef.
 func (t *Typedef) Info() DefinitionInfo {
@@ -93,6 +105,16 @@ type Enum struct {
 func (*Enum) node()       {}
 func (*Enum) definition() {}
 
+func (e *Enum) forEachChild(f func(Node)) {
+	for _, item := range e.Items {
+		f(item)
+	}
+
+	for _, ann := range e.Annotations {
+		f(ann)
+	}
+}
+
 // Info for Enum.
 func (e *Enum) Info() DefinitionInfo {
 	return DefinitionInfo{Name: e.Name, Line: e.Line}
@@ -108,6 +130,12 @@ type EnumItem struct {
 }
 
 func (*EnumItem) node() {}
+
+func (i *EnumItem) forEachChild(f func(Node)) {
+	for _, ann := range i.Annotations {
+		f(ann)
+	}
+}
 
 // StructureType specifies whether a struct-like type is a struct, union, or
 // exception.
@@ -151,6 +179,15 @@ type Struct struct {
 func (*Struct) node()       {}
 func (*Struct) definition() {}
 
+func (s *Struct) forEachChild(f func(Node)) {
+	for _, field := range s.Fields {
+		f(field)
+	}
+	for _, ann := range s.Annotations {
+		f(ann)
+	}
+}
+
 // Info for Struct.
 func (s *Struct) Info() DefinitionInfo {
 	return DefinitionInfo{Name: s.Name, Line: s.Line}
@@ -175,6 +212,15 @@ type Service struct {
 func (*Service) node()       {}
 func (*Service) definition() {}
 
+func (s *Service) forEachChild(f func(Node)) {
+	for _, function := range s.Functions {
+		f(function)
+	}
+	for _, ann := range s.Annotations {
+		f(ann)
+	}
+}
+
 // Info for Service.
 func (s *Service) Info() DefinitionInfo {
 	return DefinitionInfo{Name: s.Name, Line: s.Line}
@@ -197,6 +243,19 @@ type Function struct {
 }
 
 func (*Function) node() {}
+
+func (n *Function) forEachChild(f func(Node)) {
+	f(n.ReturnType)
+	for _, field := range n.Parameters {
+		f(field)
+	}
+	for _, exc := range n.Exceptions {
+		f(exc)
+	}
+	for _, ann := range n.Annotations {
+		f(ann)
+	}
+}
 
 // Requiredness represents whether a field was marked as required or optional,
 // or if the user did not specify either.
@@ -227,6 +286,14 @@ type Field struct {
 }
 
 func (*Field) node() {}
+
+func (n *Field) forEachChild(f func(Node)) {
+	f(n.Type)
+	f(n.Default)
+	for _, ann := range n.Annotations {
+		f(ann)
+	}
+}
 
 // ServiceReference is a reference to another service.
 type ServiceReference struct {

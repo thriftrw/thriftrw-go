@@ -67,6 +67,12 @@ type BaseType struct {
 func (BaseType) node()      {}
 func (BaseType) fieldType() {}
 
+func (bt BaseType) forEachChild(f func(Node)) {
+	for _, ann := range bt.Annotations {
+		f(ann)
+	}
+}
+
 func (bt BaseType) String() string {
 	var name string
 
@@ -110,6 +116,14 @@ type MapType struct {
 func (MapType) node()      {}
 func (MapType) fieldType() {}
 
+func (t MapType) forEachChild(f func(Node)) {
+	f(t.KeyType)
+	f(t.ValueType)
+	for _, ann := range t.Annotations {
+		f(ann)
+	}
+}
+
 func (mt MapType) String() string {
 	return appendAnnotations(
 		fmt.Sprintf("map<%s, %s>", mt.KeyType, mt.ValueType),
@@ -132,6 +146,13 @@ type ListType struct {
 
 func (ListType) node()      {}
 func (ListType) fieldType() {}
+
+func (t ListType) forEachChild(f func(Node)) {
+	f(t.ValueType)
+	for _, ann := range t.Annotations {
+		f(ann)
+	}
+}
 
 func (lt ListType) String() string {
 	return appendAnnotations(
@@ -156,6 +177,13 @@ type SetType struct {
 func (SetType) node()      {}
 func (SetType) fieldType() {}
 
+func (t SetType) forEachChild(f func(Node)) {
+	f(t.ValueType)
+	for _, ann := range t.Annotations {
+		f(ann)
+	}
+}
+
 func (st SetType) String() string {
 	return appendAnnotations(
 		fmt.Sprintf("set<%s>", st.ValueType.String()),
@@ -171,6 +199,8 @@ type TypeReference struct {
 
 func (TypeReference) node()      {}
 func (TypeReference) fieldType() {}
+
+func (TypeReference) forEachChild(func(Node)) {}
 
 func (tr TypeReference) String() string {
 	return tr.Name

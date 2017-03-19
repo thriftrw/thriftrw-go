@@ -27,3 +27,12 @@ type Program struct {
 }
 
 func (*Program) node() {}
+
+func (p *Program) forEachChild(f func(Node)) {
+	for _, h := range p.Headers {
+		f(h)
+	}
+	for _, d := range p.Definitions {
+		f(d)
+	}
+}

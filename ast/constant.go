@@ -36,6 +36,12 @@ func (ConstantReference) node() {}
 func (ConstantMap) node()       {}
 func (ConstantList) node()      {}
 
+func (ConstantBoolean) forEachChild(func(Node))   {}
+func (ConstantInteger) forEachChild(func(Node))   {}
+func (ConstantString) forEachChild(func(Node))    {}
+func (ConstantDouble) forEachChild(func(Node))    {}
+func (ConstantReference) forEachChild(func(Node)) {}
+
 func (ConstantBoolean) constantValue()   {}
 func (ConstantInteger) constantValue()   {}
 func (ConstantString) constantValue()    {}
@@ -43,6 +49,23 @@ func (ConstantDouble) constantValue()    {}
 func (ConstantReference) constantValue() {}
 func (ConstantMap) constantValue()       {}
 func (ConstantList) constantValue()      {}
+
+func (l ConstantList) forEachChild(f func(Node)) {
+	for _, item := range l.Items {
+		f(item)
+	}
+}
+
+func (m ConstantMap) forEachChild(f func(Node)) {
+	for _, item := range m.Items {
+		f(item)
+	}
+}
+
+func (i ConstantMapItem) forEachChild(f func(Node)) {
+	f(i.Key)
+	f(i.Value)
+}
 
 // ConstantBoolean is a boolean value specified in the Thrift file.
 //
