@@ -798,6 +798,60 @@ func TestWalk(t *testing.T) {
 				{node: ast.TypeReference{Name: "foo"}},
 			},
 		},
+		func() (tt test) {
+			tt.desc = "typedef"
+
+			td := &ast.Typedef{
+				Name: "UUID",
+				Type: ast.BaseType{ID: ast.StringTypeID},
+			}
+
+			tt.node = td
+			tt.visits = []visit{
+				{node: td},
+				{
+					node:      ast.BaseType{ID: ast.StringTypeID},
+					parent:    td,
+					ancestors: []ast.Node{td},
+				},
+			}
+
+			return
+		}(),
+		func() (tt test) {
+			tt.desc = "typedef with annotations"
+
+			td := &ast.Typedef{
+				Name: "UUID",
+				Type: ast.BaseType{ID: ast.StringTypeID},
+				Annotations: []*ast.Annotation{
+					{Name: "a", Value: "b"},
+					{Name: "c", Value: "d"},
+				},
+			}
+
+			tt.node = td
+			tt.visits = []visit{
+				{node: td},
+				{
+					node:      ast.BaseType{ID: ast.StringTypeID},
+					parent:    td,
+					ancestors: []ast.Node{td},
+				},
+				{
+					node:      &ast.Annotation{Name: "a", Value: "b"},
+					parent:    td,
+					ancestors: []ast.Node{td},
+				},
+				{
+					node:      &ast.Annotation{Name: "c", Value: "d"},
+					parent:    td,
+					ancestors: []ast.Node{td},
+				},
+			}
+
+			return
+		}(),
 	}
 
 	for _, tt := range tests {
