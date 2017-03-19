@@ -643,6 +643,54 @@ func TestWalk(t *testing.T) {
 
 			return
 		}(),
+		{
+			desc: "empty service",
+			node: &ast.Service{Name: "Foo"},
+			visits: []visit{
+				{node: &ast.Service{Name: "Foo"}},
+			},
+		},
+		func() (tt test) {
+			tt.desc = "basic service"
+
+			f1 := &ast.Function{Name: "noop"}
+
+			f2Param := &ast.Field{ID: 1, Type: ast.BaseType{ID: ast.BinaryTypeID}, Name: "foo"}
+			f2 := &ast.Function{
+				Name:       "set",
+				Parameters: []*ast.Field{f2Param},
+			}
+
+			svc := &ast.Service{
+				Name:      "Foo",
+				Functions: []*ast.Function{f1, f2},
+				Annotations: []*ast.Annotation{
+					{Name: "visibility", Value: "private"},
+				},
+			}
+
+			tt.node = svc
+			tt.visits = []visit{
+				{node: svc},
+
+				{node: f1, parent: svc, ancestors: []ast.Node{svc}},
+
+				{node: f2, parent: svc, ancestors: []ast.Node{svc}},
+				{node: f2Param, parent: f2, ancestors: []ast.Node{f2, svc}},
+				{
+					node:      ast.BaseType{ID: ast.BinaryTypeID},
+					parent:    f2Param,
+					ancestors: []ast.Node{f2Param, f2, svc},
+				},
+
+				{
+					node:      &ast.Annotation{Name: "visibility", Value: "private"},
+					parent:    svc,
+					ancestors: []ast.Node{svc},
+				},
+			}
+			return
+		}(),
 	}
 
 	for _, tt := range tests {
