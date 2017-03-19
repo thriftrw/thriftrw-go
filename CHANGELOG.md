@@ -8,10 +8,10 @@ v1.1.0 (unreleased)
 -   Added flags `--no-types`, `--no-constants`, `--no-service-helpers`.
 -   Plugins: Fail code generation if communication with a plugin fails to
     disconnect properly.
+-   Handle `nil` values in generated `String()` methods.
 -   AST: All type references and complex constant values now record the line
     numbers on which they were specified.
 -   AST: Added a Node interface to unify different AST object types.
--   Handle `nil` values in generated `String()` methods.
 -   AST: Added Walk to traverse the AST using a Visitor.
 
 
