@@ -50,6 +50,10 @@ type walker struct {
 }
 
 func (w walker) Walk(n Node) {
+	if n == nil {
+		return
+	}
+
 	w.v = w.v.Visit(w.s, n)
 	if w.v == nil {
 		return

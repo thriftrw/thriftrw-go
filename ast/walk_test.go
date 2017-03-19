@@ -248,6 +248,100 @@ func TestWalk(t *testing.T) {
 			}
 			return
 		}(),
+		func() (tt test) {
+			tt.desc = "field"
+
+			field := &ast.Field{
+				ID:           42,
+				Name:         "foo",
+				Type:         ast.BaseType{ID: ast.BoolTypeID},
+				Requiredness: ast.Required,
+			}
+
+			tt.node = field
+			tt.visits = []visit{
+				{node: field},
+				{
+					node:      ast.BaseType{ID: ast.BoolTypeID},
+					ancestors: []ast.Node{field},
+				},
+			}
+			return
+		}(),
+		func() (tt test) {
+			tt.desc = "field with default"
+
+			field := &ast.Field{
+				ID:           2,
+				Name:         "bar",
+				Type:         ast.BaseType{ID: ast.StringTypeID},
+				Requiredness: ast.Required,
+				Default:      ast.ConstantString("hi"),
+			}
+
+			tt.node = field
+			tt.visits = []visit{
+				{node: field},
+				{
+					node:      ast.BaseType{ID: ast.StringTypeID},
+					ancestors: []ast.Node{field},
+				},
+				{
+					node:      ast.ConstantString("hi"),
+					ancestors: []ast.Node{field},
+				},
+			}
+			return
+		}(),
+		func() (tt test) {
+			tt.desc = "field with annotations"
+
+			typ := ast.BaseType{
+				ID: ast.StringTypeID,
+				Annotations: []*ast.Annotation{
+					{Name: "k1", Value: "v1"},
+					{Name: "k2", Value: "v2"},
+				},
+			}
+			field := &ast.Field{
+				ID:           2,
+				Name:         "bar",
+				Type:         typ,
+				Requiredness: ast.Required,
+				Default:      ast.ConstantString("hi"),
+				Annotations: []*ast.Annotation{
+					{Name: "a", Value: "b"},
+					{Name: "c", Value: "d"},
+				},
+			}
+
+			tt.node = field
+			tt.visits = []visit{
+				{node: field},
+				{node: typ, ancestors: []ast.Node{field}},
+				{
+					node:      &ast.Annotation{Name: "k1", Value: "v1"},
+					ancestors: []ast.Node{typ, field},
+				},
+				{
+					node:      &ast.Annotation{Name: "k2", Value: "v2"},
+					ancestors: []ast.Node{typ, field},
+				},
+				{
+					node:      ast.ConstantString("hi"),
+					ancestors: []ast.Node{field},
+				},
+				{
+					node:      &ast.Annotation{Name: "a", Value: "b"},
+					ancestors: []ast.Node{field},
+				},
+				{
+					node:      &ast.Annotation{Name: "c", Value: "d"},
+					ancestors: []ast.Node{field},
+				},
+			}
+			return
+		}(),
 	}
 
 	for _, tt := range tests {
