@@ -617,6 +617,32 @@ func TestWalk(t *testing.T) {
 				{node: &ast.Namespace{Scope: "go", Name: "foo"}},
 			},
 		},
+		{
+			desc: "empty program",
+			node: &ast.Program{},
+			visits: []visit{
+				{node: &ast.Program{}},
+			},
+		},
+		func() (tt test) {
+			tt.desc = "program with headers and defs"
+
+			inc := &ast.Include{Path: "foo.thrift"}
+			enum := &ast.Enum{Name: "Foo"}
+			prog := &ast.Program{
+				Headers:     []ast.Header{inc},
+				Definitions: []ast.Definition{enum},
+			}
+
+			tt.node = prog
+			tt.visits = []visit{
+				{node: prog},
+				{node: inc, parent: prog, ancestors: []ast.Node{prog}},
+				{node: enum, parent: prog, ancestors: []ast.Node{prog}},
+			}
+
+			return
+		}(),
 	}
 
 	for _, tt := range tests {
