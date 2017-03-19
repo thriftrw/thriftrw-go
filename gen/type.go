@@ -177,6 +177,14 @@ func typeName(g Generator, spec compile.TypeSpec) (string, error) {
 	}
 }
 
+func equalsFuncName(g Generator, spec compile.TypeSpec) string {
+	return fmt.Sprintf("_%s_Equals", g.MangleType(spec))
+}
+
+func equalsPtrFuncName(g Generator, spec compile.TypeSpec) string {
+	return fmt.Sprintf("_%s_EqualsPtr", g.MangleType(spec))
+}
+
 func readerFuncName(g Generator, spec compile.TypeSpec) string {
 	return fmt.Sprintf("_%s_Read", g.MangleType(spec))
 }

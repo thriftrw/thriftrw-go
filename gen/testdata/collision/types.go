@@ -401,7 +401,7 @@ func _Set_String_Equals(lhs, rhs map[string]struct{}) bool {
 	return true
 }
 
-func _Map_String_String_EqualsHashable(lhs, rhs map[string]string) bool {
+func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -424,7 +424,7 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	if !((v.B == nil && rhs.B == nil) || (v.B != nil && rhs.B != nil && _Set_String_Equals(v.B, rhs.B))) {
 		return false
 	}
-	if !((v.C == nil && rhs.C == nil) || (v.C != nil && rhs.C != nil && _Map_String_String_EqualsHashable(v.C, rhs.C))) {
+	if !((v.C == nil && rhs.C == nil) || (v.C != nil && rhs.C != nil && _Map_String_String_Equals(v.C, rhs.C))) {
 		return false
 	}
 	return true
@@ -601,7 +601,7 @@ func (v *UnionCollision) String() string {
 	return fmt.Sprintf("UnionCollision{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _bool_EqualsPtr(lhs, rhs *bool) bool {
+func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -610,7 +610,7 @@ func _bool_EqualsPtr(lhs, rhs *bool) bool {
 	return lhs == nil && rhs == nil
 }
 
-func _string_EqualsPtr(lhs, rhs *string) bool {
+func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -620,10 +620,10 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 }
 
 func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
-	if !_bool_EqualsPtr(v.CollisionField, rhs.CollisionField) {
+	if !_Bool_EqualsPtr(v.CollisionField, rhs.CollisionField) {
 		return false
 	}
-	if !_string_EqualsPtr(v.CollisionField2, rhs.CollisionField2) {
+	if !_String_EqualsPtr(v.CollisionField2, rhs.CollisionField2) {
 		return false
 	}
 	return true
@@ -979,10 +979,10 @@ func (v *UnionCollision2) String() string {
 }
 
 func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
-	if !_bool_EqualsPtr(v.CollisionField, rhs.CollisionField) {
+	if !_Bool_EqualsPtr(v.CollisionField, rhs.CollisionField) {
 		return false
 	}
-	if !_string_EqualsPtr(v.CollisionField2, rhs.CollisionField2) {
+	if !_String_EqualsPtr(v.CollisionField2, rhs.CollisionField2) {
 		return false
 	}
 	return true

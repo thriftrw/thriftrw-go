@@ -1243,7 +1243,7 @@ func _List_Set_I32_Equals(lhs, rhs []map[int32]struct{}) bool {
 	return true
 }
 
-func _Map_I32_I32_EqualsHashable(lhs, rhs map[int32]int32) bool {
+func _Map_I32_I32_Equals(lhs, rhs map[int32]int32) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -1265,7 +1265,7 @@ func _List_Map_I32_I32_Equals(lhs, rhs []map[int32]int32) bool {
 	}
 	for i, lv := range lhs {
 		rv := rhs[i]
-		if !_Map_I32_I32_EqualsHashable(lv, rv) {
+		if !_Map_I32_I32_Equals(lv, rv) {
 			return false
 		}
 	}
@@ -1335,7 +1335,7 @@ func _Set_List_String_Equals(lhs, rhs [][]string) bool {
 	return true
 }
 
-func _Map_String_String_EqualsHashable(lhs, rhs map[string]string) bool {
+func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -1358,7 +1358,7 @@ func _Set_Map_String_String_Equals(lhs, rhs []map[string]string) bool {
 	for _, x := range lhs {
 		ok := false
 		for _, y := range rhs {
-			if _Map_String_String_EqualsHashable(x, y) {
+			if _Map_String_String_Equals(x, y) {
 				ok = true
 				break
 			}
@@ -1370,7 +1370,7 @@ func _Set_Map_String_String_Equals(lhs, rhs []map[string]string) bool {
 	return true
 }
 
-func _Map_String_I32_EqualsHashable(lhs, rhs map[string]int32) bool {
+func _Map_String_I32_Equals(lhs, rhs map[string]int32) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -1386,7 +1386,7 @@ func _Map_String_I32_EqualsHashable(lhs, rhs map[string]int32) bool {
 	return true
 }
 
-func _Map_Map_String_I32_I64_EqualsUnhashable(lhs, rhs []struct {
+func _Map_Map_String_I32_I64_Equals(lhs, rhs []struct {
 	Key   map[string]int32
 	Value int64
 }) bool {
@@ -1400,7 +1400,7 @@ func _Map_Map_String_I32_I64_EqualsUnhashable(lhs, rhs []struct {
 		for _, j := range rhs {
 			rk := j.Key
 			rv := j.Value
-			if !_Map_String_I32_EqualsHashable(lk, rk) {
+			if !_Map_String_I32_Equals(lk, rk) {
 				continue
 			}
 			if !(lv == rv) {
@@ -1428,7 +1428,7 @@ func _Set_I64_Equals(lhs, rhs map[int64]struct{}) bool {
 	return true
 }
 
-func _Map_List_I32_Set_I64_EqualsUnhashable(lhs, rhs []struct {
+func _Map_List_I32_Set_I64_Equals(lhs, rhs []struct {
 	Key   []int32
 	Value map[int64]struct{}
 }) bool {
@@ -1471,7 +1471,7 @@ func _List_Double_Equals(lhs, rhs []float64) bool {
 	return true
 }
 
-func _Map_Set_I32_List_Double_EqualsUnhashable(lhs, rhs []struct {
+func _Map_Set_I32_List_Double_Equals(lhs, rhs []struct {
 	Key   map[int32]struct{}
 	Value []float64
 }) bool {
@@ -1520,13 +1520,13 @@ func (v *ContainersOfContainers) Equals(rhs *ContainersOfContainers) bool {
 	if !((v.SetOfMaps == nil && rhs.SetOfMaps == nil) || (v.SetOfMaps != nil && rhs.SetOfMaps != nil && _Set_Map_String_String_Equals(v.SetOfMaps, rhs.SetOfMaps))) {
 		return false
 	}
-	if !((v.MapOfMapToInt == nil && rhs.MapOfMapToInt == nil) || (v.MapOfMapToInt != nil && rhs.MapOfMapToInt != nil && _Map_Map_String_I32_I64_EqualsUnhashable(v.MapOfMapToInt, rhs.MapOfMapToInt))) {
+	if !((v.MapOfMapToInt == nil && rhs.MapOfMapToInt == nil) || (v.MapOfMapToInt != nil && rhs.MapOfMapToInt != nil && _Map_Map_String_I32_I64_Equals(v.MapOfMapToInt, rhs.MapOfMapToInt))) {
 		return false
 	}
-	if !((v.MapOfListToSet == nil && rhs.MapOfListToSet == nil) || (v.MapOfListToSet != nil && rhs.MapOfListToSet != nil && _Map_List_I32_Set_I64_EqualsUnhashable(v.MapOfListToSet, rhs.MapOfListToSet))) {
+	if !((v.MapOfListToSet == nil && rhs.MapOfListToSet == nil) || (v.MapOfListToSet != nil && rhs.MapOfListToSet != nil && _Map_List_I32_Set_I64_Equals(v.MapOfListToSet, rhs.MapOfListToSet))) {
 		return false
 	}
-	if !((v.MapOfSetToListOfDouble == nil && rhs.MapOfSetToListOfDouble == nil) || (v.MapOfSetToListOfDouble != nil && rhs.MapOfSetToListOfDouble != nil && _Map_Set_I32_List_Double_EqualsUnhashable(v.MapOfSetToListOfDouble, rhs.MapOfSetToListOfDouble))) {
+	if !((v.MapOfSetToListOfDouble == nil && rhs.MapOfSetToListOfDouble == nil) || (v.MapOfSetToListOfDouble != nil && rhs.MapOfSetToListOfDouble != nil && _Map_Set_I32_List_Double_Equals(v.MapOfSetToListOfDouble, rhs.MapOfSetToListOfDouble))) {
 		return false
 	}
 	return true
@@ -1813,7 +1813,7 @@ func _Set_EnumWithValues_Equals(lhs, rhs map[enums.EnumWithValues]struct{}) bool
 	return true
 }
 
-func _Map_EnumWithDuplicateValues_I32_EqualsHashable(lhs, rhs map[enums.EnumWithDuplicateValues]int32) bool {
+func _Map_EnumWithDuplicateValues_I32_Equals(lhs, rhs map[enums.EnumWithDuplicateValues]int32) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -1836,7 +1836,7 @@ func (v *EnumContainers) Equals(rhs *EnumContainers) bool {
 	if !((v.SetOfEnums == nil && rhs.SetOfEnums == nil) || (v.SetOfEnums != nil && rhs.SetOfEnums != nil && _Set_EnumWithValues_Equals(v.SetOfEnums, rhs.SetOfEnums))) {
 		return false
 	}
-	if !((v.MapOfEnums == nil && rhs.MapOfEnums == nil) || (v.MapOfEnums != nil && rhs.MapOfEnums != nil && _Map_EnumWithDuplicateValues_I32_EqualsHashable(v.MapOfEnums, rhs.MapOfEnums))) {
+	if !((v.MapOfEnums == nil && rhs.MapOfEnums == nil) || (v.MapOfEnums != nil && rhs.MapOfEnums != nil && _Map_EnumWithDuplicateValues_I32_Equals(v.MapOfEnums, rhs.MapOfEnums))) {
 		return false
 	}
 	return true
@@ -2034,11 +2034,24 @@ func _List_RecordType_Equals(lhs, rhs []enum_conflict.RecordType) bool {
 	return true
 }
 
+func _List_RecordType_1_Equals(lhs, rhs []enums.RecordType) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !lv.Equals(rv) {
+			return false
+		}
+	}
+	return true
+}
+
 func (v *ListOfConflictingEnums) Equals(rhs *ListOfConflictingEnums) bool {
 	if !_List_RecordType_Equals(v.Records, rhs.Records) {
 		return false
 	}
-	if !_List_RecordType_Equals(v.OtherRecords, rhs.OtherRecords) {
+	if !_List_RecordType_1_Equals(v.OtherRecords, rhs.OtherRecords) {
 		return false
 	}
 	return true
@@ -2239,11 +2252,24 @@ func _List_UUID_Equals(lhs, rhs []*typedefs.UUID) bool {
 	return true
 }
 
+func _List_UUID_1_Equals(lhs, rhs []uuid_conflict.UUID) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
 func (v *ListOfConflictingUUIDs) Equals(rhs *ListOfConflictingUUIDs) bool {
 	if !_List_UUID_Equals(v.Uuids, rhs.Uuids) {
 		return false
 	}
-	if !_List_UUID_Equals(v.OtherUUIDs, rhs.OtherUUIDs) {
+	if !_List_UUID_1_Equals(v.OtherUUIDs, rhs.OtherUUIDs) {
 		return false
 	}
 	return true
@@ -2461,7 +2487,7 @@ func (v *MapOfBinaryAndString) String() string {
 	return fmt.Sprintf("MapOfBinaryAndString{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _Map_Binary_String_EqualsUnhashable(lhs, rhs []struct {
+func _Map_Binary_String_Equals(lhs, rhs []struct {
 	Key   []byte
 	Value string
 }) bool {
@@ -2491,7 +2517,7 @@ func _Map_Binary_String_EqualsUnhashable(lhs, rhs []struct {
 	return true
 }
 
-func _Map_String_Binary_EqualsHashable(lhs, rhs map[string][]byte) bool {
+func _Map_String_Binary_Equals(lhs, rhs map[string][]byte) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -2508,10 +2534,10 @@ func _Map_String_Binary_EqualsHashable(lhs, rhs map[string][]byte) bool {
 }
 
 func (v *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
-	if !((v.BinaryToString == nil && rhs.BinaryToString == nil) || (v.BinaryToString != nil && rhs.BinaryToString != nil && _Map_Binary_String_EqualsUnhashable(v.BinaryToString, rhs.BinaryToString))) {
+	if !((v.BinaryToString == nil && rhs.BinaryToString == nil) || (v.BinaryToString != nil && rhs.BinaryToString != nil && _Map_Binary_String_Equals(v.BinaryToString, rhs.BinaryToString))) {
 		return false
 	}
-	if !((v.StringToBinary == nil && rhs.StringToBinary == nil) || (v.StringToBinary != nil && rhs.StringToBinary != nil && _Map_String_Binary_EqualsHashable(v.StringToBinary, rhs.StringToBinary))) {
+	if !((v.StringToBinary == nil && rhs.StringToBinary == nil) || (v.StringToBinary != nil && rhs.StringToBinary != nil && _Map_String_Binary_Equals(v.StringToBinary, rhs.StringToBinary))) {
 		return false
 	}
 	return true
@@ -2959,7 +2985,7 @@ func _Set_Byte_Equals(lhs, rhs map[int8]struct{}) bool {
 	return true
 }
 
-func _Map_I32_String_EqualsHashable(lhs, rhs map[int32]string) bool {
+func _Map_I32_String_Equals(lhs, rhs map[int32]string) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -2975,7 +3001,7 @@ func _Map_I32_String_EqualsHashable(lhs, rhs map[int32]string) bool {
 	return true
 }
 
-func _Map_String_Bool_EqualsHashable(lhs, rhs map[string]bool) bool {
+func _Map_String_Bool_Equals(lhs, rhs map[string]bool) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -3004,10 +3030,10 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	if !((v.SetOfBytes == nil && rhs.SetOfBytes == nil) || (v.SetOfBytes != nil && rhs.SetOfBytes != nil && _Set_Byte_Equals(v.SetOfBytes, rhs.SetOfBytes))) {
 		return false
 	}
-	if !((v.MapOfIntToString == nil && rhs.MapOfIntToString == nil) || (v.MapOfIntToString != nil && rhs.MapOfIntToString != nil && _Map_I32_String_EqualsHashable(v.MapOfIntToString, rhs.MapOfIntToString))) {
+	if !((v.MapOfIntToString == nil && rhs.MapOfIntToString == nil) || (v.MapOfIntToString != nil && rhs.MapOfIntToString != nil && _Map_I32_String_Equals(v.MapOfIntToString, rhs.MapOfIntToString))) {
 		return false
 	}
-	if !((v.MapOfStringToBool == nil && rhs.MapOfStringToBool == nil) || (v.MapOfStringToBool != nil && rhs.MapOfStringToBool != nil && _Map_String_Bool_EqualsHashable(v.MapOfStringToBool, rhs.MapOfStringToBool))) {
+	if !((v.MapOfStringToBool == nil && rhs.MapOfStringToBool == nil) || (v.MapOfStringToBool != nil && rhs.MapOfStringToBool != nil && _Map_String_Bool_Equals(v.MapOfStringToBool, rhs.MapOfStringToBool))) {
 		return false
 	}
 	return true
@@ -3175,7 +3201,7 @@ func (v *PrimitiveContainersRequired) String() string {
 	return fmt.Sprintf("PrimitiveContainersRequired{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _Map_I64_Double_EqualsHashable(lhs, rhs map[int64]float64) bool {
+func _Map_I64_Double_Equals(lhs, rhs map[int64]float64) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -3198,7 +3224,7 @@ func (v *PrimitiveContainersRequired) Equals(rhs *PrimitiveContainersRequired) b
 	if !_Set_I32_Equals(v.SetOfInts, rhs.SetOfInts) {
 		return false
 	}
-	if !_Map_I64_Double_EqualsHashable(v.MapOfIntsToDoubles, rhs.MapOfIntsToDoubles) {
+	if !_Map_I64_Double_Equals(v.MapOfIntsToDoubles, rhs.MapOfIntsToDoubles) {
 		return false
 	}
 	return true

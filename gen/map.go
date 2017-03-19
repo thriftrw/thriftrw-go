@@ -194,7 +194,7 @@ func (m *mapGenerator) Equals(g Generator, spec *compile.MapSpec) (string, error
 		return m.equalsUnhashable(g, spec)
 	}
 
-	name := "_" + valueName(spec) + "_EqualsHashable"
+	name := equalsFuncName(g, spec)
 	err := g.EnsureDeclared(
 		`
 			<$mapType := typeReference .Spec>
@@ -232,8 +232,7 @@ func (m *mapGenerator) Equals(g Generator, spec *compile.MapSpec) (string, error
 }
 
 func (m *mapGenerator) equalsUnhashable(g Generator, spec *compile.MapSpec) (string, error) {
-	name := "_" + valueName(spec) + "_EqualsUnhashable"
-
+	name := equalsFuncName(g, spec)
 	err := g.EnsureDeclared(
 		`
 			<$mapType := typeReference .Spec>
@@ -285,19 +284,4 @@ func (m *mapGenerator) equalsUnhashable(g Generator, spec *compile.MapSpec) (str
 	)
 
 	return name, wrapGenerateError(spec.ThriftName(), err)
-}
-
-func valueName(spec compile.TypeSpec) string {
-	switch s := spec.(type) {
-	case *compile.MapSpec:
-		return fmt.Sprintf(
-			"Map_%s_%s", valueName(s.KeySpec), valueName(s.ValueSpec),
-		)
-	case *compile.ListSpec:
-		return fmt.Sprintf("List_%s", valueName(s.ValueSpec))
-	case *compile.SetSpec:
-		return fmt.Sprintf("Set_%s", valueName(s.ValueSpec))
-	default:
-		return goCase(spec.ThriftName())
-	}
 }

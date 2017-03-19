@@ -41,6 +41,10 @@ func (v RecordType) String() string {
 	return fmt.Sprintf("RecordType(%d)", w)
 }
 
+func (v RecordType) Equals(rhs RecordType) bool {
+	return v == rhs
+}
+
 func (v RecordType) MarshalJSON() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -179,6 +183,9 @@ func (v *Records) FromWire(w wire.Value) error {
 }
 
 func (v *Records) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	if v.RecordType != nil {
@@ -190,4 +197,32 @@ func (v *Records) String() string {
 		i++
 	}
 	return fmt.Sprintf("Records{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _RecordType_EqualsPtr(lhs, rhs *RecordType) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x.Equals(y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func _RecordType_1_EqualsPtr(lhs, rhs *enums.RecordType) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return x.Equals(y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func (v *Records) Equals(rhs *Records) bool {
+	if !_RecordType_EqualsPtr(v.RecordType, rhs.RecordType) {
+		return false
+	}
+	if !_RecordType_1_EqualsPtr(v.OtherRecordType, rhs.OtherRecordType) {
+		return false
+	}
+	return true
 }

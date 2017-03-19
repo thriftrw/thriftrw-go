@@ -147,8 +147,7 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 //
 // And returns its name.
 func (s *setGenerator) Equals(g Generator, spec *compile.SetSpec) (string, error) {
-	name := "_" + valueName(spec) + "_Equals"
-
+	name := equalsFuncName(g, spec)
 	err := g.EnsureDeclared(
 		`
 			<$setType := typeReference .Spec>

@@ -145,8 +145,7 @@ func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, err
 //
 // And returns its name.
 func (l *listGenerator) Equals(g Generator, spec *compile.ListSpec) (string, error) {
-	name := "_" + valueName(spec) + "_Equals"
-
+	name := equalsFuncName(g, spec)
 	err := g.EnsureDeclared(
 		`
 			<$listType := typeReference .Spec>

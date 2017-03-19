@@ -29,6 +29,10 @@ func (v *UUID) FromWire(w wire.Value) error {
 	return err
 }
 
+func (lhs UUID) Equals(rhs UUID) bool {
+	return (lhs == rhs)
+}
+
 type UUIDConflict struct {
 	LocalUUID    UUID           `json:"localUUID"`
 	ImportedUUID *typedefs.UUID `json:"importedUUID"`
@@ -105,6 +109,9 @@ func (v *UUIDConflict) FromWire(w wire.Value) error {
 }
 
 func (v *UUIDConflict) String() string {
+	if v == nil {
+		return "<nil>"
+	}
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("LocalUUID: %v", v.LocalUUID)
@@ -112,4 +119,14 @@ func (v *UUIDConflict) String() string {
 	fields[i] = fmt.Sprintf("ImportedUUID: %v", v.ImportedUUID)
 	i++
 	return fmt.Sprintf("UUIDConflict{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *UUIDConflict) Equals(rhs *UUIDConflict) bool {
+	if !(v.LocalUUID == rhs.LocalUUID) {
+		return false
+	}
+	if !v.ImportedUUID.Equals(rhs.ImportedUUID) {
+		return false
+	}
+	return true
 }

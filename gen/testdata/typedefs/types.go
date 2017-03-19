@@ -186,7 +186,7 @@ func _Map_Edge_Edge_Read(m wire.MapItemList) ([]struct {
 	return o, err
 }
 
-func _Map_Edge_Edge_EqualsUnhashable(lhs, rhs []struct {
+func _Map_Edge_Edge_Equals(lhs, rhs []struct {
 	Key   *structs.Edge
 	Value *structs.Edge
 }) bool {
@@ -244,7 +244,7 @@ func (v *EdgeMap) FromWire(w wire.Value) error {
 }
 
 func (lhs EdgeMap) Equals(rhs EdgeMap) bool {
-	return _Map_Edge_Edge_EqualsUnhashable(lhs, rhs)
+	return _Map_Edge_Edge_Equals(lhs, rhs)
 }
 
 type Event struct {
@@ -672,7 +672,7 @@ func _Map_Point_Point_Read(m wire.MapItemList) ([]struct {
 	return o, err
 }
 
-func _Map_Point_Point_EqualsUnhashable(lhs, rhs []struct {
+func _Map_Point_Point_Equals(lhs, rhs []struct {
 	Key   *structs.Point
 	Value *structs.Point
 }) bool {
@@ -730,7 +730,7 @@ func (v *PointMap) FromWire(w wire.Value) error {
 }
 
 func (lhs PointMap) Equals(rhs PointMap) bool {
-	return _Map_Point_Point_EqualsUnhashable(lhs, rhs)
+	return _Map_Point_Point_Equals(lhs, rhs)
 }
 
 type State string
