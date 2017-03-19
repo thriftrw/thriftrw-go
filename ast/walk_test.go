@@ -691,6 +691,52 @@ func TestWalk(t *testing.T) {
 			}
 			return
 		}(),
+		func() (tt test) {
+			tt.desc = "set type"
+
+			itemType := ast.BaseType{ID: ast.I64TypeID}
+			setType := ast.SetType{ValueType: itemType}
+
+			tt.node = setType
+			tt.visits = []visit{
+				{node: setType},
+				{node: itemType, parent: setType, ancestors: []ast.Node{setType}},
+			}
+			return
+		}(),
+		func() (tt test) {
+			tt.desc = "set type annotations"
+
+			itemType := ast.BaseType{
+				ID: ast.I64TypeID,
+				Annotations: []*ast.Annotation{
+					{Name: "foo", Value: "bar"},
+				},
+			}
+			setType := ast.SetType{
+				ValueType: itemType,
+				Annotations: []*ast.Annotation{
+					{Name: "baz", Value: "qux"},
+				},
+			}
+
+			tt.node = setType
+			tt.visits = []visit{
+				{node: setType},
+				{node: itemType, parent: setType, ancestors: []ast.Node{setType}},
+				{
+					node:      &ast.Annotation{Name: "foo", Value: "bar"},
+					parent:    itemType,
+					ancestors: []ast.Node{itemType, setType},
+				},
+				{
+					node:      &ast.Annotation{Name: "baz", Value: "qux"},
+					parent:    setType,
+					ancestors: []ast.Node{setType},
+				},
+			}
+			return
+		}(),
 	}
 
 	for _, tt := range tests {
