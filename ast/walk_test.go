@@ -563,6 +563,53 @@ func TestWalk(t *testing.T) {
 			}
 			return
 		}(),
+		func() (tt test) {
+			tt.desc = "map type"
+
+			keyType := ast.BaseType{ID: ast.StringTypeID}
+			valueType := ast.BaseType{ID: ast.BinaryTypeID}
+			mapType := ast.MapType{KeyType: keyType, ValueType: valueType}
+
+			tt.node = mapType
+			tt.visits = []visit{
+				{node: mapType},
+				{node: keyType, parent: mapType, ancestors: []ast.Node{mapType}},
+				{node: valueType, parent: mapType, ancestors: []ast.Node{mapType}},
+			}
+			return
+		}(),
+		func() (tt test) {
+			tt.desc = "map type with annotations"
+
+			keyType := ast.BaseType{ID: ast.StringTypeID}
+			valueType := ast.BaseType{ID: ast.BinaryTypeID}
+			mapType := ast.MapType{
+				KeyType:   keyType,
+				ValueType: valueType,
+				Annotations: []*ast.Annotation{
+					{Name: "foo", Value: "bar"},
+					{Name: "baz", Value: "qux"},
+				},
+			}
+
+			tt.node = mapType
+			tt.visits = []visit{
+				{node: mapType},
+				{node: keyType, parent: mapType, ancestors: []ast.Node{mapType}},
+				{node: valueType, parent: mapType, ancestors: []ast.Node{mapType}},
+				{
+					node:      &ast.Annotation{Name: "foo", Value: "bar"},
+					parent:    mapType,
+					ancestors: []ast.Node{mapType},
+				},
+				{
+					node:      &ast.Annotation{Name: "baz", Value: "qux"},
+					parent:    mapType,
+					ancestors: []ast.Node{mapType},
+				},
+			}
+			return
+		}(),
 	}
 
 	for _, tt := range tests {
