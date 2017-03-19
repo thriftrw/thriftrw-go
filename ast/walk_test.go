@@ -510,6 +510,59 @@ func TestWalk(t *testing.T) {
 			}
 			return
 		}(),
+		{
+			desc: "include",
+			node: &ast.Include{Path: "foo.thrift"},
+			visits: []visit{
+				{node: &ast.Include{Path: "foo.thrift"}},
+			},
+		},
+		func() (tt test) {
+			tt.desc = "list type"
+
+			itemType := ast.BaseType{ID: ast.I64TypeID}
+			listType := ast.ListType{ValueType: itemType}
+
+			tt.node = listType
+			tt.visits = []visit{
+				{node: listType},
+				{node: itemType, parent: listType, ancestors: []ast.Node{listType}},
+			}
+			return
+		}(),
+		func() (tt test) {
+			tt.desc = "list type annotations"
+
+			itemType := ast.BaseType{
+				ID: ast.I64TypeID,
+				Annotations: []*ast.Annotation{
+					{Name: "foo", Value: "bar"},
+				},
+			}
+			listType := ast.ListType{
+				ValueType: itemType,
+				Annotations: []*ast.Annotation{
+					{Name: "baz", Value: "qux"},
+				},
+			}
+
+			tt.node = listType
+			tt.visits = []visit{
+				{node: listType},
+				{node: itemType, parent: listType, ancestors: []ast.Node{listType}},
+				{
+					node:      &ast.Annotation{Name: "foo", Value: "bar"},
+					parent:    itemType,
+					ancestors: []ast.Node{itemType, listType},
+				},
+				{
+					node:      &ast.Annotation{Name: "baz", Value: "qux"},
+					parent:    listType,
+					ancestors: []ast.Node{listType},
+				},
+			}
+			return
+		}(),
 	}
 
 	for _, tt := range tests {
