@@ -1,9 +1,9 @@
 package ast_test
 
 import (
+	"bytes"
 	"fmt"
 	"reflect"
-	"strings"
 	"testing"
 
 	"go.uber.org/thriftrw/ast"
@@ -15,6 +15,7 @@ func TestWalk(t *testing.T) {
 	type visit struct {
 		// expected node and that node's ancestors for each visit
 		node      ast.Node
+		parent    ast.Node
 		ancestors []ast.Node
 	}
 
@@ -51,8 +52,8 @@ func TestWalk(t *testing.T) {
 			tt.node = baseType
 			tt.visits = []visit{
 				{node: baseType},
-				{node: foo, ancestors: []ast.Node{baseType}},
-				{node: bar, ancestors: []ast.Node{baseType}},
+				{node: foo, parent: baseType, ancestors: []ast.Node{baseType}},
+				{node: bar, parent: baseType, ancestors: []ast.Node{baseType}},
 			}
 			return
 		}(),
@@ -66,8 +67,8 @@ func TestWalk(t *testing.T) {
 			tt.node = constant
 			tt.visits = []visit{
 				{node: constant},
-				{node: typ, ancestors: []ast.Node{constant}},
-				{node: val, ancestors: []ast.Node{constant}},
+				{node: typ, parent: constant, ancestors: []ast.Node{constant}},
+				{node: val, parent: constant, ancestors: []ast.Node{constant}},
 			}
 			return
 		}(),
@@ -112,9 +113,9 @@ func TestWalk(t *testing.T) {
 			tt.node = clist
 			tt.visits = []visit{
 				{node: clist},
-				{node: one, ancestors: []ast.Node{clist}},
-				{node: two, ancestors: []ast.Node{clist}},
-				{node: three, ancestors: []ast.Node{clist}},
+				{node: one, parent: clist, ancestors: []ast.Node{clist}},
+				{node: two, parent: clist, ancestors: []ast.Node{clist}},
+				{node: three, parent: clist, ancestors: []ast.Node{clist}},
 			}
 			return
 		}(),
@@ -139,17 +140,55 @@ func TestWalk(t *testing.T) {
 			tt.visits = []visit{
 				{node: cmap},
 
-				{node: item1, ancestors: []ast.Node{cmap}},
-				{node: ast.ConstantString("foo"), ancestors: []ast.Node{item1, cmap}},
-				{node: ast.ConstantInteger(1), ancestors: []ast.Node{item1, cmap}},
+				{
+					node:      item1,
+					parent:    cmap,
+					ancestors: []ast.Node{cmap},
+				},
 
-				{node: item2, ancestors: []ast.Node{cmap}},
-				{node: ast.ConstantString("bar"), ancestors: []ast.Node{item2, cmap}},
-				{node: ast.ConstantInteger(2), ancestors: []ast.Node{item2, cmap}},
+				{
+					node:      ast.ConstantString("foo"),
+					parent:    item1,
+					ancestors: []ast.Node{item1, cmap},
+				},
 
-				{node: item3, ancestors: []ast.Node{cmap}},
-				{node: ast.ConstantString("baz"), ancestors: []ast.Node{item3, cmap}},
-				{node: ast.ConstantInteger(3), ancestors: []ast.Node{item3, cmap}},
+				{
+					node:      ast.ConstantInteger(1),
+					parent:    item1,
+					ancestors: []ast.Node{item1, cmap},
+				},
+
+				{
+					node:      item2,
+					parent:    cmap,
+					ancestors: []ast.Node{cmap},
+				},
+				{
+					node:      ast.ConstantString("bar"),
+					parent:    item2,
+					ancestors: []ast.Node{item2, cmap},
+				},
+				{
+					node:      ast.ConstantInteger(2),
+					parent:    item2,
+					ancestors: []ast.Node{item2, cmap},
+				},
+
+				{
+					node:      item3,
+					parent:    cmap,
+					ancestors: []ast.Node{cmap},
+				},
+				{
+					node:      ast.ConstantString("baz"),
+					parent:    item3,
+					ancestors: []ast.Node{item3, cmap},
+				},
+				{
+					node:      ast.ConstantInteger(3),
+					parent:    item3,
+					ancestors: []ast.Node{item3, cmap},
+				},
 			}
 			return
 		}(),
@@ -163,8 +202,8 @@ func TestWalk(t *testing.T) {
 			tt.node = item
 			tt.visits = []visit{
 				{node: item},
-				{node: key, ancestors: []ast.Node{item}},
-				{node: value, ancestors: []ast.Node{item}},
+				{node: key, parent: item, ancestors: []ast.Node{item}},
+				{node: value, parent: item, ancestors: []ast.Node{item}},
 			}
 			return
 		}(),
@@ -206,23 +245,27 @@ func TestWalk(t *testing.T) {
 			tt.node = enum
 			tt.visits = []visit{
 				{node: enum},
-				{node: item1, ancestors: []ast.Node{enum}},
-				{node: item2, ancestors: []ast.Node{enum}},
+				{node: item1, parent: enum, ancestors: []ast.Node{enum}},
+				{node: item2, parent: enum, ancestors: []ast.Node{enum}},
 				{
 					node:      &ast.Annotation{Name: "k1", Value: "v1"},
+					parent:    item2,
 					ancestors: []ast.Node{item2, enum},
 				},
 				{
 					node:      &ast.Annotation{Name: "k2", Value: "v2"},
+					parent:    item2,
 					ancestors: []ast.Node{item2, enum},
 				},
 				{
 					node:      &ast.Annotation{Name: "k3", Value: "v3"},
+					parent:    item2,
 					ancestors: []ast.Node{item2, enum},
 				},
-				{node: item3, ancestors: []ast.Node{enum}},
+				{node: item3, parent: enum, ancestors: []ast.Node{enum}},
 				{
 					node:      &ast.Annotation{Name: "k4", Value: "v4"},
+					parent:    enum,
 					ancestors: []ast.Node{enum},
 				},
 			}
@@ -244,7 +287,7 @@ func TestWalk(t *testing.T) {
 			tt.node = item
 			tt.visits = []visit{
 				{node: item},
-				{node: ann, ancestors: []ast.Node{item}},
+				{node: ann, parent: item, ancestors: []ast.Node{item}},
 			}
 			return
 		}(),
@@ -263,6 +306,7 @@ func TestWalk(t *testing.T) {
 				{node: field},
 				{
 					node:      ast.BaseType{ID: ast.BoolTypeID},
+					parent:    field,
 					ancestors: []ast.Node{field},
 				},
 			}
@@ -284,10 +328,12 @@ func TestWalk(t *testing.T) {
 				{node: field},
 				{
 					node:      ast.BaseType{ID: ast.StringTypeID},
+					parent:    field,
 					ancestors: []ast.Node{field},
 				},
 				{
 					node:      ast.ConstantString("hi"),
+					parent:    field,
 					ancestors: []ast.Node{field},
 				},
 			}
@@ -318,25 +364,30 @@ func TestWalk(t *testing.T) {
 			tt.node = field
 			tt.visits = []visit{
 				{node: field},
-				{node: typ, ancestors: []ast.Node{field}},
+				{node: typ, parent: field, ancestors: []ast.Node{field}},
 				{
 					node:      &ast.Annotation{Name: "k1", Value: "v1"},
+					parent:    typ,
 					ancestors: []ast.Node{typ, field},
 				},
 				{
 					node:      &ast.Annotation{Name: "k2", Value: "v2"},
+					parent:    typ,
 					ancestors: []ast.Node{typ, field},
 				},
 				{
 					node:      ast.ConstantString("hi"),
+					parent:    field,
 					ancestors: []ast.Node{field},
 				},
 				{
 					node:      &ast.Annotation{Name: "a", Value: "b"},
+					parent:    field,
 					ancestors: []ast.Node{field},
 				},
 				{
 					node:      &ast.Annotation{Name: "c", Value: "d"},
+					parent:    field,
 					ancestors: []ast.Node{field},
 				},
 			}
@@ -401,50 +452,59 @@ func TestWalk(t *testing.T) {
 				// Return type
 				{
 					node:      ast.TypeReference{Name: "Value"},
+					parent:    function,
 					ancestors: []ast.Node{function},
 				},
 
 				// Key param
-				{node: key, ancestors: []ast.Node{function}},
-				{node: keyType, ancestors: []ast.Node{key, function}},
+				{node: key, parent: function, ancestors: []ast.Node{function}},
+				{node: keyType, parent: key, ancestors: []ast.Node{key, function}},
 				{
 					node:      &ast.Annotation{Name: "validator", Value: "alphanumeric"},
+					parent:    keyType,
 					ancestors: []ast.Node{keyType, key, function},
 				},
 				{
 					node:      &ast.Annotation{Name: "http.param", Value: "key"},
+					parent:    key,
 					ancestors: []ast.Node{key, function},
 				},
 
 				// Value param
-				{node: value, ancestors: []ast.Node{function}},
+				{node: value, parent: function, ancestors: []ast.Node{function}},
 				{
 					node:      ast.TypeReference{Name: "Value"},
+					parent:    value,
 					ancestors: []ast.Node{value, function},
 				},
 				{
 					node:      &ast.Annotation{Name: "http.body"},
+					parent:    value,
 					ancestors: []ast.Node{value, function},
 				},
 
 				// Exception
-				{node: doesNotExist, ancestors: []ast.Node{function}},
+				{node: doesNotExist, parent: function, ancestors: []ast.Node{function}},
 				{
 					node:      ast.TypeReference{Name: "DoesNotExistException"},
+					parent:    doesNotExist,
 					ancestors: []ast.Node{doesNotExist, function},
 				},
 				{
 					node:      &ast.Annotation{Name: "http.status", Value: "404"},
+					parent:    doesNotExist,
 					ancestors: []ast.Node{doesNotExist, function},
 				},
 
 				// Annotations
 				{
 					node:      &ast.Annotation{Name: "http.url", Value: "/update/:key"},
+					parent:    function,
 					ancestors: []ast.Node{function},
 				},
 				{
 					node:      &ast.Annotation{Name: "http.method", Value: "POST"},
+					parent:    function,
 					ancestors: []ast.Node{function},
 				},
 			}
@@ -462,8 +522,13 @@ func TestWalk(t *testing.T) {
 			var calls []*gomock.Call
 			for _, visit := range tt.visits {
 				call := v.EXPECT().
-					Visit(matchAncestors(visit.ancestors), visit.node).
-					Return(v)
+					Visit(
+						walkerMatcher{
+							Parent:    visit.parent,
+							Ancestors: visit.ancestors,
+						},
+						visit.node,
+					).Return(v)
 				calls = append(calls, call)
 			}
 			gomock.InOrder(calls...)
@@ -473,20 +538,48 @@ func TestWalk(t *testing.T) {
 	}
 }
 
-type matchAncestors []ast.Node
+type walkerMatcher struct {
+	Ancestors []ast.Node
+	Parent    ast.Node
+}
 
-func (m matchAncestors) Matches(x interface{}) bool {
+var _ gomock.Matcher = walkerMatcher{}
+
+func (m walkerMatcher) Matches(x interface{}) bool {
 	w, ok := x.(ast.Walker)
 	if !ok {
 		return false
 	}
-	return reflect.DeepEqual([]ast.Node(m), w.Ancestors())
+
+	return reflect.DeepEqual(m.Parent, w.Parent()) &&
+		reflect.DeepEqual(m.Ancestors, w.Ancestors())
 }
 
-func (m matchAncestors) String() string {
-	ancestors := make([]string, len(m))
-	for i, n := range m {
-		ancestors[i] = fmt.Sprint(n)
+func (m walkerMatcher) String() string {
+	buff := bytes.NewBufferString("Walker{")
+	if m.Parent != nil {
+		fmt.Fprintf(buff, "Parent: %#v", m.Parent)
+		if len(m.Ancestors) > 0 {
+			buff.WriteString(", ")
+		}
 	}
-	return "[" + strings.Join(ancestors, ", ") + "]"
+
+	if len(m.Ancestors) > 0 {
+		buff.WriteString("Ancestors: [")
+
+		first := true
+		for _, n := range m.Ancestors {
+			if first {
+				first = false
+			} else {
+				buff.WriteString(", ")
+			}
+			fmt.Fprintf(buff, "%#v", n)
+		}
+
+		buff.WriteString("]")
+	}
+	buff.WriteString("}")
+
+	return buff.String()
 }
