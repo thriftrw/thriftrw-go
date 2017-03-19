@@ -116,10 +116,10 @@ type MapType struct {
 func (MapType) node()      {}
 func (MapType) fieldType() {}
 
-func (t MapType) forEachChild(f func(Node)) {
-	f(t.KeyType)
-	f(t.ValueType)
-	for _, ann := range t.Annotations {
+func (mt MapType) forEachChild(f func(Node)) {
+	f(mt.KeyType)
+	f(mt.ValueType)
+	for _, ann := range mt.Annotations {
 		f(ann)
 	}
 }
@@ -147,9 +147,9 @@ type ListType struct {
 func (ListType) node()      {}
 func (ListType) fieldType() {}
 
-func (t ListType) forEachChild(f func(Node)) {
-	f(t.ValueType)
-	for _, ann := range t.Annotations {
+func (lt ListType) forEachChild(f func(Node)) {
+	f(lt.ValueType)
+	for _, ann := range lt.Annotations {
 		f(ann)
 	}
 }
@@ -177,9 +177,9 @@ type SetType struct {
 func (SetType) node()      {}
 func (SetType) fieldType() {}
 
-func (t SetType) forEachChild(f func(Node)) {
-	f(t.ValueType)
-	for _, ann := range t.Annotations {
+func (st SetType) forEachChild(f func(Node)) {
+	f(st.ValueType)
+	for _, ann := range st.Annotations {
 		f(ann)
 	}
 }
