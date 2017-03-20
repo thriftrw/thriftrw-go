@@ -28,8 +28,10 @@ package ast
 type Node interface {
 	node()
 
-	// Must call the given function on each child node.
-	forEachChild(func(Node))
+	// Nodes must call visitor.visit(nodeStack, n) for each child node n.
+	//
+	// This is needed to be able to walk the AST with ast.Walk
+	visitChildren(nodeStack, visitor)
 }
 
 var _ Node = (*Annotation)(nil)

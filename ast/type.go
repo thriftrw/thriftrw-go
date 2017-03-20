@@ -67,9 +67,9 @@ type BaseType struct {
 func (BaseType) node()      {}
 func (BaseType) fieldType() {}
 
-func (bt BaseType) forEachChild(f func(Node)) {
+func (bt BaseType) visitChildren(ss nodeStack, v visitor) {
 	for _, ann := range bt.Annotations {
-		f(ann)
+		v.visit(ss, ann)
 	}
 }
 
@@ -116,11 +116,11 @@ type MapType struct {
 func (MapType) node()      {}
 func (MapType) fieldType() {}
 
-func (mt MapType) forEachChild(f func(Node)) {
-	f(mt.KeyType)
-	f(mt.ValueType)
+func (mt MapType) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, mt.KeyType)
+	v.visit(ss, mt.ValueType)
 	for _, ann := range mt.Annotations {
-		f(ann)
+		v.visit(ss, ann)
 	}
 }
 
@@ -147,10 +147,10 @@ type ListType struct {
 func (ListType) node()      {}
 func (ListType) fieldType() {}
 
-func (lt ListType) forEachChild(f func(Node)) {
-	f(lt.ValueType)
+func (lt ListType) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, lt.ValueType)
 	for _, ann := range lt.Annotations {
-		f(ann)
+		v.visit(ss, ann)
 	}
 }
 
@@ -177,10 +177,10 @@ type SetType struct {
 func (SetType) node()      {}
 func (SetType) fieldType() {}
 
-func (st SetType) forEachChild(f func(Node)) {
-	f(st.ValueType)
+func (st SetType) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, st.ValueType)
 	for _, ann := range st.Annotations {
-		f(ann)
+		v.visit(ss, ann)
 	}
 }
 
@@ -200,7 +200,7 @@ type TypeReference struct {
 func (TypeReference) node()      {}
 func (TypeReference) fieldType() {}
 
-func (TypeReference) forEachChild(func(Node)) {}
+func (TypeReference) visitChildren(nodeStack, visitor) {}
 
 func (tr TypeReference) String() string {
 	return tr.Name

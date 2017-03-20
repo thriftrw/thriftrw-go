@@ -49,9 +49,9 @@ type Constant struct {
 func (*Constant) node()       {}
 func (*Constant) definition() {}
 
-func (c *Constant) forEachChild(f func(Node)) {
-	f(c.Type)
-	f(c.Value)
+func (c *Constant) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, c.Type)
+	v.visit(ss, c.Value)
 }
 
 // Info for Constant
@@ -74,10 +74,10 @@ type Typedef struct {
 func (*Typedef) node()       {}
 func (*Typedef) definition() {}
 
-func (t *Typedef) forEachChild(f func(Node)) {
-	f(t.Type)
+func (t *Typedef) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, t.Type)
 	for _, ann := range t.Annotations {
-		f(ann)
+		v.visit(ss, ann)
 	}
 }
 
@@ -105,13 +105,13 @@ type Enum struct {
 func (*Enum) node()       {}
 func (*Enum) definition() {}
 
-func (e *Enum) forEachChild(f func(Node)) {
+func (e *Enum) visitChildren(ss nodeStack, v visitor) {
 	for _, item := range e.Items {
-		f(item)
+		v.visit(ss, item)
 	}
 
 	for _, ann := range e.Annotations {
-		f(ann)
+		v.visit(ss, ann)
 	}
 }
 
@@ -131,9 +131,9 @@ type EnumItem struct {
 
 func (*EnumItem) node() {}
 
-func (i *EnumItem) forEachChild(f func(Node)) {
+func (i *EnumItem) visitChildren(ss nodeStack, v visitor) {
 	for _, ann := range i.Annotations {
-		f(ann)
+		v.visit(ss, ann)
 	}
 }
 
@@ -179,12 +179,12 @@ type Struct struct {
 func (*Struct) node()       {}
 func (*Struct) definition() {}
 
-func (s *Struct) forEachChild(f func(Node)) {
+func (s *Struct) visitChildren(ss nodeStack, v visitor) {
 	for _, field := range s.Fields {
-		f(field)
+		v.visit(ss, field)
 	}
 	for _, ann := range s.Annotations {
-		f(ann)
+		v.visit(ss, ann)
 	}
 }
 
@@ -212,12 +212,12 @@ type Service struct {
 func (*Service) node()       {}
 func (*Service) definition() {}
 
-func (s *Service) forEachChild(f func(Node)) {
+func (s *Service) visitChildren(ss nodeStack, v visitor) {
 	for _, function := range s.Functions {
-		f(function)
+		v.visit(ss, function)
 	}
 	for _, ann := range s.Annotations {
-		f(ann)
+		v.visit(ss, ann)
 	}
 }
 
@@ -244,16 +244,16 @@ type Function struct {
 
 func (*Function) node() {}
 
-func (n *Function) forEachChild(f func(Node)) {
-	f(n.ReturnType)
+func (n *Function) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, n.ReturnType)
 	for _, field := range n.Parameters {
-		f(field)
+		v.visit(ss, field)
 	}
 	for _, exc := range n.Exceptions {
-		f(exc)
+		v.visit(ss, exc)
 	}
 	for _, ann := range n.Annotations {
-		f(ann)
+		v.visit(ss, ann)
 	}
 }
 
@@ -287,11 +287,11 @@ type Field struct {
 
 func (*Field) node() {}
 
-func (n *Field) forEachChild(f func(Node)) {
-	f(n.Type)
-	f(n.Default)
+func (n *Field) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, n.Type)
+	v.visit(ss, n.Default)
 	for _, ann := range n.Annotations {
-		f(ann)
+		v.visit(ss, ann)
 	}
 }
 

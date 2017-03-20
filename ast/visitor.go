@@ -41,6 +41,11 @@ type Visitor interface {
 	Visit(w Walker, n Node) Visitor
 }
 
+// Internal version of Visitor. Nodes operate directly on this interface.
+type visitor interface {
+	visit(nodeStack, Node)
+}
+
 // VisitorFunc is a Visitor which visits all the nodes of the AST.
 type VisitorFunc func(Walker, Node)
 

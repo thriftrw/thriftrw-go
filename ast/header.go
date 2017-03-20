@@ -50,7 +50,7 @@ type Include struct {
 func (*Include) node()   {}
 func (*Include) header() {}
 
-func (*Include) forEachChild(func(Node)) {}
+func (*Include) visitChildren(nodeStack, visitor) {}
 
 // Info for Include.
 func (i *Include) Info() HeaderInfo {
@@ -70,7 +70,7 @@ type Namespace struct {
 func (*Namespace) node()   {}
 func (*Namespace) header() {}
 
-func (*Namespace) forEachChild(func(Node)) {}
+func (*Namespace) visitChildren(nodeStack, visitor) {}
 
 // Info for Namespace.
 func (n *Namespace) Info() HeaderInfo {

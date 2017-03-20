@@ -38,8 +38,9 @@ type Annotation struct {
 	Line  int
 }
 
-func (*Annotation) node()                   {}
-func (*Annotation) forEachChild(func(Node)) {}
+func (*Annotation) node() {}
+
+func (*Annotation) visitChildren(nodeStack, visitor) {}
 
 func (ann *Annotation) String() string {
 	return fmt.Sprintf("%s = %q", ann.Name, ann.Value)

@@ -36,11 +36,11 @@ func (ConstantReference) node() {}
 func (ConstantMap) node()       {}
 func (ConstantList) node()      {}
 
-func (ConstantBoolean) forEachChild(func(Node))   {}
-func (ConstantInteger) forEachChild(func(Node))   {}
-func (ConstantString) forEachChild(func(Node))    {}
-func (ConstantDouble) forEachChild(func(Node))    {}
-func (ConstantReference) forEachChild(func(Node)) {}
+func (ConstantBoolean) visitChildren(nodeStack, visitor)   {}
+func (ConstantInteger) visitChildren(nodeStack, visitor)   {}
+func (ConstantString) visitChildren(nodeStack, visitor)    {}
+func (ConstantDouble) visitChildren(nodeStack, visitor)    {}
+func (ConstantReference) visitChildren(nodeStack, visitor) {}
 
 func (ConstantBoolean) constantValue()   {}
 func (ConstantInteger) constantValue()   {}
@@ -50,21 +50,21 @@ func (ConstantReference) constantValue() {}
 func (ConstantMap) constantValue()       {}
 func (ConstantList) constantValue()      {}
 
-func (l ConstantList) forEachChild(f func(Node)) {
+func (l ConstantList) visitChildren(ss nodeStack, v visitor) {
 	for _, item := range l.Items {
-		f(item)
+		v.visit(ss, item)
 	}
 }
 
-func (m ConstantMap) forEachChild(f func(Node)) {
+func (m ConstantMap) visitChildren(ss nodeStack, v visitor) {
 	for _, item := range m.Items {
-		f(item)
+		v.visit(ss, item)
 	}
 }
 
-func (i ConstantMapItem) forEachChild(f func(Node)) {
-	f(i.Key)
-	f(i.Value)
+func (i ConstantMapItem) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, i.Key)
+	v.visit(ss, i.Value)
 }
 
 // ConstantBoolean is a boolean value specified in the Thrift file.
