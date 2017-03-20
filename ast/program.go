@@ -27,3 +27,12 @@ type Program struct {
 }
 
 func (*Program) node() {}
+
+func (p *Program) visitChildren(ss nodeStack, v visitor) {
+	for _, h := range p.Headers {
+		v.visit(ss, h)
+	}
+	for _, d := range p.Definitions {
+		v.visit(ss, d)
+	}
+}

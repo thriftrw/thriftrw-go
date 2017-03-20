@@ -67,6 +67,12 @@ type BaseType struct {
 func (BaseType) node()      {}
 func (BaseType) fieldType() {}
 
+func (bt BaseType) visitChildren(ss nodeStack, v visitor) {
+	for _, ann := range bt.Annotations {
+		v.visit(ss, ann)
+	}
+}
+
 func (bt BaseType) String() string {
 	var name string
 
@@ -110,6 +116,14 @@ type MapType struct {
 func (MapType) node()      {}
 func (MapType) fieldType() {}
 
+func (mt MapType) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, mt.KeyType)
+	v.visit(ss, mt.ValueType)
+	for _, ann := range mt.Annotations {
+		v.visit(ss, ann)
+	}
+}
+
 func (mt MapType) String() string {
 	return appendAnnotations(
 		fmt.Sprintf("map<%s, %s>", mt.KeyType, mt.ValueType),
@@ -132,6 +146,13 @@ type ListType struct {
 
 func (ListType) node()      {}
 func (ListType) fieldType() {}
+
+func (lt ListType) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, lt.ValueType)
+	for _, ann := range lt.Annotations {
+		v.visit(ss, ann)
+	}
+}
 
 func (lt ListType) String() string {
 	return appendAnnotations(
@@ -156,6 +177,13 @@ type SetType struct {
 func (SetType) node()      {}
 func (SetType) fieldType() {}
 
+func (st SetType) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, st.ValueType)
+	for _, ann := range st.Annotations {
+		v.visit(ss, ann)
+	}
+}
+
 func (st SetType) String() string {
 	return appendAnnotations(
 		fmt.Sprintf("set<%s>", st.ValueType.String()),
@@ -171,6 +199,8 @@ type TypeReference struct {
 
 func (TypeReference) node()      {}
 func (TypeReference) fieldType() {}
+
+func (TypeReference) visitChildren(nodeStack, visitor) {}
 
 func (tr TypeReference) String() string {
 	return tr.Name

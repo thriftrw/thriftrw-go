@@ -49,6 +49,11 @@ type Constant struct {
 func (*Constant) node()       {}
 func (*Constant) definition() {}
 
+func (c *Constant) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, c.Type)
+	v.visit(ss, c.Value)
+}
+
 // Info for Constant
 func (c *Constant) Info() DefinitionInfo {
 	return DefinitionInfo{Name: c.Name, Line: c.Line}
@@ -68,6 +73,13 @@ type Typedef struct {
 // Definition implementation for Typedef.
 func (*Typedef) node()       {}
 func (*Typedef) definition() {}
+
+func (t *Typedef) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, t.Type)
+	for _, ann := range t.Annotations {
+		v.visit(ss, ann)
+	}
+}
 
 // Info for Typedef.
 func (t *Typedef) Info() DefinitionInfo {
@@ -93,6 +105,16 @@ type Enum struct {
 func (*Enum) node()       {}
 func (*Enum) definition() {}
 
+func (e *Enum) visitChildren(ss nodeStack, v visitor) {
+	for _, item := range e.Items {
+		v.visit(ss, item)
+	}
+
+	for _, ann := range e.Annotations {
+		v.visit(ss, ann)
+	}
+}
+
 // Info for Enum.
 func (e *Enum) Info() DefinitionInfo {
 	return DefinitionInfo{Name: e.Name, Line: e.Line}
@@ -108,6 +130,12 @@ type EnumItem struct {
 }
 
 func (*EnumItem) node() {}
+
+func (i *EnumItem) visitChildren(ss nodeStack, v visitor) {
+	for _, ann := range i.Annotations {
+		v.visit(ss, ann)
+	}
+}
 
 // StructureType specifies whether a struct-like type is a struct, union, or
 // exception.
@@ -151,6 +179,15 @@ type Struct struct {
 func (*Struct) node()       {}
 func (*Struct) definition() {}
 
+func (s *Struct) visitChildren(ss nodeStack, v visitor) {
+	for _, field := range s.Fields {
+		v.visit(ss, field)
+	}
+	for _, ann := range s.Annotations {
+		v.visit(ss, ann)
+	}
+}
+
 // Info for Struct.
 func (s *Struct) Info() DefinitionInfo {
 	return DefinitionInfo{Name: s.Name, Line: s.Line}
@@ -175,6 +212,15 @@ type Service struct {
 func (*Service) node()       {}
 func (*Service) definition() {}
 
+func (s *Service) visitChildren(ss nodeStack, v visitor) {
+	for _, function := range s.Functions {
+		v.visit(ss, function)
+	}
+	for _, ann := range s.Annotations {
+		v.visit(ss, ann)
+	}
+}
+
 // Info for Service.
 func (s *Service) Info() DefinitionInfo {
 	return DefinitionInfo{Name: s.Name, Line: s.Line}
@@ -197,6 +243,19 @@ type Function struct {
 }
 
 func (*Function) node() {}
+
+func (n *Function) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, n.ReturnType)
+	for _, field := range n.Parameters {
+		v.visit(ss, field)
+	}
+	for _, exc := range n.Exceptions {
+		v.visit(ss, exc)
+	}
+	for _, ann := range n.Annotations {
+		v.visit(ss, ann)
+	}
+}
 
 // Requiredness represents whether a field was marked as required or optional,
 // or if the user did not specify either.
@@ -227,6 +286,14 @@ type Field struct {
 }
 
 func (*Field) node() {}
+
+func (n *Field) visitChildren(ss nodeStack, v visitor) {
+	v.visit(ss, n.Type)
+	v.visit(ss, n.Default)
+	for _, ann := range n.Annotations {
+		v.visit(ss, ann)
+	}
+}
 
 // ServiceReference is a reference to another service.
 type ServiceReference struct {

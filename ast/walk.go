@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Uber Technologies, Inc.
+// Copyright (c) 2017 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,42 +20,52 @@
 
 package ast
 
-import (
-	"fmt"
-	"strings"
-)
-
-// Annotation represents a type annotation. Type annotations are key-value
-// pairs in the form,
-//
-// 	(foo = "bar", baz = "qux")
-//
-// They may be used to customize the generated code. Annotations are optional
-// anywhere in the code where they're accepted and may be skipped completely.
-type Annotation struct {
-	Name  string
-	Value string
-	Line  int
+// Walk walks the AST depth-first with the given visitor, starting at the
+// given node. The visitor's Visit function should return a non-nil visitor if
+// it wants to visit the children of the node it was called with.
+func Walk(v Visitor, n Node) {
+	visitor{Visitor: v}.visit(nil, n)
 }
 
-func (*Annotation) node() {}
+// nodeStack of nodes visited in the order they were visited
+type nodeStack []Node
 
-func (*Annotation) visitChildren(nodeStack, visitor) {}
-
-func (ann *Annotation) String() string {
-	return fmt.Sprintf("%s = %q", ann.Name, ann.Value)
+func (ss nodeStack) Parent() Node {
+	if len(ss) == 0 {
+		return nil
+	}
+	return ss[len(ss)-1]
 }
 
-// FormatAnnotations formats a collection of annotations into a string.
-func FormatAnnotations(anns []*Annotation) string {
-	if len(anns) == 0 {
-		return ""
+func (ss nodeStack) Ancestors() []Node {
+	if len(ss) == 0 {
+		return nil
 	}
 
-	as := make([]string, len(anns))
-	for i, ann := range anns {
-		as[i] = ann.String()
+	ancestors := make([]Node, len(ss))
+	for i, n := range ss {
+		ancestors[len(ss)-1-i] = n
+	}
+	return ancestors
+}
+
+// visitor adapts a user-provided Visitor so that we can use the internal
+// visitChildren method on nodes.
+type visitor struct {
+	Visitor Visitor
+}
+
+func (v visitor) visit(ss nodeStack, n Node) {
+	if n == nil {
+		return
 	}
 
-	return "(" + strings.Join(as, ", ") + ")"
+	// Note that visitor is passed by value so we're operating on a copy
+	v.Visitor = v.Visitor.Visit(ss, n)
+	if v.Visitor == nil {
+		return
+	}
+
+	ss = append(ss, n)
+	n.visitChildren(ss, v)
 }

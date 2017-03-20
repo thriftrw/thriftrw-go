@@ -27,6 +27,11 @@ package ast
 // *EnumItem, *Field, *Function, *Program.
 type Node interface {
 	node()
+
+	// Nodes must call visitor.visit(nodeStack, n) for each child node n.
+	//
+	// This is needed to be able to walk the AST with ast.Walk
+	visitChildren(nodeStack, visitor)
 }
 
 var _ Node = (*Annotation)(nil)

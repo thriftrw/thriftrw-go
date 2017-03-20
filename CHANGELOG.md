@@ -14,6 +14,7 @@ v1.1.0 (unreleased)
 -   AST: All type references and complex constant values now record the line
     numbers on which they were specified.
 -   AST: Added a Node interface to unify different AST object types.
+-   AST: Added Walk to traverse the AST using a Visitor.
 
 
 v1.0.0 (2016-11-14)
