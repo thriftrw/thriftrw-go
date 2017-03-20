@@ -24,7 +24,6 @@ package ast
 // given node. The visitor's Visit function should return a non-nil visitor if
 // it wants to visit the children of the node it was called with.
 func Walk(v Visitor, n Node) {
-	// walk(nil, v, n)
 	w := walker{v: v}
 	w.Walk(n)
 }
