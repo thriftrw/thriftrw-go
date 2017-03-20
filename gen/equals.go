@@ -77,7 +77,7 @@ func (e *equalsGenerator) EqualsPtr(g Generator, spec compile.TypeSpec, lhs, rhs
 		)
 	}
 
-	equalsPtrFunc := fmt.Sprintf("_%v_EqualsPtr", spec.ThriftName())
+	name := equalsPtrFuncName(g, spec)
 	err := g.EnsureDeclared(
 		`
 			<$type := typeReference .Spec>
@@ -99,7 +99,7 @@ func (e *equalsGenerator) EqualsPtr(g Generator, spec compile.TypeSpec, lhs, rhs
 		struct {
 			Name string
 			Spec compile.TypeSpec
-		}{Name: equalsPtrFunc, Spec: spec},
+		}{Name: name, Spec: spec},
 	)
-	return fmt.Sprintf("%s(%s, %s)", equalsPtrFunc, lhs, rhs), err
+	return fmt.Sprintf("%s(%s, %s)", name, lhs, rhs), err
 }

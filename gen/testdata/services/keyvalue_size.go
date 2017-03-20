@@ -146,7 +146,7 @@ func (v *KeyValue_Size_Result) String() string {
 }
 
 func (v *KeyValue_Size_Result) Equals(rhs *KeyValue_Size_Result) bool {
-	if !_i64_EqualsPtr(v.Success, rhs.Success) {
+	if !_I64_EqualsPtr(v.Success, rhs.Success) {
 		return false
 	}
 	return true

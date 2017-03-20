@@ -23,21 +23,11 @@ package gen
 import "go.uber.org/thriftrw/compile"
 
 // typedefGenerator generates code to serialize and deserialize typedefs.
-type typedefGenerator struct {
-	hasReaders
-}
+type typedefGenerator struct{}
 
 func (t *typedefGenerator) Reader(g Generator, spec *compile.TypedefSpec) (string, error) {
-	name, err := readerFuncName(spec)
-	if err != nil {
-		return "", err
-	}
-
-	if t.HasReader(name) {
-		return name, nil
-	}
-
-	err = g.DeclareFromTemplate(
+	name := readerFuncName(g, spec)
+	err := g.EnsureDeclared(
 		`
 		<$wire := import "go.uber.org/thriftrw/wire">
 

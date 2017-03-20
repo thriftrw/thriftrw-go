@@ -150,7 +150,7 @@ func (v *InternalError) String() string {
 	return fmt.Sprintf("InternalError{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _string_EqualsPtr(lhs, rhs *string) bool {
+func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -160,7 +160,7 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 }
 
 func (v *InternalError) Equals(rhs *InternalError) bool {
-	if !_string_EqualsPtr(v.Message, rhs.Message) {
+	if !_String_EqualsPtr(v.Message, rhs.Message) {
 		return false
 	}
 	return true

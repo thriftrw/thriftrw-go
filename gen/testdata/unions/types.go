@@ -284,7 +284,7 @@ func (v *ArbitraryValue) String() string {
 	return fmt.Sprintf("ArbitraryValue{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _bool_EqualsPtr(lhs, rhs *bool) bool {
+func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -293,7 +293,7 @@ func _bool_EqualsPtr(lhs, rhs *bool) bool {
 	return lhs == nil && rhs == nil
 }
 
-func _i64_EqualsPtr(lhs, rhs *int64) bool {
+func _I64_EqualsPtr(lhs, rhs *int64) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -302,7 +302,7 @@ func _i64_EqualsPtr(lhs, rhs *int64) bool {
 	return lhs == nil && rhs == nil
 }
 
-func _string_EqualsPtr(lhs, rhs *string) bool {
+func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -324,7 +324,7 @@ func _List_ArbitraryValue_Equals(lhs, rhs []*ArbitraryValue) bool {
 	return true
 }
 
-func _Map_String_ArbitraryValue_EqualsHashable(lhs, rhs map[string]*ArbitraryValue) bool {
+func _Map_String_ArbitraryValue_Equals(lhs, rhs map[string]*ArbitraryValue) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -341,19 +341,19 @@ func _Map_String_ArbitraryValue_EqualsHashable(lhs, rhs map[string]*ArbitraryVal
 }
 
 func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
-	if !_bool_EqualsPtr(v.BoolValue, rhs.BoolValue) {
+	if !_Bool_EqualsPtr(v.BoolValue, rhs.BoolValue) {
 		return false
 	}
-	if !_i64_EqualsPtr(v.Int64Value, rhs.Int64Value) {
+	if !_I64_EqualsPtr(v.Int64Value, rhs.Int64Value) {
 		return false
 	}
-	if !_string_EqualsPtr(v.StringValue, rhs.StringValue) {
+	if !_String_EqualsPtr(v.StringValue, rhs.StringValue) {
 		return false
 	}
 	if !((v.ListValue == nil && rhs.ListValue == nil) || (v.ListValue != nil && rhs.ListValue != nil && _List_ArbitraryValue_Equals(v.ListValue, rhs.ListValue))) {
 		return false
 	}
-	if !((v.MapValue == nil && rhs.MapValue == nil) || (v.MapValue != nil && rhs.MapValue != nil && _Map_String_ArbitraryValue_EqualsHashable(v.MapValue, rhs.MapValue))) {
+	if !((v.MapValue == nil && rhs.MapValue == nil) || (v.MapValue != nil && rhs.MapValue != nil && _Map_String_ArbitraryValue_Equals(v.MapValue, rhs.MapValue))) {
 		return false
 	}
 	return true
@@ -455,7 +455,7 @@ func (v *Document) Equals(rhs *Document) bool {
 	if !((v.Pdf == nil && rhs.Pdf == nil) || (v.Pdf != nil && rhs.Pdf != nil && v.Pdf.Equals(rhs.Pdf))) {
 		return false
 	}
-	if !_string_EqualsPtr(v.PlainText, rhs.PlainText) {
+	if !_String_EqualsPtr(v.PlainText, rhs.PlainText) {
 		return false
 	}
 	return true

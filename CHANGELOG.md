@@ -9,6 +9,8 @@ v1.1.0 (unreleased)
 -   Plugins: Fail code generation if communication with a plugin fails to
     disconnect properly.
 -   Handle `nil` values in generated `String()` methods.
+-   Fixed conflicts in helper functions when imported types had names similar
+    to locally defined types.
 -   AST: All type references and complex constant values now record the line
     numbers on which they were specified.
 -   AST: Added a Node interface to unify different AST object types.

@@ -133,14 +133,6 @@ func goName(e compile.NamedEntity) (string, error) {
 	return name, err
 }
 
-func readerFuncName(e compile.NamedEntity) (string, error) {
-	name, err := goName(e)
-	if err == nil {
-		name = "_" + name + "_Read"
-	}
-	return name, err
-}
-
 // This set is taken from https://github.com/golang/lint/blob/master/lint.go#L692
 var commonInitialisms = map[string]bool{
 	"API":   true,

@@ -7,7 +7,10 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"go.uber.org/thriftrw/gen/testdata/enum_conflict"
 	"go.uber.org/thriftrw/gen/testdata/enums"
+	"go.uber.org/thriftrw/gen/testdata/typedefs"
+	"go.uber.org/thriftrw/gen/testdata/uuid_conflict"
 	"go.uber.org/thriftrw/wire"
 	"strings"
 )
@@ -1240,7 +1243,7 @@ func _List_Set_I32_Equals(lhs, rhs []map[int32]struct{}) bool {
 	return true
 }
 
-func _Map_I32_I32_EqualsHashable(lhs, rhs map[int32]int32) bool {
+func _Map_I32_I32_Equals(lhs, rhs map[int32]int32) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -1262,7 +1265,7 @@ func _List_Map_I32_I32_Equals(lhs, rhs []map[int32]int32) bool {
 	}
 	for i, lv := range lhs {
 		rv := rhs[i]
-		if !_Map_I32_I32_EqualsHashable(lv, rv) {
+		if !_Map_I32_I32_Equals(lv, rv) {
 			return false
 		}
 	}
@@ -1332,7 +1335,7 @@ func _Set_List_String_Equals(lhs, rhs [][]string) bool {
 	return true
 }
 
-func _Map_String_String_EqualsHashable(lhs, rhs map[string]string) bool {
+func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -1355,7 +1358,7 @@ func _Set_Map_String_String_Equals(lhs, rhs []map[string]string) bool {
 	for _, x := range lhs {
 		ok := false
 		for _, y := range rhs {
-			if _Map_String_String_EqualsHashable(x, y) {
+			if _Map_String_String_Equals(x, y) {
 				ok = true
 				break
 			}
@@ -1367,7 +1370,7 @@ func _Set_Map_String_String_Equals(lhs, rhs []map[string]string) bool {
 	return true
 }
 
-func _Map_String_I32_EqualsHashable(lhs, rhs map[string]int32) bool {
+func _Map_String_I32_Equals(lhs, rhs map[string]int32) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -1383,7 +1386,7 @@ func _Map_String_I32_EqualsHashable(lhs, rhs map[string]int32) bool {
 	return true
 }
 
-func _Map_Map_String_I32_I64_EqualsUnhashable(lhs, rhs []struct {
+func _Map_Map_String_I32_I64_Equals(lhs, rhs []struct {
 	Key   map[string]int32
 	Value int64
 }) bool {
@@ -1397,7 +1400,7 @@ func _Map_Map_String_I32_I64_EqualsUnhashable(lhs, rhs []struct {
 		for _, j := range rhs {
 			rk := j.Key
 			rv := j.Value
-			if !_Map_String_I32_EqualsHashable(lk, rk) {
+			if !_Map_String_I32_Equals(lk, rk) {
 				continue
 			}
 			if !(lv == rv) {
@@ -1425,7 +1428,7 @@ func _Set_I64_Equals(lhs, rhs map[int64]struct{}) bool {
 	return true
 }
 
-func _Map_List_I32_Set_I64_EqualsUnhashable(lhs, rhs []struct {
+func _Map_List_I32_Set_I64_Equals(lhs, rhs []struct {
 	Key   []int32
 	Value map[int64]struct{}
 }) bool {
@@ -1468,7 +1471,7 @@ func _List_Double_Equals(lhs, rhs []float64) bool {
 	return true
 }
 
-func _Map_Set_I32_List_Double_EqualsUnhashable(lhs, rhs []struct {
+func _Map_Set_I32_List_Double_Equals(lhs, rhs []struct {
 	Key   map[int32]struct{}
 	Value []float64
 }) bool {
@@ -1517,13 +1520,13 @@ func (v *ContainersOfContainers) Equals(rhs *ContainersOfContainers) bool {
 	if !((v.SetOfMaps == nil && rhs.SetOfMaps == nil) || (v.SetOfMaps != nil && rhs.SetOfMaps != nil && _Set_Map_String_String_Equals(v.SetOfMaps, rhs.SetOfMaps))) {
 		return false
 	}
-	if !((v.MapOfMapToInt == nil && rhs.MapOfMapToInt == nil) || (v.MapOfMapToInt != nil && rhs.MapOfMapToInt != nil && _Map_Map_String_I32_I64_EqualsUnhashable(v.MapOfMapToInt, rhs.MapOfMapToInt))) {
+	if !((v.MapOfMapToInt == nil && rhs.MapOfMapToInt == nil) || (v.MapOfMapToInt != nil && rhs.MapOfMapToInt != nil && _Map_Map_String_I32_I64_Equals(v.MapOfMapToInt, rhs.MapOfMapToInt))) {
 		return false
 	}
-	if !((v.MapOfListToSet == nil && rhs.MapOfListToSet == nil) || (v.MapOfListToSet != nil && rhs.MapOfListToSet != nil && _Map_List_I32_Set_I64_EqualsUnhashable(v.MapOfListToSet, rhs.MapOfListToSet))) {
+	if !((v.MapOfListToSet == nil && rhs.MapOfListToSet == nil) || (v.MapOfListToSet != nil && rhs.MapOfListToSet != nil && _Map_List_I32_Set_I64_Equals(v.MapOfListToSet, rhs.MapOfListToSet))) {
 		return false
 	}
-	if !((v.MapOfSetToListOfDouble == nil && rhs.MapOfSetToListOfDouble == nil) || (v.MapOfSetToListOfDouble != nil && rhs.MapOfSetToListOfDouble != nil && _Map_Set_I32_List_Double_EqualsUnhashable(v.MapOfSetToListOfDouble, rhs.MapOfSetToListOfDouble))) {
+	if !((v.MapOfSetToListOfDouble == nil && rhs.MapOfSetToListOfDouble == nil) || (v.MapOfSetToListOfDouble != nil && rhs.MapOfSetToListOfDouble != nil && _Map_Set_I32_List_Double_Equals(v.MapOfSetToListOfDouble, rhs.MapOfSetToListOfDouble))) {
 		return false
 	}
 	return true
@@ -1810,7 +1813,7 @@ func _Set_EnumWithValues_Equals(lhs, rhs map[enums.EnumWithValues]struct{}) bool
 	return true
 }
 
-func _Map_EnumWithDuplicateValues_I32_EqualsHashable(lhs, rhs map[enums.EnumWithDuplicateValues]int32) bool {
+func _Map_EnumWithDuplicateValues_I32_Equals(lhs, rhs map[enums.EnumWithDuplicateValues]int32) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -1833,7 +1836,440 @@ func (v *EnumContainers) Equals(rhs *EnumContainers) bool {
 	if !((v.SetOfEnums == nil && rhs.SetOfEnums == nil) || (v.SetOfEnums != nil && rhs.SetOfEnums != nil && _Set_EnumWithValues_Equals(v.SetOfEnums, rhs.SetOfEnums))) {
 		return false
 	}
-	if !((v.MapOfEnums == nil && rhs.MapOfEnums == nil) || (v.MapOfEnums != nil && rhs.MapOfEnums != nil && _Map_EnumWithDuplicateValues_I32_EqualsHashable(v.MapOfEnums, rhs.MapOfEnums))) {
+	if !((v.MapOfEnums == nil && rhs.MapOfEnums == nil) || (v.MapOfEnums != nil && rhs.MapOfEnums != nil && _Map_EnumWithDuplicateValues_I32_Equals(v.MapOfEnums, rhs.MapOfEnums))) {
+		return false
+	}
+	return true
+}
+
+type ListOfConflictingEnums struct {
+	Records      []enum_conflict.RecordType `json:"records"`
+	OtherRecords []enums.RecordType         `json:"otherRecords"`
+}
+
+type _List_RecordType_ValueList []enum_conflict.RecordType
+
+func (v _List_RecordType_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_RecordType_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_RecordType_ValueList) ValueType() wire.Type {
+	return wire.TI32
+}
+
+func (_List_RecordType_ValueList) Close() {
+}
+
+type _List_RecordType_1_ValueList []enums.RecordType
+
+func (v _List_RecordType_1_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_RecordType_1_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_RecordType_1_ValueList) ValueType() wire.Type {
+	return wire.TI32
+}
+
+func (_List_RecordType_1_ValueList) Close() {
+}
+
+func (v *ListOfConflictingEnums) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.Records == nil {
+		return w, errors.New("field Records of ListOfConflictingEnums is required")
+	}
+	w, err = wire.NewValueList(_List_RecordType_ValueList(v.Records)), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+	if v.OtherRecords == nil {
+		return w, errors.New("field OtherRecords of ListOfConflictingEnums is required")
+	}
+	w, err = wire.NewValueList(_List_RecordType_1_ValueList(v.OtherRecords)), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _RecordType_Read(w wire.Value) (enum_conflict.RecordType, error) {
+	var v enum_conflict.RecordType
+	err := v.FromWire(w)
+	return v, err
+}
+
+func _List_RecordType_Read(l wire.ValueList) ([]enum_conflict.RecordType, error) {
+	if l.ValueType() != wire.TI32 {
+		return nil, nil
+	}
+	o := make([]enum_conflict.RecordType, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
+		i, err := _RecordType_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Close()
+	return o, err
+}
+
+func _RecordType_1_Read(w wire.Value) (enums.RecordType, error) {
+	var v enums.RecordType
+	err := v.FromWire(w)
+	return v, err
+}
+
+func _List_RecordType_1_Read(l wire.ValueList) ([]enums.RecordType, error) {
+	if l.ValueType() != wire.TI32 {
+		return nil, nil
+	}
+	o := make([]enums.RecordType, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
+		i, err := _RecordType_1_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Close()
+	return o, err
+}
+
+func (v *ListOfConflictingEnums) FromWire(w wire.Value) error {
+	var err error
+	recordsIsSet := false
+	otherRecordsIsSet := false
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TList {
+				v.Records, err = _List_RecordType_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+				recordsIsSet = true
+			}
+		case 2:
+			if field.Value.Type() == wire.TList {
+				v.OtherRecords, err = _List_RecordType_1_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+				otherRecordsIsSet = true
+			}
+		}
+	}
+	if !recordsIsSet {
+		return errors.New("field Records of ListOfConflictingEnums is required")
+	}
+	if !otherRecordsIsSet {
+		return errors.New("field OtherRecords of ListOfConflictingEnums is required")
+	}
+	return nil
+}
+
+func (v *ListOfConflictingEnums) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	var fields [2]string
+	i := 0
+	fields[i] = fmt.Sprintf("Records: %v", v.Records)
+	i++
+	fields[i] = fmt.Sprintf("OtherRecords: %v", v.OtherRecords)
+	i++
+	return fmt.Sprintf("ListOfConflictingEnums{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _List_RecordType_Equals(lhs, rhs []enum_conflict.RecordType) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !lv.Equals(rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _List_RecordType_1_Equals(lhs, rhs []enums.RecordType) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !lv.Equals(rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (v *ListOfConflictingEnums) Equals(rhs *ListOfConflictingEnums) bool {
+	if !_List_RecordType_Equals(v.Records, rhs.Records) {
+		return false
+	}
+	if !_List_RecordType_1_Equals(v.OtherRecords, rhs.OtherRecords) {
+		return false
+	}
+	return true
+}
+
+type ListOfConflictingUUIDs struct {
+	Uuids      []*typedefs.UUID     `json:"uuids"`
+	OtherUUIDs []uuid_conflict.UUID `json:"otherUUIDs"`
+}
+
+type _List_UUID_ValueList []*typedefs.UUID
+
+func (v _List_UUID_ValueList) ForEach(f func(wire.Value) error) error {
+	for i, x := range v {
+		if x == nil {
+			return fmt.Errorf("invalid [%v]: value is nil", i)
+		}
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_UUID_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_UUID_ValueList) ValueType() wire.Type {
+	return wire.TStruct
+}
+
+func (_List_UUID_ValueList) Close() {
+}
+
+type _List_UUID_1_ValueList []uuid_conflict.UUID
+
+func (v _List_UUID_1_ValueList) ForEach(f func(wire.Value) error) error {
+	for _, x := range v {
+		w, err := x.ToWire()
+		if err != nil {
+			return err
+		}
+		err = f(w)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _List_UUID_1_ValueList) Size() int {
+	return len(v)
+}
+
+func (_List_UUID_1_ValueList) ValueType() wire.Type {
+	return wire.TBinary
+}
+
+func (_List_UUID_1_ValueList) Close() {
+}
+
+func (v *ListOfConflictingUUIDs) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.Uuids == nil {
+		return w, errors.New("field Uuids of ListOfConflictingUUIDs is required")
+	}
+	w, err = wire.NewValueList(_List_UUID_ValueList(v.Uuids)), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+	if v.OtherUUIDs == nil {
+		return w, errors.New("field OtherUUIDs of ListOfConflictingUUIDs is required")
+	}
+	w, err = wire.NewValueList(_List_UUID_1_ValueList(v.OtherUUIDs)), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _UUID_Read(w wire.Value) (*typedefs.UUID, error) {
+	var x typedefs.UUID
+	err := x.FromWire(w)
+	return &x, err
+}
+
+func _List_UUID_Read(l wire.ValueList) ([]*typedefs.UUID, error) {
+	if l.ValueType() != wire.TStruct {
+		return nil, nil
+	}
+	o := make([]*typedefs.UUID, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
+		i, err := _UUID_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Close()
+	return o, err
+}
+
+func _UUID_1_Read(w wire.Value) (uuid_conflict.UUID, error) {
+	var x uuid_conflict.UUID
+	err := x.FromWire(w)
+	return x, err
+}
+
+func _List_UUID_1_Read(l wire.ValueList) ([]uuid_conflict.UUID, error) {
+	if l.ValueType() != wire.TBinary {
+		return nil, nil
+	}
+	o := make([]uuid_conflict.UUID, 0, l.Size())
+	err := l.ForEach(func(x wire.Value) error {
+		i, err := _UUID_1_Read(x)
+		if err != nil {
+			return err
+		}
+		o = append(o, i)
+		return nil
+	})
+	l.Close()
+	return o, err
+}
+
+func (v *ListOfConflictingUUIDs) FromWire(w wire.Value) error {
+	var err error
+	uuidsIsSet := false
+	otherUUIDsIsSet := false
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TList {
+				v.Uuids, err = _List_UUID_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+				uuidsIsSet = true
+			}
+		case 2:
+			if field.Value.Type() == wire.TList {
+				v.OtherUUIDs, err = _List_UUID_1_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+				otherUUIDsIsSet = true
+			}
+		}
+	}
+	if !uuidsIsSet {
+		return errors.New("field Uuids of ListOfConflictingUUIDs is required")
+	}
+	if !otherUUIDsIsSet {
+		return errors.New("field OtherUUIDs of ListOfConflictingUUIDs is required")
+	}
+	return nil
+}
+
+func (v *ListOfConflictingUUIDs) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	var fields [2]string
+	i := 0
+	fields[i] = fmt.Sprintf("Uuids: %v", v.Uuids)
+	i++
+	fields[i] = fmt.Sprintf("OtherUUIDs: %v", v.OtherUUIDs)
+	i++
+	return fmt.Sprintf("ListOfConflictingUUIDs{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _List_UUID_Equals(lhs, rhs []*typedefs.UUID) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !lv.Equals(rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func _List_UUID_1_Equals(lhs, rhs []uuid_conflict.UUID) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+	for i, lv := range lhs {
+		rv := rhs[i]
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+func (v *ListOfConflictingUUIDs) Equals(rhs *ListOfConflictingUUIDs) bool {
+	if !_List_UUID_Equals(v.Uuids, rhs.Uuids) {
+		return false
+	}
+	if !_List_UUID_1_Equals(v.OtherUUIDs, rhs.OtherUUIDs) {
 		return false
 	}
 	return true
@@ -2051,7 +2487,7 @@ func (v *MapOfBinaryAndString) String() string {
 	return fmt.Sprintf("MapOfBinaryAndString{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _Map_Binary_String_EqualsUnhashable(lhs, rhs []struct {
+func _Map_Binary_String_Equals(lhs, rhs []struct {
 	Key   []byte
 	Value string
 }) bool {
@@ -2081,7 +2517,7 @@ func _Map_Binary_String_EqualsUnhashable(lhs, rhs []struct {
 	return true
 }
 
-func _Map_String_Binary_EqualsHashable(lhs, rhs map[string][]byte) bool {
+func _Map_String_Binary_Equals(lhs, rhs map[string][]byte) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -2098,10 +2534,10 @@ func _Map_String_Binary_EqualsHashable(lhs, rhs map[string][]byte) bool {
 }
 
 func (v *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
-	if !((v.BinaryToString == nil && rhs.BinaryToString == nil) || (v.BinaryToString != nil && rhs.BinaryToString != nil && _Map_Binary_String_EqualsUnhashable(v.BinaryToString, rhs.BinaryToString))) {
+	if !((v.BinaryToString == nil && rhs.BinaryToString == nil) || (v.BinaryToString != nil && rhs.BinaryToString != nil && _Map_Binary_String_Equals(v.BinaryToString, rhs.BinaryToString))) {
 		return false
 	}
-	if !((v.StringToBinary == nil && rhs.StringToBinary == nil) || (v.StringToBinary != nil && rhs.StringToBinary != nil && _Map_String_Binary_EqualsHashable(v.StringToBinary, rhs.StringToBinary))) {
+	if !((v.StringToBinary == nil && rhs.StringToBinary == nil) || (v.StringToBinary != nil && rhs.StringToBinary != nil && _Map_String_Binary_Equals(v.StringToBinary, rhs.StringToBinary))) {
 		return false
 	}
 	return true
@@ -2549,7 +2985,7 @@ func _Set_Byte_Equals(lhs, rhs map[int8]struct{}) bool {
 	return true
 }
 
-func _Map_I32_String_EqualsHashable(lhs, rhs map[int32]string) bool {
+func _Map_I32_String_Equals(lhs, rhs map[int32]string) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -2565,7 +3001,7 @@ func _Map_I32_String_EqualsHashable(lhs, rhs map[int32]string) bool {
 	return true
 }
 
-func _Map_String_Bool_EqualsHashable(lhs, rhs map[string]bool) bool {
+func _Map_String_Bool_Equals(lhs, rhs map[string]bool) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -2594,10 +3030,10 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	if !((v.SetOfBytes == nil && rhs.SetOfBytes == nil) || (v.SetOfBytes != nil && rhs.SetOfBytes != nil && _Set_Byte_Equals(v.SetOfBytes, rhs.SetOfBytes))) {
 		return false
 	}
-	if !((v.MapOfIntToString == nil && rhs.MapOfIntToString == nil) || (v.MapOfIntToString != nil && rhs.MapOfIntToString != nil && _Map_I32_String_EqualsHashable(v.MapOfIntToString, rhs.MapOfIntToString))) {
+	if !((v.MapOfIntToString == nil && rhs.MapOfIntToString == nil) || (v.MapOfIntToString != nil && rhs.MapOfIntToString != nil && _Map_I32_String_Equals(v.MapOfIntToString, rhs.MapOfIntToString))) {
 		return false
 	}
-	if !((v.MapOfStringToBool == nil && rhs.MapOfStringToBool == nil) || (v.MapOfStringToBool != nil && rhs.MapOfStringToBool != nil && _Map_String_Bool_EqualsHashable(v.MapOfStringToBool, rhs.MapOfStringToBool))) {
+	if !((v.MapOfStringToBool == nil && rhs.MapOfStringToBool == nil) || (v.MapOfStringToBool != nil && rhs.MapOfStringToBool != nil && _Map_String_Bool_Equals(v.MapOfStringToBool, rhs.MapOfStringToBool))) {
 		return false
 	}
 	return true
@@ -2765,7 +3201,7 @@ func (v *PrimitiveContainersRequired) String() string {
 	return fmt.Sprintf("PrimitiveContainersRequired{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _Map_I64_Double_EqualsHashable(lhs, rhs map[int64]float64) bool {
+func _Map_I64_Double_Equals(lhs, rhs map[int64]float64) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -2788,7 +3224,7 @@ func (v *PrimitiveContainersRequired) Equals(rhs *PrimitiveContainersRequired) b
 	if !_Set_I32_Equals(v.SetOfInts, rhs.SetOfInts) {
 		return false
 	}
-	if !_Map_I64_Double_EqualsHashable(v.MapOfIntsToDoubles, rhs.MapOfIntsToDoubles) {
+	if !_Map_I64_Double_Equals(v.MapOfIntsToDoubles, rhs.MapOfIntsToDoubles) {
 		return false
 	}
 	return true
