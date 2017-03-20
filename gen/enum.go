@@ -27,21 +27,11 @@ import (
 )
 
 // enumGenerator generates code to serialize and deserialize enums.
-type enumGenerator struct {
-	hasReaders
-}
+type enumGenerator struct{}
 
 func (e *enumGenerator) Reader(g Generator, spec *compile.EnumSpec) (string, error) {
-	name, err := readerFuncName(spec)
-	if err != nil {
-		return "", err
-	}
-
-	if e.HasReader(name) {
-		return name, nil
-	}
-
-	err = g.DeclareFromTemplate(
+	name := readerFuncName(g, spec)
+	err := g.EnsureDeclared(
 		`
 		<$wire := import "go.uber.org/thriftrw/wire">
 

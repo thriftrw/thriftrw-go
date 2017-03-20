@@ -84,7 +84,7 @@ func (v *DoesNotExistException) String() string {
 	return fmt.Sprintf("DoesNotExistException{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _string_EqualsPtr(lhs, rhs *string) bool {
+func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -97,7 +97,7 @@ func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
 	if !(v.Key == rhs.Key) {
 		return false
 	}
-	if !_string_EqualsPtr(v.Error2, rhs.Error2) {
+	if !_String_EqualsPtr(v.Error2, rhs.Error2) {
 		return false
 	}
 	return true

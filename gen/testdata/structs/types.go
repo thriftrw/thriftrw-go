@@ -429,7 +429,7 @@ func (v *DefaultsStruct) String() string {
 	return fmt.Sprintf("DefaultsStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _i32_EqualsPtr(lhs, rhs *int32) bool {
+func _I32_EqualsPtr(lhs, rhs *int32) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -474,10 +474,10 @@ func _List_Double_Equals(lhs, rhs []float64) bool {
 }
 
 func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
-	if !_i32_EqualsPtr(v.RequiredPrimitive, rhs.RequiredPrimitive) {
+	if !_I32_EqualsPtr(v.RequiredPrimitive, rhs.RequiredPrimitive) {
 		return false
 	}
-	if !_i32_EqualsPtr(v.OptionalPrimitive, rhs.OptionalPrimitive) {
+	if !_I32_EqualsPtr(v.OptionalPrimitive, rhs.OptionalPrimitive) {
 		return false
 	}
 	if !_EnumDefault_EqualsPtr(v.RequiredEnum, rhs.RequiredEnum) {
@@ -1240,7 +1240,7 @@ func (v *PrimitiveOptionalStruct) String() string {
 	return fmt.Sprintf("PrimitiveOptionalStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _bool_EqualsPtr(lhs, rhs *bool) bool {
+func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -1249,7 +1249,7 @@ func _bool_EqualsPtr(lhs, rhs *bool) bool {
 	return lhs == nil && rhs == nil
 }
 
-func _byte_EqualsPtr(lhs, rhs *int8) bool {
+func _Byte_EqualsPtr(lhs, rhs *int8) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -1258,7 +1258,7 @@ func _byte_EqualsPtr(lhs, rhs *int8) bool {
 	return lhs == nil && rhs == nil
 }
 
-func _i16_EqualsPtr(lhs, rhs *int16) bool {
+func _I16_EqualsPtr(lhs, rhs *int16) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -1267,7 +1267,7 @@ func _i16_EqualsPtr(lhs, rhs *int16) bool {
 	return lhs == nil && rhs == nil
 }
 
-func _i64_EqualsPtr(lhs, rhs *int64) bool {
+func _I64_EqualsPtr(lhs, rhs *int64) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -1276,7 +1276,7 @@ func _i64_EqualsPtr(lhs, rhs *int64) bool {
 	return lhs == nil && rhs == nil
 }
 
-func _double_EqualsPtr(lhs, rhs *float64) bool {
+func _Double_EqualsPtr(lhs, rhs *float64) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -1285,7 +1285,7 @@ func _double_EqualsPtr(lhs, rhs *float64) bool {
 	return lhs == nil && rhs == nil
 }
 
-func _string_EqualsPtr(lhs, rhs *string) bool {
+func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 		x := *lhs
 		y := *rhs
@@ -1295,25 +1295,25 @@ func _string_EqualsPtr(lhs, rhs *string) bool {
 }
 
 func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
-	if !_bool_EqualsPtr(v.BoolField, rhs.BoolField) {
+	if !_Bool_EqualsPtr(v.BoolField, rhs.BoolField) {
 		return false
 	}
-	if !_byte_EqualsPtr(v.ByteField, rhs.ByteField) {
+	if !_Byte_EqualsPtr(v.ByteField, rhs.ByteField) {
 		return false
 	}
-	if !_i16_EqualsPtr(v.Int16Field, rhs.Int16Field) {
+	if !_I16_EqualsPtr(v.Int16Field, rhs.Int16Field) {
 		return false
 	}
-	if !_i32_EqualsPtr(v.Int32Field, rhs.Int32Field) {
+	if !_I32_EqualsPtr(v.Int32Field, rhs.Int32Field) {
 		return false
 	}
-	if !_i64_EqualsPtr(v.Int64Field, rhs.Int64Field) {
+	if !_I64_EqualsPtr(v.Int64Field, rhs.Int64Field) {
 		return false
 	}
-	if !_double_EqualsPtr(v.DoubleField, rhs.DoubleField) {
+	if !_Double_EqualsPtr(v.DoubleField, rhs.DoubleField) {
 		return false
 	}
-	if !_string_EqualsPtr(v.StringField, rhs.StringField) {
+	if !_String_EqualsPtr(v.StringField, rhs.StringField) {
 		return false
 	}
 	if !((v.BinaryField == nil && rhs.BinaryField == nil) || (v.BinaryField != nil && rhs.BinaryField != nil && bytes.Equal(v.BinaryField, rhs.BinaryField))) {
