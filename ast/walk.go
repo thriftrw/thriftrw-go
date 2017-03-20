@@ -24,8 +24,7 @@ package ast
 // given node. The visitor's Visit function should return a non-nil visitor if
 // it wants to visit the children of the node it was called with.
 func Walk(v Visitor, n Node) {
-	w := visitorWrapper{v: v}
-	w.visit(nil, n)
+	visitor{Visitor: v}.visit(nil, n)
 }
 
 // nodeStack of nodes visited in the order they were visited
@@ -50,22 +49,23 @@ func (ss nodeStack) Ancestors() []Node {
 	return ancestors
 }
 
-// Adapts a user-provided Visitor into an internal visitor so that we can call
-// the visitChildren method on nodes.
-type visitorWrapper struct{ v Visitor }
+// visitor adapts a user-provided Visitor so that we can use the internal
+// visitChildren method on nodes.
+type visitor struct {
+	Visitor Visitor
+}
 
-func (w visitorWrapper) visit(ss nodeStack, n Node) {
+func (v visitor) visit(ss nodeStack, n Node) {
 	if n == nil {
 		return
 	}
 
-	// Note that visitorWrapper is passed by value so we're operating on a
-	// copy of visitorWrapper.
-	w.v = w.v.Visit(ss, n)
-	if w.v == nil {
+	// Note that visitor is passed by value so we're operating on a copy
+	v.Visitor = v.Visitor.Visit(ss, n)
+	if v.Visitor == nil {
 		return
 	}
 
 	ss = append(ss, n)
-	n.visitChildren(ss, w)
+	n.visitChildren(ss, v)
 }
