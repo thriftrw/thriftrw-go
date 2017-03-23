@@ -1,7 +1,7 @@
 Releases
 ========
 
-v1.1.0 (unreleased)
+v1.1.0 (2017-03-23)
 -------------------
 
 -   `Equals()` methods are now generated for all custom types.
