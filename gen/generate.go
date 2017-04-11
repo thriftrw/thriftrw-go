@@ -164,6 +164,10 @@ func (i thriftPackageImporter) RelativePackage(file string) (string, error) {
 	return filepath.Rel(i.ThriftRoot, strings.TrimSuffix(file, ".thrift"))
 }
 
+func (i thriftPackageImporter) RelativeThriftFilePath(file string) (string, error) {
+	return filepath.Rel(i.ThriftRoot, file)
+}
+
 // Package returns the import path for the top-level package of the given Thrift
 // file.
 func (i thriftPackageImporter) Package(file string) (string, error) {
@@ -265,6 +269,20 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		if !o.NoTypes {
 			files["types.go"] = buff.Bytes()
 		}
+	}
+
+	if m.Raw != nil {
+		if err := EmbedIDL(g, i, m); err != nil {
+			return nil, err
+		}
+
+		buff := new(bytes.Buffer)
+		if err := g.Write(buff, token.NewFileSet()); err != nil {
+			return nil, fmt.Errorf(
+				"could not generate idl.go for %q: %v", m.ThriftPath, err)
+		}
+
+		files["idl.go"] = buff.Bytes()
 	}
 
 	// Services must be generated last because names of user-defined types take

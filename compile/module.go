@@ -40,6 +40,8 @@ type Module struct {
 	Constants map[string]*Constant
 	Types     map[string]TypeSpec
 	Services  map[string]*ServiceSpec
+
+	Raw []byte // The raw IDL input.
 }
 
 // GetName for Module

@@ -144,6 +144,7 @@ func (c compiler) load(p string) (*Module, error) {
 		Constants:  make(map[string]*Constant),
 		Types:      make(map[string]TypeSpec),
 		Services:   make(map[string]*ServiceSpec),
+		Raw:        s,
 	}
 	c.Modules[p] = m
 	// the module is added to the map before processing includes to break

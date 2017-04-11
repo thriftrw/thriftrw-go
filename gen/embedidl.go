@@ -1,0 +1,85 @@
+// Copyright (c) 2017 Uber Technologies, Inc.
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+package gen
+
+import (
+	"crypto/sha1"
+	"encoding/hex"
+
+	"go.uber.org/thriftrw/compile"
+)
+
+// EmbedIDL generate Go code with a full copy of the IDL embeded.
+func EmbedIDL(g Generator, i thriftPackageImporter, m *compile.Module) error {
+	pkg, err := i.Package(m.ThriftPath)
+	if err != nil {
+		return wrapGenerateError("idl embeding", err)
+	}
+	packageRelPath, err := i.RelativeThriftFilePath(m.ThriftPath)
+	if err != nil {
+		return wrapGenerateError("idl embeding", err)
+	}
+
+	hash := sha1.Sum(m.Raw)
+	var includes []string
+	for _, v := range m.Includes {
+		importPath, err := i.Package(v.Module.ThriftPath)
+		if err != nil {
+			return wrapGenerateError("idl embeding", err)
+		}
+		includes = append(includes, g.Import(importPath))
+	}
+	data := struct {
+		Name     string
+		Package  string
+		FilePath string
+		SHA1     string
+		Includes []string
+		Raw      []byte
+	}{
+		Name:     m.Name,
+		Package:  pkg,
+		FilePath: packageRelPath,
+		SHA1:     hex.EncodeToString(hash[:]),
+		Includes: includes,
+		Raw:      m.Raw,
+	}
+	err = g.DeclareFromTemplate(`
+		<$idl := import "go.uber.org/thriftrw/idl">
+
+		func ThriftModule() <$idl>.ThriftModule {
+			return thriftModule
+		}
+
+		var thriftModule = <$idl>.ThriftModule {
+			Name: "<.Name>",
+			Package: "<.Package>",
+			FilePath: "<.FilePath>",
+			SHA1: "<.SHA1>",
+			Includes: []<$idl>.ThriftModule {<range .Includes>
+					<.>.ThriftModule(), <end>
+				},
+			Raw: rawIDL,
+		}
+		const rawIDL = <printf "%q" .Raw>
+		`, data)
+	return wrapGenerateError("idl embeding", err)
+}
