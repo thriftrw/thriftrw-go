@@ -37,9 +37,9 @@ service KeyValue {
 }
 
 service Cache {
-    oneway void clear()
+    oneway void clear() (anno.tation="42")
     oneway void clearAfter(1: i64 durationMS)
-}
+} (anno.tation="21")
 
 struct ConflictingNames_SetValue_Args {
     1: required string key

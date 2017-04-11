@@ -145,6 +145,10 @@ struct Function {
      * returnType and exceptions will be null or empty.
      */
     6: optional bool oneWay
+    /**
+     * Annotations on the function.
+     */
+    7: optional map<string, string> annotations
 }
 
 /**
@@ -171,6 +175,10 @@ struct Service {
      * ID of the module where this service was declared.
      */
     6: required ModuleID moduleID
+    /**
+     * Annotations on the service.
+     */
+    8: optional map<string, string> annotations
 }
 
 /**
