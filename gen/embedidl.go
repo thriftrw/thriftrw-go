@@ -23,6 +23,7 @@ package gen
 import (
 	"crypto/sha1"
 	"encoding/hex"
+	"sort"
 
 	"go.uber.org/thriftrw/compile"
 )
@@ -47,6 +48,9 @@ func EmbedIDL(g Generator, i thriftPackageImporter, m *compile.Module) error {
 		}
 		includes = append(includes, g.Import(importPath))
 	}
+
+	sort.Strings(includes)
+
 	data := struct {
 		Name     string
 		Package  string
