@@ -70,6 +70,9 @@ type Options struct {
 
 	// Do not generate service helpers
 	NoServiceHelpers bool
+
+	// Do not embed IDLs in generated code
+	NoIDLEmbedding bool
 }
 
 // Generate generates code based on the given options.
@@ -271,7 +274,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		}
 	}
 
-	if m.Raw != nil {
+	if !o.NoIDLEmbedding {
 		if err := EmbedIDL(g, i, m); err != nil {
 			return nil, err
 		}
