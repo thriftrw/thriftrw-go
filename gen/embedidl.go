@@ -65,17 +65,14 @@ func EmbedIDL(g Generator, i thriftPackageImporter, m *compile.Module) error {
 	err = g.DeclareFromTemplate(`
 		<$idl := import "go.uber.org/thriftrw/idl">
 
-		func ThriftModule() <$idl>.ThriftModule {
-			return thriftModule
-		}
-
-		var thriftModule = <$idl>.ThriftModule {
+		// ThriftModule represents the IDL file used to generate this package.
+		var ThriftModule = &<$idl>.ThriftModule {
 			Name: "<.Name>",
 			Package: "<.Package>",
 			FilePath: "<.FilePath>",
 			SHA1: "<.SHA1>",
-			Includes: []<$idl>.ThriftModule {<range .Includes>
-					<.>.ThriftModule(), <end>
+			Includes: []*<$idl>.ThriftModule {<range .Includes>
+					<.>.ThriftModule, <end>
 				},
 			Raw: rawIDL,
 		}

@@ -8,10 +8,6 @@ import (
 	"go.uber.org/thriftrw/idl"
 )
 
-func ThriftModule() idl.ThriftModule {
-	return thriftModule
-}
-
-var thriftModule = idl.ThriftModule{Name: "unions", Package: "go.uber.org/thriftrw/gen/testdata/unions", FilePath: "unions.thrift", SHA1: "ec5d7ff25ced107d4166f19645b5e492391f21dd", Includes: []idl.ThriftModule{typedefs.ThriftModule()}, Raw: rawIDL}
+var ThriftModule = &idl.ThriftModule{Name: "unions", Package: "go.uber.org/thriftrw/gen/testdata/unions", FilePath: "unions.thrift", SHA1: "ec5d7ff25ced107d4166f19645b5e492391f21dd", Includes: []*idl.ThriftModule{typedefs.ThriftModule}, Raw: rawIDL}
 
 const rawIDL = "include \"./typedefs.thrift\"\n\nunion EmptyUnion {}\n\nunion Document {\n    1: typedefs.PDF pdf\n    2: string plainText\n}\n\nunion ArbitraryValue {\n    1: bool boolValue\n    2: i64 int64Value\n    3: string stringValue\n    4: list<ArbitraryValue> listValue\n    5: map<string, ArbitraryValue> mapValue\n}\n"

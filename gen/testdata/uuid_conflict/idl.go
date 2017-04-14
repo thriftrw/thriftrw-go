@@ -8,10 +8,6 @@ import (
 	"go.uber.org/thriftrw/idl"
 )
 
-func ThriftModule() idl.ThriftModule {
-	return thriftModule
-}
-
-var thriftModule = idl.ThriftModule{Name: "uuid_conflict", Package: "go.uber.org/thriftrw/gen/testdata/uuid_conflict", FilePath: "uuid_conflict.thrift", SHA1: "c7ab8450f4c3a548cde8938fe7e150cf1b8f9493", Includes: []idl.ThriftModule{typedefs.ThriftModule()}, Raw: rawIDL}
+var ThriftModule = &idl.ThriftModule{Name: "uuid_conflict", Package: "go.uber.org/thriftrw/gen/testdata/uuid_conflict", FilePath: "uuid_conflict.thrift", SHA1: "c7ab8450f4c3a548cde8938fe7e150cf1b8f9493", Includes: []*idl.ThriftModule{typedefs.ThriftModule}, Raw: rawIDL}
 
 const rawIDL = "include \"./typedefs.thrift\"\n\ntypedef string UUID\n\nstruct UUIDConflict {\n    1: required UUID localUUID\n    2: required typedefs.UUID importedUUID\n}\n"

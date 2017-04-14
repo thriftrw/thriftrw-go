@@ -25,24 +25,6 @@ package exception
 
 import "go.uber.org/thriftrw/idl"
 
-var ThriftModule = idl.ThriftModule{Name: "exception", Package: "go.uber.org/thriftrw/internal/envelope/exception", FilePath: "exception.thrift", SHA1: "88105bcd404d4aee06542af9452f7cf76647ae98", Includes: []idl.ThriftModule{}, Raw: rawIDL}
+var ThriftModule = &idl.ThriftModule{Name: "exception", Package: "go.uber.org/thriftrw/internal/envelope/exception", FilePath: "exception.thrift", SHA1: "88105bcd404d4aee06542af9452f7cf76647ae98", Includes: []*idl.ThriftModule{}, Raw: rawIDL}
 
-const rawIDL = `enum ExceptionType {
-  UNKNOWN = 0
-  UNKNOWN_METHOD = 1
-  INVALID_MESSAGE_TYPE = 2
-  WRONG_METHOD_NAME = 3
-  BAD_SEQUENCE_ID = 4
-  MISSING_RESULT = 5
-  INTERNAL_ERROR = 6
-  PROTOCOL_ERROR = 7
-  INVALID_TRANSFORM = 8
-  INVALID_PROTOCOL = 9
-  UNSUPPORTED_CLIENT_TYPE = 10
-}
-
-exception TApplicationException {
-  1: optional string message
-  2: optional ExceptionType type
-}
-`
+const rawIDL = "enum ExceptionType {\n  UNKNOWN = 0\n  UNKNOWN_METHOD = 1\n  INVALID_MESSAGE_TYPE = 2\n  WRONG_METHOD_NAME = 3\n  BAD_SEQUENCE_ID = 4\n  MISSING_RESULT = 5\n  INTERNAL_ERROR = 6\n  PROTOCOL_ERROR = 7\n  INVALID_TRANSFORM = 8\n  INVALID_PROTOCOL = 9\n  UNSUPPORTED_CLIENT_TYPE = 10\n}\n\nexception TApplicationException {\n  1: optional string message\n  2: optional ExceptionType type\n}\n"

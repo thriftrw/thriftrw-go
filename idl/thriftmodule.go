@@ -27,6 +27,6 @@ type ThriftModule struct {
 	Package  string
 	FilePath string
 	SHA1     string
-	Includes []ThriftModule
+	Includes []*ThriftModule
 	Raw      string
 }
