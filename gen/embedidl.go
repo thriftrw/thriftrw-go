@@ -44,7 +44,7 @@ func embedIDL(g Generator, i thriftPackageImporter, m *compile.Module) error {
 	for _, v := range m.Includes {
 		importPath, err := i.Package(v.Module.ThriftPath)
 		if err != nil {
-			return wrapGenerateError("idl embeding", err)
+			return wrapGenerateError("idl embedding", err)
 		}
 		includes = append(includes, g.Import(importPath))
 	}
@@ -84,5 +84,5 @@ func embedIDL(g Generator, i thriftPackageImporter, m *compile.Module) error {
 		}
 		const rawIDL = <printf "%q" .Raw>
 		`, data)
-	return wrapGenerateError("idl embeding", err)
+	return wrapGenerateError("idl embedding", err)
 }
