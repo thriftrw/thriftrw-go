@@ -31,7 +31,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	te "go.uber.org/thriftrw/gen/testdata/enums"
 	ts "go.uber.org/thriftrw/gen/testdata/structs"
-	"go.uber.org/thriftrw/idl"
+	"go.uber.org/thriftrw/thriftreflect"
 )
 
 func loadIDL(filename string) (string, string, error) {
@@ -50,7 +50,7 @@ func loadIDL(filename string) (string, string, error) {
 func TestIDLEmbedding(t *testing.T) {
 	for _, tt := range []struct {
 		N  string
-		TM *idl.ThriftModule
+		TM *thriftreflect.ThriftModule
 	}{
 		{
 			"enums",

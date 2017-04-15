@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package idl
+package thriftreflect
 
 // ThriftModule is used by the generated code to expose the embedded IDL
 // source.
