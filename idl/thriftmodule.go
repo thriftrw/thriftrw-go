@@ -23,10 +23,10 @@ package idl
 // ThriftModule is used by the generated code to expose the embedded IDL
 // source.
 type ThriftModule struct {
-	Name     string
-	Package  string
-	FilePath string
-	SHA1     string
-	Includes []*ThriftModule
-	Raw      string
+	Name     string          // The name of the thrift module.
+	Package  string          // The go package (full path).
+	FilePath string          // The thrift file path (relative to--thrift-root=).
+	Includes []*ThriftModule // A reference to every included thrift modules.
+	SHA1     string          // The SHA1 of the thrift content.
+	Raw      string          // The full content of the thrift file.
 }

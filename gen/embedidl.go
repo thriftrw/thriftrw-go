@@ -28,15 +28,15 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
-// EmbedIDL generate Go code with a full copy of the IDL embeded.
-func EmbedIDL(g Generator, i thriftPackageImporter, m *compile.Module) error {
+// embedIDL generate Go code with a full copy of the IDL embeded.
+func embedIDL(g Generator, i thriftPackageImporter, m *compile.Module) error {
 	pkg, err := i.Package(m.ThriftPath)
 	if err != nil {
-		return wrapGenerateError("idl embeding", err)
+		return wrapGenerateError("idl embedding", err)
 	}
 	packageRelPath, err := i.RelativeThriftFilePath(m.ThriftPath)
 	if err != nil {
-		return wrapGenerateError("idl embeding", err)
+		return wrapGenerateError("idl embedding", err)
 	}
 
 	hash := sha1.Sum(m.Raw)
@@ -75,9 +75,11 @@ func EmbedIDL(g Generator, i thriftPackageImporter, m *compile.Module) error {
 			Package: "<.Package>",
 			FilePath: "<.FilePath>",
 			SHA1: "<.SHA1>",
-			Includes: []*<$idl>.ThriftModule {<range .Includes>
-					<.>.ThriftModule, <end>
-				},
+			<if .Includes>
+				Includes: []*<$idl>.ThriftModule {<range .Includes>
+						<.>.ThriftModule, <end>
+					},
+			<end>
 			Raw: rawIDL,
 		}
 		const rawIDL = <printf "%q" .Raw>

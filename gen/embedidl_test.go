@@ -31,6 +31,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	te "go.uber.org/thriftrw/gen/testdata/enums"
 	ts "go.uber.org/thriftrw/gen/testdata/structs"
+	"go.uber.org/thriftrw/idl"
 )
 
 func loadIDL(filename string) (string, string, error) {
@@ -46,31 +47,35 @@ func loadIDL(filename string) (string, string, error) {
 	return string(rawIDL), hex.EncodeToString(hash[:]), nil
 }
 
-func TestIDLEmbeddingEnums(t *testing.T) {
-	tm := te.ThriftModule
-	assert.Equal(t, "enums", tm.Name)
-	assert.True(t, strings.HasSuffix(tm.Package, "thriftrw/gen/testdata/enums"))
-	assert.Equal(t, "enums.thrift", tm.FilePath)
+func TestIDLEmbedding(t *testing.T) {
+	for _, tt := range []struct {
+		N  string
+		TM *idl.ThriftModule
+	}{
+		{
+			"enums",
+			te.ThriftModule,
+		},
+		{
+			"structs",
+			ts.ThriftModule,
+		},
+	} {
+		tm := tt.TM
+		assert.Equal(t, tt.N, tm.Name)
+		assert.True(t, strings.HasSuffix(tm.Package, "thriftrw/gen/testdata/"+tt.N))
+		assert.Equal(t, tt.N+".thrift", tm.FilePath)
 
-	rawIDL, sha1, err := loadIDL("enums.thrift")
-	if assert.NoError(t, err) {
-		assert.Equal(t, rawIDL, tm.Raw)
-		assert.Equal(t, sha1, tm.SHA1)
+		rawIDL, sha1, err := loadIDL(tt.N + ".thrift")
+		if assert.NoError(t, err) {
+			assert.Equal(t, rawIDL, tm.Raw)
+			assert.Equal(t, sha1, tm.SHA1)
+		}
 	}
 }
 
-func TestIDLEmbeddingStructs(t *testing.T) {
+func TestIDLEmbeddingInclude(t *testing.T) {
 	tm := ts.ThriftModule
-	assert.Equal(t, "structs", tm.Name)
-	assert.True(t, strings.HasSuffix(tm.Package, "thriftrw/gen/testdata/structs"))
-	assert.Equal(t, "structs.thrift", tm.FilePath)
-
-	rawIDL, sha1, err := loadIDL("structs.thrift")
-	if assert.NoError(t, err) {
-		assert.Equal(t, rawIDL, tm.Raw)
-		assert.Equal(t, sha1, tm.SHA1)
-	}
-
 	if assert.Equal(t, 1, len(tm.Includes)) {
 		assert.Equal(t, te.ThriftModule, tm.Includes[0])
 	}
