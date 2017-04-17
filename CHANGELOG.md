@@ -4,7 +4,8 @@ Releases
 v1.2.0 (unreleased)
 -------------------
 
--   No changes yet.
+-   The Thrift IDL is now embedded withing the generated package. It is
+    accessible via the package global ThriftModule.
 
 
 v1.1.0 (2017-03-23)
