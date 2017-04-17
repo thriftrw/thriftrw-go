@@ -73,7 +73,7 @@ func embedIDL(g Generator, i thriftPackageImporter, m *compile.Module) error {
 		var ThriftModule = &<$idl>.ThriftModule {
 			Name: "<.Name>",
 			Package: "<.Package>",
-			FilePath: "<.FilePath>",
+			FilePath: <printf "%q" .FilePath>,
 			SHA1: "<.SHA1>",
 			<if .Includes>
 				Includes: []*<$idl>.ThriftModule {<range .Includes>
