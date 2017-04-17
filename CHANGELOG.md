@@ -1,7 +1,7 @@
 Releases
 ========
 
-v1.2.0 (unreleased)
+v1.2.0 (2017-04-17)
 -------------------
 
 -   The Thrift IDL is now embedded withing the generated package. It is
