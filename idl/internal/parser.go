@@ -39,7 +39,8 @@ func Parse(s []byte) (*ast.Program, error) {
 //go:generate ragel -Z -G2 -o lex.go lex.rl
 //go:generate goimports -w ./lex.go
 
-//go:generate go tool yacc thrift.y
+// Install from golang.org/x/tools/cmd/goyacc
+//go:generate goyacc thrift.y
 //go:generate goimports -w ./y.go
 
 //go:generate ./generated.sh
