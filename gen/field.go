@@ -110,6 +110,10 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 				jsonTags += ",omitempty"
 			}
 
+			if f.Required {
+				jsonTags += ",required"
+			}
+
 			goTag := f.Annotations["go.tag"]
 			if goTag != "" {
 				structTag := reflect.StructTag(goTag)
