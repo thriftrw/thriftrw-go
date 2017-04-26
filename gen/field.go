@@ -126,6 +126,11 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 				}
 			}
 
+			// If the field name is "-" then it means omit, add no tags
+			if jsonFieldName == "-" {
+				jsonTags = ""
+			}
+
 			// TODO(abg): Take go.tag and js.name annotations into account
 			return fmt.Sprintf("`json:\"%s%s\"`", jsonFieldName, jsonTags)
 		}),
