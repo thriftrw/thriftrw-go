@@ -39,7 +39,10 @@ GENERATED_GO_FILES := $(shell \
 LINT_EXCLUDES := $(GENERATED_GO_FILES) $(LINT_EXCLUDES_EXTRAS)
 
 # Pipe lint output into this to filter out ignored files.
-FILTER_LINT := grep -v $(patsubst %,-e %, $(LINT_EXCLUDES))
+FILTER_LINT := grep -v $(patsubst %,-e %, $(LINT_EXCLUDES)) -e "vendor/"
+
+# Disable printf-like invocation checking due to testify.assert.Error()
+VET_RULES := -printf=false
 
 BUILD_FLAGS ?=
 
@@ -62,7 +65,13 @@ ifdef SHOULD_LINT
 	@[ ! -s "$(FMT_LOG)" ] || (echo "gofmt failed:" | cat - $(FMT_LOG) && false)
 
 	$(eval VET_LOG := $(shell mktemp -t govet.XXXXX))
-	@go vet $(PACKAGES) 2>&1 | grep -v '^exit status' | $(FILTER_LINT) > $(VET_LOG) || true
+	@$(foreach pkg, $(PACKAGES), \
+		go tool vet $(VET_RULES) $(pkg) 2>&1 | \
+			grep -v '^exit status' | \
+			$(FILTER_LINT) | \
+			grep -v 'something"` not compatible with reflect.StructTag.Get:' \
+		> $(VET_LOG) || true; \
+	)
 	@[ ! -s "$(VET_LOG)" ] || (echo "govet failed:" | cat - $(VET_LOG) && false)
 
 	$(eval LINT_LOG := $(shell mktemp -t golint.XXXXX))
