@@ -151,7 +151,7 @@ func TestTypedefStruct(t *testing.T) {
 		v wire.Value
 	}{
 		{
-			(*td.UUID)(&td.I128{1, 2}),
+			(*td.UUID)(&td.I128{High: 1, Low: 2}),
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueI64(1)},
 				{ID: 2, Value: wire.NewValueI64(2)},
@@ -170,8 +170,8 @@ func TestTypedefStructEquals(t *testing.T) {
 		x, y *td.UUID
 	}{
 		{
-			(*td.UUID)(&td.I128{1, 2}),
-			(*td.UUID)(&td.I128{3, 1}),
+			(*td.UUID)(&td.I128{High: 1, Low: 2}),
+			(*td.UUID)(&td.I128{High: 3, Low: 1}),
 		},
 	}
 

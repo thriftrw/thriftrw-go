@@ -1,7 +1,7 @@
 WANT_VERSION = $(shell grep '^v[0-9]' CHANGELOG.md | head -n1 | cut -d' ' -f1)
 
 # Minor versions of Go for which the lint check should be run.
-LINTABLE_MINOR_VERSIONS := 7
+LINTABLE_MINOR_VERSIONS := 8
 
 # Paths besides auto-detected generated files that should be excluded from
 # lint results. If generated code uses '//line' directives with a different
@@ -39,7 +39,10 @@ GENERATED_GO_FILES := $(shell \
 LINT_EXCLUDES := $(GENERATED_GO_FILES) $(LINT_EXCLUDES_EXTRAS)
 
 # Pipe lint output into this to filter out ignored files.
-FILTER_LINT := grep -v $(patsubst %,-e %, $(LINT_EXCLUDES))
+FILTER_LINT := grep -v $(patsubst %,-e %, $(LINT_EXCLUDES)) -e "vendor/"
+
+# Disable printf-like invocation checking due to testify.assert.Error()
+VET_RULES := -printf=false
 
 BUILD_FLAGS ?=
 RAGEL_PATH := $(shell pwd)/vendor/ragel
@@ -72,7 +75,12 @@ ifdef SHOULD_LINT
 	@[ ! -s "$(FMT_LOG)" ] || (echo "gofmt failed:" | cat - $(FMT_LOG) && false)
 
 	$(eval VET_LOG := $(shell mktemp -t govet.XXXXX))
-	@go vet $(PACKAGES) 2>&1 | grep -v '^exit status' | $(FILTER_LINT) > $(VET_LOG) || true
+	@$(foreach pkg, $(PACKAGES), \
+		go tool vet $(VET_RULES) $(pkg) 2>&1 | \
+			grep -v '^exit status' | \
+			$(FILTER_LINT) | \
+		> $(VET_LOG) || true; \
+	)
 	@[ ! -s "$(VET_LOG)" ] || (echo "govet failed:" | cat - $(VET_LOG) && false)
 
 	$(eval LINT_LOG := $(shell mktemp -t golint.XXXXX))
