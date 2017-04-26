@@ -986,6 +986,14 @@ func TestStructJSON(t *testing.T) {
 	}
 }
 
+func TestStructRequiredJSONField(t *testing.T) {
+	edge := ts.Edge{}
+	err := json.Unmarshal([]byte(`{}`), &edge)
+
+	assert.Error(t, err, "expected err in json unmarshal")
+	assert.Equal(t, err.Error(), "key 'startPoint' is required")
+}
+
 func TestStructValidation(t *testing.T) {
 	tests := []struct {
 		desc        string
