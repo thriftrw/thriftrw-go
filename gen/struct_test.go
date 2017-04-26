@@ -971,6 +971,14 @@ func TestStructJSON(t *testing.T) {
 			&ts.List{Value: 0, Tail: &ts.List{Value: 1}},
 			`{"value":0,"tail":{"value":1}}`,
 		},
+		{
+			&ts.Rename{Default: "foo", CamelCase: "bar"},
+			`{"default":"foo","snake_case":"bar"}`,
+		},
+		{
+			&ts.Omit{Serialized: "foo", Hidden: ""},
+			`{"serialized":"foo"}`,
+		},
 	}
 
 	for _, tt := range tests {
@@ -984,6 +992,21 @@ func TestStructJSON(t *testing.T) {
 			assert.Equal(t, tt.v, v)
 		}
 	}
+}
+
+func TestJSONOmitBehaviour(t *testing.T) {
+	omit := ts.Omit{Serialized: "foo", Hidden: "bar"}
+	bytes, err := json.Marshal(&omit)
+
+	assert.NoError(t, err, "should marshal")
+	assert.Equal(t, bytes, []byte(`{"serialized":"foo"}`))
+
+	omit2 := ts.Omit{}
+	err = json.Unmarshal([]byte(`{"serialized":"foo","hidden":"bar"}`), &omit2)
+
+	assert.NoError(t, err, "should unmarshal")
+	assert.Equal(t, omit2.Serialized, "foo")
+	assert.Equal(t, omit2.Hidden, "")
 }
 
 func TestStructRequiredJSONField(t *testing.T) {
