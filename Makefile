@@ -42,15 +42,25 @@ LINT_EXCLUDES := $(GENERATED_GO_FILES) $(LINT_EXCLUDES_EXTRAS)
 FILTER_LINT := grep -v $(patsubst %,-e %, $(LINT_EXCLUDES))
 
 BUILD_FLAGS ?=
+RAGEL_PATH := $(shell pwd)/vendor/ragel
 
 .PHONY: build
 build:
 	go build -i $(BUILD_FLAGS)
 
+$(RAGEL_PATH)/bin/ragel:
+	mkdir $(RAGEL_PATH)
+	curl https://www.colm.net/files/ragel/ragel-6.9.tar.gz | \
+		tar -xz -C $(RAGEL_PATH) --strip-components 1
+	cd ./vendor/ragel ; (./configure --prefix=$(RAGEL_PATH) && make install)
+
 .PHONY: generate
-generate:
+generate: $(RAGEL_PATH)/bin/ragel
+	go get -u github.com/golang/mock/mockgen
+	go get -u golang.org/x/tools/cmd/stringer
+	go get -u golang.org/x/tools/cmd/goyacc
 	go build -i -tags=thriftrw.disableVersionCheck
-	PATH=$$(pwd):$$PATH go generate $$(glide nv)
+	PATH=$$(pwd):$$PATH:$(RAGEL_PATH)/bin go generate $$(glide nv)
 	make -C ./gen/testdata
 	./scripts/updateLicenses.sh
 
