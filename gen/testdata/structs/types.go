@@ -14,7 +14,7 @@ import (
 )
 
 type ContactInfo struct {
-	EmailAddress string `json:"emailAddress"`
+	EmailAddress string `json:"emailAddress,required"`
 }
 
 func (v *ContactInfo) ToWire() (wire.Value, error) {
@@ -502,8 +502,8 @@ func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 }
 
 type Edge struct {
-	StartPoint *Point `json:"startPoint"`
-	EndPoint   *Point `json:"endPoint"`
+	StartPoint *Point `json:"startPoint,required"`
+	EndPoint   *Point `json:"endPoint,required"`
 }
 
 func (v *Edge) ToWire() (wire.Value, error) {
@@ -628,8 +628,8 @@ func (v *EmptyStruct) Equals(rhs *EmptyStruct) bool {
 }
 
 type Frame struct {
-	TopLeft *Point `json:"topLeft"`
-	Size    *Size  `json:"size"`
+	TopLeft *Point `json:"topLeft,required"`
+	Size    *Size  `json:"size,required"`
 }
 
 func (v *Frame) ToWire() (wire.Value, error) {
@@ -723,7 +723,7 @@ func (v *Frame) Equals(rhs *Frame) bool {
 }
 
 type Graph struct {
-	Edges []*Edge `json:"edges"`
+	Edges []*Edge `json:"edges,required"`
 }
 
 type _List_Edge_ValueList []*Edge
@@ -865,7 +865,7 @@ func (lhs *List) Equals(rhs *List) bool {
 }
 
 type Node struct {
-	Value int32 `json:"value"`
+	Value int32 `json:"value,required"`
 	Tail  *List `json:"tail,omitempty"`
 }
 
@@ -953,8 +953,8 @@ func (v *Node) Equals(rhs *Node) bool {
 }
 
 type Point struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
+	X float64 `json:"x,required"`
+	Y float64 `json:"y,required"`
 }
 
 func (v *Point) ToWire() (wire.Value, error) {
@@ -1323,14 +1323,14 @@ func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
 }
 
 type PrimitiveRequiredStruct struct {
-	BoolField   bool    `json:"boolField"`
-	ByteField   int8    `json:"byteField"`
-	Int16Field  int16   `json:"int16Field"`
-	Int32Field  int32   `json:"int32Field"`
-	Int64Field  int64   `json:"int64Field"`
-	DoubleField float64 `json:"doubleField"`
-	StringField string  `json:"stringField"`
-	BinaryField []byte  `json:"binaryField"`
+	BoolField   bool    `json:"boolField,required"`
+	ByteField   int8    `json:"byteField,required"`
+	Int16Field  int16   `json:"int16Field,required"`
+	Int32Field  int32   `json:"int32Field,required"`
+	Int64Field  int64   `json:"int64Field,required"`
+	DoubleField float64 `json:"doubleField,required"`
+	StringField string  `json:"stringField,required"`
+	BinaryField []byte  `json:"binaryField,required"`
 }
 
 func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
@@ -1553,8 +1553,8 @@ func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
 }
 
 type Size struct {
-	Width  float64 `json:"width"`
-	Height float64 `json:"height"`
+	Width  float64 `json:"width,required"`
+	Height float64 `json:"height,required"`
 }
 
 func (v *Size) ToWire() (wire.Value, error) {
@@ -1636,7 +1636,7 @@ func (v *Size) Equals(rhs *Size) bool {
 }
 
 type User struct {
-	Name    string       `json:"name"`
+	Name    string       `json:"name,required"`
 	Contact *ContactInfo `json:"contact,omitempty"`
 }
 
