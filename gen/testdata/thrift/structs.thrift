@@ -76,6 +76,19 @@ struct Node {
     2: optional List tail
 }
 
+//////////////////////////////////////////////////////////////////////////////
+// JSON tagged structs
+
+struct Rename {
+    1: required string Default (go.tag = "json:\"default\"")
+    2: required string camelCase (go.tag = "json:\"snake_case\"")
+}
+
+struct Omit {
+    1: required string serialized
+    2: required string hidden (go.tag = "json:\"-\"")
+}
+
 
 //////////////////////////////////////////////////////////////////////////////
 // Default values
