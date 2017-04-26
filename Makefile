@@ -1,7 +1,7 @@
 WANT_VERSION = $(shell grep '^v[0-9]' CHANGELOG.md | head -n1 | cut -d' ' -f1)
 
 # Minor versions of Go for which the lint check should be run.
-LINTABLE_MINOR_VERSIONS := 7
+LINTABLE_MINOR_VERSIONS := 8
 
 # Paths besides auto-detected generated files that should be excluded from
 # lint results. If generated code uses '//line' directives with a different
@@ -69,7 +69,6 @@ ifdef SHOULD_LINT
 		go tool vet $(VET_RULES) $(pkg) 2>&1 | \
 			grep -v '^exit status' | \
 			$(FILTER_LINT) | \
-			grep -v 'something"` not compatible with reflect.StructTag.Get:' \
 		> $(VET_LOG) || true; \
 	)
 	@[ ! -s "$(VET_LOG)" ] || (echo "govet failed:" | cat - $(VET_LOG) && false)
