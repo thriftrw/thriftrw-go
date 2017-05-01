@@ -134,7 +134,6 @@ func (h *transportHandle) Close() error {
 	if !h.Running.Swap(false) {
 		return nil // already closed
 	}
-
 	err := h.Client.Goodbye()
 	if closer, ok := h.Transport.(io.Closer); ok {
 		err = internal.CombineErrors(err, closer.Close())

@@ -25,7 +25,6 @@ import (
 	"io"
 
 	"go.uber.org/atomic"
-	"go.uber.org/thriftrw/internal"
 )
 
 // Handler handles incoming framed requests.
@@ -42,6 +41,9 @@ type Server struct {
 	w *Writer
 
 	running *atomic.Bool
+
+	shouldCloseReader atomic.Bool
+	shouldCloseWriter atomic.Bool
 }
 
 // NewServer builds a new server which reads requests from the given Reader
@@ -65,9 +67,7 @@ func (s *Server) Serve(h Handler) (err error) {
 		return fmt.Errorf("server is already running")
 	}
 
-	defer func() {
-		err = internal.CombineErrors(err, s.r.Close(), s.w.Close())
-	}()
+	defer s.closeReaderWriter()
 
 	for s.running.Load() {
 		req, err := s.r.Read()
@@ -97,12 +97,20 @@ func (s *Server) Serve(h Handler) (err error) {
 //
 // This is a no-op if the server wasn't already running.
 func (s *Server) Stop() error {
-	// We only close the reader because we want the writer to be available if
-	// Stop() was called by a request handler which still needs to send back a
-	// response (goodbye()). The writer will be closed automatically when the
-	// loop exits.
 	if s.running.Swap(false) {
-		return s.r.Close()
+		s.closeReader()
 	}
 	return nil
+}
+
+func (s *Server) closeReader() {
+	s.shouldCloseReader.Store(true)
+	if s.shouldCloseWriter.Load() {
+		s.closeReaderWriter()
+	}
+}
+
+func (s *Server) closeReaderWriter() {
+	s.r.Close()
+	s.w.Close()
 }
