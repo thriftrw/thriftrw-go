@@ -22,6 +22,9 @@ package gen
 
 import (
 	"fmt"
+	"strings"
+
+	"reflect"
 
 	"go.uber.org/thriftrw/compile"
 )
@@ -100,12 +103,36 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 			// optional collections because omitempty doesn't differentiate
 			// between nil and empty collections.
 
+			jsonTags := ""
+			jsonFieldName := f.Name
+
 			if (isStructType(f.Type) || isPrimitiveType(f.Type)) && !f.Required {
-				return fmt.Sprintf("`json:\"%s,omitempty\"`", f.Name)
+				jsonTags += ",omitempty"
 			}
 
-			return fmt.Sprintf("`json:%q`", f.Name)
+			if f.Required {
+				jsonTags += ",required"
+			}
+
+			goTag := f.Annotations["go.tag"]
+			if goTag != "" {
+				structTag := reflect.StructTag(goTag)
+				jsonTag := structTag.Get("json")
+				if jsonTag != "" {
+					segments := strings.Split(jsonTag, ",")
+
+					// Assign jsonFieldName to be the name in json tag.
+					jsonFieldName = segments[0]
+				}
+			}
+
+			// If the field name is "-" then it means omit, add no tags
+			if jsonFieldName == "-" {
+				jsonTags = ""
+			}
+
 			// TODO(abg): Take go.tag and js.name annotations into account
+			return fmt.Sprintf("`json:\"%s%s\"`", jsonFieldName, jsonTags)
 		}),
 		TemplateFunc("declFieldName", f.declFieldName),
 	)

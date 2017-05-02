@@ -28,6 +28,8 @@ import (
 	"path/filepath"
 	"sort"
 
+	"strings"
+
 	"go.uber.org/thriftrw/wire"
 )
 
@@ -71,6 +73,10 @@ func dirhash(dir string) (string, error) {
 		}
 
 		if info.IsDir() {
+			return nil
+		}
+
+		if strings.Index(path, "_easyjson.go") > -1 {
 			return nil
 		}
 

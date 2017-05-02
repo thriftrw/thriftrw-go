@@ -11,7 +11,7 @@ import (
 )
 
 type DoesNotExistException struct {
-	Key    string  `json:"key"`
+	Key    string  `json:"key,required"`
 	Error2 *string `json:"Error,omitempty"`
 }
 

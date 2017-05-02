@@ -12,8 +12,8 @@ import (
 )
 
 type ConflictingNamesSetValueArgs struct {
-	Key   string `json:"key"`
-	Value []byte `json:"value"`
+	Key   string `json:"key,required"`
+	Value []byte `json:"value,required"`
 }
 
 func (v *ConflictingNamesSetValueArgs) ToWire() (wire.Value, error) {

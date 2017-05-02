@@ -431,8 +431,8 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 }
 
 type StructCollision struct {
-	CollisionField  bool   `json:"collisionField"`
-	CollisionField2 string `json:"collision_field"`
+	CollisionField  bool   `json:"collisionField,required"`
+	CollisionField2 string `json:"collision_field,required"`
 }
 
 func (v *StructCollision) ToWire() (wire.Value, error) {
@@ -808,8 +808,8 @@ func (v *MyEnum2) UnmarshalJSON(text []byte) error {
 }
 
 type StructCollision2 struct {
-	CollisionField  bool   `json:"collisionField"`
-	CollisionField2 string `json:"collision_field"`
+	CollisionField  bool   `json:"collisionField,required"`
+	CollisionField2 string `json:"collision_field,required"`
 }
 
 func (v *StructCollision2) ToWire() (wire.Value, error) {

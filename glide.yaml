@@ -12,3 +12,5 @@ import:
   - go/ast/astutil
 - package: github.com/jessevdk/go-flags
 - package: github.com/anmitsu/go-shlex
+testImport:
+- package: github.com/mailru/easyjson

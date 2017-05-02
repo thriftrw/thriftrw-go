@@ -35,8 +35,8 @@ import (
 )
 
 type Argument struct {
-	Name string `json:"name"`
-	Type *Type  `json:"type"`
+	Name string `json:"name,required"`
+	Type *Type  `json:"type,required"`
 }
 
 func (v *Argument) ToWire() (wire.Value, error) {
@@ -197,9 +197,9 @@ func (v *Feature) UnmarshalJSON(text []byte) error {
 }
 
 type Function struct {
-	Name       string      `json:"name"`
-	ThriftName string      `json:"thriftName"`
-	Arguments  []*Argument `json:"arguments"`
+	Name       string      `json:"name,required"`
+	ThriftName string      `json:"thriftName,required"`
+	Arguments  []*Argument `json:"arguments,required"`
 	ReturnType *Type       `json:"returnType,omitempty"`
 	Exceptions []*Argument `json:"exceptions"`
 	OneWay     *bool       `json:"oneWay,omitempty"`
@@ -453,9 +453,9 @@ func (v *Function) Equals(rhs *Function) bool {
 }
 
 type GenerateServiceRequest struct {
-	RootServices []ServiceID            `json:"rootServices"`
-	Services     map[ServiceID]*Service `json:"services"`
-	Modules      map[ModuleID]*Module   `json:"modules"`
+	RootServices []ServiceID            `json:"rootServices,required"`
+	Services     map[ServiceID]*Service `json:"services,required"`
+	Modules      map[ModuleID]*Module   `json:"modules,required"`
 }
 
 type _List_ServiceID_ValueList []ServiceID
@@ -973,9 +973,9 @@ func (v *HandshakeRequest) Equals(rhs *HandshakeRequest) bool {
 }
 
 type HandshakeResponse struct {
-	Name           string    `json:"name"`
-	APIVersion     int32     `json:"apiVersion"`
-	Features       []Feature `json:"features"`
+	Name           string    `json:"name,required"`
+	APIVersion     int32     `json:"apiVersion,required"`
+	Features       []Feature `json:"features,required"`
 	LibraryVersion *string   `json:"libraryVersion,omitempty"`
 }
 
@@ -1180,8 +1180,8 @@ func (v *HandshakeResponse) Equals(rhs *HandshakeResponse) bool {
 }
 
 type Module struct {
-	ImportPath string `json:"importPath"`
-	Directory  string `json:"directory"`
+	ImportPath string `json:"importPath,required"`
+	Directory  string `json:"directory,required"`
 }
 
 func (v *Module) ToWire() (wire.Value, error) {
@@ -1285,11 +1285,11 @@ func (lhs ModuleID) Equals(rhs ModuleID) bool {
 }
 
 type Service struct {
-	Name       string      `json:"name"`
-	ThriftName string      `json:"thriftName"`
+	Name       string      `json:"name,required"`
+	ThriftName string      `json:"thriftName,required"`
 	ParentID   *ServiceID  `json:"parentID,omitempty"`
-	Functions  []*Function `json:"functions"`
-	ModuleID   ModuleID    `json:"moduleID"`
+	Functions  []*Function `json:"functions,required"`
+	ModuleID   ModuleID    `json:"moduleID,required"`
 }
 
 type _List_Function_ValueList []*Function
@@ -1902,8 +1902,8 @@ func (v *Type) Equals(rhs *Type) bool {
 }
 
 type TypePair struct {
-	Left  *Type `json:"left"`
-	Right *Type `json:"right"`
+	Left  *Type `json:"left,required"`
+	Right *Type `json:"right,required"`
 }
 
 func (v *TypePair) ToWire() (wire.Value, error) {
@@ -1991,8 +1991,8 @@ func (v *TypePair) Equals(rhs *TypePair) bool {
 }
 
 type TypeReference struct {
-	Name       string `json:"name"`
-	ImportPath string `json:"importPath"`
+	Name       string `json:"name,required"`
+	ImportPath string `json:"importPath,required"`
 }
 
 func (v *TypeReference) ToWire() (wire.Value, error) {

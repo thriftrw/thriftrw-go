@@ -14,7 +14,7 @@ import (
 )
 
 type ContactInfo struct {
-	EmailAddress string `json:"emailAddress"`
+	EmailAddress string `json:"emailAddress,required"`
 }
 
 func (v *ContactInfo) ToWire() (wire.Value, error) {
@@ -502,8 +502,8 @@ func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 }
 
 type Edge struct {
-	StartPoint *Point `json:"startPoint"`
-	EndPoint   *Point `json:"endPoint"`
+	StartPoint *Point `json:"startPoint,required"`
+	EndPoint   *Point `json:"endPoint,required"`
 }
 
 func (v *Edge) ToWire() (wire.Value, error) {
@@ -628,8 +628,8 @@ func (v *EmptyStruct) Equals(rhs *EmptyStruct) bool {
 }
 
 type Frame struct {
-	TopLeft *Point `json:"topLeft"`
-	Size    *Size  `json:"size"`
+	TopLeft *Point `json:"topLeft,required"`
+	Size    *Size  `json:"size,required"`
 }
 
 func (v *Frame) ToWire() (wire.Value, error) {
@@ -723,7 +723,7 @@ func (v *Frame) Equals(rhs *Frame) bool {
 }
 
 type Graph struct {
-	Edges []*Edge `json:"edges"`
+	Edges []*Edge `json:"edges,required"`
 }
 
 type _List_Edge_ValueList []*Edge
@@ -865,7 +865,7 @@ func (lhs *List) Equals(rhs *List) bool {
 }
 
 type Node struct {
-	Value int32 `json:"value"`
+	Value int32 `json:"value,required"`
 	Tail  *List `json:"tail,omitempty"`
 }
 
@@ -952,9 +952,92 @@ func (v *Node) Equals(rhs *Node) bool {
 	return true
 }
 
+type Omit struct {
+	Serialized string `json:"serialized,required"`
+	Hidden     string `json:"-"`
+}
+
+func (v *Omit) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueString(v.Serialized), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+	w, err = wire.NewValueString(v.Hidden), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func (v *Omit) FromWire(w wire.Value) error {
+	var err error
+	serializedIsSet := false
+	hiddenIsSet := false
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TBinary {
+				v.Serialized, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				serializedIsSet = true
+			}
+		case 2:
+			if field.Value.Type() == wire.TBinary {
+				v.Hidden, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				hiddenIsSet = true
+			}
+		}
+	}
+	if !serializedIsSet {
+		return errors.New("field Serialized of Omit is required")
+	}
+	if !hiddenIsSet {
+		return errors.New("field Hidden of Omit is required")
+	}
+	return nil
+}
+
+func (v *Omit) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	var fields [2]string
+	i := 0
+	fields[i] = fmt.Sprintf("Serialized: %v", v.Serialized)
+	i++
+	fields[i] = fmt.Sprintf("Hidden: %v", v.Hidden)
+	i++
+	return fmt.Sprintf("Omit{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *Omit) Equals(rhs *Omit) bool {
+	if !(v.Serialized == rhs.Serialized) {
+		return false
+	}
+	if !(v.Hidden == rhs.Hidden) {
+		return false
+	}
+	return true
+}
+
 type Point struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
+	X float64 `json:"x,required"`
+	Y float64 `json:"y,required"`
 }
 
 func (v *Point) ToWire() (wire.Value, error) {
@@ -1323,14 +1406,14 @@ func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
 }
 
 type PrimitiveRequiredStruct struct {
-	BoolField   bool    `json:"boolField"`
-	ByteField   int8    `json:"byteField"`
-	Int16Field  int16   `json:"int16Field"`
-	Int32Field  int32   `json:"int32Field"`
-	Int64Field  int64   `json:"int64Field"`
-	DoubleField float64 `json:"doubleField"`
-	StringField string  `json:"stringField"`
-	BinaryField []byte  `json:"binaryField"`
+	BoolField   bool    `json:"boolField,required"`
+	ByteField   int8    `json:"byteField,required"`
+	Int16Field  int16   `json:"int16Field,required"`
+	Int32Field  int32   `json:"int32Field,required"`
+	Int64Field  int64   `json:"int64Field,required"`
+	DoubleField float64 `json:"doubleField,required"`
+	StringField string  `json:"stringField,required"`
+	BinaryField []byte  `json:"binaryField,required"`
 }
 
 func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
@@ -1552,9 +1635,92 @@ func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
 	return true
 }
 
+type Rename struct {
+	Default   string `json:"default,required"`
+	CamelCase string `json:"snake_case,required"`
+}
+
+func (v *Rename) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueString(v.Default), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+	w, err = wire.NewValueString(v.CamelCase), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func (v *Rename) FromWire(w wire.Value) error {
+	var err error
+	DefaultIsSet := false
+	camelCaseIsSet := false
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TBinary {
+				v.Default, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				DefaultIsSet = true
+			}
+		case 2:
+			if field.Value.Type() == wire.TBinary {
+				v.CamelCase, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				camelCaseIsSet = true
+			}
+		}
+	}
+	if !DefaultIsSet {
+		return errors.New("field Default of Rename is required")
+	}
+	if !camelCaseIsSet {
+		return errors.New("field CamelCase of Rename is required")
+	}
+	return nil
+}
+
+func (v *Rename) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	var fields [2]string
+	i := 0
+	fields[i] = fmt.Sprintf("Default: %v", v.Default)
+	i++
+	fields[i] = fmt.Sprintf("CamelCase: %v", v.CamelCase)
+	i++
+	return fmt.Sprintf("Rename{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *Rename) Equals(rhs *Rename) bool {
+	if !(v.Default == rhs.Default) {
+		return false
+	}
+	if !(v.CamelCase == rhs.CamelCase) {
+		return false
+	}
+	return true
+}
+
 type Size struct {
-	Width  float64 `json:"width"`
-	Height float64 `json:"height"`
+	Width  float64 `json:"width,required"`
+	Height float64 `json:"height,required"`
 }
 
 func (v *Size) ToWire() (wire.Value, error) {
@@ -1636,7 +1802,7 @@ func (v *Size) Equals(rhs *Size) bool {
 }
 
 type User struct {
-	Name    string       `json:"name"`
+	Name    string       `json:"name,required"`
 	Contact *ContactInfo `json:"contact,omitempty"`
 }
 
