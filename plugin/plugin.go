@@ -36,11 +36,7 @@ import (
 
 const _fastPathFrameSize = 10 * 1024 * 1024 // 10 MB
 
-var (
-	_proto           = protocol.Binary
-	_out   io.Writer = os.Stdout
-	_in    io.Reader = os.Stdin
-)
+var _proto = protocol.Binary
 
 // Plugin defines a ThriftRW plugin.
 //
@@ -55,6 +51,12 @@ type Plugin struct {
 	// Thrift services. This may be nil if the plugin does not provide this
 	// functionality.
 	ServiceGenerator api.ServiceGenerator
+
+	// Reader and Writer may be specified to change the communication channel
+	// this plugin uses. By default, plugins listen on stdin and write to
+	// stdout.
+	Reader io.Reader
+	Writer io.Writer
 }
 
 // Main serves the given plugin. It is the entry point to the plugin system.
@@ -83,8 +85,16 @@ func Main(p *Plugin) {
 	}
 
 	// TODO(abg): Check for other features and register handlers here.
+	reader := p.Reader
+	if reader == nil {
+		reader = os.Stdin
+	}
+	writer := p.Writer
+	if writer == nil {
+		writer = os.Stdout
+	}
 
-	server := frame.NewServer(_in, _out)
+	server := frame.NewServer(reader, writer)
 	mainHandler.Put("Plugin", api.NewPluginHandler(pluginHandler{
 		server:   server,
 		plugin:   p,

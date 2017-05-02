@@ -17,33 +17,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// fakeStreams is a helper for tests to control the output and input used by
-// plugin.Main while testing.
-//
-// It returns a Writer to write to the plugin's stdin, a Reader to read from it,
-// and a function that should be called after the test is finished to restore
-// the old values.
-//
-// 	in, out, done := fakeStreams()
-// 	defer done()
-func fakeStreams() (stdin io.Writer, stdout io.Reader, done func()) {
-	stdinReader, stdinWriter := io.Pipe()
-	stdoutReader, stdoutWriter := io.Pipe()
-
-	oldIn := _in
-	oldOut := _out
-	_in = stdinReader
-	_out = stdoutWriter
-
-	return stdinWriter, stdoutReader, func() {
-		_in = oldIn
-		_out = oldOut
-	}
-}
-
-func fakeEnvelopeClient() (envelope.Client, func()) {
-	in, out, done := fakeStreams()
-	return envelope.NewClient(_proto, frame.NewClient(in, out)), done
+func fakeEnvelopeClient(w io.Writer, r io.Reader) envelope.Client {
+	return envelope.NewClient(_proto, frame.NewClient(w, r))
 }
 
 func TestEmptyPluginName(t *testing.T) {
@@ -51,11 +26,16 @@ func TestEmptyPluginName(t *testing.T) {
 }
 
 func TestEmptyPlugin(t *testing.T) {
-	transport, done := fakeEnvelopeClient()
-	defer done()
+	stdinReader, stdinWriter := io.Pipe()
+	stdoutReader, stdoutWriter := io.Pipe()
 
-	go Main(&Plugin{Name: "hello"})
+	go Main(&Plugin{
+		Name:   "hello",
+		Writer: stdoutWriter,
+		Reader: stdinReader,
+	})
 
+	transport := fakeEnvelopeClient(stdinWriter, stdoutReader)
 	client := api.NewPluginClient(multiplex.NewClient("Plugin", transport))
 
 	response, err := client.Handshake(&api.HandshakeRequest{})
@@ -69,8 +49,9 @@ func TestEmptyPlugin(t *testing.T) {
 }
 
 func TestServiceGenerator(t *testing.T) {
-	transport, done := fakeEnvelopeClient()
-	defer done()
+	stdinReader, stdinWriter := io.Pipe()
+	stdoutReader, stdoutWriter := io.Pipe()
+	transport := fakeEnvelopeClient(stdinWriter, stdoutReader)
 
 	mockCtrl := gomock.NewController(t)
 	defer mockCtrl.Finish()
@@ -80,6 +61,8 @@ func TestServiceGenerator(t *testing.T) {
 	go Main(&Plugin{
 		Name:             "hello",
 		ServiceGenerator: serviceGenerator,
+		Writer:           stdoutWriter,
+		Reader:           stdinReader,
 	})
 
 	pluginClient := api.NewPluginClient(multiplex.NewClient("Plugin", transport))

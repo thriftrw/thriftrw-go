@@ -4,7 +4,8 @@ Releases
 v1.3.0 (unreleased)
 -------------------
 
-- 	No changes yet.
+-   Plugins: Added support for overriding the communication channels used by
+    plugins.
 
 
 v1.2.0 (2017-04-17)
