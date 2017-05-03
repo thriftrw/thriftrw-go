@@ -12,3 +12,5 @@ import:
   - go/ast/astutil
 - package: github.com/jessevdk/go-flags
 - package: github.com/anmitsu/go-shlex
+- package: go.uber.org/multierr
+  version: ~0.2.0

@@ -25,9 +25,10 @@ import (
 	"io"
 	"os/exec"
 
-	"go.uber.org/atomic"
-	"go.uber.org/thriftrw/internal"
 	"go.uber.org/thriftrw/internal/frame"
+
+	"go.uber.org/atomic"
+	"go.uber.org/multierr"
 )
 
 // Client sends framed requests and receives framed responses from an external
@@ -95,5 +96,5 @@ func (c *Client) Close() error {
 	if err := c.cmd.Wait(); err != nil {
 		errors = append(errors, fmt.Errorf("%q failed with: %v", c.cmd.Path, err))
 	}
-	return internal.MultiError(errors)
+	return multierr.Combine(errors...)
 }

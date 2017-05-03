@@ -30,8 +30,9 @@ import (
 	"strings"
 
 	"go.uber.org/thriftrw/compile"
-	"go.uber.org/thriftrw/internal"
 	"go.uber.org/thriftrw/internal/plugin"
+
+	"go.uber.org/multierr"
 )
 
 // Options controls how code gets generated.
@@ -190,7 +191,7 @@ func mergeFiles(dest, src map[string][]byte) error {
 		}
 		dest[path] = contents
 	}
-	return internal.MultiError(errors)
+	return multierr.Combine(errors...)
 }
 
 // generateModule returns a mapping from filename to file contents of files that

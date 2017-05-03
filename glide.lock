@@ -1,5 +1,5 @@
-hash: 6cf6e00e62723d428870ad1cc6e7a7891464c9e0e7b06eb52321ee02fa9dac35
-updated: 2016-11-01T13:16:12.641441702-07:00
+hash: a7378641e02fb40bbf856ced84c6b4fb24409a4fdddf3a8bb3a165143038972b
+updated: 2017-05-03T10:44:57.820152543-07:00
 imports:
 - name: github.com/anmitsu/go-shlex
   version: 648efa622239a2f6ff949fed78ee37b48d499ba4
@@ -20,6 +20,8 @@ imports:
   - require
 - name: go.uber.org/atomic
   version: 9e99152552a6ce13fa3b2ce4a9c4fb117cca4506
+- name: go.uber.org/multierr
+  version: a3d1fc1f1316d4132fc61f4ea1159ae0613fb474
 - name: golang.org/x/tools
   version: 1529f889eb4b594d1f047f2fb8d5b3cc85c8f006
   subpackages:
