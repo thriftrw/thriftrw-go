@@ -25,7 +25,7 @@ import (
 	"reflect"
 	"sync"
 
-	"go.uber.org/thriftrw/internal"
+	"go.uber.org/multierr"
 )
 
 var (
@@ -126,7 +126,7 @@ func Range(coll, fn interface{}) error {
 	}
 
 	wg.Wait()
-	return internal.MultiError(errors)
+	return multierr.Combine(errors...)
 }
 
 func alwaysReturnNoError(fn reflect.Value) reflect.Value {

@@ -26,11 +26,11 @@ import (
 	"os/exec"
 	"sync"
 
-	"go.uber.org/thriftrw/internal"
 	"go.uber.org/thriftrw/internal/concurrent"
 	"go.uber.org/thriftrw/internal/process"
 
 	"github.com/anmitsu/go-shlex"
+	"go.uber.org/multierr"
 )
 
 const _pluginExecPrefix = "thriftrw-plugin-"
@@ -62,7 +62,7 @@ func (f *Flag) Handle() (Handle, error) {
 
 	handle, err := NewTransportHandle(f.Name, transport)
 	if err != nil {
-		return nil, internal.CombineErrors(
+		return nil, multierr.Combine(
 			fmt.Errorf("failed to open plugin %q: %v", f.Name, err),
 			transport.Close(),
 		)
@@ -126,5 +126,5 @@ func (fs Flags) Handle() (MultiHandle, error) {
 		return multi, nil
 	}
 
-	return nil, internal.CombineErrors(err, multi.Close())
+	return nil, multierr.Append(err, multi.Close())
 }

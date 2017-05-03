@@ -25,7 +25,6 @@ import (
 	"io"
 	"strings"
 
-	"go.uber.org/thriftrw/internal"
 	"go.uber.org/thriftrw/internal/envelope"
 	"go.uber.org/thriftrw/internal/multiplex"
 	"go.uber.org/thriftrw/internal/semver"
@@ -34,6 +33,7 @@ import (
 	"go.uber.org/thriftrw/version"
 
 	"go.uber.org/atomic"
+	"go.uber.org/multierr"
 )
 
 var (
@@ -137,7 +137,7 @@ func (h *transportHandle) Close() error {
 
 	err := h.Client.Goodbye()
 	if closer, ok := h.Transport.(io.Closer); ok {
-		err = internal.CombineErrors(err, closer.Close())
+		err = multierr.Append(err, closer.Close())
 	}
 	return err
 }

@@ -25,7 +25,7 @@ import (
 	"io"
 
 	"go.uber.org/atomic"
-	"go.uber.org/thriftrw/internal"
+	"go.uber.org/multierr"
 )
 
 // Handler handles incoming framed requests.
@@ -66,7 +66,8 @@ func (s *Server) Serve(h Handler) (err error) {
 	}
 
 	defer func() {
-		err = internal.CombineErrors(err, s.r.Close(), s.w.Close())
+		err = multierr.Append(err, s.r.Close())
+		err = multierr.Append(err, s.w.Close())
 	}()
 
 	for s.running.Load() {

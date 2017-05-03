@@ -31,12 +31,12 @@ import (
 
 	"go.uber.org/thriftrw/compile"
 	"go.uber.org/thriftrw/gen"
-	"go.uber.org/thriftrw/internal"
 	"go.uber.org/thriftrw/internal/plugin"
 	"go.uber.org/thriftrw/internal/plugin/builtin/pluginapigen"
 	"go.uber.org/thriftrw/version"
 
 	"github.com/jessevdk/go-flags"
+	"go.uber.org/multierr"
 )
 
 type options struct {
@@ -66,9 +66,7 @@ type genOptions struct {
 
 func main() {
 	if err := do(); err != nil {
-		if errString := err.Error(); errString != "" {
-			log.Fatalln(errString)
-		}
+		log.Fatalf("%+v", err)
 		os.Exit(1)
 	}
 	os.Exit(0)
@@ -105,8 +103,8 @@ func do() (err error) {
 		}
 		return fmt.Errorf("Could not stat file %q: %v", inputFile, err)
 	}
-
 	gopts := opts.GOpts
+
 	if len(gopts.OutputDirectory) == 0 {
 		gopts.OutputDirectory = "."
 	}
@@ -129,7 +127,7 @@ func do() (err error) {
 	if err != nil {
 		// TODO(abg): For nested compile errors, split causal chain across
 		// multiple lines.
-		return fmt.Errorf("Failed to compile %q: %v", inputFile, err)
+		return fmt.Errorf("Failed to compile %q: %+v", inputFile, err)
 	}
 
 	if gopts.ThriftRoot == "" {
@@ -139,7 +137,7 @@ func do() (err error) {
 				"Could not find a common parent directory for %q and the Thrift files "+
 					"imported by it.\nThis directory is required to generate a consistent "+
 					"hierarchy for generated packages.\nUse the --thrift-root option to "+
-					"provide this path.", err)
+					"provide this path.\n\t%v", inputFile, err)
 		}
 	} else {
 		gopts.ThriftRoot, err = filepath.Abs(gopts.ThriftRoot)
@@ -155,7 +153,7 @@ func do() (err error) {
 
 	pluginHandle, err := gopts.Plugins.Handle()
 	if err != nil {
-		return fmt.Errorf("Failed to initialize plugins: %v", err)
+		return fmt.Errorf("Failed to initialize plugins: %+v", err)
 	}
 
 	if gopts.GeneratePluginAPI {
@@ -163,7 +161,7 @@ func do() (err error) {
 	}
 
 	defer func() {
-		err = internal.CombineErrors(err, pluginHandle.Close())
+		err = multierr.Append(err, pluginHandle.Close())
 	}()
 
 	generatorOptions := gen.Options{
@@ -179,7 +177,7 @@ func do() (err error) {
 		NoEmbedIDL:       gopts.NoEmbedIDL,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {
-		return fmt.Errorf("Failed to generate code: %v", err)
+		return fmt.Errorf("Failed to generate code: %+v", err)
 	}
 	return nil
 }
