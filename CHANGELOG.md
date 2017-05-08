@@ -6,6 +6,7 @@ v1.3.0 (unreleased)
 
 -   Plugins: Added support for overriding the communication channels used by
     plugins.
+-   Enums now implement `encoding.TextUnmarshaler`.
 
 
 v1.2.0 (2017-04-17)

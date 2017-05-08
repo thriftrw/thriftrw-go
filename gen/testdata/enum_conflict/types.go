@@ -21,6 +21,19 @@ const (
 	RecordTypeEmail RecordType = 1
 )
 
+func (v *RecordType) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "Name":
+		*v = RecordTypeName
+		return nil
+	case "Email":
+		*v = RecordTypeEmail
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "RecordType")
+	}
+}
+
 func (v RecordType) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
@@ -77,16 +90,7 @@ func (v *RecordType) UnmarshalJSON(text []byte) error {
 		*v = (RecordType)(x)
 		return nil
 	case string:
-		switch w {
-		case "Name":
-			*v = RecordTypeName
-			return nil
-		case "Email":
-			*v = RecordTypeEmail
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "RecordType")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "RecordType")
 	}

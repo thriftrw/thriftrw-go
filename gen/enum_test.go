@@ -310,3 +310,15 @@ func TestInvalidJSON(t *testing.T) {
 		})
 	}
 }
+func TestUnmarshalTextReturnsValue(t *testing.T) {
+	var v te.EnumDefault
+	err := v.UnmarshalText([]byte("Foo"))
+	assert.NoError(t, err)
+	assert.Equal(t, te.EnumDefaultFoo, v)
+}
+
+func TestUnmarshalTextReturnsErrorOnInvalidValue(t *testing.T) {
+	var v te.EnumDefault
+	err := v.UnmarshalText([]byte("blah"))
+	assert.Error(t, err)
+}

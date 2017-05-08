@@ -15,6 +15,13 @@ import (
 
 type EmptyEnum int32
 
+func (v *EmptyEnum) UnmarshalText(value []byte) error {
+	switch string(value) {
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "EmptyEnum")
+	}
+}
+
 func (v EmptyEnum) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
@@ -59,10 +66,7 @@ func (v *EmptyEnum) UnmarshalJSON(text []byte) error {
 		*v = (EmptyEnum)(x)
 		return nil
 	case string:
-		switch w {
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "EmptyEnum")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EmptyEnum")
 	}
@@ -75,6 +79,22 @@ const (
 	EnumDefaultBar EnumDefault = 1
 	EnumDefaultBaz EnumDefault = 2
 )
+
+func (v *EnumDefault) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "Foo":
+		*v = EnumDefaultFoo
+		return nil
+	case "Bar":
+		*v = EnumDefaultBar
+		return nil
+	case "Baz":
+		*v = EnumDefaultBaz
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "EnumDefault")
+	}
+}
 
 func (v EnumDefault) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
@@ -136,19 +156,7 @@ func (v *EnumDefault) UnmarshalJSON(text []byte) error {
 		*v = (EnumDefault)(x)
 		return nil
 	case string:
-		switch w {
-		case "Foo":
-			*v = EnumDefaultFoo
-			return nil
-		case "Bar":
-			*v = EnumDefaultBar
-			return nil
-		case "Baz":
-			*v = EnumDefaultBaz
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "EnumDefault")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumDefault")
 	}
@@ -167,6 +175,40 @@ const (
 	EnumWithDuplicateNameY EnumWithDuplicateName = 7
 	EnumWithDuplicateNameZ EnumWithDuplicateName = 8
 )
+
+func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "A":
+		*v = EnumWithDuplicateNameA
+		return nil
+	case "B":
+		*v = EnumWithDuplicateNameB
+		return nil
+	case "C":
+		*v = EnumWithDuplicateNameC
+		return nil
+	case "P":
+		*v = EnumWithDuplicateNameP
+		return nil
+	case "Q":
+		*v = EnumWithDuplicateNameQ
+		return nil
+	case "R":
+		*v = EnumWithDuplicateNameR
+		return nil
+	case "X":
+		*v = EnumWithDuplicateNameX
+		return nil
+	case "Y":
+		*v = EnumWithDuplicateNameY
+		return nil
+	case "Z":
+		*v = EnumWithDuplicateNameZ
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "EnumWithDuplicateName")
+	}
+}
 
 func (v EnumWithDuplicateName) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
@@ -252,37 +294,7 @@ func (v *EnumWithDuplicateName) UnmarshalJSON(text []byte) error {
 		*v = (EnumWithDuplicateName)(x)
 		return nil
 	case string:
-		switch w {
-		case "A":
-			*v = EnumWithDuplicateNameA
-			return nil
-		case "B":
-			*v = EnumWithDuplicateNameB
-			return nil
-		case "C":
-			*v = EnumWithDuplicateNameC
-			return nil
-		case "P":
-			*v = EnumWithDuplicateNameP
-			return nil
-		case "Q":
-			*v = EnumWithDuplicateNameQ
-			return nil
-		case "R":
-			*v = EnumWithDuplicateNameR
-			return nil
-		case "X":
-			*v = EnumWithDuplicateNameX
-			return nil
-		case "Y":
-			*v = EnumWithDuplicateNameY
-			return nil
-		case "Z":
-			*v = EnumWithDuplicateNameZ
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "EnumWithDuplicateName")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithDuplicateName")
 	}
@@ -295,6 +307,22 @@ const (
 	EnumWithDuplicateValuesQ EnumWithDuplicateValues = -1
 	EnumWithDuplicateValuesR EnumWithDuplicateValues = 0
 )
+
+func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "P":
+		*v = EnumWithDuplicateValuesP
+		return nil
+	case "Q":
+		*v = EnumWithDuplicateValuesQ
+		return nil
+	case "R":
+		*v = EnumWithDuplicateValuesR
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "EnumWithDuplicateValues")
+	}
+}
 
 func (v EnumWithDuplicateValues) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
@@ -352,19 +380,7 @@ func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
 		*v = (EnumWithDuplicateValues)(x)
 		return nil
 	case string:
-		switch w {
-		case "P":
-			*v = EnumWithDuplicateValuesP
-			return nil
-		case "Q":
-			*v = EnumWithDuplicateValuesQ
-			return nil
-		case "R":
-			*v = EnumWithDuplicateValuesR
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "EnumWithDuplicateValues")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithDuplicateValues")
 	}
@@ -377,6 +393,22 @@ const (
 	EnumWithValuesY EnumWithValues = 456
 	EnumWithValuesZ EnumWithValues = 789
 )
+
+func (v *EnumWithValues) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "X":
+		*v = EnumWithValuesX
+		return nil
+	case "Y":
+		*v = EnumWithValuesY
+		return nil
+	case "Z":
+		*v = EnumWithValuesZ
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "EnumWithValues")
+	}
+}
 
 func (v EnumWithValues) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
@@ -438,19 +470,7 @@ func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
 		*v = (EnumWithValues)(x)
 		return nil
 	case string:
-		switch w {
-		case "X":
-			*v = EnumWithValuesX
-			return nil
-		case "Y":
-			*v = EnumWithValuesY
-			return nil
-		case "Z":
-			*v = EnumWithValuesZ
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "EnumWithValues")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithValues")
 	}
@@ -463,6 +483,22 @@ const (
 	RecordTypeHomeAddress RecordType = 1
 	RecordTypeWorkAddress RecordType = 2
 )
+
+func (v *RecordType) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "NAME":
+		*v = RecordTypeName
+		return nil
+	case "HOME_ADDRESS":
+		*v = RecordTypeHomeAddress
+		return nil
+	case "WORK_ADDRESS":
+		*v = RecordTypeWorkAddress
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "RecordType")
+	}
+}
 
 func (v RecordType) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
@@ -524,19 +560,7 @@ func (v *RecordType) UnmarshalJSON(text []byte) error {
 		*v = (RecordType)(x)
 		return nil
 	case string:
-		switch w {
-		case "NAME":
-			*v = RecordTypeName
-			return nil
-		case "HOME_ADDRESS":
-			*v = RecordTypeHomeAddress
-			return nil
-		case "WORK_ADDRESS":
-			*v = RecordTypeWorkAddress
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "RecordType")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "RecordType")
 	}
@@ -625,6 +649,22 @@ const (
 	LowerCaseEnumItems      LowerCaseEnum = 2
 )
 
+func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "containing":
+		*v = LowerCaseEnumContaining
+		return nil
+	case "lower_case":
+		*v = LowerCaseEnumLowerCase
+		return nil
+	case "items":
+		*v = LowerCaseEnumItems
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "LowerCaseEnum")
+	}
+}
+
 func (v LowerCaseEnum) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
@@ -685,19 +725,7 @@ func (v *LowerCaseEnum) UnmarshalJSON(text []byte) error {
 		*v = (LowerCaseEnum)(x)
 		return nil
 	case string:
-		switch w {
-		case "containing":
-			*v = LowerCaseEnumContaining
-			return nil
-		case "lower_case":
-			*v = LowerCaseEnumLowerCase
-			return nil
-		case "items":
-			*v = LowerCaseEnumItems
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "LowerCaseEnum")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "LowerCaseEnum")
 	}
