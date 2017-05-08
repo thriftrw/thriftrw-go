@@ -132,6 +132,10 @@ const (
 	FeatureServiceGenerator Feature = 1
 )
 
+func GetFeatureValues() []Feature {
+	return []Feature{FeatureServiceGenerator}
+}
+
 func (v *Feature) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "SERVICE_GENERATOR":
@@ -1557,6 +1561,10 @@ const (
 	SimpleTypeString      SimpleType = 8
 	SimpleTypeStructEmpty SimpleType = 9
 )
+
+func GetSimpleTypeValues() []SimpleType {
+	return []SimpleType{SimpleTypeBool, SimpleTypeByte, SimpleTypeInt8, SimpleTypeInt16, SimpleTypeInt32, SimpleTypeInt64, SimpleTypeFloat64, SimpleTypeString, SimpleTypeStructEmpty}
+}
 
 func (v *SimpleType) UnmarshalText(value []byte) error {
 	switch string(value) {

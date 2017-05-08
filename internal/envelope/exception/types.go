@@ -49,6 +49,10 @@ const (
 	ExceptionTypeUnsupportedClientType ExceptionType = 10
 )
 
+func GetExceptionTypeValues() []ExceptionType {
+	return []ExceptionType{ExceptionTypeUnknown, ExceptionTypeUnknownMethod, ExceptionTypeInvalidMessageType, ExceptionTypeWrongMethodName, ExceptionTypeBadSequenceID, ExceptionTypeMissingResult, ExceptionTypeInternalError, ExceptionTypeProtocolError, ExceptionTypeInvalidTransform, ExceptionTypeInvalidProtocol, ExceptionTypeUnsupportedClientType}
+}
+
 func (v *ExceptionType) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "UNKNOWN":

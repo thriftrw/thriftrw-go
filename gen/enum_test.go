@@ -310,6 +310,12 @@ func TestInvalidJSON(t *testing.T) {
 		})
 	}
 }
+
+func TestEnumValuesCanBeListed(t *testing.T) {
+	values := te.GetEnumDefaultValues()
+	assert.Equal(t, values, []te.EnumDefault{te.EnumDefaultFoo, te.EnumDefaultBar, te.EnumDefaultBaz})
+}
+
 func TestUnmarshalTextReturnsValue(t *testing.T) {
 	var v te.EnumDefault
 	err := v.UnmarshalText([]byte("Foo"))

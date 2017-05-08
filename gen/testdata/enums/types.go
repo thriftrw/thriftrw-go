@@ -80,6 +80,10 @@ const (
 	EnumDefaultBaz EnumDefault = 2
 )
 
+func GetEnumDefaultValues() []EnumDefault {
+	return []EnumDefault{EnumDefaultFoo, EnumDefaultBar, EnumDefaultBaz}
+}
+
 func (v *EnumDefault) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "Foo":
@@ -175,6 +179,10 @@ const (
 	EnumWithDuplicateNameY EnumWithDuplicateName = 7
 	EnumWithDuplicateNameZ EnumWithDuplicateName = 8
 )
+
+func GetEnumWithDuplicateNameValues() []EnumWithDuplicateName {
+	return []EnumWithDuplicateName{EnumWithDuplicateNameA, EnumWithDuplicateNameB, EnumWithDuplicateNameC, EnumWithDuplicateNameP, EnumWithDuplicateNameQ, EnumWithDuplicateNameR, EnumWithDuplicateNameX, EnumWithDuplicateNameY, EnumWithDuplicateNameZ}
+}
 
 func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
 	switch string(value) {
@@ -308,6 +316,10 @@ const (
 	EnumWithDuplicateValuesR EnumWithDuplicateValues = 0
 )
 
+func GetEnumWithDuplicateValuesValues() []EnumWithDuplicateValues {
+	return []EnumWithDuplicateValues{EnumWithDuplicateValuesP, EnumWithDuplicateValuesQ, EnumWithDuplicateValuesR}
+}
+
 func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "P":
@@ -393,6 +405,10 @@ const (
 	EnumWithValuesY EnumWithValues = 456
 	EnumWithValuesZ EnumWithValues = 789
 )
+
+func GetEnumWithValuesValues() []EnumWithValues {
+	return []EnumWithValues{EnumWithValuesX, EnumWithValuesY, EnumWithValuesZ}
+}
 
 func (v *EnumWithValues) UnmarshalText(value []byte) error {
 	switch string(value) {
@@ -483,6 +499,10 @@ const (
 	RecordTypeHomeAddress RecordType = 1
 	RecordTypeWorkAddress RecordType = 2
 )
+
+func GetRecordTypeValues() []RecordType {
+	return []RecordType{RecordTypeName, RecordTypeHomeAddress, RecordTypeWorkAddress}
+}
 
 func (v *RecordType) UnmarshalText(value []byte) error {
 	switch string(value) {
@@ -648,6 +668,10 @@ const (
 	LowerCaseEnumLowerCase  LowerCaseEnum = 1
 	LowerCaseEnumItems      LowerCaseEnum = 2
 )
+
+func GetLowerCaseEnumValues() []LowerCaseEnum {
+	return []LowerCaseEnum{LowerCaseEnumContaining, LowerCaseEnumLowerCase, LowerCaseEnumItems}
+}
 
 func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
 	switch string(value) {

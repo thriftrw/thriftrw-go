@@ -9,6 +9,8 @@ v1.3.0 (unreleased)
 -   Enums now implement the `encoding.TextUnmarshaler` interface. This allows
     retrieving enum values by name and integrates better with other encoding
     formats.
+-   Enums now have a `Get<EnumName>Values()` function which returns all known
+    values for that enum.
 
 
 v1.2.0 (2017-04-17)
