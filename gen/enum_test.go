@@ -312,7 +312,7 @@ func TestInvalidJSON(t *testing.T) {
 }
 
 func TestEnumValuesCanBeListed(t *testing.T) {
-	values := te.GetEnumDefaultValues()
+	values := te.EnumDefault_Values()
 	assert.Equal(t, values, []te.EnumDefault{te.EnumDefaultFoo, te.EnumDefaultBar, te.EnumDefaultBaz})
 }
 

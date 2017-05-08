@@ -46,7 +46,7 @@ const (
 	MyEnumFooBar2 MyEnum = 791
 )
 
-func GetMyEnumValues() []MyEnum {
+func MyEnum_Values() []MyEnum {
 	return []MyEnum{MyEnumX, MyEnumY, MyEnumZ, MyEnumFooBar, MyEnumFooBar2}
 }
 
@@ -737,7 +737,7 @@ const (
 	MyEnum2Z MyEnum2 = 56
 )
 
-func GetMyEnum2Values() []MyEnum2 {
+func MyEnum2_Values() []MyEnum2 {
 	return []MyEnum2{MyEnum2X, MyEnum2Y, MyEnum2Z}
 }
 

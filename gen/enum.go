@@ -76,7 +76,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			<end>
 			)
 
-		func Get<$enumName>Values() []<$enumName> {
+		func <$enumName>_Values() []<$enumName> {
 			return []<$enumName>{<range .Spec.Items><enumItemName $enumName .>,<end>}
 		}
 		<end>

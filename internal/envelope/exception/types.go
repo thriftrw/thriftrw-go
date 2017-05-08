@@ -49,7 +49,7 @@ const (
 	ExceptionTypeUnsupportedClientType ExceptionType = 10
 )
 
-func GetExceptionTypeValues() []ExceptionType {
+func ExceptionType_Values() []ExceptionType {
 	return []ExceptionType{ExceptionTypeUnknown, ExceptionTypeUnknownMethod, ExceptionTypeInvalidMessageType, ExceptionTypeWrongMethodName, ExceptionTypeBadSequenceID, ExceptionTypeMissingResult, ExceptionTypeInternalError, ExceptionTypeProtocolError, ExceptionTypeInvalidTransform, ExceptionTypeInvalidProtocol, ExceptionTypeUnsupportedClientType}
 }
 

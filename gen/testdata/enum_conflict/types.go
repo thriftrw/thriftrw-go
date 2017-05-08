@@ -21,7 +21,7 @@ const (
 	RecordTypeEmail RecordType = 1
 )
 
-func GetRecordTypeValues() []RecordType {
+func RecordType_Values() []RecordType {
 	return []RecordType{RecordTypeName, RecordTypeEmail}
 }
 

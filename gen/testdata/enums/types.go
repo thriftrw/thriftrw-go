@@ -80,7 +80,7 @@ const (
 	EnumDefaultBaz EnumDefault = 2
 )
 
-func GetEnumDefaultValues() []EnumDefault {
+func EnumDefault_Values() []EnumDefault {
 	return []EnumDefault{EnumDefaultFoo, EnumDefaultBar, EnumDefaultBaz}
 }
 
@@ -180,7 +180,7 @@ const (
 	EnumWithDuplicateNameZ EnumWithDuplicateName = 8
 )
 
-func GetEnumWithDuplicateNameValues() []EnumWithDuplicateName {
+func EnumWithDuplicateName_Values() []EnumWithDuplicateName {
 	return []EnumWithDuplicateName{EnumWithDuplicateNameA, EnumWithDuplicateNameB, EnumWithDuplicateNameC, EnumWithDuplicateNameP, EnumWithDuplicateNameQ, EnumWithDuplicateNameR, EnumWithDuplicateNameX, EnumWithDuplicateNameY, EnumWithDuplicateNameZ}
 }
 
@@ -316,7 +316,7 @@ const (
 	EnumWithDuplicateValuesR EnumWithDuplicateValues = 0
 )
 
-func GetEnumWithDuplicateValuesValues() []EnumWithDuplicateValues {
+func EnumWithDuplicateValues_Values() []EnumWithDuplicateValues {
 	return []EnumWithDuplicateValues{EnumWithDuplicateValuesP, EnumWithDuplicateValuesQ, EnumWithDuplicateValuesR}
 }
 
@@ -406,7 +406,7 @@ const (
 	EnumWithValuesZ EnumWithValues = 789
 )
 
-func GetEnumWithValuesValues() []EnumWithValues {
+func EnumWithValues_Values() []EnumWithValues {
 	return []EnumWithValues{EnumWithValuesX, EnumWithValuesY, EnumWithValuesZ}
 }
 
@@ -500,7 +500,7 @@ const (
 	RecordTypeWorkAddress RecordType = 2
 )
 
-func GetRecordTypeValues() []RecordType {
+func RecordType_Values() []RecordType {
 	return []RecordType{RecordTypeName, RecordTypeHomeAddress, RecordTypeWorkAddress}
 }
 
@@ -669,7 +669,7 @@ const (
 	LowerCaseEnumItems      LowerCaseEnum = 2
 )
 
-func GetLowerCaseEnumValues() []LowerCaseEnum {
+func LowerCaseEnum_Values() []LowerCaseEnum {
 	return []LowerCaseEnum{LowerCaseEnumContaining, LowerCaseEnumLowerCase, LowerCaseEnumItems}
 }
 

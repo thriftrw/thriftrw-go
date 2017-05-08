@@ -132,7 +132,7 @@ const (
 	FeatureServiceGenerator Feature = 1
 )
 
-func GetFeatureValues() []Feature {
+func Feature_Values() []Feature {
 	return []Feature{FeatureServiceGenerator}
 }
 
@@ -1562,7 +1562,7 @@ const (
 	SimpleTypeStructEmpty SimpleType = 9
 )
 
-func GetSimpleTypeValues() []SimpleType {
+func SimpleType_Values() []SimpleType {
 	return []SimpleType{SimpleTypeBool, SimpleTypeByte, SimpleTypeInt8, SimpleTypeInt16, SimpleTypeInt32, SimpleTypeInt64, SimpleTypeFloat64, SimpleTypeString, SimpleTypeStructEmpty}
 }
 
