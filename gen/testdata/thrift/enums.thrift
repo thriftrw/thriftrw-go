@@ -35,3 +35,6 @@ enum RecordType {
 enum lowerCaseEnum {
     containing, lower_case, items
 }
+
+// collision with RecordType_Values() function.
+enum RecordType_Values { FOO, BAR }

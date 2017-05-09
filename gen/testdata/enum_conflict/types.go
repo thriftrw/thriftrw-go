@@ -21,6 +21,10 @@ const (
 	RecordTypeEmail RecordType = 1
 )
 
+func RecordType_Values() []RecordType {
+	return []RecordType{RecordTypeName, RecordTypeEmail}
+}
+
 func (v *RecordType) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "Name":

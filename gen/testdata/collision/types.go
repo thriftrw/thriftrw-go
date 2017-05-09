@@ -46,6 +46,10 @@ const (
 	MyEnumFooBar2 MyEnum = 791
 )
 
+func MyEnum_Values() []MyEnum {
+	return []MyEnum{MyEnumX, MyEnumY, MyEnumZ, MyEnumFooBar, MyEnumFooBar2}
+}
+
 func (v *MyEnum) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "X":
@@ -732,6 +736,10 @@ const (
 	MyEnum2Y MyEnum2 = 34
 	MyEnum2Z MyEnum2 = 56
 )
+
+func MyEnum2_Values() []MyEnum2 {
+	return []MyEnum2{MyEnum2X, MyEnum2Y, MyEnum2Z}
+}
 
 func (v *MyEnum2) UnmarshalText(value []byte) error {
 	switch string(value) {

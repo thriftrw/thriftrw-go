@@ -80,6 +80,10 @@ const (
 	EnumDefaultBaz EnumDefault = 2
 )
 
+func EnumDefault_Values() []EnumDefault {
+	return []EnumDefault{EnumDefaultFoo, EnumDefaultBar, EnumDefaultBaz}
+}
+
 func (v *EnumDefault) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "Foo":
@@ -175,6 +179,10 @@ const (
 	EnumWithDuplicateNameY EnumWithDuplicateName = 7
 	EnumWithDuplicateNameZ EnumWithDuplicateName = 8
 )
+
+func EnumWithDuplicateName_Values() []EnumWithDuplicateName {
+	return []EnumWithDuplicateName{EnumWithDuplicateNameA, EnumWithDuplicateNameB, EnumWithDuplicateNameC, EnumWithDuplicateNameP, EnumWithDuplicateNameQ, EnumWithDuplicateNameR, EnumWithDuplicateNameX, EnumWithDuplicateNameY, EnumWithDuplicateNameZ}
+}
 
 func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
 	switch string(value) {
@@ -308,6 +316,10 @@ const (
 	EnumWithDuplicateValuesR EnumWithDuplicateValues = 0
 )
 
+func EnumWithDuplicateValues_Values() []EnumWithDuplicateValues {
+	return []EnumWithDuplicateValues{EnumWithDuplicateValuesP, EnumWithDuplicateValuesQ, EnumWithDuplicateValuesR}
+}
+
 func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "P":
@@ -393,6 +405,10 @@ const (
 	EnumWithValuesY EnumWithValues = 456
 	EnumWithValuesZ EnumWithValues = 789
 )
+
+func EnumWithValues_Values() []EnumWithValues {
+	return []EnumWithValues{EnumWithValuesX, EnumWithValuesY, EnumWithValuesZ}
+}
 
 func (v *EnumWithValues) UnmarshalText(value []byte) error {
 	switch string(value) {
@@ -484,6 +500,10 @@ const (
 	RecordTypeWorkAddress RecordType = 2
 )
 
+func RecordType_Values() []RecordType {
+	return []RecordType{RecordTypeName, RecordTypeHomeAddress, RecordTypeWorkAddress}
+}
+
 func (v *RecordType) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "NAME":
@@ -563,6 +583,92 @@ func (v *RecordType) UnmarshalJSON(text []byte) error {
 		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "RecordType")
+	}
+}
+
+type RecordTypeValues int32
+
+const (
+	RecordTypeValuesFoo RecordTypeValues = 0
+	RecordTypeValuesBar RecordTypeValues = 1
+)
+
+func RecordTypeValues_Values() []RecordTypeValues {
+	return []RecordTypeValues{RecordTypeValuesFoo, RecordTypeValuesBar}
+}
+
+func (v *RecordTypeValues) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "FOO":
+		*v = RecordTypeValuesFoo
+		return nil
+	case "BAR":
+		*v = RecordTypeValuesBar
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "RecordTypeValues")
+	}
+}
+
+func (v RecordTypeValues) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
+}
+
+func (v *RecordTypeValues) FromWire(w wire.Value) error {
+	*v = (RecordTypeValues)(w.GetI32())
+	return nil
+}
+
+func (v RecordTypeValues) String() string {
+	w := int32(v)
+	switch w {
+	case 0:
+		return "FOO"
+	case 1:
+		return "BAR"
+	}
+	return fmt.Sprintf("RecordTypeValues(%d)", w)
+}
+
+func (v RecordTypeValues) Equals(rhs RecordTypeValues) bool {
+	return v == rhs
+}
+
+func (v RecordTypeValues) MarshalJSON() ([]byte, error) {
+	switch int32(v) {
+	case 0:
+		return ([]byte)("\"FOO\""), nil
+	case 1:
+		return ([]byte)("\"BAR\""), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+func (v *RecordTypeValues) UnmarshalJSON(text []byte) error {
+	d := json.NewDecoder(bytes.NewReader(text))
+	d.UseNumber()
+	t, err := d.Token()
+	if err != nil {
+		return err
+	}
+	switch w := t.(type) {
+	case json.Number:
+		x, err := w.Int64()
+		if err != nil {
+			return err
+		}
+		if x > math.MaxInt32 {
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "RecordTypeValues")
+		}
+		if x < math.MinInt32 {
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "RecordTypeValues")
+		}
+		*v = (RecordTypeValues)(x)
+		return nil
+	case string:
+		return v.UnmarshalText([]byte(w))
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "RecordTypeValues")
 	}
 }
 
@@ -648,6 +754,10 @@ const (
 	LowerCaseEnumLowerCase  LowerCaseEnum = 1
 	LowerCaseEnumItems      LowerCaseEnum = 2
 )
+
+func LowerCaseEnum_Values() []LowerCaseEnum {
+	return []LowerCaseEnum{LowerCaseEnumContaining, LowerCaseEnumLowerCase, LowerCaseEnumItems}
+}
 
 func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
 	switch string(value) {
