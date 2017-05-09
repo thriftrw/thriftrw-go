@@ -78,6 +78,19 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<end>
 
 		<$v := newVar "v">
+		func (<$v> *<$enumName>) UnmarshalText(value []byte) error {
+			switch string(value) {
+			<$enum := .Spec>
+			<range .Spec.Items>
+				case "<.Name>":
+					*<$v> = <enumItemName $enumName .>
+					return nil
+			<end>
+				default:
+					return <$fmt>.Errorf("unknown enum value %q for %q", value, "<$enumName>")
+			}
+		}
+
 		func (<$v> <$enumName>) ToWire() (<$wire>.Value, error) {
 			return <$wire>.NewValueI32(int32(<$v>)), nil
 		}
@@ -146,16 +159,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				*<$v> = (<$enumName>)(<$x>)
 				return nil
 			case string:
-				switch <$w> {
-				<$enum := .Spec>
-				<range .Spec.Items>
-					case "<.Name>":
-						*<$v> = <enumItemName $enumName .>
-						return nil
-				<end>
-					default:
-						return <$fmt>.Errorf("unknown enum value %q for %q", <$w>, "<$enumName>")
-				}
+				return <$v>.UnmarshalText([]byte(<$w>))
 			default:
 				return <$fmt>.Errorf("invalid JSON value %q (%T) to unmarshal into %q", <$t>, <$t>, "<$enumName>")
 			}

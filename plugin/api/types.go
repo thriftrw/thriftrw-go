@@ -132,6 +132,16 @@ const (
 	FeatureServiceGenerator Feature = 1
 )
 
+func (v *Feature) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "SERVICE_GENERATOR":
+		*v = FeatureServiceGenerator
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "Feature")
+	}
+}
+
 func (v Feature) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
@@ -184,13 +194,7 @@ func (v *Feature) UnmarshalJSON(text []byte) error {
 		*v = (Feature)(x)
 		return nil
 	case string:
-		switch w {
-		case "SERVICE_GENERATOR":
-			*v = FeatureServiceGenerator
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "Feature")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "Feature")
 	}
@@ -1554,6 +1558,40 @@ const (
 	SimpleTypeStructEmpty SimpleType = 9
 )
 
+func (v *SimpleType) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "BOOL":
+		*v = SimpleTypeBool
+		return nil
+	case "BYTE":
+		*v = SimpleTypeByte
+		return nil
+	case "INT8":
+		*v = SimpleTypeInt8
+		return nil
+	case "INT16":
+		*v = SimpleTypeInt16
+		return nil
+	case "INT32":
+		*v = SimpleTypeInt32
+		return nil
+	case "INT64":
+		*v = SimpleTypeInt64
+		return nil
+	case "FLOAT64":
+		*v = SimpleTypeFloat64
+		return nil
+	case "STRING":
+		*v = SimpleTypeString
+		return nil
+	case "STRUCT_EMPTY":
+		*v = SimpleTypeStructEmpty
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "SimpleType")
+	}
+}
+
 func (v SimpleType) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
@@ -1638,37 +1676,7 @@ func (v *SimpleType) UnmarshalJSON(text []byte) error {
 		*v = (SimpleType)(x)
 		return nil
 	case string:
-		switch w {
-		case "BOOL":
-			*v = SimpleTypeBool
-			return nil
-		case "BYTE":
-			*v = SimpleTypeByte
-			return nil
-		case "INT8":
-			*v = SimpleTypeInt8
-			return nil
-		case "INT16":
-			*v = SimpleTypeInt16
-			return nil
-		case "INT32":
-			*v = SimpleTypeInt32
-			return nil
-		case "INT64":
-			*v = SimpleTypeInt64
-			return nil
-		case "FLOAT64":
-			*v = SimpleTypeFloat64
-			return nil
-		case "STRING":
-			*v = SimpleTypeString
-			return nil
-		case "STRUCT_EMPTY":
-			*v = SimpleTypeStructEmpty
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "SimpleType")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "SimpleType")
 	}

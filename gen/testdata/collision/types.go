@@ -46,6 +46,28 @@ const (
 	MyEnumFooBar2 MyEnum = 791
 )
 
+func (v *MyEnum) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "X":
+		*v = MyEnumX
+		return nil
+	case "Y":
+		*v = MyEnumY
+		return nil
+	case "Z":
+		*v = MyEnumZ
+		return nil
+	case "FooBar":
+		*v = MyEnumFooBar
+		return nil
+	case "foo_bar":
+		*v = MyEnumFooBar2
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "MyEnum")
+	}
+}
+
 func (v MyEnum) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
@@ -114,25 +136,7 @@ func (v *MyEnum) UnmarshalJSON(text []byte) error {
 		*v = (MyEnum)(x)
 		return nil
 	case string:
-		switch w {
-		case "X":
-			*v = MyEnumX
-			return nil
-		case "Y":
-			*v = MyEnumY
-			return nil
-		case "Z":
-			*v = MyEnumZ
-			return nil
-		case "FooBar":
-			*v = MyEnumFooBar
-			return nil
-		case "foo_bar":
-			*v = MyEnumFooBar2
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "MyEnum")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "MyEnum")
 	}
@@ -729,6 +733,22 @@ const (
 	MyEnum2Z MyEnum2 = 56
 )
 
+func (v *MyEnum2) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "X":
+		*v = MyEnum2X
+		return nil
+	case "Y":
+		*v = MyEnum2Y
+		return nil
+	case "Z":
+		*v = MyEnum2Z
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "MyEnum2")
+	}
+}
+
 func (v MyEnum2) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
@@ -789,19 +809,7 @@ func (v *MyEnum2) UnmarshalJSON(text []byte) error {
 		*v = (MyEnum2)(x)
 		return nil
 	case string:
-		switch w {
-		case "X":
-			*v = MyEnum2X
-			return nil
-		case "Y":
-			*v = MyEnum2Y
-			return nil
-		case "Z":
-			*v = MyEnum2Z
-			return nil
-		default:
-			return fmt.Errorf("unknown enum value %q for %q", w, "MyEnum2")
-		}
+		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "MyEnum2")
 	}
