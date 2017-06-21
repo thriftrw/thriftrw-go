@@ -32,8 +32,8 @@ type Lint struct {
 	Message string
 }
 
-// Catcher receives lint messages from different linter rules.
-type Catcher interface {
+// Trap receives lint messages from different linter rules.
+type Trap interface {
 	PostLint(Lint)
 }
 
@@ -43,8 +43,8 @@ type Rule struct {
 	Name string
 
 	// Inspector walks the Thrift AST and posts linter messages to the given
-	// catcher.
-	Inspector func(Catcher) ast.Visitor
+	// Trap.
+	Inspector func(Trap) ast.Visitor
 }
 
 // SimpleRule provides a convenient API to write linter rules that don't need
@@ -115,10 +115,10 @@ func (r *SimpleRule) build() (*Rule, error) {
 
 	return &Rule{
 		Name: r.Name,
-		Inspector: func(c Catcher) ast.Visitor {
+		Inspector: func(trap Trap) ast.Visitor {
 			return &simpleRuleVisitor{
 				Rule:            r,
-				Catcher:         c,
+				Trap:            trap,
 				Inspect:         inspect,
 				NodeType:        t.In(1),
 				MessageTemplate: tmpl,
@@ -137,7 +137,7 @@ func (r *SimpleRule) mustBuild() *Rule {
 
 type simpleRuleVisitor struct {
 	Rule            *SimpleRule
-	Catcher         Catcher
+	Trap            Trap
 	Inspect         reflect.Value
 	NodeType        reflect.Type
 	MessageTemplate *template.Template
@@ -169,7 +169,7 @@ func (v *simpleRuleVisitor) Visit(w ast.Walker, n ast.Node) ast.Visitor {
 		Line:     getLineNumber(nV),
 		Message:  buff.String(),
 	}
-	v.Catcher.PostLint(lint)
+	v.Trap.PostLint(lint)
 	return v
 }
 
