@@ -1,7 +1,7 @@
 Releases
 ========
 
-v1.3.0 (unreleased)
+v1.3.0 (2017-07-05)
 -------------------
 
 -   Plugins: Added support for overriding the communication channels used by
