@@ -23,8 +23,8 @@ package plugin
 import (
 	"bytes"
 	"fmt"
+	"go/format"
 	"go/parser"
-	"go/printer"
 	"go/token"
 	"path/filepath"
 	"sort"
@@ -240,13 +240,8 @@ func (g *goFileGenerator) Generate(filename, tmpl string, data interface{}) ([]b
 		astutil.AddNamedImport(fset, f, g.imports[path], path)
 	}
 
-	cfg := printer.Config{
-		Mode:     printer.UseSpaces | printer.TabIndent,
-		Tabwidth: 8,
-	}
-
 	buff = bytes.Buffer{}
-	if err := cfg.Fprint(&buff, fset, f); err != nil {
+	if err := format.Node(&buff, fset, f); err != nil {
 		return nil, err // TODO wrap error
 	}
 
