@@ -67,6 +67,8 @@ type BaseType struct {
 func (BaseType) node()      {}
 func (BaseType) fieldType() {}
 
+func (bt BaseType) lineNumber() int { return bt.Line }
+
 func (bt BaseType) visitChildren(ss nodeStack, v visitor) {
 	for _, ann := range bt.Annotations {
 		v.visit(ss, ann)
@@ -116,6 +118,8 @@ type MapType struct {
 func (MapType) node()      {}
 func (MapType) fieldType() {}
 
+func (mt MapType) lineNumber() int { return mt.Line }
+
 func (mt MapType) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, mt.KeyType)
 	v.visit(ss, mt.ValueType)
@@ -147,6 +151,8 @@ type ListType struct {
 func (ListType) node()      {}
 func (ListType) fieldType() {}
 
+func (lt ListType) lineNumber() int { return lt.Line }
+
 func (lt ListType) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, lt.ValueType)
 	for _, ann := range lt.Annotations {
@@ -177,6 +183,8 @@ type SetType struct {
 func (SetType) node()      {}
 func (SetType) fieldType() {}
 
+func (st SetType) lineNumber() int { return st.Line }
+
 func (st SetType) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, st.ValueType)
 	for _, ann := range st.Annotations {
@@ -199,6 +207,8 @@ type TypeReference struct {
 
 func (TypeReference) node()      {}
 func (TypeReference) fieldType() {}
+
+func (tr TypeReference) lineNumber() int { return tr.Line }
 
 func (TypeReference) visitChildren(nodeStack, visitor) {}
 

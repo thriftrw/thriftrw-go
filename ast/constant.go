@@ -67,6 +67,11 @@ func (i ConstantMapItem) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, i.Value)
 }
 
+func (m ConstantMap) lineNumber() int       { return m.Line }
+func (i ConstantMapItem) lineNumber() int   { return i.Line }
+func (l ConstantList) lineNumber() int      { return l.Line }
+func (r ConstantReference) lineNumber() int { return r.Line }
+
 // ConstantBoolean is a boolean value specified in the Thrift file.
 //
 //   true

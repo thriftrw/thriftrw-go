@@ -49,6 +49,8 @@ type Constant struct {
 func (*Constant) node()       {}
 func (*Constant) definition() {}
 
+func (c *Constant) lineNumber() int { return c.Line }
+
 func (c *Constant) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, c.Type)
 	v.visit(ss, c.Value)
@@ -73,6 +75,8 @@ type Typedef struct {
 // Definition implementation for Typedef.
 func (*Typedef) node()       {}
 func (*Typedef) definition() {}
+
+func (t *Typedef) lineNumber() int { return t.Line }
 
 func (t *Typedef) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, t.Type)
@@ -105,6 +109,8 @@ type Enum struct {
 func (*Enum) node()       {}
 func (*Enum) definition() {}
 
+func (e *Enum) lineNumber() int { return e.Line }
+
 func (e *Enum) visitChildren(ss nodeStack, v visitor) {
 	for _, item := range e.Items {
 		v.visit(ss, item)
@@ -130,6 +136,8 @@ type EnumItem struct {
 }
 
 func (*EnumItem) node() {}
+
+func (i *EnumItem) lineNumber() int { return i.Line }
 
 func (i *EnumItem) visitChildren(ss nodeStack, v visitor) {
 	for _, ann := range i.Annotations {
@@ -179,6 +187,8 @@ type Struct struct {
 func (*Struct) node()       {}
 func (*Struct) definition() {}
 
+func (s *Struct) lineNumber() int { return s.Line }
+
 func (s *Struct) visitChildren(ss nodeStack, v visitor) {
 	for _, field := range s.Fields {
 		v.visit(ss, field)
@@ -212,6 +222,8 @@ type Service struct {
 func (*Service) node()       {}
 func (*Service) definition() {}
 
+func (s *Service) lineNumber() int { return s.Line }
+
 func (s *Service) visitChildren(ss nodeStack, v visitor) {
 	for _, function := range s.Functions {
 		v.visit(ss, function)
@@ -243,6 +255,8 @@ type Function struct {
 }
 
 func (*Function) node() {}
+
+func (n *Function) lineNumber() int { return n.Line }
 
 func (n *Function) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, n.ReturnType)
@@ -286,6 +300,8 @@ type Field struct {
 }
 
 func (*Field) node() {}
+
+func (n *Field) lineNumber() int { return n.Line }
 
 func (n *Field) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, n.Type)
