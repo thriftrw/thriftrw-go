@@ -4,6 +4,10 @@ Releases
 v1.4.0 (unreleased)
 -------------------
 
+-   AST: Added a `LineNumber` function to get the line on which an AST Node was
+    defined.
+
+
 v1.3.0 (2017-07-05)
 -------------------
 

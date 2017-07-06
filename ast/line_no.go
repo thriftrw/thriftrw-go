@@ -20,44 +20,40 @@
 
 package ast
 
-import (
-	"fmt"
-	"strings"
-)
+// Nodes which know the line number they were defined on can implement this
+// interface.
+type nodeWithLine interface {
+	Node
 
-// Annotation represents a type annotation. Type annotations are key-value
-// pairs in the form,
-//
-// 	(foo = "bar", baz = "qux")
-//
-// They may be used to customize the generated code. Annotations are optional
-// anywhere in the code where they're accepted and may be skipped completely.
-type Annotation struct {
-	Name  string
-	Value string
-	Line  int
+	lineNumber() int
 }
 
-func (*Annotation) node() {}
-
-func (*Annotation) visitChildren(nodeStack, visitor) {}
-
-func (ann *Annotation) lineNumber() int { return ann.Line }
-
-func (ann *Annotation) String() string {
-	return fmt.Sprintf("%s = %q", ann.Name, ann.Value)
-}
-
-// FormatAnnotations formats a collection of annotations into a string.
-func FormatAnnotations(anns []*Annotation) string {
-	if len(anns) == 0 {
-		return ""
+// LineNumber returns the line in the file at which the given node was defined
+// or 0 if the Node does not record its line number.
+func LineNumber(n Node) int {
+	if nl, ok := n.(nodeWithLine); ok {
+		return nl.lineNumber()
 	}
-
-	as := make([]string, len(anns))
-	for i, ann := range anns {
-		as[i] = ann.String()
-	}
-
-	return "(" + strings.Join(as, ", ") + ")"
+	return 0
 }
+
+var _ nodeWithLine = (*Annotation)(nil)
+var _ nodeWithLine = BaseType{}
+var _ nodeWithLine = (*Constant)(nil)
+var _ nodeWithLine = ConstantList{}
+var _ nodeWithLine = ConstantMap{}
+var _ nodeWithLine = ConstantMapItem{}
+var _ nodeWithLine = ConstantReference{}
+var _ nodeWithLine = (*Enum)(nil)
+var _ nodeWithLine = (*EnumItem)(nil)
+var _ nodeWithLine = (*Field)(nil)
+var _ nodeWithLine = (*Function)(nil)
+var _ nodeWithLine = (*Include)(nil)
+var _ nodeWithLine = ListType{}
+var _ nodeWithLine = MapType{}
+var _ nodeWithLine = (*Namespace)(nil)
+var _ nodeWithLine = (*Service)(nil)
+var _ nodeWithLine = SetType{}
+var _ nodeWithLine = (*Struct)(nil)
+var _ nodeWithLine = TypeReference{}
+var _ nodeWithLine = (*Typedef)(nil)
