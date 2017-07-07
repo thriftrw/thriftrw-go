@@ -722,6 +722,172 @@ func (v *Frame) Equals(rhs *Frame) bool {
 	return true
 }
 
+type GoTags struct {
+	Foo                 string  `json:"-" foo:"bar"`
+	Bar                 *string `json:"Bar,omitempty" bar:"foo"`
+	FooBar              string  `json:"foobar,option1,option2" bar:"foo,option1" foo:"foobar"`
+	FooBarWithSpace     string  `json:"foobarWithSpace" foo:"foo bar foobar barfoo"`
+	FooBarWithOmitEmpty *string `json:"foobarWithOmitEmpty,omitempty"`
+}
+
+func (v *GoTags) ToWire() (wire.Value, error) {
+	var (
+		fields [5]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueString(v.Foo), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+	if v.Bar != nil {
+		w, err = wire.NewValueString(*(v.Bar)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
+	w, err = wire.NewValueString(v.FooBar), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 3, Value: w}
+	i++
+	w, err = wire.NewValueString(v.FooBarWithSpace), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 4, Value: w}
+	i++
+	if v.FooBarWithOmitEmpty != nil {
+		w, err = wire.NewValueString(*(v.FooBarWithOmitEmpty)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 5, Value: w}
+		i++
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func (v *GoTags) FromWire(w wire.Value) error {
+	var err error
+	FooIsSet := false
+	FooBarIsSet := false
+	FooBarWithSpaceIsSet := false
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TBinary {
+				v.Foo, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				FooIsSet = true
+			}
+		case 2:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.Bar = &x
+				if err != nil {
+					return err
+				}
+			}
+		case 3:
+			if field.Value.Type() == wire.TBinary {
+				v.FooBar, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				FooBarIsSet = true
+			}
+		case 4:
+			if field.Value.Type() == wire.TBinary {
+				v.FooBarWithSpace, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				FooBarWithSpaceIsSet = true
+			}
+		case 5:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.FooBarWithOmitEmpty = &x
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	if !FooIsSet {
+		return errors.New("field Foo of GoTags is required")
+	}
+	if !FooBarIsSet {
+		return errors.New("field FooBar of GoTags is required")
+	}
+	if !FooBarWithSpaceIsSet {
+		return errors.New("field FooBarWithSpace of GoTags is required")
+	}
+	return nil
+}
+
+func (v *GoTags) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	var fields [5]string
+	i := 0
+	fields[i] = fmt.Sprintf("Foo: %v", v.Foo)
+	i++
+	if v.Bar != nil {
+		fields[i] = fmt.Sprintf("Bar: %v", *(v.Bar))
+		i++
+	}
+	fields[i] = fmt.Sprintf("FooBar: %v", v.FooBar)
+	i++
+	fields[i] = fmt.Sprintf("FooBarWithSpace: %v", v.FooBarWithSpace)
+	i++
+	if v.FooBarWithOmitEmpty != nil {
+		fields[i] = fmt.Sprintf("FooBarWithOmitEmpty: %v", *(v.FooBarWithOmitEmpty))
+		i++
+	}
+	return fmt.Sprintf("GoTags{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _String_EqualsPtr(lhs, rhs *string) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func (v *GoTags) Equals(rhs *GoTags) bool {
+	if !(v.Foo == rhs.Foo) {
+		return false
+	}
+	if !_String_EqualsPtr(v.Bar, rhs.Bar) {
+		return false
+	}
+	if !(v.FooBar == rhs.FooBar) {
+		return false
+	}
+	if !(v.FooBarWithSpace == rhs.FooBarWithSpace) {
+		return false
+	}
+	if !_String_EqualsPtr(v.FooBarWithOmitEmpty, rhs.FooBarWithOmitEmpty) {
+		return false
+	}
+	return true
+}
+
 type Graph struct {
 	Edges []*Edge `json:"edges"`
 }
@@ -947,6 +1113,89 @@ func (v *Node) Equals(rhs *Node) bool {
 		return false
 	}
 	if !((v.Tail == nil && rhs.Tail == nil) || (v.Tail != nil && rhs.Tail != nil && v.Tail.Equals(rhs.Tail))) {
+		return false
+	}
+	return true
+}
+
+type Omit struct {
+	Serialized string `json:"serialized"`
+	Hidden     string `json:"-"`
+}
+
+func (v *Omit) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueString(v.Serialized), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+	w, err = wire.NewValueString(v.Hidden), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func (v *Omit) FromWire(w wire.Value) error {
+	var err error
+	serializedIsSet := false
+	hiddenIsSet := false
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TBinary {
+				v.Serialized, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				serializedIsSet = true
+			}
+		case 2:
+			if field.Value.Type() == wire.TBinary {
+				v.Hidden, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				hiddenIsSet = true
+			}
+		}
+	}
+	if !serializedIsSet {
+		return errors.New("field Serialized of Omit is required")
+	}
+	if !hiddenIsSet {
+		return errors.New("field Hidden of Omit is required")
+	}
+	return nil
+}
+
+func (v *Omit) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	var fields [2]string
+	i := 0
+	fields[i] = fmt.Sprintf("Serialized: %v", v.Serialized)
+	i++
+	fields[i] = fmt.Sprintf("Hidden: %v", v.Hidden)
+	i++
+	return fmt.Sprintf("Omit{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *Omit) Equals(rhs *Omit) bool {
+	if !(v.Serialized == rhs.Serialized) {
+		return false
+	}
+	if !(v.Hidden == rhs.Hidden) {
 		return false
 	}
 	return true
@@ -1285,15 +1534,6 @@ func _Double_EqualsPtr(lhs, rhs *float64) bool {
 	return lhs == nil && rhs == nil
 }
 
-func _String_EqualsPtr(lhs, rhs *string) bool {
-	if lhs != nil && rhs != nil {
-		x := *lhs
-		y := *rhs
-		return (x == y)
-	}
-	return lhs == nil && rhs == nil
-}
-
 func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
 	if !_Bool_EqualsPtr(v.BoolField, rhs.BoolField) {
 		return false
@@ -1547,6 +1787,89 @@ func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
 		return false
 	}
 	if !bytes.Equal(v.BinaryField, rhs.BinaryField) {
+		return false
+	}
+	return true
+}
+
+type Rename struct {
+	Default   string `json:"default"`
+	CamelCase string `json:"snake_case"`
+}
+
+func (v *Rename) ToWire() (wire.Value, error) {
+	var (
+		fields [2]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	w, err = wire.NewValueString(v.Default), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+	w, err = wire.NewValueString(v.CamelCase), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
+	i++
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func (v *Rename) FromWire(w wire.Value) error {
+	var err error
+	DefaultIsSet := false
+	camelCaseIsSet := false
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TBinary {
+				v.Default, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				DefaultIsSet = true
+			}
+		case 2:
+			if field.Value.Type() == wire.TBinary {
+				v.CamelCase, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				camelCaseIsSet = true
+			}
+		}
+	}
+	if !DefaultIsSet {
+		return errors.New("field Default of Rename is required")
+	}
+	if !camelCaseIsSet {
+		return errors.New("field CamelCase of Rename is required")
+	}
+	return nil
+}
+
+func (v *Rename) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	var fields [2]string
+	i := 0
+	fields[i] = fmt.Sprintf("Default: %v", v.Default)
+	i++
+	fields[i] = fmt.Sprintf("CamelCase: %v", v.CamelCase)
+	i++
+	return fmt.Sprintf("Rename{%v}", strings.Join(fields[:i], ", "))
+}
+
+func (v *Rename) Equals(rhs *Rename) bool {
+	if !(v.Default == rhs.Default) {
+		return false
+	}
+	if !(v.CamelCase == rhs.CamelCase) {
 		return false
 	}
 	return true

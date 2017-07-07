@@ -892,6 +892,13 @@ func TestStructJSON(t *testing.T) {
 			&ts.Edge{StartPoint: &ts.Point{X: 1, Y: 1}},
 			`{"startPoint":{"x":1,"y":1},"endPoint":null}`,
 		},
+		{
+			&ts.Edge{
+				StartPoint: &ts.Point{X: 1, Y: 1},
+				EndPoint:   &ts.Point{X: 1, Y: 1},
+			},
+			`{"startPoint":{"x":1,"y":1},"endPoint":{"x":1,"y":1}}`,
+		},
 		{&ts.User{Name: ""}, `{"name":""}`},
 		{&ts.User{Name: "foo"}, `{"name":"foo"}`},
 		{
@@ -968,6 +975,14 @@ func TestStructJSON(t *testing.T) {
 			&ts.List{Value: 0, Tail: &ts.List{Value: 1}},
 			`{"value":0,"tail":{"value":1}}`,
 		},
+		{
+			&ts.Rename{Default: "foo", CamelCase: "bar"},
+			`{"default":"foo","snake_case":"bar"}`,
+		},
+		{
+			&ts.Omit{Serialized: "foo", Hidden: ""},
+			`{"serialized":"foo"}`,
+		},
 	}
 
 	for _, tt := range tests {
@@ -979,8 +994,50 @@ func TestStructJSON(t *testing.T) {
 		v := reflect.New(reflect.TypeOf(tt.v).Elem()).Interface()
 		if assert.NoError(t, json.Unmarshal([]byte(tt.j), v), "failed to decode %q", tt.j) {
 			assert.Equal(t, tt.v, v)
+			assert.Equal(t, tt.v, v)
 		}
 	}
+}
+
+func TestJSONOmitBehaviour(t *testing.T) {
+	omit := ts.Omit{Serialized: "foo", Hidden: "bar"}
+	b, err := json.Marshal(&omit)
+
+	assert.NoError(t, err, "should marshal")
+	assert.Equal(t, b, []byte(`{"serialized":"foo"}`))
+
+	omit2 := ts.Omit{}
+	err = json.Unmarshal([]byte(`{"serialized":"foo","hidden":"bar"}`), &omit2)
+
+	assert.NoError(t, err, "should unmarshal")
+	assert.Equal(t, omit2.Serialized, "foo")
+	assert.Equal(t, omit2.Hidden, "")
+}
+
+func TestStructGoTags(t *testing.T) {
+	gt := &ts.GoTags{
+		Foo:             "shouldomit",
+		FooBar:          "shouldnotomit",
+		FooBarWithSpace: "shouldalsonotomit",
+	}
+	b, err := json.Marshal(gt)
+	assert.NoError(t, err, "should marshal")
+	assert.JSONEq(t, string(b), `{"foobar":"shouldnotomit", "foobarWithSpace":"shouldalsonotomit"}`)
+
+	foo, _ := reflect.TypeOf(gt).Elem().FieldByName("Foo")
+	assert.Equal(t, `json:"-" foo:"bar"`, string(foo.Tag))
+
+	foobar, _ := reflect.TypeOf(gt).Elem().FieldByName("FooBar")
+	assert.Equal(t, `json:"foobar,option1,option2" bar:"foo,option1" foo:"foobar"`, string(foobar.Tag))
+
+	foobarWithSpace, _ := reflect.TypeOf(gt).Elem().FieldByName("FooBarWithSpace")
+	assert.Equal(t, `json:"foobarWithSpace" foo:"foo bar foobar barfoo"`, string(foobarWithSpace.Tag))
+
+	bar, _ := reflect.TypeOf(gt).Elem().FieldByName("Bar")
+	assert.Equal(t, `json:"Bar,omitempty" bar:"foo"`, string(bar.Tag))
+
+	foobarWithOmitEmpty, _ := reflect.TypeOf(gt).Elem().FieldByName("FooBarWithOmitEmpty")
+	assert.Equal(t, `json:"foobarWithOmitEmpty,omitempty"`, string(foobarWithOmitEmpty.Tag))
 }
 
 func TestStructValidation(t *testing.T) {
