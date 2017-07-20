@@ -4,6 +4,8 @@ Releases
 v1.4.0 (unreleased)
 -------------------
 
+-   Added support for `go.tag` annotations on struct fields. Corresponding
+    fields of the generated Go structs will be tagged with these values.
 -   AST: Added a `LineNumber` function to get the line on which an AST Node was
     defined.
 
