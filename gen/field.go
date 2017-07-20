@@ -23,7 +23,17 @@ package gen
 import (
 	"fmt"
 
+	"github.com/fatih/structtag"
 	"go.uber.org/thriftrw/compile"
+)
+
+const (
+	// value of this annotation tag will be parsed and included
+	// in the generated go struct's tag
+	goTagKey = "go.tag"
+
+	// key for tag set on all generated go structs used by encoding/json
+	jsonTagKey = "json"
 )
 
 var reservedIdentifiers = map[string]struct{}{
@@ -94,21 +104,64 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 			<end>
 		}`,
 		f,
-		TemplateFunc("tag", func(f *compile.FieldSpec) string {
-			// We want to add omitempty if the field is an optional struct or
-			// primitive to redure "null" noise. We won't add omitempty for
-			// optional collections because omitempty doesn't differentiate
-			// between nil and empty collections.
-
-			if (isStructType(f.Type) || isPrimitiveType(f.Type)) && !f.Required {
-				return fmt.Sprintf("`json:\"%s,omitempty\"`", f.Name)
-			}
-
-			return fmt.Sprintf("`json:%q`", f.Name)
-			// TODO(abg): Take go.tag and js.name annotations into account
-		}),
+		TemplateFunc("tag", generateTags),
 		TemplateFunc("declFieldName", f.declFieldName),
 	)
+}
+
+// generateTags parses the annotation on the thrift field and creates the resulting go tag
+func generateTags(f *compile.FieldSpec) (string, error) {
+	tags, err := structtag.Parse("") // no tags
+	if err != nil {
+		return "", fmt.Errorf("failed to parse tag: %v", err)
+	}
+
+	if err := tags.Set(compileJSONTag(f, f.Name)); err != nil {
+		return "", fmt.Errorf("failed to set tag: %v", err)
+	}
+
+	// process go tags and overwrite json tag if specified in thrift annotation
+	if goAnnotation := f.Annotations[goTagKey]; goAnnotation != "" {
+		goTags, err := structtag.Parse(goAnnotation)
+		if err != nil {
+			return "", fmt.Errorf("failed to parse tags %q: %v", goAnnotation, err)
+		}
+
+		for _, t := range goTags.Tags() {
+			if t.Key == jsonTagKey {
+				t = compileJSONTag(f, t.Name, t.Options...)
+			}
+			if err := tags.Set(t); err != nil {
+				return "", fmt.Errorf("failed to set tag: %v", err)
+			}
+		}
+	}
+
+	return fmt.Sprintf("`%s`", tags.String()), nil
+}
+
+func compileJSONTag(f *compile.FieldSpec, name string, opts ...string) *structtag.Tag {
+	// We want to add omitempty if the field is an optional struct or
+	// primitive to reduce "null" noise. We won't add omitempty for
+	// optional collections because omitempty doesn't differentiate
+	// between nil and empty collections.
+
+	t := &structtag.Tag{
+		Key:     jsonTagKey,
+		Name:    name,
+		Options: opts,
+	}
+
+	if name == "-" {
+		// If the field name is "-" then it means omit, add no tags
+		return t
+	}
+
+	if (isStructType(f.Type) || isPrimitiveType(f.Type)) && !f.Required && !t.HasOption("omitempty") {
+		t.Options = append(t.Options, "omitempty")
+	}
+
+	return t
 }
 
 // declFieldName replaces goName during generation of a structure's definition.
