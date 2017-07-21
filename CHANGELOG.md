@@ -1,7 +1,7 @@
 Releases
 ========
 
-v1.4.0 (unreleased)
+v1.4.0 (2017-07-21)
 -------------------
 
 -   Added support for `go.tag` annotations on struct fields. Corresponding
