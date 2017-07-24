@@ -77,12 +77,15 @@ func do() (err error) {
 
 	var opts options
 
-	parser := flags.NewParser(&opts, flags.Default)
+	parser := flags.NewParser(&opts, flags.Default & ^flags.PrintErrors)
 	parser.Usage = "[OPTIONS] FILE"
 
 	args, err := parser.Parse()
-	if err != nil {
-		return nil // message already printed by go-flags
+	if ferr, ok := err.(*flags.Error); ok && ferr.Type == flags.ErrHelp {
+		parser.WriteHelp(os.Stdout)
+		return nil
+	} else if err != nil {
+		return err
 	}
 
 	if opts.DisplayVersion {
