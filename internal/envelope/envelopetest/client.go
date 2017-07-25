@@ -26,6 +26,7 @@ package envelopetest
 import (
 	gomock "github.com/golang/mock/gomock"
 	wire "go.uber.org/thriftrw/wire"
+	reflect "reflect"
 )
 
 // MockTransport is a mock of Transport interface
@@ -61,7 +62,7 @@ func (_m *MockTransport) Send(_param0 []byte) ([]byte, error) {
 
 // Send indicates an expected call of Send
 func (_mr *MockTransportMockRecorder) Send(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Send", arg0)
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Send", reflect.TypeOf((*MockTransport)(nil).Send), arg0)
 }
 
 // MockClient is a mock of Client interface
@@ -97,5 +98,5 @@ func (_m *MockClient) Send(name string, body wire.Value) (wire.Value, error) {
 
 // Send indicates an expected call of Send
 func (_mr *MockClientMockRecorder) Send(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Send", arg0, arg1)
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Send", reflect.TypeOf((*MockClient)(nil).Send), arg0, arg1)
 }

@@ -26,6 +26,7 @@ package envelopetest
 import (
 	gomock "github.com/golang/mock/gomock"
 	wire "go.uber.org/thriftrw/wire"
+	reflect "reflect"
 )
 
 // MockHandler is a mock of Handler interface
@@ -61,5 +62,5 @@ func (_m *MockHandler) Handle(name string, body wire.Value) (wire.Value, error) 
 
 // Handle indicates an expected call of Handle
 func (_mr *MockHandlerMockRecorder) Handle(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Handle", arg0, arg1)
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Handle", reflect.TypeOf((*MockHandler)(nil).Handle), arg0, arg1)
 }

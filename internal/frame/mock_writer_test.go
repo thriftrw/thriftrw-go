@@ -5,6 +5,7 @@ package frame
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
 // MockWriter is a mock of Writer interface
@@ -40,7 +41,7 @@ func (_m *MockWriter) Write(_param0 []byte) (int, error) {
 
 // Write indicates an expected call of Write
 func (_mr *MockWriterMockRecorder) Write(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Write", arg0)
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Write", reflect.TypeOf((*MockWriter)(nil).Write), arg0)
 }
 
 // MockWriteCloser is a mock of WriteCloser interface
@@ -75,7 +76,7 @@ func (_m *MockWriteCloser) Close() error {
 
 // Close indicates an expected call of Close
 func (_mr *MockWriteCloserMockRecorder) Close() *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Close")
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Close", reflect.TypeOf((*MockWriteCloser)(nil).Close))
 }
 
 // Write mocks base method
@@ -88,5 +89,5 @@ func (_m *MockWriteCloser) Write(_param0 []byte) (int, error) {
 
 // Write indicates an expected call of Write
 func (_mr *MockWriteCloserMockRecorder) Write(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Write", arg0)
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Write", reflect.TypeOf((*MockWriteCloser)(nil).Write), arg0)
 }
