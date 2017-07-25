@@ -21,15 +21,21 @@
 package gen
 
 import (
+	"bufio"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/thriftrw/compile"
 )
+
+// Header for generated code as per https://golang.org/s/generatedcode
+var generatedByRegex = regexp.MustCompile(`^// Code generated .* DO NOT EDIT\.$`)
 
 func TestCodeIsUpToDate(t *testing.T) {
 	// This test just verifies that the generated code in testdata/ is up to
@@ -64,6 +70,36 @@ func TestCodeIsUpToDate(t *testing.T) {
 			NoRecurse:     true,
 		})
 		require.NoError(t, err, "failed to generate code for %q", thriftFile)
+
+		// All generated Go files must have a line that matches
+		// generatedByRegex.
+		err = filepath.Walk(outputDir, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if !info.Mode().IsRegular() || !strings.HasSuffix(path, ".go") {
+				return nil
+			}
+
+			f, err := os.Open(path)
+			if !assert.NoError(t, err, "failed to open %q", path) {
+				return err
+			}
+			defer f.Close()
+
+			scanner := bufio.NewScanner(f)
+			if scanner.Scan() {
+				// Check the first line only if the file is non-empty.
+				line := scanner.Text()
+				assert.Regexp(t, generatedByRegex, line,
+					"first line of %q does not have the correct header", path)
+			}
+
+			err = scanner.Err()
+			assert.NoError(t, err, "failed to scan %q", path)
+			return err
+		})
+		require.NoError(t, err)
 
 		newHash, err := dirhash(newPackageDir)
 		require.NoError(t, err, "could not hash %q", newPackageDir)

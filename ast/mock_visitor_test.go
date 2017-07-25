@@ -5,6 +5,7 @@ package ast
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
 // MockVisitor is a mock of Visitor interface
@@ -39,5 +40,5 @@ func (_m *MockVisitor) Visit(_param0 Walker, _param1 Node) Visitor {
 
 // Visit indicates an expected call of Visit
 func (_mr *MockVisitorMockRecorder) Visit(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Visit", arg0, arg1)
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Visit", reflect.TypeOf((*MockVisitor)(nil).Visit), arg0, arg1)
 }
