@@ -1,5 +1,5 @@
-hash: dba7e4b9ea0549b86f98ac8ec35df5b8d1d8c50fb092b26d0dcb4bf63b80201c
-updated: 2017-07-25T12:03:29.555918575-07:00
+hash: d0f43f812a18bfa1f7490f400166b9116e3021f8f77e723dd0a5901a6745e0b9
+updated: 2017-08-03T15:10:56.086707616-07:00
 imports:
 - name: github.com/anmitsu/go-shlex
   version: 648efa622239a2f6ff949fed78ee37b48d499ba4
@@ -15,17 +15,12 @@ imports:
   version: cfb55aafdaf3ec08f0db22699ab822c50091b1c4
 - name: github.com/kr/text
   version: 7cafcd837844e784b526369c9bce262804aebc60
-- name: github.com/stretchr/testify
-  version: 05e8a0eda380579888eb53c394909df027f06991
-  subpackages:
-  - assert
-  - require
 - name: go.uber.org/atomic
   version: 4e336646b2ef9fc6e47be8e21594178f98e5ebcf
 - name: go.uber.org/multierr
   version: a3d1fc1f1316d4132fc61f4ea1159ae0613fb474
 - name: golang.org/x/tools
-  version: 3da34b1b520a543128e8441cd2ffffc383111d03
+  version: 4e70a1b26a7875f00ca1916637a876b5ffaeec59
   subpackages:
   - go/ast/astutil
 testImports:
@@ -37,3 +32,8 @@ testImports:
   version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
   - difflib
+- name: github.com/stretchr/testify
+  version: 05e8a0eda380579888eb53c394909df027f06991
+  subpackages:
+  - assert
+  - require
