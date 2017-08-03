@@ -1,9 +1,0 @@
-# We will explicitly whitelist vendored libraries that we want to check in.
-/*
-!/github.com/
-
-/github.com/*
-!/github.com/fatih/
-
-/github.com/fatih/*
-!/github.com/fatih/structtag

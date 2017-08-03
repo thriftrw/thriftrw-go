@@ -26,6 +26,7 @@ package plugintest
 import (
 	gomock "github.com/golang/mock/gomock"
 	api "go.uber.org/thriftrw/plugin/api"
+	reflect "reflect"
 )
 
 // MockPlugin is a mock of Plugin interface
@@ -60,7 +61,7 @@ func (_m *MockPlugin) Goodbye() error {
 
 // Goodbye indicates an expected call of Goodbye
 func (_mr *MockPluginMockRecorder) Goodbye() *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Goodbye")
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Goodbye", reflect.TypeOf((*MockPlugin)(nil).Goodbye))
 }
 
 // Handshake mocks base method
@@ -73,7 +74,7 @@ func (_m *MockPlugin) Handshake(_param0 *api.HandshakeRequest) (*api.HandshakeRe
 
 // Handshake indicates an expected call of Handshake
 func (_mr *MockPluginMockRecorder) Handshake(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Handshake", arg0)
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Handshake", reflect.TypeOf((*MockPlugin)(nil).Handshake), arg0)
 }
 
 // MockServiceGenerator is a mock of ServiceGenerator interface
@@ -109,5 +110,5 @@ func (_m *MockServiceGenerator) Generate(_param0 *api.GenerateServiceRequest) (*
 
 // Generate indicates an expected call of Generate
 func (_mr *MockServiceGeneratorMockRecorder) Generate(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Generate", arg0)
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Generate", reflect.TypeOf((*MockServiceGenerator)(nil).Generate), arg0)
 }

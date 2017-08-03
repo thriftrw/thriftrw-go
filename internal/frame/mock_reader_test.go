@@ -5,6 +5,7 @@ package frame
 
 import (
 	gomock "github.com/golang/mock/gomock"
+	reflect "reflect"
 )
 
 // MockReader is a mock of Reader interface
@@ -40,7 +41,7 @@ func (_m *MockReader) Read(_param0 []byte) (int, error) {
 
 // Read indicates an expected call of Read
 func (_mr *MockReaderMockRecorder) Read(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Read", arg0)
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Read", reflect.TypeOf((*MockReader)(nil).Read), arg0)
 }
 
 // MockReadCloser is a mock of ReadCloser interface
@@ -75,7 +76,7 @@ func (_m *MockReadCloser) Close() error {
 
 // Close indicates an expected call of Close
 func (_mr *MockReadCloserMockRecorder) Close() *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Close")
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Close", reflect.TypeOf((*MockReadCloser)(nil).Close))
 }
 
 // Read mocks base method
@@ -88,5 +89,5 @@ func (_m *MockReadCloser) Read(_param0 []byte) (int, error) {
 
 // Read indicates an expected call of Read
 func (_mr *MockReadCloserMockRecorder) Read(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCall(_mr.mock, "Read", arg0)
+	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Read", reflect.TypeOf((*MockReadCloser)(nil).Read), arg0)
 }
