@@ -1,10 +1,6 @@
 package: go.uber.org/thriftrw
 import:
 - package: go.uber.org/atomic
-- package: github.com/stretchr/testify
-- package: github.com/golang/mock
-  subpackages:
-  - gomock
 - package: github.com/kr/pretty
 - package: github.com/kr/text
 - package: golang.org/x/tools
@@ -16,3 +12,8 @@ import:
   version: ~0.2.0
 - package: github.com/fatih/structtag
   version: ^0.1.0
+testImport:
+- package: github.com/golang/mock
+  subpackages:
+  - gomock
+- package: github.com/stretchr/testify
