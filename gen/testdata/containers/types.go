@@ -1843,8 +1843,8 @@ func (v *EnumContainers) Equals(rhs *EnumContainers) bool {
 }
 
 type ListOfConflictingEnums struct {
-	Records      []enum_conflict.RecordType `json:"records"`
-	OtherRecords []enums.RecordType         `json:"otherRecords"`
+	Records      []enum_conflict.RecordType `json:"records,required"`
+	OtherRecords []enums.RecordType         `json:"otherRecords,required"`
 }
 
 type _List_RecordType_ValueList []enum_conflict.RecordType
@@ -2058,8 +2058,8 @@ func (v *ListOfConflictingEnums) Equals(rhs *ListOfConflictingEnums) bool {
 }
 
 type ListOfConflictingUUIDs struct {
-	Uuids      []*typedefs.UUID     `json:"uuids"`
-	OtherUUIDs []uuid_conflict.UUID `json:"otherUUIDs"`
+	Uuids      []*typedefs.UUID     `json:"uuids,required"`
+	OtherUUIDs []uuid_conflict.UUID `json:"otherUUIDs,required"`
 }
 
 type _List_UUID_ValueList []*typedefs.UUID
@@ -3040,9 +3040,9 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 }
 
 type PrimitiveContainersRequired struct {
-	ListOfStrings      []string           `json:"listOfStrings"`
-	SetOfInts          map[int32]struct{} `json:"setOfInts"`
-	MapOfIntsToDoubles map[int64]float64  `json:"mapOfIntsToDoubles"`
+	ListOfStrings      []string           `json:"listOfStrings,required"`
+	SetOfInts          map[int32]struct{} `json:"setOfInts,required"`
+	MapOfIntsToDoubles map[int64]float64  `json:"mapOfIntsToDoubles,required"`
 }
 
 type _Map_I64_Double_MapItemList map[int64]float64
