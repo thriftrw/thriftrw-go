@@ -1016,13 +1016,14 @@ func TestJSONOmitBehaviour(t *testing.T) {
 
 func TestStructGoTags(t *testing.T) {
 	gt := &ts.GoTags{
-		Foo:             "shouldomit",
-		FooBar:          "shouldnotomit",
-		FooBarWithSpace: "shouldalsonotomit",
+		Foo:                "shouldomit",
+		FooBar:             "shouldnotomit",
+		FooBarWithSpace:    "shouldalsonotomit",
+		FooBarWithRequired: "shouldrequired",
 	}
 	b, err := json.Marshal(gt)
 	assert.NoError(t, err, "should marshal")
-	assert.JSONEq(t, string(b), `{"foobar":"shouldnotomit", "foobarWithSpace":"shouldalsonotomit"}`)
+	assert.JSONEq(t, string(b), `{"foobar":"shouldnotomit", "foobarWithSpace":"shouldalsonotomit","foobarWithRequired":"shouldrequired"}`)
 
 	foo, _ := reflect.TypeOf(gt).Elem().FieldByName("Foo")
 	assert.Equal(t, `json:"-" foo:"bar"`, string(foo.Tag))
@@ -1038,6 +1039,9 @@ func TestStructGoTags(t *testing.T) {
 
 	foobarWithOmitEmpty, _ := reflect.TypeOf(gt).Elem().FieldByName("FooBarWithOmitEmpty")
 	assert.Equal(t, `json:"foobarWithOmitEmpty,omitempty"`, string(foobarWithOmitEmpty.Tag))
+
+	foobarWithRequired, _ := reflect.TypeOf(gt).Elem().FieldByName("FooBarWithRequired")
+	assert.Equal(t, `json:"foobarWithRequired,required"`, string(foobarWithRequired.Tag))
 }
 
 func TestStructValidation(t *testing.T) {
