@@ -95,6 +95,7 @@ struct GoTags {
         3: required string FooBar (go.tag = 'json:"foobar,option1,option2" bar:"foo,option1" foo:"foobar"')
         4: required string FooBarWithSpace (go.tag = 'json:"foobarWithSpace" foo:"foo bar foobar barfoo"')
         5: optional string FooBarWithOmitEmpty (go.tag = 'json:"foobarWithOmitEmpty,omitempty"')
+        6: required string FooBarWithRequired (go.tag = 'json:"foobarWithRequired,required"')
 }
 
 //////////////////////////////////////////////////////////////////////////////
