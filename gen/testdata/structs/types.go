@@ -728,11 +728,12 @@ type GoTags struct {
 	FooBar              string  `json:"foobar,option1,option2,required" bar:"foo,option1" foo:"foobar"`
 	FooBarWithSpace     string  `json:"foobarWithSpace,required" foo:"foo bar foobar barfoo"`
 	FooBarWithOmitEmpty *string `json:"foobarWithOmitEmpty,omitempty"`
+	FooBarWithRequired  string  `json:"foobarWithRequired,required"`
 }
 
 func (v *GoTags) ToWire() (wire.Value, error) {
 	var (
-		fields [5]wire.Field
+		fields [6]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -771,6 +772,12 @@ func (v *GoTags) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 5, Value: w}
 		i++
 	}
+	w, err = wire.NewValueString(v.FooBarWithRequired), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 6, Value: w}
+	i++
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -779,6 +786,7 @@ func (v *GoTags) FromWire(w wire.Value) error {
 	FooIsSet := false
 	FooBarIsSet := false
 	FooBarWithSpaceIsSet := false
+	FooBarWithRequiredIsSet := false
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -823,6 +831,14 @@ func (v *GoTags) FromWire(w wire.Value) error {
 					return err
 				}
 			}
+		case 6:
+			if field.Value.Type() == wire.TBinary {
+				v.FooBarWithRequired, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				FooBarWithRequiredIsSet = true
+			}
 		}
 	}
 	if !FooIsSet {
@@ -834,6 +850,9 @@ func (v *GoTags) FromWire(w wire.Value) error {
 	if !FooBarWithSpaceIsSet {
 		return errors.New("field FooBarWithSpace of GoTags is required")
 	}
+	if !FooBarWithRequiredIsSet {
+		return errors.New("field FooBarWithRequired of GoTags is required")
+	}
 	return nil
 }
 
@@ -841,7 +860,7 @@ func (v *GoTags) String() string {
 	if v == nil {
 		return "<nil>"
 	}
-	var fields [5]string
+	var fields [6]string
 	i := 0
 	fields[i] = fmt.Sprintf("Foo: %v", v.Foo)
 	i++
@@ -857,6 +876,8 @@ func (v *GoTags) String() string {
 		fields[i] = fmt.Sprintf("FooBarWithOmitEmpty: %v", *(v.FooBarWithOmitEmpty))
 		i++
 	}
+	fields[i] = fmt.Sprintf("FooBarWithRequired: %v", v.FooBarWithRequired)
+	i++
 	return fmt.Sprintf("GoTags{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -883,6 +904,9 @@ func (v *GoTags) Equals(rhs *GoTags) bool {
 		return false
 	}
 	if !_String_EqualsPtr(v.FooBarWithOmitEmpty, rhs.FooBarWithOmitEmpty) {
+		return false
+	}
+	if !(v.FooBarWithRequired == rhs.FooBarWithRequired) {
 		return false
 	}
 	return true
