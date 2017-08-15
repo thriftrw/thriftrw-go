@@ -248,7 +248,7 @@ func (lhs EdgeMap) Equals(rhs EdgeMap) bool {
 }
 
 type Event struct {
-	UUID *UUID      `json:"uuid"`
+	UUID *UUID      `json:"uuid,required"`
 	Time *Timestamp `json:"time,omitempty"`
 }
 
@@ -778,8 +778,8 @@ func (lhs Timestamp) Equals(rhs Timestamp) bool {
 }
 
 type Transition struct {
-	FromState State      `json:"fromState"`
-	ToState   State      `json:"toState"`
+	FromState State      `json:"fromState,required"`
+	ToState   State      `json:"toState,required"`
 	Events    EventGroup `json:"events"`
 }
 
@@ -916,8 +916,8 @@ func (lhs *UUID) Equals(rhs *UUID) bool {
 }
 
 type I128 struct {
-	High int64 `json:"high"`
-	Low  int64 `json:"low"`
+	High int64 `json:"high,required"`
+	Low  int64 `json:"low,required"`
 }
 
 func (v *I128) ToWire() (wire.Value, error) {

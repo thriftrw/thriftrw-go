@@ -12,8 +12,8 @@ import (
 )
 
 type KeyValue_SetValueV2_Args struct {
-	Key   Key                    `json:"key"`
-	Value *unions.ArbitraryValue `json:"value"`
+	Key   Key                    `json:"key,required"`
+	Value *unions.ArbitraryValue `json:"value,required"`
 }
 
 func (v *KeyValue_SetValueV2_Args) ToWire() (wire.Value, error) {

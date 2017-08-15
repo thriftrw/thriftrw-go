@@ -1016,28 +1016,32 @@ func TestJSONOmitBehaviour(t *testing.T) {
 
 func TestStructGoTags(t *testing.T) {
 	gt := &ts.GoTags{
-		Foo:             "shouldomit",
-		FooBar:          "shouldnotomit",
-		FooBarWithSpace: "shouldalsonotomit",
+		Foo:                "shouldomit",
+		FooBar:             "shouldnotomit",
+		FooBarWithSpace:    "shouldalsonotomit",
+		FooBarWithRequired: "shouldrequired",
 	}
 	b, err := json.Marshal(gt)
 	assert.NoError(t, err, "should marshal")
-	assert.JSONEq(t, string(b), `{"foobar":"shouldnotomit", "foobarWithSpace":"shouldalsonotomit"}`)
+	assert.JSONEq(t, string(b), `{"foobar":"shouldnotomit", "foobarWithSpace":"shouldalsonotomit","foobarWithRequired":"shouldrequired"}`)
 
 	foo, _ := reflect.TypeOf(gt).Elem().FieldByName("Foo")
 	assert.Equal(t, `json:"-" foo:"bar"`, string(foo.Tag))
 
 	foobar, _ := reflect.TypeOf(gt).Elem().FieldByName("FooBar")
-	assert.Equal(t, `json:"foobar,option1,option2" bar:"foo,option1" foo:"foobar"`, string(foobar.Tag))
+	assert.Equal(t, `json:"foobar,option1,option2,required" bar:"foo,option1" foo:"foobar"`, string(foobar.Tag))
 
 	foobarWithSpace, _ := reflect.TypeOf(gt).Elem().FieldByName("FooBarWithSpace")
-	assert.Equal(t, `json:"foobarWithSpace" foo:"foo bar foobar barfoo"`, string(foobarWithSpace.Tag))
+	assert.Equal(t, `json:"foobarWithSpace,required" foo:"foo bar foobar barfoo"`, string(foobarWithSpace.Tag))
 
 	bar, _ := reflect.TypeOf(gt).Elem().FieldByName("Bar")
 	assert.Equal(t, `json:"Bar,omitempty" bar:"foo"`, string(bar.Tag))
 
 	foobarWithOmitEmpty, _ := reflect.TypeOf(gt).Elem().FieldByName("FooBarWithOmitEmpty")
 	assert.Equal(t, `json:"foobarWithOmitEmpty,omitempty"`, string(foobarWithOmitEmpty.Tag))
+
+	foobarWithRequired, _ := reflect.TypeOf(gt).Elem().FieldByName("FooBarWithRequired")
+	assert.Equal(t, `json:"foobarWithRequired,required"`, string(foobarWithRequired.Tag))
 }
 
 func TestStructValidation(t *testing.T) {

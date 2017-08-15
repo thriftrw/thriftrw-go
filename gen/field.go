@@ -161,6 +161,10 @@ func compileJSONTag(f *compile.FieldSpec, name string, opts ...string) *structta
 		t.Options = append(t.Options, "omitempty")
 	}
 
+	if f.Required && !t.HasOption("required") {
+		t.Options = append(t.Options, "required")
+	}
+
 	return t
 }
 

@@ -34,8 +34,8 @@ func (lhs UUID) Equals(rhs UUID) bool {
 }
 
 type UUIDConflict struct {
-	LocalUUID    UUID           `json:"localUUID"`
-	ImportedUUID *typedefs.UUID `json:"importedUUID"`
+	LocalUUID    UUID           `json:"localUUID,required"`
+	ImportedUUID *typedefs.UUID `json:"importedUUID,required"`
 }
 
 func (v *UUIDConflict) ToWire() (wire.Value, error) {
