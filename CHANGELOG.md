@@ -4,7 +4,8 @@ Releases
 v1.6.0 (unreleased)
 -------------------
 
--   No changes yet.
+-   Fields of generated struct types are now tagged with easyjson-compatible
+    `required` tags.
 
 
 v1.5.0 (2017-08-03)
