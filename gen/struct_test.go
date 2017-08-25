@@ -32,6 +32,7 @@ import (
 	ts "go.uber.org/thriftrw/gen/testdata/structs"
 	td "go.uber.org/thriftrw/gen/testdata/typedefs"
 	tu "go.uber.org/thriftrw/gen/testdata/unions"
+	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
@@ -1583,4 +1584,64 @@ func TestStructValidation(t *testing.T) {
 			assert.Contains(t, e.(error).Error(), tt.wantError, tt.desc)
 		}
 	}
+}
+
+func TestStructAccessors(t *testing.T) {
+	t.Run("DoesNotExistException", func(t *testing.T) {
+		t.Run("set", func(t *testing.T) {
+			err := tx.DoesNotExistException{Error2: ptr.String("foo")}
+			assert.Equal(t, "foo", err.GetError2())
+		})
+		t.Run("unset", func(t *testing.T) {
+			var err tx.DoesNotExistException
+			assert.Equal(t, "", err.GetError2())
+		})
+	})
+	t.Run("DefaultsStruct", func(t *testing.T) {
+		t.Run("RequiredPrimitive", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				s := ts.DefaultsStruct{RequiredPrimitive: ptr.Int32(42)}
+				assert.Equal(t, int32(42), s.GetRequiredPrimitive())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.Equal(t, int32(100), s.GetRequiredPrimitive())
+			})
+		})
+
+		t.Run("OptionalPrimitive", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				s := ts.DefaultsStruct{OptionalPrimitive: ptr.Int32(100)}
+				assert.Equal(t, int32(100), s.GetOptionalPrimitive())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.Equal(t, int32(200), s.GetOptionalPrimitive())
+			})
+		})
+
+		t.Run("RequiredEnum", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				e := te.EnumDefaultFoo
+				s := ts.DefaultsStruct{RequiredEnum: &e}
+				assert.Equal(t, te.EnumDefaultFoo, s.GetRequiredEnum())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.Equal(t, te.EnumDefaultBar, s.GetRequiredEnum())
+			})
+		})
+
+		t.Run("OptionalEnum", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				e := te.EnumDefaultFoo
+				s := ts.DefaultsStruct{OptionalEnum: &e}
+				assert.Equal(t, te.EnumDefaultFoo, s.GetOptionalEnum())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.Equal(t, te.EnumDefaultBaz, s.GetOptionalEnum())
+			})
+		})
+	})
 }

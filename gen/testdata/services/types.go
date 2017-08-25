@@ -166,6 +166,13 @@ func (v *InternalError) Equals(rhs *InternalError) bool {
 	return true
 }
 
+func (v *InternalError) GetMessage() (o string) {
+	if v.Message != nil {
+		return *v.Message
+	}
+	return
+}
+
 func (v *InternalError) Error() string {
 	return v.String()
 }

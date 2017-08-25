@@ -637,6 +637,20 @@ func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
 	return true
 }
 
+func (v *UnionCollision) GetCollisionField() (o bool) {
+	if v.CollisionField != nil {
+		return *v.CollisionField
+	}
+	return
+}
+
+func (v *UnionCollision) GetCollisionField2() (o string) {
+	if v.CollisionField2 != nil {
+		return *v.CollisionField2
+	}
+	return
+}
+
 type WithDefault struct {
 	Pouet *StructCollision2 `json:"pouet,omitempty"`
 }
@@ -1002,4 +1016,18 @@ func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
 		return false
 	}
 	return true
+}
+
+func (v *UnionCollision2) GetCollisionField() (o bool) {
+	if v.CollisionField != nil {
+		return *v.CollisionField
+	}
+	return
+}
+
+func (v *UnionCollision2) GetCollisionField2() (o string) {
+	if v.CollisionField2 != nil {
+		return *v.CollisionField2
+	}
+	return
 }

@@ -512,3 +512,29 @@ func TestBinarySetEquals(t *testing.T) {
 		assert.False(t, tt.x.Equals(tt.y), "BinarySet unequal")
 	}
 }
+
+func TestTypedefAccessors(t *testing.T) {
+	t.Run("Timestamp", func(t *testing.T) {
+		t.Run("set", func(t *testing.T) {
+			timestamp := td.Timestamp(42)
+			s := td.Event{Time: &timestamp}
+			assert.Equal(t, td.Timestamp(42), s.GetTime())
+		})
+		t.Run("unset", func(t *testing.T) {
+			var s td.Event
+			assert.Equal(t, td.Timestamp(0), s.GetTime())
+		})
+	})
+
+	t.Run("DefaultPrimitiveTypedef", func(t *testing.T) {
+		t.Run("set", func(t *testing.T) {
+			value := td.State("hi")
+			s := td.DefaultPrimitiveTypedef{State: &value}
+			assert.Equal(t, td.State("hi"), s.GetState())
+		})
+		t.Run("unset", func(t *testing.T) {
+			var s td.DefaultPrimitiveTypedef
+			assert.Equal(t, td.State("hello"), s.GetState())
+		})
+	})
+}

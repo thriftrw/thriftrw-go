@@ -234,3 +234,19 @@ func (v *Records) Equals(rhs *Records) bool {
 	}
 	return true
 }
+
+func (v *Records) GetRecordType() (o RecordType) {
+	if v.RecordType != nil {
+		return *v.RecordType
+	}
+	o = DefaultRecordType
+	return
+}
+
+func (v *Records) GetOtherRecordType() (o enums.RecordType) {
+	if v.OtherRecordType != nil {
+		return *v.OtherRecordType
+	}
+	o = DefaultOtherRecordType
+	return
+}

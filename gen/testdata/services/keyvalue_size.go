@@ -152,6 +152,13 @@ func (v *KeyValue_Size_Result) Equals(rhs *KeyValue_Size_Result) bool {
 	return true
 }
 
+func (v *KeyValue_Size_Result) GetSuccess() (o int64) {
+	if v.Success != nil {
+		return *v.Success
+	}
+	return
+}
+
 func (v *KeyValue_Size_Result) MethodName() string {
 	return "size"
 }

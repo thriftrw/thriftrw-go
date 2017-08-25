@@ -569,3 +569,53 @@ func roundTrip(t *testing.T, x thriftType, msg string) thriftType {
 	assert.Equal(t, x, gotX.Interface(), "FromWire: %v", msg)
 	return gotX.Interface().(thriftType)
 }
+
+func TestCollisionAccessors(t *testing.T) {
+	t.Run("UnionCollision", func(t *testing.T) {
+		t.Run("bool", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				u := tc.UnionCollision{CollisionField: ptr.Bool(true)}
+				assert.True(t, u.GetCollisionField())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var u tc.UnionCollision
+				assert.False(t, u.GetCollisionField())
+			})
+		})
+
+		t.Run("string", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				u := tc.UnionCollision{CollisionField2: ptr.String("foo")}
+				assert.Equal(t, "foo", u.GetCollisionField2())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var u tc.UnionCollision
+				assert.Equal(t, "", u.GetCollisionField2())
+			})
+		})
+	})
+
+	t.Run("UnionCollision2", func(t *testing.T) {
+		t.Run("bool", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				u := tc.UnionCollision2{CollisionField: ptr.Bool(true)}
+				assert.True(t, u.GetCollisionField())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var u tc.UnionCollision2
+				assert.False(t, u.GetCollisionField())
+			})
+		})
+
+		t.Run("string", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				u := tc.UnionCollision2{CollisionField2: ptr.String("foo")}
+				assert.Equal(t, "foo", u.GetCollisionField2())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var u tc.UnionCollision2
+				assert.Equal(t, "", u.GetCollisionField2())
+			})
+		})
+	})
+}

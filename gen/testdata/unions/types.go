@@ -359,6 +359,27 @@ func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
 	return true
 }
 
+func (v *ArbitraryValue) GetBoolValue() (o bool) {
+	if v.BoolValue != nil {
+		return *v.BoolValue
+	}
+	return
+}
+
+func (v *ArbitraryValue) GetInt64Value() (o int64) {
+	if v.Int64Value != nil {
+		return *v.Int64Value
+	}
+	return
+}
+
+func (v *ArbitraryValue) GetStringValue() (o string) {
+	if v.StringValue != nil {
+		return *v.StringValue
+	}
+	return
+}
+
 type Document struct {
 	Pdf       typedefs.PDF `json:"pdf"`
 	PlainText *string      `json:"plainText,omitempty"`
@@ -459,6 +480,13 @@ func (v *Document) Equals(rhs *Document) bool {
 		return false
 	}
 	return true
+}
+
+func (v *Document) GetPlainText() (o string) {
+	if v.PlainText != nil {
+		return *v.PlainText
+	}
+	return
 }
 
 type EmptyUnion struct{}

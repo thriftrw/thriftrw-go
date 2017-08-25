@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"testing"
 
+	tec "go.uber.org/thriftrw/gen/testdata/enum_conflict"
 	te "go.uber.org/thriftrw/gen/testdata/enums"
 	"go.uber.org/thriftrw/wire"
 
@@ -327,4 +328,32 @@ func TestUnmarshalTextReturnsErrorOnInvalidValue(t *testing.T) {
 	var v te.EnumDefault
 	err := v.UnmarshalText([]byte("blah"))
 	assert.Error(t, err)
+}
+
+func TestEnumAccessors(t *testing.T) {
+	t.Run("Records", func(t *testing.T) {
+		t.Run("set", func(t *testing.T) {
+			rt := tec.RecordTypeName
+			r := tec.Records{RecordType: &rt}
+			assert.Equal(t, tec.RecordTypeName, r.GetRecordType())
+		})
+
+		t.Run("unset", func(t *testing.T) {
+			var r tec.Records
+			assert.Equal(t, tec.DefaultRecordType, r.GetRecordType())
+		})
+	})
+
+	t.Run("StructWithOptionalEnum", func(t *testing.T) {
+		t.Run("set", func(t *testing.T) {
+			e := te.EnumDefaultBar
+			s := te.StructWithOptionalEnum{E: &e}
+			assert.Equal(t, te.EnumDefaultBar, s.GetE())
+		})
+
+		t.Run("unset", func(t *testing.T) {
+			var s te.StructWithOptionalEnum
+			assert.Equal(t, te.EnumDefaultFoo, s.GetE())
+		})
+	})
 }

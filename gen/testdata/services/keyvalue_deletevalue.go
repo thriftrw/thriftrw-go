@@ -86,6 +86,13 @@ func (v *KeyValue_DeleteValue_Args) Equals(rhs *KeyValue_DeleteValue_Args) bool 
 	return true
 }
 
+func (v *KeyValue_DeleteValue_Args) GetKey() (o Key) {
+	if v.Key != nil {
+		return *v.Key
+	}
+	return
+}
+
 func (v *KeyValue_DeleteValue_Args) MethodName() string {
 	return "deleteValue"
 }

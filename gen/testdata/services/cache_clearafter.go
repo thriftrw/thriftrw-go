@@ -78,6 +78,13 @@ func (v *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
 	return true
 }
 
+func (v *Cache_ClearAfter_Args) GetDurationMS() (o int64) {
+	if v.DurationMS != nil {
+		return *v.DurationMS
+	}
+	return
+}
+
 func (v *Cache_ClearAfter_Args) MethodName() string {
 	return "clearAfter"
 }
