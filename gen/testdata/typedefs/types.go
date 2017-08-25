@@ -101,6 +101,91 @@ func (lhs BinarySet) Equals(rhs BinarySet) bool {
 	return _Set_Binary_Equals(lhs, rhs)
 }
 
+type DefaultPrimitiveTypedef struct {
+	State *State `json:"state,omitempty"`
+}
+
+func _State_ptr(v State) *State {
+	return &v
+}
+
+func (v *DefaultPrimitiveTypedef) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+	if v.State == nil {
+		v.State = _State_ptr("hello")
+	}
+	{
+		w, err = v.State.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _State_Read(w wire.Value) (State, error) {
+	var x State
+	err := x.FromWire(w)
+	return x, err
+}
+
+func (v *DefaultPrimitiveTypedef) FromWire(w wire.Value) error {
+	var err error
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TBinary {
+				var x State
+				x, err = _State_Read(field.Value)
+				v.State = &x
+				if err != nil {
+					return err
+				}
+			}
+		}
+	}
+	if v.State == nil {
+		v.State = _State_ptr("hello")
+	}
+	return nil
+}
+
+func (v *DefaultPrimitiveTypedef) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+	var fields [1]string
+	i := 0
+	if v.State != nil {
+		fields[i] = fmt.Sprintf("State: %v", *(v.State))
+		i++
+	}
+	return fmt.Sprintf("DefaultPrimitiveTypedef{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _State_EqualsPtr(lhs, rhs *State) bool {
+	if lhs != nil && rhs != nil {
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func (v *DefaultPrimitiveTypedef) Equals(rhs *DefaultPrimitiveTypedef) bool {
+	if !_State_EqualsPtr(v.State, rhs.State) {
+		return false
+	}
+	return true
+}
+
 type _Map_Edge_Edge_MapItemList []struct {
 	Key   *structs.Edge
 	Value *structs.Edge
@@ -811,12 +896,6 @@ func (v *Transition) ToWire() (wire.Value, error) {
 		i++
 	}
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
-}
-
-func _State_Read(w wire.Value) (State, error) {
-	var x State
-	err := x.FromWire(w)
-	return x, err
 }
 
 func _EventGroup_Read(w wire.Value) (EventGroup, error) {
