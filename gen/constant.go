@@ -220,7 +220,7 @@ func enumItemReference(g Generator, v compile.EnumItemReference, t compile.TypeS
 func ConstantValuePtr(g Generator, c compile.ConstantValue, t compile.TypeSpec) (string, error) {
 	var ptrFunc string
 
-	switch compile.RootTypeSpec(t).(type) {
+	switch t.(type) {
 	case *compile.BoolSpec:
 		ptrFunc = fmt.Sprintf("%v.Bool", g.Import("go.uber.org/thriftrw/ptr"))
 	case *compile.I8Spec:
@@ -235,7 +235,7 @@ func ConstantValuePtr(g Generator, c compile.ConstantValue, t compile.TypeSpec) 
 		ptrFunc = fmt.Sprintf("%v.Float64", g.Import("go.uber.org/thriftrw/ptr"))
 	case *compile.StringSpec:
 		ptrFunc = fmt.Sprintf("%v.String", g.Import("go.uber.org/thriftrw/ptr"))
-	case *compile.EnumSpec:
+	case *compile.EnumSpec, *compile.TypedefSpec:
 		ptrFunc = fmt.Sprintf("_%s_ptr", g.MangleType(t))
 		err := g.EnsureDeclared(
 			`func <.Name>(v <typeReference .Spec>) *<typeReference .Spec> {
