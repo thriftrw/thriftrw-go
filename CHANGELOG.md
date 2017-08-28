@@ -1,7 +1,7 @@
 Releases
 ========
 
-v1.6.0 (unreleased)
+v1.6.0 (2017-08-28)
 -------------------
 
 -   Structs now include getter functions for primitive types.
