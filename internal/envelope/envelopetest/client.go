@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 // Source: ../client.go
 
+// Package envelopetest is a generated GoMock package.
 package envelopetest
 
 import (
@@ -48,21 +49,21 @@ func NewMockTransport(ctrl *gomock.Controller) *MockTransport {
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (_m *MockTransport) EXPECT() *MockTransportMockRecorder {
-	return _m.recorder
+func (m *MockTransport) EXPECT() *MockTransportMockRecorder {
+	return m.recorder
 }
 
 // Send mocks base method
-func (_m *MockTransport) Send(_param0 []byte) ([]byte, error) {
-	ret := _m.ctrl.Call(_m, "Send", _param0)
+func (m *MockTransport) Send(arg0 []byte) ([]byte, error) {
+	ret := m.ctrl.Call(m, "Send", arg0)
 	ret0, _ := ret[0].([]byte)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Send indicates an expected call of Send
-func (_mr *MockTransportMockRecorder) Send(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Send", reflect.TypeOf((*MockTransport)(nil).Send), arg0)
+func (mr *MockTransportMockRecorder) Send(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockTransport)(nil).Send), arg0)
 }
 
 // MockClient is a mock of Client interface
@@ -84,19 +85,19 @@ func NewMockClient(ctrl *gomock.Controller) *MockClient {
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (_m *MockClient) EXPECT() *MockClientMockRecorder {
-	return _m.recorder
+func (m *MockClient) EXPECT() *MockClientMockRecorder {
+	return m.recorder
 }
 
 // Send mocks base method
-func (_m *MockClient) Send(name string, body wire.Value) (wire.Value, error) {
-	ret := _m.ctrl.Call(_m, "Send", name, body)
+func (m *MockClient) Send(name string, body wire.Value) (wire.Value, error) {
+	ret := m.ctrl.Call(m, "Send", name, body)
 	ret0, _ := ret[0].(wire.Value)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Send indicates an expected call of Send
-func (_mr *MockClientMockRecorder) Send(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Send", reflect.TypeOf((*MockClient)(nil).Send), arg0, arg1)
+func (mr *MockClientMockRecorder) Send(name, body interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockClient)(nil).Send), name, body)
 }

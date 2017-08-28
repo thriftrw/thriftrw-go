@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 // Source: ../server.go
 
+// Package envelopetest is a generated GoMock package.
 package envelopetest
 
 import (
@@ -48,19 +49,19 @@ func NewMockHandler(ctrl *gomock.Controller) *MockHandler {
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (_m *MockHandler) EXPECT() *MockHandlerMockRecorder {
-	return _m.recorder
+func (m *MockHandler) EXPECT() *MockHandlerMockRecorder {
+	return m.recorder
 }
 
 // Handle mocks base method
-func (_m *MockHandler) Handle(name string, body wire.Value) (wire.Value, error) {
-	ret := _m.ctrl.Call(_m, "Handle", name, body)
+func (m *MockHandler) Handle(name string, body wire.Value) (wire.Value, error) {
+	ret := m.ctrl.Call(m, "Handle", name, body)
 	ret0, _ := ret[0].(wire.Value)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Handle indicates an expected call of Handle
-func (_mr *MockHandlerMockRecorder) Handle(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Handle", reflect.TypeOf((*MockHandler)(nil).Handle), arg0, arg1)
+func (mr *MockHandlerMockRecorder) Handle(name, body interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handle", reflect.TypeOf((*MockHandler)(nil).Handle), name, body)
 }

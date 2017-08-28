@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 // Source: go.uber.org/thriftrw/plugin/api (interfaces: Plugin,ServiceGenerator)
 
+// Package plugintest is a generated GoMock package.
 package plugintest
 
 import (
@@ -48,33 +49,33 @@ func NewMockPlugin(ctrl *gomock.Controller) *MockPlugin {
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (_m *MockPlugin) EXPECT() *MockPluginMockRecorder {
-	return _m.recorder
+func (m *MockPlugin) EXPECT() *MockPluginMockRecorder {
+	return m.recorder
 }
 
 // Goodbye mocks base method
-func (_m *MockPlugin) Goodbye() error {
-	ret := _m.ctrl.Call(_m, "Goodbye")
+func (m *MockPlugin) Goodbye() error {
+	ret := m.ctrl.Call(m, "Goodbye")
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Goodbye indicates an expected call of Goodbye
-func (_mr *MockPluginMockRecorder) Goodbye() *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Goodbye", reflect.TypeOf((*MockPlugin)(nil).Goodbye))
+func (mr *MockPluginMockRecorder) Goodbye() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Goodbye", reflect.TypeOf((*MockPlugin)(nil).Goodbye))
 }
 
 // Handshake mocks base method
-func (_m *MockPlugin) Handshake(_param0 *api.HandshakeRequest) (*api.HandshakeResponse, error) {
-	ret := _m.ctrl.Call(_m, "Handshake", _param0)
+func (m *MockPlugin) Handshake(arg0 *api.HandshakeRequest) (*api.HandshakeResponse, error) {
+	ret := m.ctrl.Call(m, "Handshake", arg0)
 	ret0, _ := ret[0].(*api.HandshakeResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Handshake indicates an expected call of Handshake
-func (_mr *MockPluginMockRecorder) Handshake(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Handshake", reflect.TypeOf((*MockPlugin)(nil).Handshake), arg0)
+func (mr *MockPluginMockRecorder) Handshake(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handshake", reflect.TypeOf((*MockPlugin)(nil).Handshake), arg0)
 }
 
 // MockServiceGenerator is a mock of ServiceGenerator interface
@@ -96,19 +97,19 @@ func NewMockServiceGenerator(ctrl *gomock.Controller) *MockServiceGenerator {
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (_m *MockServiceGenerator) EXPECT() *MockServiceGeneratorMockRecorder {
-	return _m.recorder
+func (m *MockServiceGenerator) EXPECT() *MockServiceGeneratorMockRecorder {
+	return m.recorder
 }
 
 // Generate mocks base method
-func (_m *MockServiceGenerator) Generate(_param0 *api.GenerateServiceRequest) (*api.GenerateServiceResponse, error) {
-	ret := _m.ctrl.Call(_m, "Generate", _param0)
+func (m *MockServiceGenerator) Generate(arg0 *api.GenerateServiceRequest) (*api.GenerateServiceResponse, error) {
+	ret := m.ctrl.Call(m, "Generate", arg0)
 	ret0, _ := ret[0].(*api.GenerateServiceResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Generate indicates an expected call of Generate
-func (_mr *MockServiceGeneratorMockRecorder) Generate(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Generate", reflect.TypeOf((*MockServiceGenerator)(nil).Generate), arg0)
+func (mr *MockServiceGeneratorMockRecorder) Generate(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Generate", reflect.TypeOf((*MockServiceGenerator)(nil).Generate), arg0)
 }
