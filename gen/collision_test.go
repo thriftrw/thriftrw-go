@@ -618,4 +618,28 @@ func TestCollisionAccessors(t *testing.T) {
 			})
 		})
 	})
+
+	t.Run("AccessorConflict", func(t *testing.T) {
+		t.Run("name", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				u := tc.AccessorConflict{Name: ptr.String("foo")}
+				assert.Equal(t, "foo", u.GetName())
+			})
+			t.Run("unset", func(t *testing.T) {
+				u := tc.AccessorConflict{GetName2: ptr.String("bar")}
+				assert.Equal(t, "", u.GetName())
+			})
+		})
+
+		t.Run("get_name", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				u := tc.AccessorConflict{GetName2: ptr.String("foo")}
+				assert.Equal(t, "foo", u.GetGetName2())
+			})
+			t.Run("unset", func(t *testing.T) {
+				u := tc.AccessorConflict{Name: ptr.String("bar")}
+				assert.Equal(t, "", u.GetGetName2())
+			})
+		})
+	})
 }

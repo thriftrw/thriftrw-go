@@ -446,13 +446,17 @@ func (f fieldGroupGenerator) Equals(g Generator) error {
 }
 
 func (f fieldGroupGenerator) PrimitiveAccessors(g Generator) error {
+	fieldsAndAccessors := NewNamespace()
 	return g.DeclareFromTemplate(
 		`
 		<$v := newVar "v">
 		<$o := newVar "o">
 		<$name := .Name>
+
 		<range .Fields>
 			<$fname := goName .>
+			<reserveFieldOrMethod $fname>
+			<reserveFieldOrMethod (printf "Get%v" $fname)>
 			<if and (not .Required) (isPrimitiveType .Type)>
 			func (<$v> *<$name>) Get<$fname>() (<$o> <typeReference .Type>) {
 				if <$v>.<$fname> != nil {
@@ -463,5 +467,12 @@ func (f fieldGroupGenerator) PrimitiveAccessors(g Generator) error {
 			}
 			<end>
 		<end>
-		`, f, TemplateFunc("constantValue", ConstantValue))
+		`, f,
+		TemplateFunc("constantValue", ConstantValue),
+		TemplateFunc("reserveFieldOrMethod", func(name string) (string, error) {
+			// we return an empty string for the sake of the templating system
+			err := fieldsAndAccessors.Reserve(name)
+			return "", err
+		}),
+	)
 }
