@@ -186,6 +186,14 @@ func (v *DefaultPrimitiveTypedef) Equals(rhs *DefaultPrimitiveTypedef) bool {
 	return true
 }
 
+func (v *DefaultPrimitiveTypedef) GetState() (o State) {
+	if v.State != nil {
+		return *v.State
+	}
+	o = "hello"
+	return
+}
+
 type _Map_Edge_Edge_MapItemList []struct {
 	Key   *structs.Edge
 	Value *structs.Edge
@@ -438,6 +446,13 @@ func (v *Event) Equals(rhs *Event) bool {
 		return false
 	}
 	return true
+}
+
+func (v *Event) GetTime() (o Timestamp) {
+	if v.Time != nil {
+		return *v.Time
+	}
+	return
 }
 
 type _List_Event_ValueList []*Event

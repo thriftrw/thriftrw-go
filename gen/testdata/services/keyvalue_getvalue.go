@@ -72,6 +72,13 @@ func (v *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
 	return true
 }
 
+func (v *KeyValue_GetValue_Args) GetKey() (o Key) {
+	if v.Key != nil {
+		return *v.Key
+	}
+	return
+}
+
 func (v *KeyValue_GetValue_Args) MethodName() string {
 	return "getValue"
 }

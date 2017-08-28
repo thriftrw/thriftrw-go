@@ -747,6 +747,13 @@ func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 	return true
 }
 
+func (v *StructWithOptionalEnum) GetE() (o EnumDefault) {
+	if v.E != nil {
+		return *v.E
+	}
+	return
+}
+
 type LowerCaseEnum int32
 
 const (

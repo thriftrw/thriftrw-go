@@ -501,6 +501,38 @@ func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 	return true
 }
 
+func (v *DefaultsStruct) GetRequiredPrimitive() (o int32) {
+	if v.RequiredPrimitive != nil {
+		return *v.RequiredPrimitive
+	}
+	o = 100
+	return
+}
+
+func (v *DefaultsStruct) GetOptionalPrimitive() (o int32) {
+	if v.OptionalPrimitive != nil {
+		return *v.OptionalPrimitive
+	}
+	o = 200
+	return
+}
+
+func (v *DefaultsStruct) GetRequiredEnum() (o enums.EnumDefault) {
+	if v.RequiredEnum != nil {
+		return *v.RequiredEnum
+	}
+	o = enums.EnumDefaultBar
+	return
+}
+
+func (v *DefaultsStruct) GetOptionalEnum() (o enums.EnumDefault) {
+	if v.OptionalEnum != nil {
+		return *v.OptionalEnum
+	}
+	o = enums.EnumDefaultBaz
+	return
+}
+
 type Edge struct {
 	StartPoint *Point `json:"startPoint"`
 	EndPoint   *Point `json:"endPoint"`
@@ -886,6 +918,20 @@ func (v *GoTags) Equals(rhs *GoTags) bool {
 		return false
 	}
 	return true
+}
+
+func (v *GoTags) GetBar() (o string) {
+	if v.Bar != nil {
+		return *v.Bar
+	}
+	return
+}
+
+func (v *GoTags) GetFooBarWithOmitEmpty() (o string) {
+	if v.FooBarWithOmitEmpty != nil {
+		return *v.FooBarWithOmitEmpty
+	}
+	return
 }
 
 type Graph struct {
@@ -1560,6 +1606,55 @@ func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
 		return false
 	}
 	return true
+}
+
+func (v *PrimitiveOptionalStruct) GetBoolField() (o bool) {
+	if v.BoolField != nil {
+		return *v.BoolField
+	}
+	return
+}
+
+func (v *PrimitiveOptionalStruct) GetByteField() (o int8) {
+	if v.ByteField != nil {
+		return *v.ByteField
+	}
+	return
+}
+
+func (v *PrimitiveOptionalStruct) GetInt16Field() (o int16) {
+	if v.Int16Field != nil {
+		return *v.Int16Field
+	}
+	return
+}
+
+func (v *PrimitiveOptionalStruct) GetInt32Field() (o int32) {
+	if v.Int32Field != nil {
+		return *v.Int32Field
+	}
+	return
+}
+
+func (v *PrimitiveOptionalStruct) GetInt64Field() (o int64) {
+	if v.Int64Field != nil {
+		return *v.Int64Field
+	}
+	return
+}
+
+func (v *PrimitiveOptionalStruct) GetDoubleField() (o float64) {
+	if v.DoubleField != nil {
+		return *v.DoubleField
+	}
+	return
+}
+
+func (v *PrimitiveOptionalStruct) GetStringField() (o string) {
+	if v.StringField != nil {
+		return *v.StringField
+	}
+	return
 }
 
 type PrimitiveRequiredStruct struct {

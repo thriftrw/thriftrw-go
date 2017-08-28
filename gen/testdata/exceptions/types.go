@@ -103,6 +103,13 @@ func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
 	return true
 }
 
+func (v *DoesNotExistException) GetError2() (o string) {
+	if v.Error2 != nil {
+		return *v.Error2
+	}
+	return
+}
+
 func (v *DoesNotExistException) Error() string {
 	return v.String()
 }

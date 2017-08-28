@@ -93,6 +93,13 @@ func (v *KeyValue_SetValue_Args) Equals(rhs *KeyValue_SetValue_Args) bool {
 	return true
 }
 
+func (v *KeyValue_SetValue_Args) GetKey() (o Key) {
+	if v.Key != nil {
+		return *v.Key
+	}
+	return
+}
+
 func (v *KeyValue_SetValue_Args) MethodName() string {
 	return "setValue"
 }
