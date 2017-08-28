@@ -18,6 +18,10 @@ struct Event {
     2: optional Timestamp time  // optional typedef
 }
 
+struct DefaultPrimitiveTypedef {
+    1: optional State state = "hello"
+}
+
 struct Transition {
     1: required State fromState
     2: required State toState

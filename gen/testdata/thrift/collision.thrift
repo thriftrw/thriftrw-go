@@ -50,3 +50,13 @@ union union_collision {
 struct WithDefault {
 	1: required struct_collision pouet = struct_constant
 }
+
+struct AccessorNoConflict {
+    1: optional string getname
+    2: optional string get_name
+}
+
+struct AccessorConflict {
+    1: optional string name
+    2: optional string get_name (go.name = "GetName2")
+}

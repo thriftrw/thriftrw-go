@@ -1,6 +1,16 @@
 Releases
 ========
 
+v1.6.0 (unreleased)
+-------------------
+
+-   Structs now include getter functions for primitive types.
+-   Fields of generated struct types are now tagged with easyjson-compatible
+    `required` tags.
+-   Fixed code generation bug for default values of fields with a `typedef`
+    type.
+
+
 v1.5.0 (2017-08-03)
 -------------------
 
