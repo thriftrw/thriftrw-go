@@ -5,7 +5,7 @@ Releases
 v1.7.0 (unreleased)
 -------------------
 
--   Add Go 1.9 support.
+-   No changes yet.
 
 
 v1.6.0 (2017-08-28)
