@@ -161,7 +161,7 @@ definition
                 Type: $4,
                 Value: $7,
                 Line: $1,
-                Doc: $2,  // TODO: clean up docstring
+                Doc: CleanupDocstring($2),
             }
         }
     /* types */
@@ -172,7 +172,7 @@ definition
                 Type: $4,
                 Annotations: $6,
                 Line: $1,
-                Doc: $2,  // TODO: clean up docstring
+                Doc: CleanupDocstring($2),
             }
         }
     | lineno docstring ENUM IDENTIFIER '{' enum_items '}' type_annotations
@@ -182,7 +182,7 @@ definition
                 Items: $6,
                 Annotations: $8,
                 Line: $1,
-                Doc: $2,  // TODO: clean up docstring
+                Doc: CleanupDocstring($2),
             }
         }
     | lineno docstring struct_type IDENTIFIER '{' fields '}' type_annotations
@@ -193,7 +193,7 @@ definition
                 Fields: $6,
                 Annotations: $8,
                 Line: $1,
-                Doc: $2,  // TODO: clean up docstring
+                Doc: CleanupDocstring($2),
             }
         }
     /* services */
@@ -204,7 +204,7 @@ definition
                 Functions: $6,
                 Annotations: $8,
                 Line: $1,
-                Doc: $2,  // TODO: clean up docstring
+                Doc: CleanupDocstring($2),
             }
         }
     | lineno docstring SERVICE IDENTIFIER EXTENDS lineno IDENTIFIER '{' functions '}'
@@ -221,7 +221,7 @@ definition
                 Parent: parent,
                 Annotations: $11,
                 Line: $1,
-                Doc: $2,  // TODO: clean up docstring
+                Doc: CleanupDocstring($2),
             }
         }
     ;
@@ -244,7 +244,7 @@ enum_item
                 Name: $3,
                 Annotations: $4,
                 Line: $1,
-                Doc: $2,  // TODO: clean up docstring
+                Doc: CleanupDocstring($2),
             }
         }
     | lineno docstring IDENTIFIER '=' INTCONSTANT type_annotations
@@ -255,7 +255,7 @@ enum_item
                 Value: &value,
                 Annotations: $6,
                 Line: $1,
-                Doc: $2,  // TODO: clean up docstring
+                Doc: CleanupDocstring($2),
             }
         }
     ;
@@ -276,7 +276,7 @@ field
                 Requiredness: $5,
                 Annotations: $8,
                 Line: $1,
-                Doc: $2,  // TODO: clean up docstring
+                Doc: CleanupDocstring($2),
             }
         }
     | lineno docstring INTCONSTANT ':' field_required type IDENTIFIER '=' const_value
@@ -290,7 +290,7 @@ field
                 Default: $9,
                 Annotations: $10,
                 Line: $1,
-                Doc: $2,  // TODO: clean up docstring
+                Doc: CleanupDocstring($2),
             }
         }
     ;
@@ -318,7 +318,7 @@ function
                 OneWay: $<bul>2,
                 Annotations: $10,
                 Line: $4,
-                Doc: $1,  // TODO: clean up docstring
+                Doc: CleanupDocstring($1),
             }
         }
     ;
