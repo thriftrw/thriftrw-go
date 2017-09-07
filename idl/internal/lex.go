@@ -45,8 +45,9 @@ type lexer struct {
 	line    int
 	program *ast.Program
 
-	docstringStart int
-	lastDocstring  string
+	docstringStart      int
+	lastDocstring       string
+	linesSinceDocstring int
 
 	err         parseError
 	parseFailed bool
@@ -66,7 +67,7 @@ func newLexer(data []byte) *lexer {
 		pe:          len(data),
 	}
 
-//line lex.go:56
+//line lex.go:57
 	{
 		lex.cs = thrift_start
 		lex.ts = 0
@@ -74,7 +75,7 @@ func newLexer(data []byte) *lexer {
 		lex.act = 0
 	}
 
-//line lex.rl:50
+//line lex.rl:51
 	return lex
 }
 
@@ -86,7 +87,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		tok = 0
 	)
 
-//line lex.go:77
+//line lex.go:78
 	{
 		if (lex.p) == (lex.pe) {
 			goto _test_eof
@@ -905,7 +906,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st_out
 	tr2:
-//line lex.rl:293
+//line lex.rl:300
 		lex.te = (lex.p) + 1
 		{
 			bs := lex.data[lex.ts:lex.te]
@@ -933,7 +934,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr7:
-//line lex.rl:282
+//line lex.rl:289
 		(lex.p) = (lex.te) - 1
 		{
 			str := string(lex.data[lex.ts:lex.te])
@@ -951,24 +952,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr16:
-//line lex.rl:263
+//line lex.rl:270
 		lex.te = (lex.p) + 1
 
 		goto st19
 	tr21:
-//line lex.rl:65
+//line lex.rl:66
 		lex.lastDocstring = string(lex.data[lex.docstringStart : lex.p+1])
-//line lex.rl:261
+		lex.linesSinceDocstring = 0
+
+//line lex.rl:268
 		lex.te = (lex.p) + 1
 
 		goto st19
 	tr22:
-//line lex.rl:263
+//line lex.rl:270
 		(lex.p) = (lex.te) - 1
 
 		goto st19
 	tr25:
-//line lex.rl:265
+//line lex.rl:272
 		(lex.p) = (lex.te) - 1
 		{
 			str := string(lex.data[lex.ts:lex.te])
@@ -1311,19 +1314,21 @@ func (lex *lexer) Lex(out *yySymType) int {
 
 		goto st19
 	tr29:
-//line lex.rl:259
+//line lex.rl:266
 		lex.te = (lex.p) + 1
 
 		goto st19
 	tr30:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
-//line lex.rl:260
+		lex.linesSinceDocstring++
+
+//line lex.rl:267
 		lex.te = (lex.p) + 1
 
 		goto st19
 	tr31:
-//line lex.rl:253
+//line lex.rl:260
 		lex.te = (lex.p) + 1
 		{
 			tok = int(lex.data[lex.ts])
@@ -1335,13 +1340,13 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr59:
-//line lex.rl:262
+//line lex.rl:269
 		lex.te = (lex.p)
 		(lex.p)--
 
 		goto st19
 	tr60:
-//line lex.rl:265
+//line lex.rl:272
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1366,7 +1371,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr62:
-//line lex.rl:282
+//line lex.rl:289
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1385,13 +1390,13 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr64:
-//line lex.rl:263
+//line lex.rl:270
 		lex.te = (lex.p)
 		(lex.p)--
 
 		goto st19
 	tr66:
-//line lex.rl:319
+//line lex.rl:326
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1405,7 +1410,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr72:
-//line lex.rl:314
+//line lex.rl:321
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1418,7 +1423,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr133:
-//line lex.rl:234
+//line lex.rl:241
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1431,7 +1436,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr138:
-//line lex.rl:226
+//line lex.rl:233
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1444,7 +1449,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr145:
-//line lex.rl:227
+//line lex.rl:234
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1457,7 +1462,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr160:
-//line lex.rl:247
+//line lex.rl:254
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1470,7 +1475,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr180:
-//line lex.rl:232
+//line lex.rl:239
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1483,7 +1488,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr209:
-//line lex.rl:246
+//line lex.rl:253
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1496,7 +1501,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr220:
-//line lex.rl:242
+//line lex.rl:249
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1509,7 +1514,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr227:
-//line lex.rl:243
+//line lex.rl:250
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1522,7 +1527,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr238:
-//line lex.rl:251
+//line lex.rl:258
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1535,7 +1540,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr264:
-//line lex.rl:229
+//line lex.rl:236
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1548,7 +1553,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr268:
-//line lex.rl:230
+//line lex.rl:237
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1561,7 +1566,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr272:
-//line lex.rl:231
+//line lex.rl:238
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1574,7 +1579,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr275:
-//line lex.rl:228
+//line lex.rl:235
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1587,7 +1592,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr292:
-//line lex.rl:223
+//line lex.rl:230
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1600,7 +1605,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr311:
-//line lex.rl:236
+//line lex.rl:243
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1613,7 +1618,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr317:
-//line lex.rl:235
+//line lex.rl:242
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1626,7 +1631,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr331:
-//line lex.rl:224
+//line lex.rl:231
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1639,7 +1644,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr341:
-//line lex.rl:238
+//line lex.rl:245
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1652,7 +1657,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr350:
-//line lex.rl:249
+//line lex.rl:256
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1665,7 +1670,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr383:
-//line lex.rl:248
+//line lex.rl:255
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1678,7 +1683,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr398:
-//line lex.rl:245
+//line lex.rl:252
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1691,7 +1696,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr401:
-//line lex.rl:237
+//line lex.rl:244
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1704,7 +1709,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr410:
-//line lex.rl:233
+//line lex.rl:240
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1717,7 +1722,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr415:
-//line lex.rl:240
+//line lex.rl:247
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1730,7 +1735,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr432:
-//line lex.rl:244
+//line lex.rl:251
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1743,7 +1748,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr442:
-//line lex.rl:250
+//line lex.rl:257
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1756,7 +1761,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr450:
-//line lex.rl:239
+//line lex.rl:246
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1769,7 +1774,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr461:
-//line lex.rl:241
+//line lex.rl:248
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1782,7 +1787,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr473:
-//line lex.rl:225
+//line lex.rl:232
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1805,7 +1810,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.ts = (lex.p)
 
-//line lex.go:1348
+//line lex.go:1355
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto tr29
@@ -1993,7 +1998,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof22
 		}
 	st_case_22:
-//line lex.go:1536
+//line lex.go:1543
 		switch lex.data[(lex.p)] {
 		case 69:
 			goto st6
@@ -2062,15 +2067,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st10
 	tr13:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st10
 	st10:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof10
 		}
 	st_case_10:
-//line lex.go:1613
+//line lex.go:1623
 		switch lex.data[(lex.p)] {
 		case 10:
 			goto tr13
@@ -2093,7 +2100,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st10
 	tr14:
-//line lex.rl:63
+//line lex.rl:64
 		lex.docstringStart = lex.p - 2
 		goto st12
 	st12:
@@ -2101,7 +2108,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof12
 		}
 	st_case_12:
-//line lex.go:1644
+//line lex.go:1654
 		switch lex.data[(lex.p)] {
 		case 10:
 			goto tr18
@@ -2112,15 +2119,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st13
 	tr18:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st13
 	st13:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof13
 		}
 	st_case_13:
-//line lex.go:1663
+//line lex.go:1676
 		switch lex.data[(lex.p)] {
 		case 10:
 			goto tr18
@@ -2152,7 +2161,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof24
 		}
 	st_case_24:
-//line lex.go:1695
+//line lex.go:1708
 		if lex.data[(lex.p)] == 42 {
 			goto st16
 		}
@@ -2188,7 +2197,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof25
 		}
 	st_case_25:
-//line lex.go:1731
+//line lex.go:1744
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto tr61
@@ -2239,7 +2248,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st27
 	st27:
@@ -2247,7 +2256,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof27
 		}
 	st_case_27:
-//line lex.go:1790
+//line lex.go:1803
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2292,7 +2301,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st28
 	st28:
@@ -2300,7 +2309,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof28
 		}
 	st_case_28:
-//line lex.go:1843
+//line lex.go:1856
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2326,7 +2335,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st29
 	st29:
@@ -2334,7 +2343,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof29
 		}
 	st_case_29:
-//line lex.go:1877
+//line lex.go:1890
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2360,7 +2369,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st30
 	st30:
@@ -2368,7 +2377,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof30
 		}
 	st_case_30:
-//line lex.go:1911
+//line lex.go:1924
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2394,7 +2403,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st31
 	st31:
@@ -2402,7 +2411,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof31
 		}
 	st_case_31:
-//line lex.go:1945
+//line lex.go:1958
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2428,9 +2437,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:203
+//line lex.rl:210
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
-//line lex.rl:314
+//line lex.rl:321
 		lex.act = 39
 		goto st32
 	st32:
@@ -2438,7 +2447,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof32
 		}
 	st_case_32:
-//line lex.go:1981
+//line lex.go:1994
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -2467,15 +2476,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr72
 	tr74:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st33
 	st33:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof33
 		}
 	st_case_33:
-//line lex.go:2018
+//line lex.go:2034
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -2491,7 +2502,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st34
 	st34:
@@ -2499,7 +2510,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof34
 		}
 	st_case_34:
-//line lex.go:2042
+//line lex.go:2058
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2525,7 +2536,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st35
 	st35:
@@ -2533,7 +2544,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof35
 		}
 	st_case_35:
-//line lex.go:2076
+//line lex.go:2092
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2559,7 +2570,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st36
 	st36:
@@ -2567,7 +2578,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof36
 		}
 	st_case_36:
-//line lex.go:2110
+//line lex.go:2126
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2591,7 +2602,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st37
 	st37:
@@ -2599,7 +2610,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof37
 		}
 	st_case_37:
-//line lex.go:2142
+//line lex.go:2158
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2635,7 +2646,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st38
 	st38:
@@ -2643,7 +2654,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof38
 		}
 	st_case_38:
-//line lex.go:2186
+//line lex.go:2202
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2669,7 +2680,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st39
 	st39:
@@ -2677,7 +2688,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof39
 		}
 	st_case_39:
-//line lex.go:2220
+//line lex.go:2236
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2703,7 +2714,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st40
 	st40:
@@ -2711,7 +2722,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof40
 		}
 	st_case_40:
-//line lex.go:2254
+//line lex.go:2270
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2737,7 +2748,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st41
 	st41:
@@ -2745,7 +2756,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof41
 		}
 	st_case_41:
-//line lex.go:2288
+//line lex.go:2304
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2771,7 +2782,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st42
 	st42:
@@ -2779,7 +2790,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof42
 		}
 	st_case_42:
-//line lex.go:2322
+//line lex.go:2338
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2803,7 +2814,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st43
 	st43:
@@ -2811,7 +2822,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof43
 		}
 	st_case_43:
-//line lex.go:2354
+//line lex.go:2370
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2835,7 +2846,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st44
 	st44:
@@ -2843,7 +2854,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof44
 		}
 	st_case_44:
-//line lex.go:2386
+//line lex.go:2402
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2869,7 +2880,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st45
 	st45:
@@ -2877,7 +2888,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof45
 		}
 	st_case_45:
-//line lex.go:2420
+//line lex.go:2436
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2903,7 +2914,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st46
 	st46:
@@ -2911,7 +2922,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof46
 		}
 	st_case_46:
-//line lex.go:2454
+//line lex.go:2470
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2939,7 +2950,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st47
 	st47:
@@ -2947,7 +2958,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof47
 		}
 	st_case_47:
-//line lex.go:2490
+//line lex.go:2506
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -2973,7 +2984,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st48
 	st48:
@@ -2981,7 +2992,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof48
 		}
 	st_case_48:
-//line lex.go:2524
+//line lex.go:2540
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3007,7 +3018,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st49
 	st49:
@@ -3015,7 +3026,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof49
 		}
 	st_case_49:
-//line lex.go:2558
+//line lex.go:2574
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3041,7 +3052,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st50
 	st50:
@@ -3049,7 +3060,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof50
 		}
 	st_case_50:
-//line lex.go:2592
+//line lex.go:2608
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3075,7 +3086,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st51
 	st51:
@@ -3083,7 +3094,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof51
 		}
 	st_case_51:
-//line lex.go:2626
+//line lex.go:2642
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3109,7 +3120,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st52
 	st52:
@@ -3117,7 +3128,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof52
 		}
 	st_case_52:
-//line lex.go:2660
+//line lex.go:2676
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3143,7 +3154,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st53
 	st53:
@@ -3151,7 +3162,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof53
 		}
 	st_case_53:
-//line lex.go:2694
+//line lex.go:2710
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3177,7 +3188,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st54
 	st54:
@@ -3185,7 +3196,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof54
 		}
 	st_case_54:
-//line lex.go:2728
+//line lex.go:2744
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3211,7 +3222,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st55
 	st55:
@@ -3219,7 +3230,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof55
 		}
 	st_case_55:
-//line lex.go:2762
+//line lex.go:2778
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3245,7 +3256,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st56
 	st56:
@@ -3253,7 +3264,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof56
 		}
 	st_case_56:
-//line lex.go:2796
+//line lex.go:2812
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3279,7 +3290,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st57
 	st57:
@@ -3287,7 +3298,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof57
 		}
 	st_case_57:
-//line lex.go:2830
+//line lex.go:2846
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3313,7 +3324,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st58
 	st58:
@@ -3321,7 +3332,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof58
 		}
 	st_case_58:
-//line lex.go:2864
+//line lex.go:2880
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3347,7 +3358,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st59
 	st59:
@@ -3355,7 +3366,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof59
 		}
 	st_case_59:
-//line lex.go:2898
+//line lex.go:2914
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3381,7 +3392,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st60
 	st60:
@@ -3389,7 +3400,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof60
 		}
 	st_case_60:
-//line lex.go:2932
+//line lex.go:2948
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3415,7 +3426,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st61
 	st61:
@@ -3423,7 +3434,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof61
 		}
 	st_case_61:
-//line lex.go:2966
+//line lex.go:2982
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3449,7 +3460,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st62
 	st62:
@@ -3457,7 +3468,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof62
 		}
 	st_case_62:
-//line lex.go:3000
+//line lex.go:3016
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3483,7 +3494,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st63
 	st63:
@@ -3491,7 +3502,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof63
 		}
 	st_case_63:
-//line lex.go:3034
+//line lex.go:3050
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3517,7 +3528,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st64
 	st64:
@@ -3525,7 +3536,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof64
 		}
 	st_case_64:
-//line lex.go:3068
+//line lex.go:3084
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3551,7 +3562,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st65
 	st65:
@@ -3559,7 +3570,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof65
 		}
 	st_case_65:
-//line lex.go:3102
+//line lex.go:3118
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3585,7 +3596,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st66
 	st66:
@@ -3593,7 +3604,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof66
 		}
 	st_case_66:
-//line lex.go:3136
+//line lex.go:3152
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3619,7 +3630,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st67
 	st67:
@@ -3627,7 +3638,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof67
 		}
 	st_case_67:
-//line lex.go:3170
+//line lex.go:3186
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3653,7 +3664,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st68
 	st68:
@@ -3661,7 +3672,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof68
 		}
 	st_case_68:
-//line lex.go:3204
+//line lex.go:3220
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3687,7 +3698,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st69
 	st69:
@@ -3695,7 +3706,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof69
 		}
 	st_case_69:
-//line lex.go:3238
+//line lex.go:3254
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3729,7 +3740,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st70
 	st70:
@@ -3737,7 +3748,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof70
 		}
 	st_case_70:
-//line lex.go:3280
+//line lex.go:3296
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3763,7 +3774,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st71
 	st71:
@@ -3771,7 +3782,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof71
 		}
 	st_case_71:
-//line lex.go:3314
+//line lex.go:3330
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3797,7 +3808,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st72
 	st72:
@@ -3805,7 +3816,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof72
 		}
 	st_case_72:
-//line lex.go:3348
+//line lex.go:3364
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3831,7 +3842,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st73
 	st73:
@@ -3839,7 +3850,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof73
 		}
 	st_case_73:
-//line lex.go:3382
+//line lex.go:3398
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3865,7 +3876,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st74
 	st74:
@@ -3873,7 +3884,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof74
 		}
 	st_case_74:
-//line lex.go:3416
+//line lex.go:3432
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3899,7 +3910,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st75
 	st75:
@@ -3907,7 +3918,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof75
 		}
 	st_case_75:
-//line lex.go:3450
+//line lex.go:3466
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3933,7 +3944,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st76
 	st76:
@@ -3941,7 +3952,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof76
 		}
 	st_case_76:
-//line lex.go:3484
+//line lex.go:3500
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -3967,7 +3978,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st77
 	st77:
@@ -3975,7 +3986,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof77
 		}
 	st_case_77:
-//line lex.go:3518
+//line lex.go:3534
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4001,7 +4012,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st78
 	st78:
@@ -4009,7 +4020,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof78
 		}
 	st_case_78:
-//line lex.go:3552
+//line lex.go:3568
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4035,7 +4046,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st79
 	st79:
@@ -4043,7 +4054,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof79
 		}
 	st_case_79:
-//line lex.go:3586
+//line lex.go:3602
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4069,7 +4080,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st80
 	st80:
@@ -4077,7 +4088,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof80
 		}
 	st_case_80:
-//line lex.go:3620
+//line lex.go:3636
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4103,9 +4114,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:203
+//line lex.rl:210
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
-//line lex.rl:314
+//line lex.rl:321
 		lex.act = 39
 		goto st81
 	st81:
@@ -4113,7 +4124,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof81
 		}
 	st_case_81:
-//line lex.go:3656
+//line lex.go:3672
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -4147,7 +4158,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st82
 	st82:
@@ -4155,7 +4166,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof82
 		}
 	st_case_82:
-//line lex.go:3698
+//line lex.go:3714
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4181,7 +4192,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st83
 	st83:
@@ -4189,7 +4200,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof83
 		}
 	st_case_83:
-//line lex.go:3732
+//line lex.go:3748
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4215,7 +4226,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st84
 	st84:
@@ -4223,7 +4234,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof84
 		}
 	st_case_84:
-//line lex.go:3766
+//line lex.go:3782
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4257,7 +4268,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st85
 	st85:
@@ -4265,7 +4276,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof85
 		}
 	st_case_85:
-//line lex.go:3808
+//line lex.go:3824
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4291,7 +4302,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st86
 	st86:
@@ -4299,7 +4310,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof86
 		}
 	st_case_86:
-//line lex.go:3842
+//line lex.go:3858
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4325,7 +4336,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st87
 	st87:
@@ -4333,7 +4344,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof87
 		}
 	st_case_87:
-//line lex.go:3876
+//line lex.go:3892
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4359,7 +4370,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st88
 	st88:
@@ -4367,7 +4378,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof88
 		}
 	st_case_88:
-//line lex.go:3910
+//line lex.go:3926
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4393,7 +4404,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st89
 	st89:
@@ -4401,7 +4412,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof89
 		}
 	st_case_89:
-//line lex.go:3944
+//line lex.go:3960
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4427,7 +4438,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st90
 	st90:
@@ -4435,7 +4446,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof90
 		}
 	st_case_90:
-//line lex.go:3978
+//line lex.go:3994
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4461,7 +4472,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st91
 	st91:
@@ -4469,7 +4480,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof91
 		}
 	st_case_91:
-//line lex.go:4012
+//line lex.go:4028
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4495,7 +4506,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:234
+//line lex.rl:241
 		lex.act = 12
 		goto st92
 	st92:
@@ -4503,7 +4514,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof92
 		}
 	st_case_92:
-//line lex.go:4046
+//line lex.go:4062
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st93
@@ -4532,15 +4543,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr133
 	tr135:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st93
 	st93:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof93
 		}
 	st_case_93:
-//line lex.go:4083
+//line lex.go:4102
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st93
@@ -4556,7 +4569,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st94
 	st94:
@@ -4564,7 +4577,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof94
 		}
 	st_case_94:
-//line lex.go:4107
+//line lex.go:4126
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4590,7 +4603,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st95
 	st95:
@@ -4598,7 +4611,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof95
 		}
 	st_case_95:
-//line lex.go:4141
+//line lex.go:4160
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4624,7 +4637,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:226
+//line lex.rl:233
 		lex.act = 4
 		goto st96
 	st96:
@@ -4632,7 +4645,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof96
 		}
 	st_case_96:
-//line lex.go:4175
+//line lex.go:4194
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st97
@@ -4661,15 +4674,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr138
 	tr140:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st97
 	st97:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof97
 		}
 	st_case_97:
-//line lex.go:4212
+//line lex.go:4234
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st97
@@ -4685,7 +4700,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st98
 	st98:
@@ -4693,7 +4708,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof98
 		}
 	st_case_98:
-//line lex.go:4236
+//line lex.go:4258
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4719,7 +4734,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st99
 	st99:
@@ -4727,7 +4742,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof99
 		}
 	st_case_99:
-//line lex.go:4270
+//line lex.go:4292
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4753,7 +4768,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st100
 	st100:
@@ -4761,7 +4776,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof100
 		}
 	st_case_100:
-//line lex.go:4304
+//line lex.go:4326
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4787,7 +4802,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st101
 	st101:
@@ -4795,7 +4810,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof101
 		}
 	st_case_101:
-//line lex.go:4338
+//line lex.go:4360
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4821,7 +4836,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st102
 	st102:
@@ -4829,7 +4844,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof102
 		}
 	st_case_102:
-//line lex.go:4372
+//line lex.go:4394
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4855,7 +4870,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:227
+//line lex.rl:234
 		lex.act = 5
 		goto st103
 	st103:
@@ -4863,7 +4878,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof103
 		}
 	st_case_103:
-//line lex.go:4406
+//line lex.go:4428
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st104
@@ -4892,15 +4907,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr145
 	tr147:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st104
 	st104:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof104
 		}
 	st_case_104:
-//line lex.go:4443
+//line lex.go:4468
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st104
@@ -4916,7 +4933,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st105
 	st105:
@@ -4924,7 +4941,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof105
 		}
 	st_case_105:
-//line lex.go:4467
+//line lex.go:4492
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4954,7 +4971,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st106
 	st106:
@@ -4962,7 +4979,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof106
 		}
 	st_case_106:
-//line lex.go:4505
+//line lex.go:4530
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -4990,7 +5007,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st107
 	st107:
@@ -4998,7 +5015,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof107
 		}
 	st_case_107:
-//line lex.go:4541
+//line lex.go:4566
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5024,7 +5041,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st108
 	st108:
@@ -5032,7 +5049,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof108
 		}
 	st_case_108:
-//line lex.go:4575
+//line lex.go:4600
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5058,7 +5075,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st109
 	st109:
@@ -5066,7 +5083,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof109
 		}
 	st_case_109:
-//line lex.go:4609
+//line lex.go:4634
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5092,7 +5109,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st110
 	st110:
@@ -5100,7 +5117,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof110
 		}
 	st_case_110:
-//line lex.go:4643
+//line lex.go:4668
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5128,7 +5145,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st111
 	st111:
@@ -5136,7 +5153,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof111
 		}
 	st_case_111:
-//line lex.go:4679
+//line lex.go:4704
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5162,7 +5179,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st112
 	st112:
@@ -5170,7 +5187,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof112
 		}
 	st_case_112:
-//line lex.go:4713
+//line lex.go:4738
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5196,7 +5213,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st113
 	st113:
@@ -5204,7 +5221,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof113
 		}
 	st_case_113:
-//line lex.go:4747
+//line lex.go:4772
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5230,7 +5247,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st114
 	st114:
@@ -5238,7 +5255,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof114
 		}
 	st_case_114:
-//line lex.go:4781
+//line lex.go:4806
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5266,7 +5283,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st115
 	st115:
@@ -5274,7 +5291,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof115
 		}
 	st_case_115:
-//line lex.go:4817
+//line lex.go:4842
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5300,7 +5317,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:247
+//line lex.rl:254
 		lex.act = 25
 		goto st116
 	st116:
@@ -5308,7 +5325,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof116
 		}
 	st_case_116:
-//line lex.go:4851
+//line lex.go:4876
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st117
@@ -5337,15 +5354,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr160
 	tr162:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st117
 	st117:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof117
 		}
 	st_case_117:
-//line lex.go:4888
+//line lex.go:4916
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st117
@@ -5361,7 +5380,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st118
 	st118:
@@ -5369,7 +5388,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof118
 		}
 	st_case_118:
-//line lex.go:4912
+//line lex.go:4940
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5395,7 +5414,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st119
 	st119:
@@ -5403,7 +5422,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof119
 		}
 	st_case_119:
-//line lex.go:4946
+//line lex.go:4974
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5429,7 +5448,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st120
 	st120:
@@ -5437,7 +5456,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof120
 		}
 	st_case_120:
-//line lex.go:4980
+//line lex.go:5008
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5463,7 +5482,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st121
 	st121:
@@ -5471,7 +5490,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof121
 		}
 	st_case_121:
-//line lex.go:5014
+//line lex.go:5042
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5501,7 +5520,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st122
 	st122:
@@ -5509,7 +5528,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof122
 		}
 	st_case_122:
-//line lex.go:5052
+//line lex.go:5080
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5539,7 +5558,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st123
 	st123:
@@ -5547,7 +5566,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof123
 		}
 	st_case_123:
-//line lex.go:5090
+//line lex.go:5118
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5573,7 +5592,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st124
 	st124:
@@ -5581,7 +5600,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof124
 		}
 	st_case_124:
-//line lex.go:5124
+//line lex.go:5152
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5607,7 +5626,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st125
 	st125:
@@ -5615,7 +5634,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof125
 		}
 	st_case_125:
-//line lex.go:5158
+//line lex.go:5186
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5641,9 +5660,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:203
+//line lex.rl:210
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
-//line lex.rl:314
+//line lex.rl:321
 		lex.act = 39
 		goto st126
 	st126:
@@ -5651,7 +5670,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof126
 		}
 	st_case_126:
-//line lex.go:5194
+//line lex.go:5222
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -5685,7 +5704,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st127
 	st127:
@@ -5693,7 +5712,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof127
 		}
 	st_case_127:
-//line lex.go:5236
+//line lex.go:5264
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5719,7 +5738,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st128
 	st128:
@@ -5727,7 +5746,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof128
 		}
 	st_case_128:
-//line lex.go:5270
+//line lex.go:5298
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5753,9 +5772,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:203
+//line lex.rl:210
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
-//line lex.rl:314
+//line lex.rl:321
 		lex.act = 39
 		goto st129
 	st129:
@@ -5763,7 +5782,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof129
 		}
 	st_case_129:
-//line lex.go:5306
+//line lex.go:5334
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -5797,7 +5816,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st130
 	st130:
@@ -5805,7 +5824,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof130
 		}
 	st_case_130:
-//line lex.go:5348
+//line lex.go:5376
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5831,9 +5850,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:203
+//line lex.rl:210
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
-//line lex.rl:314
+//line lex.rl:321
 		lex.act = 39
 		goto st131
 	st131:
@@ -5841,7 +5860,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof131
 		}
 	st_case_131:
-//line lex.go:5384
+//line lex.go:5412
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -5875,7 +5894,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st132
 	st132:
@@ -5883,7 +5902,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof132
 		}
 	st_case_132:
-//line lex.go:5426
+//line lex.go:5454
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5909,7 +5928,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st133
 	st133:
@@ -5917,7 +5936,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof133
 		}
 	st_case_133:
-//line lex.go:5460
+//line lex.go:5488
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5943,7 +5962,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st134
 	st134:
@@ -5951,7 +5970,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof134
 		}
 	st_case_134:
-//line lex.go:5494
+//line lex.go:5522
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -5977,7 +5996,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:232
+//line lex.rl:239
 		lex.act = 10
 		goto st135
 	st135:
@@ -5985,7 +6004,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof135
 		}
 	st_case_135:
-//line lex.go:5528
+//line lex.go:5556
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st136
@@ -6014,15 +6033,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr180
 	tr182:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st136
 	st136:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof136
 		}
 	st_case_136:
-//line lex.go:5565
+//line lex.go:5596
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st136
@@ -6038,7 +6059,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st137
 	st137:
@@ -6046,7 +6067,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof137
 		}
 	st_case_137:
-//line lex.go:5589
+//line lex.go:5620
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6072,7 +6093,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st138
 	st138:
@@ -6080,7 +6101,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof138
 		}
 	st_case_138:
-//line lex.go:5623
+//line lex.go:5654
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6106,7 +6127,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st139
 	st139:
@@ -6114,7 +6135,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof139
 		}
 	st_case_139:
-//line lex.go:5657
+//line lex.go:5688
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6140,7 +6161,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st140
 	st140:
@@ -6148,7 +6169,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof140
 		}
 	st_case_140:
-//line lex.go:5691
+//line lex.go:5722
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6174,7 +6195,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st141
 	st141:
@@ -6182,7 +6203,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof141
 		}
 	st_case_141:
-//line lex.go:5725
+//line lex.go:5756
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6208,7 +6229,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st142
 	st142:
@@ -6216,7 +6237,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof142
 		}
 	st_case_142:
-//line lex.go:5759
+//line lex.go:5790
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6246,7 +6267,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st143
 	st143:
@@ -6254,7 +6275,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof143
 		}
 	st_case_143:
-//line lex.go:5797
+//line lex.go:5828
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6282,7 +6303,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st144
 	st144:
@@ -6290,7 +6311,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof144
 		}
 	st_case_144:
-//line lex.go:5833
+//line lex.go:5864
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6316,7 +6337,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st145
 	st145:
@@ -6324,7 +6345,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof145
 		}
 	st_case_145:
-//line lex.go:5867
+//line lex.go:5898
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6352,9 +6373,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:203
+//line lex.rl:210
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
-//line lex.rl:314
+//line lex.rl:321
 		lex.act = 39
 		goto st146
 	st146:
@@ -6362,7 +6383,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof146
 		}
 	st_case_146:
-//line lex.go:5905
+//line lex.go:5936
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -6396,7 +6417,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st147
 	st147:
@@ -6404,7 +6425,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof147
 		}
 	st_case_147:
-//line lex.go:5947
+//line lex.go:5978
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6434,9 +6455,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:203
+//line lex.rl:210
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
-//line lex.rl:314
+//line lex.rl:321
 		lex.act = 39
 		goto st148
 	st148:
@@ -6444,7 +6465,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof148
 		}
 	st_case_148:
-//line lex.go:5987
+//line lex.go:6018
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -6486,7 +6507,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st149
 	st149:
@@ -6494,7 +6515,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof149
 		}
 	st_case_149:
-//line lex.go:6037
+//line lex.go:6068
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6520,7 +6541,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st150
 	st150:
@@ -6528,7 +6549,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof150
 		}
 	st_case_150:
-//line lex.go:6071
+//line lex.go:6102
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6554,7 +6575,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st151
 	st151:
@@ -6562,7 +6583,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof151
 		}
 	st_case_151:
-//line lex.go:6105
+//line lex.go:6136
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6588,7 +6609,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st152
 	st152:
@@ -6596,7 +6617,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof152
 		}
 	st_case_152:
-//line lex.go:6139
+//line lex.go:6170
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6622,9 +6643,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:203
+//line lex.rl:210
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
-//line lex.rl:314
+//line lex.rl:321
 		lex.act = 39
 		goto st153
 	st153:
@@ -6632,7 +6653,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof153
 		}
 	st_case_153:
-//line lex.go:6175
+//line lex.go:6206
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -6666,7 +6687,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st154
 	st154:
@@ -6674,7 +6695,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof154
 		}
 	st_case_154:
-//line lex.go:6217
+//line lex.go:6248
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6700,7 +6721,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st155
 	st155:
@@ -6708,7 +6729,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof155
 		}
 	st_case_155:
-//line lex.go:6251
+//line lex.go:6282
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6734,7 +6755,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st156
 	st156:
@@ -6742,7 +6763,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof156
 		}
 	st_case_156:
-//line lex.go:6285
+//line lex.go:6316
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6768,7 +6789,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st157
 	st157:
@@ -6776,7 +6797,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof157
 		}
 	st_case_157:
-//line lex.go:6319
+//line lex.go:6350
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6802,7 +6823,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st158
 	st158:
@@ -6810,7 +6831,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof158
 		}
 	st_case_158:
-//line lex.go:6353
+//line lex.go:6384
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6836,7 +6857,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st159
 	st159:
@@ -6844,7 +6865,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof159
 		}
 	st_case_159:
-//line lex.go:6387
+//line lex.go:6418
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6870,7 +6891,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st160
 	st160:
@@ -6878,7 +6899,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof160
 		}
 	st_case_160:
-//line lex.go:6421
+//line lex.go:6452
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6904,7 +6925,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st161
 	st161:
@@ -6912,7 +6933,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof161
 		}
 	st_case_161:
-//line lex.go:6455
+//line lex.go:6486
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6938,7 +6959,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st162
 	st162:
@@ -6946,7 +6967,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof162
 		}
 	st_case_162:
-//line lex.go:6489
+//line lex.go:6520
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -6972,7 +6993,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:246
+//line lex.rl:253
 		lex.act = 24
 		goto st163
 	st163:
@@ -6980,7 +7001,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof163
 		}
 	st_case_163:
-//line lex.go:6523
+//line lex.go:6554
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st164
@@ -7009,15 +7030,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr209
 	tr211:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st164
 	st164:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof164
 		}
 	st_case_164:
-//line lex.go:6560
+//line lex.go:6594
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st164
@@ -7033,7 +7056,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st165
 	st165:
@@ -7041,7 +7064,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof165
 		}
 	st_case_165:
-//line lex.go:6584
+//line lex.go:6618
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7071,7 +7094,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st166
 	st166:
@@ -7079,7 +7102,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof166
 		}
 	st_case_166:
-//line lex.go:6622
+//line lex.go:6656
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7105,7 +7128,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st167
 	st167:
@@ -7113,7 +7136,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof167
 		}
 	st_case_167:
-//line lex.go:6656
+//line lex.go:6690
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7139,7 +7162,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st168
 	st168:
@@ -7147,7 +7170,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof168
 		}
 	st_case_168:
-//line lex.go:6690
+//line lex.go:6724
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7173,9 +7196,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:203
+//line lex.rl:210
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
-//line lex.rl:314
+//line lex.rl:321
 		lex.act = 39
 		goto st169
 	st169:
@@ -7183,7 +7206,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof169
 		}
 	st_case_169:
-//line lex.go:6726
+//line lex.go:6760
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -7217,7 +7240,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st170
 	st170:
@@ -7225,7 +7248,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof170
 		}
 	st_case_170:
-//line lex.go:6768
+//line lex.go:6802
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7251,7 +7274,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st171
 	st171:
@@ -7259,7 +7282,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof171
 		}
 	st_case_171:
-//line lex.go:6802
+//line lex.go:6836
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7285,7 +7308,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:242
+//line lex.rl:249
 		lex.act = 20
 		goto st172
 	st172:
@@ -7293,7 +7316,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof172
 		}
 	st_case_172:
-//line lex.go:6836
+//line lex.go:6870
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st173
@@ -7322,15 +7345,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr220
 	tr222:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st173
 	st173:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof173
 		}
 	st_case_173:
-//line lex.go:6873
+//line lex.go:6910
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st173
@@ -7346,7 +7371,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st174
 	st174:
@@ -7354,7 +7379,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof174
 		}
 	st_case_174:
-//line lex.go:6897
+//line lex.go:6934
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7380,7 +7405,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st175
 	st175:
@@ -7388,7 +7413,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof175
 		}
 	st_case_175:
-//line lex.go:6931
+//line lex.go:6968
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7414,7 +7439,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st176
 	st176:
@@ -7422,7 +7447,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof176
 		}
 	st_case_176:
-//line lex.go:6965
+//line lex.go:7002
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7448,7 +7473,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st177
 	st177:
@@ -7456,7 +7481,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof177
 		}
 	st_case_177:
-//line lex.go:6999
+//line lex.go:7036
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7482,7 +7507,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:243
+//line lex.rl:250
 		lex.act = 21
 		goto st178
 	st178:
@@ -7490,7 +7515,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof178
 		}
 	st_case_178:
-//line lex.go:7033
+//line lex.go:7070
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st179
@@ -7519,15 +7544,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr227
 	tr229:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st179
 	st179:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof179
 		}
 	st_case_179:
-//line lex.go:7070
+//line lex.go:7110
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st179
@@ -7543,7 +7570,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st180
 	st180:
@@ -7551,7 +7578,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof180
 		}
 	st_case_180:
-//line lex.go:7094
+//line lex.go:7134
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7587,7 +7614,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st181
 	st181:
@@ -7595,7 +7622,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof181
 		}
 	st_case_181:
-//line lex.go:7138
+//line lex.go:7178
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7621,7 +7648,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st182
 	st182:
@@ -7629,7 +7656,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof182
 		}
 	st_case_182:
-//line lex.go:7172
+//line lex.go:7212
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7655,7 +7682,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st183
 	st183:
@@ -7663,7 +7690,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof183
 		}
 	st_case_183:
-//line lex.go:7206
+//line lex.go:7246
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7689,7 +7716,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:251
+//line lex.rl:258
 		lex.act = 29
 		goto st184
 	st184:
@@ -7697,7 +7724,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof184
 		}
 	st_case_184:
-//line lex.go:7240
+//line lex.go:7280
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st185
@@ -7726,15 +7753,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr238
 	tr240:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st185
 	st185:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof185
 		}
 	st_case_185:
-//line lex.go:7277
+//line lex.go:7320
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st185
@@ -7750,7 +7779,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st186
 	st186:
@@ -7758,7 +7787,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof186
 		}
 	st_case_186:
-//line lex.go:7301
+//line lex.go:7344
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7784,7 +7813,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st187
 	st187:
@@ -7792,7 +7821,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof187
 		}
 	st_case_187:
-//line lex.go:7335
+//line lex.go:7378
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7818,7 +7847,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st188
 	st188:
@@ -7826,7 +7855,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof188
 		}
 	st_case_188:
-//line lex.go:7369
+//line lex.go:7412
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7852,7 +7881,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st189
 	st189:
@@ -7860,7 +7889,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof189
 		}
 	st_case_189:
-//line lex.go:7403
+//line lex.go:7446
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7886,7 +7915,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st190
 	st190:
@@ -7894,7 +7923,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof190
 		}
 	st_case_190:
-//line lex.go:7437
+//line lex.go:7480
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7920,7 +7949,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st191
 	st191:
@@ -7928,7 +7957,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof191
 		}
 	st_case_191:
-//line lex.go:7471
+//line lex.go:7514
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7954,7 +7983,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st192
 	st192:
@@ -7962,7 +7991,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof192
 		}
 	st_case_192:
-//line lex.go:7505
+//line lex.go:7548
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -7988,7 +8017,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st193
 	st193:
@@ -7996,7 +8025,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof193
 		}
 	st_case_193:
-//line lex.go:7539
+//line lex.go:7582
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8022,7 +8051,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st194
 	st194:
@@ -8030,7 +8059,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof194
 		}
 	st_case_194:
-//line lex.go:7573
+//line lex.go:7616
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8056,7 +8085,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st195
 	st195:
@@ -8064,7 +8093,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof195
 		}
 	st_case_195:
-//line lex.go:7607
+//line lex.go:7650
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8090,7 +8119,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st196
 	st196:
@@ -8098,7 +8127,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof196
 		}
 	st_case_196:
-//line lex.go:7641
+//line lex.go:7684
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8124,7 +8153,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st197
 	st197:
@@ -8132,7 +8161,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof197
 		}
 	st_case_197:
-//line lex.go:7675
+//line lex.go:7718
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8158,7 +8187,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st198
 	st198:
@@ -8166,7 +8195,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof198
 		}
 	st_case_198:
-//line lex.go:7709
+//line lex.go:7752
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8192,7 +8221,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st199
 	st199:
@@ -8200,7 +8229,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof199
 		}
 	st_case_199:
-//line lex.go:7743
+//line lex.go:7786
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8226,7 +8255,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st200
 	st200:
@@ -8234,7 +8263,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof200
 		}
 	st_case_200:
-//line lex.go:7777
+//line lex.go:7820
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8262,7 +8291,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st201
 	st201:
@@ -8270,7 +8299,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof201
 		}
 	st_case_201:
-//line lex.go:7813
+//line lex.go:7856
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8296,7 +8325,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st202
 	st202:
@@ -8304,7 +8333,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof202
 		}
 	st_case_202:
-//line lex.go:7847
+//line lex.go:7890
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8330,7 +8359,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st203
 	st203:
@@ -8338,7 +8367,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof203
 		}
 	st_case_203:
-//line lex.go:7881
+//line lex.go:7924
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8364,7 +8393,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st204
 	st204:
@@ -8372,7 +8401,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof204
 		}
 	st_case_204:
-//line lex.go:7915
+//line lex.go:7958
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8398,7 +8427,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st205
 	st205:
@@ -8406,7 +8435,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof205
 		}
 	st_case_205:
-//line lex.go:7949
+//line lex.go:7992
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8432,7 +8461,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st206
 	st206:
@@ -8440,7 +8469,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof206
 		}
 	st_case_206:
-//line lex.go:7983
+//line lex.go:8026
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8466,7 +8495,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st207
 	st207:
@@ -8474,7 +8503,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof207
 		}
 	st_case_207:
-//line lex.go:8017
+//line lex.go:8060
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8514,7 +8543,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st208
 	st208:
@@ -8522,7 +8551,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof208
 		}
 	st_case_208:
-//line lex.go:8065
+//line lex.go:8108
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8548,7 +8577,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:229
+//line lex.rl:236
 		lex.act = 7
 		goto st209
 	st209:
@@ -8556,7 +8585,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof209
 		}
 	st_case_209:
-//line lex.go:8099
+//line lex.go:8142
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st210
@@ -8585,15 +8614,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr264
 	tr266:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st210
 	st210:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof210
 		}
 	st_case_210:
-//line lex.go:8136
+//line lex.go:8182
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st210
@@ -8609,7 +8640,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st211
 	st211:
@@ -8617,7 +8648,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof211
 		}
 	st_case_211:
-//line lex.go:8160
+//line lex.go:8206
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8643,7 +8674,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:230
+//line lex.rl:237
 		lex.act = 8
 		goto st212
 	st212:
@@ -8651,7 +8682,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof212
 		}
 	st_case_212:
-//line lex.go:8194
+//line lex.go:8240
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st213
@@ -8680,15 +8711,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr268
 	tr270:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st213
 	st213:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof213
 		}
 	st_case_213:
-//line lex.go:8231
+//line lex.go:8280
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st213
@@ -8704,7 +8737,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st214
 	st214:
@@ -8712,7 +8745,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof214
 		}
 	st_case_214:
-//line lex.go:8255
+//line lex.go:8304
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8738,7 +8771,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:231
+//line lex.rl:238
 		lex.act = 9
 		goto st215
 	st215:
@@ -8746,7 +8779,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof215
 		}
 	st_case_215:
-//line lex.go:8289
+//line lex.go:8338
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st216
@@ -8775,15 +8808,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr272
 	tr274:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st216
 	st216:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof216
 		}
 	st_case_216:
-//line lex.go:8326
+//line lex.go:8378
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st216
@@ -8799,7 +8834,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:228
+//line lex.rl:235
 		lex.act = 6
 		goto st217
 	st217:
@@ -8807,7 +8842,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof217
 		}
 	st_case_217:
-//line lex.go:8350
+//line lex.go:8402
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st218
@@ -8836,15 +8871,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr275
 	tr277:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st218
 	st218:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof218
 		}
 	st_case_218:
-//line lex.go:8387
+//line lex.go:8442
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st218
@@ -8860,7 +8897,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st219
 	st219:
@@ -8868,7 +8905,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof219
 		}
 	st_case_219:
-//line lex.go:8411
+//line lex.go:8466
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8894,7 +8931,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st220
 	st220:
@@ -8902,7 +8939,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof220
 		}
 	st_case_220:
-//line lex.go:8445
+//line lex.go:8500
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8930,7 +8967,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st221
 	st221:
@@ -8938,7 +8975,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof221
 		}
 	st_case_221:
-//line lex.go:8481
+//line lex.go:8536
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8964,7 +9001,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st222
 	st222:
@@ -8972,7 +9009,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof222
 		}
 	st_case_222:
-//line lex.go:8515
+//line lex.go:8570
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -8998,7 +9035,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st223
 	st223:
@@ -9006,7 +9043,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof223
 		}
 	st_case_223:
-//line lex.go:8549
+//line lex.go:8604
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9032,7 +9069,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st224
 	st224:
@@ -9040,7 +9077,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof224
 		}
 	st_case_224:
-//line lex.go:8583
+//line lex.go:8638
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9066,7 +9103,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st225
 	st225:
@@ -9074,7 +9111,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof225
 		}
 	st_case_225:
-//line lex.go:8617
+//line lex.go:8672
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9100,9 +9137,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:203
+//line lex.rl:210
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
-//line lex.rl:314
+//line lex.rl:321
 		lex.act = 39
 		goto st226
 	st226:
@@ -9110,7 +9147,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof226
 		}
 	st_case_226:
-//line lex.go:8653
+//line lex.go:8708
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -9150,7 +9187,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st227
 	st227:
@@ -9158,7 +9195,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof227
 		}
 	st_case_227:
-//line lex.go:8701
+//line lex.go:8756
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9184,7 +9221,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st228
 	st228:
@@ -9192,7 +9229,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof228
 		}
 	st_case_228:
-//line lex.go:8735
+//line lex.go:8790
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9218,7 +9255,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st229
 	st229:
@@ -9226,7 +9263,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof229
 		}
 	st_case_229:
-//line lex.go:8769
+//line lex.go:8824
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9252,7 +9289,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st230
 	st230:
@@ -9260,7 +9297,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof230
 		}
 	st_case_230:
-//line lex.go:8803
+//line lex.go:8858
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9286,7 +9323,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:223
+//line lex.rl:230
 		lex.act = 1
 		goto st231
 	st231:
@@ -9294,7 +9331,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof231
 		}
 	st_case_231:
-//line lex.go:8837
+//line lex.go:8892
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st232
@@ -9323,15 +9360,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr292
 	tr294:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st232
 	st232:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof232
 		}
 	st_case_232:
-//line lex.go:8874
+//line lex.go:8932
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st232
@@ -9347,7 +9386,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st233
 	st233:
@@ -9355,7 +9394,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof233
 		}
 	st_case_233:
-//line lex.go:8898
+//line lex.go:8956
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9381,7 +9420,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st234
 	st234:
@@ -9389,7 +9428,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof234
 		}
 	st_case_234:
-//line lex.go:8932
+//line lex.go:8990
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9415,7 +9454,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st235
 	st235:
@@ -9423,7 +9462,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof235
 		}
 	st_case_235:
-//line lex.go:8966
+//line lex.go:9024
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9449,7 +9488,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st236
 	st236:
@@ -9457,7 +9496,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof236
 		}
 	st_case_236:
-//line lex.go:9000
+//line lex.go:9058
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9483,7 +9522,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st237
 	st237:
@@ -9491,7 +9530,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof237
 		}
 	st_case_237:
-//line lex.go:9034
+//line lex.go:9092
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9517,7 +9556,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st238
 	st238:
@@ -9525,7 +9564,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof238
 		}
 	st_case_238:
-//line lex.go:9068
+//line lex.go:9126
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9551,7 +9590,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st239
 	st239:
@@ -9559,7 +9598,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof239
 		}
 	st_case_239:
-//line lex.go:9102
+//line lex.go:9160
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9585,7 +9624,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st240
 	st240:
@@ -9593,7 +9632,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof240
 		}
 	st_case_240:
-//line lex.go:9136
+//line lex.go:9194
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9619,7 +9658,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st241
 	st241:
@@ -9627,7 +9666,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof241
 		}
 	st_case_241:
-//line lex.go:9170
+//line lex.go:9228
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9653,7 +9692,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st242
 	st242:
@@ -9661,7 +9700,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof242
 		}
 	st_case_242:
-//line lex.go:9204
+//line lex.go:9262
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9687,7 +9726,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st243
 	st243:
@@ -9695,7 +9734,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof243
 		}
 	st_case_243:
-//line lex.go:9238
+//line lex.go:9296
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9721,7 +9760,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st244
 	st244:
@@ -9729,7 +9768,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof244
 		}
 	st_case_244:
-//line lex.go:9272
+//line lex.go:9330
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9755,7 +9794,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st245
 	st245:
@@ -9763,7 +9802,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof245
 		}
 	st_case_245:
-//line lex.go:9306
+//line lex.go:9364
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9791,7 +9830,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st246
 	st246:
@@ -9799,7 +9838,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof246
 		}
 	st_case_246:
-//line lex.go:9342
+//line lex.go:9400
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9825,7 +9864,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st247
 	st247:
@@ -9833,7 +9872,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof247
 		}
 	st_case_247:
-//line lex.go:9376
+//line lex.go:9434
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9859,7 +9898,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st248
 	st248:
@@ -9867,7 +9906,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof248
 		}
 	st_case_248:
-//line lex.go:9410
+//line lex.go:9468
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9893,7 +9932,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st249
 	st249:
@@ -9901,7 +9940,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof249
 		}
 	st_case_249:
-//line lex.go:9444
+//line lex.go:9502
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9927,7 +9966,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st250
 	st250:
@@ -9935,7 +9974,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof250
 		}
 	st_case_250:
-//line lex.go:9478
+//line lex.go:9536
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9961,7 +10000,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st251
 	st251:
@@ -9969,7 +10008,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof251
 		}
 	st_case_251:
-//line lex.go:9512
+//line lex.go:9570
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -9995,7 +10034,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:236
+//line lex.rl:243
 		lex.act = 14
 		goto st252
 	st252:
@@ -10003,7 +10042,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof252
 		}
 	st_case_252:
-//line lex.go:9546
+//line lex.go:9604
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st253
@@ -10032,15 +10071,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr311
 	tr313:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st253
 	st253:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof253
 		}
 	st_case_253:
-//line lex.go:9583
+//line lex.go:9644
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st253
@@ -10056,7 +10097,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st254
 	st254:
@@ -10064,7 +10105,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof254
 		}
 	st_case_254:
-//line lex.go:9607
+//line lex.go:9668
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10092,7 +10133,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st255
 	st255:
@@ -10100,7 +10141,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof255
 		}
 	st_case_255:
-//line lex.go:9643
+//line lex.go:9704
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10126,7 +10167,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:235
+//line lex.rl:242
 		lex.act = 13
 		goto st256
 	st256:
@@ -10134,7 +10175,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof256
 		}
 	st_case_256:
-//line lex.go:9677
+//line lex.go:9738
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st257
@@ -10163,15 +10204,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr317
 	tr319:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st257
 	st257:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof257
 		}
 	st_case_257:
-//line lex.go:9714
+//line lex.go:9778
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st257
@@ -10187,7 +10230,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st258
 	st258:
@@ -10195,7 +10238,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof258
 		}
 	st_case_258:
-//line lex.go:9738
+//line lex.go:9802
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10221,7 +10264,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st259
 	st259:
@@ -10229,7 +10272,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof259
 		}
 	st_case_259:
-//line lex.go:9772
+//line lex.go:9836
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10255,7 +10298,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st260
 	st260:
@@ -10263,7 +10306,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof260
 		}
 	st_case_260:
-//line lex.go:9806
+//line lex.go:9870
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10295,7 +10338,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st261
 	st261:
@@ -10303,7 +10346,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof261
 		}
 	st_case_261:
-//line lex.go:9846
+//line lex.go:9910
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10331,7 +10374,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st262
 	st262:
@@ -10339,7 +10382,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof262
 		}
 	st_case_262:
-//line lex.go:9882
+//line lex.go:9946
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10365,7 +10408,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st263
 	st263:
@@ -10373,7 +10416,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof263
 		}
 	st_case_263:
-//line lex.go:9916
+//line lex.go:9980
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10399,7 +10442,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st264
 	st264:
@@ -10407,7 +10450,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof264
 		}
 	st_case_264:
-//line lex.go:9950
+//line lex.go:10014
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10433,7 +10476,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st265
 	st265:
@@ -10441,7 +10484,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof265
 		}
 	st_case_265:
-//line lex.go:9984
+//line lex.go:10048
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10467,7 +10510,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st266
 	st266:
@@ -10475,7 +10518,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof266
 		}
 	st_case_266:
-//line lex.go:10018
+//line lex.go:10082
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10501,7 +10544,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st267
 	st267:
@@ -10509,7 +10552,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof267
 		}
 	st_case_267:
-//line lex.go:10052
+//line lex.go:10116
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10535,7 +10578,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:224
+//line lex.rl:231
 		lex.act = 2
 		goto st268
 	st268:
@@ -10543,7 +10586,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof268
 		}
 	st_case_268:
-//line lex.go:10086
+//line lex.go:10150
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st269
@@ -10572,15 +10615,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr331
 	tr333:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st269
 	st269:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof269
 		}
 	st_case_269:
-//line lex.go:10123
+//line lex.go:10190
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st269
@@ -10596,7 +10641,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st270
 	st270:
@@ -10604,7 +10649,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof270
 		}
 	st_case_270:
-//line lex.go:10147
+//line lex.go:10214
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10630,7 +10675,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st271
 	st271:
@@ -10638,7 +10683,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof271
 		}
 	st_case_271:
-//line lex.go:10181
+//line lex.go:10248
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10664,7 +10709,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st272
 	st272:
@@ -10672,7 +10717,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof272
 		}
 	st_case_272:
-//line lex.go:10215
+//line lex.go:10282
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10700,7 +10745,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st273
 	st273:
@@ -10708,7 +10753,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof273
 		}
 	st_case_273:
-//line lex.go:10251
+//line lex.go:10318
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10738,7 +10783,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st274
 	st274:
@@ -10746,7 +10791,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof274
 		}
 	st_case_274:
-//line lex.go:10289
+//line lex.go:10356
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10772,7 +10817,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st275
 	st275:
@@ -10780,7 +10825,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof275
 		}
 	st_case_275:
-//line lex.go:10323
+//line lex.go:10390
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10806,7 +10851,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st276
 	st276:
@@ -10814,7 +10859,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof276
 		}
 	st_case_276:
-//line lex.go:10357
+//line lex.go:10424
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10840,7 +10885,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st277
 	st277:
@@ -10848,7 +10893,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof277
 		}
 	st_case_277:
-//line lex.go:10391
+//line lex.go:10458
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10874,7 +10919,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:238
+//line lex.rl:245
 		lex.act = 16
 		goto st278
 	st278:
@@ -10882,7 +10927,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof278
 		}
 	st_case_278:
-//line lex.go:10425
+//line lex.go:10492
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st279
@@ -10911,15 +10956,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr341
 	tr343:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st279
 	st279:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof279
 		}
 	st_case_279:
-//line lex.go:10462
+//line lex.go:10532
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st279
@@ -10935,7 +10982,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st280
 	st280:
@@ -10943,7 +10990,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof280
 		}
 	st_case_280:
-//line lex.go:10486
+//line lex.go:10556
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -10969,7 +11016,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st281
 	st281:
@@ -10977,7 +11024,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof281
 		}
 	st_case_281:
-//line lex.go:10520
+//line lex.go:10590
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11003,7 +11050,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st282
 	st282:
@@ -11011,7 +11058,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof282
 		}
 	st_case_282:
-//line lex.go:10554
+//line lex.go:10624
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11037,7 +11084,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st283
 	st283:
@@ -11045,7 +11092,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof283
 		}
 	st_case_283:
-//line lex.go:10588
+//line lex.go:10658
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11071,7 +11118,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st284
 	st284:
@@ -11079,7 +11126,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof284
 		}
 	st_case_284:
-//line lex.go:10622
+//line lex.go:10692
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11105,7 +11152,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st285
 	st285:
@@ -11113,7 +11160,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof285
 		}
 	st_case_285:
-//line lex.go:10656
+//line lex.go:10726
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11139,7 +11186,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:249
+//line lex.rl:256
 		lex.act = 27
 		goto st286
 	st286:
@@ -11147,7 +11194,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof286
 		}
 	st_case_286:
-//line lex.go:10690
+//line lex.go:10760
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st287
@@ -11176,15 +11223,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr350
 	tr352:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st287
 	st287:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof287
 		}
 	st_case_287:
-//line lex.go:10727
+//line lex.go:10800
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st287
@@ -11200,7 +11249,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st288
 	st288:
@@ -11208,7 +11257,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof288
 		}
 	st_case_288:
-//line lex.go:10751
+//line lex.go:10824
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11238,7 +11287,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st289
 	st289:
@@ -11246,7 +11295,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof289
 		}
 	st_case_289:
-//line lex.go:10789
+//line lex.go:10862
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11274,7 +11323,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st290
 	st290:
@@ -11282,7 +11331,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof290
 		}
 	st_case_290:
-//line lex.go:10825
+//line lex.go:10898
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11308,7 +11357,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st291
 	st291:
@@ -11316,7 +11365,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof291
 		}
 	st_case_291:
-//line lex.go:10859
+//line lex.go:10932
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11342,7 +11391,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st292
 	st292:
@@ -11350,7 +11399,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof292
 		}
 	st_case_292:
-//line lex.go:10893
+//line lex.go:10966
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11376,7 +11425,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st293
 	st293:
@@ -11384,7 +11433,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof293
 		}
 	st_case_293:
-//line lex.go:10927
+//line lex.go:11000
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11412,7 +11461,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st294
 	st294:
@@ -11420,7 +11469,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof294
 		}
 	st_case_294:
-//line lex.go:10963
+//line lex.go:11036
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11448,7 +11497,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st295
 	st295:
@@ -11456,7 +11505,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof295
 		}
 	st_case_295:
-//line lex.go:10999
+//line lex.go:11072
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11482,7 +11531,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st296
 	st296:
@@ -11490,7 +11539,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof296
 		}
 	st_case_296:
-//line lex.go:11033
+//line lex.go:11106
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11516,7 +11565,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st297
 	st297:
@@ -11524,7 +11573,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof297
 		}
 	st_case_297:
-//line lex.go:11067
+//line lex.go:11140
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11550,7 +11599,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st298
 	st298:
@@ -11558,7 +11607,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof298
 		}
 	st_case_298:
-//line lex.go:11101
+//line lex.go:11174
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11584,7 +11633,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st299
 	st299:
@@ -11592,7 +11641,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof299
 		}
 	st_case_299:
-//line lex.go:11135
+//line lex.go:11208
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11618,7 +11667,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st300
 	st300:
@@ -11626,7 +11675,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof300
 		}
 	st_case_300:
-//line lex.go:11169
+//line lex.go:11242
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11652,7 +11701,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st301
 	st301:
@@ -11660,7 +11709,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof301
 		}
 	st_case_301:
-//line lex.go:11203
+//line lex.go:11276
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11686,7 +11735,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st302
 	st302:
@@ -11694,7 +11743,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof302
 		}
 	st_case_302:
-//line lex.go:11237
+//line lex.go:11310
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11720,7 +11769,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st303
 	st303:
@@ -11728,7 +11777,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof303
 		}
 	st_case_303:
-//line lex.go:11271
+//line lex.go:11344
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11756,7 +11805,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st304
 	st304:
@@ -11764,7 +11813,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof304
 		}
 	st_case_304:
-//line lex.go:11307
+//line lex.go:11380
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11790,7 +11839,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st305
 	st305:
@@ -11798,7 +11847,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof305
 		}
 	st_case_305:
-//line lex.go:11341
+//line lex.go:11414
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11824,7 +11873,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st306
 	st306:
@@ -11832,7 +11881,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof306
 		}
 	st_case_306:
-//line lex.go:11375
+//line lex.go:11448
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11866,7 +11915,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st307
 	st307:
@@ -11874,7 +11923,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof307
 		}
 	st_case_307:
-//line lex.go:11417
+//line lex.go:11490
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11900,7 +11949,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st308
 	st308:
@@ -11908,7 +11957,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof308
 		}
 	st_case_308:
-//line lex.go:11451
+//line lex.go:11524
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11934,7 +11983,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st309
 	st309:
@@ -11942,7 +11991,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof309
 		}
 	st_case_309:
-//line lex.go:11485
+//line lex.go:11558
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -11968,7 +12017,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st310
 	st310:
@@ -11976,7 +12025,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof310
 		}
 	st_case_310:
-//line lex.go:11519
+//line lex.go:11592
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12002,7 +12051,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st311
 	st311:
@@ -12010,7 +12059,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof311
 		}
 	st_case_311:
-//line lex.go:11553
+//line lex.go:11626
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12036,7 +12085,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st312
 	st312:
@@ -12044,7 +12093,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof312
 		}
 	st_case_312:
-//line lex.go:11587
+//line lex.go:11660
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12070,7 +12119,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st313
 	st313:
@@ -12078,7 +12127,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof313
 		}
 	st_case_313:
-//line lex.go:11621
+//line lex.go:11694
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12104,7 +12153,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st314
 	st314:
@@ -12112,7 +12161,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof314
 		}
 	st_case_314:
-//line lex.go:11655
+//line lex.go:11728
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12138,7 +12187,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st315
 	st315:
@@ -12146,7 +12195,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof315
 		}
 	st_case_315:
-//line lex.go:11689
+//line lex.go:11762
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12172,7 +12221,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st316
 	st316:
@@ -12180,7 +12229,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof316
 		}
 	st_case_316:
-//line lex.go:11723
+//line lex.go:11796
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12206,7 +12255,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:248
+//line lex.rl:255
 		lex.act = 26
 		goto st317
 	st317:
@@ -12214,7 +12263,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof317
 		}
 	st_case_317:
-//line lex.go:11757
+//line lex.go:11830
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st318
@@ -12243,15 +12292,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr383
 	tr385:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st318
 	st318:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof318
 		}
 	st_case_318:
-//line lex.go:11794
+//line lex.go:11870
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st318
@@ -12267,7 +12318,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st319
 	st319:
@@ -12275,7 +12326,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof319
 		}
 	st_case_319:
-//line lex.go:11818
+//line lex.go:11894
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12301,7 +12352,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st320
 	st320:
@@ -12309,7 +12360,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof320
 		}
 	st_case_320:
-//line lex.go:11852
+//line lex.go:11928
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12337,7 +12388,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st321
 	st321:
@@ -12345,7 +12396,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof321
 		}
 	st_case_321:
-//line lex.go:11888
+//line lex.go:11964
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12371,7 +12422,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st322
 	st322:
@@ -12379,7 +12430,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof322
 		}
 	st_case_322:
-//line lex.go:11922
+//line lex.go:11998
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12415,7 +12466,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st323
 	st323:
@@ -12423,7 +12474,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof323
 		}
 	st_case_323:
-//line lex.go:11966
+//line lex.go:12042
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12453,7 +12504,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st324
 	st324:
@@ -12461,7 +12512,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof324
 		}
 	st_case_324:
-//line lex.go:12004
+//line lex.go:12080
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12487,7 +12538,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st325
 	st325:
@@ -12495,7 +12546,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof325
 		}
 	st_case_325:
-//line lex.go:12038
+//line lex.go:12114
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12521,7 +12572,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st326
 	st326:
@@ -12529,7 +12580,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof326
 		}
 	st_case_326:
-//line lex.go:12072
+//line lex.go:12148
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12555,7 +12606,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st327
 	st327:
@@ -12563,7 +12614,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof327
 		}
 	st_case_327:
-//line lex.go:12106
+//line lex.go:12182
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12589,7 +12640,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:245
+//line lex.rl:252
 		lex.act = 23
 		goto st328
 	st328:
@@ -12597,7 +12648,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof328
 		}
 	st_case_328:
-//line lex.go:12140
+//line lex.go:12216
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st329
@@ -12626,15 +12677,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr398
 	tr400:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st329
 	st329:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof329
 		}
 	st_case_329:
-//line lex.go:12177
+//line lex.go:12256
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st329
@@ -12650,7 +12703,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:237
+//line lex.rl:244
 		lex.act = 15
 		goto st330
 	st330:
@@ -12658,7 +12711,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof330
 		}
 	st_case_330:
-//line lex.go:12201
+//line lex.go:12280
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st331
@@ -12687,15 +12740,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr401
 	tr403:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st331
 	st331:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof331
 		}
 	st_case_331:
-//line lex.go:12238
+//line lex.go:12320
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st331
@@ -12711,7 +12766,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st332
 	st332:
@@ -12719,7 +12774,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof332
 		}
 	st_case_332:
-//line lex.go:12262
+//line lex.go:12344
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12745,7 +12800,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st333
 	st333:
@@ -12753,7 +12808,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof333
 		}
 	st_case_333:
-//line lex.go:12296
+//line lex.go:12378
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12781,7 +12836,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st334
 	st334:
@@ -12789,7 +12844,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof334
 		}
 	st_case_334:
-//line lex.go:12332
+//line lex.go:12414
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12815,7 +12870,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st335
 	st335:
@@ -12823,7 +12878,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof335
 		}
 	st_case_335:
-//line lex.go:12366
+//line lex.go:12448
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12851,7 +12906,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st336
 	st336:
@@ -12859,7 +12914,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof336
 		}
 	st_case_336:
-//line lex.go:12402
+//line lex.go:12484
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12885,7 +12940,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st337
 	st337:
@@ -12893,7 +12948,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof337
 		}
 	st_case_337:
-//line lex.go:12436
+//line lex.go:12518
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -12919,7 +12974,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:233
+//line lex.rl:240
 		lex.act = 11
 		goto st338
 	st338:
@@ -12927,7 +12982,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof338
 		}
 	st_case_338:
-//line lex.go:12470
+//line lex.go:12552
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st339
@@ -12956,15 +13011,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr410
 	tr412:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st339
 	st339:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof339
 		}
 	st_case_339:
-//line lex.go:12507
+//line lex.go:12592
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st339
@@ -12980,7 +13037,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st340
 	st340:
@@ -12988,7 +13045,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof340
 		}
 	st_case_340:
-//line lex.go:12531
+//line lex.go:12616
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13014,7 +13071,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st341
 	st341:
@@ -13022,7 +13079,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof341
 		}
 	st_case_341:
-//line lex.go:12565
+//line lex.go:12650
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13048,7 +13105,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:240
+//line lex.rl:247
 		lex.act = 18
 		goto st342
 	st342:
@@ -13056,7 +13113,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof342
 		}
 	st_case_342:
-//line lex.go:12599
+//line lex.go:12684
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st343
@@ -13085,15 +13142,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr415
 	tr417:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st343
 	st343:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof343
 		}
 	st_case_343:
-//line lex.go:12636
+//line lex.go:12724
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st343
@@ -13109,7 +13168,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st344
 	st344:
@@ -13117,7 +13176,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof344
 		}
 	st_case_344:
-//line lex.go:12660
+//line lex.go:12748
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13143,7 +13202,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st345
 	st345:
@@ -13151,7 +13210,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof345
 		}
 	st_case_345:
-//line lex.go:12694
+//line lex.go:12782
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13177,7 +13236,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st346
 	st346:
@@ -13185,7 +13244,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof346
 		}
 	st_case_346:
-//line lex.go:12728
+//line lex.go:12816
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13211,7 +13270,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st347
 	st347:
@@ -13219,7 +13278,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof347
 		}
 	st_case_347:
-//line lex.go:12762
+//line lex.go:12850
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13245,7 +13304,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st348
 	st348:
@@ -13253,7 +13312,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof348
 		}
 	st_case_348:
-//line lex.go:12796
+//line lex.go:12884
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13279,7 +13338,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st349
 	st349:
@@ -13287,7 +13346,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof349
 		}
 	st_case_349:
-//line lex.go:12830
+//line lex.go:12918
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13313,7 +13372,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st350
 	st350:
@@ -13321,7 +13380,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof350
 		}
 	st_case_350:
-//line lex.go:12864
+//line lex.go:12952
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13347,7 +13406,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st351
 	st351:
@@ -13355,7 +13414,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof351
 		}
 	st_case_351:
-//line lex.go:12898
+//line lex.go:12986
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13381,7 +13440,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st352
 	st352:
@@ -13389,7 +13448,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof352
 		}
 	st_case_352:
-//line lex.go:12932
+//line lex.go:13020
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13415,7 +13474,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st353
 	st353:
@@ -13423,7 +13482,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof353
 		}
 	st_case_353:
-//line lex.go:12966
+//line lex.go:13054
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13453,7 +13512,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st354
 	st354:
@@ -13461,7 +13520,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof354
 		}
 	st_case_354:
-//line lex.go:13004
+//line lex.go:13092
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13491,7 +13550,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st355
 	st355:
@@ -13499,7 +13558,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof355
 		}
 	st_case_355:
-//line lex.go:13042
+//line lex.go:13130
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13525,7 +13584,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st356
 	st356:
@@ -13533,7 +13592,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof356
 		}
 	st_case_356:
-//line lex.go:13076
+//line lex.go:13164
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13559,9 +13618,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:203
+//line lex.rl:210
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
-//line lex.rl:314
+//line lex.rl:321
 		lex.act = 39
 		goto st357
 	st357:
@@ -13569,7 +13628,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof357
 		}
 	st_case_357:
-//line lex.go:13112
+//line lex.go:13200
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st33
@@ -13603,7 +13662,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:244
+//line lex.rl:251
 		lex.act = 22
 		goto st358
 	st358:
@@ -13611,7 +13670,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof358
 		}
 	st_case_358:
-//line lex.go:13154
+//line lex.go:13242
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st359
@@ -13640,15 +13699,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr432
 	tr434:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st359
 	st359:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof359
 		}
 	st_case_359:
-//line lex.go:13191
+//line lex.go:13282
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st359
@@ -13664,7 +13725,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st360
 	st360:
@@ -13672,7 +13733,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof360
 		}
 	st_case_360:
-//line lex.go:13215
+//line lex.go:13306
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13702,7 +13763,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st361
 	st361:
@@ -13710,7 +13771,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof361
 		}
 	st_case_361:
-//line lex.go:13253
+//line lex.go:13344
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13736,7 +13797,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st362
 	st362:
@@ -13744,7 +13805,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof362
 		}
 	st_case_362:
-//line lex.go:13287
+//line lex.go:13378
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13770,7 +13831,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st363
 	st363:
@@ -13778,7 +13839,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof363
 		}
 	st_case_363:
-//line lex.go:13321
+//line lex.go:13412
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13804,7 +13865,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st364
 	st364:
@@ -13812,7 +13873,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof364
 		}
 	st_case_364:
-//line lex.go:13355
+//line lex.go:13446
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13838,7 +13899,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st365
 	st365:
@@ -13846,7 +13907,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof365
 		}
 	st_case_365:
-//line lex.go:13389
+//line lex.go:13480
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13872,7 +13933,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st366
 	st366:
@@ -13880,7 +13941,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof366
 		}
 	st_case_366:
-//line lex.go:13423
+//line lex.go:13514
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -13906,7 +13967,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:250
+//line lex.rl:257
 		lex.act = 28
 		goto st367
 	st367:
@@ -13914,7 +13975,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof367
 		}
 	st_case_367:
-//line lex.go:13457
+//line lex.go:13548
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st368
@@ -13943,15 +14004,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr442
 	tr444:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st368
 	st368:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof368
 		}
 	st_case_368:
-//line lex.go:13494
+//line lex.go:13588
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st368
@@ -13967,7 +14030,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st369
 	st369:
@@ -13975,7 +14038,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof369
 		}
 	st_case_369:
-//line lex.go:13518
+//line lex.go:13612
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14001,7 +14064,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st370
 	st370:
@@ -14009,7 +14072,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof370
 		}
 	st_case_370:
-//line lex.go:13552
+//line lex.go:13646
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14035,7 +14098,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st371
 	st371:
@@ -14043,7 +14106,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof371
 		}
 	st_case_371:
-//line lex.go:13586
+//line lex.go:13680
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14069,7 +14132,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st372
 	st372:
@@ -14077,7 +14140,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof372
 		}
 	st_case_372:
-//line lex.go:13620
+//line lex.go:13714
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14103,7 +14166,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st373
 	st373:
@@ -14111,7 +14174,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof373
 		}
 	st_case_373:
-//line lex.go:13654
+//line lex.go:13748
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14137,7 +14200,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:239
+//line lex.rl:246
 		lex.act = 17
 		goto st374
 	st374:
@@ -14145,7 +14208,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof374
 		}
 	st_case_374:
-//line lex.go:13688
+//line lex.go:13782
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st375
@@ -14174,15 +14237,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr450
 	tr452:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st375
 	st375:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof375
 		}
 	st_case_375:
-//line lex.go:13725
+//line lex.go:13822
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st375
@@ -14198,7 +14263,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st376
 	st376:
@@ -14206,7 +14271,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof376
 		}
 	st_case_376:
-//line lex.go:13749
+//line lex.go:13846
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14234,7 +14299,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st377
 	st377:
@@ -14242,7 +14307,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof377
 		}
 	st_case_377:
-//line lex.go:13785
+//line lex.go:13882
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14276,7 +14341,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st378
 	st378:
@@ -14284,7 +14349,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof378
 		}
 	st_case_378:
-//line lex.go:13827
+//line lex.go:13924
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14310,7 +14375,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st379
 	st379:
@@ -14318,7 +14383,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof379
 		}
 	st_case_379:
-//line lex.go:13861
+//line lex.go:13958
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14344,7 +14409,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st380
 	st380:
@@ -14352,7 +14417,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof380
 		}
 	st_case_380:
-//line lex.go:13895
+//line lex.go:13992
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14378,7 +14443,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:241
+//line lex.rl:248
 		lex.act = 19
 		goto st381
 	st381:
@@ -14386,7 +14451,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof381
 		}
 	st_case_381:
-//line lex.go:13929
+//line lex.go:14026
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st382
@@ -14415,15 +14480,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr461
 	tr463:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st382
 	st382:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof382
 		}
 	st_case_382:
-//line lex.go:13966
+//line lex.go:14066
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st382
@@ -14439,7 +14506,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st383
 	st383:
@@ -14447,7 +14514,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof383
 		}
 	st_case_383:
-//line lex.go:13990
+//line lex.go:14090
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14473,7 +14540,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st384
 	st384:
@@ -14481,7 +14548,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof384
 		}
 	st_case_384:
-//line lex.go:14024
+//line lex.go:14124
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14507,7 +14574,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st385
 	st385:
@@ -14515,7 +14582,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof385
 		}
 	st_case_385:
-//line lex.go:14058
+//line lex.go:14158
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14541,7 +14608,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st386
 	st386:
@@ -14549,7 +14616,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof386
 		}
 	st_case_386:
-//line lex.go:14092
+//line lex.go:14192
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14575,7 +14642,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st387
 	st387:
@@ -14583,7 +14650,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof387
 		}
 	st_case_387:
-//line lex.go:14126
+//line lex.go:14226
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14609,7 +14676,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st388
 	st388:
@@ -14617,7 +14684,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof388
 		}
 	st_case_388:
-//line lex.go:14160
+//line lex.go:14260
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14647,7 +14714,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st389
 	st389:
@@ -14655,7 +14722,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof389
 		}
 	st_case_389:
-//line lex.go:14198
+//line lex.go:14298
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14681,7 +14748,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st390
 	st390:
@@ -14689,7 +14756,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof390
 		}
 	st_case_390:
-//line lex.go:14232
+//line lex.go:14332
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14715,7 +14782,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st391
 	st391:
@@ -14723,7 +14790,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof391
 		}
 	st_case_391:
-//line lex.go:14266
+//line lex.go:14366
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14749,7 +14816,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st392
 	st392:
@@ -14757,7 +14824,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof392
 		}
 	st_case_392:
-//line lex.go:14300
+//line lex.go:14400
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14785,7 +14852,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st393
 	st393:
@@ -14793,7 +14860,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof393
 		}
 	st_case_393:
-//line lex.go:14336
+//line lex.go:14436
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14819,7 +14886,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:225
+//line lex.rl:232
 		lex.act = 3
 		goto st394
 	st394:
@@ -14827,7 +14894,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof394
 		}
 	st_case_394:
-//line lex.go:14370
+//line lex.go:14470
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st395
@@ -14856,15 +14923,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr473
 	tr475:
-//line lex.rl:71
+//line lex.rl:75
 		lex.line++
+		lex.linesSinceDocstring++
+
 		goto st395
 	st395:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof395
 		}
 	st_case_395:
-//line lex.go:14407
+//line lex.go:14510
 		switch lex.data[(lex.p)] {
 		case 9:
 			goto st395
@@ -14880,7 +14949,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st396
 	st396:
@@ -14888,7 +14957,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof396
 		}
 	st_case_396:
-//line lex.go:14431
+//line lex.go:14534
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14914,7 +14983,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st397
 	st397:
@@ -14922,7 +14991,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof397
 		}
 	st_case_397:
-//line lex.go:14465
+//line lex.go:14568
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14948,7 +15017,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st398
 	st398:
@@ -14956,7 +15025,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof398
 		}
 	st_case_398:
-//line lex.go:14499
+//line lex.go:14602
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -14984,7 +15053,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st399
 	st399:
@@ -14992,7 +15061,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof399
 		}
 	st_case_399:
-//line lex.go:14535
+//line lex.go:14638
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -15020,7 +15089,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st400
 	st400:
@@ -15028,7 +15097,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof400
 		}
 	st_case_400:
-//line lex.go:14571
+//line lex.go:14674
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -15054,7 +15123,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st401
 	st401:
@@ -15062,7 +15131,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof401
 		}
 	st_case_401:
-//line lex.go:14605
+//line lex.go:14708
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -15088,7 +15157,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st402
 	st402:
@@ -15096,7 +15165,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof402
 		}
 	st_case_402:
-//line lex.go:14639
+//line lex.go:14742
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -15122,7 +15191,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st403
 	st403:
@@ -15130,7 +15199,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof403
 		}
 	st_case_403:
-//line lex.go:14673
+//line lex.go:14776
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -15156,7 +15225,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 //line NONE:1
 		lex.te = (lex.p) + 1
 
-//line lex.rl:319
+//line lex.rl:326
 		lex.act = 40
 		goto st404
 	st404:
@@ -15164,7 +15233,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto _test_eof404
 		}
 	st_case_404:
-//line lex.go:14707
+//line lex.go:14810
 		switch lex.data[(lex.p)] {
 		case 46:
 			goto st18
@@ -17195,7 +17264,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 	}
 
-//line lex.rl:328
+//line lex.rl:335
 	if lex.cs == thrift_error {
 		lex.Error(fmt.Sprintf("unknown token at index %d", lex.p))
 	}
@@ -17205,4 +17274,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 func (lex *lexer) Error(e string) {
 	lex.parseFailed = true
 	lex.err.add(lex.line, e)
+}
+
+func (lex *lexer) LastDocstring() string {
+	// If we've had more than one line since we recorded
+	// the docstring, ignore it.
+	if lex.linesSinceDocstring > 1 {
+		return ""
+	}
+
+	s := lex.lastDocstring
+	lex.lastDocstring = ""
+	lex.linesSinceDocstring = 0
+	return s
 }

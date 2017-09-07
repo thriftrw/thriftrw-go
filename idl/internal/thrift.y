@@ -433,7 +433,7 @@ lineno
     ;
 
 docstring
-    : /* nothing */ { $$ = yylex.(*lexer).lastDocstring }
+    : /* nothing */ { $$ = yylex.(*lexer).LastDocstring() }
     ;
 
 optional_sep

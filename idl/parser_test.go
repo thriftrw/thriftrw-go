@@ -64,6 +64,30 @@ func TestParseComments(t *testing.T) {
 	assert.NoError(t, err, "Failed to parse:\n%s", s)
 }
 
+func TestParseOrphanDocstring(t *testing.T) {
+	tests := []parseCase{
+		{
+			`
+				/**
+				 * Orphan docstrings should be ignored.
+				 */
+
+				const string bar = 'b';
+			`,
+			&Program{Definitions: []Definition{
+				&Constant{
+					Name:  "bar",
+					Type:  BaseType{ID: StringTypeID, Line: 6},
+					Value: ConstantString(`b`),
+					Line:  6,
+				},
+			}},
+		},
+	}
+
+	assertParseCases(t, tests)
+}
+
 func TestParseErrors(t *testing.T) {
 	tests := []struct {
 		give       string

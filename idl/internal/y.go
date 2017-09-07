@@ -1177,7 +1177,7 @@ yydefault:
 		yyDollar = yyS[yypt-0 : yypt+1]
 		//line thrift.y:436
 		{
-			yyVAL.docstring = yylex.(*lexer).lastDocstring
+			yyVAL.docstring = yylex.(*lexer).LastDocstring()
 		}
 	}
 	goto yystack /* stack new state and value */

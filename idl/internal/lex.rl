@@ -27,6 +27,7 @@ type lexer struct {
 
     docstringStart int
     lastDocstring string
+    linesSinceDocstring int
 
     err parseError
     parseFailed bool
@@ -62,13 +63,19 @@ func (lex *lexer) Lex(out *yySymType) int {
        docstring =
             '/**' @{ lex.docstringStart = lex.p - 2 }
             (any* - (any* '*/' any*))
-            '*/' @{ lex.lastDocstring = string(lex.data[lex.docstringStart:lex.p + 1]) };
+            '*/' @{
+                lex.lastDocstring = string(lex.data[lex.docstringStart:lex.p + 1])
+                lex.linesSinceDocstring = 0
+            };
 
         ws = [ \t\r];
 
         # All uses of \n MUST use this instead if we want accurate line
         # number tracking.
-        newline = '\n' >{ lex.line++ };
+        newline = '\n' >{
+            lex.line++
+            lex.linesSinceDocstring++
+        };
 
         __ = (ws | newline)*;
 
@@ -336,4 +343,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 func (lex *lexer) Error(e string) {
     lex.parseFailed = true
     lex.err.add(lex.line, e)
+}
+
+func (lex *lexer) LastDocstring() string {
+    // If we've had more than one line since we recorded
+    // the docstring, ignore it.
+    if lex.linesSinceDocstring > 1 {
+        return ""
+    }
+
+    s := lex.lastDocstring
+    lex.lastDocstring = ""
+    lex.linesSinceDocstring = 0
+    return s
 }
