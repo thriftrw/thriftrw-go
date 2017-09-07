@@ -406,6 +406,23 @@ func TestParseConstants(t *testing.T) {
 				},
 			}},
 		},
+		{
+			`
+				/**
+				 * foo does stuff
+				 */
+				const string foo = 'a';
+			`,
+			&Program{Definitions: []Definition{
+				&Constant{
+					Name:  "foo",
+					Type:  BaseType{ID: StringTypeID, Line: 5},
+					Value: ConstantString(`a`),
+					Doc:   "foo does stuff",
+					Line:  5,
+				},
+			}},
+		},
 	}
 	assertParseCases(t, tests)
 }
@@ -420,6 +437,11 @@ func TestParseTypedef(t *testing.T) {
 
 				typedef i8 foo
 				typedef byte bar
+
+				/**
+				 * ISODate specifies the date in ISO8601 format.
+				 */
+				typedef string ISODate
 			`,
 			&Program{Definitions: []Definition{
 				&Typedef{
@@ -458,6 +480,12 @@ func TestParseTypedef(t *testing.T) {
 					Name: "bar",
 					Type: BaseType{ID: I8TypeID, Line: 7},
 					Line: 7,
+				},
+				&Typedef{
+					Name: "ISODate",
+					Type: BaseType{ID: StringTypeID, Line: 12},
+					Doc:  "ISODate specifies the date in ISO8601 format.",
+					Line: 12,
 				},
 			}},
 		},
@@ -512,6 +540,57 @@ func TestParseEnum(t *testing.T) {
 						{Name: "foo", Value: "bar", Line: 7},
 					},
 					Line: 2,
+				},
+			}},
+		},
+		{
+			`
+				/**
+				 * UserRole specifies the different roles a user can have.
+				 */
+				enum UserRole {
+					/** A regular user. */
+					User,
+					/**
+					 * A user with moderation privileges.
+					 */
+					Moderator,
+					/**
+					 * A user with administration privileges.
+					 */
+					Admin,
+					/** This user was banned. */
+					Banned = -1,
+				}
+			`,
+			&Program{Definitions: []Definition{
+				&Enum{
+					Name: "UserRole",
+					Line: 5,
+					Doc:  "UserRole specifies the different roles a user can have.",
+					Items: []*EnumItem{
+						{
+							Name: "User",
+							Line: 7,
+							Doc:  "A regular user.",
+						},
+						{
+							Name: "Moderator",
+							Line: 11,
+							Doc:  "A user with moderation privileges.",
+						},
+						{
+							Name: "Admin",
+							Line: 15,
+							Doc:  "A user with administration privileges.",
+						},
+						{
+							Name:  "Banned",
+							Line:  17,
+							Value: ptrInt(-1),
+							Doc:   "This user was banned.",
+						},
+					},
 				},
 			}},
 		},
@@ -634,6 +713,145 @@ func TestParseStruct(t *testing.T) {
 				},
 			}},
 		},
+		{
+			`
+				/**
+				 * Comment is a comment posted on a document.
+				 */
+				struct Comment {
+					/**
+					 * User who posted this comment.
+					 */
+					1: required User author
+					/** Contents of the comment. */
+					2: required CommentBody body
+				}
+
+				/**
+				 * CommentBody holds the contents of a comment.
+				 */
+				union CommentBody {
+					/** Plain text comment. */
+					1: string plain
+					/** An image was posted as a comment. */
+					2: binary image
+				}
+
+				/**
+				 * Raised when a user performs an action they're not
+				 * authorized to do.
+				 */
+				exception UnauthorizedError {
+					// User who performed this action.
+					1: optional User user
+					// NOTE: We don't use /** here so the comment above will
+					// not show up in the parsed AST.
+
+					/** Error message. */
+					2: optional string message
+				}
+			`,
+			&Program{Definitions: []Definition{
+				&Struct{
+					Name: "Comment",
+					Type: StructType,
+					Line: 5,
+					Doc:  "Comment is a comment posted on a document.",
+					Fields: []*Field{
+						{
+							ID:           1,
+							Name:         "author",
+							Requiredness: Required,
+							Type:         TypeReference{Name: "User", Line: 9},
+							Line:         9,
+							Doc:          "User who posted this comment.",
+						},
+						{
+							ID:           2,
+							Name:         "body",
+							Requiredness: Required,
+							Type:         TypeReference{Name: "CommentBody", Line: 11},
+							Line:         11,
+							Doc:          "Contents of the comment.",
+						},
+					},
+				},
+				&Struct{
+					Name: "CommentBody",
+					Type: UnionType,
+					Line: 17,
+					Doc:  "CommentBody holds the contents of a comment.",
+					Fields: []*Field{
+						{
+							ID:   1,
+							Name: "plain",
+							Type: BaseType{ID: StringTypeID, Line: 19},
+							Line: 19,
+							Doc:  "Plain text comment.",
+						},
+						{
+							ID:   2,
+							Name: "image",
+							Type: BaseType{ID: BinaryTypeID, Line: 21},
+							Line: 21,
+							Doc:  "An image was posted as a comment.",
+						},
+					},
+				},
+				&Struct{
+					Name: "UnauthorizedError",
+					Type: ExceptionType,
+					Line: 28,
+					Doc: "Raised when a user performs an action they're not\n" +
+						"authorized to do.",
+					Fields: []*Field{
+						{
+							ID:           1,
+							Name:         "user",
+							Requiredness: Optional,
+							Type:         TypeReference{Name: "User", Line: 30},
+							Line:         30,
+						},
+						{
+							ID:           2,
+							Name:         "message",
+							Requiredness: Optional,
+							Type:         BaseType{ID: StringTypeID, Line: 35},
+							Line:         35,
+							Doc:          "Error message.",
+						},
+					},
+				},
+			}},
+		},
+		{
+			`
+				struct Foo {
+					/**
+					 * foo
+					 */
+					1: optional string x = "bar"
+				}
+			`,
+			&Program{Definitions: []Definition{
+				&Struct{
+					Name: "Foo",
+					Line: 2,
+					Type: StructType,
+					Fields: []*Field{
+						{
+							ID:           1,
+							Name:         "x",
+							Requiredness: Optional,
+							Type:         BaseType{ID: StringTypeID, Line: 6},
+							Line:         6,
+							Doc:          "foo",
+							Default:      ConstantString("bar"),
+						},
+					},
+				},
+			}},
+		},
 	}
 
 	assertParseCases(t, tests)
@@ -644,6 +862,7 @@ func TestParseServices(t *testing.T) {
 		{
 			`
 				service EmptyService {}
+				/** AnotherEmptyService does not do anything. */
 				service AnotherEmptyService extends EmptyService {}
 			`,
 			&Program{Definitions: []Definition{
@@ -652,9 +871,10 @@ func TestParseServices(t *testing.T) {
 					Name: "AnotherEmptyService",
 					Parent: &ServiceReference{
 						Name: "EmptyService",
-						Line: 3,
+						Line: 4,
 					},
-					Line: 3,
+					Line: 4,
+					Doc:  "AnotherEmptyService does not do anything.",
 				},
 			}},
 		},
@@ -737,7 +957,85 @@ func TestParseServices(t *testing.T) {
 				},
 			}},
 		},
+		{
+			`
+				/**
+				 * KeyValue is a key-value store.
+				 */
+				service KeyValue {
+					/**
+					 * Retrieves the value associated with the given key.
+					 */
+					string getValue(
+						/** Name of the value. */
+						1: string key,
+						/**
+						 * Amount of time to wait while retrieving the value
+						 * before giving up.
+						 */
+						2: Duration timeout,
+					) throws (
+						/** A matching value was not found. */
+						1: NotFoundException notFound,
+						/**
+						 * The request timed out.
+						 */
+						2: TimedOutException timedOut
+					)
+				}
+			`,
+			&Program{Definitions: []Definition{
+				&Service{
+					Name: "KeyValue",
+					Line: 5,
+					Doc:  "KeyValue is a key-value store.",
+					Functions: []*Function{
+						{
+							Name:       "getValue",
+							Line:       9,
+							Doc:        "Retrieves the value associated with the given key.",
+							ReturnType: BaseType{ID: StringTypeID, Line: 9},
+							Parameters: []*Field{
+								{
+									ID:   1,
+									Name: "key",
+									Type: BaseType{ID: StringTypeID, Line: 11},
+									Line: 11,
+									Doc:  "Name of the value.",
+								},
+								{
+									ID:   2,
+									Name: "timeout",
+									Type: TypeReference{Name: "Duration", Line: 16},
+									Line: 16,
+									Doc: "Amount of time to wait while retrieving the value\n" +
+										"before giving up.",
+								},
+							},
+							Exceptions: []*Field{
+								{
+									ID:   1,
+									Name: "notFound",
+									Type: TypeReference{Name: "NotFoundException", Line: 19},
+									Line: 19,
+									Doc:  "A matching value was not found.",
+								},
+								{
+									ID:   2,
+									Name: "timedOut",
+									Type: TypeReference{Name: "TimedOutException", Line: 23},
+									Line: 23,
+									Doc:  "The request timed out.",
+								},
+							},
+						},
+					},
+				},
+			}},
+		},
 	}
 
 	assertParseCases(t, tests)
 }
+
+func ptrInt(n int) *int { return &n }
