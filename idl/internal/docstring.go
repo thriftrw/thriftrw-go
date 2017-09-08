@@ -84,9 +84,23 @@ func dropTrailingEmptyLines(lines []string) []string {
 	return lines
 }
 
-// skipFirstIfUnindented tells dedent to not consider the first line for the
-// prefix if it's not already indented. This is needed because our docstringcs
-// will start at "/**" without any leading whitespace.
+// Takes a series of lines that have been indented and removes the indentation
+// of the first line from all lines.
+//
+// So,
+//
+//  "    foo"
+//  "      bar"
+//
+// Becomes,
+//
+//  "foo"
+//  "  bar"
+//
+// If the first line was not indentend, skipFirstIfUnindented controls whether
+// we strip the indentation of the second line from all lines instead. This
+// flag is needed because our docstringcs will start at "/**" without any
+// leading whitespace.
 func dedent(lines []string, skipFirstIfUnindented bool) {
 	if len(lines) == 0 {
 		return
