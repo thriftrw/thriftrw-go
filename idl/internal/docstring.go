@@ -23,20 +23,17 @@ func CleanupDocstring(s string) string {
 	lines := strings.Split(s, "\n")
 	dedent(lines, true /* skipFirstIfUnindented */)
 
-	switch len(lines) {
-	case 0:
+	if len(lines) == 0 {
 		return s
-	case 1:
-		// /** foo */
-		s := lines[0]
-		s = strings.TrimPrefix(s, _docstringOpen)
-		s = strings.TrimSuffix(s, _docstringClose)
-		return strings.TrimSpace(s)
 	}
 
-	if len(lines) > 0 {
-		lines[0] = strings.TrimPrefix(lines[0], _docstringOpen)
-		lines[len(lines)-1] = strings.TrimSuffix(lines[len(lines)-1], _docstringClose)
+	// Strip comment markers from start and end.
+	lines[0] = strings.TrimPrefix(lines[0], _docstringOpen)
+	lines[len(lines)-1] = strings.TrimSuffix(lines[len(lines)-1], _docstringClose)
+
+	if len(lines) == 1 {
+		// Single-line doc block like, /** foo */
+		return strings.TrimSpace(lines[0])
 	}
 
 	lines = dropLeadingEmptyLines(lines)
