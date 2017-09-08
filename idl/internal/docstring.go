@@ -21,15 +21,17 @@ const (
 //  foo bar
 func ParseDocstring(s string) string {
 	lines := strings.Split(s, "\n")
-	dedent(lines, true /* skipFirstIfUnindented */)
-
 	if len(lines) == 0 {
 		return s
 	}
 
+	dedent(lines, true /* skipFirstIfUnindented */)
+
+	lastIdx := len(lines) - 1
+
 	// Strip comment markers from start and end.
 	lines[0] = strings.TrimPrefix(lines[0], _docstringOpen)
-	lines[len(lines)-1] = strings.TrimSuffix(lines[len(lines)-1], _docstringClose)
+	lines[lastIdx] = strings.TrimSuffix(lines[lastIdx], _docstringClose)
 
 	if len(lines) == 1 {
 		// Single-line doc block like, /** foo */
