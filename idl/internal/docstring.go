@@ -44,18 +44,11 @@ func ParseDocstring(s string) string {
 	// At this point, we need to strip the leading "*" and " *" from every
 	// line and dedent again.
 	for i, l := range lines {
-		if len(l) == 0 {
-			continue
-		}
-
-		if l[0] == '*' {
+		switch {
+		case len(l) > 0 && l[0] == '*':
 			lines[i] = l[1:]
-			continue
-		}
-
-		if len(l) > 1 && l[:2] == " *" {
+		case len(l) > 1 && l[:2] == " *":
 			lines[i] = l[2:]
-			continue
 		}
 	}
 
