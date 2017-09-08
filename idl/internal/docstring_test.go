@@ -107,6 +107,25 @@ func TestParseDocstring(t *testing.T) {
 			},
 			want: []string{"foo does stuff"},
 		},
+		{
+			give: []string{
+				"/**",
+				"no prefix",
+				"for lines",
+				"*/",
+			},
+			want: []string{"no prefix", "for lines"},
+		},
+		{
+			give: []string{
+				"/**",
+				"   no prefix",
+				"   for lines",
+				"   with indentation",
+				"*/",
+			},
+			want: []string{"no prefix", "for lines", "with indentation"},
+		},
 	}
 
 	for _, tt := range tests {
