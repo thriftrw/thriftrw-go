@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCleanupDocstring(t *testing.T) {
+func TestParseDocstring(t *testing.T) {
 	tests := []struct {
 		give []string
 		want []string
@@ -112,7 +112,7 @@ func TestCleanupDocstring(t *testing.T) {
 	for _, tt := range tests {
 		give := strings.Join(tt.give, "\n")
 		want := strings.Join(tt.want, "\n")
-		got := CleanupDocstring(give)
+		got := ParseDocstring(give)
 		assert.Equalf(t, want, got, "failed to cleanup %#v", tt.give)
 	}
 }

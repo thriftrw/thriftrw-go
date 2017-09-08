@@ -10,7 +10,7 @@ const (
 	_docstringClose = "*/"
 )
 
-// CleanupDocstring takes a docstring in the form,
+// ParseDocstring takes a docstring in the form,
 //
 //  /**
 //   * foo bar
@@ -19,7 +19,7 @@ const (
 // And returns,
 //
 //  foo bar
-func CleanupDocstring(s string) string {
+func ParseDocstring(s string) string {
 	lines := strings.Split(s, "\n")
 	dedent(lines, true /* skipFirstIfUnindented */)
 

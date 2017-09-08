@@ -735,7 +735,7 @@ yydefault:
 				Type:  yyDollar[4].fieldType,
 				Value: yyDollar[7].constantValue,
 				Line:  yyDollar[1].line,
-				Doc:   CleanupDocstring(yyDollar[2].docstring),
+				Doc:   ParseDocstring(yyDollar[2].docstring),
 			}
 		}
 	case 11:
@@ -747,7 +747,7 @@ yydefault:
 				Type:        yyDollar[4].fieldType,
 				Annotations: yyDollar[6].typeAnnotations,
 				Line:        yyDollar[1].line,
-				Doc:         CleanupDocstring(yyDollar[2].docstring),
+				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
 	case 12:
@@ -759,7 +759,7 @@ yydefault:
 				Items:       yyDollar[6].enumItems,
 				Annotations: yyDollar[8].typeAnnotations,
 				Line:        yyDollar[1].line,
-				Doc:         CleanupDocstring(yyDollar[2].docstring),
+				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
 	case 13:
@@ -772,7 +772,7 @@ yydefault:
 				Fields:      yyDollar[6].fields,
 				Annotations: yyDollar[8].typeAnnotations,
 				Line:        yyDollar[1].line,
-				Doc:         CleanupDocstring(yyDollar[2].docstring),
+				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
 	case 14:
@@ -784,7 +784,7 @@ yydefault:
 				Functions:   yyDollar[6].functions,
 				Annotations: yyDollar[8].typeAnnotations,
 				Line:        yyDollar[1].line,
-				Doc:         CleanupDocstring(yyDollar[2].docstring),
+				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
 	case 15:
@@ -802,7 +802,7 @@ yydefault:
 				Parent:      parent,
 				Annotations: yyDollar[11].typeAnnotations,
 				Line:        yyDollar[1].line,
-				Doc:         CleanupDocstring(yyDollar[2].docstring),
+				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
 	case 16:
@@ -843,7 +843,7 @@ yydefault:
 				Name:        yyDollar[3].str,
 				Annotations: yyDollar[4].typeAnnotations,
 				Line:        yyDollar[1].line,
-				Doc:         CleanupDocstring(yyDollar[2].docstring),
+				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
 	case 22:
@@ -856,7 +856,7 @@ yydefault:
 				Value:       &value,
 				Annotations: yyDollar[6].typeAnnotations,
 				Line:        yyDollar[1].line,
-				Doc:         CleanupDocstring(yyDollar[2].docstring),
+				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
 	case 23:
@@ -882,7 +882,7 @@ yydefault:
 				Requiredness: yyDollar[5].fieldRequired,
 				Annotations:  yyDollar[8].typeAnnotations,
 				Line:         yyDollar[1].line,
-				Doc:          CleanupDocstring(yyDollar[2].docstring),
+				Doc:          ParseDocstring(yyDollar[2].docstring),
 			}
 		}
 	case 26:
@@ -897,7 +897,7 @@ yydefault:
 				Default:      yyDollar[9].constantValue,
 				Annotations:  yyDollar[10].typeAnnotations,
 				Line:         yyDollar[1].line,
-				Doc:          CleanupDocstring(yyDollar[2].docstring),
+				Doc:          ParseDocstring(yyDollar[2].docstring),
 			}
 		}
 	case 27:
@@ -942,7 +942,7 @@ yydefault:
 				OneWay:      yyDollar[2].bul,
 				Annotations: yyDollar[10].typeAnnotations,
 				Line:        yyDollar[4].line,
-				Doc:         CleanupDocstring(yyDollar[1].docstring),
+				Doc:         ParseDocstring(yyDollar[1].docstring),
 			}
 		}
 	case 33:
