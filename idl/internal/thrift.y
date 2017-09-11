@@ -9,6 +9,8 @@ import "go.uber.org/thriftrw/ast"
     // required.
     line int
 
+    docstring string
+
     // Holds the final AST for the file.
     prog *ast.Program
 
@@ -58,6 +60,7 @@ import "go.uber.org/thriftrw/ast"
 %token REQUIRED OPTIONAL TRUE FALSE
 
 %type <line> lineno
+%type <docstring> docstring
 %type <prog> program
 %type <fieldType> type
 %type <baseTypeID> base_type_name
@@ -151,68 +154,74 @@ definitions
 
 definition
     /* constants */
-    : lineno CONST type IDENTIFIER '=' const_value
+    : lineno docstring CONST type IDENTIFIER '=' const_value
         {
             $$ = &ast.Constant{
-                Name: $4,
-                Type: $3,
-                Value: $6,
+                Name: $5,
+                Type: $4,
+                Value: $7,
                 Line: $1,
+                Doc: ParseDocstring($2),
             }
         }
     /* types */
-    | lineno TYPEDEF type IDENTIFIER type_annotations
+    | lineno docstring TYPEDEF type IDENTIFIER type_annotations
         {
             $$ = &ast.Typedef{
-                Name: $4,
-                Type: $3,
-                Annotations: $5,
+                Name: $5,
+                Type: $4,
+                Annotations: $6,
                 Line: $1,
+                Doc: ParseDocstring($2),
             }
         }
-    | lineno ENUM IDENTIFIER '{' enum_items '}' type_annotations
+    | lineno docstring ENUM IDENTIFIER '{' enum_items '}' type_annotations
         {
             $$ = &ast.Enum{
-                Name: $3,
-                Items: $5,
-                Annotations: $7,
+                Name: $4,
+                Items: $6,
+                Annotations: $8,
                 Line: $1,
+                Doc: ParseDocstring($2),
             }
         }
-    | lineno struct_type IDENTIFIER '{' fields '}' type_annotations
+    | lineno docstring struct_type IDENTIFIER '{' fields '}' type_annotations
         {
             $$ = &ast.Struct{
-                Name: $3,
-                Type: $2,
-                Fields: $5,
-                Annotations: $7,
+                Name: $4,
+                Type: $3,
+                Fields: $6,
+                Annotations: $8,
                 Line: $1,
+                Doc: ParseDocstring($2),
             }
         }
     /* services */
-    | lineno SERVICE IDENTIFIER '{' functions '}' type_annotations
+    | lineno docstring SERVICE IDENTIFIER '{' functions '}' type_annotations
         {
             $$ = &ast.Service{
-                Name: $3,
-                Functions: $5,
-                Annotations: $7,
+                Name: $4,
+                Functions: $6,
+                Annotations: $8,
                 Line: $1,
+                Doc: ParseDocstring($2),
             }
         }
-    | lineno SERVICE IDENTIFIER EXTENDS lineno IDENTIFIER '{' functions '}'
+    | lineno docstring SERVICE IDENTIFIER EXTENDS lineno IDENTIFIER '{' functions '}'
       type_annotations
         {
             parent := &ast.ServiceReference{
-                Name: $6,
-                Line: $5,
+                Name: $7,
+                Line: $6,
             }
 
             $$ = &ast.Service{
-                Name: $3,
-                Functions: $8,
+                Name: $4,
+                Functions: $9,
                 Parent: parent,
-                Annotations: $10,
+                Annotations: $11,
                 Line: $1,
+                Doc: ParseDocstring($2),
             }
         }
     ;
@@ -229,16 +238,24 @@ enum_items
     ;
 
 enum_item
-    : lineno IDENTIFIER type_annotations
-        { $$ = &ast.EnumItem{Name: $2, Annotations: $3, Line: $1} }
-    | lineno IDENTIFIER '=' INTCONSTANT type_annotations
+    : lineno docstring IDENTIFIER type_annotations
         {
-            value := int($4)
             $$ = &ast.EnumItem{
-                Name: $2,
-                Value: &value,
-                Annotations: $5,
+                Name: $3,
+                Annotations: $4,
                 Line: $1,
+                Doc: ParseDocstring($2),
+            }
+        }
+    | lineno docstring IDENTIFIER '=' INTCONSTANT type_annotations
+        {
+            value := int($5)
+            $$ = &ast.EnumItem{
+                Name: $3,
+                Value: &value,
+                Annotations: $6,
+                Line: $1,
+                Doc: ParseDocstring($2),
             }
         }
     ;
@@ -250,28 +267,30 @@ fields
 
 
 field
-    : lineno INTCONSTANT ':' field_required type IDENTIFIER type_annotations
+    : lineno docstring INTCONSTANT ':' field_required type IDENTIFIER type_annotations
         {
             $$ = &ast.Field{
-                ID: int($2),
-                Name: $6,
-                Type: $5,
-                Requiredness: $4,
-                Annotations: $7,
+                ID: int($3),
+                Name: $7,
+                Type: $6,
+                Requiredness: $5,
+                Annotations: $8,
                 Line: $1,
+                Doc: ParseDocstring($2),
             }
         }
-    | lineno INTCONSTANT ':' field_required type IDENTIFIER '=' const_value
+    | lineno docstring INTCONSTANT ':' field_required type IDENTIFIER '=' const_value
       type_annotations
         {
             $$ = &ast.Field{
-                ID: int($2),
-                Name: $6,
-                Type: $5,
-                Requiredness: $4,
-                Default: $8,
-                Annotations: $9,
+                ID: int($3),
+                Name: $7,
+                Type: $6,
+                Requiredness: $5,
+                Default: $9,
+                Annotations: $10,
                 Line: $1,
+                Doc: ParseDocstring($2),
             }
         }
     ;
@@ -288,17 +307,18 @@ functions
     ;
 
 function
-    : oneway function_type lineno IDENTIFIER '(' fields ')' throws
+    : docstring oneway function_type lineno IDENTIFIER '(' fields ')' throws
       type_annotations
         {
             $$ = &ast.Function{
-                Name: $4,
-                Parameters: $6,
-                ReturnType: $<fieldType>2,
-                Exceptions: $<fields>8,
-                OneWay: $<bul>1,
-                Annotations: $9,
-                Line: $3,
+                Name: $5,
+                Parameters: $7,
+                ReturnType: $<fieldType>3,
+                Exceptions: $<fields>9,
+                OneWay: $<bul>2,
+                Annotations: $10,
+                Line: $4,
+                Doc: ParseDocstring($1),
             }
         }
     ;
@@ -410,6 +430,10 @@ type_annotation_list
  */
 lineno
     : /* nothing */ { $$ = yylex.(*lexer).line }
+    ;
+
+docstring
+    : /* nothing */ { $$ = yylex.(*lexer).LastDocstring() }
     ;
 
 optional_sep

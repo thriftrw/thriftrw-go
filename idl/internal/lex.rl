@@ -25,6 +25,10 @@ type lexer struct {
     line int
     program *ast.Program
 
+    docstringStart int
+    lastDocstring string
+    linesSinceDocstring int
+
     err parseError
     parseFailed bool
 
@@ -48,17 +52,30 @@ func newLexer(data []byte) *lexer {
 }
 
 func (lex *lexer) Lex(out *yySymType) int {
-    var reservedKeyword string
+    var (
+        reservedKeyword string
 
-    eof := lex.pe
-    tok := 0
+        eof = lex.pe
+        tok = 0
+    )
 
     %%{
+       docstring =
+            '/**' @{ lex.docstringStart = lex.p - 2 }
+            (any* - (any* '*/' any*))
+            '*/' @{
+                lex.lastDocstring = string(lex.data[lex.docstringStart:lex.p + 1])
+                lex.linesSinceDocstring = 0
+            };
+
         ws = [ \t\r];
 
         # All uses of \n MUST use this instead if we want accurate line
         # number tracking.
-        newline = '\n' >{ lex.line++ };
+        newline = '\n' >{
+            lex.line++
+            lex.linesSinceDocstring++
+        };
 
         __ = (ws | newline)*;
 
@@ -248,6 +265,7 @@ func (lex *lexer) Lex(out *yySymType) int {
             # Ignore comments and whitespace
             ws;
             newline;
+            docstring;
             line_comment;
             multiline_comment;
 
@@ -325,4 +343,17 @@ func (lex *lexer) Lex(out *yySymType) int {
 func (lex *lexer) Error(e string) {
     lex.parseFailed = true
     lex.err.add(lex.line, e)
+}
+
+func (lex *lexer) LastDocstring() string {
+    // If we've had more than one line since we recorded
+    // the docstring, ignore it.
+    if lex.linesSinceDocstring > 1 {
+        return ""
+    }
+
+    s := lex.lastDocstring
+    lex.lastDocstring = ""
+    lex.linesSinceDocstring = 0
+    return s
 }
