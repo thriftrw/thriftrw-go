@@ -25,7 +25,7 @@ func ParseDocstring(s string) string {
 		return s
 	}
 
-	dedent(lines, true /* skipFirstIfUnindented */)
+	unindent(lines, true /* skipFirstIfUnindented */)
 
 	lastIdx := len(lines) - 1
 
@@ -42,7 +42,7 @@ func ParseDocstring(s string) string {
 	lines = dropTrailingEmptyLines(lines)
 
 	// At this point, we need to strip the leading "*" and " *" from every
-	// line and dedent again.
+	// line and unindent again.
 	for i, l := range lines {
 		switch {
 		case len(l) > 0 && l[0] == '*':
@@ -52,7 +52,7 @@ func ParseDocstring(s string) string {
 		}
 	}
 
-	dedent(lines, false /* skipFirstIfUnindented */)
+	unindent(lines, false /* skipFirstIfUnindented */)
 	lines = dropLeadingEmptyLines(lines)
 	lines = dropTrailingEmptyLines(lines)
 
@@ -96,7 +96,7 @@ func dropTrailingEmptyLines(lines []string) []string {
 // we strip the indentation of the second line from all lines instead. This
 // flag is needed because our docstringcs will start at "/**" without any
 // leading whitespace.
-func dedent(lines []string, skipFirstIfUnindented bool) {
+func unindent(lines []string, skipFirstIfUnindented bool) {
 	if len(lines) == 0 {
 		return
 	}
@@ -131,7 +131,7 @@ func dedent(lines []string, skipFirstIfUnindented bool) {
 			havePrefix = true
 		}
 
-		// Dedent only if the first non-space character appears at or after
+		// unindent only if the first non-space character appears at or after
 		// the prefix.
 		if nonSpace >= len(prefix) {
 			lines[i] = s[len(prefix):]
