@@ -4,7 +4,8 @@ Releases
 v1.7.0 (unreleased)
 -------------------
 
--   No changes yet.
+-   AST: Parts of the AST now support parsing docstrings in the `/** ... */`
+    style.
 
 
 v1.6.0 (2017-08-28)
