@@ -20,6 +20,7 @@ func (v *Cache_ClearAfter_Args) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.DurationMS != nil {
 		w, err = wire.NewValueI64(*(v.DurationMS)), error(nil)
 		if err != nil {
@@ -28,11 +29,13 @@ func (v *Cache_ClearAfter_Args) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *Cache_ClearAfter_Args) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -43,9 +46,11 @@ func (v *Cache_ClearAfter_Args) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -53,17 +58,20 @@ func (v *Cache_ClearAfter_Args) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [1]string
 	i := 0
 	if v.DurationMS != nil {
 		fields[i] = fmt.Sprintf("DurationMS: %v", *(v.DurationMS))
 		i++
 	}
+
 	return fmt.Sprintf("Cache_ClearAfter_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _I64_EqualsPtr(lhs, rhs *int64) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -75,6 +83,7 @@ func (v *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
 	if !_I64_EqualsPtr(v.DurationMS, rhs.DurationMS) {
 		return false
 	}
+
 	return true
 }
 
@@ -82,6 +91,7 @@ func (v *Cache_ClearAfter_Args) GetDurationMS() (o int64) {
 	if v.DurationMS != nil {
 		return *v.DurationMS
 	}
+
 	return
 }
 
@@ -94,11 +104,18 @@ func (v *Cache_ClearAfter_Args) EnvelopeType() wire.EnvelopeType {
 }
 
 var Cache_ClearAfter_Helper = struct {
-	Args func(durationMS *int64) *Cache_ClearAfter_Args
+	Args func(
+		durationMS *int64,
+	) *Cache_ClearAfter_Args
 }{}
 
 func init() {
-	Cache_ClearAfter_Helper.Args = func(durationMS *int64) *Cache_ClearAfter_Args {
-		return &Cache_ClearAfter_Args{DurationMS: durationMS}
+	Cache_ClearAfter_Helper.Args = func(
+		durationMS *int64,
+	) *Cache_ClearAfter_Args {
+		return &Cache_ClearAfter_Args{
+			DurationMS: durationMS,
+		}
 	}
+
 }

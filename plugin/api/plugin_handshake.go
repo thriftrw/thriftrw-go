@@ -41,6 +41,7 @@ func (v *Plugin_Handshake_Args) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.Request != nil {
 		w, err = v.Request.ToWire()
 		if err != nil {
@@ -49,6 +50,7 @@ func (v *Plugin_Handshake_Args) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -60,6 +62,7 @@ func _HandshakeRequest_Read(w wire.Value) (*HandshakeRequest, error) {
 
 func (v *Plugin_Handshake_Args) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -68,9 +71,11 @@ func (v *Plugin_Handshake_Args) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -78,12 +83,14 @@ func (v *Plugin_Handshake_Args) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [1]string
 	i := 0
 	if v.Request != nil {
 		fields[i] = fmt.Sprintf("Request: %v", v.Request)
 		i++
 	}
+
 	return fmt.Sprintf("Plugin_Handshake_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -91,6 +98,7 @@ func (v *Plugin_Handshake_Args) Equals(rhs *Plugin_Handshake_Args) bool {
 	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
 		return false
 	}
+
 	return true
 }
 
@@ -103,36 +111,50 @@ func (v *Plugin_Handshake_Args) EnvelopeType() wire.EnvelopeType {
 }
 
 var Plugin_Handshake_Helper = struct {
-	Args           func(request *HandshakeRequest) *Plugin_Handshake_Args
-	IsException    func(error) bool
+	Args func(
+		request *HandshakeRequest,
+	) *Plugin_Handshake_Args
+
+	IsException func(error) bool
+
 	WrapResponse   func(*HandshakeResponse, error) (*Plugin_Handshake_Result, error)
 	UnwrapResponse func(*Plugin_Handshake_Result) (*HandshakeResponse, error)
 }{}
 
 func init() {
-	Plugin_Handshake_Helper.Args = func(request *HandshakeRequest) *Plugin_Handshake_Args {
-		return &Plugin_Handshake_Args{Request: request}
+	Plugin_Handshake_Helper.Args = func(
+		request *HandshakeRequest,
+	) *Plugin_Handshake_Args {
+		return &Plugin_Handshake_Args{
+			Request: request,
+		}
 	}
+
 	Plugin_Handshake_Helper.IsException = func(err error) bool {
 		switch err.(type) {
 		default:
 			return false
 		}
 	}
+
 	Plugin_Handshake_Helper.WrapResponse = func(success *HandshakeResponse, err error) (*Plugin_Handshake_Result, error) {
 		if err == nil {
 			return &Plugin_Handshake_Result{Success: success}, nil
 		}
+
 		return nil, err
 	}
 	Plugin_Handshake_Helper.UnwrapResponse = func(result *Plugin_Handshake_Result) (success *HandshakeResponse, err error) {
+
 		if result.Success != nil {
 			success = result.Success
 			return
 		}
+
 		err = errors.New("expected a non-void result")
 		return
 	}
+
 }
 
 type Plugin_Handshake_Result struct {
@@ -146,6 +168,7 @@ func (v *Plugin_Handshake_Result) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.Success != nil {
 		w, err = v.Success.ToWire()
 		if err != nil {
@@ -154,9 +177,11 @@ func (v *Plugin_Handshake_Result) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 0, Value: w}
 		i++
 	}
+
 	if i != 1 {
 		return wire.Value{}, fmt.Errorf("Plugin_Handshake_Result should have exactly one field: got %v fields", i)
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -168,6 +193,7 @@ func _HandshakeResponse_Read(w wire.Value) (*HandshakeResponse, error) {
 
 func (v *Plugin_Handshake_Result) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 0:
@@ -176,9 +202,11 @@ func (v *Plugin_Handshake_Result) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	count := 0
 	if v.Success != nil {
 		count++
@@ -186,6 +214,7 @@ func (v *Plugin_Handshake_Result) FromWire(w wire.Value) error {
 	if count != 1 {
 		return fmt.Errorf("Plugin_Handshake_Result should have exactly one field: got %v fields", count)
 	}
+
 	return nil
 }
 
@@ -193,12 +222,14 @@ func (v *Plugin_Handshake_Result) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [1]string
 	i := 0
 	if v.Success != nil {
 		fields[i] = fmt.Sprintf("Success: %v", v.Success)
 		i++
 	}
+
 	return fmt.Sprintf("Plugin_Handshake_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -206,6 +237,7 @@ func (v *Plugin_Handshake_Result) Equals(rhs *Plugin_Handshake_Result) bool {
 	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
 		return false
 	}
+
 	return true
 }
 

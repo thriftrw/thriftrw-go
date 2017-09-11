@@ -45,8 +45,7 @@ func (_List_ArbitraryValue_ValueList) ValueType() wire.Type {
 	return wire.TStruct
 }
 
-func (_List_ArbitraryValue_ValueList) Close() {
-}
+func (_List_ArbitraryValue_ValueList) Close() {}
 
 type _Map_String_ArbitraryValue_MapItemList map[string]*ArbitraryValue
 
@@ -59,6 +58,7 @@ func (m _Map_String_ArbitraryValue_MapItemList) ForEach(f func(wire.MapItem) err
 		if err != nil {
 			return err
 		}
+
 		vw, err := v.ToWire()
 		if err != nil {
 			return err
@@ -83,8 +83,7 @@ func (_Map_String_ArbitraryValue_MapItemList) ValueType() wire.Type {
 	return wire.TStruct
 }
 
-func (_Map_String_ArbitraryValue_MapItemList) Close() {
-}
+func (_Map_String_ArbitraryValue_MapItemList) Close() {}
 
 func (v *ArbitraryValue) ToWire() (wire.Value, error) {
 	var (
@@ -93,6 +92,7 @@ func (v *ArbitraryValue) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.BoolValue != nil {
 		w, err = wire.NewValueBool(*(v.BoolValue)), error(nil)
 		if err != nil {
@@ -133,9 +133,11 @@ func (v *ArbitraryValue) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 5, Value: w}
 		i++
 	}
+
 	if i != 1 {
 		return wire.Value{}, fmt.Errorf("ArbitraryValue should have exactly one field: got %v fields", i)
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -149,6 +151,7 @@ func _List_ArbitraryValue_Read(l wire.ValueList) ([]*ArbitraryValue, error) {
 	if l.ValueType() != wire.TStruct {
 		return nil, nil
 	}
+
 	o := make([]*ArbitraryValue, 0, l.Size())
 	err := l.ForEach(func(x wire.Value) error {
 		i, err := _ArbitraryValue_Read(x)
@@ -166,19 +169,23 @@ func _Map_String_ArbitraryValue_Read(m wire.MapItemList) (map[string]*ArbitraryV
 	if m.KeyType() != wire.TBinary {
 		return nil, nil
 	}
+
 	if m.ValueType() != wire.TStruct {
 		return nil, nil
 	}
+
 	o := make(map[string]*ArbitraryValue, m.Size())
 	err := m.ForEach(func(x wire.MapItem) error {
 		k, err := x.Key.GetString(), error(nil)
 		if err != nil {
 			return err
 		}
+
 		v, err := _ArbitraryValue_Read(x.Value)
 		if err != nil {
 			return err
 		}
+
 		o[k] = v
 		return nil
 	})
@@ -188,6 +195,7 @@ func _Map_String_ArbitraryValue_Read(m wire.MapItemList) (map[string]*ArbitraryV
 
 func (v *ArbitraryValue) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -198,6 +206,7 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 2:
 			if field.Value.Type() == wire.TI64 {
@@ -207,6 +216,7 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 3:
 			if field.Value.Type() == wire.TBinary {
@@ -216,6 +226,7 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 4:
 			if field.Value.Type() == wire.TList {
@@ -223,6 +234,7 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 5:
 			if field.Value.Type() == wire.TMap {
@@ -230,9 +242,11 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	count := 0
 	if v.BoolValue != nil {
 		count++
@@ -252,6 +266,7 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 	if count != 1 {
 		return fmt.Errorf("ArbitraryValue should have exactly one field: got %v fields", count)
 	}
+
 	return nil
 }
 
@@ -259,6 +274,7 @@ func (v *ArbitraryValue) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [5]string
 	i := 0
 	if v.BoolValue != nil {
@@ -281,11 +297,13 @@ func (v *ArbitraryValue) String() string {
 		fields[i] = fmt.Sprintf("MapValue: %v", v.MapValue)
 		i++
 	}
+
 	return fmt.Sprintf("ArbitraryValue{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -295,6 +313,7 @@ func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 
 func _I64_EqualsPtr(lhs, rhs *int64) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -304,6 +323,7 @@ func _I64_EqualsPtr(lhs, rhs *int64) bool {
 
 func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -315,12 +335,14 @@ func _List_ArbitraryValue_Equals(lhs, rhs []*ArbitraryValue) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for i, lv := range lhs {
 		rv := rhs[i]
 		if !lv.Equals(rv) {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -328,6 +350,7 @@ func _Map_String_ArbitraryValue_Equals(lhs, rhs map[string]*ArbitraryValue) bool
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for lk, lv := range lhs {
 		rv, ok := rhs[lk]
 		if !ok {
@@ -356,6 +379,7 @@ func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
 	if !((v.MapValue == nil && rhs.MapValue == nil) || (v.MapValue != nil && rhs.MapValue != nil && _Map_String_ArbitraryValue_Equals(v.MapValue, rhs.MapValue))) {
 		return false
 	}
+
 	return true
 }
 
@@ -363,6 +387,7 @@ func (v *ArbitraryValue) GetBoolValue() (o bool) {
 	if v.BoolValue != nil {
 		return *v.BoolValue
 	}
+
 	return
 }
 
@@ -370,6 +395,7 @@ func (v *ArbitraryValue) GetInt64Value() (o int64) {
 	if v.Int64Value != nil {
 		return *v.Int64Value
 	}
+
 	return
 }
 
@@ -377,6 +403,7 @@ func (v *ArbitraryValue) GetStringValue() (o string) {
 	if v.StringValue != nil {
 		return *v.StringValue
 	}
+
 	return
 }
 
@@ -392,6 +419,7 @@ func (v *Document) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.Pdf != nil {
 		w, err = v.Pdf.ToWire()
 		if err != nil {
@@ -408,9 +436,11 @@ func (v *Document) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
+
 	if i != 1 {
 		return wire.Value{}, fmt.Errorf("Document should have exactly one field: got %v fields", i)
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -422,6 +452,7 @@ func _PDF_Read(w wire.Value) (typedefs.PDF, error) {
 
 func (v *Document) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -430,6 +461,7 @@ func (v *Document) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
@@ -439,9 +471,11 @@ func (v *Document) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	count := 0
 	if v.Pdf != nil {
 		count++
@@ -452,6 +486,7 @@ func (v *Document) FromWire(w wire.Value) error {
 	if count != 1 {
 		return fmt.Errorf("Document should have exactly one field: got %v fields", count)
 	}
+
 	return nil
 }
 
@@ -459,6 +494,7 @@ func (v *Document) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	if v.Pdf != nil {
@@ -469,6 +505,7 @@ func (v *Document) String() string {
 		fields[i] = fmt.Sprintf("PlainText: %v", *(v.PlainText))
 		i++
 	}
+
 	return fmt.Sprintf("Document{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -479,6 +516,7 @@ func (v *Document) Equals(rhs *Document) bool {
 	if !_String_EqualsPtr(v.PlainText, rhs.PlainText) {
 		return false
 	}
+
 	return true
 }
 
@@ -486,24 +524,29 @@ func (v *Document) GetPlainText() (o string) {
 	if v.PlainText != nil {
 		return *v.PlainText
 	}
+
 	return
 }
 
-type EmptyUnion struct{}
+type EmptyUnion struct {
+}
 
 func (v *EmptyUnion) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
 		i      int = 0
 	)
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *EmptyUnion) FromWire(w wire.Value) error {
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		}
 	}
+
 	return nil
 }
 
@@ -511,11 +554,14 @@ func (v *EmptyUnion) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [0]string
 	i := 0
+
 	return fmt.Sprintf("EmptyUnion{%v}", strings.Join(fields[:i], ", "))
 }
 
 func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
+
 	return true
 }

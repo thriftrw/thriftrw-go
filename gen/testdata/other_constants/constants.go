@@ -5,6 +5,13 @@ package other_constants
 
 import "go.uber.org/thriftrw/gen/testdata/structs"
 
-var ListOfInts []int32 = []int32{1, 2, 3}
+var ListOfInts []int32 = []int32{
+	1,
+	2,
+	3,
+}
 
-var SomePoint *structs.Point = &structs.Point{X: 1, Y: 2}
+var SomePoint *structs.Point = &structs.Point{
+	X: 1,
+	Y: 2,
+}

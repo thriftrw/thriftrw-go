@@ -51,6 +51,7 @@ func (v *EmptyEnum) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -81,7 +82,11 @@ const (
 )
 
 func EnumDefault_Values() []EnumDefault {
-	return []EnumDefault{EnumDefaultFoo, EnumDefaultBar, EnumDefaultBaz}
+	return []EnumDefault{
+		EnumDefaultFoo,
+		EnumDefaultBar,
+		EnumDefaultBaz,
+	}
 }
 
 func (v *EnumDefault) UnmarshalText(value []byte) error {
@@ -145,6 +150,7 @@ func (v *EnumDefault) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -181,7 +187,17 @@ const (
 )
 
 func EnumWithDuplicateName_Values() []EnumWithDuplicateName {
-	return []EnumWithDuplicateName{EnumWithDuplicateNameA, EnumWithDuplicateNameB, EnumWithDuplicateNameC, EnumWithDuplicateNameP, EnumWithDuplicateNameQ, EnumWithDuplicateNameR, EnumWithDuplicateNameX, EnumWithDuplicateNameY, EnumWithDuplicateNameZ}
+	return []EnumWithDuplicateName{
+		EnumWithDuplicateNameA,
+		EnumWithDuplicateNameB,
+		EnumWithDuplicateNameC,
+		EnumWithDuplicateNameP,
+		EnumWithDuplicateNameQ,
+		EnumWithDuplicateNameR,
+		EnumWithDuplicateNameX,
+		EnumWithDuplicateNameY,
+		EnumWithDuplicateNameZ,
+	}
 }
 
 func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
@@ -287,6 +303,7 @@ func (v *EnumWithDuplicateName) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -317,7 +334,11 @@ const (
 )
 
 func EnumWithDuplicateValues_Values() []EnumWithDuplicateValues {
-	return []EnumWithDuplicateValues{EnumWithDuplicateValuesP, EnumWithDuplicateValuesQ, EnumWithDuplicateValuesR}
+	return []EnumWithDuplicateValues{
+		EnumWithDuplicateValuesP,
+		EnumWithDuplicateValuesQ,
+		EnumWithDuplicateValuesR,
+	}
 }
 
 func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
@@ -377,6 +398,7 @@ func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -407,7 +429,11 @@ const (
 )
 
 func EnumWithValues_Values() []EnumWithValues {
-	return []EnumWithValues{EnumWithValuesX, EnumWithValuesY, EnumWithValuesZ}
+	return []EnumWithValues{
+		EnumWithValuesX,
+		EnumWithValuesY,
+		EnumWithValuesZ,
+	}
 }
 
 func (v *EnumWithValues) UnmarshalText(value []byte) error {
@@ -471,6 +497,7 @@ func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -501,7 +528,11 @@ const (
 )
 
 func RecordType_Values() []RecordType {
-	return []RecordType{RecordTypeName, RecordTypeHomeAddress, RecordTypeWorkAddress}
+	return []RecordType{
+		RecordTypeName,
+		RecordTypeHomeAddress,
+		RecordTypeWorkAddress,
+	}
 }
 
 func (v *RecordType) UnmarshalText(value []byte) error {
@@ -565,6 +596,7 @@ func (v *RecordType) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -594,7 +626,10 @@ const (
 )
 
 func RecordTypeValues_Values() []RecordTypeValues {
-	return []RecordTypeValues{RecordTypeValuesFoo, RecordTypeValuesBar}
+	return []RecordTypeValues{
+		RecordTypeValuesFoo,
+		RecordTypeValuesBar,
+	}
 }
 
 func (v *RecordTypeValues) UnmarshalText(value []byte) error {
@@ -651,6 +686,7 @@ func (v *RecordTypeValues) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -683,6 +719,7 @@ func (v *StructWithOptionalEnum) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.E != nil {
 		w, err = v.E.ToWire()
 		if err != nil {
@@ -691,6 +728,7 @@ func (v *StructWithOptionalEnum) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -702,6 +740,7 @@ func _EnumDefault_Read(w wire.Value) (EnumDefault, error) {
 
 func (v *StructWithOptionalEnum) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -712,9 +751,11 @@ func (v *StructWithOptionalEnum) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -722,17 +763,20 @@ func (v *StructWithOptionalEnum) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [1]string
 	i := 0
 	if v.E != nil {
 		fields[i] = fmt.Sprintf("E: %v", *(v.E))
 		i++
 	}
+
 	return fmt.Sprintf("StructWithOptionalEnum{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _EnumDefault_EqualsPtr(lhs, rhs *EnumDefault) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return x.Equals(y)
@@ -744,6 +788,7 @@ func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 	if !_EnumDefault_EqualsPtr(v.E, rhs.E) {
 		return false
 	}
+
 	return true
 }
 
@@ -751,6 +796,7 @@ func (v *StructWithOptionalEnum) GetE() (o EnumDefault) {
 	if v.E != nil {
 		return *v.E
 	}
+
 	return
 }
 
@@ -763,7 +809,11 @@ const (
 )
 
 func LowerCaseEnum_Values() []LowerCaseEnum {
-	return []LowerCaseEnum{LowerCaseEnumContaining, LowerCaseEnumLowerCase, LowerCaseEnumItems}
+	return []LowerCaseEnum{
+		LowerCaseEnumContaining,
+		LowerCaseEnumLowerCase,
+		LowerCaseEnumItems,
+	}
 }
 
 func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
@@ -827,6 +877,7 @@ func (v *LowerCaseEnum) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()

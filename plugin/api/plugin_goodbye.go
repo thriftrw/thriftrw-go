@@ -29,21 +29,25 @@ import (
 	"strings"
 )
 
-type Plugin_Goodbye_Args struct{}
+type Plugin_Goodbye_Args struct {
+}
 
 func (v *Plugin_Goodbye_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
 		i      int = 0
 	)
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *Plugin_Goodbye_Args) FromWire(w wire.Value) error {
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		}
 	}
+
 	return nil
 }
 
@@ -51,12 +55,15 @@ func (v *Plugin_Goodbye_Args) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [0]string
 	i := 0
+
 	return fmt.Sprintf("Plugin_Goodbye_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
 func (v *Plugin_Goodbye_Args) Equals(rhs *Plugin_Goodbye_Args) bool {
+
 	return true
 }
 
@@ -69,8 +76,10 @@ func (v *Plugin_Goodbye_Args) EnvelopeType() wire.EnvelopeType {
 }
 
 var Plugin_Goodbye_Helper = struct {
-	Args           func() *Plugin_Goodbye_Args
-	IsException    func(error) bool
+	Args func() *Plugin_Goodbye_Args
+
+	IsException func(error) bool
+
 	WrapResponse   func(error) (*Plugin_Goodbye_Result, error)
 	UnwrapResponse func(*Plugin_Goodbye_Result) error
 }{}
@@ -79,38 +88,46 @@ func init() {
 	Plugin_Goodbye_Helper.Args = func() *Plugin_Goodbye_Args {
 		return &Plugin_Goodbye_Args{}
 	}
+
 	Plugin_Goodbye_Helper.IsException = func(err error) bool {
 		switch err.(type) {
 		default:
 			return false
 		}
 	}
+
 	Plugin_Goodbye_Helper.WrapResponse = func(err error) (*Plugin_Goodbye_Result, error) {
 		if err == nil {
 			return &Plugin_Goodbye_Result{}, nil
 		}
+
 		return nil, err
 	}
 	Plugin_Goodbye_Helper.UnwrapResponse = func(result *Plugin_Goodbye_Result) (err error) {
 		return
 	}
+
 }
 
-type Plugin_Goodbye_Result struct{}
+type Plugin_Goodbye_Result struct {
+}
 
 func (v *Plugin_Goodbye_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
 		i      int = 0
 	)
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *Plugin_Goodbye_Result) FromWire(w wire.Value) error {
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		}
 	}
+
 	return nil
 }
 
@@ -118,12 +135,15 @@ func (v *Plugin_Goodbye_Result) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [0]string
 	i := 0
+
 	return fmt.Sprintf("Plugin_Goodbye_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
 func (v *Plugin_Goodbye_Result) Equals(rhs *Plugin_Goodbye_Result) bool {
+
 	return true
 }
 

@@ -23,7 +23,6 @@ package gen
 import (
 	"bytes"
 	"fmt"
-	"go/token"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -230,7 +229,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		}
 
 		var buff bytes.Buffer
-		if err := g.Write(&buff, token.NewFileSet()); err != nil {
+		if err := g.Write(&buff, nil /* fset */); err != nil {
 			return nil, fmt.Errorf(
 				"could not generate version check for %q: %v", m.ThriftPath, err)
 		}
@@ -245,7 +244,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		}
 
 		buff := new(bytes.Buffer)
-		if err := g.Write(buff, token.NewFileSet()); err != nil {
+		if err := g.Write(buff, nil /* fset */); err != nil {
 			return nil, fmt.Errorf(
 				"could not generate constants for %q: %v", m.ThriftPath, err)
 		}
@@ -264,7 +263,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		}
 
 		buff := new(bytes.Buffer)
-		if err := g.Write(buff, token.NewFileSet()); err != nil {
+		if err := g.Write(buff, nil /* fset */); err != nil {
 			return nil, fmt.Errorf(
 				"could not generate types for %q: %v", m.ThriftPath, err)
 		}
@@ -281,7 +280,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		}
 
 		buff := new(bytes.Buffer)
-		if err := g.Write(buff, token.NewFileSet()); err != nil {
+		if err := g.Write(buff, nil /* fset */); err != nil {
 			return nil, fmt.Errorf(
 				"could not generate idl.go for %q: %v", m.ThriftPath, err)
 		}

@@ -26,6 +26,7 @@ func (v *AccessorConflict) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.Name != nil {
 		w, err = wire.NewValueString(*(v.Name)), error(nil)
 		if err != nil {
@@ -42,11 +43,13 @@ func (v *AccessorConflict) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *AccessorConflict) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -57,6 +60,7 @@ func (v *AccessorConflict) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
@@ -66,9 +70,11 @@ func (v *AccessorConflict) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -76,6 +82,7 @@ func (v *AccessorConflict) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	if v.Name != nil {
@@ -86,11 +93,13 @@ func (v *AccessorConflict) String() string {
 		fields[i] = fmt.Sprintf("GetName2: %v", *(v.GetName2))
 		i++
 	}
+
 	return fmt.Sprintf("AccessorConflict{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -105,6 +114,7 @@ func (v *AccessorConflict) Equals(rhs *AccessorConflict) bool {
 	if !_String_EqualsPtr(v.GetName2, rhs.GetName2) {
 		return false
 	}
+
 	return true
 }
 
@@ -112,6 +122,7 @@ func (v *AccessorConflict) GetName() (o string) {
 	if v.Name != nil {
 		return *v.Name
 	}
+
 	return
 }
 
@@ -119,6 +130,7 @@ func (v *AccessorConflict) GetGetName2() (o string) {
 	if v.GetName2 != nil {
 		return *v.GetName2
 	}
+
 	return
 }
 
@@ -134,6 +146,7 @@ func (v *AccessorNoConflict) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.Getname != nil {
 		w, err = wire.NewValueString(*(v.Getname)), error(nil)
 		if err != nil {
@@ -150,11 +163,13 @@ func (v *AccessorNoConflict) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *AccessorNoConflict) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -165,6 +180,7 @@ func (v *AccessorNoConflict) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
@@ -174,9 +190,11 @@ func (v *AccessorNoConflict) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -184,6 +202,7 @@ func (v *AccessorNoConflict) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	if v.Getname != nil {
@@ -194,6 +213,7 @@ func (v *AccessorNoConflict) String() string {
 		fields[i] = fmt.Sprintf("GetName: %v", *(v.GetName))
 		i++
 	}
+
 	return fmt.Sprintf("AccessorNoConflict{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -204,6 +224,7 @@ func (v *AccessorNoConflict) Equals(rhs *AccessorNoConflict) bool {
 	if !_String_EqualsPtr(v.GetName, rhs.GetName) {
 		return false
 	}
+
 	return true
 }
 
@@ -211,6 +232,7 @@ func (v *AccessorNoConflict) GetGetname() (o string) {
 	if v.Getname != nil {
 		return *v.Getname
 	}
+
 	return
 }
 
@@ -218,6 +240,7 @@ func (v *AccessorNoConflict) GetGetName() (o string) {
 	if v.GetName != nil {
 		return *v.GetName
 	}
+
 	return
 }
 
@@ -254,7 +277,13 @@ const (
 )
 
 func MyEnum_Values() []MyEnum {
-	return []MyEnum{MyEnumX, MyEnumY, MyEnumZ, MyEnumFooBar, MyEnumFooBar2}
+	return []MyEnum{
+		MyEnumX,
+		MyEnumY,
+		MyEnumZ,
+		MyEnumFooBar,
+		MyEnumFooBar2,
+	}
 }
 
 func (v *MyEnum) UnmarshalText(value []byte) error {
@@ -332,6 +361,7 @@ func (v *MyEnum) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -383,8 +413,7 @@ func (_List_String_ValueList) ValueType() wire.Type {
 	return wire.TBinary
 }
 
-func (_List_String_ValueList) Close() {
-}
+func (_List_String_ValueList) Close() {}
 
 type _Set_String_ValueList map[string]struct{}
 
@@ -394,8 +423,8 @@ func (v _Set_String_ValueList) ForEach(f func(wire.Value) error) error {
 		if err != nil {
 			return err
 		}
-		err = f(w)
-		if err != nil {
+
+		if err := f(w); err != nil {
 			return err
 		}
 	}
@@ -410,8 +439,7 @@ func (_Set_String_ValueList) ValueType() wire.Type {
 	return wire.TBinary
 }
 
-func (_Set_String_ValueList) Close() {
-}
+func (_Set_String_ValueList) Close() {}
 
 type _Map_String_String_MapItemList map[string]string
 
@@ -421,6 +449,7 @@ func (m _Map_String_String_MapItemList) ForEach(f func(wire.MapItem) error) erro
 		if err != nil {
 			return err
 		}
+
 		vw, err := wire.NewValueString(v), error(nil)
 		if err != nil {
 			return err
@@ -445,8 +474,7 @@ func (_Map_String_String_MapItemList) ValueType() wire.Type {
 	return wire.TBinary
 }
 
-func (_Map_String_String_MapItemList) Close() {
-}
+func (_Map_String_String_MapItemList) Close() {}
 
 func (v *PrimitiveContainers) ToWire() (wire.Value, error) {
 	var (
@@ -455,6 +483,7 @@ func (v *PrimitiveContainers) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.A != nil {
 		w, err = wire.NewValueList(_List_String_ValueList(v.A)), error(nil)
 		if err != nil {
@@ -479,6 +508,7 @@ func (v *PrimitiveContainers) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 5, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -486,6 +516,7 @@ func _List_String_Read(l wire.ValueList) ([]string, error) {
 	if l.ValueType() != wire.TBinary {
 		return nil, nil
 	}
+
 	o := make([]string, 0, l.Size())
 	err := l.ForEach(func(x wire.Value) error {
 		i, err := x.GetString(), error(nil)
@@ -503,12 +534,14 @@ func _Set_String_Read(s wire.ValueList) (map[string]struct{}, error) {
 	if s.ValueType() != wire.TBinary {
 		return nil, nil
 	}
+
 	o := make(map[string]struct{}, s.Size())
 	err := s.ForEach(func(x wire.Value) error {
 		i, err := x.GetString(), error(nil)
 		if err != nil {
 			return err
 		}
+
 		o[i] = struct{}{}
 		return nil
 	})
@@ -520,19 +553,23 @@ func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 	if m.KeyType() != wire.TBinary {
 		return nil, nil
 	}
+
 	if m.ValueType() != wire.TBinary {
 		return nil, nil
 	}
+
 	o := make(map[string]string, m.Size())
 	err := m.ForEach(func(x wire.MapItem) error {
 		k, err := x.Key.GetString(), error(nil)
 		if err != nil {
 			return err
 		}
+
 		v, err := x.Value.GetString(), error(nil)
 		if err != nil {
 			return err
 		}
+
 		o[k] = v
 		return nil
 	})
@@ -542,6 +579,7 @@ func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 
 func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -550,6 +588,7 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 3:
 			if field.Value.Type() == wire.TSet {
@@ -557,6 +596,7 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 5:
 			if field.Value.Type() == wire.TMap {
@@ -564,9 +604,11 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -574,6 +616,7 @@ func (v *PrimitiveContainers) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [3]string
 	i := 0
 	if v.A != nil {
@@ -588,6 +631,7 @@ func (v *PrimitiveContainers) String() string {
 		fields[i] = fmt.Sprintf("C: %v", v.C)
 		i++
 	}
+
 	return fmt.Sprintf("PrimitiveContainers{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -595,12 +639,14 @@ func _List_String_Equals(lhs, rhs []string) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for i, lv := range lhs {
 		rv := rhs[i]
 		if !(lv == rv) {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -608,11 +654,13 @@ func _Set_String_Equals(lhs, rhs map[string]struct{}) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for x := range rhs {
 		if _, ok := lhs[x]; !ok {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -620,6 +668,7 @@ func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for lk, lv := range lhs {
 		rv, ok := rhs[lk]
 		if !ok {
@@ -642,6 +691,7 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	if !((v.C == nil && rhs.C == nil) || (v.C != nil && rhs.C != nil && _Map_String_String_Equals(v.C, rhs.C))) {
 		return false
 	}
+
 	return true
 }
 
@@ -657,25 +707,30 @@ func (v *StructCollision) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = wire.NewValueBool(v.CollisionField), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
+
 	w, err = wire.NewValueString(v.CollisionField2), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *StructCollision) FromWire(w wire.Value) error {
 	var err error
+
 	collisionFieldIsSet := false
 	collision_fieldIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -696,12 +751,15 @@ func (v *StructCollision) FromWire(w wire.Value) error {
 			}
 		}
 	}
+
 	if !collisionFieldIsSet {
 		return errors.New("field CollisionField of StructCollision is required")
 	}
+
 	if !collision_fieldIsSet {
 		return errors.New("field CollisionField2 of StructCollision is required")
 	}
+
 	return nil
 }
 
@@ -709,12 +767,14 @@ func (v *StructCollision) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("CollisionField: %v", v.CollisionField)
 	i++
 	fields[i] = fmt.Sprintf("CollisionField2: %v", v.CollisionField2)
 	i++
+
 	return fmt.Sprintf("StructCollision{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -725,6 +785,7 @@ func (v *StructCollision) Equals(rhs *StructCollision) bool {
 	if !(v.CollisionField2 == rhs.CollisionField2) {
 		return false
 	}
+
 	return true
 }
 
@@ -740,6 +801,7 @@ func (v *UnionCollision) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.CollisionField != nil {
 		w, err = wire.NewValueBool(*(v.CollisionField)), error(nil)
 		if err != nil {
@@ -756,14 +818,17 @@ func (v *UnionCollision) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
+
 	if i != 1 {
 		return wire.Value{}, fmt.Errorf("UnionCollision should have exactly one field: got %v fields", i)
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *UnionCollision) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -774,6 +839,7 @@ func (v *UnionCollision) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
@@ -783,9 +849,11 @@ func (v *UnionCollision) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	count := 0
 	if v.CollisionField != nil {
 		count++
@@ -796,6 +864,7 @@ func (v *UnionCollision) FromWire(w wire.Value) error {
 	if count != 1 {
 		return fmt.Errorf("UnionCollision should have exactly one field: got %v fields", count)
 	}
+
 	return nil
 }
 
@@ -803,6 +872,7 @@ func (v *UnionCollision) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	if v.CollisionField != nil {
@@ -813,11 +883,13 @@ func (v *UnionCollision) String() string {
 		fields[i] = fmt.Sprintf("CollisionField2: %v", *(v.CollisionField2))
 		i++
 	}
+
 	return fmt.Sprintf("UnionCollision{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -832,6 +904,7 @@ func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
 	if !_String_EqualsPtr(v.CollisionField2, rhs.CollisionField2) {
 		return false
 	}
+
 	return true
 }
 
@@ -839,6 +912,7 @@ func (v *UnionCollision) GetCollisionField() (o bool) {
 	if v.CollisionField != nil {
 		return *v.CollisionField
 	}
+
 	return
 }
 
@@ -846,6 +920,7 @@ func (v *UnionCollision) GetCollisionField2() (o string) {
 	if v.CollisionField2 != nil {
 		return *v.CollisionField2
 	}
+
 	return
 }
 
@@ -860,8 +935,12 @@ func (v *WithDefault) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.Pouet == nil {
-		v.Pouet = &StructCollision2{CollisionField: false, CollisionField2: "false indeed"}
+		v.Pouet = &StructCollision2{
+			CollisionField:  false,
+			CollisionField2: "false indeed",
+		}
 	}
 	{
 		w, err = v.Pouet.ToWire()
@@ -871,6 +950,7 @@ func (v *WithDefault) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -882,6 +962,7 @@ func _StructCollision_Read(w wire.Value) (*StructCollision2, error) {
 
 func (v *WithDefault) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -890,12 +971,18 @@ func (v *WithDefault) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	if v.Pouet == nil {
-		v.Pouet = &StructCollision2{CollisionField: false, CollisionField2: "false indeed"}
+		v.Pouet = &StructCollision2{
+			CollisionField:  false,
+			CollisionField2: "false indeed",
+		}
 	}
+
 	return nil
 }
 
@@ -903,12 +990,14 @@ func (v *WithDefault) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [1]string
 	i := 0
 	if v.Pouet != nil {
 		fields[i] = fmt.Sprintf("Pouet: %v", v.Pouet)
 		i++
 	}
+
 	return fmt.Sprintf("WithDefault{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -916,6 +1005,7 @@ func (v *WithDefault) Equals(rhs *WithDefault) bool {
 	if !((v.Pouet == nil && rhs.Pouet == nil) || (v.Pouet != nil && rhs.Pouet != nil && v.Pouet.Equals(rhs.Pouet))) {
 		return false
 	}
+
 	return true
 }
 
@@ -950,7 +1040,11 @@ const (
 )
 
 func MyEnum2_Values() []MyEnum2 {
-	return []MyEnum2{MyEnum2X, MyEnum2Y, MyEnum2Z}
+	return []MyEnum2{
+		MyEnum2X,
+		MyEnum2Y,
+		MyEnum2Z,
+	}
 }
 
 func (v *MyEnum2) UnmarshalText(value []byte) error {
@@ -1014,6 +1108,7 @@ func (v *MyEnum2) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -1047,25 +1142,30 @@ func (v *StructCollision2) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = wire.NewValueBool(v.CollisionField), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
+
 	w, err = wire.NewValueString(v.CollisionField2), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *StructCollision2) FromWire(w wire.Value) error {
 	var err error
+
 	collisionFieldIsSet := false
 	collision_fieldIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -1086,12 +1186,15 @@ func (v *StructCollision2) FromWire(w wire.Value) error {
 			}
 		}
 	}
+
 	if !collisionFieldIsSet {
 		return errors.New("field CollisionField of StructCollision2 is required")
 	}
+
 	if !collision_fieldIsSet {
 		return errors.New("field CollisionField2 of StructCollision2 is required")
 	}
+
 	return nil
 }
 
@@ -1099,12 +1202,14 @@ func (v *StructCollision2) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("CollisionField: %v", v.CollisionField)
 	i++
 	fields[i] = fmt.Sprintf("CollisionField2: %v", v.CollisionField2)
 	i++
+
 	return fmt.Sprintf("StructCollision2{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -1115,6 +1220,7 @@ func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
 	if !(v.CollisionField2 == rhs.CollisionField2) {
 		return false
 	}
+
 	return true
 }
 
@@ -1130,6 +1236,7 @@ func (v *UnionCollision2) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.CollisionField != nil {
 		w, err = wire.NewValueBool(*(v.CollisionField)), error(nil)
 		if err != nil {
@@ -1146,14 +1253,17 @@ func (v *UnionCollision2) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
+
 	if i != 1 {
 		return wire.Value{}, fmt.Errorf("UnionCollision2 should have exactly one field: got %v fields", i)
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *UnionCollision2) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -1164,6 +1274,7 @@ func (v *UnionCollision2) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
@@ -1173,9 +1284,11 @@ func (v *UnionCollision2) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	count := 0
 	if v.CollisionField != nil {
 		count++
@@ -1186,6 +1299,7 @@ func (v *UnionCollision2) FromWire(w wire.Value) error {
 	if count != 1 {
 		return fmt.Errorf("UnionCollision2 should have exactly one field: got %v fields", count)
 	}
+
 	return nil
 }
 
@@ -1193,6 +1307,7 @@ func (v *UnionCollision2) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	if v.CollisionField != nil {
@@ -1203,6 +1318,7 @@ func (v *UnionCollision2) String() string {
 		fields[i] = fmt.Sprintf("CollisionField2: %v", *(v.CollisionField2))
 		i++
 	}
+
 	return fmt.Sprintf("UnionCollision2{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -1213,6 +1329,7 @@ func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
 	if !_String_EqualsPtr(v.CollisionField2, rhs.CollisionField2) {
 		return false
 	}
+
 	return true
 }
 
@@ -1220,6 +1337,7 @@ func (v *UnionCollision2) GetCollisionField() (o bool) {
 	if v.CollisionField != nil {
 		return *v.CollisionField
 	}
+
 	return
 }
 
@@ -1227,5 +1345,6 @@ func (v *UnionCollision2) GetCollisionField2() (o string) {
 	if v.CollisionField2 != nil {
 		return *v.CollisionField2
 	}
+
 	return
 }

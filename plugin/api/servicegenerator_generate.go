@@ -41,6 +41,7 @@ func (v *ServiceGenerator_Generate_Args) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.Request != nil {
 		w, err = v.Request.ToWire()
 		if err != nil {
@@ -49,6 +50,7 @@ func (v *ServiceGenerator_Generate_Args) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -60,6 +62,7 @@ func _GenerateServiceRequest_Read(w wire.Value) (*GenerateServiceRequest, error)
 
 func (v *ServiceGenerator_Generate_Args) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -68,9 +71,11 @@ func (v *ServiceGenerator_Generate_Args) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -78,12 +83,14 @@ func (v *ServiceGenerator_Generate_Args) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [1]string
 	i := 0
 	if v.Request != nil {
 		fields[i] = fmt.Sprintf("Request: %v", v.Request)
 		i++
 	}
+
 	return fmt.Sprintf("ServiceGenerator_Generate_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -91,6 +98,7 @@ func (v *ServiceGenerator_Generate_Args) Equals(rhs *ServiceGenerator_Generate_A
 	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
 		return false
 	}
+
 	return true
 }
 
@@ -103,36 +111,50 @@ func (v *ServiceGenerator_Generate_Args) EnvelopeType() wire.EnvelopeType {
 }
 
 var ServiceGenerator_Generate_Helper = struct {
-	Args           func(request *GenerateServiceRequest) *ServiceGenerator_Generate_Args
-	IsException    func(error) bool
+	Args func(
+		request *GenerateServiceRequest,
+	) *ServiceGenerator_Generate_Args
+
+	IsException func(error) bool
+
 	WrapResponse   func(*GenerateServiceResponse, error) (*ServiceGenerator_Generate_Result, error)
 	UnwrapResponse func(*ServiceGenerator_Generate_Result) (*GenerateServiceResponse, error)
 }{}
 
 func init() {
-	ServiceGenerator_Generate_Helper.Args = func(request *GenerateServiceRequest) *ServiceGenerator_Generate_Args {
-		return &ServiceGenerator_Generate_Args{Request: request}
+	ServiceGenerator_Generate_Helper.Args = func(
+		request *GenerateServiceRequest,
+	) *ServiceGenerator_Generate_Args {
+		return &ServiceGenerator_Generate_Args{
+			Request: request,
+		}
 	}
+
 	ServiceGenerator_Generate_Helper.IsException = func(err error) bool {
 		switch err.(type) {
 		default:
 			return false
 		}
 	}
+
 	ServiceGenerator_Generate_Helper.WrapResponse = func(success *GenerateServiceResponse, err error) (*ServiceGenerator_Generate_Result, error) {
 		if err == nil {
 			return &ServiceGenerator_Generate_Result{Success: success}, nil
 		}
+
 		return nil, err
 	}
 	ServiceGenerator_Generate_Helper.UnwrapResponse = func(result *ServiceGenerator_Generate_Result) (success *GenerateServiceResponse, err error) {
+
 		if result.Success != nil {
 			success = result.Success
 			return
 		}
+
 		err = errors.New("expected a non-void result")
 		return
 	}
+
 }
 
 type ServiceGenerator_Generate_Result struct {
@@ -146,6 +168,7 @@ func (v *ServiceGenerator_Generate_Result) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.Success != nil {
 		w, err = v.Success.ToWire()
 		if err != nil {
@@ -154,9 +177,11 @@ func (v *ServiceGenerator_Generate_Result) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 0, Value: w}
 		i++
 	}
+
 	if i != 1 {
 		return wire.Value{}, fmt.Errorf("ServiceGenerator_Generate_Result should have exactly one field: got %v fields", i)
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -168,6 +193,7 @@ func _GenerateServiceResponse_Read(w wire.Value) (*GenerateServiceResponse, erro
 
 func (v *ServiceGenerator_Generate_Result) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 0:
@@ -176,9 +202,11 @@ func (v *ServiceGenerator_Generate_Result) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	count := 0
 	if v.Success != nil {
 		count++
@@ -186,6 +214,7 @@ func (v *ServiceGenerator_Generate_Result) FromWire(w wire.Value) error {
 	if count != 1 {
 		return fmt.Errorf("ServiceGenerator_Generate_Result should have exactly one field: got %v fields", count)
 	}
+
 	return nil
 }
 
@@ -193,12 +222,14 @@ func (v *ServiceGenerator_Generate_Result) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [1]string
 	i := 0
 	if v.Success != nil {
 		fields[i] = fmt.Sprintf("Success: %v", v.Success)
 		i++
 	}
+
 	return fmt.Sprintf("ServiceGenerator_Generate_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -206,6 +237,7 @@ func (v *ServiceGenerator_Generate_Result) Equals(rhs *ServiceGenerator_Generate
 	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
 		return false
 	}
+
 	return true
 }
 

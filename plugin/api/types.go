@@ -46,6 +46,7 @@ func (v *Argument) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = wire.NewValueString(v.Name), error(nil)
 	if err != nil {
 		return w, err
@@ -61,6 +62,7 @@ func (v *Argument) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -72,8 +74,10 @@ func _Type_Read(w wire.Value) (*Type, error) {
 
 func (v *Argument) FromWire(w wire.Value) error {
 	var err error
+
 	nameIsSet := false
 	typeIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -94,12 +98,15 @@ func (v *Argument) FromWire(w wire.Value) error {
 			}
 		}
 	}
+
 	if !nameIsSet {
 		return errors.New("field Name of Argument is required")
 	}
+
 	if !typeIsSet {
 		return errors.New("field Type of Argument is required")
 	}
+
 	return nil
 }
 
@@ -107,12 +114,14 @@ func (v *Argument) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
 	fields[i] = fmt.Sprintf("Type: %v", v.Type)
 	i++
+
 	return fmt.Sprintf("Argument{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -123,6 +132,7 @@ func (v *Argument) Equals(rhs *Argument) bool {
 	if !v.Type.Equals(rhs.Type) {
 		return false
 	}
+
 	return true
 }
 
@@ -133,7 +143,9 @@ const (
 )
 
 func Feature_Values() []Feature {
-	return []Feature{FeatureServiceGenerator}
+	return []Feature{
+		FeatureServiceGenerator,
+	}
 }
 
 func (v *Feature) UnmarshalText(value []byte) error {
@@ -183,6 +195,7 @@ func (v *Feature) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -240,8 +253,7 @@ func (_List_Argument_ValueList) ValueType() wire.Type {
 	return wire.TStruct
 }
 
-func (_List_Argument_ValueList) Close() {
-}
+func (_List_Argument_ValueList) Close() {}
 
 func (v *Function) ToWire() (wire.Value, error) {
 	var (
@@ -250,12 +262,14 @@ func (v *Function) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = wire.NewValueString(v.Name), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
+
 	w, err = wire.NewValueString(v.ThriftName), error(nil)
 	if err != nil {
 		return w, err
@@ -295,6 +309,7 @@ func (v *Function) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 6, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -308,6 +323,7 @@ func _List_Argument_Read(l wire.ValueList) ([]*Argument, error) {
 	if l.ValueType() != wire.TStruct {
 		return nil, nil
 	}
+
 	o := make([]*Argument, 0, l.Size())
 	err := l.ForEach(func(x wire.Value) error {
 		i, err := _Argument_Read(x)
@@ -323,9 +339,11 @@ func _List_Argument_Read(l wire.ValueList) ([]*Argument, error) {
 
 func (v *Function) FromWire(w wire.Value) error {
 	var err error
+
 	nameIsSet := false
 	thriftNameIsSet := false
 	argumentsIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -358,6 +376,7 @@ func (v *Function) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 5:
 			if field.Value.Type() == wire.TList {
@@ -365,6 +384,7 @@ func (v *Function) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 6:
 			if field.Value.Type() == wire.TBool {
@@ -374,18 +394,23 @@ func (v *Function) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	if !nameIsSet {
 		return errors.New("field Name of Function is required")
 	}
+
 	if !thriftNameIsSet {
 		return errors.New("field ThriftName of Function is required")
 	}
+
 	if !argumentsIsSet {
 		return errors.New("field Arguments of Function is required")
 	}
+
 	return nil
 }
 
@@ -393,6 +418,7 @@ func (v *Function) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [6]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
@@ -413,6 +439,7 @@ func (v *Function) String() string {
 		fields[i] = fmt.Sprintf("OneWay: %v", *(v.OneWay))
 		i++
 	}
+
 	return fmt.Sprintf("Function{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -420,17 +447,20 @@ func _List_Argument_Equals(lhs, rhs []*Argument) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for i, lv := range lhs {
 		rv := rhs[i]
 		if !lv.Equals(rv) {
 			return false
 		}
 	}
+
 	return true
 }
 
 func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -457,6 +487,7 @@ func (v *Function) Equals(rhs *Function) bool {
 	if !_Bool_EqualsPtr(v.OneWay, rhs.OneWay) {
 		return false
 	}
+
 	return true
 }
 
@@ -464,6 +495,7 @@ func (v *Function) GetOneWay() (o bool) {
 	if v.OneWay != nil {
 		return *v.OneWay
 	}
+
 	return
 }
 
@@ -497,8 +529,7 @@ func (_List_ServiceID_ValueList) ValueType() wire.Type {
 	return wire.TI32
 }
 
-func (_List_ServiceID_ValueList) Close() {
-}
+func (_List_ServiceID_ValueList) Close() {}
 
 type _Map_ServiceID_Service_MapItemList map[ServiceID]*Service
 
@@ -511,6 +542,7 @@ func (m _Map_ServiceID_Service_MapItemList) ForEach(f func(wire.MapItem) error) 
 		if err != nil {
 			return err
 		}
+
 		vw, err := v.ToWire()
 		if err != nil {
 			return err
@@ -535,8 +567,7 @@ func (_Map_ServiceID_Service_MapItemList) ValueType() wire.Type {
 	return wire.TStruct
 }
 
-func (_Map_ServiceID_Service_MapItemList) Close() {
-}
+func (_Map_ServiceID_Service_MapItemList) Close() {}
 
 type _Map_ModuleID_Module_MapItemList map[ModuleID]*Module
 
@@ -549,6 +580,7 @@ func (m _Map_ModuleID_Module_MapItemList) ForEach(f func(wire.MapItem) error) er
 		if err != nil {
 			return err
 		}
+
 		vw, err := v.ToWire()
 		if err != nil {
 			return err
@@ -573,8 +605,7 @@ func (_Map_ModuleID_Module_MapItemList) ValueType() wire.Type {
 	return wire.TStruct
 }
 
-func (_Map_ModuleID_Module_MapItemList) Close() {
-}
+func (_Map_ModuleID_Module_MapItemList) Close() {}
 
 func (v *GenerateServiceRequest) ToWire() (wire.Value, error) {
 	var (
@@ -583,6 +614,7 @@ func (v *GenerateServiceRequest) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.RootServices == nil {
 		return w, errors.New("field RootServices of GenerateServiceRequest is required")
 	}
@@ -610,6 +642,7 @@ func (v *GenerateServiceRequest) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 3, Value: w}
 	i++
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -623,6 +656,7 @@ func _List_ServiceID_Read(l wire.ValueList) ([]ServiceID, error) {
 	if l.ValueType() != wire.TI32 {
 		return nil, nil
 	}
+
 	o := make([]ServiceID, 0, l.Size())
 	err := l.ForEach(func(x wire.Value) error {
 		i, err := _ServiceID_Read(x)
@@ -646,19 +680,23 @@ func _Map_ServiceID_Service_Read(m wire.MapItemList) (map[ServiceID]*Service, er
 	if m.KeyType() != wire.TI32 {
 		return nil, nil
 	}
+
 	if m.ValueType() != wire.TStruct {
 		return nil, nil
 	}
+
 	o := make(map[ServiceID]*Service, m.Size())
 	err := m.ForEach(func(x wire.MapItem) error {
 		k, err := _ServiceID_Read(x.Key)
 		if err != nil {
 			return err
 		}
+
 		v, err := _Service_Read(x.Value)
 		if err != nil {
 			return err
 		}
+
 		o[k] = v
 		return nil
 	})
@@ -682,19 +720,23 @@ func _Map_ModuleID_Module_Read(m wire.MapItemList) (map[ModuleID]*Module, error)
 	if m.KeyType() != wire.TI32 {
 		return nil, nil
 	}
+
 	if m.ValueType() != wire.TStruct {
 		return nil, nil
 	}
+
 	o := make(map[ModuleID]*Module, m.Size())
 	err := m.ForEach(func(x wire.MapItem) error {
 		k, err := _ModuleID_Read(x.Key)
 		if err != nil {
 			return err
 		}
+
 		v, err := _Module_Read(x.Value)
 		if err != nil {
 			return err
 		}
+
 		o[k] = v
 		return nil
 	})
@@ -704,9 +746,11 @@ func _Map_ModuleID_Module_Read(m wire.MapItemList) (map[ModuleID]*Module, error)
 
 func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
 	var err error
+
 	rootServicesIsSet := false
 	servicesIsSet := false
 	modulesIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -735,15 +779,19 @@ func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
 			}
 		}
 	}
+
 	if !rootServicesIsSet {
 		return errors.New("field RootServices of GenerateServiceRequest is required")
 	}
+
 	if !servicesIsSet {
 		return errors.New("field Services of GenerateServiceRequest is required")
 	}
+
 	if !modulesIsSet {
 		return errors.New("field Modules of GenerateServiceRequest is required")
 	}
+
 	return nil
 }
 
@@ -751,6 +799,7 @@ func (v *GenerateServiceRequest) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [3]string
 	i := 0
 	fields[i] = fmt.Sprintf("RootServices: %v", v.RootServices)
@@ -759,6 +808,7 @@ func (v *GenerateServiceRequest) String() string {
 	i++
 	fields[i] = fmt.Sprintf("Modules: %v", v.Modules)
 	i++
+
 	return fmt.Sprintf("GenerateServiceRequest{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -766,12 +816,14 @@ func _List_ServiceID_Equals(lhs, rhs []ServiceID) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for i, lv := range lhs {
 		rv := rhs[i]
 		if !(lv == rv) {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -779,6 +831,7 @@ func _Map_ServiceID_Service_Equals(lhs, rhs map[ServiceID]*Service) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for lk, lv := range lhs {
 		rv, ok := rhs[lk]
 		if !ok {
@@ -795,6 +848,7 @@ func _Map_ModuleID_Module_Equals(lhs, rhs map[ModuleID]*Module) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for lk, lv := range lhs {
 		rv, ok := rhs[lk]
 		if !ok {
@@ -817,6 +871,7 @@ func (v *GenerateServiceRequest) Equals(rhs *GenerateServiceRequest) bool {
 	if !_Map_ModuleID_Module_Equals(v.Modules, rhs.Modules) {
 		return false
 	}
+
 	return true
 }
 
@@ -835,6 +890,7 @@ func (m _Map_String_Binary_MapItemList) ForEach(f func(wire.MapItem) error) erro
 		if err != nil {
 			return err
 		}
+
 		vw, err := wire.NewValueBinary(v), error(nil)
 		if err != nil {
 			return err
@@ -859,8 +915,7 @@ func (_Map_String_Binary_MapItemList) ValueType() wire.Type {
 	return wire.TBinary
 }
 
-func (_Map_String_Binary_MapItemList) Close() {
-}
+func (_Map_String_Binary_MapItemList) Close() {}
 
 func (v *GenerateServiceResponse) ToWire() (wire.Value, error) {
 	var (
@@ -869,6 +924,7 @@ func (v *GenerateServiceResponse) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.Files != nil {
 		w, err = wire.NewValueMap(_Map_String_Binary_MapItemList(v.Files)), error(nil)
 		if err != nil {
@@ -877,6 +933,7 @@ func (v *GenerateServiceResponse) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -884,19 +941,23 @@ func _Map_String_Binary_Read(m wire.MapItemList) (map[string][]byte, error) {
 	if m.KeyType() != wire.TBinary {
 		return nil, nil
 	}
+
 	if m.ValueType() != wire.TBinary {
 		return nil, nil
 	}
+
 	o := make(map[string][]byte, m.Size())
 	err := m.ForEach(func(x wire.MapItem) error {
 		k, err := x.Key.GetString(), error(nil)
 		if err != nil {
 			return err
 		}
+
 		v, err := x.Value.GetBinary(), error(nil)
 		if err != nil {
 			return err
 		}
+
 		o[k] = v
 		return nil
 	})
@@ -906,6 +967,7 @@ func _Map_String_Binary_Read(m wire.MapItemList) (map[string][]byte, error) {
 
 func (v *GenerateServiceResponse) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -914,9 +976,11 @@ func (v *GenerateServiceResponse) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -924,12 +988,14 @@ func (v *GenerateServiceResponse) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [1]string
 	i := 0
 	if v.Files != nil {
 		fields[i] = fmt.Sprintf("Files: %v", v.Files)
 		i++
 	}
+
 	return fmt.Sprintf("GenerateServiceResponse{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -937,6 +1003,7 @@ func _Map_String_Binary_Equals(lhs, rhs map[string][]byte) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for lk, lv := range lhs {
 		rv, ok := rhs[lk]
 		if !ok {
@@ -953,24 +1020,29 @@ func (v *GenerateServiceResponse) Equals(rhs *GenerateServiceResponse) bool {
 	if !((v.Files == nil && rhs.Files == nil) || (v.Files != nil && rhs.Files != nil && _Map_String_Binary_Equals(v.Files, rhs.Files))) {
 		return false
 	}
+
 	return true
 }
 
-type HandshakeRequest struct{}
+type HandshakeRequest struct {
+}
 
 func (v *HandshakeRequest) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
 		i      int = 0
 	)
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *HandshakeRequest) FromWire(w wire.Value) error {
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		}
 	}
+
 	return nil
 }
 
@@ -978,12 +1050,15 @@ func (v *HandshakeRequest) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [0]string
 	i := 0
+
 	return fmt.Sprintf("HandshakeRequest{%v}", strings.Join(fields[:i], ", "))
 }
 
 func (v *HandshakeRequest) Equals(rhs *HandshakeRequest) bool {
+
 	return true
 }
 
@@ -1018,8 +1093,7 @@ func (_List_Feature_ValueList) ValueType() wire.Type {
 	return wire.TI32
 }
 
-func (_List_Feature_ValueList) Close() {
-}
+func (_List_Feature_ValueList) Close() {}
 
 func (v *HandshakeResponse) ToWire() (wire.Value, error) {
 	var (
@@ -1028,12 +1102,14 @@ func (v *HandshakeResponse) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = wire.NewValueString(v.Name), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
+
 	w, err = wire.NewValueI32(v.APIVersion), error(nil)
 	if err != nil {
 		return w, err
@@ -1057,6 +1133,7 @@ func (v *HandshakeResponse) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 4, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -1070,6 +1147,7 @@ func _List_Feature_Read(l wire.ValueList) ([]Feature, error) {
 	if l.ValueType() != wire.TI32 {
 		return nil, nil
 	}
+
 	o := make([]Feature, 0, l.Size())
 	err := l.ForEach(func(x wire.Value) error {
 		i, err := _Feature_Read(x)
@@ -1085,9 +1163,11 @@ func _List_Feature_Read(l wire.ValueList) ([]Feature, error) {
 
 func (v *HandshakeResponse) FromWire(w wire.Value) error {
 	var err error
+
 	nameIsSet := false
 	apiVersionIsSet := false
 	featuresIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -1122,18 +1202,23 @@ func (v *HandshakeResponse) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	if !nameIsSet {
 		return errors.New("field Name of HandshakeResponse is required")
 	}
+
 	if !apiVersionIsSet {
 		return errors.New("field APIVersion of HandshakeResponse is required")
 	}
+
 	if !featuresIsSet {
 		return errors.New("field Features of HandshakeResponse is required")
 	}
+
 	return nil
 }
 
@@ -1141,6 +1226,7 @@ func (v *HandshakeResponse) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [4]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
@@ -1153,6 +1239,7 @@ func (v *HandshakeResponse) String() string {
 		fields[i] = fmt.Sprintf("LibraryVersion: %v", *(v.LibraryVersion))
 		i++
 	}
+
 	return fmt.Sprintf("HandshakeResponse{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -1160,17 +1247,20 @@ func _List_Feature_Equals(lhs, rhs []Feature) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for i, lv := range lhs {
 		rv := rhs[i]
 		if !lv.Equals(rv) {
 			return false
 		}
 	}
+
 	return true
 }
 
 func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -1191,6 +1281,7 @@ func (v *HandshakeResponse) Equals(rhs *HandshakeResponse) bool {
 	if !_String_EqualsPtr(v.LibraryVersion, rhs.LibraryVersion) {
 		return false
 	}
+
 	return true
 }
 
@@ -1198,6 +1289,7 @@ func (v *HandshakeResponse) GetLibraryVersion() (o string) {
 	if v.LibraryVersion != nil {
 		return *v.LibraryVersion
 	}
+
 	return
 }
 
@@ -1213,25 +1305,30 @@ func (v *Module) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = wire.NewValueString(v.ImportPath), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
+
 	w, err = wire.NewValueString(v.Directory), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *Module) FromWire(w wire.Value) error {
 	var err error
+
 	importPathIsSet := false
 	directoryIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -1252,12 +1349,15 @@ func (v *Module) FromWire(w wire.Value) error {
 			}
 		}
 	}
+
 	if !importPathIsSet {
 		return errors.New("field ImportPath of Module is required")
 	}
+
 	if !directoryIsSet {
 		return errors.New("field Directory of Module is required")
 	}
+
 	return nil
 }
 
@@ -1265,12 +1365,14 @@ func (v *Module) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("ImportPath: %v", v.ImportPath)
 	i++
 	fields[i] = fmt.Sprintf("Directory: %v", v.Directory)
 	i++
+
 	return fmt.Sprintf("Module{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -1281,6 +1383,7 @@ func (v *Module) Equals(rhs *Module) bool {
 	if !(v.Directory == rhs.Directory) {
 		return false
 	}
+
 	return true
 }
 
@@ -1341,8 +1444,7 @@ func (_List_Function_ValueList) ValueType() wire.Type {
 	return wire.TStruct
 }
 
-func (_List_Function_ValueList) Close() {
-}
+func (_List_Function_ValueList) Close() {}
 
 func (v *Service) ToWire() (wire.Value, error) {
 	var (
@@ -1351,12 +1453,14 @@ func (v *Service) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = wire.NewValueString(v.Name), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 7, Value: w}
 	i++
+
 	w, err = wire.NewValueString(v.ThriftName), error(nil)
 	if err != nil {
 		return w, err
@@ -1380,12 +1484,14 @@ func (v *Service) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 5, Value: w}
 	i++
+
 	w, err = v.ModuleID.ToWire()
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 6, Value: w}
 	i++
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -1399,6 +1505,7 @@ func _List_Function_Read(l wire.ValueList) ([]*Function, error) {
 	if l.ValueType() != wire.TStruct {
 		return nil, nil
 	}
+
 	o := make([]*Function, 0, l.Size())
 	err := l.ForEach(func(x wire.Value) error {
 		i, err := _Function_Read(x)
@@ -1414,10 +1521,13 @@ func _List_Function_Read(l wire.ValueList) ([]*Function, error) {
 
 func (v *Service) FromWire(w wire.Value) error {
 	var err error
+
 	nameIsSet := false
 	thriftNameIsSet := false
+
 	functionsIsSet := false
 	moduleIDIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 7:
@@ -1444,6 +1554,7 @@ func (v *Service) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 5:
 			if field.Value.Type() == wire.TList {
@@ -1463,18 +1574,23 @@ func (v *Service) FromWire(w wire.Value) error {
 			}
 		}
 	}
+
 	if !nameIsSet {
 		return errors.New("field Name of Service is required")
 	}
+
 	if !thriftNameIsSet {
 		return errors.New("field ThriftName of Service is required")
 	}
+
 	if !functionsIsSet {
 		return errors.New("field Functions of Service is required")
 	}
+
 	if !moduleIDIsSet {
 		return errors.New("field ModuleID of Service is required")
 	}
+
 	return nil
 }
 
@@ -1482,6 +1598,7 @@ func (v *Service) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [5]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
@@ -1496,11 +1613,13 @@ func (v *Service) String() string {
 	i++
 	fields[i] = fmt.Sprintf("ModuleID: %v", v.ModuleID)
 	i++
+
 	return fmt.Sprintf("Service{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _ServiceID_EqualsPtr(lhs, rhs *ServiceID) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -1512,12 +1631,14 @@ func _List_Function_Equals(lhs, rhs []*Function) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for i, lv := range lhs {
 		rv := rhs[i]
 		if !lv.Equals(rv) {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -1537,6 +1658,7 @@ func (v *Service) Equals(rhs *Service) bool {
 	if !(v.ModuleID == rhs.ModuleID) {
 		return false
 	}
+
 	return true
 }
 
@@ -1544,6 +1666,7 @@ func (v *Service) GetParentID() (o ServiceID) {
 	if v.ParentID != nil {
 		return *v.ParentID
 	}
+
 	return
 }
 
@@ -1584,7 +1707,17 @@ const (
 )
 
 func SimpleType_Values() []SimpleType {
-	return []SimpleType{SimpleTypeBool, SimpleTypeByte, SimpleTypeInt8, SimpleTypeInt16, SimpleTypeInt32, SimpleTypeInt64, SimpleTypeFloat64, SimpleTypeString, SimpleTypeStructEmpty}
+	return []SimpleType{
+		SimpleTypeBool,
+		SimpleTypeByte,
+		SimpleTypeInt8,
+		SimpleTypeInt16,
+		SimpleTypeInt32,
+		SimpleTypeInt64,
+		SimpleTypeFloat64,
+		SimpleTypeString,
+		SimpleTypeStructEmpty,
+	}
 }
 
 func (v *SimpleType) UnmarshalText(value []byte) error {
@@ -1690,6 +1823,7 @@ func (v *SimpleType) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -1727,6 +1861,7 @@ func (v *Type) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.SimpleType != nil {
 		w, err = v.SimpleType.ToWire()
 		if err != nil {
@@ -1775,9 +1910,11 @@ func (v *Type) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 6, Value: w}
 		i++
 	}
+
 	if i != 1 {
 		return wire.Value{}, fmt.Errorf("Type should have exactly one field: got %v fields", i)
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -1801,6 +1938,7 @@ func _TypeReference_Read(w wire.Value) (*TypeReference, error) {
 
 func (v *Type) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -1811,6 +1949,7 @@ func (v *Type) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
@@ -1818,6 +1957,7 @@ func (v *Type) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 3:
 			if field.Value.Type() == wire.TStruct {
@@ -1825,6 +1965,7 @@ func (v *Type) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 4:
 			if field.Value.Type() == wire.TStruct {
@@ -1832,6 +1973,7 @@ func (v *Type) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 5:
 			if field.Value.Type() == wire.TStruct {
@@ -1839,6 +1981,7 @@ func (v *Type) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 6:
 			if field.Value.Type() == wire.TStruct {
@@ -1846,9 +1989,11 @@ func (v *Type) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	count := 0
 	if v.SimpleType != nil {
 		count++
@@ -1871,6 +2016,7 @@ func (v *Type) FromWire(w wire.Value) error {
 	if count != 1 {
 		return fmt.Errorf("Type should have exactly one field: got %v fields", count)
 	}
+
 	return nil
 }
 
@@ -1878,6 +2024,7 @@ func (v *Type) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [6]string
 	i := 0
 	if v.SimpleType != nil {
@@ -1904,11 +2051,13 @@ func (v *Type) String() string {
 		fields[i] = fmt.Sprintf("PointerType: %v", v.PointerType)
 		i++
 	}
+
 	return fmt.Sprintf("Type{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _SimpleType_EqualsPtr(lhs, rhs *SimpleType) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return x.Equals(y)
@@ -1935,6 +2084,7 @@ func (v *Type) Equals(rhs *Type) bool {
 	if !((v.PointerType == nil && rhs.PointerType == nil) || (v.PointerType != nil && rhs.PointerType != nil && v.PointerType.Equals(rhs.PointerType))) {
 		return false
 	}
+
 	return true
 }
 
@@ -1942,6 +2092,7 @@ func (v *Type) GetSimpleType() (o SimpleType) {
 	if v.SimpleType != nil {
 		return *v.SimpleType
 	}
+
 	return
 }
 
@@ -1957,6 +2108,7 @@ func (v *TypePair) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.Left == nil {
 		return w, errors.New("field Left of TypePair is required")
 	}
@@ -1975,13 +2127,16 @@ func (v *TypePair) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *TypePair) FromWire(w wire.Value) error {
 	var err error
+
 	leftIsSet := false
 	rightIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -2002,12 +2157,15 @@ func (v *TypePair) FromWire(w wire.Value) error {
 			}
 		}
 	}
+
 	if !leftIsSet {
 		return errors.New("field Left of TypePair is required")
 	}
+
 	if !rightIsSet {
 		return errors.New("field Right of TypePair is required")
 	}
+
 	return nil
 }
 
@@ -2015,12 +2173,14 @@ func (v *TypePair) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("Left: %v", v.Left)
 	i++
 	fields[i] = fmt.Sprintf("Right: %v", v.Right)
 	i++
+
 	return fmt.Sprintf("TypePair{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -2031,6 +2191,7 @@ func (v *TypePair) Equals(rhs *TypePair) bool {
 	if !v.Right.Equals(rhs.Right) {
 		return false
 	}
+
 	return true
 }
 
@@ -2046,25 +2207,30 @@ func (v *TypeReference) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = wire.NewValueString(v.Name), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
+
 	w, err = wire.NewValueString(v.ImportPath), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *TypeReference) FromWire(w wire.Value) error {
 	var err error
+
 	nameIsSet := false
 	importPathIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -2085,12 +2251,15 @@ func (v *TypeReference) FromWire(w wire.Value) error {
 			}
 		}
 	}
+
 	if !nameIsSet {
 		return errors.New("field Name of TypeReference is required")
 	}
+
 	if !importPathIsSet {
 		return errors.New("field ImportPath of TypeReference is required")
 	}
+
 	return nil
 }
 
@@ -2098,12 +2267,14 @@ func (v *TypeReference) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
 	fields[i] = fmt.Sprintf("ImportPath: %v", v.ImportPath)
 	i++
+
 	return fmt.Sprintf("TypeReference{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -2114,5 +2285,6 @@ func (v *TypeReference) Equals(rhs *TypeReference) bool {
 	if !(v.ImportPath == rhs.ImportPath) {
 		return false
 	}
+
 	return true
 }

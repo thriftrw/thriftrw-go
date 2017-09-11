@@ -23,6 +23,7 @@ func (v *KeyValue_SetValueV2_Args) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = v.Key.ToWire()
 	if err != nil {
 		return w, err
@@ -38,13 +39,16 @@ func (v *KeyValue_SetValueV2_Args) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *KeyValue_SetValueV2_Args) FromWire(w wire.Value) error {
 	var err error
+
 	keyIsSet := false
 	valueIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -65,12 +69,15 @@ func (v *KeyValue_SetValueV2_Args) FromWire(w wire.Value) error {
 			}
 		}
 	}
+
 	if !keyIsSet {
 		return errors.New("field Key of KeyValue_SetValueV2_Args is required")
 	}
+
 	if !valueIsSet {
 		return errors.New("field Value of KeyValue_SetValueV2_Args is required")
 	}
+
 	return nil
 }
 
@@ -78,12 +85,14 @@ func (v *KeyValue_SetValueV2_Args) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("Key: %v", v.Key)
 	i++
 	fields[i] = fmt.Sprintf("Value: %v", v.Value)
 	i++
+
 	return fmt.Sprintf("KeyValue_SetValueV2_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -94,6 +103,7 @@ func (v *KeyValue_SetValueV2_Args) Equals(rhs *KeyValue_SetValueV2_Args) bool {
 	if !v.Value.Equals(rhs.Value) {
 		return false
 	}
+
 	return true
 }
 
@@ -106,48 +116,67 @@ func (v *KeyValue_SetValueV2_Args) EnvelopeType() wire.EnvelopeType {
 }
 
 var KeyValue_SetValueV2_Helper = struct {
-	Args           func(key Key, value *unions.ArbitraryValue) *KeyValue_SetValueV2_Args
-	IsException    func(error) bool
+	Args func(
+		key Key,
+		value *unions.ArbitraryValue,
+	) *KeyValue_SetValueV2_Args
+
+	IsException func(error) bool
+
 	WrapResponse   func(error) (*KeyValue_SetValueV2_Result, error)
 	UnwrapResponse func(*KeyValue_SetValueV2_Result) error
 }{}
 
 func init() {
-	KeyValue_SetValueV2_Helper.Args = func(key Key, value *unions.ArbitraryValue) *KeyValue_SetValueV2_Args {
-		return &KeyValue_SetValueV2_Args{Key: key, Value: value}
+	KeyValue_SetValueV2_Helper.Args = func(
+		key Key,
+		value *unions.ArbitraryValue,
+	) *KeyValue_SetValueV2_Args {
+		return &KeyValue_SetValueV2_Args{
+			Key:   key,
+			Value: value,
+		}
 	}
+
 	KeyValue_SetValueV2_Helper.IsException = func(err error) bool {
 		switch err.(type) {
 		default:
 			return false
 		}
 	}
+
 	KeyValue_SetValueV2_Helper.WrapResponse = func(err error) (*KeyValue_SetValueV2_Result, error) {
 		if err == nil {
 			return &KeyValue_SetValueV2_Result{}, nil
 		}
+
 		return nil, err
 	}
 	KeyValue_SetValueV2_Helper.UnwrapResponse = func(result *KeyValue_SetValueV2_Result) (err error) {
 		return
 	}
+
 }
 
-type KeyValue_SetValueV2_Result struct{}
+type KeyValue_SetValueV2_Result struct {
+}
 
 func (v *KeyValue_SetValueV2_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
 		i      int = 0
 	)
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *KeyValue_SetValueV2_Result) FromWire(w wire.Value) error {
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		}
 	}
+
 	return nil
 }
 
@@ -155,12 +184,15 @@ func (v *KeyValue_SetValueV2_Result) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [0]string
 	i := 0
+
 	return fmt.Sprintf("KeyValue_SetValueV2_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
 func (v *KeyValue_SetValueV2_Result) Equals(rhs *KeyValue_SetValueV2_Result) bool {
+
 	return true
 }
 

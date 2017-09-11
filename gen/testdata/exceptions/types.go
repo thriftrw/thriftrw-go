@@ -22,6 +22,7 @@ func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = wire.NewValueString(v.Key), error(nil)
 	if err != nil {
 		return w, err
@@ -36,12 +37,15 @@ func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *DoesNotExistException) FromWire(w wire.Value) error {
 	var err error
+
 	keyIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -60,12 +64,15 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	if !keyIsSet {
 		return errors.New("field Key of DoesNotExistException is required")
 	}
+
 	return nil
 }
 
@@ -73,6 +80,7 @@ func (v *DoesNotExistException) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("Key: %v", v.Key)
@@ -81,11 +89,13 @@ func (v *DoesNotExistException) String() string {
 		fields[i] = fmt.Sprintf("Error2: %v", *(v.Error2))
 		i++
 	}
+
 	return fmt.Sprintf("DoesNotExistException{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -100,6 +110,7 @@ func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
 	if !_String_EqualsPtr(v.Error2, rhs.Error2) {
 		return false
 	}
+
 	return true
 }
 
@@ -107,6 +118,7 @@ func (v *DoesNotExistException) GetError2() (o string) {
 	if v.Error2 != nil {
 		return *v.Error2
 	}
+
 	return
 }
 
@@ -114,21 +126,25 @@ func (v *DoesNotExistException) Error() string {
 	return v.String()
 }
 
-type EmptyException struct{}
+type EmptyException struct {
+}
 
 func (v *EmptyException) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
 		i      int = 0
 	)
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *EmptyException) FromWire(w wire.Value) error {
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		}
 	}
+
 	return nil
 }
 
@@ -136,12 +152,15 @@ func (v *EmptyException) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [0]string
 	i := 0
+
 	return fmt.Sprintf("EmptyException{%v}", strings.Join(fields[:i], ", "))
 }
 
 func (v *EmptyException) Equals(rhs *EmptyException) bool {
+
 	return true
 }
 

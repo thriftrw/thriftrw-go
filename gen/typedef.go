@@ -36,11 +36,11 @@ func (t *typedefGenerator) Reader(g Generator, spec *compile.TypedefSpec) (strin
 		func <.Name>(<$w> <$wire>.Value) (<typeReference .Spec>, error) {
 			var <$x> <typeName .Spec>
 			err := <$x>.FromWire(<$w>)
-			<if isStructType .Spec.Target>
+			<if isStructType .Spec.Target ->
 				return &<$x>, err
-			<else>
+			<- else ->
 				return <$x>, err
-			<end>
+			<- end>
 		}
 		`,
 		struct {
@@ -76,23 +76,23 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 
 		<$w := newVar "w">
 		func (<$v> *<typeName .>) FromWire(<$w> <$wire>.Value) error {
-			<if isStructType .>
+			<if isStructType . ->
 				return (<typeReference .Target>)(<$v>).FromWire(<$w>)
-			<else>
+			<- else ->
 				<$x>, err := <fromWire .Target $w>
 				*<$v> = (<$typedefType>)(<$x>)
 				return err
-			<end>
+			<- end>
 		}
 
 		<$lhs := newVar "lhs">
 		<$rhs := newVar "rhs">
 		func (<$lhs> <$typedefType>) Equals(<$rhs> <$typedefType>) bool {
-			<if isStructType .>
+			<if isStructType . ->
 				return (<typeReference .Target>)(<$lhs>).Equals((<typeReference .Target>)(<$rhs>))
-			<else>
+			<- else ->
 				return <equals .Target $lhs $rhs>
-			<end>
+			<- end>
 		}
 		`,
 		spec,
