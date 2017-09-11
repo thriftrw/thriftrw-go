@@ -108,7 +108,7 @@ func dedent(lines []string, skipFirstIfUnindented bool) {
 
 	// Don't consider the first line for the prefix if it hasn't been
 	// indented.
-	if nonSpace := strings.IndexFunc(lines[0], notIsSpace); nonSpace >= 0 {
+	if nonSpace := strings.IndexFunc(lines[0], isNotSpace); nonSpace >= 0 {
 		if nonSpace == 0 && skipFirstIfUnindented {
 			// The first line starts with a non-space character. Skip this line.
 			lines = lines[1:]
@@ -119,7 +119,7 @@ func dedent(lines []string, skipFirstIfUnindented bool) {
 	}
 
 	for i, s := range lines {
-		nonSpace := strings.IndexFunc(s, notIsSpace)
+		nonSpace := strings.IndexFunc(s, isNotSpace)
 		if nonSpace < 0 {
 			// Whitespace-only. Use an empty string.
 			lines[i] = ""
@@ -139,6 +139,6 @@ func dedent(lines []string, skipFirstIfUnindented bool) {
 	}
 }
 
-func notIsSpace(r rune) bool {
+func isNotSpace(r rune) bool {
 	return !unicode.IsSpace(r)
 }
