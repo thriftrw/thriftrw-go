@@ -12,7 +12,13 @@ service KeyValue {
     void setValue(1: Key key, 2: unions.ArbitraryValue value)
 
     void setValueV2(
+        /** Key to change. */
         1: required Key key,
+        /**
+         * New value for the key.
+         *
+         * If the key already has an existing value, it will be overwritten.
+         */
         2: required unions.ArbitraryValue value,
     )
 
@@ -23,6 +29,9 @@ service KeyValue {
     // void with exceptions
     void deleteValue(1: Key key)
         throws (
+            /**
+             * Raised if a value with the given key doesn't exist.
+             */
             1: exceptions.DoesNotExistException doesNotExist,
             2: InternalError internalError
         )

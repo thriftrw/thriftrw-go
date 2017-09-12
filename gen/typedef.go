@@ -60,7 +60,7 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 		<$wire := import "go.uber.org/thriftrw/wire">
 		<$typedefType := typeReference .>
 
-		type <typeName .> <typeName .Target>
+		<formatDoc .Doc>type <typeName .> <typeName .Target>
 
 		<$v := newVar "v">
 		<$x := newVar "x">

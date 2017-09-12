@@ -7,6 +7,17 @@ union Document {
     2: string plainText
 }
 
+/**
+ * ArbitraryValue allows constructing complex values without a schema.
+ *
+ * A value is one of,
+ *
+ * * Boolean
+ * * Integer
+ * * String
+ * * A list of other values
+ * * A dictionary of other values
+ */
 union ArbitraryValue {
     1: bool boolValue
     2: i64 int64Value

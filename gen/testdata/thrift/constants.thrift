@@ -88,7 +88,14 @@ const unions.ArbitraryValue arbitraryValue = {
 const typedefs.i128 i128 = uuid
 const typedefs.UUID uuid = {"high": 1234, "low": 5678}
 
+/** Timestamp at which time began. */
 const typedefs.Timestamp beginningOfTime = 0
+
+/**
+ * An example frame group.
+ *
+ * Contains two frames.
+ */
 const typedefs.FrameGroup frameGroup = [
     {
         "topLeft": {"x": 1, "y": 2},

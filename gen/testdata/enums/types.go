@@ -519,11 +519,19 @@ func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
 	}
 }
 
+// Kinds of records stored in the database.
 type RecordType int32
 
 const (
-	RecordTypeName        RecordType = 0
+	// Name of the user.
+	RecordTypeName RecordType = 0
+	// Home address of the user.
+	//
+	// This record is always present.
 	RecordTypeHomeAddress RecordType = 1
+	// Home address of the user.
+	//
+	// This record may not be present.
 	RecordTypeWorkAddress RecordType = 2
 )
 

@@ -177,6 +177,7 @@ func init() {
 }
 
 type KeyValue_DeleteValue_Result struct {
+	// Raised if a value with the given key doesn't exist.
 	DoesNotExist  *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
 	InternalError *InternalError                    `json:"internalError,omitempty"`
 }

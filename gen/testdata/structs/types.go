@@ -1095,7 +1095,11 @@ func (v *GoTags) GetFooBarWithOmitEmpty() (o string) {
 	return
 }
 
+// A graph is comprised of zero or more edges.
 type Graph struct {
+	// List of edges in the graph.
+	//
+	// May be empty.
 	Edges []*Edge `json:"edges,required"`
 }
 
@@ -1248,6 +1252,8 @@ func (lhs *List) Equals(rhs *List) bool {
 	return (*Node)(lhs).Equals((*Node)(rhs))
 }
 
+// Node is linked list of values.
+// All values are 32-bit integers.
 type Node struct {
 	Value int32 `json:"value,required"`
 	Tail  *List `json:"tail,omitempty"`
@@ -1440,6 +1446,7 @@ func (v *Omit) Equals(rhs *Omit) bool {
 	return true
 }
 
+// A point in 2D space.
 type Point struct {
 	X float64 `json:"x,required"`
 	Y float64 `json:"y,required"`
@@ -1534,6 +1541,9 @@ func (v *Point) Equals(rhs *Point) bool {
 	return true
 }
 
+// A struct that contains primitive fields exclusively.
+//
+// All fields are optional.
 type PrimitiveOptionalStruct struct {
 	BoolField   *bool    `json:"boolField,omitempty"`
 	ByteField   *int8    `json:"byteField,omitempty"`
@@ -1888,6 +1898,9 @@ func (v *PrimitiveOptionalStruct) GetStringField() (o string) {
 	return
 }
 
+// A struct that contains primitive fields exclusively.
+//
+// All fields are required.
 type PrimitiveRequiredStruct struct {
 	BoolField   bool    `json:"boolField,required"`
 	ByteField   int8    `json:"byteField,required"`
@@ -2234,8 +2247,11 @@ func (v *Rename) Equals(rhs *Rename) bool {
 	return true
 }
 
+// Size of something.
 type Size struct {
-	Width  float64 `json:"width,required"`
+	// Width in pixels.
+	Width float64 `json:"width,required"`
+	// Height in pixels.
 	Height float64 `json:"height,required"`
 }
 

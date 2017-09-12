@@ -25,4 +25,7 @@ package api
 
 
 
+// API_VERSION is the version of the plugin API.
+//
+// This MUST be provided in the HandshakeResponse.
 const APIVersion int32 = 3

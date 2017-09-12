@@ -30,6 +30,7 @@ import (
 	"go/types"
 	"io"
 	"reflect"
+	"strings"
 	"text/template"
 
 	"go.uber.org/thriftrw/compile"
@@ -195,6 +196,7 @@ func (g *generator) LookupConstantName(c *compile.Constant) (string, error) {
 // TextTemplate renders the given template with the given template context.
 func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOption) (string, error) {
 	templateFuncs := template.FuncMap{
+		"formatDoc":        formatDoc,
 		"goCase":           goCase,
 		"goName":           goName,
 		"import":           g.Import,
@@ -342,7 +344,7 @@ func (g *generator) recordGenDeclNames(d *ast.GenDecl) (conflict bool, err error
 //
 // toWire(TypeSpec, v): Returns an expression of type (Value, error) that
 // contains the wire representation of the item "v" of type TypeSpec.
-
+//
 // toWirePtr(TypeSpec, v): Returns an expression of type (Value, error) that
 // contains the wire representation of the item "v" which is a reference to a
 // value of type TypeSpec.
@@ -373,6 +375,11 @@ func (g *generator) recordGenDeclNames(d *ast.GenDecl) (conflict bool, err error
 // compares reference to a value of the given type for equality.
 //
 //  <equalsPtr $someType $lhs $rhs>
+//
+// formatDoc(string): Formats a docblock. Generates a trailing newline so use
+// this NEXT to the thing being documented.
+//
+//   <formatDoc .Doc>type Foo
 func (g *generator) declare(ignoreConflicts bool, s string, data interface{}, opts ...TemplateOption) error {
 	bs, err := g.renderTemplate(s, data, opts...)
 	if err != nil {
@@ -481,4 +488,19 @@ func (g *generator) Write(w io.Writer, _ *token.FileSet) error {
 // appendDecl appends a new declaration to the generator.
 func (g *generator) appendDecl(decl ast.Decl) {
 	g.decls = append(g.decls, decl)
+}
+
+func formatDoc(s string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	lines := strings.Split(s, "\n")
+	for i, l := range lines {
+		if len(l) == 0 {
+			lines[i] = "//"
+		} else {
+			lines[i] = "// " + l
+		}
+	}
+	return strings.Join(lines, "\n") + "\n"
 }

@@ -10,7 +10,9 @@ import (
 	"strings"
 )
 
+// Raised when something doesn't exist.
 type DoesNotExistException struct {
+	// Key that was missing.
 	Key    string  `json:"key,required"`
 	Error2 *string `json:"Error,omitempty"`
 }

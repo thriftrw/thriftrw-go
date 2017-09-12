@@ -67,12 +67,12 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$enumName := goName .Spec>
-		type <$enumName> int32
+		<formatDoc .Spec.Doc>type <$enumName> int32
 
 		<if .Spec.Items>
 			const (
 			<range .Spec.Items>
-				<- enumItemName $enumName .> <$enumName> = <.Value>
+				<- formatDoc .Doc><enumItemName $enumName .> <$enumName> = <.Value>
 			<end>
 			)
 

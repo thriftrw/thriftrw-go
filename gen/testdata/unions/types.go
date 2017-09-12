@@ -10,6 +10,15 @@ import (
 	"strings"
 )
 
+// ArbitraryValue allows constructing complex values without a schema.
+//
+// A value is one of,
+//
+// * Boolean
+// * Integer
+// * String
+// * A list of other values
+// * A dictionary of other values
 type ArbitraryValue struct {
 	BoolValue   *bool                      `json:"boolValue,omitempty"`
 	Int64Value  *int64                     `json:"int64Value,omitempty"`

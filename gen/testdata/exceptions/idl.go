@@ -10,8 +10,8 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "exceptions",
 	Package:  "go.uber.org/thriftrw/gen/testdata/exceptions",
 	FilePath: "exceptions.thrift",
-	SHA1:     "7515e1a7bcd9ef547ad37a0eaaeaf89df21897fa",
+	SHA1:     "743daa9bfc5a3d69637e7c67dd6f35a7d10e79a3",
 	Raw:      rawIDL,
 }
 
-const rawIDL = "exception EmptyException {}\n\nexception DoesNotExistException {\n    1: required string key\n    2: optional string Error (go.name=\"Error2\")\n}\n"
+const rawIDL = "exception EmptyException {}\n\n/**\n * Raised when something doesn't exist.\n */\nexception DoesNotExistException {\n    /** Key that was missing. */\n    1: required string key\n    2: optional string Error (go.name=\"Error2\")\n}\n"

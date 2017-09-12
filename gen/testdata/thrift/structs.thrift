@@ -5,6 +5,11 @@ struct EmptyStruct {}
 //////////////////////////////////////////////////////////////////////////////
 // Structs with primitives
 
+/**
+ * A struct that contains primitive fields exclusively.
+ *
+ * All fields are required.
+ */
 struct PrimitiveRequiredStruct {
     1: required bool boolField
     2: required byte byteField
@@ -16,6 +21,11 @@ struct PrimitiveRequiredStruct {
     8: required binary binaryField
 }
 
+/**
+ * A struct that contains primitive fields exclusively.
+ *
+ * All fields are optional.
+ */
 struct PrimitiveOptionalStruct {
     1: optional bool boolField
     2: optional byte byteField
@@ -30,13 +40,23 @@ struct PrimitiveOptionalStruct {
 //////////////////////////////////////////////////////////////////////////////
 // Nested structs (Required)
 
+/**
+ * A point in 2D space.
+ */
 struct Point {
     1: required double x
     2: required double y
 }
 
+/**
+ * Size of something.
+ */
 struct Size {
+    /**
+     * Width in pixels.
+     */
     1: required double width
+    /** Height in pixels. */
     2: required double height
 }
 
@@ -50,7 +70,15 @@ struct Edge {
     2: required Point endPoint
 }
 
+/**
+ * A graph is comprised of zero or more edges.
+ */
 struct Graph {
+    /**
+     * List of edges in the graph.
+     *
+     * May be empty.
+     */
     1: required list<Edge> edges
 }
 
@@ -71,6 +99,10 @@ struct User {
 
 typedef Node List
 
+/**
+ * Node is linked list of values.
+ * All values are 32-bit integers.
+ */
 struct Node {
     1: required i32 value
     2: optional List tail

@@ -30,7 +30,7 @@ import (
 // Constant generates code for `const` expressions in Thrift files.
 func Constant(g Generator, c *compile.Constant) error {
 	err := g.DeclareFromTemplate(
-		`<if canBeConstant .Type>const<else>var<end> <constantName .Name> <typeReference .Type> = <constantValue .Value .Type>`,
+		`<formatDoc .Doc><if canBeConstant .Type>const<else>var<end> <constantName .Name> <typeReference .Type> = <constantValue .Value .Type>`,
 		c,
 		TemplateFunc("constantValue", ConstantValue),
 		TemplateFunc("canBeConstant", canBeConstant),

@@ -57,6 +57,8 @@ type fieldGroupGenerator struct {
 
 	// This field group represents a Thrift exception.
 	IsException bool
+
+	Doc string
 }
 
 func (f fieldGroupGenerator) checkReservedIdentifier(name string) error {
@@ -98,12 +100,12 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 
 func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 	return g.DeclareFromTemplate(
-		`type <.Name> struct {
+		`<formatDoc .Doc>type <.Name> struct {
 			<range .Fields>
 				<- if .Required ->
-					<declFieldName .> <typeReference .Type> <tag .>
+					<formatDoc .Doc><declFieldName .> <typeReference .Type> <tag .>
 				<- else ->
-					<declFieldName .> <typeReferencePtr .Type> <tag .>
+					<formatDoc .Doc><declFieldName .> <typeReferencePtr .Type> <tag .>
 				<- end>
 			<end>
 		}`,

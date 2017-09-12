@@ -899,6 +899,9 @@ func (lhs State) Equals(rhs State) bool {
 	return (lhs == rhs)
 }
 
+// Number of seconds since epoch.
+//
+// Deprecated: Use ISOTime instead.
 type Timestamp int64
 
 func (v Timestamp) ToWire() (wire.Value, error) {

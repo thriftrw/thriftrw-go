@@ -12,7 +12,11 @@ import (
 )
 
 type KeyValue_SetValueV2_Args struct {
-	Key   Key                    `json:"key,required"`
+	// Key to change.
+	Key Key `json:"key,required"`
+	// New value for the key.
+	//
+	// If the key already has an existing value, it will be overwritten.
 	Value *unions.ArbitraryValue `json:"value,required"`
 }
 
