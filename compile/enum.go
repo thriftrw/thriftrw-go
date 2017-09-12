@@ -29,6 +29,7 @@ import (
 type EnumSpec struct {
 	Name        string
 	File        string
+	Doc         string
 	Items       []EnumItem
 	Annotations Annotations
 }
@@ -36,6 +37,7 @@ type EnumSpec struct {
 // EnumItem is a single item inside an enum.
 type EnumItem struct {
 	Name        string
+	Doc         string
 	Value       int32
 	Annotations Annotations
 }
@@ -69,7 +71,12 @@ func compileEnum(file string, src *ast.Enum) (*EnumSpec, error) {
 			}
 		}
 		// TODO bounds check for value
-		item := EnumItem{Name: astItem.Name, Value: int32(value), Annotations: itemAnnotations}
+		item := EnumItem{
+			Name:        astItem.Name,
+			Value:       int32(value),
+			Doc:         astItem.Doc,
+			Annotations: itemAnnotations,
+		}
 		items = append(items, item)
 	}
 
@@ -81,7 +88,13 @@ func compileEnum(file string, src *ast.Enum) (*EnumSpec, error) {
 			Reason: err,
 		}
 	}
-	return &EnumSpec{Name: src.Name, File: file, Items: items, Annotations: annotations}, nil
+	return &EnumSpec{
+		Name:        src.Name,
+		File:        file,
+		Doc:         src.Doc,
+		Items:       items,
+		Annotations: annotations,
+	}, nil
 }
 
 // LookupItem retrieves the item with the given name from the enum.

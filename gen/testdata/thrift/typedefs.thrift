@@ -1,6 +1,11 @@
 include "./structs.thrift"
 include "./enums.thrift"
 
+/**
+ * Number of seconds since epoch.
+ *
+ * Deprecated: Use ISOTime instead.
+ */
 typedef i64 Timestamp  // alias of primitive
 typedef string State
 

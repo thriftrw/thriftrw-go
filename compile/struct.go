@@ -33,6 +33,7 @@ type StructSpec struct {
 	File        string
 	Type        ast.StructureType
 	Fields      FieldGroup
+	Doc         string
 	Annotations Annotations
 }
 
@@ -68,6 +69,7 @@ func compileStruct(file string, src *ast.Struct, requiredness fieldRequiredness)
 		File:        file,
 		Type:        src.Type,
 		Fields:      fields,
+		Doc:         src.Doc,
 		Annotations: annotations,
 	}, nil
 }

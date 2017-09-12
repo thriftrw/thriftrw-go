@@ -40,6 +40,7 @@ var ArbitraryValue *unions.ArbitraryValue = &unions.ArbitraryValue{
 	},
 }
 
+// Timestamp at which time began.
 const BeginningOfTime typedefs.Timestamp = typedefs.Timestamp(0)
 
 var ContainersOfContainers *containers.ContainersOfContainers = &containers.ContainersOfContainers{
@@ -211,6 +212,9 @@ var EnumContainers *containers.EnumContainers = &containers.EnumContainers{
 	},
 }
 
+// An example frame group.
+//
+// Contains two frames.
 var FrameGroup typedefs.FrameGroup = typedefs.FrameGroup{
 	&structs.Frame{
 		Size: &structs.Size{

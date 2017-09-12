@@ -32,6 +32,7 @@ type Constant struct {
 
 	Name  string
 	File  string
+	Doc   string
 	Type  TypeSpec
 	Value ConstantValue
 }
@@ -47,6 +48,7 @@ func compileConstant(file string, src *ast.Constant) (*Constant, error) {
 		Name:  src.Name,
 		File:  file,
 		Type:  typ,
+		Doc:   src.Doc,
 		Value: compileConstantValue(src.Value),
 	}, nil
 }

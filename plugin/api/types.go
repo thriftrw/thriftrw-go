@@ -34,9 +34,22 @@ import (
 	"strings"
 )
 
+// Argument is a single Argument inside a Function.
+// For,
+//
+//      void setValue(1: string key, 2: string value)
+//
+// You get the arguments,
+//
+//      Argument{Name: "Key", Type: Type{SimpleType: SimpleTypeString}}
+//
+//      Argument{Name: "Value", Type: Type{SimpleType: SimpleTypeString}}
 type Argument struct {
+	// Name of the argument. This is also the name of the argument field
+	// inside the args/result struct for that function.
 	Name string `json:"name,required"`
-	Type *Type  `json:"type,required"`
+	// Argument type.
+	Type *Type `json:"type,required"`
 }
 
 func (v *Argument) ToWire() (wire.Value, error) {
@@ -136,9 +149,15 @@ func (v *Argument) Equals(rhs *Argument) bool {
 	return true
 }
 
+// Feature is a functionality offered by a ThriftRW plugin.
 type Feature int32
 
 const (
+	// SERVICE_GENERATOR specifies that the plugin may generate arbitrary code
+	// for services defined in the Thrift file.
+	//
+	// If a plugin provides this, it MUST implement the ServiceGenerator
+	// service.
 	FeatureServiceGenerator Feature = 1
 )
 
@@ -217,13 +236,27 @@ func (v *Feature) UnmarshalJSON(text []byte) error {
 	}
 }
 
+// Function is a single function on a Thrift service.
 type Function struct {
-	Name       string      `json:"name,required"`
-	ThriftName string      `json:"thriftName,required"`
-	Arguments  []*Argument `json:"arguments,required"`
-	ReturnType *Type       `json:"returnType,omitempty"`
+	// Name of the Go function.
+	Name string `json:"name,required"`
+	// Name of the function as defined in the Thrift file.
+	ThriftName string `json:"thriftName,required"`
+	// List of arguments accepted by the function.
+	//
+	// This list is in the order specified by the user in the Thrift file.
+	Arguments []*Argument `json:"arguments,required"`
+	// Return type of the function, if any. If this is not set, the function
+	// is a void function.
+	ReturnType *Type `json:"returnType,omitempty"`
+	// List of exceptions raised by the function.
+	//
+	// This list is in the order specified by the user in the Thrift file.
 	Exceptions []*Argument `json:"exceptions"`
-	OneWay     *bool       `json:"oneWay,omitempty"`
+	// Whether this function is oneway or not. This should be assumed to be
+	// false unless explicitly stated otherwise. If this is true, the
+	// returnType and exceptions will be null or empty.
+	OneWay *bool `json:"oneWay,omitempty"`
 }
 
 type _List_Argument_ValueList []*Argument
@@ -499,10 +532,26 @@ func (v *Function) GetOneWay() (o bool) {
 	return
 }
 
+// GenerateServiceRequest is a request to generate code for zero or more
+// Thrift services.
 type GenerateServiceRequest struct {
-	RootServices []ServiceID            `json:"rootServices,required"`
-	Services     map[ServiceID]*Service `json:"services,required"`
-	Modules      map[ModuleID]*Module   `json:"modules,required"`
+	// IDs of services for which code should be generated.
+	//
+	// Note that the services map contains information about both, the
+	// services being generated and their transitive dependencies. Code should
+	// only be generated for service IDs listed here.
+	RootServices []ServiceID `json:"rootServices,required"`
+	// Map of service ID to service.
+	//
+	// Any service IDs present in this request will have a corresponding
+	// service definition in this map, including services for which code does
+	// not need to be generated.
+	Services map[ServiceID]*Service `json:"services,required"`
+	// Map of module ID to module.
+	//
+	// Any module IDs present in the request will have a corresponding module
+	// definition in this map.
+	Modules map[ModuleID]*Module `json:"modules,required"`
 }
 
 type _List_ServiceID_ValueList []ServiceID
@@ -875,7 +924,15 @@ func (v *GenerateServiceRequest) Equals(rhs *GenerateServiceRequest) bool {
 	return true
 }
 
+// GenerateServiceResponse is response to a GenerateServiceRequest.
 type GenerateServiceResponse struct {
+	// Map of file path to file contents.
+	//
+	// All paths MUST be relative to the output directory into which ThriftRW
+	// is generating code. Plugins SHOULD NOT make any assumptions about the
+	// absolute location of the directory.
+	//
+	// The paths MUST NOT contain the string ".." or the request will fail.
 	Files map[string][]byte `json:"files"`
 }
 
@@ -1024,6 +1081,8 @@ func (v *GenerateServiceResponse) Equals(rhs *GenerateServiceResponse) bool {
 	return true
 }
 
+// HandshakeRequest is the initial request sent to the plugin as part of
+// establishing communication and feature negotiation.
 type HandshakeRequest struct {
 }
 
@@ -1062,11 +1121,22 @@ func (v *HandshakeRequest) Equals(rhs *HandshakeRequest) bool {
 	return true
 }
 
+// HandshakeResponse is the response from the plugin for a HandshakeRequest.
 type HandshakeResponse struct {
-	Name           string    `json:"name,required"`
-	APIVersion     int32     `json:"apiVersion,required"`
-	Features       []Feature `json:"features,required"`
-	LibraryVersion *string   `json:"libraryVersion,omitempty"`
+	// Name of the plugin. This MUST match the name of the plugin specified
+	// over the command line or the program will fail.
+	Name string `json:"name,required"`
+	// Version of the plugin API.
+	//
+	// This MUST be set to API_VERSION by the plugin.
+	APIVersion int32 `json:"apiVersion,required"`
+	// List of features the plugin provides.
+	Features []Feature `json:"features,required"`
+	// Version of ThriftRW with which the plugin was built.
+	//
+	// This MUST be set to go.uber.org/thriftrw/version.Version by the plugin
+	// explicitly.
+	LibraryVersion *string `json:"libraryVersion,omitempty"`
 }
 
 type _List_Feature_ValueList []Feature
@@ -1293,9 +1363,18 @@ func (v *HandshakeResponse) GetLibraryVersion() (o string) {
 	return
 }
 
+// Module is a module generated from a single Thrift file. Each module
+// corresponds to exactly one Thrift file and contains all the types and
+// constants defined in that Thrift file.
 type Module struct {
+	// Import path for the package defining the types for this module.
 	ImportPath string `json:"importPath,required"`
-	Directory  string `json:"directory,required"`
+	// Path to the directory containing the code for this module.
+	//
+	// The path is relative to the output directory into which ThriftRW is
+	// generating code. Plugins SHOULD NOT make any assumptions about the
+	// absolute location of the directory.
+	Directory string `json:"directory,required"`
 }
 
 func (v *Module) ToWire() (wire.Value, error) {
@@ -1387,6 +1466,8 @@ func (v *Module) Equals(rhs *Module) bool {
 	return true
 }
 
+// ModuleID is an arbitrary unique identifier to reference the different
+// modules in this request.
 type ModuleID int32
 
 func (v ModuleID) ToWire() (wire.Value, error) {
@@ -1409,12 +1490,18 @@ func (lhs ModuleID) Equals(rhs ModuleID) bool {
 	return (lhs == rhs)
 }
 
+// Service is a service defined by the user in the Thrift file.
 type Service struct {
-	Name       string      `json:"name,required"`
-	ThriftName string      `json:"thriftName,required"`
-	ParentID   *ServiceID  `json:"parentID,omitempty"`
-	Functions  []*Function `json:"functions,required"`
-	ModuleID   ModuleID    `json:"moduleID,required"`
+	// Name of the Thrift service in Go code.
+	Name string `json:"name,required"`
+	// Name of the service as defined in the Thrift file.
+	ThriftName string `json:"thriftName,required"`
+	// ID of the parent service.
+	ParentID *ServiceID `json:"parentID,omitempty"`
+	// List of functions defined for this service.
+	Functions []*Function `json:"functions,required"`
+	// ID of the module where this service was declared.
+	ModuleID ModuleID `json:"moduleID,required"`
 }
 
 type _List_Function_ValueList []*Function
@@ -1670,6 +1757,8 @@ func (v *Service) GetParentID() (o ServiceID) {
 	return
 }
 
+// ServiceID is an arbitrary unique identifier to reference the different
+// services in this request.
 type ServiceID int32
 
 func (v ServiceID) ToWire() (wire.Value, error) {
@@ -1692,6 +1781,7 @@ func (lhs ServiceID) Equals(rhs ServiceID) bool {
 	return (lhs == rhs)
 }
 
+// SimpleType is a standalone native Go type.
 type SimpleType int32
 
 const (
@@ -1845,13 +1935,25 @@ func (v *SimpleType) UnmarshalJSON(text []byte) error {
 	}
 }
 
+// Type is a reference to a Go type which may be native or user defined.
 type Type struct {
-	SimpleType        *SimpleType    `json:"simpleType,omitempty"`
-	SliceType         *Type          `json:"sliceType,omitempty"`
-	KeyValueSliceType *TypePair      `json:"keyValueSliceType,omitempty"`
-	MapType           *TypePair      `json:"mapType,omitempty"`
-	ReferenceType     *TypeReference `json:"referenceType,omitempty"`
-	PointerType       *Type          `json:"pointerType,omitempty"`
+	SimpleType *SimpleType `json:"simpleType,omitempty"`
+	// Slice of a type
+	//
+	// []$sliceType
+	SliceType *Type `json:"sliceType,omitempty"`
+	// Slice of key-value pairs of a pair of types.
+	//
+	// []struct{Key $left, Value $right}
+	KeyValueSliceType *TypePair `json:"keyValueSliceType,omitempty"`
+	// Map of a pair of types.
+	//
+	// map[$left]$right
+	MapType *TypePair `json:"mapType,omitempty"`
+	// Reference to a user-defined type.
+	ReferenceType *TypeReference `json:"referenceType,omitempty"`
+	// Pointer to a type.
+	PointerType *Type `json:"pointerType,omitempty"`
 }
 
 func (v *Type) ToWire() (wire.Value, error) {
@@ -2096,6 +2198,7 @@ func (v *Type) GetSimpleType() (o SimpleType) {
 	return
 }
 
+// TypePair is a pair of two types.
 type TypePair struct {
 	Left  *Type `json:"left,required"`
 	Right *Type `json:"right,required"`
@@ -2195,8 +2298,10 @@ func (v *TypePair) Equals(rhs *TypePair) bool {
 	return true
 }
 
+// TypeReference is a reference to a user-defined type.
 type TypeReference struct {
-	Name       string `json:"name,required"`
+	Name string `json:"name,required"`
+	// Import path for the package defining this type.
 	ImportPath string `json:"importPath,required"`
 }
 

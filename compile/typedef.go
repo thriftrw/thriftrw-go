@@ -33,6 +33,7 @@ type TypedefSpec struct {
 	File        string
 	Target      TypeSpec
 	Annotations Annotations
+	Doc         string
 
 	root TypeSpec
 }
@@ -58,6 +59,7 @@ func compileTypedef(file string, src *ast.Typedef) (*TypedefSpec, error) {
 		File:        file,
 		Target:      typ,
 		Annotations: annotations,
+		Doc:         src.Doc,
 	}, nil
 }
 

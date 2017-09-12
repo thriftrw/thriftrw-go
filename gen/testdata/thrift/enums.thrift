@@ -26,9 +26,25 @@ struct StructWithOptionalEnum {
     1: optional EnumDefault e
 }
 
+/**
+ * Kinds of records stored in the database.
+ */
 enum RecordType {
+  /** Name of the user. */
   NAME,
+
+  /**
+   * Home address of the user.
+   *
+   * This record is always present.
+   */
   HOME_ADDRESS,
+
+  /**
+   * Home address of the user.
+   *
+   * This record may not be present.
+   */
   WORK_ADDRESS
 }
 

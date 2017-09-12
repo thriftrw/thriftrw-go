@@ -95,6 +95,7 @@ type FieldSpec struct {
 	Name        string
 	Type        TypeSpec
 	Required    bool
+	Doc         string
 	Default     ConstantValue
 	Annotations Annotations
 }
@@ -136,6 +137,7 @@ func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
 		ID:          int16(src.ID),
 		Name:        src.Name,
 		Type:        typ,
+		Doc:         src.Doc,
 		Required:    required,
 		Default:     compileConstantValue(src.Default),
 		Annotations: annotations,
