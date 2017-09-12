@@ -29,17 +29,17 @@ import (
 type EnumSpec struct {
 	Name        string
 	File        string
-	Doc         string
 	Items       []EnumItem
 	Annotations Annotations
+	Doc         string
 }
 
 // EnumItem is a single item inside an enum.
 type EnumItem struct {
 	Name        string
-	Doc         string
 	Value       int32
 	Annotations Annotations
+	Doc         string
 }
 
 // compileEnum compiles the given Enum AST into an EnumSpec.
