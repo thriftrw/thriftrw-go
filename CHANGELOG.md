@@ -6,6 +6,8 @@ v1.7.0 (unreleased)
 
 -   AST: Parts of the AST now support parsing docstrings in the `/** ... */`
     style.
+-   Docstrings on types in the Thrift file are now included in the generated
+    code.
 
 
 v1.6.0 (2017-08-28)
