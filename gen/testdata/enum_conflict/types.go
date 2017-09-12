@@ -21,6 +21,7 @@ const (
 	RecordTypeEmail RecordType = 1
 )
 
+// RecordType_Values returns all recognized values of RecordType.
 func RecordType_Values() []RecordType {
 	return []RecordType{
 		RecordTypeName,
@@ -28,6 +29,11 @@ func RecordType_Values() []RecordType {
 	}
 }
 
+// UnmarshalText tries to decode RecordType from a byte slice
+// containing its name.
+//
+//   var v RecordType
+//   err := v.UnmarshalText([]byte("Name"))
 func (v *RecordType) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "Name":
@@ -41,15 +47,34 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToWire translates RecordType into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
 func (v RecordType) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
 
+// FromWire deserializes RecordType from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return RecordType(0), err
+//   }
+//
+//   var v RecordType
+//   if err := v.FromWire(x); err != nil {
+//     return RecordType(0), err
+//   }
+//   return v, nil
 func (v *RecordType) FromWire(w wire.Value) error {
 	*v = (RecordType)(w.GetI32())
 	return nil
 }
 
+// String returns a readable string representation of RecordType.
 func (v RecordType) String() string {
 	w := int32(v)
 	switch w {
@@ -61,10 +86,18 @@ func (v RecordType) String() string {
 	return fmt.Sprintf("RecordType(%d)", w)
 }
 
+// Equals returns true if this RecordType value matches the provided
+// value.
 func (v RecordType) Equals(rhs RecordType) bool {
 	return v == rhs
 }
 
+// MarshalJSON serializes RecordType into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
 func (v RecordType) MarshalJSON() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -75,6 +108,13 @@ func (v RecordType) MarshalJSON() ([]byte, error) {
 	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// UnmarshalJSON attempts to decode RecordType from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
 func (v *RecordType) UnmarshalJSON(text []byte) error {
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
@@ -117,6 +157,21 @@ func _RecordType_1_ptr(v enums.RecordType) *enums.RecordType {
 	return &v
 }
 
+// ToWire translates a Records struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Records) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -163,6 +218,23 @@ func _RecordType_1_Read(w wire.Value) (enums.RecordType, error) {
 	return v, err
 }
 
+// FromWire deserializes a Records struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Records struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Records
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Records) FromWire(w wire.Value) error {
 	var err error
 
@@ -202,6 +274,8 @@ func (v *Records) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Records
+// struct.
 func (v *Records) String() string {
 	if v == nil {
 		return "<nil>"
@@ -241,6 +315,10 @@ func _RecordType_1_EqualsPtr(lhs, rhs *enums.RecordType) bool {
 	return lhs == nil && rhs == nil
 }
 
+// Equals returns true if all the fields of this Records match the
+// provided Records.
+//
+// This function performs a deep comparison.
 func (v *Records) Equals(rhs *Records) bool {
 	if !_RecordType_EqualsPtr(v.RecordType, rhs.RecordType) {
 		return false
@@ -252,6 +330,8 @@ func (v *Records) Equals(rhs *Records) bool {
 	return true
 }
 
+// GetRecordType returns the value of RecordType if it is set or its
+// zero value if it is unset.
 func (v *Records) GetRecordType() (o RecordType) {
 	if v.RecordType != nil {
 		return *v.RecordType
@@ -260,6 +340,8 @@ func (v *Records) GetRecordType() (o RecordType) {
 	return
 }
 
+// GetOtherRecordType returns the value of OtherRecordType if it is set or its
+// zero value if it is unset.
 func (v *Records) GetOtherRecordType() (o enums.RecordType) {
 	if v.OtherRecordType != nil {
 		return *v.OtherRecordType

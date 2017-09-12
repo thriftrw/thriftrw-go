@@ -606,6 +606,21 @@ func (_Map_Set_I32_List_Double_MapItemList) ValueType() wire.Type {
 
 func (_Map_Set_I32_List_Double_MapItemList) Close() {}
 
+// ToWire translates a ContainersOfContainers struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *ContainersOfContainers) ToWire() (wire.Value, error) {
 	var (
 		fields [9]wire.Field
@@ -1107,6 +1122,23 @@ func _Map_Set_I32_List_Double_Read(m wire.MapItemList) ([]struct {
 	return o, err
 }
 
+// FromWire deserializes a ContainersOfContainers struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a ContainersOfContainers struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v ContainersOfContainers
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *ContainersOfContainers) FromWire(w wire.Value) error {
 	var err error
 
@@ -1190,6 +1222,8 @@ func (v *ContainersOfContainers) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a ContainersOfContainers
+// struct.
 func (v *ContainersOfContainers) String() string {
 	if v == nil {
 		return "<nil>"
@@ -1582,6 +1616,10 @@ func _Map_Set_I32_List_Double_Equals(lhs, rhs []struct {
 	return true
 }
 
+// Equals returns true if all the fields of this ContainersOfContainers match the
+// provided ContainersOfContainers.
+//
+// This function performs a deep comparison.
 func (v *ContainersOfContainers) Equals(rhs *ContainersOfContainers) bool {
 	if !((v.ListOfLists == nil && rhs.ListOfLists == nil) || (v.ListOfLists != nil && rhs.ListOfLists != nil && _List_List_I32_Equals(v.ListOfLists, rhs.ListOfLists))) {
 		return false
@@ -1707,6 +1745,21 @@ func (_Map_EnumWithDuplicateValues_I32_MapItemList) ValueType() wire.Type {
 
 func (_Map_EnumWithDuplicateValues_I32_MapItemList) Close() {}
 
+// ToWire translates a EnumContainers struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *EnumContainers) ToWire() (wire.Value, error) {
 	var (
 		fields [3]wire.Field
@@ -1826,6 +1879,23 @@ func _Map_EnumWithDuplicateValues_I32_Read(m wire.MapItemList) (map[enums.EnumWi
 	return o, err
 }
 
+// FromWire deserializes a EnumContainers struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a EnumContainers struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v EnumContainers
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *EnumContainers) FromWire(w wire.Value) error {
 	var err error
 
@@ -1861,6 +1931,8 @@ func (v *EnumContainers) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a EnumContainers
+// struct.
 func (v *EnumContainers) String() string {
 	if v == nil {
 		return "<nil>"
@@ -1930,6 +2002,10 @@ func _Map_EnumWithDuplicateValues_I32_Equals(lhs, rhs map[enums.EnumWithDuplicat
 	return true
 }
 
+// Equals returns true if all the fields of this EnumContainers match the
+// provided EnumContainers.
+//
+// This function performs a deep comparison.
 func (v *EnumContainers) Equals(rhs *EnumContainers) bool {
 	if !((v.ListOfEnums == nil && rhs.ListOfEnums == nil) || (v.ListOfEnums != nil && rhs.ListOfEnums != nil && _List_EnumDefault_Equals(v.ListOfEnums, rhs.ListOfEnums))) {
 		return false
@@ -2001,6 +2077,21 @@ func (_List_RecordType_1_ValueList) ValueType() wire.Type {
 
 func (_List_RecordType_1_ValueList) Close() {}
 
+// ToWire translates a ListOfConflictingEnums struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *ListOfConflictingEnums) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -2079,6 +2170,23 @@ func _List_RecordType_1_Read(l wire.ValueList) ([]enums.RecordType, error) {
 	return o, err
 }
 
+// FromWire deserializes a ListOfConflictingEnums struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a ListOfConflictingEnums struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v ListOfConflictingEnums
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *ListOfConflictingEnums) FromWire(w wire.Value) error {
 	var err error
 
@@ -2117,6 +2225,8 @@ func (v *ListOfConflictingEnums) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a ListOfConflictingEnums
+// struct.
 func (v *ListOfConflictingEnums) String() string {
 	if v == nil {
 		return "<nil>"
@@ -2162,6 +2272,10 @@ func _List_RecordType_1_Equals(lhs, rhs []enums.RecordType) bool {
 	return true
 }
 
+// Equals returns true if all the fields of this ListOfConflictingEnums match the
+// provided ListOfConflictingEnums.
+//
+// This function performs a deep comparison.
 func (v *ListOfConflictingEnums) Equals(rhs *ListOfConflictingEnums) bool {
 	if !_List_RecordType_Equals(v.Records, rhs.Records) {
 		return false
@@ -2233,6 +2347,21 @@ func (_List_UUID_1_ValueList) ValueType() wire.Type {
 
 func (_List_UUID_1_ValueList) Close() {}
 
+// ToWire translates a ListOfConflictingUUIDs struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *ListOfConflictingUUIDs) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -2311,6 +2440,23 @@ func _List_UUID_1_Read(l wire.ValueList) ([]uuid_conflict.UUID, error) {
 	return o, err
 }
 
+// FromWire deserializes a ListOfConflictingUUIDs struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a ListOfConflictingUUIDs struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v ListOfConflictingUUIDs
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *ListOfConflictingUUIDs) FromWire(w wire.Value) error {
 	var err error
 
@@ -2349,6 +2495,8 @@ func (v *ListOfConflictingUUIDs) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a ListOfConflictingUUIDs
+// struct.
 func (v *ListOfConflictingUUIDs) String() string {
 	if v == nil {
 		return "<nil>"
@@ -2394,6 +2542,10 @@ func _List_UUID_1_Equals(lhs, rhs []uuid_conflict.UUID) bool {
 	return true
 }
 
+// Equals returns true if all the fields of this ListOfConflictingUUIDs match the
+// provided ListOfConflictingUUIDs.
+//
+// This function performs a deep comparison.
 func (v *ListOfConflictingUUIDs) Equals(rhs *ListOfConflictingUUIDs) bool {
 	if !_List_UUID_Equals(v.Uuids, rhs.Uuids) {
 		return false
@@ -2494,6 +2646,21 @@ func (_Map_String_Binary_MapItemList) ValueType() wire.Type {
 
 func (_Map_String_Binary_MapItemList) Close() {}
 
+// ToWire translates a MapOfBinaryAndString struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *MapOfBinaryAndString) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -2587,6 +2754,23 @@ func _Map_String_Binary_Read(m wire.MapItemList) (map[string][]byte, error) {
 	return o, err
 }
 
+// FromWire deserializes a MapOfBinaryAndString struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a MapOfBinaryAndString struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v MapOfBinaryAndString
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *MapOfBinaryAndString) FromWire(w wire.Value) error {
 	var err error
 
@@ -2614,6 +2798,8 @@ func (v *MapOfBinaryAndString) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a MapOfBinaryAndString
+// struct.
 func (v *MapOfBinaryAndString) String() string {
 	if v == nil {
 		return "<nil>"
@@ -2683,6 +2869,10 @@ func _Map_String_Binary_Equals(lhs, rhs map[string][]byte) bool {
 	return true
 }
 
+// Equals returns true if all the fields of this MapOfBinaryAndString match the
+// provided MapOfBinaryAndString.
+//
+// This function performs a deep comparison.
 func (v *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
 	if !((v.BinaryToString == nil && rhs.BinaryToString == nil) || (v.BinaryToString != nil && rhs.BinaryToString != nil && _Map_Binary_String_Equals(v.BinaryToString, rhs.BinaryToString))) {
 		return false
@@ -2854,6 +3044,21 @@ func (_Map_String_Bool_MapItemList) ValueType() wire.Type {
 
 func (_Map_String_Bool_MapItemList) Close() {}
 
+// ToWire translates a PrimitiveContainers struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *PrimitiveContainers) ToWire() (wire.Value, error) {
 	var (
 		fields [6]wire.Field
@@ -3025,6 +3230,23 @@ func _Map_String_Bool_Read(m wire.MapItemList) (map[string]bool, error) {
 	return o, err
 }
 
+// FromWire deserializes a PrimitiveContainers struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a PrimitiveContainers struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v PrimitiveContainers
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 	var err error
 
@@ -3084,6 +3306,8 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a PrimitiveContainers
+// struct.
 func (v *PrimitiveContainers) String() string {
 	if v == nil {
 		return "<nil>"
@@ -3197,6 +3421,10 @@ func _Map_String_Bool_Equals(lhs, rhs map[string]bool) bool {
 	return true
 }
 
+// Equals returns true if all the fields of this PrimitiveContainers match the
+// provided PrimitiveContainers.
+//
+// This function performs a deep comparison.
 func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	if !((v.ListOfBinary == nil && rhs.ListOfBinary == nil) || (v.ListOfBinary != nil && rhs.ListOfBinary != nil && _List_Binary_Equals(v.ListOfBinary, rhs.ListOfBinary))) {
 		return false
@@ -3261,6 +3489,21 @@ func (_Map_I64_Double_MapItemList) ValueType() wire.Type {
 
 func (_Map_I64_Double_MapItemList) Close() {}
 
+// ToWire translates a PrimitiveContainersRequired struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *PrimitiveContainersRequired) ToWire() (wire.Value, error) {
 	var (
 		fields [3]wire.Field
@@ -3328,6 +3571,23 @@ func _Map_I64_Double_Read(m wire.MapItemList) (map[int64]float64, error) {
 	return o, err
 }
 
+// FromWire deserializes a PrimitiveContainersRequired struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a PrimitiveContainersRequired struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v PrimitiveContainersRequired
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *PrimitiveContainersRequired) FromWire(w wire.Value) error {
 	var err error
 
@@ -3379,6 +3639,8 @@ func (v *PrimitiveContainersRequired) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a PrimitiveContainersRequired
+// struct.
 func (v *PrimitiveContainersRequired) String() string {
 	if v == nil {
 		return "<nil>"
@@ -3413,6 +3675,10 @@ func _Map_I64_Double_Equals(lhs, rhs map[int64]float64) bool {
 	return true
 }
 
+// Equals returns true if all the fields of this PrimitiveContainersRequired match the
+// provided PrimitiveContainersRequired.
+//
+// This function performs a deep comparison.
 func (v *PrimitiveContainersRequired) Equals(rhs *PrimitiveContainersRequired) bool {
 	if !_List_String_Equals(v.ListOfStrings, rhs.ListOfStrings) {
 		return false

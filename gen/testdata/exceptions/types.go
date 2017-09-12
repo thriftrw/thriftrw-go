@@ -17,6 +17,21 @@ type DoesNotExistException struct {
 	Error2 *string `json:"Error,omitempty"`
 }
 
+// ToWire translates a DoesNotExistException struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -43,6 +58,23 @@ func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a DoesNotExistException struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a DoesNotExistException struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v DoesNotExistException
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *DoesNotExistException) FromWire(w wire.Value) error {
 	var err error
 
@@ -78,6 +110,8 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a DoesNotExistException
+// struct.
 func (v *DoesNotExistException) String() string {
 	if v == nil {
 		return "<nil>"
@@ -105,6 +139,10 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 	return lhs == nil && rhs == nil
 }
 
+// Equals returns true if all the fields of this DoesNotExistException match the
+// provided DoesNotExistException.
+//
+// This function performs a deep comparison.
 func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
 	if !(v.Key == rhs.Key) {
 		return false
@@ -116,6 +154,8 @@ func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
 	return true
 }
 
+// GetError2 returns the value of Error2 if it is set or its
+// zero value if it is unset.
 func (v *DoesNotExistException) GetError2() (o string) {
 	if v.Error2 != nil {
 		return *v.Error2
@@ -131,6 +171,21 @@ func (v *DoesNotExistException) Error() string {
 type EmptyException struct {
 }
 
+// ToWire translates a EmptyException struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *EmptyException) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -140,6 +195,23 @@ func (v *EmptyException) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a EmptyException struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a EmptyException struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v EmptyException
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *EmptyException) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {
@@ -150,6 +222,8 @@ func (v *EmptyException) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a EmptyException
+// struct.
 func (v *EmptyException) String() string {
 	if v == nil {
 		return "<nil>"
@@ -161,6 +235,10 @@ func (v *EmptyException) String() string {
 	return fmt.Sprintf("EmptyException{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this EmptyException match the
+// provided EmptyException.
+//
+// This function performs a deep comparison.
 func (v *EmptyException) Equals(rhs *EmptyException) bool {
 
 	return true

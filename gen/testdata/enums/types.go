@@ -15,6 +15,8 @@ import (
 
 type EmptyEnum int32
 
+// UnmarshalText tries to decode EmptyEnum from a byte slice
+// containing its name.
 func (v *EmptyEnum) UnmarshalText(value []byte) error {
 	switch string(value) {
 	default:
@@ -22,28 +24,62 @@ func (v *EmptyEnum) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToWire translates EmptyEnum into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
 func (v EmptyEnum) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
 
+// FromWire deserializes EmptyEnum from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return EmptyEnum(0), err
+//   }
+//
+//   var v EmptyEnum
+//   if err := v.FromWire(x); err != nil {
+//     return EmptyEnum(0), err
+//   }
+//   return v, nil
 func (v *EmptyEnum) FromWire(w wire.Value) error {
 	*v = (EmptyEnum)(w.GetI32())
 	return nil
 }
 
+// String returns a readable string representation of EmptyEnum.
 func (v EmptyEnum) String() string {
 	w := int32(v)
 	return fmt.Sprintf("EmptyEnum(%d)", w)
 }
 
+// Equals returns true if this EmptyEnum value matches the provided
+// value.
 func (v EmptyEnum) Equals(rhs EmptyEnum) bool {
 	return v == rhs
 }
 
+// MarshalJSON serializes EmptyEnum into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
 func (v EmptyEnum) MarshalJSON() ([]byte, error) {
 	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// UnmarshalJSON attempts to decode EmptyEnum from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
 func (v *EmptyEnum) UnmarshalJSON(text []byte) error {
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
@@ -81,6 +117,7 @@ const (
 	EnumDefaultBaz EnumDefault = 2
 )
 
+// EnumDefault_Values returns all recognized values of EnumDefault.
 func EnumDefault_Values() []EnumDefault {
 	return []EnumDefault{
 		EnumDefaultFoo,
@@ -89,6 +126,11 @@ func EnumDefault_Values() []EnumDefault {
 	}
 }
 
+// UnmarshalText tries to decode EnumDefault from a byte slice
+// containing its name.
+//
+//   var v EnumDefault
+//   err := v.UnmarshalText([]byte("Foo"))
 func (v *EnumDefault) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "Foo":
@@ -105,15 +147,34 @@ func (v *EnumDefault) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToWire translates EnumDefault into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
 func (v EnumDefault) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
 
+// FromWire deserializes EnumDefault from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return EnumDefault(0), err
+//   }
+//
+//   var v EnumDefault
+//   if err := v.FromWire(x); err != nil {
+//     return EnumDefault(0), err
+//   }
+//   return v, nil
 func (v *EnumDefault) FromWire(w wire.Value) error {
 	*v = (EnumDefault)(w.GetI32())
 	return nil
 }
 
+// String returns a readable string representation of EnumDefault.
 func (v EnumDefault) String() string {
 	w := int32(v)
 	switch w {
@@ -127,10 +188,18 @@ func (v EnumDefault) String() string {
 	return fmt.Sprintf("EnumDefault(%d)", w)
 }
 
+// Equals returns true if this EnumDefault value matches the provided
+// value.
 func (v EnumDefault) Equals(rhs EnumDefault) bool {
 	return v == rhs
 }
 
+// MarshalJSON serializes EnumDefault into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
 func (v EnumDefault) MarshalJSON() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -143,6 +212,13 @@ func (v EnumDefault) MarshalJSON() ([]byte, error) {
 	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// UnmarshalJSON attempts to decode EnumDefault from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
 func (v *EnumDefault) UnmarshalJSON(text []byte) error {
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
@@ -186,6 +262,7 @@ const (
 	EnumWithDuplicateNameZ EnumWithDuplicateName = 8
 )
 
+// EnumWithDuplicateName_Values returns all recognized values of EnumWithDuplicateName.
 func EnumWithDuplicateName_Values() []EnumWithDuplicateName {
 	return []EnumWithDuplicateName{
 		EnumWithDuplicateNameA,
@@ -200,6 +277,11 @@ func EnumWithDuplicateName_Values() []EnumWithDuplicateName {
 	}
 }
 
+// UnmarshalText tries to decode EnumWithDuplicateName from a byte slice
+// containing its name.
+//
+//   var v EnumWithDuplicateName
+//   err := v.UnmarshalText([]byte("A"))
 func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "A":
@@ -234,15 +316,34 @@ func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToWire translates EnumWithDuplicateName into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
 func (v EnumWithDuplicateName) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
 
+// FromWire deserializes EnumWithDuplicateName from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return EnumWithDuplicateName(0), err
+//   }
+//
+//   var v EnumWithDuplicateName
+//   if err := v.FromWire(x); err != nil {
+//     return EnumWithDuplicateName(0), err
+//   }
+//   return v, nil
 func (v *EnumWithDuplicateName) FromWire(w wire.Value) error {
 	*v = (EnumWithDuplicateName)(w.GetI32())
 	return nil
 }
 
+// String returns a readable string representation of EnumWithDuplicateName.
 func (v EnumWithDuplicateName) String() string {
 	w := int32(v)
 	switch w {
@@ -268,10 +369,18 @@ func (v EnumWithDuplicateName) String() string {
 	return fmt.Sprintf("EnumWithDuplicateName(%d)", w)
 }
 
+// Equals returns true if this EnumWithDuplicateName value matches the provided
+// value.
 func (v EnumWithDuplicateName) Equals(rhs EnumWithDuplicateName) bool {
 	return v == rhs
 }
 
+// MarshalJSON serializes EnumWithDuplicateName into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
 func (v EnumWithDuplicateName) MarshalJSON() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -296,6 +405,13 @@ func (v EnumWithDuplicateName) MarshalJSON() ([]byte, error) {
 	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// UnmarshalJSON attempts to decode EnumWithDuplicateName from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
 func (v *EnumWithDuplicateName) UnmarshalJSON(text []byte) error {
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
@@ -333,6 +449,7 @@ const (
 	EnumWithDuplicateValuesR EnumWithDuplicateValues = 0
 )
 
+// EnumWithDuplicateValues_Values returns all recognized values of EnumWithDuplicateValues.
 func EnumWithDuplicateValues_Values() []EnumWithDuplicateValues {
 	return []EnumWithDuplicateValues{
 		EnumWithDuplicateValuesP,
@@ -341,6 +458,11 @@ func EnumWithDuplicateValues_Values() []EnumWithDuplicateValues {
 	}
 }
 
+// UnmarshalText tries to decode EnumWithDuplicateValues from a byte slice
+// containing its name.
+//
+//   var v EnumWithDuplicateValues
+//   err := v.UnmarshalText([]byte("P"))
 func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "P":
@@ -357,15 +479,34 @@ func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToWire translates EnumWithDuplicateValues into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
 func (v EnumWithDuplicateValues) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
 
+// FromWire deserializes EnumWithDuplicateValues from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return EnumWithDuplicateValues(0), err
+//   }
+//
+//   var v EnumWithDuplicateValues
+//   if err := v.FromWire(x); err != nil {
+//     return EnumWithDuplicateValues(0), err
+//   }
+//   return v, nil
 func (v *EnumWithDuplicateValues) FromWire(w wire.Value) error {
 	*v = (EnumWithDuplicateValues)(w.GetI32())
 	return nil
 }
 
+// String returns a readable string representation of EnumWithDuplicateValues.
 func (v EnumWithDuplicateValues) String() string {
 	w := int32(v)
 	switch w {
@@ -377,10 +518,18 @@ func (v EnumWithDuplicateValues) String() string {
 	return fmt.Sprintf("EnumWithDuplicateValues(%d)", w)
 }
 
+// Equals returns true if this EnumWithDuplicateValues value matches the provided
+// value.
 func (v EnumWithDuplicateValues) Equals(rhs EnumWithDuplicateValues) bool {
 	return v == rhs
 }
 
+// MarshalJSON serializes EnumWithDuplicateValues into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
 func (v EnumWithDuplicateValues) MarshalJSON() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -391,6 +540,13 @@ func (v EnumWithDuplicateValues) MarshalJSON() ([]byte, error) {
 	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// UnmarshalJSON attempts to decode EnumWithDuplicateValues from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
 func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
@@ -428,6 +584,7 @@ const (
 	EnumWithValuesZ EnumWithValues = 789
 )
 
+// EnumWithValues_Values returns all recognized values of EnumWithValues.
 func EnumWithValues_Values() []EnumWithValues {
 	return []EnumWithValues{
 		EnumWithValuesX,
@@ -436,6 +593,11 @@ func EnumWithValues_Values() []EnumWithValues {
 	}
 }
 
+// UnmarshalText tries to decode EnumWithValues from a byte slice
+// containing its name.
+//
+//   var v EnumWithValues
+//   err := v.UnmarshalText([]byte("X"))
 func (v *EnumWithValues) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "X":
@@ -452,15 +614,34 @@ func (v *EnumWithValues) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToWire translates EnumWithValues into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
 func (v EnumWithValues) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
 
+// FromWire deserializes EnumWithValues from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return EnumWithValues(0), err
+//   }
+//
+//   var v EnumWithValues
+//   if err := v.FromWire(x); err != nil {
+//     return EnumWithValues(0), err
+//   }
+//   return v, nil
 func (v *EnumWithValues) FromWire(w wire.Value) error {
 	*v = (EnumWithValues)(w.GetI32())
 	return nil
 }
 
+// String returns a readable string representation of EnumWithValues.
 func (v EnumWithValues) String() string {
 	w := int32(v)
 	switch w {
@@ -474,10 +655,18 @@ func (v EnumWithValues) String() string {
 	return fmt.Sprintf("EnumWithValues(%d)", w)
 }
 
+// Equals returns true if this EnumWithValues value matches the provided
+// value.
 func (v EnumWithValues) Equals(rhs EnumWithValues) bool {
 	return v == rhs
 }
 
+// MarshalJSON serializes EnumWithValues into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
 func (v EnumWithValues) MarshalJSON() ([]byte, error) {
 	switch int32(v) {
 	case 123:
@@ -490,6 +679,13 @@ func (v EnumWithValues) MarshalJSON() ([]byte, error) {
 	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// UnmarshalJSON attempts to decode EnumWithValues from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
 func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
@@ -535,6 +731,7 @@ const (
 	RecordTypeWorkAddress RecordType = 2
 )
 
+// RecordType_Values returns all recognized values of RecordType.
 func RecordType_Values() []RecordType {
 	return []RecordType{
 		RecordTypeName,
@@ -543,6 +740,11 @@ func RecordType_Values() []RecordType {
 	}
 }
 
+// UnmarshalText tries to decode RecordType from a byte slice
+// containing its name.
+//
+//   var v RecordType
+//   err := v.UnmarshalText([]byte("NAME"))
 func (v *RecordType) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "NAME":
@@ -559,15 +761,34 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToWire translates RecordType into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
 func (v RecordType) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
 
+// FromWire deserializes RecordType from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return RecordType(0), err
+//   }
+//
+//   var v RecordType
+//   if err := v.FromWire(x); err != nil {
+//     return RecordType(0), err
+//   }
+//   return v, nil
 func (v *RecordType) FromWire(w wire.Value) error {
 	*v = (RecordType)(w.GetI32())
 	return nil
 }
 
+// String returns a readable string representation of RecordType.
 func (v RecordType) String() string {
 	w := int32(v)
 	switch w {
@@ -581,10 +802,18 @@ func (v RecordType) String() string {
 	return fmt.Sprintf("RecordType(%d)", w)
 }
 
+// Equals returns true if this RecordType value matches the provided
+// value.
 func (v RecordType) Equals(rhs RecordType) bool {
 	return v == rhs
 }
 
+// MarshalJSON serializes RecordType into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
 func (v RecordType) MarshalJSON() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -597,6 +826,13 @@ func (v RecordType) MarshalJSON() ([]byte, error) {
 	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// UnmarshalJSON attempts to decode RecordType from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
 func (v *RecordType) UnmarshalJSON(text []byte) error {
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
@@ -633,6 +869,7 @@ const (
 	RecordTypeValuesBar RecordTypeValues = 1
 )
 
+// RecordTypeValues_Values returns all recognized values of RecordTypeValues.
 func RecordTypeValues_Values() []RecordTypeValues {
 	return []RecordTypeValues{
 		RecordTypeValuesFoo,
@@ -640,6 +877,11 @@ func RecordTypeValues_Values() []RecordTypeValues {
 	}
 }
 
+// UnmarshalText tries to decode RecordTypeValues from a byte slice
+// containing its name.
+//
+//   var v RecordTypeValues
+//   err := v.UnmarshalText([]byte("FOO"))
 func (v *RecordTypeValues) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "FOO":
@@ -653,15 +895,34 @@ func (v *RecordTypeValues) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToWire translates RecordTypeValues into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
 func (v RecordTypeValues) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
 
+// FromWire deserializes RecordTypeValues from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return RecordTypeValues(0), err
+//   }
+//
+//   var v RecordTypeValues
+//   if err := v.FromWire(x); err != nil {
+//     return RecordTypeValues(0), err
+//   }
+//   return v, nil
 func (v *RecordTypeValues) FromWire(w wire.Value) error {
 	*v = (RecordTypeValues)(w.GetI32())
 	return nil
 }
 
+// String returns a readable string representation of RecordTypeValues.
 func (v RecordTypeValues) String() string {
 	w := int32(v)
 	switch w {
@@ -673,10 +934,18 @@ func (v RecordTypeValues) String() string {
 	return fmt.Sprintf("RecordTypeValues(%d)", w)
 }
 
+// Equals returns true if this RecordTypeValues value matches the provided
+// value.
 func (v RecordTypeValues) Equals(rhs RecordTypeValues) bool {
 	return v == rhs
 }
 
+// MarshalJSON serializes RecordTypeValues into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
 func (v RecordTypeValues) MarshalJSON() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -687,6 +956,13 @@ func (v RecordTypeValues) MarshalJSON() ([]byte, error) {
 	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// UnmarshalJSON attempts to decode RecordTypeValues from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
 func (v *RecordTypeValues) UnmarshalJSON(text []byte) error {
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
@@ -720,6 +996,21 @@ type StructWithOptionalEnum struct {
 	E *EnumDefault `json:"e,omitempty"`
 }
 
+// ToWire translates a StructWithOptionalEnum struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *StructWithOptionalEnum) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -746,6 +1037,23 @@ func _EnumDefault_Read(w wire.Value) (EnumDefault, error) {
 	return v, err
 }
 
+// FromWire deserializes a StructWithOptionalEnum struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a StructWithOptionalEnum struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v StructWithOptionalEnum
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *StructWithOptionalEnum) FromWire(w wire.Value) error {
 	var err error
 
@@ -767,6 +1075,8 @@ func (v *StructWithOptionalEnum) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a StructWithOptionalEnum
+// struct.
 func (v *StructWithOptionalEnum) String() string {
 	if v == nil {
 		return "<nil>"
@@ -792,6 +1102,10 @@ func _EnumDefault_EqualsPtr(lhs, rhs *EnumDefault) bool {
 	return lhs == nil && rhs == nil
 }
 
+// Equals returns true if all the fields of this StructWithOptionalEnum match the
+// provided StructWithOptionalEnum.
+//
+// This function performs a deep comparison.
 func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 	if !_EnumDefault_EqualsPtr(v.E, rhs.E) {
 		return false
@@ -800,6 +1114,8 @@ func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 	return true
 }
 
+// GetE returns the value of E if it is set or its
+// zero value if it is unset.
 func (v *StructWithOptionalEnum) GetE() (o EnumDefault) {
 	if v.E != nil {
 		return *v.E
@@ -816,6 +1132,7 @@ const (
 	LowerCaseEnumItems      LowerCaseEnum = 2
 )
 
+// LowerCaseEnum_Values returns all recognized values of LowerCaseEnum.
 func LowerCaseEnum_Values() []LowerCaseEnum {
 	return []LowerCaseEnum{
 		LowerCaseEnumContaining,
@@ -824,6 +1141,11 @@ func LowerCaseEnum_Values() []LowerCaseEnum {
 	}
 }
 
+// UnmarshalText tries to decode LowerCaseEnum from a byte slice
+// containing its name.
+//
+//   var v LowerCaseEnum
+//   err := v.UnmarshalText([]byte("containing"))
 func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "containing":
@@ -840,15 +1162,34 @@ func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToWire translates LowerCaseEnum into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
 func (v LowerCaseEnum) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
 
+// FromWire deserializes LowerCaseEnum from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return LowerCaseEnum(0), err
+//   }
+//
+//   var v LowerCaseEnum
+//   if err := v.FromWire(x); err != nil {
+//     return LowerCaseEnum(0), err
+//   }
+//   return v, nil
 func (v *LowerCaseEnum) FromWire(w wire.Value) error {
 	*v = (LowerCaseEnum)(w.GetI32())
 	return nil
 }
 
+// String returns a readable string representation of LowerCaseEnum.
 func (v LowerCaseEnum) String() string {
 	w := int32(v)
 	switch w {
@@ -862,10 +1203,18 @@ func (v LowerCaseEnum) String() string {
 	return fmt.Sprintf("LowerCaseEnum(%d)", w)
 }
 
+// Equals returns true if this LowerCaseEnum value matches the provided
+// value.
 func (v LowerCaseEnum) Equals(rhs LowerCaseEnum) bool {
 	return v == rhs
 }
 
+// MarshalJSON serializes LowerCaseEnum into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
 func (v LowerCaseEnum) MarshalJSON() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -878,6 +1227,13 @@ func (v LowerCaseEnum) MarshalJSON() ([]byte, error) {
 	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// UnmarshalJSON attempts to decode LowerCaseEnum from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
 func (v *LowerCaseEnum) UnmarshalJSON(text []byte) error {
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()

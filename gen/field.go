@@ -210,6 +210,21 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$v := newVar "v">
+		// ToWire translates a <.Name> struct into a Thrift-level intermediate
+		// representation. This intermediate representation may be serialized
+		// into bytes using a ThriftRW protocol implementation.
+		//
+		// An error is returned if the struct or any of its fields failed to
+		// validate.
+		//
+		//   x, err := <$v>.ToWire()
+		//   if err != nil {
+		//     return err
+		//   }
+		//
+		//   if err := binaryProtocol.Encode(x, writer); err != nil {
+		//     return err
+		//   }
 		func (<$v> *<.Name>) ToWire() (<$wire>.Value, error) {
     		<$fields := newVar "fields" ->
     		<- $i := newVar "i" ->
@@ -284,6 +299,23 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 
 		<$v := newVar "v">
 		<$w := newVar "w">
+		// FromWire deserializes a <.Name> struct from its Thrift-level
+		// representation. The Thrift-level representation may be obtained
+		// from a ThriftRW protocol implementation.
+		//
+		// An error is returned if we were unable to build a <.Name> struct
+		// from the provided intermediate representation.
+		//
+		//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+		//   if err != nil {
+		//     return nil, err
+		//   }
+		//
+		//   var <$v> <.Name>
+		//   if err := <$v>.FromWire(x); err != nil {
+		//     return nil, err
+		//   }
+		//   return &<$v>, nil
 		func (<$v> *<.Name>) FromWire(<$w> <$wire>.Value) error {
 			<if len .Fields> var err error <end>
 			<$f := newVar "field">
@@ -366,6 +398,8 @@ func (f fieldGroupGenerator) String(g Generator) error {
 		<$strings := import "strings">
 
 		<$v := newVar "v">
+		// String returns a readable string representation of a <.Name>
+		// struct.
 		func (<$v> *<.Name>) String() string {
 			if <$v> == nil {
 				return "<"<nil>">"
@@ -405,6 +439,10 @@ func (f fieldGroupGenerator) Equals(g Generator) error {
 		`
 		<$v := newVar "v">
 		<$rhs := newVar "rhs">
+		// Equals returns true if all the fields of this <.Name> match the
+		// provided <.Name>.
+		//
+		// This function performs a deep comparison.
 		func (<$v> *<.Name>) Equals(<$rhs> *<.Name>) bool {
 			<range .Fields>
 				<- $fname := goName . ->
@@ -439,6 +477,8 @@ func (f fieldGroupGenerator) PrimitiveAccessors(g Generator) error {
 			<reserveFieldOrMethod $fname>
 			<reserveFieldOrMethod (printf "Get%v" $fname)>
 			<if and (not .Required) (isPrimitiveType .Type)>
+			// Get<$fname> returns the value of <$fname> if it is set or its
+			// zero value if it is unset.
 			func (<$v> *<$name>) Get<$fname>() (<$o> <typeReference .Type>) {
 				if <$v>.<$fname> != nil {
 					return *<$v>.<$fname>

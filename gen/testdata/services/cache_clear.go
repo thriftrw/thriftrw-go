@@ -9,9 +9,27 @@ import (
 	"strings"
 )
 
+// Cache_Clear_Args represents the arguments for the Cache.clear function.
+//
+// The arguments for clear are sent and received over the wire as this struct.
 type Cache_Clear_Args struct {
 }
 
+// ToWire translates a Cache_Clear_Args struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Cache_Clear_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -21,6 +39,23 @@ func (v *Cache_Clear_Args) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a Cache_Clear_Args struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Cache_Clear_Args struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Cache_Clear_Args
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Cache_Clear_Args) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {
@@ -31,6 +66,8 @@ func (v *Cache_Clear_Args) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Cache_Clear_Args
+// struct.
 func (v *Cache_Clear_Args) String() string {
 	if v == nil {
 		return "<nil>"
@@ -42,20 +79,36 @@ func (v *Cache_Clear_Args) String() string {
 	return fmt.Sprintf("Cache_Clear_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this Cache_Clear_Args match the
+// provided Cache_Clear_Args.
+//
+// This function performs a deep comparison.
 func (v *Cache_Clear_Args) Equals(rhs *Cache_Clear_Args) bool {
 
 	return true
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the arguments.
+//
+// This will always be "clear" for this struct.
 func (v *Cache_Clear_Args) MethodName() string {
 	return "clear"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be OneWay for this struct.
 func (v *Cache_Clear_Args) EnvelopeType() wire.EnvelopeType {
 	return wire.OneWay
 }
 
+// Cache_Clear_Helper provides functions that aid in handling the
+// parameters and return values of the Cache.clear
+// function.
 var Cache_Clear_Helper = struct {
+	// Args accepts the parameters of clear in-order and returns
+	// the arguments struct for the function.
 	Args func() *Cache_Clear_Args
 }{}
 

@@ -9,10 +9,28 @@ import (
 	"strings"
 )
 
+// Cache_ClearAfter_Args represents the arguments for the Cache.clearAfter function.
+//
+// The arguments for clearAfter are sent and received over the wire as this struct.
 type Cache_ClearAfter_Args struct {
 	DurationMS *int64 `json:"durationMS,omitempty"`
 }
 
+// ToWire translates a Cache_ClearAfter_Args struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Cache_ClearAfter_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -33,6 +51,23 @@ func (v *Cache_ClearAfter_Args) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a Cache_ClearAfter_Args struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Cache_ClearAfter_Args struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Cache_ClearAfter_Args
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Cache_ClearAfter_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -54,6 +89,8 @@ func (v *Cache_ClearAfter_Args) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Cache_ClearAfter_Args
+// struct.
 func (v *Cache_ClearAfter_Args) String() string {
 	if v == nil {
 		return "<nil>"
@@ -79,6 +116,10 @@ func _I64_EqualsPtr(lhs, rhs *int64) bool {
 	return lhs == nil && rhs == nil
 }
 
+// Equals returns true if all the fields of this Cache_ClearAfter_Args match the
+// provided Cache_ClearAfter_Args.
+//
+// This function performs a deep comparison.
 func (v *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
 	if !_I64_EqualsPtr(v.DurationMS, rhs.DurationMS) {
 		return false
@@ -87,6 +128,8 @@ func (v *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
 	return true
 }
 
+// GetDurationMS returns the value of DurationMS if it is set or its
+// zero value if it is unset.
 func (v *Cache_ClearAfter_Args) GetDurationMS() (o int64) {
 	if v.DurationMS != nil {
 		return *v.DurationMS
@@ -95,15 +138,27 @@ func (v *Cache_ClearAfter_Args) GetDurationMS() (o int64) {
 	return
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the arguments.
+//
+// This will always be "clearAfter" for this struct.
 func (v *Cache_ClearAfter_Args) MethodName() string {
 	return "clearAfter"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be OneWay for this struct.
 func (v *Cache_ClearAfter_Args) EnvelopeType() wire.EnvelopeType {
 	return wire.OneWay
 }
 
+// Cache_ClearAfter_Helper provides functions that aid in handling the
+// parameters and return values of the Cache.clearAfter
+// function.
 var Cache_ClearAfter_Helper = struct {
+	// Args accepts the parameters of clearAfter in-order and returns
+	// the arguments struct for the function.
 	Args func(
 		durationMS *int64,
 	) *Cache_ClearAfter_Args

@@ -60,10 +60,16 @@ func Service(g Generator, s *compile.ServiceSpec) (map[string]*bytes.Buffer, err
 
 // ServiceFunction generates code for the given function of the given service.
 func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) error {
+	argsName := functionNamePrefix(s, f) + "Args"
 	argsGen := fieldGroupGenerator{
 		Namespace: NewNamespace(),
-		Name:      functionNamePrefix(s, f) + "Args",
+		Name:      argsName,
 		Fields:    compile.FieldGroup(f.ArgsSpec),
+		Doc: fmt.Sprintf(
+			"%v represents the arguments for the %v.%v function.\n\n"+
+				"The arguments for %v are sent and received over the wire as this struct.",
+			argsName, s.Name, f.Name, f.Name,
+		),
 	}
 	if err := argsGen.Generate(g); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
@@ -86,16 +92,28 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 			ID:   0,
 			Name: "success",
 			Type: f.ResultSpec.ReturnType,
+			Doc:  fmt.Sprintf("Value returned by %v after a successful execution.", f.Name),
 		})
 	}
 	resultFields = append(resultFields, f.ResultSpec.Exceptions...)
 
+	resultName := functionNamePrefix(s, f) + "Result"
+	resultDoc := fmt.Sprintf(
+		"%v represents the result of a %v.%v function call.\n\n"+
+			"The result of a %v execution is sent and received over the wire as this struct.",
+		resultName, s.Name, f.Name, f.Name,
+	)
+	if f.ResultSpec.ReturnType != nil {
+		resultDoc += fmt.Sprintf("\n\nSuccess is set only if the function did not throw an exception.")
+	}
+
 	resultGen := fieldGroupGenerator{
 		Namespace:       NewNamespace(),
-		Name:            functionNamePrefix(s, f) + "Result",
+		Name:            resultName,
 		Fields:          resultFields,
 		IsUnion:         true,
 		AllowEmptyUnion: f.ResultSpec.ReturnType == nil,
+		Doc:             resultDoc,
 	}
 	if err := resultGen.Generate(g); err != nil {
 		return wrapGenerateError(fmt.Sprintf("%s.%s", s.Name, f.Name), err)
@@ -130,15 +148,73 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 		<$f := .Function>
 		<$prefix := namePrefix .Service $f>
 
+		// <$prefix>Helper provides functions that aid in handling the
+		// parameters and return values of the <.Service.Name>.<$f.Name>
+		// function.
 		var <$prefix>Helper = struct{
+			// Args accepts the parameters of <$f.Name> in-order and returns
+			// the arguments struct for the function.
 			Args func(<params $f>) *<$prefix>Args
 			<if not $f.OneWay>
+				// IsException returns true if the given error can be thrown
+				// by <$f.Name>.
+				//
+				// An error can be thrown by <$f.Name> only if the
+				// corresponding exception type was mentioned in the 'throws'
+				// section for it in the Thrift file.
 				IsException func(error) bool
 				<if $f.ResultSpec.ReturnType>
+					// WrapResponse returns the result struct for <$f.Name>
+					// given its return value and error.
+					//
+					// This allows mapping values and errors returned by
+					// <$f.Name> into a serializable result struct.
+					// WrapResponse returns a non-nil error if the provided
+					// error cannot be thrown by <$f.Name>
+					//
+					//   value, err := <$f.Name>(args)
+					//   result, err := <$prefix>Helper.WrapResponse(value, err)
+					//   if err != nil {
+					//     return fmt.Errorf("unexpected error from <$f.Name>: %v", err)
+					//   }
+					//   serialize(result)
 					WrapResponse func(<typeReference $f.ResultSpec.ReturnType>, error) (*<$prefix>Result, error)
+
+					// UnwrapResponse takes the result struct for <$f.Name>
+					// and returns the value or error returned by it.
+					//
+					// The error is non-nil only if <$f.Name> threw an
+					// exception.
+					//
+					//   result := deserialize(bytes)
+					//   value, err := <$prefix>Helper.UnwrapResponse(result)
 					UnwrapResponse func(*<$prefix>Result) (<typeReference $f.ResultSpec.ReturnType>, error)
 				<else>
+					// WrapResponse returns the result struct for <$f.Name>
+					// given the error returned by it. The provided error may
+					// be nil if <$f.Name> did not fail.
+					//
+					// This allows mapping errors returned by <$f.Name> into a
+					// serializable result struct. WrapResponse returns a
+					// non-nil error if the provided error cannot be thrown by
+					// <$f.Name>
+					//
+					//   err := <$f.Name>(args)
+					//   result, err := <$prefix>Helper.WrapResponse(err)
+					//   if err != nil {
+					//     return fmt.Errorf("unexpected error from <$f.Name>: %v", err)
+					//   }
+					//   serialize(result)
 					WrapResponse func(error) (*<$prefix>Result, error)
+
+					// UnwrapResponse takes the result struct for <$f.Name>
+					// and returns the erorr returned by it (if any).
+					//
+					// The error is non-nil only if <$f.Name> threw an
+					// exception.
+					//
+					//   result := deserialize(bytes)
+					//   err := <$prefix>Helper.UnwrapResponse(result)
 					UnwrapResponse func(*<$prefix>Result) error
 				<end>
 			<end>
@@ -324,10 +400,17 @@ func functionArgsEnveloper(g Generator, s *compile.ServiceSpec, f *compile.Funct
 		<$wire := import "go.uber.org/thriftrw/wire">
 		<$v := newVar "v">
 
+		// MethodName returns the name of the Thrift function as specified in
+		// the IDL, for which this struct represent the arguments.
+		//
+		// This will always be "<$f.MethodName>" for this struct.
 		func (<$v> *<$prefix>Args) MethodName() string {
 			return "<$f.MethodName>"
 		}
 
+		// EnvelopeType returns the kind of value inside this struct.
+		//
+		// This will always be <$f.CallType.String> for this struct.
 		func (<$v> *<$prefix>Args) EnvelopeType() <$wire>.EnvelopeType {
 			return <$wire>.<$f.CallType.String>
 		}
@@ -351,10 +434,17 @@ func functionResponseEnveloper(g Generator, s *compile.ServiceSpec, f *compile.F
 		<$wire := import "go.uber.org/thriftrw/wire">
 		<$v := newVar "v">
 
+		// MethodName returns the name of the Thrift function as specified in
+		// the IDL, for which this struct represent the result.
+		//
+		// This will always be "<$f.MethodName>" for this struct.
 		func (<$v> *<$prefix>Result) MethodName() string {
 			return "<$f.MethodName>"
 		}
 
+		// EnvelopeType returns the kind of value inside this struct.
+		//
+		// This will always be Reply for this struct.
 		func (<$v> *<$prefix>Result) EnvelopeType() <$wire>.EnvelopeType {
 			return <$wire>.Reply
 		}

@@ -49,6 +49,7 @@ const (
 	ExceptionTypeUnsupportedClientType ExceptionType = 10
 )
 
+// ExceptionType_Values returns all recognized values of ExceptionType.
 func ExceptionType_Values() []ExceptionType {
 	return []ExceptionType{
 		ExceptionTypeUnknown,
@@ -65,6 +66,11 @@ func ExceptionType_Values() []ExceptionType {
 	}
 }
 
+// UnmarshalText tries to decode ExceptionType from a byte slice
+// containing its name.
+//
+//   var v ExceptionType
+//   err := v.UnmarshalText([]byte("UNKNOWN"))
 func (v *ExceptionType) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "UNKNOWN":
@@ -105,15 +111,34 @@ func (v *ExceptionType) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToWire translates ExceptionType into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
 func (v ExceptionType) ToWire() (wire.Value, error) {
 	return wire.NewValueI32(int32(v)), nil
 }
 
+// FromWire deserializes ExceptionType from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return ExceptionType(0), err
+//   }
+//
+//   var v ExceptionType
+//   if err := v.FromWire(x); err != nil {
+//     return ExceptionType(0), err
+//   }
+//   return v, nil
 func (v *ExceptionType) FromWire(w wire.Value) error {
 	*v = (ExceptionType)(w.GetI32())
 	return nil
 }
 
+// String returns a readable string representation of ExceptionType.
 func (v ExceptionType) String() string {
 	w := int32(v)
 	switch w {
@@ -143,10 +168,18 @@ func (v ExceptionType) String() string {
 	return fmt.Sprintf("ExceptionType(%d)", w)
 }
 
+// Equals returns true if this ExceptionType value matches the provided
+// value.
 func (v ExceptionType) Equals(rhs ExceptionType) bool {
 	return v == rhs
 }
 
+// MarshalJSON serializes ExceptionType into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
 func (v ExceptionType) MarshalJSON() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -175,6 +208,13 @@ func (v ExceptionType) MarshalJSON() ([]byte, error) {
 	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// UnmarshalJSON attempts to decode ExceptionType from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
 func (v *ExceptionType) UnmarshalJSON(text []byte) error {
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
@@ -209,6 +249,21 @@ type TApplicationException struct {
 	Type    *ExceptionType `json:"type,omitempty"`
 }
 
+// ToWire translates a TApplicationException struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *TApplicationException) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -243,6 +298,23 @@ func _ExceptionType_Read(w wire.Value) (ExceptionType, error) {
 	return v, err
 }
 
+// FromWire deserializes a TApplicationException struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a TApplicationException struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v TApplicationException
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *TApplicationException) FromWire(w wire.Value) error {
 	var err error
 
@@ -274,6 +346,8 @@ func (v *TApplicationException) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a TApplicationException
+// struct.
 func (v *TApplicationException) String() string {
 	if v == nil {
 		return "<nil>"
@@ -313,6 +387,10 @@ func _ExceptionType_EqualsPtr(lhs, rhs *ExceptionType) bool {
 	return lhs == nil && rhs == nil
 }
 
+// Equals returns true if all the fields of this TApplicationException match the
+// provided TApplicationException.
+//
+// This function performs a deep comparison.
 func (v *TApplicationException) Equals(rhs *TApplicationException) bool {
 	if !_String_EqualsPtr(v.Message, rhs.Message) {
 		return false
@@ -324,6 +402,8 @@ func (v *TApplicationException) Equals(rhs *TApplicationException) bool {
 	return true
 }
 
+// GetMessage returns the value of Message if it is set or its
+// zero value if it is unset.
 func (v *TApplicationException) GetMessage() (o string) {
 	if v.Message != nil {
 		return *v.Message
@@ -332,6 +412,8 @@ func (v *TApplicationException) GetMessage() (o string) {
 	return
 }
 
+// GetType returns the value of Type if it is set or its
+// zero value if it is unset.
 func (v *TApplicationException) GetType() (o ExceptionType) {
 	if v.Type != nil {
 		return *v.Type
