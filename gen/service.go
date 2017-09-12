@@ -113,15 +113,15 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 func functionParams(g Generator, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
 		`
-		<$params := newNamespace>
-		<range .ArgsSpec>
-			<if .Required>
+		<- $params := newNamespace ->
+		<- range .ArgsSpec>
+			<- if .Required>
 				<$params.NewName .Name> <typeReference .Type>,
-			<else>
+			<- else>
 				<$params.NewName .Name> <typeReferencePtr .Type>,
-			<end>
+			<- end ->
 		<end>
-        `, f)
+		`, f)
 }
 
 func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) error {
@@ -135,11 +135,8 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 			<if not $f.OneWay>
 				IsException func(error) bool
 				<if $f.ResultSpec.ReturnType>
-					WrapResponse func(
-						<typeReference $f.ResultSpec.ReturnType>,
-						error) (*<$prefix>Result, error)
-					UnwrapResponse func(*<$prefix>Result) (
-						<typeReference $f.ResultSpec.ReturnType>, error)
+					WrapResponse func(<typeReference $f.ResultSpec.ReturnType>, error) (*<$prefix>Result, error)
+					UnwrapResponse func(*<$prefix>Result) (<typeReference $f.ResultSpec.ReturnType>, error)
 				<else>
 					WrapResponse func(error) (*<$prefix>Result, error)
 					UnwrapResponse func(*<$prefix>Result) error
@@ -151,6 +148,7 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 			<$prefix>Helper.Args = <newArgs .Service $f>
 			<if not $f.OneWay>
 				<$prefix>Helper.IsException = <isException $f>
+
 				<$prefix>Helper.WrapResponse = <wrapResponse .Service $f>
 				<$prefix>Helper.UnwrapResponse = <unwrapResponse .Service $f>
 			<end>
@@ -176,18 +174,16 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 // function for the given Thrift function.
 func functionIsException(g Generator, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
-		`
-		func(err error) bool {
+		`func(err error) bool {
 			switch err.(type) {
-			<range .ResultSpec.Exceptions>
+			<range .ResultSpec.Exceptions ->
 				case <typeReferencePtr .Type>:
 					return true
-			<end>
+			<end ->
 			default:
 				return false
 			}
-		}
-		`, f)
+		}`, f)
 }
 
 // functionNewArgs generates an expression which provides the NewArgs function
@@ -195,25 +191,25 @@ func functionIsException(g Generator, f *compile.FunctionSpec) (string, error) {
 func functionNewArgs(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
 		`
-		<$f := .Function>
-		<$prefix := namePrefix .Service $f>
-		<$params := newNamespace>
+		<- $f := .Function ->
+		<- $prefix := namePrefix .Service $f ->
+		<- $params := newNamespace ->
 		func(
-			<range $f.ArgsSpec>
-				<if .Required>
+			<- range $f.ArgsSpec>
+				<- if .Required>
 					<$params.NewName .Name> <typeReference .Type>,
-				<else>
+				<- else>
 					<$params.NewName .Name> <typeReferencePtr .Type>,
-				<end>
+				<- end ->
 			<end>
 		) *<$prefix>Args {
 			return &<$prefix>Args{
 			<range $f.ArgsSpec>
-				<if .Required>
+				<- if .Required ->
 					<goCase .Name>: <$params.Rotate .Name>,
-				<else>
+				<- else ->
 					<goCase .Name>: <$params.Rotate .Name>,
-				<end>
+				<- end>
 			<end>
 			}
 		}
@@ -233,40 +229,37 @@ func functionNewArgs(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 func functionWrapResponse(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
 		`
-		<$f := .Function>
-		<$prefix := namePrefix .Service $f>
+		<- $f := .Function ->
+		<- $prefix := namePrefix .Service $f ->
 
-		<if $f.ResultSpec.ReturnType>
-			func(success <typeReference $f.ResultSpec.ReturnType>,
-				err error) (*<$prefix>Result, error) {
+		<- if $f.ResultSpec.ReturnType ->
+			func(success <typeReference $f.ResultSpec.ReturnType>, err error) (*<$prefix>Result, error) {
 				if err == nil {
-					<if isPrimitiveType $f.ResultSpec.ReturnType>
+					<if isPrimitiveType $f.ResultSpec.ReturnType ->
 						return &<$prefix>Result{Success: &success}, nil
-					<else>
+					<- else ->
 						return &<$prefix>Result{Success: success}, nil
-					<end>
+					<- end>
 				}
-		<else>
+		<- else ->
 			func(err error) (*<$prefix>Result, error) {
 				if err == nil {
 					return &<$prefix>Result{}, nil
 				}
-		<end>
+		<- end>
 				<if $f.ResultSpec.Exceptions>
 					switch e := err.(type) {
-						<range $f.ResultSpec.Exceptions>
+						<range $f.ResultSpec.Exceptions ->
 						case <typeReferencePtr .Type>:
 							if e == nil {
-								return nil, <import "errors">.New(
-									"WrapResponse received non-nil error type with nil value for <$prefix>Result.<goCase .Name>")
+								return nil, <import "errors">.New("WrapResponse received non-nil error type with nil value for <$prefix>Result.<goCase .Name>")
 							}
 							return &<$prefix>Result{<goCase .Name>: e}, nil
-						<end>
+						<end ->
 					}
 				<end>
 				return nil, err
-			}
-		`,
+			}`,
 		struct {
 			Service  *compile.ServiceSpec
 			Function *compile.FunctionSpec
@@ -282,42 +275,34 @@ func functionWrapResponse(g Generator, s *compile.ServiceSpec, f *compile.Functi
 func functionUnwrapResponse(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
 		`
-		<$f := .Function>
-		<$prefix := namePrefix .Service $f>
+		<- $f := .Function ->
+		<- $prefix := namePrefix .Service $f ->
 
-		<if $f.ResultSpec.ReturnType>
-			func(result *<$prefix>Result) (
-				success <typeReference $f.ResultSpec.ReturnType>,
-				err error) {
-		<else>
+		<- if $f.ResultSpec.ReturnType ->
+			func(result *<$prefix>Result) (success <typeReference $f.ResultSpec.ReturnType>, err error) {
+		<- else ->
 			func(result *<$prefix>Result) (err error) {
-		<end>
-				<range $f.ResultSpec.Exceptions>
+		<- end>
+				<range $f.ResultSpec.Exceptions ->
 					if result.<goCase .Name> != nil {
 						err = result.<goCase .Name>
 						return
 					}
-				<end>
-
-				// TODO unrecognized exceptions
+				<end ->
 
 				<if $f.ResultSpec.ReturnType>
 					if result.Success != nil {
-						<if isPrimitiveType $f.ResultSpec.ReturnType>
+						<- if isPrimitiveType $f.ResultSpec.ReturnType>
 							success = *result.Success
-						<else>
+						<- else>
 							success = result.Success
-						<end>
+						<- end>
 						return
 					}
 
-					// TODO library-level error type
 					err = <import "errors">.New("expected a non-void result")
-					return
-				<else>
-					return
-				<end>
-
+				<end ->
+				return
 			}
 		`, struct {
 			Service  *compile.ServiceSpec

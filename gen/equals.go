@@ -84,9 +84,8 @@ func (e *equalsGenerator) EqualsPtr(g Generator, spec compile.TypeSpec, lhs, rhs
 			<$lhs := newVar "lhs">
 			<$rhs := newVar "rhs">
 			func <.Name>(<$lhs>, <$rhs> *<$type>) bool {
-				// Make sure that both pointers are non nil.
-				<$x := newVar "x">
-				<$y := newVar "y">
+				<- $x := newVar "x" ->
+				<- $y := newVar "y">
 				if <$lhs> != nil && <$rhs> != nil {
 					// Call Equals method after dereferencing the pointers
 					<$x> := *<$lhs>

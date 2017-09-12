@@ -24,8 +24,8 @@ func (v _Set_Binary_ValueList) ForEach(f func(wire.Value) error) error {
 		if err != nil {
 			return err
 		}
-		err = f(w)
-		if err != nil {
+
+		if err := f(w); err != nil {
 			return err
 		}
 	}
@@ -40,19 +40,20 @@ func (_Set_Binary_ValueList) ValueType() wire.Type {
 	return wire.TBinary
 }
 
-func (_Set_Binary_ValueList) Close() {
-}
+func (_Set_Binary_ValueList) Close() {}
 
 func _Set_Binary_Read(s wire.ValueList) ([][]byte, error) {
 	if s.ValueType() != wire.TBinary {
 		return nil, nil
 	}
+
 	o := make([][]byte, 0, s.Size())
 	err := s.ForEach(func(x wire.Value) error {
 		i, err := x.GetBinary(), error(nil)
 		if err != nil {
 			return err
 		}
+
 		o = append(o, i)
 		return nil
 	})
@@ -64,6 +65,7 @@ func _Set_Binary_Equals(lhs, rhs [][]byte) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for _, x := range lhs {
 		ok := false
 		for _, y := range rhs {
@@ -76,6 +78,7 @@ func _Set_Binary_Equals(lhs, rhs [][]byte) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -116,6 +119,7 @@ func (v *DefaultPrimitiveTypedef) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.State == nil {
 		v.State = _State_ptr("hello")
 	}
@@ -127,6 +131,7 @@ func (v *DefaultPrimitiveTypedef) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -138,6 +143,7 @@ func _State_Read(w wire.Value) (State, error) {
 
 func (v *DefaultPrimitiveTypedef) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -148,12 +154,15 @@ func (v *DefaultPrimitiveTypedef) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	if v.State == nil {
 		v.State = _State_ptr("hello")
 	}
+
 	return nil
 }
 
@@ -161,17 +170,20 @@ func (v *DefaultPrimitiveTypedef) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [1]string
 	i := 0
 	if v.State != nil {
 		fields[i] = fmt.Sprintf("State: %v", *(v.State))
 		i++
 	}
+
 	return fmt.Sprintf("DefaultPrimitiveTypedef{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _State_EqualsPtr(lhs, rhs *State) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -183,6 +195,7 @@ func (v *DefaultPrimitiveTypedef) Equals(rhs *DefaultPrimitiveTypedef) bool {
 	if !_State_EqualsPtr(v.State, rhs.State) {
 		return false
 	}
+
 	return true
 }
 
@@ -213,6 +226,7 @@ func (m _Map_Edge_Edge_MapItemList) ForEach(f func(wire.MapItem) error) error {
 		if err != nil {
 			return err
 		}
+
 		vw, err := v.ToWire()
 		if err != nil {
 			return err
@@ -237,8 +251,7 @@ func (_Map_Edge_Edge_MapItemList) ValueType() wire.Type {
 	return wire.TStruct
 }
 
-func (_Map_Edge_Edge_MapItemList) Close() {
-}
+func (_Map_Edge_Edge_MapItemList) Close() {}
 
 func _Edge_Read(w wire.Value) (*structs.Edge, error) {
 	var v structs.Edge
@@ -253,9 +266,11 @@ func _Map_Edge_Edge_Read(m wire.MapItemList) ([]struct {
 	if m.KeyType() != wire.TStruct {
 		return nil, nil
 	}
+
 	if m.ValueType() != wire.TStruct {
 		return nil, nil
 	}
+
 	o := make([]struct {
 		Key   *structs.Edge
 		Value *structs.Edge
@@ -265,10 +280,12 @@ func _Map_Edge_Edge_Read(m wire.MapItemList) ([]struct {
 		if err != nil {
 			return err
 		}
+
 		v, err := _Edge_Read(x.Value)
 		if err != nil {
 			return err
 		}
+
 		o = append(o, struct {
 			Key   *structs.Edge
 			Value *structs.Edge
@@ -286,6 +303,7 @@ func _Map_Edge_Edge_Equals(lhs, rhs []struct {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for _, i := range lhs {
 		lk := i.Key
 		lv := i.Value
@@ -296,12 +314,14 @@ func _Map_Edge_Edge_Equals(lhs, rhs []struct {
 			if !lk.Equals(rk) {
 				continue
 			}
+
 			if !lv.Equals(rv) {
 				return false
 			}
 			ok = true
 			break
 		}
+
 		if !ok {
 			return false
 		}
@@ -352,6 +372,7 @@ func (v *Event) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.UUID == nil {
 		return w, errors.New("field UUID of Event is required")
 	}
@@ -369,6 +390,7 @@ func (v *Event) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -386,7 +408,9 @@ func _Timestamp_Read(w wire.Value) (Timestamp, error) {
 
 func (v *Event) FromWire(w wire.Value) error {
 	var err error
+
 	uuidIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -405,12 +429,15 @@ func (v *Event) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	if !uuidIsSet {
 		return errors.New("field UUID of Event is required")
 	}
+
 	return nil
 }
 
@@ -418,6 +445,7 @@ func (v *Event) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("UUID: %v", v.UUID)
@@ -426,11 +454,13 @@ func (v *Event) String() string {
 		fields[i] = fmt.Sprintf("Time: %v", *(v.Time))
 		i++
 	}
+
 	return fmt.Sprintf("Event{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _Timestamp_EqualsPtr(lhs, rhs *Timestamp) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -445,6 +475,7 @@ func (v *Event) Equals(rhs *Event) bool {
 	if !_Timestamp_EqualsPtr(v.Time, rhs.Time) {
 		return false
 	}
+
 	return true
 }
 
@@ -452,6 +483,7 @@ func (v *Event) GetTime() (o Timestamp) {
 	if v.Time != nil {
 		return *v.Time
 	}
+
 	return
 }
 
@@ -482,8 +514,7 @@ func (_List_Event_ValueList) ValueType() wire.Type {
 	return wire.TStruct
 }
 
-func (_List_Event_ValueList) Close() {
-}
+func (_List_Event_ValueList) Close() {}
 
 func _Event_Read(w wire.Value) (*Event, error) {
 	var v Event
@@ -495,6 +526,7 @@ func _List_Event_Read(l wire.ValueList) ([]*Event, error) {
 	if l.ValueType() != wire.TStruct {
 		return nil, nil
 	}
+
 	o := make([]*Event, 0, l.Size())
 	err := l.ForEach(func(x wire.Value) error {
 		i, err := _Event_Read(x)
@@ -512,12 +544,14 @@ func _List_Event_Equals(lhs, rhs []*Event) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for i, lv := range lhs {
 		rv := rhs[i]
 		if !lv.Equals(rv) {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -554,8 +588,8 @@ func (v _Set_Frame_ValueList) ForEach(f func(wire.Value) error) error {
 		if err != nil {
 			return err
 		}
-		err = f(w)
-		if err != nil {
+
+		if err := f(w); err != nil {
 			return err
 		}
 	}
@@ -570,8 +604,7 @@ func (_Set_Frame_ValueList) ValueType() wire.Type {
 	return wire.TStruct
 }
 
-func (_Set_Frame_ValueList) Close() {
-}
+func (_Set_Frame_ValueList) Close() {}
 
 func _Frame_Read(w wire.Value) (*structs.Frame, error) {
 	var v structs.Frame
@@ -583,12 +616,14 @@ func _Set_Frame_Read(s wire.ValueList) ([]*structs.Frame, error) {
 	if s.ValueType() != wire.TStruct {
 		return nil, nil
 	}
+
 	o := make([]*structs.Frame, 0, s.Size())
 	err := s.ForEach(func(x wire.Value) error {
 		i, err := _Frame_Read(x)
 		if err != nil {
 			return err
 		}
+
 		o = append(o, i)
 		return nil
 	})
@@ -600,6 +635,7 @@ func _Set_Frame_Equals(lhs, rhs []*structs.Frame) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for _, x := range lhs {
 		ok := false
 		for _, y := range rhs {
@@ -612,6 +648,7 @@ func _Set_Frame_Equals(lhs, rhs []*structs.Frame) bool {
 			return false
 		}
 	}
+
 	return true
 }
 
@@ -706,6 +743,7 @@ func (m _Map_Point_Point_MapItemList) ForEach(f func(wire.MapItem) error) error 
 		if err != nil {
 			return err
 		}
+
 		vw, err := v.ToWire()
 		if err != nil {
 			return err
@@ -730,8 +768,7 @@ func (_Map_Point_Point_MapItemList) ValueType() wire.Type {
 	return wire.TStruct
 }
 
-func (_Map_Point_Point_MapItemList) Close() {
-}
+func (_Map_Point_Point_MapItemList) Close() {}
 
 func _Point_Read(w wire.Value) (*structs.Point, error) {
 	var v structs.Point
@@ -746,9 +783,11 @@ func _Map_Point_Point_Read(m wire.MapItemList) ([]struct {
 	if m.KeyType() != wire.TStruct {
 		return nil, nil
 	}
+
 	if m.ValueType() != wire.TStruct {
 		return nil, nil
 	}
+
 	o := make([]struct {
 		Key   *structs.Point
 		Value *structs.Point
@@ -758,10 +797,12 @@ func _Map_Point_Point_Read(m wire.MapItemList) ([]struct {
 		if err != nil {
 			return err
 		}
+
 		v, err := _Point_Read(x.Value)
 		if err != nil {
 			return err
 		}
+
 		o = append(o, struct {
 			Key   *structs.Point
 			Value *structs.Point
@@ -779,6 +820,7 @@ func _Map_Point_Point_Equals(lhs, rhs []struct {
 	if len(lhs) != len(rhs) {
 		return false
 	}
+
 	for _, i := range lhs {
 		lk := i.Key
 		lv := i.Value
@@ -789,12 +831,14 @@ func _Map_Point_Point_Equals(lhs, rhs []struct {
 			if !lk.Equals(rk) {
 				continue
 			}
+
 			if !lv.Equals(rv) {
 				return false
 			}
 			ok = true
 			break
 		}
+
 		if !ok {
 			return false
 		}
@@ -890,12 +934,14 @@ func (v *Transition) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = v.FromState.ToWire()
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
+
 	w, err = v.ToState.ToWire()
 	if err != nil {
 		return w, err
@@ -910,6 +956,7 @@ func (v *Transition) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 3, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -921,8 +968,10 @@ func _EventGroup_Read(w wire.Value) (EventGroup, error) {
 
 func (v *Transition) FromWire(w wire.Value) error {
 	var err error
+
 	fromStateIsSet := false
 	toStateIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -947,15 +996,19 @@ func (v *Transition) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	if !fromStateIsSet {
 		return errors.New("field FromState of Transition is required")
 	}
+
 	if !toStateIsSet {
 		return errors.New("field ToState of Transition is required")
 	}
+
 	return nil
 }
 
@@ -963,6 +1016,7 @@ func (v *Transition) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [3]string
 	i := 0
 	fields[i] = fmt.Sprintf("FromState: %v", v.FromState)
@@ -973,6 +1027,7 @@ func (v *Transition) String() string {
 		fields[i] = fmt.Sprintf("Events: %v", v.Events)
 		i++
 	}
+
 	return fmt.Sprintf("Transition{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -986,6 +1041,7 @@ func (v *Transition) Equals(rhs *Transition) bool {
 	if !((v.Events == nil && rhs.Events == nil) || (v.Events != nil && rhs.Events != nil && v.Events.Equals(rhs.Events))) {
 		return false
 	}
+
 	return true
 }
 
@@ -1021,25 +1077,30 @@ func (v *I128) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = wire.NewValueI64(v.High), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
+
 	w, err = wire.NewValueI64(v.Low), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func (v *I128) FromWire(w wire.Value) error {
 	var err error
+
 	highIsSet := false
 	lowIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -1060,12 +1121,15 @@ func (v *I128) FromWire(w wire.Value) error {
 			}
 		}
 	}
+
 	if !highIsSet {
 		return errors.New("field High of I128 is required")
 	}
+
 	if !lowIsSet {
 		return errors.New("field Low of I128 is required")
 	}
+
 	return nil
 }
 
@@ -1073,12 +1137,14 @@ func (v *I128) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("High: %v", v.High)
 	i++
 	fields[i] = fmt.Sprintf("Low: %v", v.Low)
 	i++
+
 	return fmt.Sprintf("I128{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -1089,5 +1155,6 @@ func (v *I128) Equals(rhs *I128) bool {
 	if !(v.Low == rhs.Low) {
 		return false
 	}
+
 	return true
 }

@@ -87,7 +87,9 @@ type Generator interface {
 	//
 	// A single Write must corresponds to a single file in the generated
 	// package.
-	Write(w io.Writer, fs *token.FileSet) error
+	//
+	// The FileSet argument is deprecated and will be ignored.
+	Write(w io.Writer, _ *token.FileSet) error
 }
 
 var _typeOfGenerator = reflect.TypeOf((*Generator)(nil)).Elem()
@@ -129,6 +131,9 @@ type generator struct {
 	thriftImporter thriftPackageImporter
 	mangler        *mangler
 
+	counter int
+	fset    *token.FileSet
+
 	// TODO use something to group related decls together
 }
 
@@ -143,6 +148,7 @@ func NewGenerator(timport thriftPackageImporter, importPath string, packageName 
 		importer:       newImporter(namespace.Child()),
 		mangler:        newMangler(),
 		thriftImporter: timport,
+		fset:           token.NewFileSet(),
 	}
 }
 
@@ -373,7 +379,7 @@ func (g *generator) declare(ignoreConflicts bool, s string, data interface{}, op
 		return err
 	}
 
-	f, err := parser.ParseFile(token.NewFileSet(), "thriftrw.go", bs, 0)
+	f, err := parser.ParseFile(g.fset, g.PackageName+".go", bs, parser.ParseComments)
 	if err != nil {
 		return fmt.Errorf("could not parse generated code: %v:\n%s", err, bs)
 	}
@@ -423,7 +429,7 @@ func (g *generator) EnsureDeclared(s string, data interface{}, opts ...TemplateO
 	return g.declare(true, s, data, opts...)
 }
 
-func (g *generator) Write(w io.Writer, fs *token.FileSet) error {
+func (g *generator) Write(w io.Writer, _ *token.FileSet) error {
 	// TODO constants first, types next, and functions after that
 
 	if _, err := w.Write([]byte(generatedByHeader)); err != nil {
@@ -440,7 +446,7 @@ func (g *generator) Write(w io.Writer, fs *token.FileSet) error {
 	}
 
 	if importDecl := g.importDecl(); importDecl != nil {
-		if err := cfg.Fprint(w, fs, importDecl); err != nil {
+		if err := cfg.Fprint(w, g.fset, importDecl); err != nil {
 			return err
 		}
 	}
@@ -454,7 +460,7 @@ func (g *generator) Write(w io.Writer, fs *token.FileSet) error {
 			return err
 		}
 
-		if err := cfg.Fprint(w, fs, decl); err != nil {
+		if err := cfg.Fprint(w, g.fset, decl); err != nil {
 			return err
 		}
 

@@ -51,17 +51,16 @@ func (l *listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, 
 			<$f := newVar "f">
 			<$w := newVar "w">
 			func (<$v> <.Name>) ForEach(<$f> func(<$wire>.Value) error) error {
-				<if isPrimitiveType .Spec.ValueSpec>
+				<if isPrimitiveType .Spec.ValueSpec ->
 				for _, <$x> := range <$v> {
-				<else>
+				<- else ->
 				for <$i>, <$x> := range <$v> {
 					if <$x> == nil {
 						return <import "fmt">.Errorf("invalid [%v]: value is nil", <$i>)
 					}
-				<end>
+				<- end>
 					<$w>, err := <toWire .Spec.ValueSpec $x>
 					if err != nil {
-						// TODO(abg): nested error "invalid [%v]: %v"
 						return err
 					}
 					err = <$f>(<$w>)

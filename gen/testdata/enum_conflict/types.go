@@ -22,7 +22,10 @@ const (
 )
 
 func RecordType_Values() []RecordType {
-	return []RecordType{RecordTypeName, RecordTypeEmail}
+	return []RecordType{
+		RecordTypeName,
+		RecordTypeEmail,
+	}
 }
 
 func (v *RecordType) UnmarshalText(value []byte) error {
@@ -79,6 +82,7 @@ func (v *RecordType) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -120,6 +124,7 @@ func (v *Records) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.RecordType == nil {
 		v.RecordType = _RecordType_ptr(DefaultRecordType)
 	}
@@ -142,6 +147,7 @@ func (v *Records) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -159,6 +165,7 @@ func _RecordType_1_Read(w wire.Value) (enums.RecordType, error) {
 
 func (v *Records) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -169,6 +176,7 @@ func (v *Records) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 2:
 			if field.Value.Type() == wire.TI32 {
@@ -178,15 +186,19 @@ func (v *Records) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	if v.RecordType == nil {
 		v.RecordType = _RecordType_ptr(DefaultRecordType)
 	}
+
 	if v.OtherRecordType == nil {
 		v.OtherRecordType = _RecordType_1_ptr(DefaultOtherRecordType)
 	}
+
 	return nil
 }
 
@@ -194,6 +206,7 @@ func (v *Records) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	if v.RecordType != nil {
@@ -204,11 +217,13 @@ func (v *Records) String() string {
 		fields[i] = fmt.Sprintf("OtherRecordType: %v", *(v.OtherRecordType))
 		i++
 	}
+
 	return fmt.Sprintf("Records{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _RecordType_EqualsPtr(lhs, rhs *RecordType) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return x.Equals(y)
@@ -218,6 +233,7 @@ func _RecordType_EqualsPtr(lhs, rhs *RecordType) bool {
 
 func _RecordType_1_EqualsPtr(lhs, rhs *enums.RecordType) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return x.Equals(y)
@@ -232,6 +248,7 @@ func (v *Records) Equals(rhs *Records) bool {
 	if !_RecordType_1_EqualsPtr(v.OtherRecordType, rhs.OtherRecordType) {
 		return false
 	}
+
 	return true
 }
 

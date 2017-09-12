@@ -61,34 +61,31 @@ func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, err
 			<$kw := newVar "kw">
 			<$vw := newVar "vw">
 			func (<$m> <.Name>) ForEach(<$f> func(<$wire>.MapItem) error) error {
-				<if isHashable .Spec.KeySpec>
+				<- if isHashable .Spec.KeySpec ->
 					for <$k>, <$v> := range <$m> {
-				<else>
+				<else ->
 					for _, <$i> := range <$m> {
 						<$k> := <$i>.Key
 						<$v> := <$i>.Value
 				<end>
-						<if not (isPrimitiveType .Spec.KeySpec)>
+						<- if not (isPrimitiveType .Spec.KeySpec) ->
 							if <$k> == nil {
 								return <import "fmt">.Errorf("invalid map key: value is nil")
 							}
-						<end>
-
-						<if not (isPrimitiveType .Spec.ValueSpec)>
+						<end ->
+						<- if not (isPrimitiveType .Spec.ValueSpec) ->
 							if <$v> == nil {
 								return <import "fmt">.Errorf("invalid [%v]: value is nil", <$k>)
 							}
-						<end>
+						<end ->
 
 						<$kw>, err := <toWire .Spec.KeySpec $k>
 						if err != nil {
-							// TODO(abg): nested error "invalid map key: %v"
 							return err
 						}
 
 						<$vw>, err := <toWire .Spec.ValueSpec $v>
 						if err != nil {
-							// TODO(abg): nested error "invalid [%v]: %v"
 							return err
 						}
 						err = <$f>(<$wire>.MapItem{Key: <$kw>, Value: <$vw>})
@@ -147,7 +144,7 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 					<$o> := make(<$mapType>, <$m>.Size())
 				<else>
 					<$o> := make(<$mapType>, 0, <$m>.Size())
-				<end>
+				<end ->
 				err := <$m>.ForEach(func(<$x> <$wire>.MapItem) error {
 					<$k>, err := <fromWire .Spec.KeySpec (printf "%s.Key" $x)>
 					if err != nil {
@@ -166,7 +163,7 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 							Key <typeReference .Spec.KeySpec>
 							Value <typeReference .Spec.ValueSpec>
 						}{<$k>, <$v>})
-					<end>
+					<end ->
 					return nil
 				})
 				<$m>.Close()
@@ -263,7 +260,6 @@ func (m *mapGenerator) equalsUnhashable(g Generator, spec *compile.MapSpec) (str
 						}
 
 						if !<equals .Spec.ValueSpec $lv $rv> {
-							// Caveat: Behavior is undefined if there are multiple entries with the same key.
 							return false
 						}
 						<$ok> = true

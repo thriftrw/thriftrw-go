@@ -100,11 +100,11 @@ func (f fieldGroupGenerator) DefineStruct(g Generator) error {
 	return g.DeclareFromTemplate(
 		`type <.Name> struct {
 			<range .Fields>
-				<if .Required>
+				<- if .Required ->
 					<declFieldName .> <typeReference .Type> <tag .>
-				<else>
+				<- else ->
 					<declFieldName .> <typeReferencePtr .Type> <tag .>
-				<end>
+				<- end>
 			<end>
 		}`,
 		f,
@@ -209,85 +209,68 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 
 		<$v := newVar "v">
 		func (<$v> *<.Name>) ToWire() (<$wire>.Value, error) {
-    		<$fields := newVar "fields">
-    		<$i := newVar "i">
-			<$wVal := newVar "w">
+    		<$fields := newVar "fields" ->
+    		<- $i := newVar "i" ->
+			<- $wVal := newVar "w" ->
 
 			var (
-					<$fields> [<len .Fields>]<$wire>.Field
-					<$i> int = 0
-				<if len .Fields>
+				<$fields> [<len .Fields>]<$wire>.Field
+				<$i> int = 0
+				<if len .Fields ->
 					<$wVal> <$wire>.Value
 					err error
-				<end>
+				<- end>
 			)
 
 			<$structName := .Name>
 			<range .Fields>
-				<$fname := goName .>
-				<$f := printf "%s.%s" $v $fname>
-				<if .Required>
-					<if not (isPrimitiveType .Type)>
+				<- $fname := goName . ->
+				<- $f := printf "%s.%s" $v $fname ->
+				<- if .Required ->
+					<- if not (isPrimitiveType .Type) ->
 						if <$f> == nil {
-							// TODO: Include names of all missing fields in
-							// the error message.
-							return <$wVal>, <import "errors">.New(
-								"field <$fname> of <$structName> is required")
+							return <$wVal>, <import "errors">.New("field <$fname> of <$structName> is required")
 						}
-					<end>
+					<- end>
 						<$wVal>, err = <toWire .Type $f>
 						if err != nil {
-							// TODO: Nest the error inside a "failed to
-							// serialize field X of struct Y" error.
 							return <$wVal>, err
 						}
-						<$fields>[<$i>] = <$wire>.Field{
-							ID: <.ID>,
-							Value: <$wVal>,
-						}
+						<$fields>[<$i>] = <$wire>.Field{ID: <.ID>, Value: <$wVal>}
 						<$i>++
-				<else>
-					<if .Default>
+				<- else ->
+					<- if .Default ->
 						if <$f> == nil {
 							<$f> = <constantValuePtr .Default .Type>
 						}
 						{
-					<else>
+					<- else ->
 						if <$f> != nil {
-					<end>
+					<- end>
 							<$wVal>, err = <toWirePtr .Type $f>
 							if err != nil {
-								// TODO: Nest the error inside a "failed to
-								// serialize field X of struct Y" error.
 								return <$wVal>, err
 							}
-							<$fields>[<$i>] = <$wire>.Field{
-								ID: <.ID>,
-								Value: <$wVal>,
-							}
+							<$fields>[<$i>] = <$wire>.Field{ID: <.ID>, Value: <$wVal>}
 							<$i>++
 						}
-				<end>
+				<- end>
 			<end>
 
 			<if and .IsUnion (len .Fields)>
 				<$fmt := import "fmt">
 				<if .AllowEmptyUnion>
 					if <$i> > 1 {
-						return <$wire>.Value{}, <$fmt>.Errorf(
-							"<.Name> should have at most one field: got %v fields", <$i>)
+						return <$wire>.Value{}, <$fmt>.Errorf("<.Name> should have at most one field: got %v fields", <$i>)
 					}
 				<else>
 					if <$i> != 1 {
-						return <$wire>.Value{}, <$fmt>.Errorf(
-							"<.Name> should have exactly one field: got %v fields", <$i>)
+						return <$wire>.Value{}, <$fmt>.Errorf("<.Name> should have exactly one field: got %v fields", <$i>)
 					}
 				<end>
 			<end>
 
-			return <$wire>.NewValueStruct(
-				<$wire>.Struct{Fields: <$fields>[:<$i>]},
-			), nil
+			return <$wire>.NewValueStruct(<$wire>.Struct{Fields: <$fields>[:<$i>]}), nil
 		}
 		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))
 }
@@ -300,40 +283,36 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 		<$v := newVar "v">
 		<$w := newVar "w">
 		func (<$v> *<.Name>) FromWire(<$w> <$wire>.Value) error {
-			<if len .Fields>
-				var err error
-			<end>
+			<if len .Fields> var err error <end>
 			<$f := newVar "field">
 
 			<$isSet := newNamespace>
 			<range .Fields>
-				<if .Required>
+				<- if .Required ->
 					<$isSet.NewName (printf "%sIsSet" .Name)> := false
-				<end>
+				<- end>
 			<end>
 
 			for _, <$f> := range <$w>.GetStruct().Fields {
 				switch <$f>.ID {
-				<range .Fields>
+				<range .Fields ->
 				case <.ID>:
 					if <$f>.Value.Type() == <typeCode .Type> {
-						<$lhs := printf "%s.%s" $v (goName .)>
-						<$value := printf "%s.Value" $f>
-						<if .Required>
+						<- $lhs := printf "%s.%s" $v (goName .) ->
+						<- $value := printf "%s.Value" $f ->
+						<- if .Required ->
 							<$lhs>, err = <fromWire .Type $value>
-						<else>
+						<- else ->
 							<fromWirePtr .Type $lhs $value>
-						<end>
+						<- end>
 						if err != nil {
 							return err
-							// TODO: Nest the error inside a "failed to read
-							// field X of struct Y" error.
 						}
-						<if .Required>
+						<if .Required ->
 							<$isSet.Rotate (printf "%sIsSet" .Name)> = true
-						<end>
+						<- end>
 					}
-				<end>
+				<end ->
 				}
 			}
 
@@ -348,11 +327,8 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				<else>
 					<if .Required>
 						if !<$isSet.Rotate (printf "%sIsSet" .Name)> {
-							return <import "errors">.New(
-								"field <$fname> of <$structName> is required")
+							return <import "errors">.New("field <$fname> of <$structName> is required")
 						}
-						// TODO: Include names of all missing fields in the
-						// error message.
 					<end>
 				<end>
 			<end>
@@ -361,20 +337,20 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				<$fmt := import "fmt">
 				<$count := newVar "count">
 				<$count> := 0
-				<range .Fields>
-					if <$v>.<goName .> != nil { <$count>++ }
+				<range .Fields ->
+					if <$v>.<goName .> != nil {
+						<$count>++
+					}
 				<end>
-				<if .AllowEmptyUnion>
+				<- if .AllowEmptyUnion ->
 					if <$count> > 1 {
-						return <$fmt>.Errorf(
-							"<.Name> should have at most one field: got %v fields", <$count>)
+						return <$fmt>.Errorf( "<.Name> should have at most one field: got %v fields", <$count>)
 					}
-				<else>
+				<- else ->
 					if <$count> != 1 {
-						return <$fmt>.Errorf(
-							"<.Name> should have exactly one field: got %v fields", <$count>)
+						return <$fmt>.Errorf( "<.Name> should have exactly one field: got %v fields", <$count>)
 					}
-				<end>
+				<- end>
 			<end>
 			return nil
 		}
@@ -399,26 +375,25 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			var <$fields> [<len .Fields>]string
 			<$i> := 0
 			<range .Fields>
-				<$fname := goName .>
-				<$f := printf "%s.%s" $v $fname>
+				<- $fname := goName . ->
+				<- $f := printf "%s.%s" $v $fname ->
 
-				<if not .Required>
+				<- if not .Required ->
 					if <$f> != nil {
-						<if isPrimitiveType .Type>
+						<if isPrimitiveType .Type ->
 							<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", *(<$f>))
-						<else>
+						<- else ->
 							<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
-						<end>
+						<- end>
 						<$i>++
 					}
-				<else>
+				<- else ->
 					<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
 					<$i>++
-				<end>
+				<- end>
 			<end>
 
-			return <$fmt>.Sprintf(
-				"<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
+			return <$fmt>.Sprintf("<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
 		}
 		`, f)
 }
@@ -430,19 +405,19 @@ func (f fieldGroupGenerator) Equals(g Generator) error {
 		<$rhs := newVar "rhs">
 		func (<$v> *<.Name>) Equals(<$rhs> *<.Name>) bool {
 			<range .Fields>
-				<$fname := goName .>
-				<$lhsField := printf "%s.%s" $v $fname>
-				<$rhsField := printf "%s.%s" $rhs $fname>
+				<- $fname := goName . ->
+				<- $lhsField := printf "%s.%s" $v $fname ->
+				<- $rhsField := printf "%s.%s" $rhs $fname ->
 
-				<if .Required>
+				<- if .Required ->
 					if !<equals .Type $lhsField $rhsField> {
 						return false
 					}
-				<else>
+				<- else ->
 					if !<equalsPtr .Type $lhsField $rhsField> {
 						return false
 					}
-				<end>
+				<- end>
 			<end>
 			return true
 		}

@@ -50,7 +50,19 @@ const (
 )
 
 func ExceptionType_Values() []ExceptionType {
-	return []ExceptionType{ExceptionTypeUnknown, ExceptionTypeUnknownMethod, ExceptionTypeInvalidMessageType, ExceptionTypeWrongMethodName, ExceptionTypeBadSequenceID, ExceptionTypeMissingResult, ExceptionTypeInternalError, ExceptionTypeProtocolError, ExceptionTypeInvalidTransform, ExceptionTypeInvalidProtocol, ExceptionTypeUnsupportedClientType}
+	return []ExceptionType{
+		ExceptionTypeUnknown,
+		ExceptionTypeUnknownMethod,
+		ExceptionTypeInvalidMessageType,
+		ExceptionTypeWrongMethodName,
+		ExceptionTypeBadSequenceID,
+		ExceptionTypeMissingResult,
+		ExceptionTypeInternalError,
+		ExceptionTypeProtocolError,
+		ExceptionTypeInvalidTransform,
+		ExceptionTypeInvalidProtocol,
+		ExceptionTypeUnsupportedClientType,
+	}
 }
 
 func (v *ExceptionType) UnmarshalText(value []byte) error {
@@ -170,6 +182,7 @@ func (v *ExceptionType) UnmarshalJSON(text []byte) error {
 	if err != nil {
 		return err
 	}
+
 	switch w := t.(type) {
 	case json.Number:
 		x, err := w.Int64()
@@ -203,6 +216,7 @@ func (v *TApplicationException) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	if v.Message != nil {
 		w, err = wire.NewValueString(*(v.Message)), error(nil)
 		if err != nil {
@@ -219,6 +233,7 @@ func (v *TApplicationException) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -230,6 +245,7 @@ func _ExceptionType_Read(w wire.Value) (ExceptionType, error) {
 
 func (v *TApplicationException) FromWire(w wire.Value) error {
 	var err error
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -240,6 +256,7 @@ func (v *TApplicationException) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		case 2:
 			if field.Value.Type() == wire.TI32 {
@@ -249,9 +266,11 @@ func (v *TApplicationException) FromWire(w wire.Value) error {
 				if err != nil {
 					return err
 				}
+
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -259,6 +278,7 @@ func (v *TApplicationException) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	if v.Message != nil {
@@ -269,11 +289,13 @@ func (v *TApplicationException) String() string {
 		fields[i] = fmt.Sprintf("Type: %v", *(v.Type))
 		i++
 	}
+
 	return fmt.Sprintf("TApplicationException{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return (x == y)
@@ -283,6 +305,7 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 
 func _ExceptionType_EqualsPtr(lhs, rhs *ExceptionType) bool {
 	if lhs != nil && rhs != nil {
+
 		x := *lhs
 		y := *rhs
 		return x.Equals(y)
@@ -297,6 +320,7 @@ func (v *TApplicationException) Equals(rhs *TApplicationException) bool {
 	if !_ExceptionType_EqualsPtr(v.Type, rhs.Type) {
 		return false
 	}
+
 	return true
 }
 
@@ -304,6 +328,7 @@ func (v *TApplicationException) GetMessage() (o string) {
 	if v.Message != nil {
 		return *v.Message
 	}
+
 	return
 }
 
@@ -311,6 +336,7 @@ func (v *TApplicationException) GetType() (o ExceptionType) {
 	if v.Type != nil {
 		return *v.Type
 	}
+
 	return
 }
 

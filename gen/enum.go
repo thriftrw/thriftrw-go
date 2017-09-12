@@ -72,24 +72,28 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<if .Spec.Items>
 			const (
 			<range .Spec.Items>
-				<enumItemName $enumName .> <$enumName> = <.Value>
+				<- enumItemName $enumName .> <$enumName> = <.Value>
 			<end>
 			)
 
 		func <$enumName>_Values() []<$enumName> {
-			return []<$enumName>{<range .Spec.Items><enumItemName $enumName .>,<end>}
+			return []<$enumName>{
+				<range .Spec.Items>
+					<- enumItemName $enumName .>,
+				<end>
+			}
 		}
 		<end>
 
 		<$v := newVar "v">
 		func (<$v> *<$enumName>) UnmarshalText(value []byte) error {
 			switch string(value) {
-			<$enum := .Spec>
-			<range .Spec.Items>
+			<- $enum := .Spec ->
+			<range .Spec.Items ->
 				case "<.Name>":
 					*<$v> = <enumItemName $enumName .>
 					return nil
-			<end>
+			<end ->
 				default:
 					return <$fmt>.Errorf("unknown enum value %q for %q", value, "<$enumName>")
 			}
@@ -107,14 +111,14 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 
 		func (<$v> <$enumName>) String() string {
 			<$w> := int32(<$v>)
-			<if len .Spec.Items>
+			<if len .Spec.Items ->
 				switch <$w> {
-				<range .UniqueItems>
+				<range .UniqueItems ->
 					case <.Value>:
 						return "<.Name>"
-				<end>
+				<end ->
 				}
-			<end>
+			<end ->
 			return fmt.Sprintf("<$enumName>(%d)", <$w>)
 		}
 
@@ -124,21 +128,21 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		}
 
 		func (<$v> <$enumName>) MarshalJSON() ([]byte, error) {
-			<if len .Spec.Items>
+			<if len .Spec.Items ->
 				switch int32(<$v>) {
-				<range .UniqueItems>
+				<range .UniqueItems ->
 					case <.Value>:
 						return ([]byte)("\"<.Name>\""), nil
-				<end>
+				<end ->
 				}
-			<end>
+			<end ->
 			return ([]byte)(<$strconv>.FormatInt(int64(<$v>), 10)), nil
 		}
 
 		<$text := newVar "text">
 		func (<$v> *<$enumName>) UnmarshalJSON(<$text> []byte) error {
-			<$d := newVar "d">
-			<$t := newVar "t">
+			<- $d := newVar "d" ->
+			<- $t := newVar "t" ->
 
 			<$d> := <$json>.NewDecoder(<$bytes>.NewReader(<$text>))
 			<$d>.UseNumber()
@@ -149,7 +153,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 
 			switch <$w> := <$t>.(type) {
 			case <$json>.Number:
-				<$x := newVar "x">
+				<- $x := newVar "x" ->
 				<$x>, err := <$w>.Int64()
 				if err != nil {
 					return err

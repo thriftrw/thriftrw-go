@@ -201,10 +201,10 @@ func (w *WireGenerator) FromWirePtr(g Generator, spec compile.TypeSpec, lhs stri
 	}
 	return g.TextTemplate(
 		`
-			<$x := newVar "x">
+			<- $x := newVar "x" ->
 			var <$x> <typeReference .Spec>
 			<$x>, err = <fromWire .Spec .Value>
-			<.LHS> = &<$x>
+			<.LHS> = &<$x ->
 			`,
 		struct {
 			Spec  compile.TypeSpec

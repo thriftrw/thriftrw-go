@@ -45,6 +45,7 @@ func (v *UUIDConflict) ToWire() (wire.Value, error) {
 		w      wire.Value
 		err    error
 	)
+
 	w, err = v.LocalUUID.ToWire()
 	if err != nil {
 		return w, err
@@ -60,6 +61,7 @@ func (v *UUIDConflict) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
+
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
@@ -77,8 +79,10 @@ func _UUID_1_Read(w wire.Value) (*typedefs.UUID, error) {
 
 func (v *UUIDConflict) FromWire(w wire.Value) error {
 	var err error
+
 	localUUIDIsSet := false
 	importedUUIDIsSet := false
+
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
@@ -99,12 +103,15 @@ func (v *UUIDConflict) FromWire(w wire.Value) error {
 			}
 		}
 	}
+
 	if !localUUIDIsSet {
 		return errors.New("field LocalUUID of UUIDConflict is required")
 	}
+
 	if !importedUUIDIsSet {
 		return errors.New("field ImportedUUID of UUIDConflict is required")
 	}
+
 	return nil
 }
 
@@ -112,12 +119,14 @@ func (v *UUIDConflict) String() string {
 	if v == nil {
 		return "<nil>"
 	}
+
 	var fields [2]string
 	i := 0
 	fields[i] = fmt.Sprintf("LocalUUID: %v", v.LocalUUID)
 	i++
 	fields[i] = fmt.Sprintf("ImportedUUID: %v", v.ImportedUUID)
 	i++
+
 	return fmt.Sprintf("UUIDConflict{%v}", strings.Join(fields[:i], ", "))
 }
 
@@ -128,5 +137,6 @@ func (v *UUIDConflict) Equals(rhs *UUIDConflict) bool {
 	if !v.ImportedUUID.Equals(rhs.ImportedUUID) {
 		return false
 	}
+
 	return true
 }

@@ -50,24 +50,23 @@ func (s *setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, er
 			<$f := newVar "f">
 			<$w := newVar "w">
 			func (<$v> <.Name>) ForEach(<$f> func(<$wire>.Value) error) error {
-				<if isHashable .Spec.ValueSpec>
+				<- if isHashable .Spec.ValueSpec ->
 					for <$x> := range <$v> {
-				<else>
+				<- else ->
 					for _, <$x> := range <$v> {
-				<end>
+				<- end ->
 						<if not (isPrimitiveType .Spec.ValueSpec)>
 							if <$x> == nil {
 								return <import "fmt">.Errorf("invalid set item: value is nil")
 							}
-						<end>
+						<end ->
 
 						<$w>, err := <toWire .Spec.ValueSpec $x>
 						if err != nil {
-							// TODO(abg): nested error "invalid set item: %v"
 							return err
 						}
-						err = <$f>(<$w>)
-						if err != nil {
+
+						if err := <$f>(<$w>); err != nil {
 							return err
 						}
 					}
@@ -113,7 +112,7 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 					<$o> := make(<$setType>, <$s>.Size())
 				<else>
 					<$o> := make(<$setType>, 0, <$s>.Size())
-				<end>
+				<end ->
 				err := <$s>.ForEach(func(<$x> <$wire>.Value) error {
 					<$i>, err := <fromWire .Spec.ValueSpec $x>
 					if err != nil {
@@ -123,7 +122,7 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 						<$o>[<$i>] = struct{}{}
 					<else>
 						<$o> = append(<$o>, <$i>)
-					<end>
+					<end ->
 					return nil
 				})
 				<$s>.Close()

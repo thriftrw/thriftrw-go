@@ -75,11 +75,11 @@ func embedIDL(g Generator, i thriftPackageImporter, m *compile.Module) error {
 			Package: "<.Package>",
 			FilePath: <printf "%q" .FilePath>,
 			SHA1: "<.SHA1>",
-			<if .Includes>
+			<if .Includes ->
 				Includes: []*<$idl>.ThriftModule {<range .Includes>
 						<.>.ThriftModule, <end>
 					},
-			<end>
+			<end ->
 			Raw: rawIDL,
 		}
 		const rawIDL = <printf "%q" .Raw>

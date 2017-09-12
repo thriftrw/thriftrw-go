@@ -116,10 +116,10 @@ func constantList(g Generator, v compile.ConstantList, t compile.TypeSpec) (stri
 	valueSpec := compile.RootTypeSpec(t).(*compile.ListSpec).ValueSpec
 	return g.TextTemplate(
 		`
-		<$valueType := .ValueSpec>
-		<typeReference .Spec>{
+		<- $valueType := .ValueSpec ->
+		<- typeReference .Spec>{
 			<range .Value>
-				<constantValue . $valueType>,
+				<- constantValue . $valueType>,
 			<end>
 		}`, struct {
 			Spec      compile.TypeSpec
@@ -135,19 +135,18 @@ func constantMap(g Generator, v compile.ConstantMap, t compile.TypeSpec) (string
 	valueSpec := mapSpec.ValueSpec
 	return g.TextTemplate(
 		`
-		<$keyType := .KeySpec>
-		<$valueType := .ValueSpec>
-		<typeReference .Spec>{
+		<- $keyType := .KeySpec ->
+		<- $valueType := .ValueSpec ->
+		<- typeReference .Spec>{
 			<range .Value>
-				<if isHashable $keyType>
-					<constantValue .Key $keyType>:
-						<constantValue .Value $valueType>,
-				<else>
+				<- if isHashable $keyType ->
+					<constantValue .Key $keyType>: <constantValue .Value $valueType>,
+				<- else ->
 					{
 						Key: <constantValue .Key $keyType>,
 						Value: <constantValue .Value $valueType>,
 					},
-				<end>
+				<- end>
 			<end>
 		}`, struct {
 			Spec      compile.TypeSpec
@@ -162,14 +161,14 @@ func constantSet(g Generator, v compile.ConstantSet, t compile.TypeSpec) (string
 	valueSpec := compile.RootTypeSpec(t).(*compile.SetSpec).ValueSpec
 	return g.TextTemplate(
 		`
-		<$valueType := .ValueSpec>
-		<typeReference .Spec>{
+		<- $valueType := .ValueSpec ->
+		<- typeReference .Spec>{
 			<range .Value>
-				<if isHashable $valueType>
+				<- if isHashable $valueType ->
 					<constantValue . $valueType>: struct{}{},
-				<else>
+				<- else ->
 					<constantValue . $valueType>,
-				<end>
+				<- end>
 			<end>
 		}`, struct {
 			Spec      compile.TypeSpec
@@ -183,15 +182,15 @@ func constantStruct(g Generator, v *compile.ConstantStruct, t compile.TypeSpec) 
 	fields := compile.RootTypeSpec(t).(*compile.StructSpec).Fields
 	return g.TextTemplate(
 		`
-		<$fields := .Fields>
+		<- $fields := .Fields ->
 		&<typeName .Spec>{
 			<range $name, $value := .Value.Fields>
-				<$field := $fields.FindByName $name>
-				<if and (not $field.Required) (isPrimitiveType $field.Type)>
+				<- $field := $fields.FindByName $name ->
+				<- if and (not $field.Required) (isPrimitiveType $field.Type) ->
 					<goName $field>: <constantValuePtr $value $field.Type>,
-				<else>
+				<- else ->
 					<goName $field>: <constantValue $value $field.Type>,
-				<end>
+				<- end>
 			<end>
 		}`, struct {
 			Spec   compile.TypeSpec
