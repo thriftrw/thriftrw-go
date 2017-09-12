@@ -12,10 +12,28 @@ import (
 	"strings"
 )
 
+// KeyValue_GetValue_Args represents the arguments for the KeyValue.getValue function.
+//
+// The arguments for getValue are sent and received over the wire as this struct.
 type KeyValue_GetValue_Args struct {
 	Key *Key `json:"key,omitempty"`
 }
 
+// ToWire translates a KeyValue_GetValue_Args struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *KeyValue_GetValue_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -36,6 +54,23 @@ func (v *KeyValue_GetValue_Args) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a KeyValue_GetValue_Args struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a KeyValue_GetValue_Args struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v KeyValue_GetValue_Args
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *KeyValue_GetValue_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -57,6 +92,8 @@ func (v *KeyValue_GetValue_Args) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a KeyValue_GetValue_Args
+// struct.
 func (v *KeyValue_GetValue_Args) String() string {
 	if v == nil {
 		return "<nil>"
@@ -72,6 +109,10 @@ func (v *KeyValue_GetValue_Args) String() string {
 	return fmt.Sprintf("KeyValue_GetValue_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this KeyValue_GetValue_Args match the
+// provided KeyValue_GetValue_Args.
+//
+// This function performs a deep comparison.
 func (v *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
 	if !_Key_EqualsPtr(v.Key, rhs.Key) {
 		return false
@@ -80,6 +121,8 @@ func (v *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
 	return true
 }
 
+// GetKey returns the value of Key if it is set or its
+// zero value if it is unset.
 func (v *KeyValue_GetValue_Args) GetKey() (o Key) {
 	if v.Key != nil {
 		return *v.Key
@@ -88,22 +131,63 @@ func (v *KeyValue_GetValue_Args) GetKey() (o Key) {
 	return
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the arguments.
+//
+// This will always be "getValue" for this struct.
 func (v *KeyValue_GetValue_Args) MethodName() string {
 	return "getValue"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Call for this struct.
 func (v *KeyValue_GetValue_Args) EnvelopeType() wire.EnvelopeType {
 	return wire.Call
 }
 
+// KeyValue_GetValue_Helper provides functions that aid in handling the
+// parameters and return values of the KeyValue.getValue
+// function.
 var KeyValue_GetValue_Helper = struct {
+	// Args accepts the parameters of getValue in-order and returns
+	// the arguments struct for the function.
 	Args func(
 		key *Key,
 	) *KeyValue_GetValue_Args
 
+	// IsException returns true if the given error can be thrown
+	// by getValue.
+	//
+	// An error can be thrown by getValue only if the
+	// corresponding exception type was mentioned in the 'throws'
+	// section for it in the Thrift file.
 	IsException func(error) bool
 
-	WrapResponse   func(*unions.ArbitraryValue, error) (*KeyValue_GetValue_Result, error)
+	// WrapResponse returns the result struct for getValue
+	// given its return value and error.
+	//
+	// This allows mapping values and errors returned by
+	// getValue into a serializable result struct.
+	// WrapResponse returns a non-nil error if the provided
+	// error cannot be thrown by getValue
+	//
+	//   value, err := getValue(args)
+	//   result, err := KeyValue_GetValue_Helper.WrapResponse(value, err)
+	//   if err != nil {
+	//     return fmt.Errorf("unexpected error from getValue: %v", err)
+	//   }
+	//   serialize(result)
+	WrapResponse func(*unions.ArbitraryValue, error) (*KeyValue_GetValue_Result, error)
+
+	// UnwrapResponse takes the result struct for getValue
+	// and returns the value or error returned by it.
+	//
+	// The error is non-nil only if getValue threw an
+	// exception.
+	//
+	//   result := deserialize(bytes)
+	//   value, err := KeyValue_GetValue_Helper.UnwrapResponse(result)
 	UnwrapResponse func(*KeyValue_GetValue_Result) (*unions.ArbitraryValue, error)
 }{}
 
@@ -157,11 +241,32 @@ func init() {
 
 }
 
+// KeyValue_GetValue_Result represents the result of a KeyValue.getValue function call.
+//
+// The result of a getValue execution is sent and received over the wire as this struct.
+//
+// Success is set only if the function did not throw an exception.
 type KeyValue_GetValue_Result struct {
+	// Value returned by getValue after a successful execution.
 	Success      *unions.ArbitraryValue            `json:"success,omitempty"`
 	DoesNotExist *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
 }
 
+// ToWire translates a KeyValue_GetValue_Result struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *KeyValue_GetValue_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -194,6 +299,23 @@ func (v *KeyValue_GetValue_Result) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a KeyValue_GetValue_Result struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a KeyValue_GetValue_Result struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v KeyValue_GetValue_Result
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *KeyValue_GetValue_Result) FromWire(w wire.Value) error {
 	var err error
 
@@ -232,6 +354,8 @@ func (v *KeyValue_GetValue_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a KeyValue_GetValue_Result
+// struct.
 func (v *KeyValue_GetValue_Result) String() string {
 	if v == nil {
 		return "<nil>"
@@ -251,6 +375,10 @@ func (v *KeyValue_GetValue_Result) String() string {
 	return fmt.Sprintf("KeyValue_GetValue_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this KeyValue_GetValue_Result match the
+// provided KeyValue_GetValue_Result.
+//
+// This function performs a deep comparison.
 func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
 	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
 		return false
@@ -262,10 +390,17 @@ func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
 	return true
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the result.
+//
+// This will always be "getValue" for this struct.
 func (v *KeyValue_GetValue_Result) MethodName() string {
 	return "getValue"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Reply for this struct.
 func (v *KeyValue_GetValue_Result) EnvelopeType() wire.EnvelopeType {
 	return wire.Reply
 }

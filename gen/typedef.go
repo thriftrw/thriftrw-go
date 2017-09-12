@@ -64,17 +64,24 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 
 		<$v := newVar "v">
 		<$x := newVar "x">
+		// ToWire translates <typeName .> into a Thrift-level intermediate
+		// representation. This intermediate representation may be serialized
+		// into bytes using a ThriftRW protocol implementation.
 		func (<$v> <$typedefType>) ToWire() (<$wire>.Value, error) {
 			<$x> := (<typeReference .Target>)(<$v>)
 			return <toWire .Target $x>
 		}
 
+		// String returns a readable string representation of <typeName .>.
 		func (<$v> <$typedefType>) String() string {
 			<$x> := (<typeReference .Target>)(<$v>)
 			return <$fmt>.Sprint(<$x>)
 		}
 
 		<$w := newVar "w">
+		// FromWire deserializes <typeName .> from its Thrift-level
+		// representation. The Thrift-level representation may be obtained
+		// from a ThriftRW protocol implementation.
 		func (<$v> *<typeName .>) FromWire(<$w> <$wire>.Value) error {
 			<if isStructType . ->
 				return (<typeReference .Target>)(<$v>).FromWire(<$w>)
@@ -87,6 +94,8 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 
 		<$lhs := newVar "lhs">
 		<$rhs := newVar "rhs">
+		// Equals returns true if this <typeName .> is equal to the provided
+		// <typeName .>.
 		func (<$lhs> <$typedefType>) Equals(<$rhs> <$typedefType>) bool {
 			<if isStructType . ->
 				return (<typeReference .Target>)(<$lhs>).Equals((<typeReference .Target>)(<$rhs>))

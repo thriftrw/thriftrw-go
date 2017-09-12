@@ -13,22 +13,31 @@ import (
 
 type UUID string
 
+// ToWire translates UUID into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
 func (v UUID) ToWire() (wire.Value, error) {
 	x := (string)(v)
 	return wire.NewValueString(x), error(nil)
 }
 
+// String returns a readable string representation of UUID.
 func (v UUID) String() string {
 	x := (string)(v)
 	return fmt.Sprint(x)
 }
 
+// FromWire deserializes UUID from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
 func (v *UUID) FromWire(w wire.Value) error {
 	x, err := w.GetString(), error(nil)
 	*v = (UUID)(x)
 	return err
 }
 
+// Equals returns true if this UUID is equal to the provided
+// UUID.
 func (lhs UUID) Equals(rhs UUID) bool {
 	return (lhs == rhs)
 }
@@ -38,6 +47,21 @@ type UUIDConflict struct {
 	ImportedUUID *typedefs.UUID `json:"importedUUID,required"`
 }
 
+// ToWire translates a UUIDConflict struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *UUIDConflict) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -77,6 +101,23 @@ func _UUID_1_Read(w wire.Value) (*typedefs.UUID, error) {
 	return &x, err
 }
 
+// FromWire deserializes a UUIDConflict struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a UUIDConflict struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v UUIDConflict
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *UUIDConflict) FromWire(w wire.Value) error {
 	var err error
 
@@ -115,6 +156,8 @@ func (v *UUIDConflict) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a UUIDConflict
+// struct.
 func (v *UUIDConflict) String() string {
 	if v == nil {
 		return "<nil>"
@@ -130,6 +173,10 @@ func (v *UUIDConflict) String() string {
 	return fmt.Sprintf("UUIDConflict{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this UUIDConflict match the
+// provided UUIDConflict.
+//
+// This function performs a deep comparison.
 func (v *UUIDConflict) Equals(rhs *UUIDConflict) bool {
 	if !(v.LocalUUID == rhs.LocalUUID) {
 		return false

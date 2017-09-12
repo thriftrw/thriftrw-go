@@ -76,6 +76,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			<end>
 			)
 
+		// <$enumName>_Values returns all recognized values of <$enumName>.
 		func <$enumName>_Values() []<$enumName> {
 			return []<$enumName>{
 				<range .Spec.Items>
@@ -86,6 +87,13 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<end>
 
 		<$v := newVar "v">
+		// UnmarshalText tries to decode <$enumName> from a byte slice
+		// containing its name.
+		<- if .Spec.Items>
+		//
+		//   var <$v> <$enumName>
+		//   err := <$v>.UnmarshalText([]byte("<(index .Spec.Items 0).Name>"))
+		<- end>
 		func (<$v> *<$enumName>) UnmarshalText(value []byte) error {
 			switch string(value) {
 			<- $enum := .Spec ->
@@ -99,16 +107,35 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			}
 		}
 
+		// ToWire translates <$enumName> into a Thrift-level intermediate
+		// representation. This intermediate representation may be serialized
+		// into bytes using a ThriftRW protocol implementation.
+		//
+		// Enums are represented as 32-bit integers over the wire.
 		func (<$v> <$enumName>) ToWire() (<$wire>.Value, error) {
 			return <$wire>.NewValueI32(int32(<$v>)), nil
 		}
 
 		<$w := newVar "w">
+		// FromWire deserializes <$enumName> from its Thrift-level
+		// representation.
+		//
+		//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+		//   if err != nil {
+		//     return <$enumName>(0), err
+		//   }
+		//
+		//   var <$v> <$enumName>
+		//   if err := <$v>.FromWire(x); err != nil {
+		//     return <$enumName>(0), err
+		//   }
+		//   return <$v>, nil
 		func (<$v> *<$enumName>) FromWire(<$w> <$wire>.Value) error {
 			*<$v> = (<$enumName>)(<$w>.GetI32());
 			return nil
 		}
 
+		// String returns a readable string representation of <$enumName>.
 		func (<$v> <$enumName>) String() string {
 			<$w> := int32(<$v>)
 			<if len .Spec.Items ->
@@ -123,10 +150,18 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		}
 
 		<$rhs := newVar "rhs">
+		// Equals returns true if this <$enumName> value matches the provided
+		// value.
 		func (<$v> <$enumName>) Equals(<$rhs> <$enumName>) bool {
 			return <$v> == <$rhs>
 		}
 
+		// MarshalJSON serializes <$enumName> into JSON.
+		//
+		// If the enum value is recognized, its name is returned. Otherwise,
+		// its integer value is returned.
+		//
+		// This implements json.Marshaler.
 		func (<$v> <$enumName>) MarshalJSON() ([]byte, error) {
 			<if len .Spec.Items ->
 				switch int32(<$v>) {
@@ -140,6 +175,13 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		}
 
 		<$text := newVar "text">
+		// UnmarshalJSON attempts to decode <$enumName> from its JSON
+		// representation.
+		//
+		// This implementation supports both, numeric and string inputs. If a
+		// string is provided, it must be a known enum name.
+		//
+		// This implements json.Unmarshaler.
 		func (<$v> *<$enumName>) UnmarshalJSON(<$text> []byte) error {
 			<- $d := newVar "d" ->
 			<- $t := newVar "t" ->

@@ -30,10 +30,28 @@ import (
 	"strings"
 )
 
+// ServiceGenerator_Generate_Args represents the arguments for the ServiceGenerator.generate function.
+//
+// The arguments for generate are sent and received over the wire as this struct.
 type ServiceGenerator_Generate_Args struct {
 	Request *GenerateServiceRequest `json:"request,omitempty"`
 }
 
+// ToWire translates a ServiceGenerator_Generate_Args struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *ServiceGenerator_Generate_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -60,6 +78,23 @@ func _GenerateServiceRequest_Read(w wire.Value) (*GenerateServiceRequest, error)
 	return &v, err
 }
 
+// FromWire deserializes a ServiceGenerator_Generate_Args struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a ServiceGenerator_Generate_Args struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v ServiceGenerator_Generate_Args
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *ServiceGenerator_Generate_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -79,6 +114,8 @@ func (v *ServiceGenerator_Generate_Args) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a ServiceGenerator_Generate_Args
+// struct.
 func (v *ServiceGenerator_Generate_Args) String() string {
 	if v == nil {
 		return "<nil>"
@@ -94,6 +131,10 @@ func (v *ServiceGenerator_Generate_Args) String() string {
 	return fmt.Sprintf("ServiceGenerator_Generate_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this ServiceGenerator_Generate_Args match the
+// provided ServiceGenerator_Generate_Args.
+//
+// This function performs a deep comparison.
 func (v *ServiceGenerator_Generate_Args) Equals(rhs *ServiceGenerator_Generate_Args) bool {
 	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
 		return false
@@ -102,22 +143,63 @@ func (v *ServiceGenerator_Generate_Args) Equals(rhs *ServiceGenerator_Generate_A
 	return true
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the arguments.
+//
+// This will always be "generate" for this struct.
 func (v *ServiceGenerator_Generate_Args) MethodName() string {
 	return "generate"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Call for this struct.
 func (v *ServiceGenerator_Generate_Args) EnvelopeType() wire.EnvelopeType {
 	return wire.Call
 }
 
+// ServiceGenerator_Generate_Helper provides functions that aid in handling the
+// parameters and return values of the ServiceGenerator.generate
+// function.
 var ServiceGenerator_Generate_Helper = struct {
+	// Args accepts the parameters of generate in-order and returns
+	// the arguments struct for the function.
 	Args func(
 		request *GenerateServiceRequest,
 	) *ServiceGenerator_Generate_Args
 
+	// IsException returns true if the given error can be thrown
+	// by generate.
+	//
+	// An error can be thrown by generate only if the
+	// corresponding exception type was mentioned in the 'throws'
+	// section for it in the Thrift file.
 	IsException func(error) bool
 
-	WrapResponse   func(*GenerateServiceResponse, error) (*ServiceGenerator_Generate_Result, error)
+	// WrapResponse returns the result struct for generate
+	// given its return value and error.
+	//
+	// This allows mapping values and errors returned by
+	// generate into a serializable result struct.
+	// WrapResponse returns a non-nil error if the provided
+	// error cannot be thrown by generate
+	//
+	//   value, err := generate(args)
+	//   result, err := ServiceGenerator_Generate_Helper.WrapResponse(value, err)
+	//   if err != nil {
+	//     return fmt.Errorf("unexpected error from generate: %v", err)
+	//   }
+	//   serialize(result)
+	WrapResponse func(*GenerateServiceResponse, error) (*ServiceGenerator_Generate_Result, error)
+
+	// UnwrapResponse takes the result struct for generate
+	// and returns the value or error returned by it.
+	//
+	// The error is non-nil only if generate threw an
+	// exception.
+	//
+	//   result := deserialize(bytes)
+	//   value, err := ServiceGenerator_Generate_Helper.UnwrapResponse(result)
 	UnwrapResponse func(*ServiceGenerator_Generate_Result) (*GenerateServiceResponse, error)
 }{}
 
@@ -157,10 +239,31 @@ func init() {
 
 }
 
+// ServiceGenerator_Generate_Result represents the result of a ServiceGenerator.generate function call.
+//
+// The result of a generate execution is sent and received over the wire as this struct.
+//
+// Success is set only if the function did not throw an exception.
 type ServiceGenerator_Generate_Result struct {
+	// Value returned by generate after a successful execution.
 	Success *GenerateServiceResponse `json:"success,omitempty"`
 }
 
+// ToWire translates a ServiceGenerator_Generate_Result struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *ServiceGenerator_Generate_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -191,6 +294,23 @@ func _GenerateServiceResponse_Read(w wire.Value) (*GenerateServiceResponse, erro
 	return &v, err
 }
 
+// FromWire deserializes a ServiceGenerator_Generate_Result struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a ServiceGenerator_Generate_Result struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v ServiceGenerator_Generate_Result
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *ServiceGenerator_Generate_Result) FromWire(w wire.Value) error {
 	var err error
 
@@ -218,6 +338,8 @@ func (v *ServiceGenerator_Generate_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a ServiceGenerator_Generate_Result
+// struct.
 func (v *ServiceGenerator_Generate_Result) String() string {
 	if v == nil {
 		return "<nil>"
@@ -233,6 +355,10 @@ func (v *ServiceGenerator_Generate_Result) String() string {
 	return fmt.Sprintf("ServiceGenerator_Generate_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this ServiceGenerator_Generate_Result match the
+// provided ServiceGenerator_Generate_Result.
+//
+// This function performs a deep comparison.
 func (v *ServiceGenerator_Generate_Result) Equals(rhs *ServiceGenerator_Generate_Result) bool {
 	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
 		return false
@@ -241,10 +367,17 @@ func (v *ServiceGenerator_Generate_Result) Equals(rhs *ServiceGenerator_Generate
 	return true
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the result.
+//
+// This will always be "generate" for this struct.
 func (v *ServiceGenerator_Generate_Result) MethodName() string {
 	return "generate"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Reply for this struct.
 func (v *ServiceGenerator_Generate_Result) EnvelopeType() wire.EnvelopeType {
 	return wire.Reply
 }

@@ -16,6 +16,21 @@ type ConflictingNamesSetValueArgs struct {
 	Value []byte `json:"value,required"`
 }
 
+// ToWire translates a ConflictingNamesSetValueArgs struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *ConflictingNamesSetValueArgs) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -43,6 +58,23 @@ func (v *ConflictingNamesSetValueArgs) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a ConflictingNamesSetValueArgs struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a ConflictingNamesSetValueArgs struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v ConflictingNamesSetValueArgs
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *ConflictingNamesSetValueArgs) FromWire(w wire.Value) error {
 	var err error
 
@@ -81,6 +113,8 @@ func (v *ConflictingNamesSetValueArgs) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a ConflictingNamesSetValueArgs
+// struct.
 func (v *ConflictingNamesSetValueArgs) String() string {
 	if v == nil {
 		return "<nil>"
@@ -96,6 +130,10 @@ func (v *ConflictingNamesSetValueArgs) String() string {
 	return fmt.Sprintf("ConflictingNamesSetValueArgs{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this ConflictingNamesSetValueArgs match the
+// provided ConflictingNamesSetValueArgs.
+//
+// This function performs a deep comparison.
 func (v *ConflictingNamesSetValueArgs) Equals(rhs *ConflictingNamesSetValueArgs) bool {
 	if !(v.Key == rhs.Key) {
 		return false
@@ -111,6 +149,21 @@ type InternalError struct {
 	Message *string `json:"message,omitempty"`
 }
 
+// ToWire translates a InternalError struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *InternalError) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -131,6 +184,23 @@ func (v *InternalError) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a InternalError struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a InternalError struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v InternalError
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *InternalError) FromWire(w wire.Value) error {
 	var err error
 
@@ -152,6 +222,8 @@ func (v *InternalError) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a InternalError
+// struct.
 func (v *InternalError) String() string {
 	if v == nil {
 		return "<nil>"
@@ -177,6 +249,10 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 	return lhs == nil && rhs == nil
 }
 
+// Equals returns true if all the fields of this InternalError match the
+// provided InternalError.
+//
+// This function performs a deep comparison.
 func (v *InternalError) Equals(rhs *InternalError) bool {
 	if !_String_EqualsPtr(v.Message, rhs.Message) {
 		return false
@@ -185,6 +261,8 @@ func (v *InternalError) Equals(rhs *InternalError) bool {
 	return true
 }
 
+// GetMessage returns the value of Message if it is set or its
+// zero value if it is unset.
 func (v *InternalError) GetMessage() (o string) {
 	if v.Message != nil {
 		return *v.Message
@@ -199,22 +277,31 @@ func (v *InternalError) Error() string {
 
 type Key string
 
+// ToWire translates Key into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
 func (v Key) ToWire() (wire.Value, error) {
 	x := (string)(v)
 	return wire.NewValueString(x), error(nil)
 }
 
+// String returns a readable string representation of Key.
 func (v Key) String() string {
 	x := (string)(v)
 	return fmt.Sprint(x)
 }
 
+// FromWire deserializes Key from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
 func (v *Key) FromWire(w wire.Value) error {
 	x, err := w.GetString(), error(nil)
 	*v = (Key)(x)
 	return err
 }
 
+// Equals returns true if this Key is equal to the provided
+// Key.
 func (lhs Key) Equals(rhs Key) bool {
 	return (lhs == rhs)
 }

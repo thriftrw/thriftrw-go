@@ -30,10 +30,28 @@ import (
 	"strings"
 )
 
+// Plugin_Handshake_Args represents the arguments for the Plugin.handshake function.
+//
+// The arguments for handshake are sent and received over the wire as this struct.
 type Plugin_Handshake_Args struct {
 	Request *HandshakeRequest `json:"request,omitempty"`
 }
 
+// ToWire translates a Plugin_Handshake_Args struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Plugin_Handshake_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -60,6 +78,23 @@ func _HandshakeRequest_Read(w wire.Value) (*HandshakeRequest, error) {
 	return &v, err
 }
 
+// FromWire deserializes a Plugin_Handshake_Args struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Plugin_Handshake_Args struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Plugin_Handshake_Args
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Plugin_Handshake_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -79,6 +114,8 @@ func (v *Plugin_Handshake_Args) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Plugin_Handshake_Args
+// struct.
 func (v *Plugin_Handshake_Args) String() string {
 	if v == nil {
 		return "<nil>"
@@ -94,6 +131,10 @@ func (v *Plugin_Handshake_Args) String() string {
 	return fmt.Sprintf("Plugin_Handshake_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this Plugin_Handshake_Args match the
+// provided Plugin_Handshake_Args.
+//
+// This function performs a deep comparison.
 func (v *Plugin_Handshake_Args) Equals(rhs *Plugin_Handshake_Args) bool {
 	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
 		return false
@@ -102,22 +143,63 @@ func (v *Plugin_Handshake_Args) Equals(rhs *Plugin_Handshake_Args) bool {
 	return true
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the arguments.
+//
+// This will always be "handshake" for this struct.
 func (v *Plugin_Handshake_Args) MethodName() string {
 	return "handshake"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Call for this struct.
 func (v *Plugin_Handshake_Args) EnvelopeType() wire.EnvelopeType {
 	return wire.Call
 }
 
+// Plugin_Handshake_Helper provides functions that aid in handling the
+// parameters and return values of the Plugin.handshake
+// function.
 var Plugin_Handshake_Helper = struct {
+	// Args accepts the parameters of handshake in-order and returns
+	// the arguments struct for the function.
 	Args func(
 		request *HandshakeRequest,
 	) *Plugin_Handshake_Args
 
+	// IsException returns true if the given error can be thrown
+	// by handshake.
+	//
+	// An error can be thrown by handshake only if the
+	// corresponding exception type was mentioned in the 'throws'
+	// section for it in the Thrift file.
 	IsException func(error) bool
 
-	WrapResponse   func(*HandshakeResponse, error) (*Plugin_Handshake_Result, error)
+	// WrapResponse returns the result struct for handshake
+	// given its return value and error.
+	//
+	// This allows mapping values and errors returned by
+	// handshake into a serializable result struct.
+	// WrapResponse returns a non-nil error if the provided
+	// error cannot be thrown by handshake
+	//
+	//   value, err := handshake(args)
+	//   result, err := Plugin_Handshake_Helper.WrapResponse(value, err)
+	//   if err != nil {
+	//     return fmt.Errorf("unexpected error from handshake: %v", err)
+	//   }
+	//   serialize(result)
+	WrapResponse func(*HandshakeResponse, error) (*Plugin_Handshake_Result, error)
+
+	// UnwrapResponse takes the result struct for handshake
+	// and returns the value or error returned by it.
+	//
+	// The error is non-nil only if handshake threw an
+	// exception.
+	//
+	//   result := deserialize(bytes)
+	//   value, err := Plugin_Handshake_Helper.UnwrapResponse(result)
 	UnwrapResponse func(*Plugin_Handshake_Result) (*HandshakeResponse, error)
 }{}
 
@@ -157,10 +239,31 @@ func init() {
 
 }
 
+// Plugin_Handshake_Result represents the result of a Plugin.handshake function call.
+//
+// The result of a handshake execution is sent and received over the wire as this struct.
+//
+// Success is set only if the function did not throw an exception.
 type Plugin_Handshake_Result struct {
+	// Value returned by handshake after a successful execution.
 	Success *HandshakeResponse `json:"success,omitempty"`
 }
 
+// ToWire translates a Plugin_Handshake_Result struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Plugin_Handshake_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -191,6 +294,23 @@ func _HandshakeResponse_Read(w wire.Value) (*HandshakeResponse, error) {
 	return &v, err
 }
 
+// FromWire deserializes a Plugin_Handshake_Result struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Plugin_Handshake_Result struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Plugin_Handshake_Result
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Plugin_Handshake_Result) FromWire(w wire.Value) error {
 	var err error
 
@@ -218,6 +338,8 @@ func (v *Plugin_Handshake_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Plugin_Handshake_Result
+// struct.
 func (v *Plugin_Handshake_Result) String() string {
 	if v == nil {
 		return "<nil>"
@@ -233,6 +355,10 @@ func (v *Plugin_Handshake_Result) String() string {
 	return fmt.Sprintf("Plugin_Handshake_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this Plugin_Handshake_Result match the
+// provided Plugin_Handshake_Result.
+//
+// This function performs a deep comparison.
 func (v *Plugin_Handshake_Result) Equals(rhs *Plugin_Handshake_Result) bool {
 	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
 		return false
@@ -241,10 +367,17 @@ func (v *Plugin_Handshake_Result) Equals(rhs *Plugin_Handshake_Result) bool {
 	return true
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the result.
+//
+// This will always be "handshake" for this struct.
 func (v *Plugin_Handshake_Result) MethodName() string {
 	return "handshake"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Reply for this struct.
 func (v *Plugin_Handshake_Result) EnvelopeType() wire.EnvelopeType {
 	return wire.Reply
 }

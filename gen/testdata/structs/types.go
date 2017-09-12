@@ -17,6 +17,21 @@ type ContactInfo struct {
 	EmailAddress string `json:"emailAddress,required"`
 }
 
+// ToWire translates a ContactInfo struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *ContactInfo) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -35,6 +50,23 @@ func (v *ContactInfo) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a ContactInfo struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a ContactInfo struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v ContactInfo
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *ContactInfo) FromWire(w wire.Value) error {
 	var err error
 
@@ -60,6 +92,8 @@ func (v *ContactInfo) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a ContactInfo
+// struct.
 func (v *ContactInfo) String() string {
 	if v == nil {
 		return "<nil>"
@@ -73,6 +107,10 @@ func (v *ContactInfo) String() string {
 	return fmt.Sprintf("ContactInfo{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this ContactInfo match the
+// provided ContactInfo.
+//
+// This function performs a deep comparison.
 func (v *ContactInfo) Equals(rhs *ContactInfo) bool {
 	if !(v.EmailAddress == rhs.EmailAddress) {
 		return false
@@ -148,6 +186,21 @@ func (_List_Double_ValueList) ValueType() wire.Type {
 
 func (_List_Double_ValueList) Close() {}
 
+// ToWire translates a DefaultsStruct struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	var (
 		fields [8]wire.Field
@@ -327,6 +380,23 @@ func _Edge_Read(w wire.Value) (*Edge, error) {
 	return &v, err
 }
 
+// FromWire deserializes a DefaultsStruct struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a DefaultsStruct struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v DefaultsStruct
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *DefaultsStruct) FromWire(w wire.Value) error {
 	var err error
 
@@ -467,6 +537,8 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a DefaultsStruct
+// struct.
 func (v *DefaultsStruct) String() string {
 	if v == nil {
 		return "<nil>"
@@ -560,6 +632,10 @@ func _List_Double_Equals(lhs, rhs []float64) bool {
 	return true
 }
 
+// Equals returns true if all the fields of this DefaultsStruct match the
+// provided DefaultsStruct.
+//
+// This function performs a deep comparison.
 func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 	if !_I32_EqualsPtr(v.RequiredPrimitive, rhs.RequiredPrimitive) {
 		return false
@@ -589,6 +665,8 @@ func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 	return true
 }
 
+// GetRequiredPrimitive returns the value of RequiredPrimitive if it is set or its
+// zero value if it is unset.
 func (v *DefaultsStruct) GetRequiredPrimitive() (o int32) {
 	if v.RequiredPrimitive != nil {
 		return *v.RequiredPrimitive
@@ -597,6 +675,8 @@ func (v *DefaultsStruct) GetRequiredPrimitive() (o int32) {
 	return
 }
 
+// GetOptionalPrimitive returns the value of OptionalPrimitive if it is set or its
+// zero value if it is unset.
 func (v *DefaultsStruct) GetOptionalPrimitive() (o int32) {
 	if v.OptionalPrimitive != nil {
 		return *v.OptionalPrimitive
@@ -605,6 +685,8 @@ func (v *DefaultsStruct) GetOptionalPrimitive() (o int32) {
 	return
 }
 
+// GetRequiredEnum returns the value of RequiredEnum if it is set or its
+// zero value if it is unset.
 func (v *DefaultsStruct) GetRequiredEnum() (o enums.EnumDefault) {
 	if v.RequiredEnum != nil {
 		return *v.RequiredEnum
@@ -613,6 +695,8 @@ func (v *DefaultsStruct) GetRequiredEnum() (o enums.EnumDefault) {
 	return
 }
 
+// GetOptionalEnum returns the value of OptionalEnum if it is set or its
+// zero value if it is unset.
 func (v *DefaultsStruct) GetOptionalEnum() (o enums.EnumDefault) {
 	if v.OptionalEnum != nil {
 		return *v.OptionalEnum
@@ -626,6 +710,21 @@ type Edge struct {
 	EndPoint   *Point `json:"endPoint,required"`
 }
 
+// ToWire translates a Edge struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Edge) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -662,6 +761,23 @@ func _Point_Read(w wire.Value) (*Point, error) {
 	return &v, err
 }
 
+// FromWire deserializes a Edge struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Edge struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Edge
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Edge) FromWire(w wire.Value) error {
 	var err error
 
@@ -700,6 +816,8 @@ func (v *Edge) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Edge
+// struct.
 func (v *Edge) String() string {
 	if v == nil {
 		return "<nil>"
@@ -715,6 +833,10 @@ func (v *Edge) String() string {
 	return fmt.Sprintf("Edge{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this Edge match the
+// provided Edge.
+//
+// This function performs a deep comparison.
 func (v *Edge) Equals(rhs *Edge) bool {
 	if !v.StartPoint.Equals(rhs.StartPoint) {
 		return false
@@ -729,6 +851,21 @@ func (v *Edge) Equals(rhs *Edge) bool {
 type EmptyStruct struct {
 }
 
+// ToWire translates a EmptyStruct struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *EmptyStruct) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -738,6 +875,23 @@ func (v *EmptyStruct) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a EmptyStruct struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a EmptyStruct struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v EmptyStruct
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *EmptyStruct) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {
@@ -748,6 +902,8 @@ func (v *EmptyStruct) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a EmptyStruct
+// struct.
 func (v *EmptyStruct) String() string {
 	if v == nil {
 		return "<nil>"
@@ -759,6 +915,10 @@ func (v *EmptyStruct) String() string {
 	return fmt.Sprintf("EmptyStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this EmptyStruct match the
+// provided EmptyStruct.
+//
+// This function performs a deep comparison.
 func (v *EmptyStruct) Equals(rhs *EmptyStruct) bool {
 
 	return true
@@ -769,6 +929,21 @@ type Frame struct {
 	Size    *Size  `json:"size,required"`
 }
 
+// ToWire translates a Frame struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Frame) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -805,6 +980,23 @@ func _Size_Read(w wire.Value) (*Size, error) {
 	return &v, err
 }
 
+// FromWire deserializes a Frame struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Frame struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Frame
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Frame) FromWire(w wire.Value) error {
 	var err error
 
@@ -843,6 +1035,8 @@ func (v *Frame) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Frame
+// struct.
 func (v *Frame) String() string {
 	if v == nil {
 		return "<nil>"
@@ -858,6 +1052,10 @@ func (v *Frame) String() string {
 	return fmt.Sprintf("Frame{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this Frame match the
+// provided Frame.
+//
+// This function performs a deep comparison.
 func (v *Frame) Equals(rhs *Frame) bool {
 	if !v.TopLeft.Equals(rhs.TopLeft) {
 		return false
@@ -878,6 +1076,21 @@ type GoTags struct {
 	FooBarWithRequired  string  `json:"foobarWithRequired,required"`
 }
 
+// ToWire translates a GoTags struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *GoTags) ToWire() (wire.Value, error) {
 	var (
 		fields [6]wire.Field
@@ -933,6 +1146,23 @@ func (v *GoTags) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a GoTags struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a GoTags struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v GoTags
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *GoTags) FromWire(w wire.Value) error {
 	var err error
 
@@ -1019,6 +1249,8 @@ func (v *GoTags) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a GoTags
+// struct.
 func (v *GoTags) String() string {
 	if v == nil {
 		return "<nil>"
@@ -1056,6 +1288,10 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 	return lhs == nil && rhs == nil
 }
 
+// Equals returns true if all the fields of this GoTags match the
+// provided GoTags.
+//
+// This function performs a deep comparison.
 func (v *GoTags) Equals(rhs *GoTags) bool {
 	if !(v.Foo == rhs.Foo) {
 		return false
@@ -1079,6 +1315,8 @@ func (v *GoTags) Equals(rhs *GoTags) bool {
 	return true
 }
 
+// GetBar returns the value of Bar if it is set or its
+// zero value if it is unset.
 func (v *GoTags) GetBar() (o string) {
 	if v.Bar != nil {
 		return *v.Bar
@@ -1087,6 +1325,8 @@ func (v *GoTags) GetBar() (o string) {
 	return
 }
 
+// GetFooBarWithOmitEmpty returns the value of FooBarWithOmitEmpty if it is set or its
+// zero value if it is unset.
 func (v *GoTags) GetFooBarWithOmitEmpty() (o string) {
 	if v.FooBarWithOmitEmpty != nil {
 		return *v.FooBarWithOmitEmpty
@@ -1132,6 +1372,21 @@ func (_List_Edge_ValueList) ValueType() wire.Type {
 
 func (_List_Edge_ValueList) Close() {}
 
+// ToWire translates a Graph struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Graph) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -1171,6 +1426,23 @@ func _List_Edge_Read(l wire.ValueList) ([]*Edge, error) {
 	return o, err
 }
 
+// FromWire deserializes a Graph struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Graph struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Graph
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Graph) FromWire(w wire.Value) error {
 	var err error
 
@@ -1196,6 +1468,8 @@ func (v *Graph) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Graph
+// struct.
 func (v *Graph) String() string {
 	if v == nil {
 		return "<nil>"
@@ -1224,6 +1498,10 @@ func _List_Edge_Equals(lhs, rhs []*Edge) bool {
 	return true
 }
 
+// Equals returns true if all the fields of this Graph match the
+// provided Graph.
+//
+// This function performs a deep comparison.
 func (v *Graph) Equals(rhs *Graph) bool {
 	if !_List_Edge_Equals(v.Edges, rhs.Edges) {
 		return false
@@ -1234,20 +1512,29 @@ func (v *Graph) Equals(rhs *Graph) bool {
 
 type List Node
 
+// ToWire translates List into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
 func (v *List) ToWire() (wire.Value, error) {
 	x := (*Node)(v)
 	return x.ToWire()
 }
 
+// String returns a readable string representation of List.
 func (v *List) String() string {
 	x := (*Node)(v)
 	return fmt.Sprint(x)
 }
 
+// FromWire deserializes List from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
 func (v *List) FromWire(w wire.Value) error {
 	return (*Node)(v).FromWire(w)
 }
 
+// Equals returns true if this List is equal to the provided
+// List.
 func (lhs *List) Equals(rhs *List) bool {
 	return (*Node)(lhs).Equals((*Node)(rhs))
 }
@@ -1259,6 +1546,21 @@ type Node struct {
 	Tail  *List `json:"tail,omitempty"`
 }
 
+// ToWire translates a Node struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Node) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -1291,6 +1593,23 @@ func _List_Read(w wire.Value) (*List, error) {
 	return &x, err
 }
 
+// FromWire deserializes a Node struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Node struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Node
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Node) FromWire(w wire.Value) error {
 	var err error
 
@@ -1324,6 +1643,8 @@ func (v *Node) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Node
+// struct.
 func (v *Node) String() string {
 	if v == nil {
 		return "<nil>"
@@ -1341,6 +1662,10 @@ func (v *Node) String() string {
 	return fmt.Sprintf("Node{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this Node match the
+// provided Node.
+//
+// This function performs a deep comparison.
 func (v *Node) Equals(rhs *Node) bool {
 	if !(v.Value == rhs.Value) {
 		return false
@@ -1357,6 +1682,21 @@ type Omit struct {
 	Hidden     string `json:"-"`
 }
 
+// ToWire translates a Omit struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Omit) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -1382,6 +1722,23 @@ func (v *Omit) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a Omit struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Omit struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Omit
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Omit) FromWire(w wire.Value) error {
 	var err error
 
@@ -1420,6 +1777,8 @@ func (v *Omit) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Omit
+// struct.
 func (v *Omit) String() string {
 	if v == nil {
 		return "<nil>"
@@ -1435,6 +1794,10 @@ func (v *Omit) String() string {
 	return fmt.Sprintf("Omit{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this Omit match the
+// provided Omit.
+//
+// This function performs a deep comparison.
 func (v *Omit) Equals(rhs *Omit) bool {
 	if !(v.Serialized == rhs.Serialized) {
 		return false
@@ -1452,6 +1815,21 @@ type Point struct {
 	Y float64 `json:"y,required"`
 }
 
+// ToWire translates a Point struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Point) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -1477,6 +1855,23 @@ func (v *Point) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a Point struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Point struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Point
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Point) FromWire(w wire.Value) error {
 	var err error
 
@@ -1515,6 +1910,8 @@ func (v *Point) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Point
+// struct.
 func (v *Point) String() string {
 	if v == nil {
 		return "<nil>"
@@ -1530,6 +1927,10 @@ func (v *Point) String() string {
 	return fmt.Sprintf("Point{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this Point match the
+// provided Point.
+//
+// This function performs a deep comparison.
 func (v *Point) Equals(rhs *Point) bool {
 	if !(v.X == rhs.X) {
 		return false
@@ -1555,6 +1956,21 @@ type PrimitiveOptionalStruct struct {
 	BinaryField []byte   `json:"binaryField"`
 }
 
+// ToWire translates a PrimitiveOptionalStruct struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *PrimitiveOptionalStruct) ToWire() (wire.Value, error) {
 	var (
 		fields [8]wire.Field
@@ -1631,6 +2047,23 @@ func (v *PrimitiveOptionalStruct) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a PrimitiveOptionalStruct struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a PrimitiveOptionalStruct struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v PrimitiveOptionalStruct
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 	var err error
 
@@ -1720,6 +2153,8 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a PrimitiveOptionalStruct
+// struct.
 func (v *PrimitiveOptionalStruct) String() string {
 	if v == nil {
 		return "<nil>"
@@ -1813,6 +2248,10 @@ func _Double_EqualsPtr(lhs, rhs *float64) bool {
 	return lhs == nil && rhs == nil
 }
 
+// Equals returns true if all the fields of this PrimitiveOptionalStruct match the
+// provided PrimitiveOptionalStruct.
+//
+// This function performs a deep comparison.
 func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
 	if !_Bool_EqualsPtr(v.BoolField, rhs.BoolField) {
 		return false
@@ -1842,6 +2281,8 @@ func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
 	return true
 }
 
+// GetBoolField returns the value of BoolField if it is set or its
+// zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetBoolField() (o bool) {
 	if v.BoolField != nil {
 		return *v.BoolField
@@ -1850,6 +2291,8 @@ func (v *PrimitiveOptionalStruct) GetBoolField() (o bool) {
 	return
 }
 
+// GetByteField returns the value of ByteField if it is set or its
+// zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetByteField() (o int8) {
 	if v.ByteField != nil {
 		return *v.ByteField
@@ -1858,6 +2301,8 @@ func (v *PrimitiveOptionalStruct) GetByteField() (o int8) {
 	return
 }
 
+// GetInt16Field returns the value of Int16Field if it is set or its
+// zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetInt16Field() (o int16) {
 	if v.Int16Field != nil {
 		return *v.Int16Field
@@ -1866,6 +2311,8 @@ func (v *PrimitiveOptionalStruct) GetInt16Field() (o int16) {
 	return
 }
 
+// GetInt32Field returns the value of Int32Field if it is set or its
+// zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetInt32Field() (o int32) {
 	if v.Int32Field != nil {
 		return *v.Int32Field
@@ -1874,6 +2321,8 @@ func (v *PrimitiveOptionalStruct) GetInt32Field() (o int32) {
 	return
 }
 
+// GetInt64Field returns the value of Int64Field if it is set or its
+// zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetInt64Field() (o int64) {
 	if v.Int64Field != nil {
 		return *v.Int64Field
@@ -1882,6 +2331,8 @@ func (v *PrimitiveOptionalStruct) GetInt64Field() (o int64) {
 	return
 }
 
+// GetDoubleField returns the value of DoubleField if it is set or its
+// zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetDoubleField() (o float64) {
 	if v.DoubleField != nil {
 		return *v.DoubleField
@@ -1890,6 +2341,8 @@ func (v *PrimitiveOptionalStruct) GetDoubleField() (o float64) {
 	return
 }
 
+// GetStringField returns the value of StringField if it is set or its
+// zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetStringField() (o string) {
 	if v.StringField != nil {
 		return *v.StringField
@@ -1912,6 +2365,21 @@ type PrimitiveRequiredStruct struct {
 	BinaryField []byte  `json:"binaryField,required"`
 }
 
+// ToWire translates a PrimitiveRequiredStruct struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
 	var (
 		fields [8]wire.Field
@@ -1981,6 +2449,23 @@ func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a PrimitiveRequiredStruct struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a PrimitiveRequiredStruct struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v PrimitiveRequiredStruct
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	var err error
 
@@ -2097,6 +2582,8 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a PrimitiveRequiredStruct
+// struct.
 func (v *PrimitiveRequiredStruct) String() string {
 	if v == nil {
 		return "<nil>"
@@ -2124,6 +2611,10 @@ func (v *PrimitiveRequiredStruct) String() string {
 	return fmt.Sprintf("PrimitiveRequiredStruct{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this PrimitiveRequiredStruct match the
+// provided PrimitiveRequiredStruct.
+//
+// This function performs a deep comparison.
 func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
 	if !(v.BoolField == rhs.BoolField) {
 		return false
@@ -2158,6 +2649,21 @@ type Rename struct {
 	CamelCase string `json:"snake_case,required"`
 }
 
+// ToWire translates a Rename struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Rename) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -2183,6 +2689,23 @@ func (v *Rename) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a Rename struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Rename struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Rename
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Rename) FromWire(w wire.Value) error {
 	var err error
 
@@ -2221,6 +2744,8 @@ func (v *Rename) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Rename
+// struct.
 func (v *Rename) String() string {
 	if v == nil {
 		return "<nil>"
@@ -2236,6 +2761,10 @@ func (v *Rename) String() string {
 	return fmt.Sprintf("Rename{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this Rename match the
+// provided Rename.
+//
+// This function performs a deep comparison.
 func (v *Rename) Equals(rhs *Rename) bool {
 	if !(v.Default == rhs.Default) {
 		return false
@@ -2255,6 +2784,21 @@ type Size struct {
 	Height float64 `json:"height,required"`
 }
 
+// ToWire translates a Size struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *Size) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -2280,6 +2824,23 @@ func (v *Size) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a Size struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a Size struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v Size
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *Size) FromWire(w wire.Value) error {
 	var err error
 
@@ -2318,6 +2879,8 @@ func (v *Size) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a Size
+// struct.
 func (v *Size) String() string {
 	if v == nil {
 		return "<nil>"
@@ -2333,6 +2896,10 @@ func (v *Size) String() string {
 	return fmt.Sprintf("Size{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this Size match the
+// provided Size.
+//
+// This function performs a deep comparison.
 func (v *Size) Equals(rhs *Size) bool {
 	if !(v.Width == rhs.Width) {
 		return false
@@ -2349,6 +2916,21 @@ type User struct {
 	Contact *ContactInfo `json:"contact,omitempty"`
 }
 
+// ToWire translates a User struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *User) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -2381,6 +2963,23 @@ func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
 	return &v, err
 }
 
+// FromWire deserializes a User struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a User struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v User
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *User) FromWire(w wire.Value) error {
 	var err error
 
@@ -2414,6 +3013,8 @@ func (v *User) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a User
+// struct.
 func (v *User) String() string {
 	if v == nil {
 		return "<nil>"
@@ -2431,6 +3032,10 @@ func (v *User) String() string {
 	return fmt.Sprintf("User{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this User match the
+// provided User.
+//
+// This function performs a deep comparison.
 func (v *User) Equals(rhs *User) bool {
 	if !(v.Name == rhs.Name) {
 		return false

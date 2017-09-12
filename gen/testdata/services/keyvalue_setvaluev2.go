@@ -11,6 +11,9 @@ import (
 	"strings"
 )
 
+// KeyValue_SetValueV2_Args represents the arguments for the KeyValue.setValueV2 function.
+//
+// The arguments for setValueV2 are sent and received over the wire as this struct.
 type KeyValue_SetValueV2_Args struct {
 	// Key to change.
 	Key Key `json:"key,required"`
@@ -20,6 +23,21 @@ type KeyValue_SetValueV2_Args struct {
 	Value *unions.ArbitraryValue `json:"value,required"`
 }
 
+// ToWire translates a KeyValue_SetValueV2_Args struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *KeyValue_SetValueV2_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -47,6 +65,23 @@ func (v *KeyValue_SetValueV2_Args) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a KeyValue_SetValueV2_Args struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a KeyValue_SetValueV2_Args struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v KeyValue_SetValueV2_Args
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *KeyValue_SetValueV2_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -85,6 +120,8 @@ func (v *KeyValue_SetValueV2_Args) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a KeyValue_SetValueV2_Args
+// struct.
 func (v *KeyValue_SetValueV2_Args) String() string {
 	if v == nil {
 		return "<nil>"
@@ -100,6 +137,10 @@ func (v *KeyValue_SetValueV2_Args) String() string {
 	return fmt.Sprintf("KeyValue_SetValueV2_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this KeyValue_SetValueV2_Args match the
+// provided KeyValue_SetValueV2_Args.
+//
+// This function performs a deep comparison.
 func (v *KeyValue_SetValueV2_Args) Equals(rhs *KeyValue_SetValueV2_Args) bool {
 	if !(v.Key == rhs.Key) {
 		return false
@@ -111,23 +152,65 @@ func (v *KeyValue_SetValueV2_Args) Equals(rhs *KeyValue_SetValueV2_Args) bool {
 	return true
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the arguments.
+//
+// This will always be "setValueV2" for this struct.
 func (v *KeyValue_SetValueV2_Args) MethodName() string {
 	return "setValueV2"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Call for this struct.
 func (v *KeyValue_SetValueV2_Args) EnvelopeType() wire.EnvelopeType {
 	return wire.Call
 }
 
+// KeyValue_SetValueV2_Helper provides functions that aid in handling the
+// parameters and return values of the KeyValue.setValueV2
+// function.
 var KeyValue_SetValueV2_Helper = struct {
+	// Args accepts the parameters of setValueV2 in-order and returns
+	// the arguments struct for the function.
 	Args func(
 		key Key,
 		value *unions.ArbitraryValue,
 	) *KeyValue_SetValueV2_Args
 
+	// IsException returns true if the given error can be thrown
+	// by setValueV2.
+	//
+	// An error can be thrown by setValueV2 only if the
+	// corresponding exception type was mentioned in the 'throws'
+	// section for it in the Thrift file.
 	IsException func(error) bool
 
-	WrapResponse   func(error) (*KeyValue_SetValueV2_Result, error)
+	// WrapResponse returns the result struct for setValueV2
+	// given the error returned by it. The provided error may
+	// be nil if setValueV2 did not fail.
+	//
+	// This allows mapping errors returned by setValueV2 into a
+	// serializable result struct. WrapResponse returns a
+	// non-nil error if the provided error cannot be thrown by
+	// setValueV2
+	//
+	//   err := setValueV2(args)
+	//   result, err := KeyValue_SetValueV2_Helper.WrapResponse(err)
+	//   if err != nil {
+	//     return fmt.Errorf("unexpected error from setValueV2: %v", err)
+	//   }
+	//   serialize(result)
+	WrapResponse func(error) (*KeyValue_SetValueV2_Result, error)
+
+	// UnwrapResponse takes the result struct for setValueV2
+	// and returns the erorr returned by it (if any).
+	//
+	// The error is non-nil only if setValueV2 threw an
+	// exception.
+	//
+	//   result := deserialize(bytes)
+	//   err := KeyValue_SetValueV2_Helper.UnwrapResponse(result)
 	UnwrapResponse func(*KeyValue_SetValueV2_Result) error
 }{}
 
@@ -162,9 +245,27 @@ func init() {
 
 }
 
+// KeyValue_SetValueV2_Result represents the result of a KeyValue.setValueV2 function call.
+//
+// The result of a setValueV2 execution is sent and received over the wire as this struct.
 type KeyValue_SetValueV2_Result struct {
 }
 
+// ToWire translates a KeyValue_SetValueV2_Result struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *KeyValue_SetValueV2_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -174,6 +275,23 @@ func (v *KeyValue_SetValueV2_Result) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a KeyValue_SetValueV2_Result struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a KeyValue_SetValueV2_Result struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v KeyValue_SetValueV2_Result
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *KeyValue_SetValueV2_Result) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {
@@ -184,6 +302,8 @@ func (v *KeyValue_SetValueV2_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a KeyValue_SetValueV2_Result
+// struct.
 func (v *KeyValue_SetValueV2_Result) String() string {
 	if v == nil {
 		return "<nil>"
@@ -195,15 +315,26 @@ func (v *KeyValue_SetValueV2_Result) String() string {
 	return fmt.Sprintf("KeyValue_SetValueV2_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this KeyValue_SetValueV2_Result match the
+// provided KeyValue_SetValueV2_Result.
+//
+// This function performs a deep comparison.
 func (v *KeyValue_SetValueV2_Result) Equals(rhs *KeyValue_SetValueV2_Result) bool {
 
 	return true
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the result.
+//
+// This will always be "setValueV2" for this struct.
 func (v *KeyValue_SetValueV2_Result) MethodName() string {
 	return "setValueV2"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Reply for this struct.
 func (v *KeyValue_SetValueV2_Result) EnvelopeType() wire.EnvelopeType {
 	return wire.Reply
 }

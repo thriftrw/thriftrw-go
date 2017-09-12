@@ -9,10 +9,28 @@ import (
 	"strings"
 )
 
+// ConflictingNames_SetValue_Args represents the arguments for the ConflictingNames.setValue function.
+//
+// The arguments for setValue are sent and received over the wire as this struct.
 type ConflictingNames_SetValue_Args struct {
 	Request *ConflictingNamesSetValueArgs `json:"request,omitempty"`
 }
 
+// ToWire translates a ConflictingNames_SetValue_Args struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *ConflictingNames_SetValue_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -39,6 +57,23 @@ func _ConflictingNamesSetValueArgs_Read(w wire.Value) (*ConflictingNamesSetValue
 	return &v, err
 }
 
+// FromWire deserializes a ConflictingNames_SetValue_Args struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a ConflictingNames_SetValue_Args struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v ConflictingNames_SetValue_Args
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *ConflictingNames_SetValue_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -58,6 +93,8 @@ func (v *ConflictingNames_SetValue_Args) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a ConflictingNames_SetValue_Args
+// struct.
 func (v *ConflictingNames_SetValue_Args) String() string {
 	if v == nil {
 		return "<nil>"
@@ -73,6 +110,10 @@ func (v *ConflictingNames_SetValue_Args) String() string {
 	return fmt.Sprintf("ConflictingNames_SetValue_Args{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this ConflictingNames_SetValue_Args match the
+// provided ConflictingNames_SetValue_Args.
+//
+// This function performs a deep comparison.
 func (v *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_Args) bool {
 	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
 		return false
@@ -81,22 +122,64 @@ func (v *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_A
 	return true
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the arguments.
+//
+// This will always be "setValue" for this struct.
 func (v *ConflictingNames_SetValue_Args) MethodName() string {
 	return "setValue"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Call for this struct.
 func (v *ConflictingNames_SetValue_Args) EnvelopeType() wire.EnvelopeType {
 	return wire.Call
 }
 
+// ConflictingNames_SetValue_Helper provides functions that aid in handling the
+// parameters and return values of the ConflictingNames.setValue
+// function.
 var ConflictingNames_SetValue_Helper = struct {
+	// Args accepts the parameters of setValue in-order and returns
+	// the arguments struct for the function.
 	Args func(
 		request *ConflictingNamesSetValueArgs,
 	) *ConflictingNames_SetValue_Args
 
+	// IsException returns true if the given error can be thrown
+	// by setValue.
+	//
+	// An error can be thrown by setValue only if the
+	// corresponding exception type was mentioned in the 'throws'
+	// section for it in the Thrift file.
 	IsException func(error) bool
 
-	WrapResponse   func(error) (*ConflictingNames_SetValue_Result, error)
+	// WrapResponse returns the result struct for setValue
+	// given the error returned by it. The provided error may
+	// be nil if setValue did not fail.
+	//
+	// This allows mapping errors returned by setValue into a
+	// serializable result struct. WrapResponse returns a
+	// non-nil error if the provided error cannot be thrown by
+	// setValue
+	//
+	//   err := setValue(args)
+	//   result, err := ConflictingNames_SetValue_Helper.WrapResponse(err)
+	//   if err != nil {
+	//     return fmt.Errorf("unexpected error from setValue: %v", err)
+	//   }
+	//   serialize(result)
+	WrapResponse func(error) (*ConflictingNames_SetValue_Result, error)
+
+	// UnwrapResponse takes the result struct for setValue
+	// and returns the erorr returned by it (if any).
+	//
+	// The error is non-nil only if setValue threw an
+	// exception.
+	//
+	//   result := deserialize(bytes)
+	//   err := ConflictingNames_SetValue_Helper.UnwrapResponse(result)
 	UnwrapResponse func(*ConflictingNames_SetValue_Result) error
 }{}
 
@@ -129,9 +212,27 @@ func init() {
 
 }
 
+// ConflictingNames_SetValue_Result represents the result of a ConflictingNames.setValue function call.
+//
+// The result of a setValue execution is sent and received over the wire as this struct.
 type ConflictingNames_SetValue_Result struct {
 }
 
+// ToWire translates a ConflictingNames_SetValue_Result struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
 func (v *ConflictingNames_SetValue_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -141,6 +242,23 @@ func (v *ConflictingNames_SetValue_Result) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+// FromWire deserializes a ConflictingNames_SetValue_Result struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a ConflictingNames_SetValue_Result struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v ConflictingNames_SetValue_Result
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
 func (v *ConflictingNames_SetValue_Result) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {
@@ -151,6 +269,8 @@ func (v *ConflictingNames_SetValue_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// String returns a readable string representation of a ConflictingNames_SetValue_Result
+// struct.
 func (v *ConflictingNames_SetValue_Result) String() string {
 	if v == nil {
 		return "<nil>"
@@ -162,15 +282,26 @@ func (v *ConflictingNames_SetValue_Result) String() string {
 	return fmt.Sprintf("ConflictingNames_SetValue_Result{%v}", strings.Join(fields[:i], ", "))
 }
 
+// Equals returns true if all the fields of this ConflictingNames_SetValue_Result match the
+// provided ConflictingNames_SetValue_Result.
+//
+// This function performs a deep comparison.
 func (v *ConflictingNames_SetValue_Result) Equals(rhs *ConflictingNames_SetValue_Result) bool {
 
 	return true
 }
 
+// MethodName returns the name of the Thrift function as specified in
+// the IDL, for which this struct represent the result.
+//
+// This will always be "setValue" for this struct.
 func (v *ConflictingNames_SetValue_Result) MethodName() string {
 	return "setValue"
 }
 
+// EnvelopeType returns the kind of value inside this struct.
+//
+// This will always be Reply for this struct.
 func (v *ConflictingNames_SetValue_Result) EnvelopeType() wire.EnvelopeType {
 	return wire.Reply
 }
