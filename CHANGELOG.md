@@ -1,7 +1,7 @@
 Releases
 ========
 
-v1.7.0 (unreleased)
+v1.7.0 (2017-09-12)
 -------------------
 
 -   AST: Parts of the AST now support parsing docstrings in the `/** ... */`
