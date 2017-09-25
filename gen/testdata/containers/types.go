@@ -16,24 +16,24 @@ import (
 )
 
 type ContainersOfContainers struct {
-	ListOfLists   [][]int32             `json:"listOfLists"`
-	ListOfSets    []map[int32]struct{}  `json:"listOfSets"`
-	ListOfMaps    []map[int32]int32     `json:"listOfMaps"`
-	SetOfSets     []map[string]struct{} `json:"setOfSets"`
-	SetOfLists    [][]string            `json:"setOfLists"`
-	SetOfMaps     []map[string]string   `json:"setOfMaps"`
+	ListOfLists   [][]int32             `json:"listOfLists,omitempty"`
+	ListOfSets    []map[int32]struct{}  `json:"listOfSets,omitempty"`
+	ListOfMaps    []map[int32]int32     `json:"listOfMaps,omitempty"`
+	SetOfSets     []map[string]struct{} `json:"setOfSets,omitempty"`
+	SetOfLists    [][]string            `json:"setOfLists,omitempty"`
+	SetOfMaps     []map[string]string   `json:"setOfMaps,omitempty"`
 	MapOfMapToInt []struct {
 		Key   map[string]int32
 		Value int64
-	} `json:"mapOfMapToInt"`
+	} `json:"mapOfMapToInt,omitempty"`
 	MapOfListToSet []struct {
 		Key   []int32
 		Value map[int64]struct{}
-	} `json:"mapOfListToSet"`
+	} `json:"mapOfListToSet,omitempty"`
 	MapOfSetToListOfDouble []struct {
 		Key   map[int32]struct{}
 		Value []float64
-	} `json:"mapOfSetToListOfDouble"`
+	} `json:"mapOfSetToListOfDouble,omitempty"`
 }
 
 type _List_I32_ValueList []int32
@@ -1653,9 +1653,9 @@ func (v *ContainersOfContainers) Equals(rhs *ContainersOfContainers) bool {
 }
 
 type EnumContainers struct {
-	ListOfEnums []enums.EnumDefault                     `json:"listOfEnums"`
-	SetOfEnums  map[enums.EnumWithValues]struct{}       `json:"setOfEnums"`
-	MapOfEnums  map[enums.EnumWithDuplicateValues]int32 `json:"mapOfEnums"`
+	ListOfEnums []enums.EnumDefault                     `json:"listOfEnums,omitempty"`
+	SetOfEnums  map[enums.EnumWithValues]struct{}       `json:"setOfEnums,omitempty"`
+	MapOfEnums  map[enums.EnumWithDuplicateValues]int32 `json:"mapOfEnums,omitempty"`
 }
 
 type _List_EnumDefault_ValueList []enums.EnumDefault
@@ -2561,8 +2561,8 @@ type MapOfBinaryAndString struct {
 	BinaryToString []struct {
 		Key   []byte
 		Value string
-	} `json:"binaryToString"`
-	StringToBinary map[string][]byte `json:"stringToBinary"`
+	} `json:"binaryToString,omitempty"`
+	StringToBinary map[string][]byte `json:"stringToBinary,omitempty"`
 }
 
 type _Map_Binary_String_MapItemList []struct {
@@ -2885,12 +2885,12 @@ func (v *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
 }
 
 type PrimitiveContainers struct {
-	ListOfBinary      [][]byte            `json:"listOfBinary"`
-	ListOfInts        []int64             `json:"listOfInts"`
-	SetOfStrings      map[string]struct{} `json:"setOfStrings"`
-	SetOfBytes        map[int8]struct{}   `json:"setOfBytes"`
-	MapOfIntToString  map[int32]string    `json:"mapOfIntToString"`
-	MapOfStringToBool map[string]bool     `json:"mapOfStringToBool"`
+	ListOfBinary      [][]byte            `json:"listOfBinary,omitempty"`
+	ListOfInts        []int64             `json:"listOfInts,omitempty"`
+	SetOfStrings      map[string]struct{} `json:"setOfStrings,omitempty"`
+	SetOfBytes        map[int8]struct{}   `json:"setOfBytes,omitempty"`
+	MapOfIntToString  map[int32]string    `json:"mapOfIntToString,omitempty"`
+	MapOfStringToBool map[string]bool     `json:"mapOfStringToBool,omitempty"`
 }
 
 type _List_Binary_ValueList [][]byte

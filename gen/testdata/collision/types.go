@@ -517,9 +517,9 @@ func (v *MyEnum) UnmarshalJSON(text []byte) error {
 }
 
 type PrimitiveContainers struct {
-	A []string            `json:"ListOrSetOrMap"`
-	B map[string]struct{} `json:"List_Or_SetOrMap"`
-	C map[string]string   `json:"ListOrSet_Or_Map"`
+	A []string            `json:"ListOrSetOrMap,omitempty"`
+	B map[string]struct{} `json:"List_Or_SetOrMap,omitempty"`
+	C map[string]string   `json:"ListOrSet_Or_Map,omitempty"`
 }
 
 type _List_String_ValueList []string

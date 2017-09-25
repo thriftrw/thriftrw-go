@@ -23,8 +23,8 @@ type ArbitraryValue struct {
 	BoolValue   *bool                      `json:"boolValue,omitempty"`
 	Int64Value  *int64                     `json:"int64Value,omitempty"`
 	StringValue *string                    `json:"stringValue,omitempty"`
-	ListValue   []*ArbitraryValue          `json:"listValue"`
-	MapValue    map[string]*ArbitraryValue `json:"mapValue"`
+	ListValue   []*ArbitraryValue          `json:"listValue,omitempty"`
+	MapValue    map[string]*ArbitraryValue `json:"mapValue,omitempty"`
 }
 
 type _List_ArbitraryValue_ValueList []*ArbitraryValue
@@ -461,7 +461,7 @@ func (v *ArbitraryValue) GetStringValue() (o string) {
 }
 
 type Document struct {
-	Pdf       typedefs.PDF `json:"pdf"`
+	Pdf       typedefs.PDF `json:"pdf,omitempty"`
 	PlainText *string      `json:"plainText,omitempty"`
 }
 

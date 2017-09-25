@@ -124,8 +124,8 @@ type DefaultsStruct struct {
 	OptionalPrimitive *int32             `json:"optionalPrimitive,omitempty"`
 	RequiredEnum      *enums.EnumDefault `json:"requiredEnum,omitempty"`
 	OptionalEnum      *enums.EnumDefault `json:"optionalEnum,omitempty"`
-	RequiredList      []string           `json:"requiredList"`
-	OptionalList      []float64          `json:"optionalList"`
+	RequiredList      []string           `json:"requiredList,omitempty"`
+	OptionalList      []float64          `json:"optionalList,omitempty"`
 	RequiredStruct    *Frame             `json:"requiredStruct,omitempty"`
 	OptionalStruct    *Edge              `json:"optionalStruct,omitempty"`
 }
@@ -1953,7 +1953,7 @@ type PrimitiveOptionalStruct struct {
 	Int64Field  *int64   `json:"int64Field,omitempty"`
 	DoubleField *float64 `json:"doubleField,omitempty"`
 	StringField *string  `json:"stringField,omitempty"`
-	BinaryField []byte   `json:"binaryField"`
+	BinaryField []byte   `json:"binaryField,omitempty"`
 }
 
 // ToWire translates a PrimitiveOptionalStruct struct into a Thrift-level intermediate
