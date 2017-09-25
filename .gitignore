@@ -4,6 +4,7 @@ node_modules
 /cover
 cover.out
 cover.html
+.idea/
 
 # We will explicitly whitelist vendored libraries that we want to check in.
 vendor/*
