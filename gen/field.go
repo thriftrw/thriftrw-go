@@ -70,32 +70,32 @@ func (f fieldGroupGenerator) checkReservedIdentifier(name string) error {
 	return nil
 }
 
-func (f fieldGroupGenerator) Generate(g Generator) error {
-	if err := f.DefineStruct(g); err != nil {
+func (f fieldGroupGenerator) Generate(g Generator) (err error) {
+	if err = f.DefineStruct(g); err != nil {
 		return err
 	}
 
-	if err := f.ToWire(g); err != nil {
+	if err = f.ToWire(g); err != nil {
 		return err
 	}
 
-	if err := f.FromWire(g); err != nil {
+	if err = f.FromWire(g); err != nil {
 		return err
 	}
 
-	if err := f.String(g); err != nil {
+	if err = f.String(g); err != nil {
 		return err
 	}
 
-	if err := f.Equals(g); err != nil {
+	if err = f.Equals(g); err != nil {
 		return err
 	}
 
-	if err := f.PrimitiveAccessors(g); err != nil {
+	if err = f.PrimitiveAccessors(g); err != nil {
 		return err
 	}
 
-	return nil
+	return err
 }
 
 func (f fieldGroupGenerator) DefineStruct(g Generator) error {

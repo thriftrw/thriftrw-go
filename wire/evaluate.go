@@ -24,13 +24,13 @@ import "fmt"
 
 // EvaluateValue ensures that the given Value is fully evaluated. Lazy lists
 // are spinned and any errors raised by them are returned.
-func EvaluateValue(v Value) error {
+func EvaluateValue(v Value) (err error) {
 	switch v.Type() {
 	case TBool, TI8, TDouble, TI16, TI32, TI64, TBinary:
 		return nil
 	case TStruct:
 		for _, f := range v.GetStruct().Fields {
-			if err := EvaluateValue(f.Value); err != nil {
+			if err = EvaluateValue(f.Value); err != nil {
 				return err
 			}
 		}
@@ -39,13 +39,13 @@ func EvaluateValue(v Value) error {
 		m := v.GetMap()
 		defer m.Close()
 		return m.ForEach(func(item MapItem) error {
-			if err := EvaluateValue(item.Key); err != nil {
+			if err = EvaluateValue(item.Key); err != nil {
 				return err
 			}
-			if err := EvaluateValue(item.Value); err != nil {
+			if err = EvaluateValue(item.Value); err != nil {
 				return err
 			}
-			return nil
+			return err
 		})
 	case TSet:
 		s := v.GetSet()
