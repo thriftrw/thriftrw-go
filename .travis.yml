@@ -4,11 +4,12 @@ language: go
 
 go_import_path: go.uber.org/thriftrw
 
-go:
-    - 1.7
-    - 1.8
-    - 1.9
-    - tip
+matrix:
+  include:
+    - go: 1.7
+    - go: 1.8
+    - go: 1.9
+      env: LINT=1
 
 env:
     global:
@@ -18,7 +19,7 @@ install:
     - make install_ci
 
 script:
-    - make lint_ci
+    - test "$LINT" -eq 1 && make lint_ci || echo "Skipping lint"
     - make test_ci
     - travis_retry goveralls -coverprofile=cover.out -service=travis-ci
     - rm -rf vendor/*
