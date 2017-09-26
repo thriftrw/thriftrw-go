@@ -878,112 +878,131 @@ func TestStructWithDefaults(t *testing.T) {
 
 func TestStructJSON(t *testing.T) {
 	tests := []struct {
-		v interface{}
-		j string
+		v, w interface{}
+		j    string
 	}{
-		{&ts.Point{X: 0, Y: 0}, `{"x":0,"y":0}`},
-		{&ts.Point{X: 1, Y: 2}, `{"x":1,"y":2}`},
+		{v: &ts.Point{X: 0, Y: 0}, j: `{"x":0,"y":0}`},
+		{v: &ts.Point{X: 1, Y: 2}, j: `{"x":1,"y":2}`},
 		{
-			&ts.Edge{
+			v: &ts.Edge{
 				StartPoint: &ts.Point{X: 1, Y: 2},
 				EndPoint:   &ts.Point{X: 3, Y: 4},
 			},
-			`{"startPoint":{"x":1,"y":2},"endPoint":{"x":3,"y":4}}`,
+			j: `{"startPoint":{"x":1,"y":2},"endPoint":{"x":3,"y":4}}`,
 		},
 		{
-			&ts.Edge{StartPoint: &ts.Point{X: 1, Y: 1}},
-			`{"startPoint":{"x":1,"y":1},"endPoint":null}`,
+			v: &ts.Edge{StartPoint: &ts.Point{X: 1, Y: 1}},
+			j: `{"startPoint":{"x":1,"y":1},"endPoint":null}`,
 		},
 		{
-			&ts.Edge{
+			v: &ts.Edge{
 				StartPoint: &ts.Point{X: 1, Y: 1},
 				EndPoint:   &ts.Point{X: 1, Y: 1},
 			},
-			`{"startPoint":{"x":1,"y":1},"endPoint":{"x":1,"y":1}}`,
+			j: `{"startPoint":{"x":1,"y":1},"endPoint":{"x":1,"y":1}}`,
 		},
-		{&ts.User{Name: ""}, `{"name":""}`},
-		{&ts.User{Name: "foo"}, `{"name":"foo"}`},
+		{v: &ts.User{Name: ""}, j: `{"name":""}`},
+		{v: &ts.User{Name: "foo"}, j: `{"name":"foo"}`},
 		{
-			&ts.User{
+			v: &ts.User{
 				Name:    "foo",
 				Contact: &ts.ContactInfo{EmailAddress: "bar@example.com"},
 			},
-			`{"name":"foo","contact":{"emailAddress":"bar@example.com"}}`,
+			j: `{"name":"foo","contact":{"emailAddress":"bar@example.com"}}`,
 		},
 		{
-			&ts.User{
+			v: &ts.User{
 				Name:    "foo",
 				Contact: &ts.ContactInfo{EmailAddress: ""},
 			},
-			`{"name":"foo","contact":{"emailAddress":""}}`,
+			j: `{"name":"foo","contact":{"emailAddress":""}}`,
 		},
-		{&tu.EmptyUnion{}, "{}"},
-		{&tu.Document{Pdf: td.PDF("hello")}, `{"pdf":"aGVsbG8="}`},
-		{&tu.Document{Pdf: td.PDF{}}, `{"pdf":""}`},
+		{v: &tu.EmptyUnion{}, j: "{}"},
+		{v: &tu.Document{Pdf: td.PDF("hello")}, j: `{"pdf":"aGVsbG8="}`},
+		{v: &tu.Document{Pdf: td.PDF{}}, w: &tu.Document{Pdf: nil}, j: `{}`},
+		{v: &tu.Document{Pdf: nil}, j: `{}`},
 		{
-			&tu.Document{PlainText: stringp("hello")},
-			`{"pdf":null,"plainText":"hello"}`,
+			v: &tu.Document{PlainText: stringp("hello")},
+			j: `{"plainText":"hello"}`,
 		},
-		{&tu.Document{PlainText: stringp("")}, `{"pdf":null,"plainText":""}`},
+		{v: &tu.Document{PlainText: stringp("")}, j: `{"plainText":""}`},
 		{
-			&tu.ArbitraryValue{BoolValue: boolp(true)},
-			`{"boolValue":true,"listValue":null,"mapValue":null}`,
-		},
-		{
-			&tu.ArbitraryValue{BoolValue: boolp(false)},
-			`{"boolValue":false,"listValue":null,"mapValue":null}`,
+			v: &tu.ArbitraryValue{BoolValue: boolp(true)},
+			j: `{"boolValue":true}`,
 		},
 		{
-			&tu.ArbitraryValue{Int64Value: int64p(42)},
-			`{"int64Value":42,"listValue":null,"mapValue":null}`,
+			v: &tu.ArbitraryValue{BoolValue: boolp(false)},
+			j: `{"boolValue":false}`,
 		},
 		{
-			&tu.ArbitraryValue{Int64Value: int64p(0)},
-			`{"int64Value":0,"listValue":null,"mapValue":null}`,
+			v: &tu.ArbitraryValue{Int64Value: int64p(42)},
+			j: `{"int64Value":42}`,
 		},
 		{
-			&tu.ArbitraryValue{StringValue: stringp("foo")},
-			`{"stringValue":"foo","listValue":null,"mapValue":null}`,
+			v: &tu.ArbitraryValue{Int64Value: int64p(0)},
+			j: `{"int64Value":0}`,
 		},
 		{
-			&tu.ArbitraryValue{StringValue: stringp("")},
-			`{"stringValue":"","listValue":null,"mapValue":null}`,
+			v: &tu.ArbitraryValue{StringValue: stringp("foo")},
+			j: `{"stringValue":"foo"}`,
 		},
 		{
-			&tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{
+			v: &tu.ArbitraryValue{StringValue: stringp("")},
+			j: `{"stringValue":""}`,
+		},
+		{
+			v: &tu.ArbitraryValue{ListValue: nil},
+			j: `{}`,
+		},
+		{
+			v: &tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{}},
+			w: &tu.ArbitraryValue{ListValue: nil},
+			j: `{}`,
+		},
+		{
+			v: &tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{
 				{BoolValue: boolp(true)},
 				{Int64Value: int64p(42)},
 				{StringValue: stringp("foo")},
 			}},
-			`{"listValue":[` +
-				`{"boolValue":true,"listValue":null,"mapValue":null},` +
-				`{"int64Value":42,"listValue":null,"mapValue":null},` +
-				`{"stringValue":"foo","listValue":null,"mapValue":null}` +
-				`],"mapValue":null}`,
+			j: `{"listValue":[` +
+				`{"boolValue":true},` +
+				`{"int64Value":42},` +
+				`{"stringValue":"foo"}` +
+				`]}`,
 		},
 		{
-			&tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{
+			v: &tu.ArbitraryValue{MapValue: nil},
+			j: `{}`,
+		},
+		{
+			v: &tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{}},
+			w: &tu.ArbitraryValue{MapValue: nil},
+			j: `{}`,
+		},
+		{
+			v: &tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{
 				"bool":   {BoolValue: boolp(true)},
 				"int64":  {Int64Value: int64p(42)},
 				"string": {StringValue: stringp("foo")},
 			}},
-			`{"listValue":null,"mapValue":{` +
-				`"bool":{"boolValue":true,"listValue":null,"mapValue":null},` +
-				`"int64":{"int64Value":42,"listValue":null,"mapValue":null},` +
-				`"string":{"stringValue":"foo","listValue":null,"mapValue":null}` +
+			j: `{"mapValue":{` +
+				`"bool":{"boolValue":true},` +
+				`"int64":{"int64Value":42},` +
+				`"string":{"stringValue":"foo"}` +
 				`}}`,
 		},
 		{
-			&ts.List{Value: 0, Tail: &ts.List{Value: 1}},
-			`{"value":0,"tail":{"value":1}}`,
+			v: &ts.List{Value: 0, Tail: &ts.List{Value: 1}},
+			j: `{"value":0,"tail":{"value":1}}`,
 		},
 		{
-			&ts.Rename{Default: "foo", CamelCase: "bar"},
-			`{"default":"foo","snake_case":"bar"}`,
+			v: &ts.Rename{Default: "foo", CamelCase: "bar"},
+			j: `{"default":"foo","snake_case":"bar"}`,
 		},
 		{
-			&ts.Omit{Serialized: "foo", Hidden: ""},
-			`{"serialized":"foo"}`,
+			v: &ts.Omit{Serialized: "foo", Hidden: ""},
+			j: `{"serialized":"foo"}`,
 		},
 	}
 
@@ -993,10 +1012,13 @@ func TestStructJSON(t *testing.T) {
 			assert.Equal(t, tt.j, string(encoded))
 		}
 
-		v := reflect.New(reflect.TypeOf(tt.v).Elem()).Interface()
+		u := tt.v
+		if tt.w != nil {
+			u = tt.w
+		}
+		v := reflect.New(reflect.TypeOf(u).Elem()).Interface()
 		if assert.NoError(t, json.Unmarshal([]byte(tt.j), v), "failed to decode %q", tt.j) {
-			assert.Equal(t, tt.v, v)
-			assert.Equal(t, tt.v, v)
+			assert.Equal(t, u, v)
 		}
 	}
 }
