@@ -36,6 +36,7 @@ import (
 	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestStructRoundTripAndString(t *testing.T) {
@@ -1647,5 +1648,62 @@ func TestStructAccessors(t *testing.T) {
 				assert.Equal(t, te.EnumDefaultBaz, s.GetOptionalEnum())
 			})
 		})
+	})
+}
+
+func TestEmptyPrimitivesRoundTrip(t *testing.T) {
+	t.Run("required", func(t *testing.T) {
+		give := ts.PrimitiveRequiredStruct{
+			BoolField:   false,
+			ByteField:   0,
+			Int16Field:  0,
+			Int32Field:  0,
+			Int64Field:  0,
+			DoubleField: 0.0,
+			StringField: "",
+			BinaryField: []byte{},
+		}
+
+		b, err := json.Marshal(give)
+		require.NoError(t, err, "failed to encode to JSON")
+
+		var decoded ts.PrimitiveRequiredStruct
+		require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
+		assert.Equal(t, give, decoded)
+
+		v, err := decoded.ToWire()
+		require.NoError(t, err, "failed to convert to wire.Value")
+
+		var got ts.PrimitiveRequiredStruct
+		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
+		assert.Equal(t, give, got)
+	})
+
+	t.Run("optional", func(t *testing.T) {
+		give := ts.PrimitiveOptionalStruct{
+			BoolField:   ptr.Bool(false),
+			ByteField:   ptr.Int8(0),
+			Int16Field:  ptr.Int16(0),
+			Int32Field:  ptr.Int32(0),
+			Int64Field:  ptr.Int64(0),
+			DoubleField: ptr.Float64(0.0),
+			StringField: ptr.String(""),
+			// BinaryField is a slice so we won't check it here to avoid nil
+			// vs empty slice mismatch.
+		}
+
+		b, err := json.Marshal(give)
+		require.NoError(t, err, "failed to encode to JSON")
+
+		var decoded ts.PrimitiveOptionalStruct
+		require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
+		assert.Equal(t, give, decoded)
+
+		v, err := decoded.ToWire()
+		require.NoError(t, err, "failed to convert to wire.Value")
+
+		var got ts.PrimitiveOptionalStruct
+		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
+		assert.Equal(t, give, got)
 	})
 }

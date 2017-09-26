@@ -21,6 +21,7 @@
 package gen
 
 import (
+	"encoding/json"
 	"testing"
 
 	tc "go.uber.org/thriftrw/gen/testdata/containers"
@@ -1336,4 +1337,60 @@ func TestListOfBinaryReadNil(t *testing.T) {
 	require.NoError(t, err)
 	require.NoError(t, wire.EvaluateValue(got))
 	assert.True(t, wire.ValuesAreEqual(value, got))
+}
+
+func TestEmptyContainersRoundTrip(t *testing.T) {
+	t.Run("required", func(t *testing.T) {
+		give := tc.PrimitiveContainersRequired{
+			ListOfStrings:      []string{},
+			SetOfInts:          make(map[int32]struct{}),
+			MapOfIntsToDoubles: make(map[int64]float64),
+		}
+
+		b, err := json.Marshal(give)
+		require.NoError(t, err, "failed to encode to JSON")
+
+		var decoded tc.PrimitiveContainersRequired
+		require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
+
+		assert.Equal(t, give, decoded)
+
+		v, err := decoded.ToWire()
+		require.NoError(t, err, "failed to convert to wire.Value")
+
+		var got tc.PrimitiveContainersRequired
+		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
+
+		assert.Equal(t, give, got)
+	})
+
+	t.Run("optional", func(t *testing.T) {
+		give := tc.PrimitiveContainers{
+			ListOfInts:       []int64{},
+			SetOfStrings:     make(map[string]struct{}),
+			MapOfIntToString: make(map[int32]string),
+		}
+
+		b, err := json.Marshal(give)
+		require.NoError(t, err, "failed to encode to JSON")
+
+		var decoded tc.PrimitiveContainers
+		require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
+
+		// We check individual fields because a full assert.Equal could mismatch
+		// on nil vs empty slice.
+		assert.Empty(t, decoded.ListOfInts)
+		assert.Empty(t, decoded.SetOfStrings)
+		assert.Empty(t, decoded.MapOfIntToString)
+
+		v, err := decoded.ToWire()
+		require.NoError(t, err, "failed to convert to wire.Value")
+
+		var got tc.PrimitiveContainers
+		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
+
+		assert.Empty(t, got.ListOfInts)
+		assert.Empty(t, got.SetOfStrings)
+		assert.Empty(t, got.MapOfIntToString)
+	})
 }
