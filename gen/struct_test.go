@@ -878,131 +878,111 @@ func TestStructWithDefaults(t *testing.T) {
 
 func TestStructJSON(t *testing.T) {
 	tests := []struct {
-		v, w interface{}
-		j    string
+		v interface{}
+		j string
 	}{
-		{v: &ts.Point{X: 0, Y: 0}, j: `{"x":0,"y":0}`},
-		{v: &ts.Point{X: 1, Y: 2}, j: `{"x":1,"y":2}`},
+		{&ts.Point{X: 0, Y: 0}, `{"x":0,"y":0}`},
+		{&ts.Point{X: 1, Y: 2}, `{"x":1,"y":2}`},
 		{
-			v: &ts.Edge{
+			&ts.Edge{
 				StartPoint: &ts.Point{X: 1, Y: 2},
 				EndPoint:   &ts.Point{X: 3, Y: 4},
 			},
-			j: `{"startPoint":{"x":1,"y":2},"endPoint":{"x":3,"y":4}}`,
+			`{"startPoint":{"x":1,"y":2},"endPoint":{"x":3,"y":4}}`,
 		},
 		{
-			v: &ts.Edge{StartPoint: &ts.Point{X: 1, Y: 1}},
-			j: `{"startPoint":{"x":1,"y":1},"endPoint":null}`,
+			&ts.Edge{StartPoint: &ts.Point{X: 1, Y: 1}},
+			`{"startPoint":{"x":1,"y":1},"endPoint":null}`,
 		},
 		{
-			v: &ts.Edge{
+			&ts.Edge{
 				StartPoint: &ts.Point{X: 1, Y: 1},
 				EndPoint:   &ts.Point{X: 1, Y: 1},
 			},
-			j: `{"startPoint":{"x":1,"y":1},"endPoint":{"x":1,"y":1}}`,
+			`{"startPoint":{"x":1,"y":1},"endPoint":{"x":1,"y":1}}`,
 		},
-		{v: &ts.User{Name: ""}, j: `{"name":""}`},
-		{v: &ts.User{Name: "foo"}, j: `{"name":"foo"}`},
+		{&ts.User{Name: ""}, `{"name":""}`},
+		{&ts.User{Name: "foo"}, `{"name":"foo"}`},
 		{
-			v: &ts.User{
+			&ts.User{
 				Name:    "foo",
 				Contact: &ts.ContactInfo{EmailAddress: "bar@example.com"},
 			},
-			j: `{"name":"foo","contact":{"emailAddress":"bar@example.com"}}`,
+			`{"name":"foo","contact":{"emailAddress":"bar@example.com"}}`,
 		},
 		{
-			v: &ts.User{
+			&ts.User{
 				Name:    "foo",
 				Contact: &ts.ContactInfo{EmailAddress: ""},
 			},
-			j: `{"name":"foo","contact":{"emailAddress":""}}`,
+			`{"name":"foo","contact":{"emailAddress":""}}`,
 		},
-		{v: &tu.EmptyUnion{}, j: "{}"},
-		{v: &tu.Document{Pdf: td.PDF("hello")}, j: `{"pdf":"aGVsbG8="}`},
-		{v: &tu.Document{Pdf: td.PDF{}}, w: &tu.Document{Pdf: nil}, j: `{}`},
-		{v: &tu.Document{Pdf: nil}, j: `{}`},
+		{&tu.EmptyUnion{}, "{}"},
+		{&tu.Document{Pdf: td.PDF("hello")}, `{"pdf":"aGVsbG8="}`},
 		{
-			v: &tu.Document{PlainText: stringp("hello")},
-			j: `{"plainText":"hello"}`,
+			&tu.Document{PlainText: stringp("hello")},
+			`{"plainText":"hello"}`,
 		},
-		{v: &tu.Document{PlainText: stringp("")}, j: `{"plainText":""}`},
+		{&tu.Document{PlainText: stringp("")}, `{"plainText":""}`},
 		{
-			v: &tu.ArbitraryValue{BoolValue: boolp(true)},
-			j: `{"boolValue":true}`,
+			&tu.ArbitraryValue{BoolValue: boolp(true)},
+			`{"boolValue":true}`,
 		},
 		{
-			v: &tu.ArbitraryValue{BoolValue: boolp(false)},
-			j: `{"boolValue":false}`,
+			&tu.ArbitraryValue{BoolValue: boolp(false)},
+			`{"boolValue":false}`,
 		},
 		{
-			v: &tu.ArbitraryValue{Int64Value: int64p(42)},
-			j: `{"int64Value":42}`,
+			&tu.ArbitraryValue{Int64Value: int64p(42)},
+			`{"int64Value":42}`,
 		},
 		{
-			v: &tu.ArbitraryValue{Int64Value: int64p(0)},
-			j: `{"int64Value":0}`,
+			&tu.ArbitraryValue{Int64Value: int64p(0)},
+			`{"int64Value":0}`,
 		},
 		{
-			v: &tu.ArbitraryValue{StringValue: stringp("foo")},
-			j: `{"stringValue":"foo"}`,
+			&tu.ArbitraryValue{StringValue: stringp("foo")},
+			`{"stringValue":"foo"}`,
 		},
 		{
-			v: &tu.ArbitraryValue{StringValue: stringp("")},
-			j: `{"stringValue":""}`,
+			&tu.ArbitraryValue{StringValue: stringp("")},
+			`{"stringValue":""}`,
 		},
 		{
-			v: &tu.ArbitraryValue{ListValue: nil},
-			j: `{}`,
-		},
-		{
-			v: &tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{}},
-			w: &tu.ArbitraryValue{ListValue: nil},
-			j: `{}`,
-		},
-		{
-			v: &tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{
+			&tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{
 				{BoolValue: boolp(true)},
 				{Int64Value: int64p(42)},
 				{StringValue: stringp("foo")},
 			}},
-			j: `{"listValue":[` +
+			`{"listValue":[` +
 				`{"boolValue":true},` +
 				`{"int64Value":42},` +
 				`{"stringValue":"foo"}` +
 				`]}`,
 		},
 		{
-			v: &tu.ArbitraryValue{MapValue: nil},
-			j: `{}`,
-		},
-		{
-			v: &tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{}},
-			w: &tu.ArbitraryValue{MapValue: nil},
-			j: `{}`,
-		},
-		{
-			v: &tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{
+			&tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{
 				"bool":   {BoolValue: boolp(true)},
 				"int64":  {Int64Value: int64p(42)},
 				"string": {StringValue: stringp("foo")},
 			}},
-			j: `{"mapValue":{` +
+			`{"mapValue":{` +
 				`"bool":{"boolValue":true},` +
 				`"int64":{"int64Value":42},` +
 				`"string":{"stringValue":"foo"}` +
 				`}}`,
 		},
 		{
-			v: &ts.List{Value: 0, Tail: &ts.List{Value: 1}},
-			j: `{"value":0,"tail":{"value":1}}`,
+			&ts.List{Value: 0, Tail: &ts.List{Value: 1}},
+			`{"value":0,"tail":{"value":1}}`,
 		},
 		{
-			v: &ts.Rename{Default: "foo", CamelCase: "bar"},
-			j: `{"default":"foo","snake_case":"bar"}`,
+			&ts.Rename{Default: "foo", CamelCase: "bar"},
+			`{"default":"foo","snake_case":"bar"}`,
 		},
 		{
-			v: &ts.Omit{Serialized: "foo", Hidden: ""},
-			j: `{"serialized":"foo"}`,
+			&ts.Omit{Serialized: "foo", Hidden: ""},
+			`{"serialized":"foo"}`,
 		},
 	}
 
@@ -1012,15 +992,39 @@ func TestStructJSON(t *testing.T) {
 			assert.Equal(t, tt.j, string(encoded))
 		}
 
-		u := tt.v
-		if tt.w != nil {
-			u = tt.w
-		}
-		v := reflect.New(reflect.TypeOf(u).Elem()).Interface()
+		v := reflect.New(reflect.TypeOf(tt.v).Elem()).Interface()
 		if assert.NoError(t, json.Unmarshal([]byte(tt.j), v), "failed to decode %q", tt.j) {
-			assert.Equal(t, u, v)
+			assert.Equal(t, tt.v, v)
 		}
 	}
+}
+
+func TestOptionalEmptyListJSON(t *testing.T) {
+	give := tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{}}
+	want := tu.ArbitraryValue{ListValue: nil}
+	j := `{}`
+
+	encoded, err := json.Marshal(give)
+	require.NoError(t, err, "failed to encode to JSON")
+	assert.Equal(t, j, string(encoded))
+
+	var get tu.ArbitraryValue
+	require.NoError(t, json.Unmarshal(encoded, &get), "failed to decode JSON")
+	assert.Equal(t, want, get)
+}
+
+func TestOptionalEmptyMapJSON(t *testing.T) {
+	give := tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{}}
+	want := tu.ArbitraryValue{MapValue: nil}
+	j := `{}`
+
+	encoded, err := json.Marshal(give)
+	require.NoError(t, err, "failed to encode to JSON")
+	assert.Equal(t, j, string(encoded))
+
+	var get tu.ArbitraryValue
+	require.NoError(t, json.Unmarshal(encoded, &get), "failed to decode JSON")
+	assert.Equal(t, want, get)
 }
 
 func TestJSONOmitBehaviour(t *testing.T) {
