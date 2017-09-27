@@ -154,7 +154,7 @@ func compileJSONTag(f *compile.FieldSpec, name string, opts ...string) *structta
 		return t
 	}
 
-	// We want to add the "omitempty" json tag if the field is an 'optional" to
+	// We want to add the "omitempty" JSON tag if the field is an "optional" to
 	// reduce "null" noise. The "omitempty" json tag specifies that the field
 	// should be omitted from the encoding if the field has an empty value,
 	// defined as false, 0, a nil pointer, a nil interface value, and any empty
