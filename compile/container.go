@@ -93,14 +93,11 @@ func (m *MapSpec) TypeCode() wire.Type {
 }
 
 // ForEachTypeReference for MapSpec
-func (m *MapSpec) ForEachTypeReference(f func(TypeSpec) error) (err error) {
-	if err = f(m.KeySpec); err != nil {
+func (m *MapSpec) ForEachTypeReference(f func(TypeSpec) error) error {
+	if err := f(m.KeySpec); err != nil {
 		return err
 	}
-	if err = f(m.ValueSpec); err != nil {
-		return err
-	}
-	return err
+	return f(m.ValueSpec)
 }
 
 // ThriftAnnotations returns all associated annotations.
