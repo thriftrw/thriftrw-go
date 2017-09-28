@@ -4,7 +4,8 @@ Releases
 v1.8.0 (unreleased)
 -------------------
 
--   No changes yet.
+-   Optional fields of generated structs now enable the `omitempty` JSON option
+    if the field holds a list, set, or map.
 
 
 v1.7.0 (2017-09-12)
