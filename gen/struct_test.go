@@ -919,35 +919,34 @@ func TestStructJSON(t *testing.T) {
 		},
 		{&tu.EmptyUnion{}, "{}"},
 		{&tu.Document{Pdf: td.PDF("hello")}, `{"pdf":"aGVsbG8="}`},
-		{&tu.Document{Pdf: td.PDF{}}, `{"pdf":""}`},
 		{
 			&tu.Document{PlainText: stringp("hello")},
-			`{"pdf":null,"plainText":"hello"}`,
+			`{"plainText":"hello"}`,
 		},
-		{&tu.Document{PlainText: stringp("")}, `{"pdf":null,"plainText":""}`},
+		{&tu.Document{PlainText: stringp("")}, `{"plainText":""}`},
 		{
 			&tu.ArbitraryValue{BoolValue: boolp(true)},
-			`{"boolValue":true,"listValue":null,"mapValue":null}`,
+			`{"boolValue":true}`,
 		},
 		{
 			&tu.ArbitraryValue{BoolValue: boolp(false)},
-			`{"boolValue":false,"listValue":null,"mapValue":null}`,
+			`{"boolValue":false}`,
 		},
 		{
 			&tu.ArbitraryValue{Int64Value: int64p(42)},
-			`{"int64Value":42,"listValue":null,"mapValue":null}`,
+			`{"int64Value":42}`,
 		},
 		{
 			&tu.ArbitraryValue{Int64Value: int64p(0)},
-			`{"int64Value":0,"listValue":null,"mapValue":null}`,
+			`{"int64Value":0}`,
 		},
 		{
 			&tu.ArbitraryValue{StringValue: stringp("foo")},
-			`{"stringValue":"foo","listValue":null,"mapValue":null}`,
+			`{"stringValue":"foo"}`,
 		},
 		{
 			&tu.ArbitraryValue{StringValue: stringp("")},
-			`{"stringValue":"","listValue":null,"mapValue":null}`,
+			`{"stringValue":""}`,
 		},
 		{
 			&tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{
@@ -956,10 +955,10 @@ func TestStructJSON(t *testing.T) {
 				{StringValue: stringp("foo")},
 			}},
 			`{"listValue":[` +
-				`{"boolValue":true,"listValue":null,"mapValue":null},` +
-				`{"int64Value":42,"listValue":null,"mapValue":null},` +
-				`{"stringValue":"foo","listValue":null,"mapValue":null}` +
-				`],"mapValue":null}`,
+				`{"boolValue":true},` +
+				`{"int64Value":42},` +
+				`{"stringValue":"foo"}` +
+				`]}`,
 		},
 		{
 			&tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{
@@ -967,10 +966,10 @@ func TestStructJSON(t *testing.T) {
 				"int64":  {Int64Value: int64p(42)},
 				"string": {StringValue: stringp("foo")},
 			}},
-			`{"listValue":null,"mapValue":{` +
-				`"bool":{"boolValue":true,"listValue":null,"mapValue":null},` +
-				`"int64":{"int64Value":42,"listValue":null,"mapValue":null},` +
-				`"string":{"stringValue":"foo","listValue":null,"mapValue":null}` +
+			`{"mapValue":{` +
+				`"bool":{"boolValue":true},` +
+				`"int64":{"int64Value":42},` +
+				`"string":{"stringValue":"foo"}` +
 				`}}`,
 		},
 		{
@@ -996,9 +995,36 @@ func TestStructJSON(t *testing.T) {
 		v := reflect.New(reflect.TypeOf(tt.v).Elem()).Interface()
 		if assert.NoError(t, json.Unmarshal([]byte(tt.j), v), "failed to decode %q", tt.j) {
 			assert.Equal(t, tt.v, v)
-			assert.Equal(t, tt.v, v)
 		}
 	}
+}
+
+func TestOptionalEmptyListJSON(t *testing.T) {
+	give := tu.ArbitraryValue{ListValue: []*tu.ArbitraryValue{}}
+	want := tu.ArbitraryValue{ListValue: nil}
+	j := `{}`
+
+	encoded, err := json.Marshal(give)
+	require.NoError(t, err, "failed to encode to JSON")
+	assert.Equal(t, j, string(encoded))
+
+	var get tu.ArbitraryValue
+	require.NoError(t, json.Unmarshal(encoded, &get), "failed to decode JSON")
+	assert.Equal(t, want, get)
+}
+
+func TestOptionalEmptyMapJSON(t *testing.T) {
+	give := tu.ArbitraryValue{MapValue: map[string]*tu.ArbitraryValue{}}
+	want := tu.ArbitraryValue{MapValue: nil}
+	j := `{}`
+
+	encoded, err := json.Marshal(give)
+	require.NoError(t, err, "failed to encode to JSON")
+	assert.Equal(t, j, string(encoded))
+
+	var get tu.ArbitraryValue
+	require.NoError(t, json.Unmarshal(encoded, &get), "failed to decode JSON")
+	assert.Equal(t, want, get)
 }
 
 func TestJSONOmitBehaviour(t *testing.T) {

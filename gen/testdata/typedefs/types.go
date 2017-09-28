@@ -1088,7 +1088,7 @@ func (lhs Timestamp) Equals(rhs Timestamp) bool {
 type Transition struct {
 	FromState State      `json:"fromState,required"`
 	ToState   State      `json:"toState,required"`
-	Events    EventGroup `json:"events"`
+	Events    EventGroup `json:"events,omitempty"`
 }
 
 // ToWire translates a Transition struct into a Thrift-level intermediate

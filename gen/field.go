@@ -91,11 +91,7 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 		return err
 	}
 
-	if err := f.PrimitiveAccessors(g); err != nil {
-		return err
-	}
-
-	return nil
+	return f.PrimitiveAccessors(g)
 }
 
 func (f fieldGroupGenerator) DefineStruct(g Generator) error {
@@ -147,23 +143,24 @@ func generateTags(f *compile.FieldSpec) (string, error) {
 }
 
 func compileJSONTag(f *compile.FieldSpec, name string, opts ...string) *structtag.Tag {
-	// We want to add omitempty if the field is an optional struct or
-	// primitive to reduce "null" noise. We won't add omitempty for
-	// optional collections because omitempty doesn't differentiate
-	// between nil and empty collections.
-
 	t := &structtag.Tag{
 		Key:     jsonTagKey,
 		Name:    name,
 		Options: opts,
 	}
 
+	// If the field name is "-" then it means omit, add no tags
 	if name == "-" {
-		// If the field name is "-" then it means omit, add no tags
 		return t
 	}
 
-	if (isStructType(f.Type) || isPrimitiveType(f.Type)) && !f.Required && !t.HasOption("omitempty") {
+	// We want to add the "omitempty" JSON tag if the field is an "optional" to
+	// reduce "null" noise. The "omitempty" json tag specifies that the field
+	// should be omitted from the encoding if the field has an empty value,
+	// defined as false, 0, a nil pointer, a nil interface value, and any empty
+	// array, slice, map, or string.
+	if (isReferenceType(f.Type) || isStructType(f.Type) || isPrimitiveType(f.Type)) &&
+		!f.Required && !t.HasOption("omitempty") {
 		t.Options = append(t.Options, "omitempty")
 	}
 

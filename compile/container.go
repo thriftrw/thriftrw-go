@@ -97,10 +97,7 @@ func (m *MapSpec) ForEachTypeReference(f func(TypeSpec) error) error {
 	if err := f(m.KeySpec); err != nil {
 		return err
 	}
-	if err := f(m.ValueSpec); err != nil {
-		return err
-	}
-	return nil
+	return f(m.ValueSpec)
 }
 
 // ThriftAnnotations returns all associated annotations.

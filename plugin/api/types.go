@@ -330,7 +330,7 @@ type Function struct {
 	// List of exceptions raised by the function.
 	//
 	// This list is in the order specified by the user in the Thrift file.
-	Exceptions []*Argument `json:"exceptions"`
+	Exceptions []*Argument `json:"exceptions,omitempty"`
 	// Whether this function is oneway or not. This should be assumed to be
 	// false unless explicitly stated otherwise. If this is true, the
 	// returnType and exceptions will be null or empty.
@@ -1089,7 +1089,7 @@ type GenerateServiceResponse struct {
 	// absolute location of the directory.
 	//
 	// The paths MUST NOT contain the string ".." or the request will fail.
-	Files map[string][]byte `json:"files"`
+	Files map[string][]byte `json:"files,omitempty"`
 }
 
 type _Map_String_Binary_MapItemList map[string][]byte

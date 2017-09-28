@@ -42,10 +42,7 @@ func EvaluateValue(v Value) error {
 			if err := EvaluateValue(item.Key); err != nil {
 				return err
 			}
-			if err := EvaluateValue(item.Value); err != nil {
-				return err
-			}
-			return nil
+			return EvaluateValue(item.Value)
 		})
 	case TSet:
 		s := v.GetSet()

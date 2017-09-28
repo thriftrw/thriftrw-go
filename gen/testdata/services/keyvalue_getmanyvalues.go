@@ -16,7 +16,7 @@ import (
 //
 // The arguments for getManyValues are sent and received over the wire as this struct.
 type KeyValue_GetManyValues_Args struct {
-	Range []Key `json:"range"`
+	Range []Key `json:"range,omitempty"`
 }
 
 type _List_Key_ValueList []Key
@@ -295,7 +295,7 @@ func init() {
 // Success is set only if the function did not throw an exception.
 type KeyValue_GetManyValues_Result struct {
 	// Value returned by getManyValues after a successful execution.
-	Success      []*unions.ArbitraryValue          `json:"success"`
+	Success      []*unions.ArbitraryValue          `json:"success,omitempty"`
 	DoesNotExist *exceptions.DoesNotExistException `json:"doesNotExist,omitempty"`
 }
 
