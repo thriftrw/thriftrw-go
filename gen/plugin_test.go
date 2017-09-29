@@ -494,6 +494,32 @@ func TestBuildType(t *testing.T) {
 			},
 		},
 		{
+			desc: "enum with annotations",
+			spec: &compile.EnumSpec{
+				Name: "Foo",
+				File: "idl/bar.thrift",
+				Items: []compile.EnumItem{
+					{Name: "A", Value: 0},
+					{Name: "B", Value: 2},
+				},
+				Annotations: compile.Annotations{
+					"foo": "bar",
+					"baz": "",
+				},
+			},
+			required: true,
+			want: &api.Type{
+				ReferenceType: &api.TypeReference{
+					Name:       "Foo",
+					ImportPath: "go.uber.org/thriftrw/gen/testdata/bar",
+					Annotations: map[string]string{
+						"foo": "bar",
+						"baz": "",
+					},
+				},
+			},
+		},
+		{
 			// struct
 			desc: "struct",
 			spec: &compile.StructSpec{
@@ -514,6 +540,38 @@ func TestBuildType(t *testing.T) {
 					ReferenceType: &api.TypeReference{
 						Name:       "Foo",
 						ImportPath: "go.uber.org/thriftrw/gen/testdata/foo",
+					},
+				},
+			},
+		},
+		{
+			desc: "struct with annotations",
+			spec: &compile.StructSpec{
+				Name: "Foo",
+				File: "idl/foo.thrift",
+				Type: ast.StructType,
+				Fields: compile.FieldGroup{
+					{
+						ID:       1,
+						Name:     "value",
+						Type:     &compile.StringSpec{},
+						Required: true,
+					},
+				},
+				Annotations: compile.Annotations{
+					"validate":  "true",
+					"obfuscate": "",
+				},
+			},
+			want: &api.Type{
+				PointerType: &api.Type{
+					ReferenceType: &api.TypeReference{
+						Name:       "Foo",
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/foo",
+						Annotations: map[string]string{
+							"validate":  "true",
+							"obfuscate": "",
+						},
 					},
 				},
 			},
@@ -575,6 +633,28 @@ func TestBuildType(t *testing.T) {
 				ReferenceType: &api.TypeReference{
 					Name:       "Foo",
 					ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+				},
+			},
+		},
+		{
+			desc: "typedef with annotations",
+			spec: &compile.TypedefSpec{
+				Name:   "Timestamp",
+				File:   "idl/common.thrift",
+				Target: &compile.ListSpec{ValueSpec: &compile.StringSpec{}},
+				Annotations: compile.Annotations{
+					"format":   "ISO8601",
+					"validate": "true",
+				},
+			},
+			want: &api.Type{
+				ReferenceType: &api.TypeReference{
+					Name:       "Timestamp",
+					ImportPath: "go.uber.org/thriftrw/gen/testdata/common",
+					Annotations: map[string]string{
+						"format":   "ISO8601",
+						"validate": "true",
+					},
 				},
 			},
 		},
