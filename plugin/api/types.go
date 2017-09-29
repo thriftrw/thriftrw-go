@@ -2789,7 +2789,24 @@ type TypeReference struct {
 	Name string `json:"name,required"`
 	// Import path for the package defining this type.
 	ImportPath string `json:"importPath,required"`
-	// Annotations for the type.
+	// Annotations defined on this type.
+	//
+	// Note that these are the Thrift annotations listed after the type
+	// declaration in the Thrift file.
+	//
+	// Given,
+	//
+	//   struct User {
+	//     1: required i32 id
+	//     2: required string name
+	//   } (key = "id", validate)
+	//
+	// The annotations will be,
+	//
+	//   {
+	//     "key": "id",
+	//     "validate": "",
+	//   }
 	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
