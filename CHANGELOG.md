@@ -6,6 +6,8 @@ v1.8.0 (unreleased)
 
 -   Optional fields of generated structs now enable the `omitempty` JSON option
     if the field holds a list, set, or map.
+-   Plugins: Annotations declared on user-defined types are now exposed on
+    `TypeReference`.
 
 
 v1.7.0 (2017-09-12)

@@ -1,6 +1,7 @@
 package plugin
 
 import (
+	"sort"
 	"strings"
 	"testing"
 
@@ -42,6 +43,42 @@ func TestGoFileFromTemplate(t *testing.T) {
 				`import "go.uber.org/thriftrw/bar"`,
 				``,
 				`var foo bar.Foo = nil`,
+			),
+		},
+		{
+			desc: "type reference with annotations",
+			template: `
+				package foo
+
+				var foo <formatType .> = nil
+				var fooAnnotations = map[string]string{
+					<range $pair := typeAnnotations .>"<$pair.Key>": "<$pair.Value>",
+					<end>
+				}
+			`,
+			data: &api.Type{
+				ReferenceType: &api.TypeReference{
+					Name:       "Foo",
+					ImportPath: "go.uber.org/thriftrw/bar",
+					Annotations: map[string]string{
+						"foo": "bar",
+						"baz": "bat",
+					},
+				},
+			},
+			options: []TemplateOption{
+				TemplateFunc("typeAnnotations", typeAnnotations),
+			},
+			wantBody: unlines(
+				`package foo`,
+				``,
+				`import "go.uber.org/thriftrw/bar"`,
+				``,
+				`var foo bar.Foo = nil`,
+				`var fooAnnotations = map[string]string{`,
+				"\t"+`"baz": "bat",`,
+				"\t"+`"foo": "bar",`,
+				`}`,
 			),
 		},
 		{
@@ -231,6 +268,7 @@ func TestGoFileFromTemplate(t *testing.T) {
 		if tt.wantError != "" {
 			assert.Contains(t, err.Error(), tt.wantError, tt.desc)
 		} else {
+			assert.NoError(t, err)
 			assert.Equal(t, tt.wantBody, string(got), tt.desc)
 		}
 	}
@@ -240,4 +278,37 @@ func TestGoFileFromTemplate(t *testing.T) {
 // trailing newline.
 func unlines(lines ...string) string {
 	return strings.Join(lines, "\n") + "\n"
+}
+
+// annotationPair is a key/value pair of an annotation.
+//
+// This is needed as Golang maps are not sorted, and we want deterministic
+// output for our generated files, so we return annotations as a slice of
+// annotationPairs sorted on key.
+type annotationPair struct {
+	Key   string
+	Value string
+}
+
+// typeAnnotations returns the annotations for the api.Type.
+//
+// Only api.TypeReferences have annotations, so this returns nil if the given
+// api.Type is not an api.TypeReference.
+func typeAnnotations(t *api.Type) []annotationPair {
+	if t.ReferenceType != nil && len(t.ReferenceType.Annotations) > 0 {
+		var keys []string
+		for key := range t.ReferenceType.Annotations {
+			keys = append(keys, key)
+		}
+		sort.Strings(keys)
+		annotationPairs := make([]annotationPair, 0, len(keys))
+		for _, key := range keys {
+			annotationPairs = append(annotationPairs, annotationPair{
+				Key:   key,
+				Value: t.ReferenceType.Annotations[key],
+			})
+		}
+		return annotationPairs
+	}
+	return nil
 }
