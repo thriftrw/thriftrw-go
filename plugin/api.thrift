@@ -27,6 +27,11 @@ struct TypeReference {
      */
     2: required string importPath
 
+    /**
+     * Annotations for the type.
+     */
+    3: optional map<string, string> annotations
+
     // TODO(abg): Should this just be using ModuleID instead of a package?
 }
 
