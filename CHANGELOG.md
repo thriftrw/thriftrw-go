@@ -1,7 +1,7 @@
 Releases
 ========
 
-v1.8.0 (unreleased)
+v1.8.0 (2017-09-29)
 -------------------
 
 -   Optional fields of generated structs now enable the `omitempty` JSON option
