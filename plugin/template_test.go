@@ -45,6 +45,39 @@ func TestGoFileFromTemplate(t *testing.T) {
 			),
 		},
 		{
+			desc: "type reference with annotations",
+			template: `
+				package foo
+
+				var foo <formatType .> = nil
+				var fooAnnotations = map[string]string{
+					<range $pair := typeAnnotations .>"<$pair.Key>": "<$pair.Value>",
+					<end>
+				}
+			`,
+			data: &api.Type{
+				ReferenceType: &api.TypeReference{
+					Name:       "Foo",
+					ImportPath: "go.uber.org/thriftrw/bar",
+					Annotations: map[string]string{
+						"foo": "bar",
+						"baz": "bat",
+					},
+				},
+			},
+			wantBody: unlines(
+				`package foo`,
+				``,
+				`import "go.uber.org/thriftrw/bar"`,
+				``,
+				`var foo bar.Foo = nil`,
+				`var fooAnnotations = map[string]string{`,
+				"\t"+`"baz": "bat",`,
+				"\t"+`"foo": "bar",`,
+				`}`,
+			),
+		},
+		{
 			desc: "type reference in the same package",
 			template: `
 				package bar
@@ -231,6 +264,7 @@ func TestGoFileFromTemplate(t *testing.T) {
 		if tt.wantError != "" {
 			assert.Contains(t, err.Error(), tt.wantError, tt.desc)
 		} else {
+			assert.NoError(t, err)
 			assert.Equal(t, tt.wantBody, string(got), tt.desc)
 		}
 	}

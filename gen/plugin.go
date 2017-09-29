@@ -243,8 +243,9 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 		}
 		t = &api.Type{
 			ReferenceType: &api.TypeReference{
-				Name:       name,
-				ImportPath: importPath,
+				Name:        name,
+				ImportPath:  importPath,
+				Annotations: s.Annotations,
 			},
 		}
 	}
@@ -314,8 +315,9 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 		return &api.Type{
 			PointerType: &api.Type{
 				ReferenceType: &api.TypeReference{
-					Name:       name,
-					ImportPath: importPath,
+					Name:        name,
+					ImportPath:  importPath,
+					Annotations: s.Annotations,
 				},
 			},
 		}, nil
@@ -333,8 +335,9 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 
 		t = &api.Type{
 			ReferenceType: &api.TypeReference{
-				Name:       name,
-				ImportPath: importPath,
+				Name:        name,
+				ImportPath:  importPath,
+				Annotations: s.Annotations,
 			},
 		}
 

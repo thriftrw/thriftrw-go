@@ -199,12 +199,46 @@ func (g *goFileGenerator) FormatType(t *api.Type) (string, error) {
 	}
 }
 
+// AnnotationPair is a key/value pair of an annotation.
+//
+// This is needed as Golang maps are not sorted, and we want deterministic
+// output for our generated files, so we return annotations as a slice of
+// AnnotationPairs sorted on key.
+type AnnotationPair struct {
+	Key   string
+	Value string
+}
+
+// TypeAnnotations returns the annotations for the api.Type.
+//
+// Only api.TypeReferences have annotations, so this returns nil if the given
+// api.Type is not an api.TypeReference.
+func (g *goFileGenerator) TypeAnnotations(t *api.Type) []AnnotationPair {
+	if t.ReferenceType != nil && len(t.ReferenceType.Annotations) > 0 {
+		var keys []string
+		for key := range t.ReferenceType.Annotations {
+			keys = append(keys, key)
+		}
+		sort.Strings(keys)
+		annotationPairs := make([]AnnotationPair, 0, len(keys))
+		for _, key := range keys {
+			annotationPairs = append(annotationPairs, AnnotationPair{
+				Key:   key,
+				Value: t.ReferenceType.Annotations[key],
+			})
+		}
+		return annotationPairs
+	}
+	return nil
+}
+
 // Generates a Go file with the given name using the provided template and
 // template data.
 func (g *goFileGenerator) Generate(filename, tmpl string, data interface{}) ([]byte, error) {
 	funcs := template.FuncMap{
-		"import":     g.Import,
-		"formatType": g.FormatType,
+		"import":          g.Import,
+		"formatType":      g.FormatType,
+		"typeAnnotations": g.TypeAnnotations,
 	}
 	for k, v := range g.templateFuncs {
 		funcs[k] = v
