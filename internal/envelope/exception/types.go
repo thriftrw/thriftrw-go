@@ -111,6 +111,11 @@ func (v *ExceptionType) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToPtr translates ExceptionType into its pointer representation.
+func (v ExceptionType) ToPtr() *ExceptionType {
+	return &v
+}
+
 // ToWire translates ExceptionType into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.

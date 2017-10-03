@@ -221,6 +221,11 @@ func (v *Feature) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToPtr translates Feature into its pointer representation.
+func (v Feature) ToPtr() *Feature {
+	return &v
+}
+
 // ToWire translates Feature into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -2216,6 +2221,11 @@ func (v *SimpleType) UnmarshalText(value []byte) error {
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "SimpleType")
 	}
+}
+
+// ToPtr translates SimpleType into its pointer representation.
+func (v SimpleType) ToPtr() *SimpleType {
+	return &v
 }
 
 // ToWire translates SimpleType into a Thrift-level intermediate

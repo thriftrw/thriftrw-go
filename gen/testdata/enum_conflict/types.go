@@ -47,6 +47,11 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToPtr translates RecordType into its pointer representation.
+func (v RecordType) ToPtr() *RecordType {
+	return &v
+}
+
 // ToWire translates RecordType into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.

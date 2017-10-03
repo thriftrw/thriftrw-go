@@ -407,6 +407,11 @@ func (v *MyEnum) UnmarshalText(value []byte) error {
 	}
 }
 
+// ToPtr translates MyEnum into its pointer representation.
+func (v MyEnum) ToPtr() *MyEnum {
+	return &v
+}
+
 // ToWire translates MyEnum into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -1365,6 +1370,11 @@ func (v *MyEnum2) UnmarshalText(value []byte) error {
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "MyEnum2")
 	}
+}
+
+// ToPtr translates MyEnum2 into its pointer representation.
+func (v MyEnum2) ToPtr() *MyEnum2 {
+	return &v
 }
 
 // ToWire translates MyEnum2 into a Thrift-level intermediate
