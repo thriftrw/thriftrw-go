@@ -24,6 +24,11 @@ func (v *EmptyEnum) UnmarshalText(value []byte) error {
 	}
 }
 
+// Ptr returns a pointer to this enum value.
+func (v EmptyEnum) Ptr() *EmptyEnum {
+	return &v
+}
+
 // ToWire translates EmptyEnum into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -145,6 +150,11 @@ func (v *EnumDefault) UnmarshalText(value []byte) error {
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "EnumDefault")
 	}
+}
+
+// Ptr returns a pointer to this enum value.
+func (v EnumDefault) Ptr() *EnumDefault {
+	return &v
 }
 
 // ToWire translates EnumDefault into a Thrift-level intermediate
@@ -316,6 +326,11 @@ func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
 	}
 }
 
+// Ptr returns a pointer to this enum value.
+func (v EnumWithDuplicateName) Ptr() *EnumWithDuplicateName {
+	return &v
+}
+
 // ToWire translates EnumWithDuplicateName into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -479,6 +494,11 @@ func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
 	}
 }
 
+// Ptr returns a pointer to this enum value.
+func (v EnumWithDuplicateValues) Ptr() *EnumWithDuplicateValues {
+	return &v
+}
+
 // ToWire translates EnumWithDuplicateValues into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -612,6 +632,11 @@ func (v *EnumWithValues) UnmarshalText(value []byte) error {
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "EnumWithValues")
 	}
+}
+
+// Ptr returns a pointer to this enum value.
+func (v EnumWithValues) Ptr() *EnumWithValues {
+	return &v
 }
 
 // ToWire translates EnumWithValues into a Thrift-level intermediate
@@ -761,6 +786,11 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
+// Ptr returns a pointer to this enum value.
+func (v RecordType) Ptr() *RecordType {
+	return &v
+}
+
 // ToWire translates RecordType into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -893,6 +923,11 @@ func (v *RecordTypeValues) UnmarshalText(value []byte) error {
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "RecordTypeValues")
 	}
+}
+
+// Ptr returns a pointer to this enum value.
+func (v RecordTypeValues) Ptr() *RecordTypeValues {
+	return &v
 }
 
 // ToWire translates RecordTypeValues into a Thrift-level intermediate
@@ -1160,6 +1195,11 @@ func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "LowerCaseEnum")
 	}
+}
+
+// Ptr returns a pointer to this enum value.
+func (v LowerCaseEnum) Ptr() *LowerCaseEnum {
+	return &v
 }
 
 // ToWire translates LowerCaseEnum into a Thrift-level intermediate

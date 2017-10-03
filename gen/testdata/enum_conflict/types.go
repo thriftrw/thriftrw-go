@@ -47,6 +47,11 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
+// Ptr returns a pointer to this enum value.
+func (v RecordType) Ptr() *RecordType {
+	return &v
+}
+
 // ToWire translates RecordType into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.

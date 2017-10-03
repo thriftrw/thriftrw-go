@@ -4,7 +4,7 @@ Releases
 v1.9.0 (unreleased)
 -------------------
 
--   No changes yet.
+-   Generates enum types now include a `Ptr()` method.
 
 
 v1.8.0 (2017-09-29)

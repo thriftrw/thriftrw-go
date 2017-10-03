@@ -107,6 +107,11 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			}
 		}
 
+		// Ptr returns a pointer to this enum value.
+		func (<$v> <$enumName>) Ptr() *<$enumName> {
+			return &<$v>
+		}
+
 		// ToWire translates <$enumName> into a Thrift-level intermediate
 		// representation. This intermediate representation may be serialized
 		// into bytes using a ThriftRW protocol implementation.

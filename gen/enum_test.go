@@ -324,6 +324,11 @@ func TestUnmarshalTextReturnsValue(t *testing.T) {
 	assert.Equal(t, te.EnumDefaultFoo, v)
 }
 
+func TestEnumValueCanBecomePointer(t *testing.T) {
+	v := te.EnumDefaultFoo
+	assert.Equal(t, &v, te.EnumDefaultFoo.Ptr())
+}
+
 func TestUnmarshalTextReturnsErrorOnInvalidValue(t *testing.T) {
 	var v te.EnumDefault
 	err := v.UnmarshalText([]byte("blah"))
