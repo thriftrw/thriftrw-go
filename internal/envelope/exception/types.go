@@ -111,8 +111,8 @@ func (v *ExceptionType) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates ExceptionType into its pointer representation.
-func (v ExceptionType) ToPtr() *ExceptionType {
+// Ptr returns a pointer to this enum value.
+func (v ExceptionType) Ptr() *ExceptionType {
 	return &v
 }
 

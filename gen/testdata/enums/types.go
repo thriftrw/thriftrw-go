@@ -24,8 +24,8 @@ func (v *EmptyEnum) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates EmptyEnum into its pointer representation.
-func (v EmptyEnum) ToPtr() *EmptyEnum {
+// Ptr returns a pointer to this enum value.
+func (v EmptyEnum) Ptr() *EmptyEnum {
 	return &v
 }
 
@@ -152,8 +152,8 @@ func (v *EnumDefault) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates EnumDefault into its pointer representation.
-func (v EnumDefault) ToPtr() *EnumDefault {
+// Ptr returns a pointer to this enum value.
+func (v EnumDefault) Ptr() *EnumDefault {
 	return &v
 }
 
@@ -326,8 +326,8 @@ func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates EnumWithDuplicateName into its pointer representation.
-func (v EnumWithDuplicateName) ToPtr() *EnumWithDuplicateName {
+// Ptr returns a pointer to this enum value.
+func (v EnumWithDuplicateName) Ptr() *EnumWithDuplicateName {
 	return &v
 }
 
@@ -494,8 +494,8 @@ func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates EnumWithDuplicateValues into its pointer representation.
-func (v EnumWithDuplicateValues) ToPtr() *EnumWithDuplicateValues {
+// Ptr returns a pointer to this enum value.
+func (v EnumWithDuplicateValues) Ptr() *EnumWithDuplicateValues {
 	return &v
 }
 
@@ -634,8 +634,8 @@ func (v *EnumWithValues) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates EnumWithValues into its pointer representation.
-func (v EnumWithValues) ToPtr() *EnumWithValues {
+// Ptr returns a pointer to this enum value.
+func (v EnumWithValues) Ptr() *EnumWithValues {
 	return &v
 }
 
@@ -786,8 +786,8 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates RecordType into its pointer representation.
-func (v RecordType) ToPtr() *RecordType {
+// Ptr returns a pointer to this enum value.
+func (v RecordType) Ptr() *RecordType {
 	return &v
 }
 
@@ -925,8 +925,8 @@ func (v *RecordTypeValues) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates RecordTypeValues into its pointer representation.
-func (v RecordTypeValues) ToPtr() *RecordTypeValues {
+// Ptr returns a pointer to this enum value.
+func (v RecordTypeValues) Ptr() *RecordTypeValues {
 	return &v
 }
 
@@ -1197,8 +1197,8 @@ func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates LowerCaseEnum into its pointer representation.
-func (v LowerCaseEnum) ToPtr() *LowerCaseEnum {
+// Ptr returns a pointer to this enum value.
+func (v LowerCaseEnum) Ptr() *LowerCaseEnum {
 	return &v
 }
 

@@ -47,8 +47,8 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates RecordType into its pointer representation.
-func (v RecordType) ToPtr() *RecordType {
+// Ptr returns a pointer to this enum value.
+func (v RecordType) Ptr() *RecordType {
 	return &v
 }
 

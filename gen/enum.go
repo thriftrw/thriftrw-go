@@ -107,8 +107,8 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			}
 		}
 
-		// ToPtr translates <$enumName> into its pointer representation.
-		func (<$v> <$enumName>) ToPtr() *<$enumName> {
+		// Ptr returns a pointer to this enum value.
+		func (<$v> <$enumName>) Ptr() *<$enumName> {
 			return &<$v>
 		}
 

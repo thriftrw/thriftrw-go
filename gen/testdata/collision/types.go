@@ -407,8 +407,8 @@ func (v *MyEnum) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates MyEnum into its pointer representation.
-func (v MyEnum) ToPtr() *MyEnum {
+// Ptr returns a pointer to this enum value.
+func (v MyEnum) Ptr() *MyEnum {
 	return &v
 }
 
@@ -1372,8 +1372,8 @@ func (v *MyEnum2) UnmarshalText(value []byte) error {
 	}
 }
 
-// ToPtr translates MyEnum2 into its pointer representation.
-func (v MyEnum2) ToPtr() *MyEnum2 {
+// Ptr returns a pointer to this enum value.
+func (v MyEnum2) Ptr() *MyEnum2 {
 	return &v
 }
 
