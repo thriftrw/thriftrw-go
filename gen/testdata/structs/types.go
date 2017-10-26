@@ -1512,6 +1512,176 @@ func (v *Graph) Equals(rhs *Graph) bool {
 	return true
 }
 
+type I64TestStruct struct {
+	Time       Timestamp `json:"time,required"`
+	LongNumber Long      `json:"longNumber,required"`
+	I64Field   int64     `json:"i64Field,required"`
+}
+
+// ToWire translates a I64TestStruct struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *I64TestStruct) ToWire() (wire.Value, error) {
+	var (
+		fields [3]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	w, err = v.Time.ToWire()
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+
+	w, err = v.LongNumber.ToWire()
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 2, Value: w}
+	i++
+
+	w, err = wire.NewValueI64(v.I64Field), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 3, Value: w}
+	i++
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _Timestamp_Read(w wire.Value) (Timestamp, error) {
+	var x Timestamp
+	err := x.FromWire(w)
+	return x, err
+}
+
+func _Long_Read(w wire.Value) (Long, error) {
+	var x Long
+	err := x.FromWire(w)
+	return x, err
+}
+
+// FromWire deserializes a I64TestStruct struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a I64TestStruct struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v I64TestStruct
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *I64TestStruct) FromWire(w wire.Value) error {
+	var err error
+
+	timeIsSet := false
+	longNumberIsSet := false
+	i64FieldIsSet := false
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TI64 {
+				v.Time, err = _Timestamp_Read(field.Value)
+				if err != nil {
+					return err
+				}
+				timeIsSet = true
+			}
+		case 2:
+			if field.Value.Type() == wire.TI64 {
+				v.LongNumber, err = _Long_Read(field.Value)
+				if err != nil {
+					return err
+				}
+				longNumberIsSet = true
+			}
+		case 3:
+			if field.Value.Type() == wire.TI64 {
+				v.I64Field, err = field.Value.GetI64(), error(nil)
+				if err != nil {
+					return err
+				}
+				i64FieldIsSet = true
+			}
+		}
+	}
+
+	if !timeIsSet {
+		return errors.New("field Time of I64TestStruct is required")
+	}
+
+	if !longNumberIsSet {
+		return errors.New("field LongNumber of I64TestStruct is required")
+	}
+
+	if !i64FieldIsSet {
+		return errors.New("field I64Field of I64TestStruct is required")
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a I64TestStruct
+// struct.
+func (v *I64TestStruct) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [3]string
+	i := 0
+	fields[i] = fmt.Sprintf("Time: %v", v.Time)
+	i++
+	fields[i] = fmt.Sprintf("LongNumber: %v", v.LongNumber)
+	i++
+	fields[i] = fmt.Sprintf("I64Field: %v", v.I64Field)
+	i++
+
+	return fmt.Sprintf("I64TestStruct{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this I64TestStruct match the
+// provided I64TestStruct.
+//
+// This function performs a deep comparison.
+func (v *I64TestStruct) Equals(rhs *I64TestStruct) bool {
+	if !(v.Time == rhs.Time) {
+		return false
+	}
+	if !(v.LongNumber == rhs.LongNumber) {
+		return false
+	}
+	if !(v.I64Field == rhs.I64Field) {
+		return false
+	}
+
+	return true
+}
+
 type List Node
 
 // ToWire translates List into a Thrift-level intermediate
@@ -1718,176 +1888,6 @@ func (v *Node) Equals(rhs *Node) bool {
 		return false
 	}
 	if !((v.Tail == nil && rhs.Tail == nil) || (v.Tail != nil && rhs.Tail != nil && v.Tail.Equals(rhs.Tail))) {
-		return false
-	}
-
-	return true
-}
-
-type OliviaNumber struct {
-	Time       Timestamp `json:"time,required"`
-	LongNumber Long      `json:"longNumber,required"`
-	I64Field   int64     `json:"i64Field,required"`
-}
-
-// ToWire translates a OliviaNumber struct into a Thrift-level intermediate
-// representation. This intermediate representation may be serialized
-// into bytes using a ThriftRW protocol implementation.
-//
-// An error is returned if the struct or any of its fields failed to
-// validate.
-//
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
-//
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
-func (v *OliviaNumber) ToWire() (wire.Value, error) {
-	var (
-		fields [3]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
-	)
-
-	w, err = v.Time.ToWire()
-	if err != nil {
-		return w, err
-	}
-	fields[i] = wire.Field{ID: 1, Value: w}
-	i++
-
-	w, err = v.LongNumber.ToWire()
-	if err != nil {
-		return w, err
-	}
-	fields[i] = wire.Field{ID: 2, Value: w}
-	i++
-
-	w, err = wire.NewValueI64(v.I64Field), error(nil)
-	if err != nil {
-		return w, err
-	}
-	fields[i] = wire.Field{ID: 3, Value: w}
-	i++
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
-}
-
-func _Timestamp_Read(w wire.Value) (Timestamp, error) {
-	var x Timestamp
-	err := x.FromWire(w)
-	return x, err
-}
-
-func _Long_Read(w wire.Value) (Long, error) {
-	var x Long
-	err := x.FromWire(w)
-	return x, err
-}
-
-// FromWire deserializes a OliviaNumber struct from its Thrift-level
-// representation. The Thrift-level representation may be obtained
-// from a ThriftRW protocol implementation.
-//
-// An error is returned if we were unable to build a OliviaNumber struct
-// from the provided intermediate representation.
-//
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
-//
-//   var v OliviaNumber
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
-func (v *OliviaNumber) FromWire(w wire.Value) error {
-	var err error
-
-	timeIsSet := false
-	longNumberIsSet := false
-	i64FieldIsSet := false
-
-	for _, field := range w.GetStruct().Fields {
-		switch field.ID {
-		case 1:
-			if field.Value.Type() == wire.TI64 {
-				v.Time, err = _Timestamp_Read(field.Value)
-				if err != nil {
-					return err
-				}
-				timeIsSet = true
-			}
-		case 2:
-			if field.Value.Type() == wire.TI64 {
-				v.LongNumber, err = _Long_Read(field.Value)
-				if err != nil {
-					return err
-				}
-				longNumberIsSet = true
-			}
-		case 3:
-			if field.Value.Type() == wire.TI64 {
-				v.I64Field, err = field.Value.GetI64(), error(nil)
-				if err != nil {
-					return err
-				}
-				i64FieldIsSet = true
-			}
-		}
-	}
-
-	if !timeIsSet {
-		return errors.New("field Time of OliviaNumber is required")
-	}
-
-	if !longNumberIsSet {
-		return errors.New("field LongNumber of OliviaNumber is required")
-	}
-
-	if !i64FieldIsSet {
-		return errors.New("field I64Field of OliviaNumber is required")
-	}
-
-	return nil
-}
-
-// String returns a readable string representation of a OliviaNumber
-// struct.
-func (v *OliviaNumber) String() string {
-	if v == nil {
-		return "<nil>"
-	}
-
-	var fields [3]string
-	i := 0
-	fields[i] = fmt.Sprintf("Time: %v", v.Time)
-	i++
-	fields[i] = fmt.Sprintf("LongNumber: %v", v.LongNumber)
-	i++
-	fields[i] = fmt.Sprintf("I64Field: %v", v.I64Field)
-	i++
-
-	return fmt.Sprintf("OliviaNumber{%v}", strings.Join(fields[:i], ", "))
-}
-
-// Equals returns true if all the fields of this OliviaNumber match the
-// provided OliviaNumber.
-//
-// This function performs a deep comparison.
-func (v *OliviaNumber) Equals(rhs *OliviaNumber) bool {
-	if !(v.Time == rhs.Time) {
-		return false
-	}
-	if !(v.LongNumber == rhs.LongNumber) {
-		return false
-	}
-	if !(v.I64Field == rhs.I64Field) {
 		return false
 	}
 

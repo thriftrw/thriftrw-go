@@ -88,7 +88,7 @@ struct Graph {
 typedef i64 Timestamp (json.type = "Date")
 typedef i64 Long  (json.type = "Long")
 
-struct OliviaNumber {
+struct I64TestStruct {
     1: required Timestamp time
     2: required Long longNumber
     3: required i64 i64Field
