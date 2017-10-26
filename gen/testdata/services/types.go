@@ -8,9 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
-	"strconv"
 	"strings"
-	"time"
 )
 
 type ConflictingNamesSetValueArgs struct {

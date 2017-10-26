@@ -10,9 +10,7 @@ import (
 	"go.uber.org/thriftrw/gen/testdata/enums"
 	"go.uber.org/thriftrw/gen/testdata/structs"
 	"go.uber.org/thriftrw/wire"
-	"strconv"
 	"strings"
-	"time"
 )
 
 type _Set_Binary_ValueList [][]byte

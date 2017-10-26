@@ -8,9 +8,7 @@ import (
 	"fmt"
 	"go.uber.org/thriftrw/gen/testdata/typedefs"
 	"go.uber.org/thriftrw/wire"
-	"strconv"
 	"strings"
-	"time"
 )
 
 type UUID string

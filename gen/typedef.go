@@ -57,8 +57,6 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$fmt := import "fmt">
-		<$time := import "time">
-		<$strconv := import "strconv">
 		<$wire := import "go.uber.org/thriftrw/wire">
 		<$typedefType := typeReference .>
 		<$isTimestamp := .IsTimestamp >
@@ -77,6 +75,7 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 		}
 
 		<if $isLong>
+		<$strconv := import "strconv">
 		func (<$v> <$typedefType>) MarshalJSON() ([]byte, error) {
 			<$x> := (<typeReference .Target>)(<$v>)
 			return ([]byte)(strconv.FormatInt(int64(<$x>), 10)), nil
@@ -93,6 +92,7 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 		<end>
 
 		<if $isTimestamp>
+		<$time := import "time">
 		func (<$v> <$typedefType>) MarshalJSON() ([]byte, error) {
 			<$x> := (<typeReference .Target>)(<$v>)
 			return ([]byte)(time.Unix(<$x>/1000, 0).Format(time.RFC3339)), nil
