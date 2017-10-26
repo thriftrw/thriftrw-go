@@ -34,6 +34,8 @@ type TypedefSpec struct {
 	Target      TypeSpec
 	Annotations Annotations
 	Doc         string
+	IsLong      bool
+	IsTimestamp bool
 
 	root TypeSpec
 }
@@ -53,6 +55,8 @@ func compileTypedef(file string, src *ast.Typedef) (*TypedefSpec, error) {
 			Reason: err,
 		}
 	}
+	isLong := annotations["json.type"] == "Long"
+	isTimestamp := annotations["json.type"] == "Date"
 
 	return &TypedefSpec{
 		Name:        src.Name,
@@ -60,6 +64,8 @@ func compileTypedef(file string, src *ast.Typedef) (*TypedefSpec, error) {
 		Target:      typ,
 		Annotations: annotations,
 		Doc:         src.Doc,
+		IsLong:      isLong,
+		IsTimestamp: isTimestamp,
 	}, nil
 }
 

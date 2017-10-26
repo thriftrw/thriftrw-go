@@ -85,6 +85,15 @@ struct Graph {
 //////////////////////////////////////////////////////////////////////////////
 // Nested structs (Optional)
 
+typedef i64 Timestamp (json.type = "Date")
+typedef i64 Long  (json.type = "Long")
+
+struct OliviaNumber {
+    1: required Timestamp time
+    2: required Long longNumber
+    3: required i64 i64Field
+}
+
 struct ContactInfo {
     1: required string emailAddress
 }

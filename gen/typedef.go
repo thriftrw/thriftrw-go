@@ -57,8 +57,12 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$fmt := import "fmt">
+		<$time := import "time">
+		<$strconv := import "strconv">
 		<$wire := import "go.uber.org/thriftrw/wire">
 		<$typedefType := typeReference .>
+		<$isTimestamp := .IsTimestamp >
+		<$isLong := .IsLong >
 
 		<formatDoc .Doc>type <typeName .> <typeName .Target>
 
@@ -71,6 +75,38 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 			<$x> := (<typeReference .Target>)(<$v>)
 			return <toWire .Target $x>
 		}
+
+		<if $isLong>
+		func (<$v> <$typedefType>) MarshalJSON() ([]byte, error) {
+			<$x> := (<typeReference .Target>)(<$v>)
+			return ([]byte)(strconv.FormatInt(int64(<$x>), 10)), nil
+		}
+		<$text := newVar "text">
+		func (<$v> <$typedefType>) UnmarshalJSON(<$text> []byte) error {
+			<$x>, err := strconv.ParseInt(string(<$text>), 10, 32)
+			if err != nil {
+				return err
+			}
+			*<$v> = <$x>
+			return nil
+		}
+		<end>
+
+		<if $isTimestamp>
+		func (<$v> <$typedefType>) MarshalJSON() ([]byte, error) {
+			<$x> := (<typeReference .Target>)(<$v>)
+			return ([]byte)(time.Unix(<$x>/1000, 0).Format(time.RFC3339)), nil
+		}
+		<$text := newVar "text">
+		func (<$v> <$typedefType>) UnmarshalJSON(<$text> []byte) error {
+			<$x>, err := time.Parse(time.RFC3339, string(<$text>))
+			if err != nil {
+				return err
+			}
+			*<$v> = <$x>.Unix() * 1000
+			return nil
+		}
+		<end>
 
 		// String returns a readable string representation of <typeName .>.
 		func (<$v> <$typedefType>) String() string {

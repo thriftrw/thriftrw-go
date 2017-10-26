@@ -1,5 +1,5 @@
 hash: d0f43f812a18bfa1f7490f400166b9116e3021f8f77e723dd0a5901a6745e0b9
-updated: 2017-08-03T15:10:56.086707616-07:00
+updated: 2017-10-24T19:23:26.634233398-07:00
 imports:
 - name: github.com/anmitsu/go-shlex
   version: 648efa622239a2f6ff949fed78ee37b48d499ba4
@@ -25,11 +25,11 @@ imports:
   - go/ast/astutil
 testImports:
 - name: github.com/davecgh/go-spew
-  version: adab96458c51a58dc1783b3335dcce5461522e75
+  version: 04cdfd42973bb9c8589fd6a731800cf222fde1a9
   subpackages:
   - spew
 - name: github.com/pmezard/go-difflib
-  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
   subpackages:
   - difflib
 - name: github.com/stretchr/testify
