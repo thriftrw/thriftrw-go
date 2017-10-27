@@ -74,36 +74,70 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 			return <toWire .Target $x>
 		}
 
+		<$byteArray := newVar "byteArray">
+		<$low := newVar "low">
+		<$high := newVar "high">
+		<$firstByte := newVar "firstByte">
 		<if $isLong>
 		<$strconv := import "strconv">
+		<$json := import "encoding/json">
+		<$binary := import "encoding/binary">
 		func (<$v> <$typedefType>) MarshalJSON() ([]byte, error) {
-			<$x> := (<typeReference .Target>)(<$v>)
-			return ([]byte)(strconv.FormatInt(int64(<$x>), 10)), nil
+			<$byteArray> := make([]byte, 8, 8)
+			binary.BigEndian.PutUint64(<$byteArray> , uint64(<$v>))
+			<$high> := int32(binary.BigEndian.Uint32(<$byteArray>[:4]))
+			<$low> := int32(binary.BigEndian.Uint32(<$byteArray>[4:]))
+			return ([]byte)(fmt.Sprintf("{\"high\":%d,\"low\":%d}", <$high>, <$low>)), nil
 		}
 		<$text := newVar "text">
-		func (<$v> <$typedefType>) UnmarshalJSON(<$text> []byte) error {
-			<$x>, err := strconv.ParseInt(string(<$text>), 10, 32)
-			if err != nil {
-				return err
+		<$result := newVar "result">
+		func (<$v> *<$typedefType>) UnmarshalJSON(<$text> []byte) error {
+			<$firstByte> := <$text>[0]
+			if <$firstByte> == byte('{') {
+				<$result> := map[string]int32{}
+				err := json.Unmarshal(<$text>, &<$result>)
+				if err != nil {
+					return err
+				}
+				<$byteArray> := make([]byte, 8, 8)
+				binary.BigEndian.PutUint32(<$byteArray>[:4], uint32(<$result>["high"]))
+				binary.BigEndian.PutUint32(<$byteArray>[4:], uint32(<$result>["low"]))
+				<$x>:= binary.BigEndian.Uint64(<$byteArray>)
+				*<$v> = <$typedefType>(int64(<$x>))
+			} else {
+				<$x>, err := strconv.ParseInt(string(<$text>), 10, 64)
+				if err != nil {
+					return err
+				}
+				*<$v> = <$typedefType>(<$x>)
 			}
-			*<$v> = <$x>
 			return nil
 		}
 		<end>
 
 		<if $isTimestamp>
 		<$time := import "time">
+		<$strconv := import "strconv">
 		func (<$v> <$typedefType>) MarshalJSON() ([]byte, error) {
 			<$x> := (<typeReference .Target>)(<$v>)
-			return ([]byte)(time.Unix(<$x>/1000, 0).Format(time.RFC3339)), nil
+			return ([]byte)("\"" + time.Unix(<$x>/1000, 0).UTC().Format(time.RFC3339) + "\""), nil
 		}
 		<$text := newVar "text">
-		func (<$v> <$typedefType>) UnmarshalJSON(<$text> []byte) error {
-			<$x>, err := time.Parse(time.RFC3339, string(<$text>))
-			if err != nil {
-				return err
+		func (<$v> *<$typedefType>) UnmarshalJSON(<$text> []byte) error {
+			<$firstByte> := <$text>[0]
+			if <$firstByte> == byte('"') {
+				<$x>, err := time.Parse(time.RFC3339, string(<$text>[1: len(<$text>) - 1]))
+				if err != nil {
+					return err
+				}
+				*<$v> = <$typedefType>(<$x>.Unix() * 1000)
+			} else {
+				<$x>, err := strconv.ParseInt(string(<$text>), 10, 64)
+				if err != nil {
+					return err
+				}
+				*<$v> = <$typedefType>(<$x>)
 			}
-			*<$v> = <$x>.Unix() * 1000
 			return nil
 		}
 		<end>
