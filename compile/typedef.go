@@ -85,10 +85,12 @@ func (t *TypedefSpec) Link(scope Scope) (TypeSpec, error) {
 	if err == nil {
 		t.root = RootTypeSpec(t.Target)
 	}
-	typThriftAnnotation := t.Target.ThriftAnnotations()
-	if typThriftAnnotation != nil {
-		t.IsLong = t.IsLong || typThriftAnnotation["json.type"] == "Long"
-		t.IsTimestamp = t.IsTimestamp || typThriftAnnotation["json.type"] == "Date"
+	if t.Target != nil {
+		typThriftAnnotation := t.Target.ThriftAnnotations()
+		if typThriftAnnotation != nil {
+			t.IsLong = t.IsLong || typThriftAnnotation["json.type"] == "Long"
+			t.IsTimestamp = t.IsTimestamp || typThriftAnnotation["json.type"] == "Date"
+		}
 	}
 	return t, err
 }
