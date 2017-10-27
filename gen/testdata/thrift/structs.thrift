@@ -86,7 +86,7 @@ struct Graph {
 // Nested structs (Optional)
 
 typedef i64 Timestamp (json.type = "Date")
-typedef i64 Long  (json.type = "Long")
+typedef i64 (json.type = "Long") Long
 
 struct I64TestStruct {
     1: required Timestamp time
