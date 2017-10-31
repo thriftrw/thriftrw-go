@@ -55,17 +55,12 @@ func compileTypedef(file string, src *ast.Typedef) (*TypedefSpec, error) {
 			Reason: err,
 		}
 	}
-	isLong := annotations["json.type"] == "Long"
-	isTimestamp := annotations["json.type"] == "Date"
-
 	return &TypedefSpec{
 		Name:        src.Name,
 		File:        file,
 		Target:      typ,
 		Annotations: annotations,
 		Doc:         src.Doc,
-		IsLong:      isLong,
-		IsTimestamp: isTimestamp,
 	}, nil
 }
 
