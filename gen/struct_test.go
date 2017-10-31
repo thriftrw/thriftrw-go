@@ -895,6 +895,20 @@ func TestStructJSON(t *testing.T) {
 			`{"startPoint":{"x":1,"y":1},"endPoint":null}`,
 		},
 		{
+			&ts.I64TestStruct{
+				Time: ts.Timestamp(1257894000000),
+				LongNumber: ts.Long(1099511627776),
+			},
+			`{"time":"2009-11-10T23:00:00Z","longNumber":{"high":256,"low":0},"i64Field":0}`,
+		},
+		{
+			&ts.I64TestStruct{
+				Time: ts.Timestamp(1257894000000),
+				LongNumber: ts.Long(-1099511627779),
+			},
+			`{"time":"2009-11-10T23:00:00Z","longNumber":{"high":-257,"low":-3},"i64Field":0}`,
+		},
+		{
 			&ts.Edge{
 				StartPoint: &ts.Point{X: 1, Y: 1},
 				EndPoint:   &ts.Point{X: 1, Y: 1},

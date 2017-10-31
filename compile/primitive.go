@@ -27,6 +27,12 @@ import (
 	"go.uber.org/thriftrw/wire"
 )
 
+type JsonType int
+const (
+	Date JsonType = 1
+	Long JsonType = 2
+)
+
 type (
 	BoolSpec struct {
 		nativeThriftType
@@ -54,8 +60,8 @@ type (
 
 	I64Spec struct {
 		nativeThriftType
-
 		Annotations Annotations
+		JsonType JsonType
 	}
 
 	DoubleSpec struct {
@@ -99,7 +105,18 @@ func (t *BoolSpec) Link(Scope) (TypeSpec, error)   { return t, nil }
 func (t *I8Spec) Link(Scope) (TypeSpec, error)     { return t, nil }
 func (t *I16Spec) Link(Scope) (TypeSpec, error)    { return t, nil }
 func (t *I32Spec) Link(Scope) (TypeSpec, error)    { return t, nil }
-func (t *I64Spec) Link(Scope) (TypeSpec, error)    { return t, nil }
+func (t *I64Spec) Link(Scope) (TypeSpec, error) {
+	annotations := t.Annotations
+	if annotations != nil {
+		if annotations["json.type"] == "Long" {
+			t.JsonType = Long
+		}
+		if annotations["json.type"] == "Date" {
+			t.JsonType = Date
+		}
+	}
+	return t, nil
+}
 func (t *DoubleSpec) Link(Scope) (TypeSpec, error) { return t, nil }
 func (t *StringSpec) Link(Scope) (TypeSpec, error) { return t, nil }
 func (t *BinarySpec) Link(Scope) (TypeSpec, error) { return t, nil }

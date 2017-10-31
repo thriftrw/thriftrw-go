@@ -34,7 +34,7 @@ type TypedefSpec struct {
 	Target      TypeSpec
 	Annotations Annotations
 	Doc         string
-
+	JsonType    JsonType
 	root TypeSpec
 }
 
@@ -53,7 +53,6 @@ func compileTypedef(file string, src *ast.Typedef) (*TypedefSpec, error) {
 			Reason: err,
 		}
 	}
-
 	return &TypedefSpec{
 		Name:        src.Name,
 		File:        file,
@@ -78,6 +77,17 @@ func (t *TypedefSpec) Link(scope Scope) (TypeSpec, error) {
 	t.Target, err = t.Target.Link(scope)
 	if err == nil {
 		t.root = RootTypeSpec(t.Target)
+	}
+	if t.Target != nil {
+		typThriftAnnotation := t.Target.ThriftAnnotations()
+		if typThriftAnnotation != nil {
+			if typThriftAnnotation["json.type"] == "Long" {
+				t.JsonType = Long
+			}
+			if typThriftAnnotation["json.type"] == "Date" {
+				t.JsonType = Date
+			}
+		}
 	}
 	return t, err
 }
