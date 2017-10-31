@@ -59,8 +59,8 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 		<$fmt := import "fmt">
 		<$wire := import "go.uber.org/thriftrw/wire">
 		<$typedefType := typeReference .>
-		<$isTimestamp := .IsTimestamp >
-		<$isLong := .IsLong >
+		<$isTimestamp := eq .JsonType 1 >
+		<$isLong := eq .JsonType 2 >
 
 		<formatDoc .Doc>type <typeName .> <typeName .Target>
 

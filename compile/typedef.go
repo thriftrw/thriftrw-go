@@ -34,9 +34,7 @@ type TypedefSpec struct {
 	Target      TypeSpec
 	Annotations Annotations
 	Doc         string
-	IsLong      bool
-	IsTimestamp bool
-
+	JsonType    JsonType
 	root TypeSpec
 }
 
@@ -83,8 +81,12 @@ func (t *TypedefSpec) Link(scope Scope) (TypeSpec, error) {
 	if t.Target != nil {
 		typThriftAnnotation := t.Target.ThriftAnnotations()
 		if typThriftAnnotation != nil {
-			t.IsLong = t.IsLong || typThriftAnnotation["json.type"] == "Long"
-			t.IsTimestamp = t.IsTimestamp || typThriftAnnotation["json.type"] == "Date"
+			if typThriftAnnotation["json.type"] == "Long" {
+				t.JsonType = Long
+			}
+			if typThriftAnnotation["json.type"] == "Date" {
+				t.JsonType = Date
+			}
 		}
 	}
 	return t, err
