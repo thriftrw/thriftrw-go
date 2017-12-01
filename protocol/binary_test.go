@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"reflect"
 	"testing"
 
 	"go.uber.org/thriftrw/protocol/binary"
@@ -378,7 +379,7 @@ func TestStruct(t *testing.T) {
 func TestStructEOFFailure(t *testing.T) {
 	tests := []failureTest{
 		{},
-		{0x0B, 0x00},       // incompte field ID
+		{0x0B, 0x00},       // invalid field ID
 		{0x02, 0x00, 0x01}, // no value
 	}
 
@@ -683,16 +684,27 @@ func TestBinaryEnvelopeErrors(t *testing.T) {
 			continue
 		}
 
+		// Also verify that DecodeRequest fails.
+		_, env, err := EnvelopeAgnosticBinary.DecodeRequest(reader)
+		if !assert.Error(t, err, "%v: should fail to decode as request", tt.errMsg) {
+			continue
+		}
+
+		if !assert.Equal(t, noEnvelopeResponder, env, "%v: should fail with noEnvelopeResponder", tt.errMsg) {
+			continue
+		}
+
 		assert.Contains(t, err.Error(), tt.errMsg, "Unexpected failure")
 	}
 }
 
 func TestBinaryEnvelopeSuccessful(t *testing.T) {
 	tests := []struct {
-		msg      string
-		encoded  []byte
-		want     wire.Envelope
-		reencode bool
+		msg               string
+		encoded           []byte
+		want              wire.Envelope
+		wantResponderType reflect.Type
+		reencode          bool
 	}{
 		{
 			msg: "non-strict envelope, struct",
@@ -717,6 +729,7 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 					vfield(1, vbinary("hello")),
 				),
 			},
+			wantResponderType: reflect.TypeOf((*envelopeV0Responder)(nil)),
 		},
 		{
 			msg: "strict envelope, struct",
@@ -739,7 +752,8 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 					vfield(1, vi16(100)),
 				),
 			},
-			reencode: true,
+			wantResponderType: reflect.TypeOf((*envelopeV1Responder)(nil)),
+			reencode:          true,
 		},
 		{
 			msg: "non-strict envelope, struct",
@@ -762,6 +776,7 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 					vfield(1, vi16(100)),
 				),
 			},
+			wantResponderType: reflect.TypeOf((*envelopeV0Responder)(nil)),
 		},
 	}
 
@@ -776,6 +791,24 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 			continue
 		}
 
+		// Also verify whether we can infer the presence of the envelope
+		// reliably when reading a request struct.
+
+		r, responder, err := EnvelopeAgnosticBinary.DecodeRequest(reader)
+		if !assert.NoError(t, err, "%v: failed to decode request with envelope", tt.msg) {
+			continue
+		}
+
+		if !assert.Equal(t, tt.want.Value, r, "%v: decoded request mismatch", tt.msg) {
+			continue
+		}
+
+		if !assert.True(t, tt.wantResponderType == reflect.TypeOf(responder), "%v: decoded request should have responder want %v got %T", tt.msg, tt.wantResponderType, responder) {
+			continue
+		}
+
+		// Verify a round trip, back from encode after decode.
+
 		if !tt.reencode {
 			continue
 		}
@@ -786,5 +819,221 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 		}
 
 		assert.Equal(t, tt.encoded, buf.Bytes(), "%v: reencoded bytes mismatch")
+	}
+}
+
+func TestReqRes(t *testing.T) {
+
+	tests := []struct {
+		msg           string
+		req           wire.Value
+		reqBytes      []byte
+		responderType reflect.Type
+		res           wire.Value
+		resType       wire.EnvelopeType
+		resBytes      []byte
+	}{
+		{
+			msg:           "empty req, empty reply, no envelope",
+			req:           vstruct(),
+			reqBytes:      []byte{0x00},
+			responderType: reflect.TypeOf(noEnvelopeResponder),
+			res:           vstruct(),
+			resType:       wire.Reply,
+			resBytes:      []byte{0x00},
+		},
+		{
+			msg: "two field req, empty reply, no envelope",
+			req: vstruct(vfield(1, vbool(true))),
+			reqBytes: []byte{
+				0x02,       // type:1 = bool
+				0x00, 0x01, // id:2 = 1
+				0x01, // value = true
+				0x00, // stop
+			},
+			responderType: reflect.TypeOf(noEnvelopeResponder),
+			res:           vstruct(),
+			resType:       wire.Reply,
+			resBytes:      []byte{0x00},
+		},
+		{
+			msg: "empty reply, no-version non-strict envelope",
+			reqBytes: []byte{
+				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+				0x01,                   // type:1 = 1 = call
+				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+
+				// <struct>
+				0x06,       // type:1 = i16
+				0x00, 0x01, // id:2 = 1
+				0x00, 0x64, // value = 100
+				0x00, // stop
+			},
+			req: vstruct(
+				vfield(1, vi16(100)),
+			),
+			responderType: reflect.TypeOf((*envelopeV0Responder)(nil)),
+			resType:       wire.Exception,
+			res:           vstruct(),
+			resBytes: []byte{
+				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+				0x03,                   // type1 = 3 (exception)
+				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+
+				// <struct>
+				0x00,
+			},
+		},
+		{
+			msg: "empty reply, version 1 strict envelope",
+			reqBytes: []byte{
+				0x80, 0x01, 0x00, 0x01, // version|type:4 = 1 | call
+				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+
+				// <struct>
+				0x06,       // type:1 = i16
+				0x00, 0x01, // id:2 = 1
+				0x00, 0x64, // value = 100
+				0x00, // stop
+			},
+			req: vstruct(
+				vfield(1, vi16(100)),
+			),
+			responderType: reflect.TypeOf((*envelopeV1Responder)(nil)),
+			resType:       wire.Reply,
+			res:           vstruct(),
+			resBytes: []byte{
+				0x80, 0x01, 0x00, 0x02, // version:2 &^ 0x80 = 1, type:2 = 2 (reply)
+				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+
+				// <struct>
+				0x00,
+			},
+		},
+		{
+			msg: "complex request, no envelope, complex response",
+			req: vstruct(
+				vfield(1, vi16(42)),
+				vfield(2, vlist(wire.TBinary, vbinary("foo"), vbinary("bar"))),
+				vfield(3, vset(wire.TBinary, vbinary("baz"), vbinary("qux"))),
+			),
+			reqBytes: []byte{
+				0x06,       // type:1 = i16
+				0x00, 0x01, // id:2 = 1
+				0x00, 0x2a, // value = 42
+
+				0x0F,       // type:1 = list
+				0x00, 0x02, // id:2 = 2
+
+				// <list>
+				0x0B,                   // type:1 = binary
+				0x00, 0x00, 0x00, 0x02, // size:4 = 2
+				// <binary>
+				0x00, 0x00, 0x00, 0x03, // len:4 = 3
+				0x66, 0x6f, 0x6f, // 'f', 'o', 'o'
+				// </binary>
+				// <binary>
+				0x00, 0x00, 0x00, 0x03, // len:4 = 3
+				0x62, 0x61, 0x72, // 'b', 'a', 'r'
+				// </binary>
+				// </list>
+
+				0x0E,       // type = set
+				0x00, 0x03, // id = 3
+
+				// <set>
+				0x0B,                   // type:1 = binary
+				0x00, 0x00, 0x00, 0x02, // size:4 = 2
+				// <binary>
+				0x00, 0x00, 0x00, 0x03, // len:4 = 3
+				0x62, 0x61, 0x7a, // 'b', 'a', 'z'
+				// </binary>
+				// <binary>
+				0x00, 0x00, 0x00, 0x03, // len:4 = 3
+				0x71, 0x75, 0x78, // 'q', 'u', 'x'
+				// </binary>
+				// </set>
+
+				0x00, // stop
+			},
+			res: vstruct(
+				vfield(1, vi16(42)),
+				vfield(2, vlist(wire.TBinary, vbinary("foo"), vbinary("bar"))),
+				vfield(3, vset(wire.TBinary, vbinary("baz"), vbinary("qux"))),
+			),
+			responderType: reflect.TypeOf(noEnvelopeResponder),
+			resType:       wire.Reply,
+			resBytes: []byte{
+				0x06,       // type:1 = i16
+				0x00, 0x01, // id:2 = 1
+				0x00, 0x2a, // value = 42
+
+				0x0F,       // type:1 = list
+				0x00, 0x02, // id:2 = 2
+
+				// <list>
+				0x0B,                   // type:1 = binary
+				0x00, 0x00, 0x00, 0x02, // size:4 = 2
+				// <binary>
+				0x00, 0x00, 0x00, 0x03, // len:4 = 3
+				0x66, 0x6f, 0x6f, // 'f', 'o', 'o'
+				// </binary>
+				// <binary>
+				0x00, 0x00, 0x00, 0x03, // len:4 = 3
+				0x62, 0x61, 0x72, // 'b', 'a', 'r'
+				// </binary>
+				// </list>
+
+				0x0E,       // type = set
+				0x00, 0x03, // id = 3
+
+				// <set>
+				0x0B,                   // type:1 = binary
+				0x00, 0x00, 0x00, 0x02, // size:4 = 2
+				// <binary>
+				0x00, 0x00, 0x00, 0x03, // len:4 = 3
+				0x62, 0x61, 0x7a, // 'b', 'a', 'z'
+				// </binary>
+				// <binary>
+				0x00, 0x00, 0x00, 0x03, // len:4 = 3
+				0x71, 0x75, 0x78, // 'q', 'u', 'x'
+				// </binary>
+				// </set>
+
+				0x00, // stop
+			},
+		},
+	}
+
+	// Verify that all structs can be read as request structs, dispite lacking
+	// an envelope.
+	for _, tt := range tests {
+		reader := bytes.NewReader(tt.reqBytes)
+		req, reser, err := EnvelopeAgnosticBinary.DecodeRequest(reader)
+		if !assert.NoError(t, err, "%s: failed to decode struct as request without envelope", tt.msg) {
+			continue
+		}
+
+		if !assert.True(t, reflect.TypeOf(reser) == tt.responderType, "%s: responder type mismatch", tt.msg) {
+			continue
+		}
+
+		if !assert.True(t, wire.ValuesAreEqual(tt.req, req), "%s: decoded request mismatch", tt.msg) {
+			continue
+		}
+
+		writer := bytes.NewBuffer(make([]byte, 0, 0))
+		err = reser.EncodeResponse(tt.res, tt.resType, writer)
+
+		if !assert.NoError(t, err, "%s: failed to encode response", tt.msg) {
+			continue
+		}
+
+		if !assert.Equal(t, tt.resBytes, writer.Bytes(), "%s: response bytes mismatch", tt.msg) {
+			continue
+		}
+
 	}
 }

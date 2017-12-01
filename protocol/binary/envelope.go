@@ -33,7 +33,6 @@ const (
 )
 
 // WriteEnveloped writes enveloped value using the strict envelope.
-// TODO: Add an option when creating the writer to choose non-strict writes.
 func (bw *Writer) WriteEnveloped(e wire.Envelope) error {
 	version := uint32(version1) | uint32(e.Type)
 
@@ -42,6 +41,24 @@ func (bw *Writer) WriteEnveloped(e wire.Envelope) error {
 	}
 
 	if err := bw.writeString(e.Name); err != nil {
+		return err
+	}
+
+	if err := bw.writeInt32(e.SeqID); err != nil {
+		return err
+	}
+
+	return bw.WriteValue(e.Value)
+}
+
+// WriteLegacyEnveloped writes enveloped value using the non-strict envelope
+// (non-strict lacks an envelope version).
+func (bw *Writer) WriteLegacyEnveloped(e wire.Envelope) error {
+	if err := bw.writeString(e.Name); err != nil {
+		return err
+	}
+
+	if err := bw.writeByte(uint8(e.Type)); err != nil {
 		return err
 	}
 
