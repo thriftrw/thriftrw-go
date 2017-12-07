@@ -21,6 +21,7 @@
 package protocol
 
 import (
+	"fmt"
 	"io"
 
 	"go.uber.org/thriftrw/protocol/binary"
@@ -49,6 +50,12 @@ var Binary Protocol
 //  This would roll into the byte that distinguishes the type of the first
 //  field of an un-enveloped struct.  This would require a 16MB procedure name.
 var EnvelopeAgnosticBinary EnvelopeAgnosticProtocol
+
+type errUnexpectedEnvelopeType wire.EnvelopeType
+
+func (e errUnexpectedEnvelopeType) Error() string {
+	return fmt.Sprintf("unexpected envelope type: %v", wire.EnvelopeType(e))
+}
 
 func init() {
 	Binary = binaryProtocol{}
@@ -88,7 +95,9 @@ func (binaryProtocol) DecodeEnveloped(r io.ReaderAt) (wire.Envelope, error) {
 // envelope.
 // This allows a Thrift request handler to transparently accept requests
 // regardless of whether the caller submits an envelope.
-func (b binaryProtocol) DecodeRequest(r io.ReaderAt) (wire.Value, EnvelopeSpecificResponder, error) {
+// The caller specifies the expected envelope type, one of OneWay or Unary, on
+// which the decoder asserts if the envelope is present.
+func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Value, EnvelopeSpecificResponder, error) {
 	// Strip request envelopes if present.
 	// 1. A message of length 1 containing only 0x00 can only be a bare,
 	// un-enveloped empty struct.
@@ -114,6 +123,9 @@ func (b binaryProtocol) DecodeRequest(r io.ReaderAt) (wire.Value, EnvelopeSpecif
 		if err != nil {
 			return wire.Value{}, noEnvelopeResponder, err
 		}
+		if e.Type != et {
+			return wire.Value{}, noEnvelopeResponder, errUnexpectedEnvelopeType(e.Type)
+		}
 		return e.Value, &envelopeV0Responder{
 			Name:  e.Name,
 			SeqID: e.SeqID,
@@ -125,6 +137,9 @@ func (b binaryProtocol) DecodeRequest(r io.ReaderAt) (wire.Value, EnvelopeSpecif
 		e, err := b.DecodeEnveloped(r)
 		if err != nil {
 			return wire.Value{}, noEnvelopeResponder, err
+		}
+		if e.Type != et {
+			return wire.Value{}, noEnvelopeResponder, errUnexpectedEnvelopeType(e.Type)
 		}
 		return e.Value, &envelopeV1Responder{
 			Name:  e.Name,

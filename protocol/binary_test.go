@@ -685,7 +685,7 @@ func TestBinaryEnvelopeErrors(t *testing.T) {
 		}
 
 		// Also verify that DecodeRequest fails.
-		_, env, err := EnvelopeAgnosticBinary.DecodeRequest(reader)
+		_, env, err := EnvelopeAgnosticBinary.DecodeRequest(wire.Call, reader)
 		if !assert.Error(t, err, "%v: should fail to decode as request", tt.errMsg) {
 			continue
 		}
@@ -794,7 +794,7 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 		// Also verify whether we can infer the presence of the envelope
 		// reliably when reading a request struct.
 
-		r, responder, err := EnvelopeAgnosticBinary.DecodeRequest(reader)
+		r, responder, err := EnvelopeAgnosticBinary.DecodeRequest(tt.want.Type, reader)
 		if !assert.NoError(t, err, "%v: failed to decode request with envelope", tt.msg) {
 			continue
 		}
@@ -1011,7 +1011,7 @@ func TestReqRes(t *testing.T) {
 	// an envelope.
 	for _, tt := range tests {
 		reader := bytes.NewReader(tt.reqBytes)
-		req, reser, err := EnvelopeAgnosticBinary.DecodeRequest(reader)
+		req, reser, err := EnvelopeAgnosticBinary.DecodeRequest(wire.Call, reader)
 		if !assert.NoError(t, err, "%s: failed to decode struct as request without envelope", tt.msg) {
 			continue
 		}

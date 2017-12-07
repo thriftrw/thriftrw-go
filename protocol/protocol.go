@@ -55,7 +55,9 @@ type EnvelopeAgnosticProtocol interface {
 	// ReaderAt.
 	// This allows a Thrift request handler to transparently accept requests
 	// regardless of whether the caller is configured to submit envelopes.
-	DecodeRequest(r io.ReaderAt) (wire.Value, EnvelopeSpecificResponder, error)
+	// The caller specifies the expected envelope type, one of OneWay or Unary,
+	// on which the decoder asserts if the envelope is present.
+	DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Value, EnvelopeSpecificResponder, error)
 }
 
 // EnvelopeSpecificResponder captures how to respond to a request, concerning whether and what
