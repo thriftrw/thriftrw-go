@@ -48,6 +48,8 @@ type Protocol interface {
 // EnvelopeAgnosticProtocol defines a specific way for a Thrift value to be
 // encoded or decoded, additionally being able to decode requests without prior
 // knowledge of whether the request is enveloped.
+//
+// The Binary protocol in particular can be upcast to EnvelopeAgnosticProtocol.
 type EnvelopeAgnosticProtocol interface {
 	Protocol
 
@@ -66,6 +68,6 @@ type EnvelopeAgnosticProtocol interface {
 type EnvelopeSpecificResponder interface {
 	// EncodeResponse writes a response value to the writer, with the envelope
 	// style of the corresponding request.
-	// The EnvelopeType should be either wire.Repy or wire.Exception.
+	// The EnvelopeType should be either wire.Reply or wire.Exception.
 	EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error
 }
