@@ -690,7 +690,7 @@ func TestBinaryEnvelopeErrors(t *testing.T) {
 			continue
 		}
 
-		if !assert.Equal(t, noEnvelopeResponder, env, "%v: should fail with noEnvelopeResponder", tt.errMsg) {
+		if !assert.Equal(t, _noEnvelopeResponder, env, "%v: should fail with noEnvelopeResponder", tt.errMsg) {
 			continue
 		}
 
@@ -822,7 +822,20 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 	}
 }
 
+func tbinary(v wire.Value) []byte {
+	buf := &bytes.Buffer{}
+	Binary.Encode(v, buf)
+	return buf.Bytes()
+}
+
 func TestReqRes(t *testing.T) {
+
+	complexPayload := vstruct(
+		vfield(1, vi16(42)),
+		vfield(2, vlist(wire.TBinary, vbinary("foo"), vbinary("bar"))),
+		vfield(3, vset(wire.TBinary, vbinary("baz"), vbinary("qux"))),
+		vfield(4, vmap(wire.TBinary, wire.TI8, vitem(vbinary("a"), vi8(1)))),
+	)
 
 	tests := []struct {
 		msg           string
@@ -837,41 +850,31 @@ func TestReqRes(t *testing.T) {
 			msg:           "empty req, empty reply, no envelope",
 			req:           vstruct(),
 			reqBytes:      []byte{0x00},
-			responderType: reflect.TypeOf(noEnvelopeResponder),
+			responderType: reflect.TypeOf(_noEnvelopeResponder),
 			res:           vstruct(),
 			resType:       wire.Reply,
 			resBytes:      []byte{0x00},
 		},
 		{
-			msg: "two field req, empty reply, no envelope",
-			req: vstruct(vfield(1, vbool(true))),
-			reqBytes: []byte{
-				0x02,       // type:1 = bool
-				0x00, 0x01, // id:2 = 1
-				0x01, // value = true
-				0x00, // stop
-			},
-			responderType: reflect.TypeOf(noEnvelopeResponder),
+			msg:           "two field req, empty reply, no envelope",
+			req:           vstruct(vfield(1, vbool(true))),
+			reqBytes:      tbinary(vstruct(vfield(1, vbool(true)))),
+			responderType: reflect.TypeOf(_noEnvelopeResponder),
 			res:           vstruct(),
 			resType:       wire.Reply,
 			resBytes:      []byte{0x00},
 		},
 		{
 			msg: "empty reply, no-version non-strict envelope",
-			reqBytes: []byte{
-				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
-				0x01,                   // type:1 = 1 = call
-				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
-
-				// <struct>
-				0x06,       // type:1 = i16
-				0x00, 0x01, // id:2 = 1
-				0x00, 0x64, // value = 100
-				0x00, // stop
-			},
-			req: vstruct(
-				vfield(1, vi16(100)),
+			reqBytes: append(
+				[]byte{
+					0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+					0x01,                   // type:1 = 1 = call
+					0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+				},
+				tbinary(vstruct(vfield(1, vi16(100))))...,
 			),
+			req:           vstruct(vfield(1, vi16(100))),
 			responderType: reflect.TypeOf((*envelopeV0Responder)(nil)),
 			resType:       wire.Exception,
 			res:           vstruct(),
@@ -886,17 +889,16 @@ func TestReqRes(t *testing.T) {
 		},
 		{
 			msg: "empty reply, version 1 strict envelope",
-			reqBytes: []byte{
-				0x80, 0x01, 0x00, 0x01, // version|type:4 = 1 | call
-				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
-				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
-
-				// <struct>
-				0x06,       // type:1 = i16
-				0x00, 0x01, // id:2 = 1
-				0x00, 0x64, // value = 100
-				0x00, // stop
-			},
+			reqBytes: append(
+				[]byte{
+					0x80, 0x01, 0x00, 0x01, // version|type:4 = 1 | call
+					0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+					0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+				},
+				tbinary(vstruct(
+					vfield(1, vi16(100)),
+				))...,
+			),
 			req: vstruct(
 				vfield(1, vi16(100)),
 			),
@@ -913,97 +915,13 @@ func TestReqRes(t *testing.T) {
 			},
 		},
 		{
-			msg: "complex request, no envelope, complex response",
-			req: vstruct(
-				vfield(1, vi16(42)),
-				vfield(2, vlist(wire.TBinary, vbinary("foo"), vbinary("bar"))),
-				vfield(3, vset(wire.TBinary, vbinary("baz"), vbinary("qux"))),
-			),
-			reqBytes: []byte{
-				0x06,       // type:1 = i16
-				0x00, 0x01, // id:2 = 1
-				0x00, 0x2a, // value = 42
-
-				0x0F,       // type:1 = list
-				0x00, 0x02, // id:2 = 2
-
-				// <list>
-				0x0B,                   // type:1 = binary
-				0x00, 0x00, 0x00, 0x02, // size:4 = 2
-				// <binary>
-				0x00, 0x00, 0x00, 0x03, // len:4 = 3
-				0x66, 0x6f, 0x6f, // 'f', 'o', 'o'
-				// </binary>
-				// <binary>
-				0x00, 0x00, 0x00, 0x03, // len:4 = 3
-				0x62, 0x61, 0x72, // 'b', 'a', 'r'
-				// </binary>
-				// </list>
-
-				0x0E,       // type = set
-				0x00, 0x03, // id = 3
-
-				// <set>
-				0x0B,                   // type:1 = binary
-				0x00, 0x00, 0x00, 0x02, // size:4 = 2
-				// <binary>
-				0x00, 0x00, 0x00, 0x03, // len:4 = 3
-				0x62, 0x61, 0x7a, // 'b', 'a', 'z'
-				// </binary>
-				// <binary>
-				0x00, 0x00, 0x00, 0x03, // len:4 = 3
-				0x71, 0x75, 0x78, // 'q', 'u', 'x'
-				// </binary>
-				// </set>
-
-				0x00, // stop
-			},
-			res: vstruct(
-				vfield(1, vi16(42)),
-				vfield(2, vlist(wire.TBinary, vbinary("foo"), vbinary("bar"))),
-				vfield(3, vset(wire.TBinary, vbinary("baz"), vbinary("qux"))),
-			),
-			responderType: reflect.TypeOf(noEnvelopeResponder),
+			msg:           "complex request, no envelope, complex response",
+			req:           complexPayload,
+			reqBytes:      tbinary(complexPayload),
+			res:           complexPayload,
+			responderType: reflect.TypeOf(_noEnvelopeResponder),
 			resType:       wire.Reply,
-			resBytes: []byte{
-				0x06,       // type:1 = i16
-				0x00, 0x01, // id:2 = 1
-				0x00, 0x2a, // value = 42
-
-				0x0F,       // type:1 = list
-				0x00, 0x02, // id:2 = 2
-
-				// <list>
-				0x0B,                   // type:1 = binary
-				0x00, 0x00, 0x00, 0x02, // size:4 = 2
-				// <binary>
-				0x00, 0x00, 0x00, 0x03, // len:4 = 3
-				0x66, 0x6f, 0x6f, // 'f', 'o', 'o'
-				// </binary>
-				// <binary>
-				0x00, 0x00, 0x00, 0x03, // len:4 = 3
-				0x62, 0x61, 0x72, // 'b', 'a', 'r'
-				// </binary>
-				// </list>
-
-				0x0E,       // type = set
-				0x00, 0x03, // id = 3
-
-				// <set>
-				0x0B,                   // type:1 = binary
-				0x00, 0x00, 0x00, 0x02, // size:4 = 2
-				// <binary>
-				0x00, 0x00, 0x00, 0x03, // len:4 = 3
-				0x62, 0x61, 0x7a, // 'b', 'a', 'z'
-				// </binary>
-				// <binary>
-				0x00, 0x00, 0x00, 0x03, // len:4 = 3
-				0x71, 0x75, 0x78, // 'q', 'u', 'x'
-				// </binary>
-				// </set>
-
-				0x00, // stop
-			},
+			resBytes:      tbinary(complexPayload),
 		},
 	}
 

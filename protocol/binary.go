@@ -97,34 +97,49 @@ func (binaryProtocol) DecodeEnveloped(r io.ReaderAt) (wire.Envelope, error) {
 // regardless of whether the caller submits an envelope.
 // The caller specifies the expected envelope type, one of OneWay or Unary, on
 // which the decoder asserts if the envelope is present.
+//
+// This is possible because we can distinguish an envelope from a bare request
+// struct by looking at the first byte and the length of the message.
+//
+// 1. A message of length 1 containing only 0x00 can only be an empty struct.
+// 0x00 is the type ID for STOP, indicating the end of the struct.
+//
+// 2. A message of length >1 starting with 0x00 can only be a non-strict
+// envelope (not versioned), assuming the message name is less than 16MB long.
+// In this case, the first four bytes indicate the length of the method name,
+// which is unlikely to overflow into the high byte.
+//
+// 3. A message of length >1, where the first byte is <0 can only be a strict envelope.
+// The MSB indicates that the message is versioned. Reading the first two bytes
+// and masking out the MSB indicates the version number.
+// At this time, there is only one version.
+//
+// 4. A message of length >1, where the first byte is >=0 can only be a bare
+// struct starting with that field identifier. Valid field identifiers today
+// are in the range 0x00-0x0f. There is some chance that a future version of
+// the protocol will add more field types, but it is very unlikely that the
+// field type will flow into the MSB (128 type identifiers, starting with the
+// 15 valid types today).
 func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Value, EnvelopeSpecificResponder, error) {
-	// Strip request envelopes if present.
-	// 1. A message of length 1 containing only 0x00 can only be a bare,
-	// un-enveloped empty struct.
-	// 2. A message of length >1 starting with 0x00 can only be enveloped
-	// without a version (non-strict)
-	// 3. A message of length >1 with MSB 0x80 set can only be enveloped with a
-	// version (strict)
-	// 4. A message of length >1 starting with 0x00-0x0f can only be the
-	// beginning of an un-enveloped field.
 	var buf [2]byte
+
 	// If we fail to read two bytes, the only possible valid value is the empty struct.
 	if _, err := r.ReadAt(buf[0:2], 0); err != nil {
 		val, err := b.Decode(r, wire.TStruct)
 		if err != nil {
-			return wire.Value{}, noEnvelopeResponder, err
+			return wire.Value{}, _noEnvelopeResponder, err
 		}
-		return val, noEnvelopeResponder, nil
+		return val, _noEnvelopeResponder, nil
 	}
 
-	// 0x00 is a valid preamble for a non-strict enveloped request.
+	// If length > 1, 0x00 is only a valid preamble for a non-strict enveloped request.
 	if buf[0] == 0x00 {
 		e, err := b.DecodeEnveloped(r)
 		if err != nil {
-			return wire.Value{}, noEnvelopeResponder, err
+			return wire.Value{}, _noEnvelopeResponder, err
 		}
 		if e.Type != et {
-			return wire.Value{}, noEnvelopeResponder, errUnexpectedEnvelopeType(e.Type)
+			return wire.Value{}, _noEnvelopeResponder, errUnexpectedEnvelopeType(e.Type)
 		}
 		return e.Value, &envelopeV0Responder{
 			Name:  e.Name,
@@ -132,14 +147,17 @@ func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire
 		}, nil
 	}
 
-	// 0x80 is a valid preamble for a strict enveloped request.
+	// Only strict (versioned) envelopes begin with the most significant bit set.
+	// This could only be confused for a type identifier greater than 127
+	// (beyond the 15 Thrift has at time of writing), or a message name longer
+	// than 16MB.
 	if buf[0]&0x80 > 0 {
 		e, err := b.DecodeEnveloped(r)
 		if err != nil {
-			return wire.Value{}, noEnvelopeResponder, err
+			return wire.Value{}, _noEnvelopeResponder, err
 		}
 		if e.Type != et {
-			return wire.Value{}, noEnvelopeResponder, errUnexpectedEnvelopeType(e.Type)
+			return wire.Value{}, _noEnvelopeResponder, errUnexpectedEnvelopeType(e.Type)
 		}
 		return e.Value, &envelopeV1Responder{
 			Name:  e.Name,
@@ -148,25 +166,25 @@ func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire
 	}
 
 	// All other patterns are either bare structs or invalid.
+	// We delegate to the struct decoder to distinguish invalid type
+	// identifiers, outside the 0-15 range.
 	val, err := b.Decode(r, wire.TStruct)
 	if err != nil {
-		return wire.Value{}, noEnvelopeResponder, err
+		return wire.Value{}, _noEnvelopeResponder, err
 	}
-	return val, noEnvelopeResponder, nil
+	return val, _noEnvelopeResponder, nil
 }
 
 // noEnvelopeResponder responds to a request without an envelope.
+type noEnvelopeResponder struct{}
 
-type _noEnvelopeResponder struct{}
-
-func (_noEnvelopeResponder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error {
+func (noEnvelopeResponder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error {
 	return Binary.Encode(v, w)
 }
 
-var noEnvelopeResponder EnvelopeSpecificResponder = &_noEnvelopeResponder{}
+var _noEnvelopeResponder EnvelopeSpecificResponder = &noEnvelopeResponder{}
 
 // envelopeV0Responder responds to requests with a non-strict (unversioned) envelope.
-
 type envelopeV0Responder struct {
 	Name  string
 	SeqID int32
@@ -185,7 +203,6 @@ func (r envelopeV0Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w
 }
 
 // envelopeV1Responder responds to requests with a strict, version 1 envelope.
-
 type envelopeV1Responder struct {
 	Name  string
 	SeqID int32
