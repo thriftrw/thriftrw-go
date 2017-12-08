@@ -41,28 +41,28 @@ var Binary Protocol
 // to be able to distinguish enveloped, versioned enveloped, and not-enveloped
 // messages reliably:
 //
-//  1.	No message will use an envelope version greater than 0x7fff.  This
+//  1.  No message will use an envelope version greater than 0x7fff.  This
 //  would flip the bit that makes versioned envelopes recognizable.  The only
 //  envelope version we recognize today is version 1.
 //
-//  2.	No message with an unversioned envelope will have a message name
+//  2.  No message with an unversioned envelope will have a message name
 //  (procedure name) longer than 0x00ffffffff (three bytes of length prefix).
 //  This would roll into the byte that distinguishes the type of the first
 //  field of an un-enveloped struct.  This would require a 16MB procedure name.
 //
 // The overlapping grammars are:
 //
-//  1.	Enveloped (strict, with version)
+//  1.  Enveloped (strict, with version)
 //
-//		versionbits~4 methodname~4 seqid:4 struct
+//      versionbits:4 methodname~4 seqid:4 struct
 //
-//		versionbits := 0x80000000 | (version:2 << 2) | messagetype:2
+//      versionbits := 0x80000000 | (version:2 << 16) | messagetype:2
 //
-//  2.	Enveloped (non-strict, without version)
+//  2.  Enveloped (non-strict, without version)
 //
-//		methodname~4 messagetype~1 seqid:4 struct
+//      methodname~4 messagetype:1 seqid:4 struct
 //
-//  3.	Unenveloped
+//  3.  Unenveloped
 //
 //      struct := (typeid:1 fieldid:2 <value>)* typeid:1=0x00
 //
@@ -79,11 +79,11 @@ var Binary Protocol
 //      the message contains at least 9 other bytes, it is enveloped using the
 //      non-strict format.
 //
-//          4  bytes     method name length (minimum = 0)
-//			n  bytes	 method name
-//          1  byte      message type
-//          4  bytes     sequence ID
-//          1  byte      empty struct (0x00)
+//          4  bytes  method name length (minimum = 0)
+//          n  bytes  method name
+//          1  byte   message type
+//          4  bytes  sequence ID
+//          1  byte   empty struct (0x00)
 //          --------
 //          >10 bytes
 //
@@ -93,7 +93,7 @@ var Binary Protocol
 //      a bare, un-enveloped empty struct.
 //
 //      If the message begins with any other byte, it's an unenveloped message or
-//      an invalid request./
+//      an invalid request.
 var EnvelopeAgnosticBinary EnvelopeAgnosticProtocol
 
 type errUnexpectedEnvelopeType wire.EnvelopeType
@@ -169,12 +169,9 @@ func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire
 	var buf [2]byte
 
 	// If we fail to read two bytes, the only possible valid value is the empty struct.
-	if _, err := r.ReadAt(buf[0:2], 0); err != nil {
+	if count, _ := r.ReadAt(buf[0:2], 0); count < 2 {
 		val, err := b.Decode(r, wire.TStruct)
-		if err != nil {
-			return wire.Value{}, _noEnvelopeResponder, err
-		}
-		return val, _noEnvelopeResponder, nil
+		return val, _noEnvelopeResponder, err
 	}
 
 	// If length > 1, 0x00 is only a valid preamble for a non-strict enveloped request.
@@ -214,10 +211,7 @@ func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire
 	// We delegate to the struct decoder to distinguish invalid type
 	// identifiers, outside the 0-15 range.
 	val, err := b.Decode(r, wire.TStruct)
-	if err != nil {
-		return wire.Value{}, _noEnvelopeResponder, err
-	}
-	return val, _noEnvelopeResponder, nil
+	return val, _noEnvelopeResponder, err
 }
 
 // noEnvelopeResponder responds to a request without an envelope.

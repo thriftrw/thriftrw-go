@@ -934,7 +934,7 @@ func TestReqRes(t *testing.T) {
 			continue
 		}
 
-		if !assert.True(t, reflect.TypeOf(reser) == tt.responderType, "%s: responder type mismatch", tt.msg) {
+		if !assert.Equal(t, tt.responderType, reflect.TypeOf(reser), "%s: responder type mismatch", tt.msg) {
 			continue
 		}
 
@@ -942,7 +942,7 @@ func TestReqRes(t *testing.T) {
 			continue
 		}
 
-		writer := bytes.NewBuffer(make([]byte, 0, 0))
+		writer := &bytes.Buffer{}
 		err = reser.EncodeResponse(tt.res, tt.resType, writer)
 
 		if !assert.NoError(t, err, "%s: failed to encode response", tt.msg) {
