@@ -690,7 +690,7 @@ func TestBinaryEnvelopeErrors(t *testing.T) {
 			continue
 		}
 
-		if !assert.Equal(t, _noEnvelopeResponder, env, "%v: should fail with noEnvelopeResponder", tt.errMsg) {
+		if !assert.Equal(t, NoEnvelopeResponder, env, "%v: should fail with noEnvelopeResponder", tt.errMsg) {
 			continue
 		}
 
@@ -729,7 +729,7 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 					vfield(1, vbinary("hello")),
 				),
 			},
-			wantResponderType: reflect.TypeOf((*envelopeV0Responder)(nil)),
+			wantResponderType: reflect.TypeOf((*EnvelopeV0Responder)(nil)),
 		},
 		{
 			msg: "strict envelope, struct",
@@ -752,7 +752,7 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 					vfield(1, vi16(100)),
 				),
 			},
-			wantResponderType: reflect.TypeOf((*envelopeV1Responder)(nil)),
+			wantResponderType: reflect.TypeOf((*EnvelopeV1Responder)(nil)),
 			reencode:          true,
 		},
 		{
@@ -776,7 +776,7 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 					vfield(1, vi16(100)),
 				),
 			},
-			wantResponderType: reflect.TypeOf((*envelopeV0Responder)(nil)),
+			wantResponderType: reflect.TypeOf((*EnvelopeV0Responder)(nil)),
 		},
 	}
 
@@ -850,7 +850,7 @@ func TestReqRes(t *testing.T) {
 			msg:           "empty req, empty reply, no envelope",
 			req:           vstruct(),
 			reqBytes:      []byte{0x00},
-			responderType: reflect.TypeOf(_noEnvelopeResponder),
+			responderType: reflect.TypeOf(NoEnvelopeResponder),
 			res:           vstruct(),
 			resType:       wire.Reply,
 			resBytes:      []byte{0x00},
@@ -859,7 +859,7 @@ func TestReqRes(t *testing.T) {
 			msg:           "two field req, empty reply, no envelope",
 			req:           vstruct(vfield(1, vbool(true))),
 			reqBytes:      tbinary(vstruct(vfield(1, vbool(true)))),
-			responderType: reflect.TypeOf(_noEnvelopeResponder),
+			responderType: reflect.TypeOf(NoEnvelopeResponder),
 			res:           vstruct(),
 			resType:       wire.Reply,
 			resBytes:      []byte{0x00},
@@ -875,7 +875,7 @@ func TestReqRes(t *testing.T) {
 				tbinary(vstruct(vfield(1, vi16(100))))...,
 			),
 			req:           vstruct(vfield(1, vi16(100))),
-			responderType: reflect.TypeOf((*envelopeV0Responder)(nil)),
+			responderType: reflect.TypeOf((*EnvelopeV0Responder)(nil)),
 			resType:       wire.Exception,
 			res:           vstruct(),
 			resBytes: []byte{
@@ -902,7 +902,7 @@ func TestReqRes(t *testing.T) {
 			req: vstruct(
 				vfield(1, vi16(100)),
 			),
-			responderType: reflect.TypeOf((*envelopeV1Responder)(nil)),
+			responderType: reflect.TypeOf((*EnvelopeV1Responder)(nil)),
 			resType:       wire.Reply,
 			res:           vstruct(),
 			resBytes: []byte{
@@ -919,7 +919,7 @@ func TestReqRes(t *testing.T) {
 			req:           complexPayload,
 			reqBytes:      tbinary(complexPayload),
 			res:           complexPayload,
-			responderType: reflect.TypeOf(_noEnvelopeResponder),
+			responderType: reflect.TypeOf(NoEnvelopeResponder),
 			resType:       wire.Reply,
 			resBytes:      tbinary(complexPayload),
 		},

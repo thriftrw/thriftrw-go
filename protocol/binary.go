@@ -171,19 +171,19 @@ func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire
 	// If we fail to read two bytes, the only possible valid value is the empty struct.
 	if count, _ := r.ReadAt(buf[0:2], 0); count < 2 {
 		val, err := b.Decode(r, wire.TStruct)
-		return val, _noEnvelopeResponder, err
+		return val, NoEnvelopeResponder, err
 	}
 
 	// If length > 1, 0x00 is only a valid preamble for a non-strict enveloped request.
 	if buf[0] == 0x00 {
 		e, err := b.DecodeEnveloped(r)
 		if err != nil {
-			return wire.Value{}, _noEnvelopeResponder, err
+			return wire.Value{}, NoEnvelopeResponder, err
 		}
 		if e.Type != et {
-			return wire.Value{}, _noEnvelopeResponder, errUnexpectedEnvelopeType(e.Type)
+			return wire.Value{}, NoEnvelopeResponder, errUnexpectedEnvelopeType(e.Type)
 		}
-		return e.Value, &envelopeV0Responder{
+		return e.Value, &EnvelopeV0Responder{
 			Name:  e.Name,
 			SeqID: e.SeqID,
 		}, nil
@@ -196,12 +196,12 @@ func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire
 	if buf[0]&0x80 > 0 {
 		e, err := b.DecodeEnveloped(r)
 		if err != nil {
-			return wire.Value{}, _noEnvelopeResponder, err
+			return wire.Value{}, NoEnvelopeResponder, err
 		}
 		if e.Type != et {
-			return wire.Value{}, _noEnvelopeResponder, errUnexpectedEnvelopeType(e.Type)
+			return wire.Value{}, NoEnvelopeResponder, errUnexpectedEnvelopeType(e.Type)
 		}
-		return e.Value, &envelopeV1Responder{
+		return e.Value, &EnvelopeV1Responder{
 			Name:  e.Name,
 			SeqID: e.SeqID,
 		}, nil
@@ -211,7 +211,7 @@ func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire
 	// We delegate to the struct decoder to distinguish invalid type
 	// identifiers, outside the 0-15 range.
 	val, err := b.Decode(r, wire.TStruct)
-	return val, _noEnvelopeResponder, err
+	return val, NoEnvelopeResponder, err
 }
 
 // noEnvelopeResponder responds to a request without an envelope.
@@ -221,15 +221,16 @@ func (noEnvelopeResponder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w i
 	return Binary.Encode(v, w)
 }
 
-var _noEnvelopeResponder EnvelopeSpecificResponder = &noEnvelopeResponder{}
+// NoEnvelopeResponder responds to a request without an envelope.
+var NoEnvelopeResponder EnvelopeSpecificResponder = &noEnvelopeResponder{}
 
-// envelopeV0Responder responds to requests with a non-strict (unversioned) envelope.
-type envelopeV0Responder struct {
+// EnvelopeV0Responder responds to requests with a non-strict (unversioned) envelope.
+type EnvelopeV0Responder struct {
 	Name  string
 	SeqID int32
 }
 
-func (r envelopeV0Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error {
+func (r EnvelopeV0Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error {
 	writer := binary.BorrowWriter(w)
 	err := writer.WriteLegacyEnveloped(wire.Envelope{
 		Name:  r.Name,
@@ -241,13 +242,13 @@ func (r envelopeV0Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w
 	return err
 }
 
-// envelopeV1Responder responds to requests with a strict, version 1 envelope.
-type envelopeV1Responder struct {
+// EnvelopeV1Responder responds to requests with a strict, version 1 envelope.
+type EnvelopeV1Responder struct {
 	Name  string
 	SeqID int32
 }
 
-func (r envelopeV1Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error {
+func (r EnvelopeV1Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error {
 	writer := binary.BorrowWriter(w)
 	err := writer.WriteEnveloped(wire.Envelope{
 		Name:  r.Name,
