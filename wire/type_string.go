@@ -22,7 +22,7 @@
 
 package wire
 
-import "fmt"
+import "strconv"
 
 const (
 	_Type_name_0 = "TBoolTI8TDouble"
@@ -33,8 +33,6 @@ const (
 
 var (
 	_Type_index_0 = [...]uint8{0, 5, 8, 15}
-	_Type_index_1 = [...]uint8{0, 4}
-	_Type_index_2 = [...]uint8{0, 4}
 	_Type_index_3 = [...]uint8{0, 4, 11, 18, 22, 26, 31}
 )
 
@@ -51,6 +49,6 @@ func (i Type) String() string {
 		i -= 10
 		return _Type_name_3[_Type_index_3[i]:_Type_index_3[i+1]]
 	default:
-		return fmt.Sprintf("Type(%d)", i)
+		return "Type(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
 }
