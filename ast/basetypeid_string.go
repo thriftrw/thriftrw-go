@@ -22,7 +22,7 @@
 
 package ast
 
-import "fmt"
+import "strconv"
 
 const _BaseTypeID_name = "BoolTypeIDI8TypeIDI16TypeIDI32TypeIDI64TypeIDDoubleTypeIDStringTypeIDBinaryTypeID"
 
@@ -31,7 +31,7 @@ var _BaseTypeID_index = [...]uint8{0, 10, 18, 27, 36, 45, 57, 69, 81}
 func (i BaseTypeID) String() string {
 	i -= 1
 	if i < 0 || i >= BaseTypeID(len(_BaseTypeID_index)-1) {
-		return fmt.Sprintf("BaseTypeID(%d)", i+1)
+		return "BaseTypeID(" + strconv.FormatInt(int64(i+1), 10) + ")"
 	}
 	return _BaseTypeID_name[_BaseTypeID_index[i]:_BaseTypeID_index[i+1]]
 }
