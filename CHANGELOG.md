@@ -10,7 +10,7 @@ v1.10.0 (unreleased)
 v1.9.0 (2017-12-12)
 -------------------
 
--   Adds support for EncodingAgnosticProtocol. This upcast for protocol.Binary
+-   Adds support for EnvelopeAgnosticProtocol. This upcast for protocol.Binary
     can decode both enveloped or not-enveloped requests and respond in kind, by
     exploiting the non-overlapping grammars of these message types.
 -   Generates enum types now include a `Ptr()` method.
