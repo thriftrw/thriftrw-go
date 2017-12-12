@@ -44,3 +44,30 @@ type Protocol interface {
 	// Enveloped values are assumed to be TStructs.
 	DecodeEnveloped(r io.ReaderAt) (wire.Envelope, error)
 }
+
+// EnvelopeAgnosticProtocol defines a specific way for a Thrift value to be
+// encoded or decoded, additionally being able to decode requests without prior
+// knowledge of whether the request is enveloped.
+//
+// The Binary protocol in particular can be upcast to EnvelopeAgnosticProtocol.
+type EnvelopeAgnosticProtocol interface {
+	Protocol
+
+	// DecodeRequest reads an enveloped or un-enveloped struct from the given
+	// ReaderAt.
+	// This allows a Thrift request handler to transparently accept requests
+	// regardless of whether the caller is configured to submit envelopes.
+	// The caller specifies the expected envelope type, one of OneWay or Unary,
+	// on which the decoder asserts if the envelope is present.
+	DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Value, Responder, error)
+}
+
+// Responder captures how to respond to a request, concerning whether and what
+// kind of envelope to use, how to match the sequence identifier of the
+// corresponding request.
+type Responder interface {
+	// EncodeResponse writes a response value to the writer, with the envelope
+	// style of the corresponding request.
+	// The EnvelopeType should be either wire.Reply or wire.Exception.
+	EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error
+}
