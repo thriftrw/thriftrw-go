@@ -1,7 +1,7 @@
 Releases
 ========
 
-v1.9.0 (unreleased)
+v1.9.0 (2017-12-12)
 -------------------
 
 -   Adds support for EncodingAgnosticProtocol. This upcast for protocol.Binary
