@@ -59,13 +59,13 @@ type EnvelopeAgnosticProtocol interface {
 	// regardless of whether the caller is configured to submit envelopes.
 	// The caller specifies the expected envelope type, one of OneWay or Unary,
 	// on which the decoder asserts if the envelope is present.
-	DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Value, EnvelopeSpecificResponder, error)
+	DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Value, Responder, error)
 }
 
-// EnvelopeSpecificResponder captures how to respond to a request, concerning whether and what
+// Responder captures how to respond to a request, concerning whether and what
 // kind of envelope to use, how to match the sequence identifier of the
 // corresponding request.
-type EnvelopeSpecificResponder interface {
+type Responder interface {
 	// EncodeResponse writes a response value to the writer, with the envelope
 	// style of the corresponding request.
 	// The EnvelopeType should be either wire.Reply or wire.Exception.

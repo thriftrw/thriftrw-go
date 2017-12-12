@@ -19,8 +19,9 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-// Source: go.uber.org/thriftrw/protocol (interfaces: Protocol,EnvelopeAgnosticProtocol,EnvelopeSpecificResponder)
+// Source: go.uber.org/thriftrw/protocol (interfaces: Protocol,EnvelopeAgnosticProtocol,Responder)
 
+// Package thrifttest is a generated GoMock package.
 package thrifttest
 
 import (
@@ -50,58 +51,58 @@ func NewMockProtocol(ctrl *gomock.Controller) *MockProtocol {
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (_m *MockProtocol) EXPECT() *MockProtocolMockRecorder {
-	return _m.recorder
+func (m *MockProtocol) EXPECT() *MockProtocolMockRecorder {
+	return m.recorder
 }
 
 // Decode mocks base method
-func (_m *MockProtocol) Decode(_param0 io.ReaderAt, _param1 wire.Type) (wire.Value, error) {
-	ret := _m.ctrl.Call(_m, "Decode", _param0, _param1)
+func (m *MockProtocol) Decode(arg0 io.ReaderAt, arg1 wire.Type) (wire.Value, error) {
+	ret := m.ctrl.Call(m, "Decode", arg0, arg1)
 	ret0, _ := ret[0].(wire.Value)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Decode indicates an expected call of Decode
-func (_mr *MockProtocolMockRecorder) Decode(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Decode", reflect.TypeOf((*MockProtocol)(nil).Decode), arg0, arg1)
+func (mr *MockProtocolMockRecorder) Decode(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Decode", reflect.TypeOf((*MockProtocol)(nil).Decode), arg0, arg1)
 }
 
 // DecodeEnveloped mocks base method
-func (_m *MockProtocol) DecodeEnveloped(_param0 io.ReaderAt) (wire.Envelope, error) {
-	ret := _m.ctrl.Call(_m, "DecodeEnveloped", _param0)
+func (m *MockProtocol) DecodeEnveloped(arg0 io.ReaderAt) (wire.Envelope, error) {
+	ret := m.ctrl.Call(m, "DecodeEnveloped", arg0)
 	ret0, _ := ret[0].(wire.Envelope)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // DecodeEnveloped indicates an expected call of DecodeEnveloped
-func (_mr *MockProtocolMockRecorder) DecodeEnveloped(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "DecodeEnveloped", reflect.TypeOf((*MockProtocol)(nil).DecodeEnveloped), arg0)
+func (mr *MockProtocolMockRecorder) DecodeEnveloped(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DecodeEnveloped", reflect.TypeOf((*MockProtocol)(nil).DecodeEnveloped), arg0)
 }
 
 // Encode mocks base method
-func (_m *MockProtocol) Encode(_param0 wire.Value, _param1 io.Writer) error {
-	ret := _m.ctrl.Call(_m, "Encode", _param0, _param1)
+func (m *MockProtocol) Encode(arg0 wire.Value, arg1 io.Writer) error {
+	ret := m.ctrl.Call(m, "Encode", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Encode indicates an expected call of Encode
-func (_mr *MockProtocolMockRecorder) Encode(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Encode", reflect.TypeOf((*MockProtocol)(nil).Encode), arg0, arg1)
+func (mr *MockProtocolMockRecorder) Encode(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Encode", reflect.TypeOf((*MockProtocol)(nil).Encode), arg0, arg1)
 }
 
 // EncodeEnveloped mocks base method
-func (_m *MockProtocol) EncodeEnveloped(_param0 wire.Envelope, _param1 io.Writer) error {
-	ret := _m.ctrl.Call(_m, "EncodeEnveloped", _param0, _param1)
+func (m *MockProtocol) EncodeEnveloped(arg0 wire.Envelope, arg1 io.Writer) error {
+	ret := m.ctrl.Call(m, "EncodeEnveloped", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // EncodeEnveloped indicates an expected call of EncodeEnveloped
-func (_mr *MockProtocolMockRecorder) EncodeEnveloped(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "EncodeEnveloped", reflect.TypeOf((*MockProtocol)(nil).EncodeEnveloped), arg0, arg1)
+func (mr *MockProtocolMockRecorder) EncodeEnveloped(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EncodeEnveloped", reflect.TypeOf((*MockProtocol)(nil).EncodeEnveloped), arg0, arg1)
 }
 
 // MockEnvelopeAgnosticProtocol is a mock of EnvelopeAgnosticProtocol interface
@@ -123,105 +124,105 @@ func NewMockEnvelopeAgnosticProtocol(ctrl *gomock.Controller) *MockEnvelopeAgnos
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (_m *MockEnvelopeAgnosticProtocol) EXPECT() *MockEnvelopeAgnosticProtocolMockRecorder {
-	return _m.recorder
+func (m *MockEnvelopeAgnosticProtocol) EXPECT() *MockEnvelopeAgnosticProtocolMockRecorder {
+	return m.recorder
 }
 
 // Decode mocks base method
-func (_m *MockEnvelopeAgnosticProtocol) Decode(_param0 io.ReaderAt, _param1 wire.Type) (wire.Value, error) {
-	ret := _m.ctrl.Call(_m, "Decode", _param0, _param1)
+func (m *MockEnvelopeAgnosticProtocol) Decode(arg0 io.ReaderAt, arg1 wire.Type) (wire.Value, error) {
+	ret := m.ctrl.Call(m, "Decode", arg0, arg1)
 	ret0, _ := ret[0].(wire.Value)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Decode indicates an expected call of Decode
-func (_mr *MockEnvelopeAgnosticProtocolMockRecorder) Decode(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Decode", reflect.TypeOf((*MockEnvelopeAgnosticProtocol)(nil).Decode), arg0, arg1)
+func (mr *MockEnvelopeAgnosticProtocolMockRecorder) Decode(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Decode", reflect.TypeOf((*MockEnvelopeAgnosticProtocol)(nil).Decode), arg0, arg1)
 }
 
 // DecodeEnveloped mocks base method
-func (_m *MockEnvelopeAgnosticProtocol) DecodeEnveloped(_param0 io.ReaderAt) (wire.Envelope, error) {
-	ret := _m.ctrl.Call(_m, "DecodeEnveloped", _param0)
+func (m *MockEnvelopeAgnosticProtocol) DecodeEnveloped(arg0 io.ReaderAt) (wire.Envelope, error) {
+	ret := m.ctrl.Call(m, "DecodeEnveloped", arg0)
 	ret0, _ := ret[0].(wire.Envelope)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // DecodeEnveloped indicates an expected call of DecodeEnveloped
-func (_mr *MockEnvelopeAgnosticProtocolMockRecorder) DecodeEnveloped(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "DecodeEnveloped", reflect.TypeOf((*MockEnvelopeAgnosticProtocol)(nil).DecodeEnveloped), arg0)
+func (mr *MockEnvelopeAgnosticProtocolMockRecorder) DecodeEnveloped(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DecodeEnveloped", reflect.TypeOf((*MockEnvelopeAgnosticProtocol)(nil).DecodeEnveloped), arg0)
 }
 
 // DecodeRequest mocks base method
-func (_m *MockEnvelopeAgnosticProtocol) DecodeRequest(_param0 wire.EnvelopeType, _param1 io.ReaderAt) (wire.Value, protocol.EnvelopeSpecificResponder, error) {
-	ret := _m.ctrl.Call(_m, "DecodeRequest", _param0, _param1)
+func (m *MockEnvelopeAgnosticProtocol) DecodeRequest(arg0 wire.EnvelopeType, arg1 io.ReaderAt) (wire.Value, protocol.Responder, error) {
+	ret := m.ctrl.Call(m, "DecodeRequest", arg0, arg1)
 	ret0, _ := ret[0].(wire.Value)
-	ret1, _ := ret[1].(protocol.EnvelopeSpecificResponder)
+	ret1, _ := ret[1].(protocol.Responder)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
 
 // DecodeRequest indicates an expected call of DecodeRequest
-func (_mr *MockEnvelopeAgnosticProtocolMockRecorder) DecodeRequest(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "DecodeRequest", reflect.TypeOf((*MockEnvelopeAgnosticProtocol)(nil).DecodeRequest), arg0, arg1)
+func (mr *MockEnvelopeAgnosticProtocolMockRecorder) DecodeRequest(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DecodeRequest", reflect.TypeOf((*MockEnvelopeAgnosticProtocol)(nil).DecodeRequest), arg0, arg1)
 }
 
 // Encode mocks base method
-func (_m *MockEnvelopeAgnosticProtocol) Encode(_param0 wire.Value, _param1 io.Writer) error {
-	ret := _m.ctrl.Call(_m, "Encode", _param0, _param1)
+func (m *MockEnvelopeAgnosticProtocol) Encode(arg0 wire.Value, arg1 io.Writer) error {
+	ret := m.ctrl.Call(m, "Encode", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Encode indicates an expected call of Encode
-func (_mr *MockEnvelopeAgnosticProtocolMockRecorder) Encode(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Encode", reflect.TypeOf((*MockEnvelopeAgnosticProtocol)(nil).Encode), arg0, arg1)
+func (mr *MockEnvelopeAgnosticProtocolMockRecorder) Encode(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Encode", reflect.TypeOf((*MockEnvelopeAgnosticProtocol)(nil).Encode), arg0, arg1)
 }
 
 // EncodeEnveloped mocks base method
-func (_m *MockEnvelopeAgnosticProtocol) EncodeEnveloped(_param0 wire.Envelope, _param1 io.Writer) error {
-	ret := _m.ctrl.Call(_m, "EncodeEnveloped", _param0, _param1)
+func (m *MockEnvelopeAgnosticProtocol) EncodeEnveloped(arg0 wire.Envelope, arg1 io.Writer) error {
+	ret := m.ctrl.Call(m, "EncodeEnveloped", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // EncodeEnveloped indicates an expected call of EncodeEnveloped
-func (_mr *MockEnvelopeAgnosticProtocolMockRecorder) EncodeEnveloped(arg0, arg1 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "EncodeEnveloped", reflect.TypeOf((*MockEnvelopeAgnosticProtocol)(nil).EncodeEnveloped), arg0, arg1)
+func (mr *MockEnvelopeAgnosticProtocolMockRecorder) EncodeEnveloped(arg0, arg1 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EncodeEnveloped", reflect.TypeOf((*MockEnvelopeAgnosticProtocol)(nil).EncodeEnveloped), arg0, arg1)
 }
 
-// MockEnvelopeSpecificResponder is a mock of EnvelopeSpecificResponder interface
-type MockEnvelopeSpecificResponder struct {
+// MockResponder is a mock of Responder interface
+type MockResponder struct {
 	ctrl     *gomock.Controller
-	recorder *MockEnvelopeSpecificResponderMockRecorder
+	recorder *MockResponderMockRecorder
 }
 
-// MockEnvelopeSpecificResponderMockRecorder is the mock recorder for MockEnvelopeSpecificResponder
-type MockEnvelopeSpecificResponderMockRecorder struct {
-	mock *MockEnvelopeSpecificResponder
+// MockResponderMockRecorder is the mock recorder for MockResponder
+type MockResponderMockRecorder struct {
+	mock *MockResponder
 }
 
-// NewMockEnvelopeSpecificResponder creates a new mock instance
-func NewMockEnvelopeSpecificResponder(ctrl *gomock.Controller) *MockEnvelopeSpecificResponder {
-	mock := &MockEnvelopeSpecificResponder{ctrl: ctrl}
-	mock.recorder = &MockEnvelopeSpecificResponderMockRecorder{mock}
+// NewMockResponder creates a new mock instance
+func NewMockResponder(ctrl *gomock.Controller) *MockResponder {
+	mock := &MockResponder{ctrl: ctrl}
+	mock.recorder = &MockResponderMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (_m *MockEnvelopeSpecificResponder) EXPECT() *MockEnvelopeSpecificResponderMockRecorder {
-	return _m.recorder
+func (m *MockResponder) EXPECT() *MockResponderMockRecorder {
+	return m.recorder
 }
 
 // EncodeResponse mocks base method
-func (_m *MockEnvelopeSpecificResponder) EncodeResponse(_param0 wire.Value, _param1 wire.EnvelopeType, _param2 io.Writer) error {
-	ret := _m.ctrl.Call(_m, "EncodeResponse", _param0, _param1, _param2)
+func (m *MockResponder) EncodeResponse(arg0 wire.Value, arg1 wire.EnvelopeType, arg2 io.Writer) error {
+	ret := m.ctrl.Call(m, "EncodeResponse", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // EncodeResponse indicates an expected call of EncodeResponse
-func (_mr *MockEnvelopeSpecificResponderMockRecorder) EncodeResponse(arg0, arg1, arg2 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "EncodeResponse", reflect.TypeOf((*MockEnvelopeSpecificResponder)(nil).EncodeResponse), arg0, arg1, arg2)
+func (mr *MockResponderMockRecorder) EncodeResponse(arg0, arg1, arg2 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EncodeResponse", reflect.TypeOf((*MockResponder)(nil).EncodeResponse), arg0, arg1, arg2)
 }

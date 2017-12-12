@@ -165,7 +165,7 @@ func (binaryProtocol) DecodeEnveloped(r io.ReaderAt) (wire.Envelope, error) {
 // the protocol will add more field types, but it is very unlikely that the
 // field type will flow into the MSB (128 type identifiers, starting with the
 // 15 valid types today).
-func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Value, EnvelopeSpecificResponder, error) {
+func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Value, Responder, error) {
 	var buf [2]byte
 
 	// If we fail to read two bytes, the only possible valid value is the empty struct.
@@ -222,7 +222,7 @@ func (noEnvelopeResponder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w i
 }
 
 // NoEnvelopeResponder responds to a request without an envelope.
-var NoEnvelopeResponder EnvelopeSpecificResponder = &noEnvelopeResponder{}
+var NoEnvelopeResponder Responder = &noEnvelopeResponder{}
 
 // EnvelopeV0Responder responds to requests with a non-strict (unversioned) envelope.
 type EnvelopeV0Responder struct {
