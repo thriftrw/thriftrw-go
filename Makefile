@@ -62,7 +62,7 @@ generate: $(RAGEL_PATH)/bin/ragel
 	go get -u github.com/golang/mock/mockgen
 	go get -u golang.org/x/tools/cmd/stringer
 	go get -u golang.org/x/tools/cmd/goyacc
-	go build -i -tags=thriftrw.disableVersionCheck
+	go build -i
 	PATH=$$(pwd):$$PATH:$(RAGEL_PATH)/bin go generate $$(glide nv)
 	make -C ./gen/testdata
 	./scripts/updateLicenses.sh

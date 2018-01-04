@@ -4,7 +4,9 @@ Releases
 v1.10.0 (unreleased)
 --------------------
 
--   No changes yet.
+-   Removed version check. Version checks would force code regeneration after
+    installing backward-compatible versions of thriftrw. This change relaxes
+    that requirement.
 
 
 v1.9.0 (2017-12-12)

@@ -12,7 +12,7 @@ clean:
 	rm -rf $(PACKAGES)
 
 $(THRIFTRW):
-	make -C $(ROOT) build BUILD_FLAGS=-tags=thriftrw.disableVersionCheck
+	make -C $(ROOT) build
 
 %: thrift/%.thrift $(THRIFTRW)
 	$(THRIFTRW) --no-recurse $<

@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Uber Technologies, Inc.
+// Copyright (c) 2018 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -222,19 +222,6 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 	files := make(map[string][]byte)
 
 	g := NewGenerator(i, importPath, packageName)
-
-	if !o.NoVersionCheck {
-		if err := Version(g, importPath); err != nil {
-			return nil, err
-		}
-
-		var buff bytes.Buffer
-		if err := g.Write(&buff, nil /* fset */); err != nil {
-			return nil, fmt.Errorf(
-				"could not generate version check for %q: %v", m.ThriftPath, err)
-		}
-		files["versioncheck.go"] = buff.Bytes()
-	}
 
 	if len(m.Constants) > 0 {
 		for _, constantName := range sortStringKeys(m.Constants) {
