@@ -24,6 +24,6 @@ PACKAGENAME=handletest
 go build go.uber.org/thriftrw/vendor/github.com/golang/mock/mockgen
 mkdir -p _mockgen
 ./mockgen -prog_only "$PACKAGE" "$INTERFACES" > _mockgen/main.go
-go build -o _mockgen/gen -tags=thriftrw.disableVersionCheck _mockgen/main.go
+go build -o _mockgen/gen _mockgen/main.go
 ./mockgen -self_package "$PACKAGENAME" -package "$PACKAGENAME" -destination "$DESTINATION" -exec_only _mockgen/gen "$PACKAGE" "$INTERFACES"
 rm -r _mockgen mockgen
