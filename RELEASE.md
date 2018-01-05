@@ -15,7 +15,7 @@ This document outlines how to create a release of thriftrw-go
 
 5.  Alter `version/version.go` to have the same version as `version_to_release`
 
-6.  Run `make verifyVersion`
+6.  Run `make verifyversion`
 
 7.  Create a commit with the title `Preparing for release <version_to_release>`
 
@@ -39,6 +39,6 @@ This document outlines how to create a release of thriftrw-go
     `v<version>-dev (unreleased)`, run `make generate`, and put into a commit
     with title `Back to development`
 
-15. Run `make verifyVersion`
+15. Run `make verifyversion`
 
 16. `git push origin dev`
