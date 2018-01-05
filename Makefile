@@ -96,19 +96,23 @@ else
 	@echo "Skipping linters for $(GO_VERSION)"
 endif
 
-.PHONY: verifyVersion
-verifyVersion: build
-	@if [ "$$(./thriftrw --version)" != "thriftrw $(WANT_VERSION)" ]; then \
-		echo "Version number in version.go does not match CHANGELOG.md"; \
-		echo "Want: thriftrw $(WANT_VERSION)"; \
-		echo " Got: $$(./thriftrw --version)"; \
-		exit 1; \
+.PHONY: verifyversion
+verifyversion: build
+	$(eval CHANGELOG_VERSION := $(shell perl -ne '/^## \[(\S+?)\]/ && print "v$$1\n"' CHANGELOG.md | head -n1))
+	$(eval INTHECODE_VERSION := $(shell perl -ne '/^const Version.*"([^"]+)".*$$/ && print "v$$1\n"' version/version.go))
+	@if [ "$(INTHECODE_VERSION)" = "$(CHANGELOG_VERSION)" ]; then \
+		echo "yarpc-go: $(CHANGELOG_VERSION)"; \
+	elif [ "$(CHANGELOG_VERSION)" = "vUnreleased" ]; then \
+		echo "yarpc-go (development): $(INTHECODE_VERSION)"; \
 	else \
-		echo "thriftrw $(WANT_VERSION)"; \
+		echo "Version number in version/version.go does not match CHANGELOG.md"; \
+		echo "version/version.go: $(INTHECODE_VERSION)"; \
+		echo "CHANGELOG : $(CHANGELOG_VERSION)"; \
+		exit 1; \
 	fi
 
 .PHONY: test
-test: build verifyVersion
+test: build verifyversion
 	go test -race $(PACKAGES)
 
 .PHONY: cover
@@ -147,5 +151,5 @@ build_ci: build
 lint_ci: lint
 
 .PHONY: test_ci
-test_ci: build_ci verifyVersion
+test_ci: build_ci verifyversion
 	./scripts/cover.sh $(shell go list $(PACKAGES))
