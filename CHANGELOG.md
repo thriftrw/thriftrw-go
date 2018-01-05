@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Removed
 - Removed version check. Version checks would force code regeneration after
-  installing backward-compatible versions of thriftrw. This change relaxes that
+  installing backward-compatible versions of ThriftRW. This change relaxes that
   requirement.
 
 ## [1.9.0] - 2017-12-12
