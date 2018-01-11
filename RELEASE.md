@@ -10,14 +10,16 @@ This document outlines how to create a release of thriftrw-go
 3.  `git merge <branch>` where `<branch>` is the branch we want to cut the
     release on (most likely `dev`)
 
-4.  Alter CHANGELOG.md from `v<version>-dev (unreleased)` to
-    `v<version_to_release> (YYYY-MM-DD)`
+4.  Alter CHANGELOG.md from `[Unreleased]` to `[X.Y.Z] - YYY-MM-DD` and add
+    a reference at the bottom of the document in the form of:
+    `[X.Y.Z]: https://github.com/thriftrw/thriftrw-go/compare/vU.V.W...vX.Y.Z`,
+    where X.Y.Z is the version to release and U.V.W is the prior.
 
 5.  Alter `version/version.go` to have the same version as `version_to_release`
 
 6.  Run `make verifyversion`
 
-7.  Create a commit with the title `Preparing for release <version_to_release>`
+7.  Create a commit with the title `Prepare for release <version_to_release>`
 
 8.  Create a git tag for the version using
     `git tag -a v<version_to_release> -m v<version_to_release` (e.g.
