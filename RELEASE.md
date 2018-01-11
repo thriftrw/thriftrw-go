@@ -22,7 +22,7 @@ This document outlines how to create a release of thriftrw-go
 7.  Create a commit with the title `Prepare for release <version_to_release>`
 
 8.  Create a git tag for the version using
-    `git tag -a v<version_to_release> -m v<version_to_release` (e.g.
+    `git tag -a v<version_to_release> -m v<version_to_release` (e.g.,
     `git tag -a v1.0.0 -m v1.0.0`)
 
 9.  Push the tag to origin `git push --tags origin v<version_to_release>`
@@ -38,7 +38,7 @@ This document outlines how to create a release of thriftrw-go
 13. `git merge master`
 
 14. Update `CHANGELOG.md` and `version/version.go` to have a new
-    `v<version>-dev (unreleased)`, run `make generate`, and put into a commit
+    `[Unreleased]` (`- No changes yet`) block, run `make generate`, and put into a commit
     with title `Back to development`
 
 15. Run `make verifyversion`
