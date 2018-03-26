@@ -167,6 +167,20 @@ struct Function {
      * returnType and exceptions will be null or empty.
      */
     6: optional bool oneWay
+    /**
+     * Annotations defined on this function.
+     *
+     * Given,
+     *
+     *   void setValue(1: SetValueRequest req) (cache = "false")
+     *
+     * The annotations will be,
+     *
+     *  {
+     *    "cache": "false",
+     *  }
+     */
+    7: optional map<string, string> annotations;
 }
 
 /**
@@ -193,6 +207,21 @@ struct Service {
      * ID of the module where this service was declared.
      */
     6: required ModuleID moduleID
+    /**
+     * Annotations defined on this service.
+     *
+     * Given,
+     *
+     *   service KeyValue {
+     *   } (private = "true")
+     *
+     * The annotations will be,
+     *
+     *  {
+     *    "private": "true",
+     *  }
+     */
+    8: optional map<string, string> annotations;
 }
 
 /**
