@@ -45,7 +45,7 @@ FILTER_LINT := grep -v $(patsubst %,-e %, $(LINT_EXCLUDES)) -e "vendor/"
 VET_RULES := -printf=false
 
 BUILD_FLAGS ?=
-RAGEL_PATH := $(shell pwd)/vendor/ragel
+RAGEL_PATH := $(shell pwd)/build/ragel
 
 .PHONY: build
 build:
