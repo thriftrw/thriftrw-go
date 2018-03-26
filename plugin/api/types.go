@@ -340,6 +340,18 @@ type Function struct {
 	// false unless explicitly stated otherwise. If this is true, the
 	// returnType and exceptions will be null or empty.
 	OneWay *bool `json:"oneWay,omitempty"`
+	// Annotations defined on this function.
+	//
+	// Given,
+	//
+	//   void setValue(1: SetValueRequest req) (cache = "false")
+	//
+	// The annotations will be,
+	//
+	//  {
+	//    "cache": "false",
+	//  }
+	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
 type _List_Argument_ValueList []*Argument
@@ -371,6 +383,41 @@ func (_List_Argument_ValueList) ValueType() wire.Type {
 
 func (_List_Argument_ValueList) Close() {}
 
+type _Map_String_String_MapItemList map[string]string
+
+func (m _Map_String_String_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for k, v := range m {
+		kw, err := wire.NewValueString(k), error(nil)
+		if err != nil {
+			return err
+		}
+
+		vw, err := wire.NewValueString(v), error(nil)
+		if err != nil {
+			return err
+		}
+		err = f(wire.MapItem{Key: kw, Value: vw})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_String_String_MapItemList) Size() int {
+	return len(m)
+}
+
+func (_Map_String_String_MapItemList) KeyType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Map_String_String_MapItemList) ValueType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Map_String_String_MapItemList) Close() {}
+
 // ToWire translates a Function struct into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -388,7 +435,7 @@ func (_List_Argument_ValueList) Close() {}
 //   }
 func (v *Function) ToWire() (wire.Value, error) {
 	var (
-		fields [6]wire.Field
+		fields [7]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -440,6 +487,14 @@ func (v *Function) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 6, Value: w}
 		i++
 	}
+	if v.Annotations != nil {
+		w, err = wire.NewValueMap(_Map_String_String_MapItemList(v.Annotations)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
 
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
@@ -465,6 +520,34 @@ func _List_Argument_Read(l wire.ValueList) ([]*Argument, error) {
 		return nil
 	})
 	l.Close()
+	return o, err
+}
+
+func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
+	if m.KeyType() != wire.TBinary {
+		return nil, nil
+	}
+
+	if m.ValueType() != wire.TBinary {
+		return nil, nil
+	}
+
+	o := make(map[string]string, m.Size())
+	err := m.ForEach(func(x wire.MapItem) error {
+		k, err := x.Key.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+
+		v, err := x.Value.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+
+		o[k] = v
+		return nil
+	})
+	m.Close()
 	return o, err
 }
 
@@ -544,6 +627,14 @@ func (v *Function) FromWire(w wire.Value) error {
 				}
 
 			}
+		case 7:
+			if field.Value.Type() == wire.TMap {
+				v.Annotations, err = _Map_String_String_Read(field.Value.GetMap())
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -569,7 +660,7 @@ func (v *Function) String() string {
 		return "<nil>"
 	}
 
-	var fields [6]string
+	var fields [7]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
@@ -587,6 +678,10 @@ func (v *Function) String() string {
 	}
 	if v.OneWay != nil {
 		fields[i] = fmt.Sprintf("OneWay: %v", *(v.OneWay))
+		i++
+	}
+	if v.Annotations != nil {
+		fields[i] = fmt.Sprintf("Annotations: %v", v.Annotations)
 		i++
 	}
 
@@ -618,6 +713,23 @@ func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 	return lhs == nil && rhs == nil
 }
 
+func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
 // Equals returns true if all the fields of this Function match the
 // provided Function.
 //
@@ -639,6 +751,9 @@ func (v *Function) Equals(rhs *Function) bool {
 		return false
 	}
 	if !_Bool_EqualsPtr(v.OneWay, rhs.OneWay) {
+		return false
+	}
+	if !((v.Annotations == nil && rhs.Annotations == nil) || (v.Annotations != nil && rhs.Annotations != nil && _Map_String_String_Equals(v.Annotations, rhs.Annotations))) {
 		return false
 	}
 
@@ -1826,6 +1941,19 @@ type Service struct {
 	Functions []*Function `json:"functions,required"`
 	// ID of the module where this service was declared.
 	ModuleID ModuleID `json:"moduleID,required"`
+	// Annotations defined on this service.
+	//
+	// Given,
+	//
+	//   service KeyValue {
+	//   } (private = "true")
+	//
+	// The annotations will be,
+	//
+	//  {
+	//    "private": "true",
+	//  }
+	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
 type _List_Function_ValueList []*Function
@@ -1874,7 +2002,7 @@ func (_List_Function_ValueList) Close() {}
 //   }
 func (v *Service) ToWire() (wire.Value, error) {
 	var (
-		fields [5]wire.Field
+		fields [6]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -1917,6 +2045,14 @@ func (v *Service) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 6, Value: w}
 	i++
+	if v.Annotations != nil {
+		w, err = wire.NewValueMap(_Map_String_String_MapItemList(v.Annotations)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
+		i++
+	}
 
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
@@ -2015,6 +2151,14 @@ func (v *Service) FromWire(w wire.Value) error {
 				}
 				moduleIDIsSet = true
 			}
+		case 8:
+			if field.Value.Type() == wire.TMap {
+				v.Annotations, err = _Map_String_String_Read(field.Value.GetMap())
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -2044,7 +2188,7 @@ func (v *Service) String() string {
 		return "<nil>"
 	}
 
-	var fields [5]string
+	var fields [6]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
@@ -2058,6 +2202,10 @@ func (v *Service) String() string {
 	i++
 	fields[i] = fmt.Sprintf("ModuleID: %v", v.ModuleID)
 	i++
+	if v.Annotations != nil {
+		fields[i] = fmt.Sprintf("Annotations: %v", v.Annotations)
+		i++
+	}
 
 	return fmt.Sprintf("Service{%v}", strings.Join(fields[:i], ", "))
 }
@@ -2105,6 +2253,9 @@ func (v *Service) Equals(rhs *Service) bool {
 		return false
 	}
 	if !(v.ModuleID == rhs.ModuleID) {
+		return false
+	}
+	if !((v.Annotations == nil && rhs.Annotations == nil) || (v.Annotations != nil && rhs.Annotations != nil && _Map_String_String_Equals(v.Annotations, rhs.Annotations))) {
 		return false
 	}
 
@@ -2820,41 +2971,6 @@ type TypeReference struct {
 	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
-type _Map_String_String_MapItemList map[string]string
-
-func (m _Map_String_String_MapItemList) ForEach(f func(wire.MapItem) error) error {
-	for k, v := range m {
-		kw, err := wire.NewValueString(k), error(nil)
-		if err != nil {
-			return err
-		}
-
-		vw, err := wire.NewValueString(v), error(nil)
-		if err != nil {
-			return err
-		}
-		err = f(wire.MapItem{Key: kw, Value: vw})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (m _Map_String_String_MapItemList) Size() int {
-	return len(m)
-}
-
-func (_Map_String_String_MapItemList) KeyType() wire.Type {
-	return wire.TBinary
-}
-
-func (_Map_String_String_MapItemList) ValueType() wire.Type {
-	return wire.TBinary
-}
-
-func (_Map_String_String_MapItemList) Close() {}
-
 // ToWire translates a TypeReference struct into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -2901,34 +3017,6 @@ func (v *TypeReference) ToWire() (wire.Value, error) {
 	}
 
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
-}
-
-func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
-	if m.KeyType() != wire.TBinary {
-		return nil, nil
-	}
-
-	if m.ValueType() != wire.TBinary {
-		return nil, nil
-	}
-
-	o := make(map[string]string, m.Size())
-	err := m.ForEach(func(x wire.MapItem) error {
-		k, err := x.Key.GetString(), error(nil)
-		if err != nil {
-			return err
-		}
-
-		v, err := x.Value.GetString(), error(nil)
-		if err != nil {
-			return err
-		}
-
-		o[k] = v
-		return nil
-	})
-	m.Close()
-	return o, err
 }
 
 // FromWire deserializes a TypeReference struct from its Thrift-level
@@ -3013,23 +3101,6 @@ func (v *TypeReference) String() string {
 	}
 
 	return fmt.Sprintf("TypeReference{%v}", strings.Join(fields[:i], ", "))
-}
-
-func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
-	if len(lhs) != len(rhs) {
-		return false
-	}
-
-	for lk, lv := range lhs {
-		rv, ok := rhs[lk]
-		if !ok {
-			return false
-		}
-		if !(lv == rv) {
-			return false
-		}
-	}
-	return true
 }
 
 // Equals returns true if all the fields of this TypeReference match the

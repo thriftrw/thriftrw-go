@@ -104,6 +104,38 @@ func TestAddRootService(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "service with annotations",
+			spec: &compile.ServiceSpec{
+				Name: "EmptyService",
+				File: "idl/empty.thrift",
+				Annotations: compile.Annotations{
+					"ignore":  "true",
+					"testing": "",
+				},
+			},
+			want: &api.GenerateServiceRequest{
+				RootServices: []api.ServiceID{1},
+				Services: map[api.ServiceID]*api.Service{
+					1: {
+						Name:       "EmptyService",
+						ThriftName: "EmptyService",
+						Functions:  []*api.Function{}, // must be non-nil
+						ModuleID:   1,
+						Annotations: map[string]string{
+							"ignore":  "true",
+							"testing": "",
+						},
+					},
+				},
+				Modules: map[api.ModuleID]*api.Module{
+					1: {
+						ImportPath: "go.uber.org/thriftrw/gen/testdata/empty",
+						Directory:  "empty",
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -244,6 +276,26 @@ func TestBuildFunction(t *testing.T) {
 						Name: "DelayMS",
 						Type: &api.Type{PointerType: &api.Type{SimpleType: simpleType(api.SimpleTypeInt64)}},
 					},
+				},
+			},
+		},
+		{
+			desc: "annotations",
+			spec: &compile.FunctionSpec{
+				Name:       "foo",
+				ResultSpec: &compile.ResultSpec{},
+				Annotations: compile.Annotations{
+					"cache":   "false",
+					"private": "",
+				},
+			},
+			want: &api.Function{
+				Name:       "Foo",
+				ThriftName: "foo",
+				Arguments:  []*api.Argument{},
+				Annotations: map[string]string{
+					"cache":   "false",
+					"private": "",
 				},
 			},
 		},
