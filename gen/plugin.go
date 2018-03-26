@@ -147,11 +147,12 @@ func (g *generateServiceBuilder) addService(spec *compile.ServiceSpec) (api.Serv
 	}
 
 	g.Services[serviceID] = &api.Service{
-		ThriftName: spec.Name,
-		Name:       goCase(spec.Name),
-		ParentID:   parentID,
-		Functions:  functions,
-		ModuleID:   moduleID,
+		ThriftName:  spec.Name,
+		Name:        goCase(spec.Name),
+		ParentID:    parentID,
+		Functions:   functions,
+		ModuleID:    moduleID,
+		Annotations: spec.Annotations,
 	}
 	return serviceID, nil
 }
@@ -163,9 +164,10 @@ func (g *generateServiceBuilder) buildFunction(spec *compile.FunctionSpec) (*api
 	}
 
 	function := &api.Function{
-		Name:       goCase(spec.Name),
-		ThriftName: spec.Name,
-		Arguments:  args,
+		Name:        goCase(spec.Name),
+		ThriftName:  spec.Name,
+		Arguments:   args,
+		Annotations: spec.Annotations,
 	}
 	if spec.OneWay {
 		function.OneWay = ptr.Bool(spec.OneWay)
