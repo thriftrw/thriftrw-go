@@ -21,9 +21,8 @@ INTERFACES=Handle,ServiceGenerator
 DESTINATION=handletest/mock.go
 PACKAGENAME=handletest
 
-go build go.uber.org/thriftrw/vendor/github.com/golang/mock/mockgen
 mkdir -p _mockgen
-./mockgen -prog_only "$PACKAGE" "$INTERFACES" > _mockgen/main.go
+mockgen -prog_only "$PACKAGE" "$INTERFACES" > _mockgen/main.go
 go build -o _mockgen/gen _mockgen/main.go
-./mockgen -self_package "$PACKAGENAME" -package "$PACKAGENAME" -destination "$DESTINATION" -exec_only _mockgen/gen "$PACKAGE" "$INTERFACES"
-rm -r _mockgen mockgen
+mockgen -self_package "$PACKAGENAME" -package "$PACKAGENAME" -destination "$DESTINATION" -exec_only _mockgen/gen "$PACKAGE" "$INTERFACES"
+rm -r _mockgen

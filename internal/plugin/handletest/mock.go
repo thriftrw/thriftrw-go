@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 // Source: go.uber.org/thriftrw/internal/plugin (interfaces: Handle,ServiceGenerator)
 
+// Package handletest is a generated GoMock package.
 package handletest
 
 import (
@@ -49,44 +50,44 @@ func NewMockHandle(ctrl *gomock.Controller) *MockHandle {
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (_m *MockHandle) EXPECT() *MockHandleMockRecorder {
-	return _m.recorder
+func (m *MockHandle) EXPECT() *MockHandleMockRecorder {
+	return m.recorder
 }
 
 // Close mocks base method
-func (_m *MockHandle) Close() error {
-	ret := _m.ctrl.Call(_m, "Close")
+func (m *MockHandle) Close() error {
+	ret := m.ctrl.Call(m, "Close")
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Close indicates an expected call of Close
-func (_mr *MockHandleMockRecorder) Close() *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Close", reflect.TypeOf((*MockHandle)(nil).Close))
+func (mr *MockHandleMockRecorder) Close() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockHandle)(nil).Close))
 }
 
 // Name mocks base method
-func (_m *MockHandle) Name() string {
-	ret := _m.ctrl.Call(_m, "Name")
+func (m *MockHandle) Name() string {
+	ret := m.ctrl.Call(m, "Name")
 	ret0, _ := ret[0].(string)
 	return ret0
 }
 
 // Name indicates an expected call of Name
-func (_mr *MockHandleMockRecorder) Name() *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Name", reflect.TypeOf((*MockHandle)(nil).Name))
+func (mr *MockHandleMockRecorder) Name() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Name", reflect.TypeOf((*MockHandle)(nil).Name))
 }
 
 // ServiceGenerator mocks base method
-func (_m *MockHandle) ServiceGenerator() plugin.ServiceGenerator {
-	ret := _m.ctrl.Call(_m, "ServiceGenerator")
+func (m *MockHandle) ServiceGenerator() plugin.ServiceGenerator {
+	ret := m.ctrl.Call(m, "ServiceGenerator")
 	ret0, _ := ret[0].(plugin.ServiceGenerator)
 	return ret0
 }
 
 // ServiceGenerator indicates an expected call of ServiceGenerator
-func (_mr *MockHandleMockRecorder) ServiceGenerator() *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "ServiceGenerator", reflect.TypeOf((*MockHandle)(nil).ServiceGenerator))
+func (mr *MockHandleMockRecorder) ServiceGenerator() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ServiceGenerator", reflect.TypeOf((*MockHandle)(nil).ServiceGenerator))
 }
 
 // MockServiceGenerator is a mock of ServiceGenerator interface
@@ -108,31 +109,31 @@ func NewMockServiceGenerator(ctrl *gomock.Controller) *MockServiceGenerator {
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use
-func (_m *MockServiceGenerator) EXPECT() *MockServiceGeneratorMockRecorder {
-	return _m.recorder
+func (m *MockServiceGenerator) EXPECT() *MockServiceGeneratorMockRecorder {
+	return m.recorder
 }
 
 // Generate mocks base method
-func (_m *MockServiceGenerator) Generate(_param0 *api.GenerateServiceRequest) (*api.GenerateServiceResponse, error) {
-	ret := _m.ctrl.Call(_m, "Generate", _param0)
+func (m *MockServiceGenerator) Generate(arg0 *api.GenerateServiceRequest) (*api.GenerateServiceResponse, error) {
+	ret := m.ctrl.Call(m, "Generate", arg0)
 	ret0, _ := ret[0].(*api.GenerateServiceResponse)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Generate indicates an expected call of Generate
-func (_mr *MockServiceGeneratorMockRecorder) Generate(arg0 interface{}) *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Generate", reflect.TypeOf((*MockServiceGenerator)(nil).Generate), arg0)
+func (mr *MockServiceGeneratorMockRecorder) Generate(arg0 interface{}) *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Generate", reflect.TypeOf((*MockServiceGenerator)(nil).Generate), arg0)
 }
 
 // Handle mocks base method
-func (_m *MockServiceGenerator) Handle() plugin.Handle {
-	ret := _m.ctrl.Call(_m, "Handle")
+func (m *MockServiceGenerator) Handle() plugin.Handle {
+	ret := m.ctrl.Call(m, "Handle")
 	ret0, _ := ret[0].(plugin.Handle)
 	return ret0
 }
 
 // Handle indicates an expected call of Handle
-func (_mr *MockServiceGeneratorMockRecorder) Handle() *gomock.Call {
-	return _mr.mock.ctrl.RecordCallWithMethodType(_mr.mock, "Handle", reflect.TypeOf((*MockServiceGenerator)(nil).Handle))
+func (mr *MockServiceGeneratorMockRecorder) Handle() *gomock.Call {
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handle", reflect.TypeOf((*MockServiceGenerator)(nil).Handle))
 }
