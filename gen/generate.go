@@ -154,7 +154,12 @@ func Generate(m *compile.Module, o *Options) error {
 	return nil
 }
 
-// TODO(abg): Make some sort of public interface out of the Importer
+// ThriftPackageImporter determines the import paths from a thrift root
+type ThriftPackageImporter interface {
+	RelativePackage(file string) (string, error)
+	RelativeThriftFilePath(file string) (string, error)
+	Package(file string) (string, error)
+}
 
 type thriftPackageImporter struct {
 	ImportPrefix string

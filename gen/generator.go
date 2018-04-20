@@ -129,7 +129,7 @@ type generator struct {
 	w              WireGenerator
 	e              equalsGenerator
 	decls          []ast.Decl
-	thriftImporter thriftPackageImporter
+	thriftImporter ThriftPackageImporter
 	mangler        *mangler
 
 	counter int
@@ -139,7 +139,7 @@ type generator struct {
 }
 
 // NewGenerator sets up a new generator for Go code.
-func NewGenerator(timport thriftPackageImporter, importPath string, packageName string) Generator {
+func NewGenerator(timport ThriftPackageImporter, importPath string, packageName string) Generator {
 	// TODO(abg): Determine package name from `namespace go` directive.
 	namespace := NewNamespace()
 	return &generator{
