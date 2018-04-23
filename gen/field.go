@@ -91,7 +91,7 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 		return err
 	}
 
-	return f.PrimitiveAccessors(g)
+	return f.Accessors(g)
 }
 
 func (f fieldGroupGenerator) DefineStruct(g Generator) error {
@@ -461,7 +461,7 @@ func (f fieldGroupGenerator) Equals(g Generator) error {
 		`, f)
 }
 
-func (f fieldGroupGenerator) PrimitiveAccessors(g Generator) error {
+func (f fieldGroupGenerator) Accessors(g Generator) error {
 	fieldsAndAccessors := NewNamespace()
 	return g.DeclareFromTemplate(
 		`
@@ -473,17 +473,23 @@ func (f fieldGroupGenerator) PrimitiveAccessors(g Generator) error {
 			<$fname := goName .>
 			<reserveFieldOrMethod $fname>
 			<reserveFieldOrMethod (printf "Get%v" $fname)>
-			<if and (not .Required) (isPrimitiveType .Type)>
 			// Get<$fname> returns the value of <$fname> if it is set or its
 			// zero value if it is unset.
 			func (<$v> *<$name>) Get<$fname>() (<$o> <typeReference .Type>) {
-				if <$v>.<$fname> != nil {
-					return *<$v>.<$fname>
-				}
-				<if .Default><$o> = <constantValue .Default .Type><end>
-				return
+				<- if .Required ->
+				  return <$v>.<$fname>
+				<- else ->
+				  if <$v>.<$fname> != nil {
+					<- if and (not .Required) (isPrimitiveType .Type) ->
+					  return *<$v>.<$fname>
+					<- else ->
+					  return <$v>.<$fname>
+					<- end ->
+				  }
+				  <if .Default><$o> = <constantValue .Default .Type><end>
+				  return
+				<- end ->
 			}
-			<end>
 		<end>
 		`, f,
 		TemplateFunc("constantValue", ConstantValue),

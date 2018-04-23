@@ -152,6 +152,14 @@ func (v *KeyValue_SetValueV2_Args) Equals(rhs *KeyValue_SetValueV2_Args) bool {
 	return true
 }
 
+// GetKey returns the value of Key if it is set or its
+// zero value if it is unset.
+func (v *KeyValue_SetValueV2_Args) GetKey() (o Key) { return v.Key }
+
+// GetValue returns the value of Value if it is set or its
+// zero value if it is unset.
+func (v *KeyValue_SetValueV2_Args) GetValue() (o *unions.ArbitraryValue) { return v.Value }
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the arguments.
 //

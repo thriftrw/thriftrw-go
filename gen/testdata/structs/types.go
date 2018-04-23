@@ -119,6 +119,10 @@ func (v *ContactInfo) Equals(rhs *ContactInfo) bool {
 	return true
 }
 
+// GetEmailAddress returns the value of EmailAddress if it is set or its
+// zero value if it is unset.
+func (v *ContactInfo) GetEmailAddress() (o string) { return v.EmailAddress }
+
 type DefaultsStruct struct {
 	RequiredPrimitive *int32             `json:"requiredPrimitive,omitempty"`
 	OptionalPrimitive *int32             `json:"optionalPrimitive,omitempty"`
@@ -705,6 +709,71 @@ func (v *DefaultsStruct) GetOptionalEnum() (o enums.EnumDefault) {
 	return
 }
 
+// GetRequiredList returns the value of RequiredList if it is set or its
+// zero value if it is unset.
+func (v *DefaultsStruct) GetRequiredList() (o []string) {
+	if v.RequiredList != nil {
+		return v.RequiredList
+	}
+	o = []string{
+		"hello",
+		"world",
+	}
+	return
+}
+
+// GetOptionalList returns the value of OptionalList if it is set or its
+// zero value if it is unset.
+func (v *DefaultsStruct) GetOptionalList() (o []float64) {
+	if v.OptionalList != nil {
+		return v.OptionalList
+	}
+	o = []float64{
+		1,
+		2,
+		3,
+	}
+	return
+}
+
+// GetRequiredStruct returns the value of RequiredStruct if it is set or its
+// zero value if it is unset.
+func (v *DefaultsStruct) GetRequiredStruct() (o *Frame) {
+	if v.RequiredStruct != nil {
+		return v.RequiredStruct
+	}
+	o = &Frame{
+		Size: &Size{
+			Height: 200,
+			Width:  100,
+		},
+		TopLeft: &Point{
+			X: 1,
+			Y: 2,
+		},
+	}
+	return
+}
+
+// GetOptionalStruct returns the value of OptionalStruct if it is set or its
+// zero value if it is unset.
+func (v *DefaultsStruct) GetOptionalStruct() (o *Edge) {
+	if v.OptionalStruct != nil {
+		return v.OptionalStruct
+	}
+	o = &Edge{
+		EndPoint: &Point{
+			X: 3,
+			Y: 4,
+		},
+		StartPoint: &Point{
+			X: 1,
+			Y: 2,
+		},
+	}
+	return
+}
+
 type Edge struct {
 	StartPoint *Point `json:"startPoint,required"`
 	EndPoint   *Point `json:"endPoint,required"`
@@ -847,6 +916,14 @@ func (v *Edge) Equals(rhs *Edge) bool {
 
 	return true
 }
+
+// GetStartPoint returns the value of StartPoint if it is set or its
+// zero value if it is unset.
+func (v *Edge) GetStartPoint() (o *Point) { return v.StartPoint }
+
+// GetEndPoint returns the value of EndPoint if it is set or its
+// zero value if it is unset.
+func (v *Edge) GetEndPoint() (o *Point) { return v.EndPoint }
 
 type EmptyStruct struct {
 }
@@ -1066,6 +1143,14 @@ func (v *Frame) Equals(rhs *Frame) bool {
 
 	return true
 }
+
+// GetTopLeft returns the value of TopLeft if it is set or its
+// zero value if it is unset.
+func (v *Frame) GetTopLeft() (o *Point) { return v.TopLeft }
+
+// GetSize returns the value of Size if it is set or its
+// zero value if it is unset.
+func (v *Frame) GetSize() (o *Size) { return v.Size }
 
 type GoTags struct {
 	Foo                 string  `json:"-" foo:"bar"`
@@ -1315,6 +1400,10 @@ func (v *GoTags) Equals(rhs *GoTags) bool {
 	return true
 }
 
+// GetFoo returns the value of Foo if it is set or its
+// zero value if it is unset.
+func (v *GoTags) GetFoo() (o string) { return v.Foo }
+
 // GetBar returns the value of Bar if it is set or its
 // zero value if it is unset.
 func (v *GoTags) GetBar() (o string) {
@@ -1325,6 +1414,14 @@ func (v *GoTags) GetBar() (o string) {
 	return
 }
 
+// GetFooBar returns the value of FooBar if it is set or its
+// zero value if it is unset.
+func (v *GoTags) GetFooBar() (o string) { return v.FooBar }
+
+// GetFooBarWithSpace returns the value of FooBarWithSpace if it is set or its
+// zero value if it is unset.
+func (v *GoTags) GetFooBarWithSpace() (o string) { return v.FooBarWithSpace }
+
 // GetFooBarWithOmitEmpty returns the value of FooBarWithOmitEmpty if it is set or its
 // zero value if it is unset.
 func (v *GoTags) GetFooBarWithOmitEmpty() (o string) {
@@ -1334,6 +1431,10 @@ func (v *GoTags) GetFooBarWithOmitEmpty() (o string) {
 
 	return
 }
+
+// GetFooBarWithRequired returns the value of FooBarWithRequired if it is set or its
+// zero value if it is unset.
+func (v *GoTags) GetFooBarWithRequired() (o string) { return v.FooBarWithRequired }
 
 // A graph is comprised of zero or more edges.
 type Graph struct {
@@ -1510,6 +1611,10 @@ func (v *Graph) Equals(rhs *Graph) bool {
 	return true
 }
 
+// GetEdges returns the value of Edges if it is set or its
+// zero value if it is unset.
+func (v *Graph) GetEdges() (o []*Edge) { return v.Edges }
+
 type List Node
 
 // ToWire translates List into a Thrift-level intermediate
@@ -1677,6 +1782,20 @@ func (v *Node) Equals(rhs *Node) bool {
 	return true
 }
 
+// GetValue returns the value of Value if it is set or its
+// zero value if it is unset.
+func (v *Node) GetValue() (o int32) { return v.Value }
+
+// GetTail returns the value of Tail if it is set or its
+// zero value if it is unset.
+func (v *Node) GetTail() (o *List) {
+	if v.Tail != nil {
+		return v.Tail
+	}
+
+	return
+}
+
 type Omit struct {
 	Serialized string `json:"serialized,required"`
 	Hidden     string `json:"-"`
@@ -1808,6 +1927,14 @@ func (v *Omit) Equals(rhs *Omit) bool {
 
 	return true
 }
+
+// GetSerialized returns the value of Serialized if it is set or its
+// zero value if it is unset.
+func (v *Omit) GetSerialized() (o string) { return v.Serialized }
+
+// GetHidden returns the value of Hidden if it is set or its
+// zero value if it is unset.
+func (v *Omit) GetHidden() (o string) { return v.Hidden }
 
 // A point in 2D space.
 type Point struct {
@@ -1941,6 +2068,14 @@ func (v *Point) Equals(rhs *Point) bool {
 
 	return true
 }
+
+// GetX returns the value of X if it is set or its
+// zero value if it is unset.
+func (v *Point) GetX() (o float64) { return v.X }
+
+// GetY returns the value of Y if it is set or its
+// zero value if it is unset.
+func (v *Point) GetY() (o float64) { return v.Y }
 
 // A struct that contains primitive fields exclusively.
 //
@@ -2351,6 +2486,16 @@ func (v *PrimitiveOptionalStruct) GetStringField() (o string) {
 	return
 }
 
+// GetBinaryField returns the value of BinaryField if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveOptionalStruct) GetBinaryField() (o []byte) {
+	if v.BinaryField != nil {
+		return v.BinaryField
+	}
+
+	return
+}
+
 // A struct that contains primitive fields exclusively.
 //
 // All fields are required.
@@ -2644,6 +2789,38 @@ func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
 	return true
 }
 
+// GetBoolField returns the value of BoolField if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveRequiredStruct) GetBoolField() (o bool) { return v.BoolField }
+
+// GetByteField returns the value of ByteField if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveRequiredStruct) GetByteField() (o int8) { return v.ByteField }
+
+// GetInt16Field returns the value of Int16Field if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveRequiredStruct) GetInt16Field() (o int16) { return v.Int16Field }
+
+// GetInt32Field returns the value of Int32Field if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveRequiredStruct) GetInt32Field() (o int32) { return v.Int32Field }
+
+// GetInt64Field returns the value of Int64Field if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveRequiredStruct) GetInt64Field() (o int64) { return v.Int64Field }
+
+// GetDoubleField returns the value of DoubleField if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveRequiredStruct) GetDoubleField() (o float64) { return v.DoubleField }
+
+// GetStringField returns the value of StringField if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveRequiredStruct) GetStringField() (o string) { return v.StringField }
+
+// GetBinaryField returns the value of BinaryField if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveRequiredStruct) GetBinaryField() (o []byte) { return v.BinaryField }
+
 type Rename struct {
 	Default   string `json:"default,required"`
 	CamelCase string `json:"snake_case,required"`
@@ -2775,6 +2952,14 @@ func (v *Rename) Equals(rhs *Rename) bool {
 
 	return true
 }
+
+// GetDefault returns the value of Default if it is set or its
+// zero value if it is unset.
+func (v *Rename) GetDefault() (o string) { return v.Default }
+
+// GetCamelCase returns the value of CamelCase if it is set or its
+// zero value if it is unset.
+func (v *Rename) GetCamelCase() (o string) { return v.CamelCase }
 
 // Size of something.
 type Size struct {
@@ -2911,6 +3096,14 @@ func (v *Size) Equals(rhs *Size) bool {
 	return true
 }
 
+// GetWidth returns the value of Width if it is set or its
+// zero value if it is unset.
+func (v *Size) GetWidth() (o float64) { return v.Width }
+
+// GetHeight returns the value of Height if it is set or its
+// zero value if it is unset.
+func (v *Size) GetHeight() (o float64) { return v.Height }
+
 type User struct {
 	Name    string       `json:"name,required"`
 	Contact *ContactInfo `json:"contact,omitempty"`
@@ -3045,4 +3238,18 @@ func (v *User) Equals(rhs *User) bool {
 	}
 
 	return true
+}
+
+// GetName returns the value of Name if it is set or its
+// zero value if it is unset.
+func (v *User) GetName() (o string) { return v.Name }
+
+// GetContact returns the value of Contact if it is set or its
+// zero value if it is unset.
+func (v *User) GetContact() (o *ContactInfo) {
+	if v.Contact != nil {
+		return v.Contact
+	}
+
+	return
 }

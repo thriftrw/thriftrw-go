@@ -460,6 +460,26 @@ func (v *ArbitraryValue) GetStringValue() (o string) {
 	return
 }
 
+// GetListValue returns the value of ListValue if it is set or its
+// zero value if it is unset.
+func (v *ArbitraryValue) GetListValue() (o []*ArbitraryValue) {
+	if v.ListValue != nil {
+		return v.ListValue
+	}
+
+	return
+}
+
+// GetMapValue returns the value of MapValue if it is set or its
+// zero value if it is unset.
+func (v *ArbitraryValue) GetMapValue() (o map[string]*ArbitraryValue) {
+	if v.MapValue != nil {
+		return v.MapValue
+	}
+
+	return
+}
+
 type Document struct {
 	Pdf       typedefs.PDF `json:"pdf,omitempty"`
 	PlainText *string      `json:"plainText,omitempty"`
@@ -609,6 +629,16 @@ func (v *Document) Equals(rhs *Document) bool {
 	}
 
 	return true
+}
+
+// GetPdf returns the value of Pdf if it is set or its
+// zero value if it is unset.
+func (v *Document) GetPdf() (o typedefs.PDF) {
+	if v.Pdf != nil {
+		return v.Pdf
+	}
+
+	return
 }
 
 // GetPlainText returns the value of PlainText if it is set or its

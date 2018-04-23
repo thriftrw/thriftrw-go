@@ -871,6 +871,36 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	return true
 }
 
+// GetA returns the value of A if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainers) GetA() (o []string) {
+	if v.A != nil {
+		return v.A
+	}
+
+	return
+}
+
+// GetB returns the value of B if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainers) GetB() (o map[string]struct{}) {
+	if v.B != nil {
+		return v.B
+	}
+
+	return
+}
+
+// GetC returns the value of C if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainers) GetC() (o map[string]string) {
+	if v.C != nil {
+		return v.C
+	}
+
+	return
+}
+
 type StructCollision struct {
 	CollisionField  bool   `json:"collisionField,required"`
 	CollisionField2 string `json:"collision_field,required"`
@@ -1002,6 +1032,14 @@ func (v *StructCollision) Equals(rhs *StructCollision) bool {
 
 	return true
 }
+
+// GetCollisionField returns the value of CollisionField if it is set or its
+// zero value if it is unset.
+func (v *StructCollision) GetCollisionField() (o bool) { return v.CollisionField }
+
+// GetCollisionField2 returns the value of CollisionField2 if it is set or its
+// zero value if it is unset.
+func (v *StructCollision) GetCollisionField2() (o string) { return v.CollisionField2 }
 
 type UnionCollision struct {
 	CollisionField  *bool   `json:"collisionField,omitempty"`
@@ -1301,6 +1339,19 @@ func (v *WithDefault) Equals(rhs *WithDefault) bool {
 	}
 
 	return true
+}
+
+// GetPouet returns the value of Pouet if it is set or its
+// zero value if it is unset.
+func (v *WithDefault) GetPouet() (o *StructCollision2) {
+	if v.Pouet != nil {
+		return v.Pouet
+	}
+	o = &StructCollision2{
+		CollisionField:  false,
+		CollisionField2: "false indeed",
+	}
+	return
 }
 
 type LittlePotatoe2 float64
@@ -1609,6 +1660,14 @@ func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
 
 	return true
 }
+
+// GetCollisionField returns the value of CollisionField if it is set or its
+// zero value if it is unset.
+func (v *StructCollision2) GetCollisionField() (o bool) { return v.CollisionField }
+
+// GetCollisionField2 returns the value of CollisionField2 if it is set or its
+// zero value if it is unset.
+func (v *StructCollision2) GetCollisionField2() (o string) { return v.CollisionField2 }
 
 type UnionCollision2 struct {
 	CollisionField  *bool   `json:"collisionField,omitempty"`

@@ -154,6 +154,10 @@ func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
 	return true
 }
 
+// GetKey returns the value of Key if it is set or its
+// zero value if it is unset.
+func (v *DoesNotExistException) GetKey() (o string) { return v.Key }
+
 // GetError2 returns the value of Error2 if it is set or its
 // zero value if it is unset.
 func (v *DoesNotExistException) GetError2() (o string) {

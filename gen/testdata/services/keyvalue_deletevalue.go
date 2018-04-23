@@ -420,6 +420,26 @@ func (v *KeyValue_DeleteValue_Result) Equals(rhs *KeyValue_DeleteValue_Result) b
 	return true
 }
 
+// GetDoesNotExist returns the value of DoesNotExist if it is set or its
+// zero value if it is unset.
+func (v *KeyValue_DeleteValue_Result) GetDoesNotExist() (o *exceptions.DoesNotExistException) {
+	if v.DoesNotExist != nil {
+		return v.DoesNotExist
+	}
+
+	return
+}
+
+// GetInternalError returns the value of InternalError if it is set or its
+// zero value if it is unset.
+func (v *KeyValue_DeleteValue_Result) GetInternalError() (o *InternalError) {
+	if v.InternalError != nil {
+		return v.InternalError
+	}
+
+	return
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the result.
 //
