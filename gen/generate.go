@@ -154,7 +154,7 @@ func Generate(m *compile.Module, o *Options) error {
 	return nil
 }
 
-// ThriftPackageImporter determines the import paths from a thrift root
+// ThriftPackageImporter determines import paths from a Thrift root.
 type ThriftPackageImporter interface {
 	// RelativePackage returns the import path for the top-level package of the
 	// given Thrift file relative to the ImportPrefix.
@@ -166,7 +166,7 @@ type ThriftPackageImporter interface {
 
 	// Package returns the import path for the top-level package of the given Thrift
 	// file.
-	Package(file string) (ipmortPath string, err error)
+	Package(file string) (importPath string, err error)
 }
 
 type thriftPackageImporter struct {
