@@ -9,18 +9,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 * No changes yet.
 
-## [1.12.0] - 2018-04-23
-
-### Added
-
-* Gen: Added a public interface `ThriftPackageImporter` that determines
-  the import paths from a thrift root.
-
-### Changed
-
-* Gen: Now the constructor `NewGenerator` use a public interface instead of the
-  private implementation allowing it to be used from others packages.
-
 ## [1.11.0] - 2018-03-27
 
 ### Added
