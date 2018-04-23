@@ -156,9 +156,17 @@ func Generate(m *compile.Module, o *Options) error {
 
 // ThriftPackageImporter determines the import paths from a thrift root
 type ThriftPackageImporter interface {
-	RelativePackage(file string) (string, error)
-	RelativeThriftFilePath(file string) (string, error)
-	Package(file string) (string, error)
+	// RelativePackage returns the import path for the top-level package of the
+	// given Thrift file relative to the ImportPrefix.
+	RelativePackage(file string) (importPath string, err error)
+
+	// RelativePackage returns the relative path of the given Thrift file
+	// relative to the ThriftRoot.
+	RelativeThriftFilePath(file string) (relPath string, err error)
+
+	// Package returns the import path for the top-level package of the given Thrift
+	// file.
+	Package(file string) (ipmortPath string, err error)
 }
 
 type thriftPackageImporter struct {
@@ -166,8 +174,6 @@ type thriftPackageImporter struct {
 	ThriftRoot   string
 }
 
-// RelativePackage returns the import path for the top-level package of the
-// given Thrift file relative to the ImportPrefix.
 func (i thriftPackageImporter) RelativePackage(file string) (string, error) {
 	return filepath.Rel(i.ThriftRoot, strings.TrimSuffix(file, ".thrift"))
 }
@@ -176,8 +182,6 @@ func (i thriftPackageImporter) RelativeThriftFilePath(file string) (string, erro
 	return filepath.Rel(i.ThriftRoot, file)
 }
 
-// Package returns the import path for the top-level package of the given Thrift
-// file.
 func (i thriftPackageImporter) Package(file string) (string, error) {
 	pkg, err := i.RelativePackage(file)
 	if err != nil {
