@@ -1342,7 +1342,7 @@ func (v *WithDefault) Equals(rhs *WithDefault) bool {
 }
 
 // GetPouet returns the value of Pouet if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *WithDefault) GetPouet() (o *StructCollision2) {
 	if v.Pouet != nil {
 		return v.Pouet

@@ -336,7 +336,7 @@ func (v *Records) Equals(rhs *Records) bool {
 }
 
 // GetRecordType returns the value of RecordType if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *Records) GetRecordType() (o RecordType) {
 	if v.RecordType != nil {
 		return *v.RecordType
@@ -346,7 +346,7 @@ func (v *Records) GetRecordType() (o RecordType) {
 }
 
 // GetOtherRecordType returns the value of OtherRecordType if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *Records) GetOtherRecordType() (o enums.RecordType) {
 	if v.OtherRecordType != nil {
 		return *v.OtherRecordType

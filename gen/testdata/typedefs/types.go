@@ -247,7 +247,7 @@ func (v *DefaultPrimitiveTypedef) Equals(rhs *DefaultPrimitiveTypedef) bool {
 }
 
 // GetState returns the value of State if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *DefaultPrimitiveTypedef) GetState() (o State) {
 	if v.State != nil {
 		return *v.State

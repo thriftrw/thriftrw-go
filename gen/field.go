@@ -474,7 +474,7 @@ func (f fieldGroupGenerator) Accessors(g Generator) error {
 			<reserveFieldOrMethod $fname>
 			<reserveFieldOrMethod (printf "Get%v" $fname)>
 			// Get<$fname> returns the value of <$fname> if it is set or its
-			// zero value if it is unset.
+			// <if .Default>default<else>zero<end> value if it is unset.
 			func (<$v> *<$name>) Get<$fname>() (<$o> <typeReference .Type>) {
 				<- if .Required ->
 				  return <$v>.<$fname>

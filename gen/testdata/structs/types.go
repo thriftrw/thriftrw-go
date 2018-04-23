@@ -670,7 +670,7 @@ func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 }
 
 // GetRequiredPrimitive returns the value of RequiredPrimitive if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *DefaultsStruct) GetRequiredPrimitive() (o int32) {
 	if v.RequiredPrimitive != nil {
 		return *v.RequiredPrimitive
@@ -680,7 +680,7 @@ func (v *DefaultsStruct) GetRequiredPrimitive() (o int32) {
 }
 
 // GetOptionalPrimitive returns the value of OptionalPrimitive if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *DefaultsStruct) GetOptionalPrimitive() (o int32) {
 	if v.OptionalPrimitive != nil {
 		return *v.OptionalPrimitive
@@ -690,7 +690,7 @@ func (v *DefaultsStruct) GetOptionalPrimitive() (o int32) {
 }
 
 // GetRequiredEnum returns the value of RequiredEnum if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *DefaultsStruct) GetRequiredEnum() (o enums.EnumDefault) {
 	if v.RequiredEnum != nil {
 		return *v.RequiredEnum
@@ -700,7 +700,7 @@ func (v *DefaultsStruct) GetRequiredEnum() (o enums.EnumDefault) {
 }
 
 // GetOptionalEnum returns the value of OptionalEnum if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *DefaultsStruct) GetOptionalEnum() (o enums.EnumDefault) {
 	if v.OptionalEnum != nil {
 		return *v.OptionalEnum
@@ -710,7 +710,7 @@ func (v *DefaultsStruct) GetOptionalEnum() (o enums.EnumDefault) {
 }
 
 // GetRequiredList returns the value of RequiredList if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *DefaultsStruct) GetRequiredList() (o []string) {
 	if v.RequiredList != nil {
 		return v.RequiredList
@@ -723,7 +723,7 @@ func (v *DefaultsStruct) GetRequiredList() (o []string) {
 }
 
 // GetOptionalList returns the value of OptionalList if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *DefaultsStruct) GetOptionalList() (o []float64) {
 	if v.OptionalList != nil {
 		return v.OptionalList
@@ -737,7 +737,7 @@ func (v *DefaultsStruct) GetOptionalList() (o []float64) {
 }
 
 // GetRequiredStruct returns the value of RequiredStruct if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *DefaultsStruct) GetRequiredStruct() (o *Frame) {
 	if v.RequiredStruct != nil {
 		return v.RequiredStruct
@@ -756,7 +756,7 @@ func (v *DefaultsStruct) GetRequiredStruct() (o *Frame) {
 }
 
 // GetOptionalStruct returns the value of OptionalStruct if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *DefaultsStruct) GetOptionalStruct() (o *Edge) {
 	if v.OptionalStruct != nil {
 		return v.OptionalStruct
