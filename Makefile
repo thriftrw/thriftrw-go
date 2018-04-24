@@ -136,7 +136,7 @@ install:
 .PHONY: install_ci
 install_ci: install
 ifdef SHOULD_LINT
-	go get -u -f github.com/golang/lint/golint
+	go get -u -f golang.org/x/lint/golint
 	go get -u -f github.com/kisielk/errcheck
 endif
 	go get -u github.com/wadey/gocovmerge
