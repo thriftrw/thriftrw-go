@@ -187,3 +187,11 @@ func (v *UUIDConflict) Equals(rhs *UUIDConflict) bool {
 
 	return true
 }
+
+// GetLocalUUID returns the value of LocalUUID if it is set or its
+// zero value if it is unset.
+func (v *UUIDConflict) GetLocalUUID() (o UUID) { return v.LocalUUID }
+
+// GetImportedUUID returns the value of ImportedUUID if it is set or its
+// zero value if it is unset.
+func (v *UUIDConflict) GetImportedUUID() (o *typedefs.UUID) { return v.ImportedUUID }
