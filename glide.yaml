@@ -9,7 +9,7 @@ import:
 - package: github.com/jessevdk/go-flags
 - package: github.com/anmitsu/go-shlex
 - package: go.uber.org/multierr
-  version: ~0.2.0
+  version: ^1
 - package: github.com/fatih/structtag
   version: ^0.1.0
 testImport:
