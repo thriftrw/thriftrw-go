@@ -1652,6 +1652,105 @@ func (v *ContainersOfContainers) Equals(rhs *ContainersOfContainers) bool {
 	return true
 }
 
+// GetListOfLists returns the value of ListOfLists if it is set or its
+// zero value if it is unset.
+func (v *ContainersOfContainers) GetListOfLists() (o [][]int32) {
+	if v.ListOfLists != nil {
+		return v.ListOfLists
+	}
+
+	return
+}
+
+// GetListOfSets returns the value of ListOfSets if it is set or its
+// zero value if it is unset.
+func (v *ContainersOfContainers) GetListOfSets() (o []map[int32]struct{}) {
+	if v.ListOfSets != nil {
+		return v.ListOfSets
+	}
+
+	return
+}
+
+// GetListOfMaps returns the value of ListOfMaps if it is set or its
+// zero value if it is unset.
+func (v *ContainersOfContainers) GetListOfMaps() (o []map[int32]int32) {
+	if v.ListOfMaps != nil {
+		return v.ListOfMaps
+	}
+
+	return
+}
+
+// GetSetOfSets returns the value of SetOfSets if it is set or its
+// zero value if it is unset.
+func (v *ContainersOfContainers) GetSetOfSets() (o []map[string]struct{}) {
+	if v.SetOfSets != nil {
+		return v.SetOfSets
+	}
+
+	return
+}
+
+// GetSetOfLists returns the value of SetOfLists if it is set or its
+// zero value if it is unset.
+func (v *ContainersOfContainers) GetSetOfLists() (o [][]string) {
+	if v.SetOfLists != nil {
+		return v.SetOfLists
+	}
+
+	return
+}
+
+// GetSetOfMaps returns the value of SetOfMaps if it is set or its
+// zero value if it is unset.
+func (v *ContainersOfContainers) GetSetOfMaps() (o []map[string]string) {
+	if v.SetOfMaps != nil {
+		return v.SetOfMaps
+	}
+
+	return
+}
+
+// GetMapOfMapToInt returns the value of MapOfMapToInt if it is set or its
+// zero value if it is unset.
+func (v *ContainersOfContainers) GetMapOfMapToInt() (o []struct {
+	Key   map[string]int32
+	Value int64
+}) {
+	if v.MapOfMapToInt != nil {
+		return v.MapOfMapToInt
+	}
+
+	return
+}
+
+// GetMapOfListToSet returns the value of MapOfListToSet if it is set or its
+// zero value if it is unset.
+func (v *ContainersOfContainers) GetMapOfListToSet() (o []struct {
+	Key   []int32
+	Value map[int64]struct{}
+}) {
+	if v.MapOfListToSet != nil {
+		return v.MapOfListToSet
+	}
+
+	return
+}
+
+// GetMapOfSetToListOfDouble returns the value of MapOfSetToListOfDouble if it is set or its
+// zero value if it is unset.
+func (v *ContainersOfContainers) GetMapOfSetToListOfDouble() (o []struct {
+	Key   map[int32]struct{}
+	Value []float64
+}) {
+	if v.MapOfSetToListOfDouble != nil {
+		return v.MapOfSetToListOfDouble
+	}
+
+	return
+}
+
 type EnumContainers struct {
 	ListOfEnums []enums.EnumDefault                     `json:"listOfEnums,omitempty"`
 	SetOfEnums  map[enums.EnumWithValues]struct{}       `json:"setOfEnums,omitempty"`
@@ -2020,6 +2119,36 @@ func (v *EnumContainers) Equals(rhs *EnumContainers) bool {
 	return true
 }
 
+// GetListOfEnums returns the value of ListOfEnums if it is set or its
+// zero value if it is unset.
+func (v *EnumContainers) GetListOfEnums() (o []enums.EnumDefault) {
+	if v.ListOfEnums != nil {
+		return v.ListOfEnums
+	}
+
+	return
+}
+
+// GetSetOfEnums returns the value of SetOfEnums if it is set or its
+// zero value if it is unset.
+func (v *EnumContainers) GetSetOfEnums() (o map[enums.EnumWithValues]struct{}) {
+	if v.SetOfEnums != nil {
+		return v.SetOfEnums
+	}
+
+	return
+}
+
+// GetMapOfEnums returns the value of MapOfEnums if it is set or its
+// zero value if it is unset.
+func (v *EnumContainers) GetMapOfEnums() (o map[enums.EnumWithDuplicateValues]int32) {
+	if v.MapOfEnums != nil {
+		return v.MapOfEnums
+	}
+
+	return
+}
+
 type ListOfConflictingEnums struct {
 	Records      []enum_conflict.RecordType `json:"records,required"`
 	OtherRecords []enums.RecordType         `json:"otherRecords,required"`
@@ -2286,6 +2415,14 @@ func (v *ListOfConflictingEnums) Equals(rhs *ListOfConflictingEnums) bool {
 
 	return true
 }
+
+// GetRecords returns the value of Records if it is set or its
+// zero value if it is unset.
+func (v *ListOfConflictingEnums) GetRecords() (o []enum_conflict.RecordType) { return v.Records }
+
+// GetOtherRecords returns the value of OtherRecords if it is set or its
+// zero value if it is unset.
+func (v *ListOfConflictingEnums) GetOtherRecords() (o []enums.RecordType) { return v.OtherRecords }
 
 type ListOfConflictingUUIDs struct {
 	Uuids      []*typedefs.UUID     `json:"uuids,required"`
@@ -2556,6 +2693,14 @@ func (v *ListOfConflictingUUIDs) Equals(rhs *ListOfConflictingUUIDs) bool {
 
 	return true
 }
+
+// GetUuids returns the value of Uuids if it is set or its
+// zero value if it is unset.
+func (v *ListOfConflictingUUIDs) GetUuids() (o []*typedefs.UUID) { return v.Uuids }
+
+// GetOtherUUIDs returns the value of OtherUUIDs if it is set or its
+// zero value if it is unset.
+func (v *ListOfConflictingUUIDs) GetOtherUUIDs() (o []uuid_conflict.UUID) { return v.OtherUUIDs }
 
 type MapOfBinaryAndString struct {
 	BinaryToString []struct {
@@ -2882,6 +3027,29 @@ func (v *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
 	}
 
 	return true
+}
+
+// GetBinaryToString returns the value of BinaryToString if it is set or its
+// zero value if it is unset.
+func (v *MapOfBinaryAndString) GetBinaryToString() (o []struct {
+	Key   []byte
+	Value string
+}) {
+	if v.BinaryToString != nil {
+		return v.BinaryToString
+	}
+
+	return
+}
+
+// GetStringToBinary returns the value of StringToBinary if it is set or its
+// zero value if it is unset.
+func (v *MapOfBinaryAndString) GetStringToBinary() (o map[string][]byte) {
+	if v.StringToBinary != nil {
+		return v.StringToBinary
+	}
+
+	return
 }
 
 type PrimitiveContainers struct {
@@ -3448,6 +3616,66 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	return true
 }
 
+// GetListOfBinary returns the value of ListOfBinary if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainers) GetListOfBinary() (o [][]byte) {
+	if v.ListOfBinary != nil {
+		return v.ListOfBinary
+	}
+
+	return
+}
+
+// GetListOfInts returns the value of ListOfInts if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainers) GetListOfInts() (o []int64) {
+	if v.ListOfInts != nil {
+		return v.ListOfInts
+	}
+
+	return
+}
+
+// GetSetOfStrings returns the value of SetOfStrings if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainers) GetSetOfStrings() (o map[string]struct{}) {
+	if v.SetOfStrings != nil {
+		return v.SetOfStrings
+	}
+
+	return
+}
+
+// GetSetOfBytes returns the value of SetOfBytes if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainers) GetSetOfBytes() (o map[int8]struct{}) {
+	if v.SetOfBytes != nil {
+		return v.SetOfBytes
+	}
+
+	return
+}
+
+// GetMapOfIntToString returns the value of MapOfIntToString if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainers) GetMapOfIntToString() (o map[int32]string) {
+	if v.MapOfIntToString != nil {
+		return v.MapOfIntToString
+	}
+
+	return
+}
+
+// GetMapOfStringToBool returns the value of MapOfStringToBool if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainers) GetMapOfStringToBool() (o map[string]bool) {
+	if v.MapOfStringToBool != nil {
+		return v.MapOfStringToBool
+	}
+
+	return
+}
+
 type PrimitiveContainersRequired struct {
 	ListOfStrings      []string           `json:"listOfStrings,required"`
 	SetOfInts          map[int32]struct{} `json:"setOfInts,required"`
@@ -3691,4 +3919,18 @@ func (v *PrimitiveContainersRequired) Equals(rhs *PrimitiveContainersRequired) b
 	}
 
 	return true
+}
+
+// GetListOfStrings returns the value of ListOfStrings if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainersRequired) GetListOfStrings() (o []string) { return v.ListOfStrings }
+
+// GetSetOfInts returns the value of SetOfInts if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainersRequired) GetSetOfInts() (o map[int32]struct{}) { return v.SetOfInts }
+
+// GetMapOfIntsToDoubles returns the value of MapOfIntsToDoubles if it is set or its
+// zero value if it is unset.
+func (v *PrimitiveContainersRequired) GetMapOfIntsToDoubles() (o map[int64]float64) {
+	return v.MapOfIntsToDoubles
 }

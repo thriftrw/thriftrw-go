@@ -390,6 +390,26 @@ func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
 	return true
 }
 
+// GetSuccess returns the value of Success if it is set or its
+// zero value if it is unset.
+func (v *KeyValue_GetValue_Result) GetSuccess() (o *unions.ArbitraryValue) {
+	if v.Success != nil {
+		return v.Success
+	}
+
+	return
+}
+
+// GetDoesNotExist returns the value of DoesNotExist if it is set or its
+// zero value if it is unset.
+func (v *KeyValue_GetValue_Result) GetDoesNotExist() (o *exceptions.DoesNotExistException) {
+	if v.DoesNotExist != nil {
+		return v.DoesNotExist
+	}
+
+	return
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the result.
 //

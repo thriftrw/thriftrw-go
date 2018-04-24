@@ -1674,6 +1674,70 @@ func TestStructAccessors(t *testing.T) {
 				assert.Equal(t, te.EnumDefaultBaz, s.GetOptionalEnum())
 			})
 		})
+
+		t.Run("RequiredList", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				lst := []string{"foo", "bar", "baz"}
+				s := ts.DefaultsStruct{RequiredList: lst}
+				assert.Equal(t, lst, s.GetRequiredList())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.Equal(t, []string{"hello", "world"}, s.GetRequiredList())
+			})
+		})
+		t.Run("OptionalList", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				lst := []float64{0, 1, 2}
+				s := ts.DefaultsStruct{OptionalList: lst}
+				assert.Equal(t, lst, s.GetOptionalList())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.Equal(t, []float64{1, 2, 3}, s.GetOptionalList())
+			})
+		})
+		t.Run("RequiredStruct", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				f := &ts.Frame{
+					TopLeft: &ts.Point{X: 1, Y: 1},
+					Size:    &ts.Size{Width: 1, Height: 1},
+				}
+				s := ts.DefaultsStruct{RequiredStruct: f}
+				assert.Equal(t, f, s.GetRequiredStruct())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.Equal(t,
+					&ts.Frame{
+						TopLeft: &ts.Point{X: 1, Y: 2},
+						Size:    &ts.Size{Width: 100, Height: 200},
+					},
+					s.GetRequiredStruct(),
+				)
+
+			})
+		})
+		t.Run("OptionalStruct", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				e := &ts.Edge{
+					StartPoint: &ts.Point{X: 1.0, Y: 1.0},
+					EndPoint:   &ts.Point{X: 1.0, Y: 1.0},
+				}
+				s := ts.DefaultsStruct{OptionalStruct: e}
+				assert.Equal(t, e, s.GetOptionalStruct())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.Equal(t,
+					&ts.Edge{
+						StartPoint: &ts.Point{X: 1.0, Y: 2.0},
+						EndPoint:   &ts.Point{X: 3.0, Y: 4.0},
+					},
+					s.GetOptionalStruct(),
+				)
+			})
+		})
 	})
 }
 

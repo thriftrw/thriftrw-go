@@ -247,7 +247,7 @@ func (v *DefaultPrimitiveTypedef) Equals(rhs *DefaultPrimitiveTypedef) bool {
 }
 
 // GetState returns the value of State if it is set or its
-// zero value if it is unset.
+// default value if it is unset.
 func (v *DefaultPrimitiveTypedef) GetState() (o State) {
 	if v.State != nil {
 		return *v.State
@@ -574,6 +574,10 @@ func (v *Event) Equals(rhs *Event) bool {
 
 	return true
 }
+
+// GetUUID returns the value of UUID if it is set or its
+// zero value if it is unset.
+func (v *Event) GetUUID() (o *UUID) { return v.UUID }
 
 // GetTime returns the value of Time if it is set or its
 // zero value if it is unset.
@@ -1247,6 +1251,24 @@ func (v *Transition) Equals(rhs *Transition) bool {
 	return true
 }
 
+// GetFromState returns the value of FromState if it is set or its
+// zero value if it is unset.
+func (v *Transition) GetFromState() (o State) { return v.FromState }
+
+// GetToState returns the value of ToState if it is set or its
+// zero value if it is unset.
+func (v *Transition) GetToState() (o State) { return v.ToState }
+
+// GetEvents returns the value of Events if it is set or its
+// zero value if it is unset.
+func (v *Transition) GetEvents() (o EventGroup) {
+	if v.Events != nil {
+		return v.Events
+	}
+
+	return
+}
+
 type UUID I128
 
 // ToWire translates UUID into a Thrift-level intermediate
@@ -1407,3 +1429,11 @@ func (v *I128) Equals(rhs *I128) bool {
 
 	return true
 }
+
+// GetHigh returns the value of High if it is set or its
+// zero value if it is unset.
+func (v *I128) GetHigh() (o int64) { return v.High }
+
+// GetLow returns the value of Low if it is set or its
+// zero value if it is unset.
+func (v *I128) GetLow() (o int64) { return v.Low }
