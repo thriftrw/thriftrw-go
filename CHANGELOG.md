@@ -7,11 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
 - Added a public interface `ThriftPackageImporter` that determines
-  the import paths from a thrift root.
+  the import paths from a Thrift root.
 
 ### Changed
-- Now the constructor `NewGenerator` use a public interface instead of the
-  private implementation allowing it to be used from others packages.<Paste>
+- gen: `NewGenerator` is now usable from other packages.
 - Structs now include getter functions for all fields. This
   improves Apache Thrift compatibility.
 
