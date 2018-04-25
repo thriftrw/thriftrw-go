@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- Added a public interface `ThriftPackageImporter` that determines
-  the import paths from a Thrift root.
+- gen: Added `ThriftPackageImporter` to control import path
+  resolution Thrift files.
 
 ### Changed
 - gen: `NewGenerator` is now usable from other packages.
