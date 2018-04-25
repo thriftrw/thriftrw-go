@@ -145,6 +145,14 @@ func (v *ConflictingNamesSetValueArgs) Equals(rhs *ConflictingNamesSetValueArgs)
 	return true
 }
 
+// GetKey returns the value of Key if it is set or its
+// zero value if it is unset.
+func (v *ConflictingNamesSetValueArgs) GetKey() (o string) { return v.Key }
+
+// GetValue returns the value of Value if it is set or its
+// zero value if it is unset.
+func (v *ConflictingNamesSetValueArgs) GetValue() (o []byte) { return v.Value }
+
 type InternalError struct {
 	Message *string `json:"message,omitempty"`
 }
