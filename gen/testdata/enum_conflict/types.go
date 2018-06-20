@@ -47,6 +47,22 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
+// MarshalYAML serializes RecordType to yaml
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned
+//
+// This implements the yaml Marshaler interface
+func (v RecordType) MarshalYAML() (interface{}, error) {
+	switch int32(v) {
+	case 0:
+		return (interface{})("Name"), nil
+	case 1:
+		return (interface{})("Email"), nil
+	}
+	return (interface{})(v), nil
+}
+
 // Ptr returns a pointer to this enum value.
 func (v RecordType) Ptr() *RecordType {
 	return &v

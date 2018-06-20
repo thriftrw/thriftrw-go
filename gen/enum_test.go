@@ -28,6 +28,7 @@ import (
 	tec "go.uber.org/thriftrw/gen/testdata/enum_conflict"
 	te "go.uber.org/thriftrw/gen/testdata/enums"
 	"go.uber.org/thriftrw/wire"
+	yaml "gopkg.in/yaml.v2"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -333,6 +334,28 @@ func TestUnmarshalTextReturnsErrorOnInvalidValue(t *testing.T) {
 	var v te.EnumDefault
 	err := v.UnmarshalText([]byte("blah"))
 	assert.Error(t, err)
+}
+
+func TestMarshalYAMLReturnsValue(t *testing.T) {
+	tests := []struct {
+		title string
+		e     te.EnumDefault
+		yaml  string
+	}{
+		{`0 <-> Foo`, te.EnumDefaultFoo, "Foo\n"},
+		{`1 <-> Bar`, te.EnumDefaultBar, "Bar\n"},
+		{`2 <-> Baz`, te.EnumDefaultBaz, "Baz\n"},
+		{`42 <-> 42`, 42, "42\n"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.title, func(t *testing.T) {
+			b, err := yaml.Marshal(tt.e)
+			if assert.NoError(t, err, "unable to marshal enum") {
+				assert.Equal(t, tt.yaml, string(b), "yaml output doesn't match")
+			}
+		})
+	}
 }
 
 func TestEnumAccessors(t *testing.T) {

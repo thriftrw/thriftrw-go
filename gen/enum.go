@@ -107,6 +107,24 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			}
 		}
 
+		// MarshalYAML serializes <$enumName> to yaml
+		//
+		// If the enum value is recognized, its name is returned. Otherwise,
+		// its integer value is returned
+		//
+		// This implements the yaml Marshaler interface
+		func (<$v> <$enumName>) MarshalYAML() (interface{}, error) {
+			<if len .Spec.Items ->
+				switch int32(<$v>) {
+				<range .UniqueItems ->
+					case <.Value>:
+						return (interface{})("<.Name>"), nil
+				<end ->
+				}
+			<end ->
+			return (interface{})(<$v>), nil
+		}
+
 		// Ptr returns a pointer to this enum value.
 		func (<$v> <$enumName>) Ptr() *<$enumName> {
 			return &<$v>

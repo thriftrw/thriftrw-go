@@ -24,6 +24,16 @@ func (v *EmptyEnum) UnmarshalText(value []byte) error {
 	}
 }
 
+// MarshalYAML serializes EmptyEnum to yaml
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned
+//
+// This implements the yaml Marshaler interface
+func (v EmptyEnum) MarshalYAML() (interface{}, error) {
+	return (interface{})(v), nil
+}
+
 // Ptr returns a pointer to this enum value.
 func (v EmptyEnum) Ptr() *EmptyEnum {
 	return &v
@@ -150,6 +160,24 @@ func (v *EnumDefault) UnmarshalText(value []byte) error {
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "EnumDefault")
 	}
+}
+
+// MarshalYAML serializes EnumDefault to yaml
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned
+//
+// This implements the yaml Marshaler interface
+func (v EnumDefault) MarshalYAML() (interface{}, error) {
+	switch int32(v) {
+	case 0:
+		return (interface{})("Foo"), nil
+	case 1:
+		return (interface{})("Bar"), nil
+	case 2:
+		return (interface{})("Baz"), nil
+	}
+	return (interface{})(v), nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -326,6 +354,36 @@ func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
 	}
 }
 
+// MarshalYAML serializes EnumWithDuplicateName to yaml
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned
+//
+// This implements the yaml Marshaler interface
+func (v EnumWithDuplicateName) MarshalYAML() (interface{}, error) {
+	switch int32(v) {
+	case 0:
+		return (interface{})("A"), nil
+	case 1:
+		return (interface{})("B"), nil
+	case 2:
+		return (interface{})("C"), nil
+	case 3:
+		return (interface{})("P"), nil
+	case 4:
+		return (interface{})("Q"), nil
+	case 5:
+		return (interface{})("R"), nil
+	case 6:
+		return (interface{})("X"), nil
+	case 7:
+		return (interface{})("Y"), nil
+	case 8:
+		return (interface{})("Z"), nil
+	}
+	return (interface{})(v), nil
+}
+
 // Ptr returns a pointer to this enum value.
 func (v EnumWithDuplicateName) Ptr() *EnumWithDuplicateName {
 	return &v
@@ -494,6 +552,22 @@ func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
 	}
 }
 
+// MarshalYAML serializes EnumWithDuplicateValues to yaml
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned
+//
+// This implements the yaml Marshaler interface
+func (v EnumWithDuplicateValues) MarshalYAML() (interface{}, error) {
+	switch int32(v) {
+	case 0:
+		return (interface{})("P"), nil
+	case -1:
+		return (interface{})("Q"), nil
+	}
+	return (interface{})(v), nil
+}
+
 // Ptr returns a pointer to this enum value.
 func (v EnumWithDuplicateValues) Ptr() *EnumWithDuplicateValues {
 	return &v
@@ -632,6 +706,24 @@ func (v *EnumWithValues) UnmarshalText(value []byte) error {
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "EnumWithValues")
 	}
+}
+
+// MarshalYAML serializes EnumWithValues to yaml
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned
+//
+// This implements the yaml Marshaler interface
+func (v EnumWithValues) MarshalYAML() (interface{}, error) {
+	switch int32(v) {
+	case 123:
+		return (interface{})("X"), nil
+	case 456:
+		return (interface{})("Y"), nil
+	case 789:
+		return (interface{})("Z"), nil
+	}
+	return (interface{})(v), nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -786,6 +878,24 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
+// MarshalYAML serializes RecordType to yaml
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned
+//
+// This implements the yaml Marshaler interface
+func (v RecordType) MarshalYAML() (interface{}, error) {
+	switch int32(v) {
+	case 0:
+		return (interface{})("NAME"), nil
+	case 1:
+		return (interface{})("HOME_ADDRESS"), nil
+	case 2:
+		return (interface{})("WORK_ADDRESS"), nil
+	}
+	return (interface{})(v), nil
+}
+
 // Ptr returns a pointer to this enum value.
 func (v RecordType) Ptr() *RecordType {
 	return &v
@@ -923,6 +1033,22 @@ func (v *RecordTypeValues) UnmarshalText(value []byte) error {
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "RecordTypeValues")
 	}
+}
+
+// MarshalYAML serializes RecordTypeValues to yaml
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned
+//
+// This implements the yaml Marshaler interface
+func (v RecordTypeValues) MarshalYAML() (interface{}, error) {
+	switch int32(v) {
+	case 0:
+		return (interface{})("FOO"), nil
+	case 1:
+		return (interface{})("BAR"), nil
+	}
+	return (interface{})(v), nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -1195,6 +1321,24 @@ func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "LowerCaseEnum")
 	}
+}
+
+// MarshalYAML serializes LowerCaseEnum to yaml
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned
+//
+// This implements the yaml Marshaler interface
+func (v LowerCaseEnum) MarshalYAML() (interface{}, error) {
+	switch int32(v) {
+	case 0:
+		return (interface{})("containing"), nil
+	case 1:
+		return (interface{})("lower_case"), nil
+	case 2:
+		return (interface{})("items"), nil
+	}
+	return (interface{})(v), nil
 }
 
 // Ptr returns a pointer to this enum value.
