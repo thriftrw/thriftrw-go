@@ -1,5 +1,5 @@
-hash: 26c2c55ca402d6605deed8219389876b6207f46109135620b0f6ec7f84ca1a84
-updated: 2018-04-24T13:31:10.646395712-07:00
+hash: de0454e38eda960bd04ef6c65219131c0f7f1ec11bfeef4699e80fdd34b3be93
+updated: 2018-06-20T15:34:06.364272-07:00
 imports:
 - name: github.com/anmitsu/go-shlex
   version: 648efa622239a2f6ff949fed78ee37b48d499ba4
@@ -16,13 +16,15 @@ imports:
 - name: github.com/kr/text
   version: 7cafcd837844e784b526369c9bce262804aebc60
 - name: go.uber.org/atomic
-  version: 8474b86a5a6f79c443ce4b2992817ff32cf208b8
+  version: 1ea20fb1cbb1cc08cbd0d913a96dead89aa18289
 - name: go.uber.org/multierr
   version: 3c4937480c32f4c13a875a1829af76c98ca3d40a
 - name: golang.org/x/tools
   version: 4e70a1b26a7875f00ca1916637a876b5ffaeec59
   subpackages:
   - go/ast/astutil
+- name: gopkg.in/yaml.v2
+  version: 5420a8b6744d3b0345ab293f6fcba19c978f1183
 testImports:
 - name: github.com/davecgh/go-spew
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
