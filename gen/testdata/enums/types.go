@@ -24,12 +24,12 @@ func (v *EmptyEnum) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalText encodes EmptyEnum to text
+// MarshalText encodes EmptyEnum to text.
 //
 // If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned
+// its integer value is returned.
 //
-// This implements the text Marshaler interface
+// This implements the TextMarshaler interface.
 func (v EmptyEnum) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
@@ -162,12 +162,12 @@ func (v *EnumDefault) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalText encodes EnumDefault to text
+// MarshalText encodes EnumDefault to text.
 //
 // If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned
+// its integer value is returned.
 //
-// This implements the text Marshaler interface
+// This implements the TextMarshaler interface.
 func (v EnumDefault) MarshalText() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -354,12 +354,12 @@ func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalText encodes EnumWithDuplicateName to text
+// MarshalText encodes EnumWithDuplicateName to text.
 //
 // If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned
+// its integer value is returned.
 //
-// This implements the text Marshaler interface
+// This implements the TextMarshaler interface.
 func (v EnumWithDuplicateName) MarshalText() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -552,12 +552,12 @@ func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalText encodes EnumWithDuplicateValues to text
+// MarshalText encodes EnumWithDuplicateValues to text.
 //
 // If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned
+// its integer value is returned.
 //
-// This implements the text Marshaler interface
+// This implements the TextMarshaler interface.
 func (v EnumWithDuplicateValues) MarshalText() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -708,12 +708,12 @@ func (v *EnumWithValues) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalText encodes EnumWithValues to text
+// MarshalText encodes EnumWithValues to text.
 //
 // If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned
+// its integer value is returned.
 //
-// This implements the text Marshaler interface
+// This implements the TextMarshaler interface.
 func (v EnumWithValues) MarshalText() ([]byte, error) {
 	switch int32(v) {
 	case 123:
@@ -878,12 +878,12 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalText encodes RecordType to text
+// MarshalText encodes RecordType to text.
 //
 // If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned
+// its integer value is returned.
 //
-// This implements the text Marshaler interface
+// This implements the TextMarshaler interface.
 func (v RecordType) MarshalText() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -1035,12 +1035,12 @@ func (v *RecordTypeValues) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalText encodes RecordTypeValues to text
+// MarshalText encodes RecordTypeValues to text.
 //
 // If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned
+// its integer value is returned.
 //
-// This implements the text Marshaler interface
+// This implements the TextMarshaler interface.
 func (v RecordTypeValues) MarshalText() ([]byte, error) {
 	switch int32(v) {
 	case 0:
@@ -1323,12 +1323,12 @@ func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalText encodes LowerCaseEnum to text
+// MarshalText encodes LowerCaseEnum to text.
 //
 // If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned
+// its integer value is returned.
 //
-// This implements the text Marshaler interface
+// This implements the TextMarshaler interface.
 func (v LowerCaseEnum) MarshalText() ([]byte, error) {
 	switch int32(v) {
 	case 0:

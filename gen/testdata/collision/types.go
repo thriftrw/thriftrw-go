@@ -407,12 +407,12 @@ func (v *MyEnum) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalText encodes MyEnum to text
+// MarshalText encodes MyEnum to text.
 //
 // If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned
+// its integer value is returned.
 //
-// This implements the text Marshaler interface
+// This implements the TextMarshaler interface.
 func (v MyEnum) MarshalText() ([]byte, error) {
 	switch int32(v) {
 	case 123:
@@ -1445,12 +1445,12 @@ func (v *MyEnum2) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalText encodes MyEnum2 to text
+// MarshalText encodes MyEnum2 to text.
 //
 // If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned
+// its integer value is returned.
 //
-// This implements the text Marshaler interface
+// This implements the TextMarshaler interface.
 func (v MyEnum2) MarshalText() ([]byte, error) {
 	switch int32(v) {
 	case 12:

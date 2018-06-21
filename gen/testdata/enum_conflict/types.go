@@ -47,12 +47,12 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalText encodes RecordType to text
+// MarshalText encodes RecordType to text.
 //
 // If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned
+// its integer value is returned.
 //
-// This implements the text Marshaler interface
+// This implements the TextMarshaler interface.
 func (v RecordType) MarshalText() ([]byte, error) {
 	switch int32(v) {
 	case 0:
