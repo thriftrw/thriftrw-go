@@ -12,8 +12,6 @@ import:
   version: ^1
 - package: github.com/fatih/structtag
   version: ^0.1.0
-- package: gopkg.in/yaml.v2
-  version: ^2.2.1
 testImport:
 - package: github.com/golang/mock
   subpackages:

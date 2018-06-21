@@ -1,14 +1,10 @@
-hash: de0454e38eda960bd04ef6c65219131c0f7f1ec11bfeef4699e80fdd34b3be93
-updated: 2018-06-20T15:34:06.364272-07:00
+hash: 26c2c55ca402d6605deed8219389876b6207f46109135620b0f6ec7f84ca1a84
+updated: 2018-06-21T11:49:25.041962-07:00
 imports:
 - name: github.com/anmitsu/go-shlex
   version: 648efa622239a2f6ff949fed78ee37b48d499ba4
 - name: github.com/fatih/structtag
   version: da3d9ab5b78fdc25d3a7614853b085200bd10da9
-- name: github.com/golang/mock
-  version: 13f360950a79f5864a972c786a10a50e44b69541
-  subpackages:
-  - gomock
 - name: github.com/jessevdk/go-flags
   version: 6cf8f02b4ae8ba723ddc64dcfd403e530c06d927
 - name: github.com/kr/pretty
@@ -23,19 +19,10 @@ imports:
   version: 4e70a1b26a7875f00ca1916637a876b5ffaeec59
   subpackages:
   - go/ast/astutil
-- name: gopkg.in/yaml.v2
-  version: 5420a8b6744d3b0345ab293f6fcba19c978f1183
 testImports:
-- name: github.com/davecgh/go-spew
-  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+- name: github.com/golang/mock
+  version: ""
   subpackages:
-  - spew
-- name: github.com/pmezard/go-difflib
-  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
-  subpackages:
-  - difflib
+  - gomock
 - name: github.com/stretchr/testify
-  version: 12b6f73e6084dad08a7c6e575284b177ecafbc71
-  subpackages:
-  - assert
-  - require
+  version: ""

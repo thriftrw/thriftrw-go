@@ -47,20 +47,20 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	}
 }
 
-// MarshalYAML serializes RecordType to yaml
+// MarshalText encodes RecordType to text
 //
 // If the enum value is recognized, its name is returned. Otherwise,
 // its integer value is returned
 //
-// This implements the yaml Marshaler interface
-func (v RecordType) MarshalYAML() (interface{}, error) {
+// This implements the text Marshaler interface
+func (v RecordType) MarshalText() ([]byte, error) {
 	switch int32(v) {
 	case 0:
-		return (interface{})("Name"), nil
+		return []byte("Name"), nil
 	case 1:
-		return (interface{})("Email"), nil
+		return []byte("Email"), nil
 	}
-	return (interface{})(v), nil
+	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
 // Ptr returns a pointer to this enum value.
