@@ -362,6 +362,16 @@ func TestTextMarshaler(t *testing.T) {
 	}
 }
 
+func TestTextMarshalerUnknownValue(t *testing.T) {
+	v := te.EnumDefault(42)
+	b, err := v.MarshalText()
+	if assert.NoError(t, err, "unable to marshall unknown value") {
+		assert.Equal(t, `42`, string(b), "text output doesn't match")
+		err = v.UnmarshalText(b)
+		assert.Error(t, err, "unmarshaling unknown enum value should return error")
+	}
+}
+
 func TestEnumAccessors(t *testing.T) {
 	t.Run("Records", func(t *testing.T) {
 		t.Run("set", func(t *testing.T) {
