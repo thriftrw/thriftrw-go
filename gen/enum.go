@@ -107,6 +107,24 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			}
 		}
 
+		// MarshalText encodes <$enumName> to text.
+		//
+		// If the enum value is recognized, its name is returned. Otherwise,
+		// its integer value is returned.
+		//
+		// This implements the TextMarshaler interface.
+		func (<$v> <$enumName>) MarshalText() ([]byte, error) {
+			<if len .Spec.Items ->
+				switch int32(<$v>) {
+				<range .UniqueItems ->
+					case <.Value>:
+						return []byte("<.Name>"), nil
+				<end ->
+				}
+			<end ->
+			return []byte(<$strconv>.FormatInt(int64(<$v>), 10)), nil
+		}
+
 		// Ptr returns a pointer to this enum value.
 		func (<$v> <$enumName>) Ptr() *<$enumName> {
 			return &<$v>

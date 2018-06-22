@@ -335,6 +335,43 @@ func TestUnmarshalTextReturnsErrorOnInvalidValue(t *testing.T) {
 	assert.Error(t, err)
 }
 
+func TestTextMarshaler(t *testing.T) {
+	tests := []struct {
+		title    string
+		giveInt  te.EnumDefault
+		wantText string
+	}{
+		{`0 <-> Foo`, te.EnumDefaultFoo, "Foo"},
+		{`1 <-> Bar`, te.EnumDefaultBar, "Bar"},
+		{`2 <-> Baz`, te.EnumDefaultBaz, "Baz"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.title, func(t *testing.T) {
+			b, err := tt.giveInt.MarshalText()
+			if assert.NoError(t, err, "unable to marshal enum") {
+				assert.Equal(t, []byte(tt.wantText), b, "text output doesn't match")
+
+				var v te.EnumDefault
+				err = v.UnmarshalText(b)
+				if assert.NoError(t, err, "unable to unmarshall enum value") {
+					assert.Equal(t, tt.giveInt, v, "enum output doesn't match")
+				}
+			}
+		})
+	}
+}
+
+func TestTextMarshalerUnknownValue(t *testing.T) {
+	v := te.EnumDefault(42)
+	b, err := v.MarshalText()
+	if assert.NoError(t, err, "unable to marshall unknown value") {
+		assert.Equal(t, `42`, string(b), "text output doesn't match")
+		err = v.UnmarshalText(b)
+		assert.Error(t, err, "unmarshaling unknown enum value should return error")
+	}
+}
+
 func TestEnumAccessors(t *testing.T) {
 	t.Run("Records", func(t *testing.T) {
 		t.Run("set", func(t *testing.T) {

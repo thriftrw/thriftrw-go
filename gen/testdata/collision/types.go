@@ -407,6 +407,28 @@ func (v *MyEnum) UnmarshalText(value []byte) error {
 	}
 }
 
+// MarshalText encodes MyEnum to text.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements the TextMarshaler interface.
+func (v MyEnum) MarshalText() ([]byte, error) {
+	switch int32(v) {
+	case 123:
+		return []byte("X"), nil
+	case 456:
+		return []byte("Y"), nil
+	case 789:
+		return []byte("Z"), nil
+	case 790:
+		return []byte("FooBar"), nil
+	case 791:
+		return []byte("foo_bar"), nil
+	}
+	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
 // Ptr returns a pointer to this enum value.
 func (v MyEnum) Ptr() *MyEnum {
 	return &v
@@ -1421,6 +1443,24 @@ func (v *MyEnum2) UnmarshalText(value []byte) error {
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "MyEnum2")
 	}
+}
+
+// MarshalText encodes MyEnum2 to text.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements the TextMarshaler interface.
+func (v MyEnum2) MarshalText() ([]byte, error) {
+	switch int32(v) {
+	case 12:
+		return []byte("X"), nil
+	case 34:
+		return []byte("Y"), nil
+	case 56:
+		return []byte("Z"), nil
+	}
+	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
 // Ptr returns a pointer to this enum value.
