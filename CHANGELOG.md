@@ -8,11 +8,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - gen: Added `ThriftPackageImporter` to control import path
   resolution Thrift files.
+- Structs now include getter functions for all fields. This
+  improves Apache Thrift compatibility.
+- Enums now implement encoding.TextMarshaler.
 
 ### Changed
 - gen: `NewGenerator` is now usable from other packages.
-- Structs now include getter functions for all fields. This
-  improves Apache Thrift compatibility.
 
 ## [1.11.0] - 2018-03-27
 ### Added
