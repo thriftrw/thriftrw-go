@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.12.0] - 2018-06-25
 ### Added
 - gen: Added `ThriftPackageImporter` to control import path
   resolution Thrift files.
@@ -217,7 +217,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.12.0...HEAD
+[1.11.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.8.0...v1.9.0
