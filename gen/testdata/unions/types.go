@@ -430,11 +430,6 @@ func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
 	return true
 }
 
-// TODO
-func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
-}
-
 // GetBoolValue returns the value of BoolValue if it is set or its
 // zero value if it is unset.
 func (v *ArbitraryValue) GetBoolValue() (o bool) {
@@ -636,11 +631,6 @@ func (v *Document) Equals(rhs *Document) bool {
 	return true
 }
 
-// TODO
-func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
-}
-
 // GetPdf returns the value of Pdf if it is set or its
 // zero value if it is unset.
 func (v *Document) GetPdf() (o typedefs.PDF) {
@@ -735,9 +725,4 @@ func (v *EmptyUnion) String() string {
 func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
 
 	return true
-}
-
-// TODO
-func (v *EmptyUnion) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
 }

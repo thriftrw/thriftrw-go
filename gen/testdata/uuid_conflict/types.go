@@ -188,11 +188,6 @@ func (v *UUIDConflict) Equals(rhs *UUIDConflict) bool {
 	return true
 }
 
-// TODO
-func (v *UUIDConflict) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
-}
-
 // GetLocalUUID returns the value of LocalUUID if it is set or its
 // zero value if it is unset.
 func (v *UUIDConflict) GetLocalUUID() (o UUID) { return v.LocalUUID }

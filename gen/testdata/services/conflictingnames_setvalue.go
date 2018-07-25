@@ -122,11 +122,6 @@ func (v *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_A
 	return true
 }
 
-// TODO
-func (v *ConflictingNames_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
-}
-
 // GetRequest returns the value of Request if it is set or its
 // zero value if it is unset.
 func (v *ConflictingNames_SetValue_Args) GetRequest() (o *ConflictingNamesSetValueArgs) {
@@ -304,11 +299,6 @@ func (v *ConflictingNames_SetValue_Result) String() string {
 func (v *ConflictingNames_SetValue_Result) Equals(rhs *ConflictingNames_SetValue_Result) bool {
 
 	return true
-}
-
-// TODO
-func (v *ConflictingNames_SetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
 }
 
 // MethodName returns the name of the Thrift function as specified in

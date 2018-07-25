@@ -136,11 +136,6 @@ func (v *KeyValue_DeleteValue_Args) Equals(rhs *KeyValue_DeleteValue_Args) bool 
 	return true
 }
 
-// TODO
-func (v *KeyValue_DeleteValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
-}
-
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_DeleteValue_Args) GetKey() (o Key) {
@@ -423,11 +418,6 @@ func (v *KeyValue_DeleteValue_Result) Equals(rhs *KeyValue_DeleteValue_Result) b
 	}
 
 	return true
-}
-
-// TODO
-func (v *KeyValue_DeleteValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
 }
 
 // GetDoesNotExist returns the value of DoesNotExist if it is set or its

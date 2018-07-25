@@ -143,11 +143,6 @@ func (v *KeyValue_SetValue_Args) Equals(rhs *KeyValue_SetValue_Args) bool {
 	return true
 }
 
-// TODO
-func (v *KeyValue_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
-}
-
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_SetValue_Args) GetKey() (o Key) {
@@ -338,11 +333,6 @@ func (v *KeyValue_SetValue_Result) String() string {
 func (v *KeyValue_SetValue_Result) Equals(rhs *KeyValue_SetValue_Result) bool {
 
 	return true
-}
-
-// TODO
-func (v *KeyValue_SetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
 }
 
 // MethodName returns the name of the Thrift function as specified in

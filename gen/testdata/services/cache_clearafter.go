@@ -128,11 +128,6 @@ func (v *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
 	return true
 }
 
-// TODO
-func (v *Cache_ClearAfter_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
-}
-
 // GetDurationMS returns the value of DurationMS if it is set or its
 // zero value if it is unset.
 func (v *Cache_ClearAfter_Args) GetDurationMS() (o int64) {

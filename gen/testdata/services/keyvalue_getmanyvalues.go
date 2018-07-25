@@ -178,11 +178,6 @@ func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) b
 	return true
 }
 
-// TODO
-func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
-}
-
 // GetRange returns the value of Range if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_GetManyValues_Args) GetRange() (o []Key) {
@@ -518,11 +513,6 @@ func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Resul
 	}
 
 	return true
-}
-
-// TODO
-func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
-
 }
 
 // GetSuccess returns the value of Success if it is set or its
