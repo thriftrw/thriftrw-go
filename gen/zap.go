@@ -33,11 +33,21 @@ func zapObjectEncode(
 	fieldName string,
 	fieldValue string,
 ) (string, error) {
+	root := compile.RootTypeSpec(spec)
+
+	if _, ok := spec.(*compile.TypedefSpec); ok {
+		// For typedefs, cast to the root type and rely on that functionality.
+		rootName, err := typeReference(g, root)
+		if err != nil {
+			return "", err
+		}
+		fieldValue = fmt.Sprintf("(%v)(%v)", rootName, fieldValue)
+	}
+
 	commonCase := func(method string) (string, error) {
 		return fmt.Sprintf("%v.Add%v(%q, %v)", encoder, method, fieldName, fieldValue), nil
 	}
 
-	root := compile.RootTypeSpec(spec)
 	switch root.(type) {
 	// Primitives
 	case *compile.BoolSpec:
@@ -67,10 +77,8 @@ func zapObjectEncode(
 
 	// User-defined types
 	case *compile.EnumSpec:
-		return fmt.Sprintf("%v.zapObjectEncode(%v, %q)", fieldValue, encoder, fieldName), nil
+		return fmt.Sprintf("%v.AddObject(%q, %v)", encoder, fieldName, fieldValue), nil
 	case *compile.StructSpec:
-		return commonCase("Reflected")
-	case *compile.TypedefSpec:
 		return commonCase("Reflected")
 	default:
 		panic("Wat")
@@ -87,7 +95,5 @@ func zapObjectEncodePtr(
 	if isPrimitiveType(spec) {
 		fieldValue = "*" + fieldValue
 	}
-	// TODO: If spec is a typedef, cast to root type.
-	//  fieldValue = ($rootName)($fieldValue)
 	return zapObjectEncode(g, encoder, spec, fieldName, fieldValue)
 }

@@ -127,21 +127,18 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 
 		<$zapcore := import "go.uber.org/zap/zapcore">
 
-		// zapObjectEncode encodes <$enumName> into the given Zap
-		// ObjectEncoder.
-		//
-		// If the enum value is recognized, it is encoded as a string.
-		// Otherwise, it is encoded as an integer.
-		func (<$v> <$enumName>) zapObjectEncode(enc <$zapcore>.ObjectEncoder, name string) {
+		// TODO()
+		func (<$v> <$enumName>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
+			enc.AddInt32("value", int32(<$v>))
 			<if len .Spec.Items ->
 				switch int32(<$v>) {
 				<range .UniqueItems ->
 					case <.Value>:
-						enc.AddString(name, "<.Name>")
+						enc.AddString("name", "<.Name>")
 				<end ->
 				}
 			<end ->
-			enc.AddInt32(name, int32(<$v>))
+			return nil
 		}
 
 		// Ptr returns a pointer to this enum value.

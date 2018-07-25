@@ -468,11 +468,12 @@ func (f fieldGroupGenerator) Equals(g Generator) error {
 func (f fieldGroupGenerator) Zap(g Generator) error {
 	return g.DeclareFromTemplate(
 		`
+		<$zapcore := import "go.uber.org/zap/zapcore">
 		<$v := newVar "v">
 		// TODO(minho): Make enc a newVar.
 
 		// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-		func (<$v> *<.Name>) MarshalLogObject(enc zapcore.ObjectEncoder) {
+		func (<$v> *<.Name>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) {
 			<range .Fields>
 				<$fname := goName .>
 				<$fval := printf "%s.%s" $v $fname>
