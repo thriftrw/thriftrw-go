@@ -10,6 +10,7 @@ import (
 	"go.uber.org/thriftrw/gen/testdata/enums"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -117,6 +118,13 @@ func (v *ContactInfo) Equals(rhs *ContactInfo) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *ContactInfo) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddString("emailAddress", v.EmailAddress)
+
 }
 
 // GetEmailAddress returns the value of EmailAddress if it is set or its
@@ -669,6 +677,43 @@ func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *DefaultsStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.RequiredPrimitive != nil {
+		enc.AddInt32("requiredPrimitive", *v.RequiredPrimitive)
+	}
+
+	if v.OptionalPrimitive != nil {
+		enc.AddInt32("optionalPrimitive", *v.OptionalPrimitive)
+	}
+
+	if v.RequiredEnum != nil {
+		enc.AddObject("requiredEnum", *v.RequiredEnum)
+	}
+
+	if v.OptionalEnum != nil {
+		enc.AddObject("optionalEnum", *v.OptionalEnum)
+	}
+
+	if v.RequiredList != nil {
+		enc.AddReflected("requiredList", v.RequiredList)
+	}
+
+	if v.OptionalList != nil {
+		enc.AddReflected("optionalList", v.OptionalList)
+	}
+
+	if v.RequiredStruct != nil {
+		enc.AddReflected("requiredStruct", v.RequiredStruct)
+	}
+
+	if v.OptionalStruct != nil {
+		enc.AddReflected("optionalStruct", v.OptionalStruct)
+	}
+
+}
+
 // GetRequiredPrimitive returns the value of RequiredPrimitive if it is set or its
 // default value if it is unset.
 func (v *DefaultsStruct) GetRequiredPrimitive() (o int32) {
@@ -917,6 +962,15 @@ func (v *Edge) Equals(rhs *Edge) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Edge) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddReflected("startPoint", v.StartPoint)
+
+	enc.AddReflected("endPoint", v.EndPoint)
+
+}
+
 // GetStartPoint returns the value of StartPoint if it is set or its
 // zero value if it is unset.
 func (v *Edge) GetStartPoint() (o *Point) { return v.StartPoint }
@@ -999,6 +1053,11 @@ func (v *EmptyStruct) String() string {
 func (v *EmptyStruct) Equals(rhs *EmptyStruct) bool {
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *EmptyStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 type Frame struct {
@@ -1142,6 +1201,15 @@ func (v *Frame) Equals(rhs *Frame) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Frame) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddReflected("topLeft", v.TopLeft)
+
+	enc.AddReflected("size", v.Size)
+
 }
 
 // GetTopLeft returns the value of TopLeft if it is set or its
@@ -1400,6 +1468,27 @@ func (v *GoTags) Equals(rhs *GoTags) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *GoTags) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddString("Foo", v.Foo)
+
+	if v.Bar != nil {
+		enc.AddString("Bar", *v.Bar)
+	}
+
+	enc.AddString("FooBar", v.FooBar)
+
+	enc.AddString("FooBarWithSpace", v.FooBarWithSpace)
+
+	if v.FooBarWithOmitEmpty != nil {
+		enc.AddString("FooBarWithOmitEmpty", *v.FooBarWithOmitEmpty)
+	}
+
+	enc.AddString("FooBarWithRequired", v.FooBarWithRequired)
+
+}
+
 // GetFoo returns the value of Foo if it is set or its
 // zero value if it is unset.
 func (v *GoTags) GetFoo() (o string) { return v.Foo }
@@ -1611,6 +1700,13 @@ func (v *Graph) Equals(rhs *Graph) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Graph) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddReflected("edges", v.Edges)
+
+}
+
 // GetEdges returns the value of Edges if it is set or its
 // zero value if it is unset.
 func (v *Graph) GetEdges() (o []*Edge) { return v.Edges }
@@ -1782,6 +1878,17 @@ func (v *Node) Equals(rhs *Node) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Node) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddInt32("value", v.Value)
+
+	if v.Tail != nil {
+		enc.AddReflected("tail", (*Node)(v.Tail))
+	}
+
+}
+
 // GetValue returns the value of Value if it is set or its
 // zero value if it is unset.
 func (v *Node) GetValue() (o int32) { return v.Value }
@@ -1928,6 +2035,15 @@ func (v *Omit) Equals(rhs *Omit) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Omit) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddString("serialized", v.Serialized)
+
+	enc.AddString("hidden", v.Hidden)
+
+}
+
 // GetSerialized returns the value of Serialized if it is set or its
 // zero value if it is unset.
 func (v *Omit) GetSerialized() (o string) { return v.Serialized }
@@ -2067,6 +2183,15 @@ func (v *Point) Equals(rhs *Point) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Point) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddFloat64("x", v.X)
+
+	enc.AddFloat64("y", v.Y)
+
 }
 
 // GetX returns the value of X if it is set or its
@@ -2414,6 +2539,43 @@ func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *PrimitiveOptionalStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.BoolField != nil {
+		enc.AddBool("boolField", *v.BoolField)
+	}
+
+	if v.ByteField != nil {
+		enc.AddInt8("byteField", *v.ByteField)
+	}
+
+	if v.Int16Field != nil {
+		enc.AddInt16("int16Field", *v.Int16Field)
+	}
+
+	if v.Int32Field != nil {
+		enc.AddInt32("int32Field", *v.Int32Field)
+	}
+
+	if v.Int64Field != nil {
+		enc.AddInt64("int64Field", *v.Int64Field)
+	}
+
+	if v.DoubleField != nil {
+		enc.AddFloat64("doubleField", *v.DoubleField)
+	}
+
+	if v.StringField != nil {
+		enc.AddString("stringField", *v.StringField)
+	}
+
+	if v.BinaryField != nil {
+		enc.AddBinary("binaryField", v.BinaryField)
+	}
+
 }
 
 // GetBoolField returns the value of BoolField if it is set or its
@@ -2789,6 +2951,27 @@ func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *PrimitiveRequiredStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddBool("boolField", v.BoolField)
+
+	enc.AddInt8("byteField", v.ByteField)
+
+	enc.AddInt16("int16Field", v.Int16Field)
+
+	enc.AddInt32("int32Field", v.Int32Field)
+
+	enc.AddInt64("int64Field", v.Int64Field)
+
+	enc.AddFloat64("doubleField", v.DoubleField)
+
+	enc.AddString("stringField", v.StringField)
+
+	enc.AddBinary("binaryField", v.BinaryField)
+
+}
+
 // GetBoolField returns the value of BoolField if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveRequiredStruct) GetBoolField() (o bool) { return v.BoolField }
@@ -2953,6 +3136,15 @@ func (v *Rename) Equals(rhs *Rename) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Rename) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddString("Default", v.Default)
+
+	enc.AddString("camelCase", v.CamelCase)
+
+}
+
 // GetDefault returns the value of Default if it is set or its
 // zero value if it is unset.
 func (v *Rename) GetDefault() (o string) { return v.Default }
@@ -3094,6 +3286,15 @@ func (v *Size) Equals(rhs *Size) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Size) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddFloat64("width", v.Width)
+
+	enc.AddFloat64("height", v.Height)
+
 }
 
 // GetWidth returns the value of Width if it is set or its
@@ -3238,6 +3439,17 @@ func (v *User) Equals(rhs *User) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *User) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddString("name", v.Name)
+
+	if v.Contact != nil {
+		enc.AddReflected("contact", v.Contact)
+	}
+
 }
 
 // GetName returns the value of Name if it is set or its

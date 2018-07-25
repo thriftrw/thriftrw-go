@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"go.uber.org/thriftrw/gen/testdata/enums"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"math"
 	"strconv"
 	"strings"
@@ -61,6 +62,18 @@ func (v RecordType) MarshalText() ([]byte, error) {
 		return []byte("Email"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// TODO()
+func (v RecordType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 0:
+		enc.AddString("name", "Name")
+	case 1:
+		enc.AddString("name", "Email")
+	}
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -349,6 +362,19 @@ func (v *Records) Equals(rhs *Records) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.RecordType != nil {
+		enc.AddObject("recordType", *v.RecordType)
+	}
+
+	if v.OtherRecordType != nil {
+		enc.AddObject("otherRecordType", *v.OtherRecordType)
+	}
+
 }
 
 // GetRecordType returns the value of RecordType if it is set or its

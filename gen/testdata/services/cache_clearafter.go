@@ -6,6 +6,7 @@ package services
 import (
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -126,6 +127,15 @@ func (v *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Cache_ClearAfter_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.DurationMS != nil {
+		enc.AddInt64("durationMS", *v.DurationMS)
+	}
+
 }
 
 // GetDurationMS returns the value of DurationMS if it is set or its

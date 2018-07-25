@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"go.uber.org/thriftrw/gen/testdata/typedefs"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -430,6 +431,31 @@ func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.BoolValue != nil {
+		enc.AddBool("boolValue", *v.BoolValue)
+	}
+
+	if v.Int64Value != nil {
+		enc.AddInt64("int64Value", *v.Int64Value)
+	}
+
+	if v.StringValue != nil {
+		enc.AddString("stringValue", *v.StringValue)
+	}
+
+	if v.ListValue != nil {
+		enc.AddReflected("listValue", v.ListValue)
+	}
+
+	if v.MapValue != nil {
+		enc.AddReflected("mapValue", v.MapValue)
+	}
+
+}
+
 // GetBoolValue returns the value of BoolValue if it is set or its
 // zero value if it is unset.
 func (v *ArbitraryValue) GetBoolValue() (o bool) {
@@ -631,6 +657,19 @@ func (v *Document) Equals(rhs *Document) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.Pdf != nil {
+		enc.AddBinary("pdf", ([]byte)(v.Pdf))
+	}
+
+	if v.PlainText != nil {
+		enc.AddString("plainText", *v.PlainText)
+	}
+
+}
+
 // GetPdf returns the value of Pdf if it is set or its
 // zero value if it is unset.
 func (v *Document) GetPdf() (o typedefs.PDF) {
@@ -725,4 +764,9 @@ func (v *EmptyUnion) String() string {
 func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *EmptyUnion) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }

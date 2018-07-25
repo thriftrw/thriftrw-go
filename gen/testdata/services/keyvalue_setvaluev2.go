@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go.uber.org/thriftrw/gen/testdata/unions"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -150,6 +151,15 @@ func (v *KeyValue_SetValueV2_Args) Equals(rhs *KeyValue_SetValueV2_Args) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *KeyValue_SetValueV2_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddString("key", (string)(v.Key))
+
+	enc.AddReflected("value", v.Value)
+
 }
 
 // GetKey returns the value of Key if it is set or its
@@ -330,6 +340,11 @@ func (v *KeyValue_SetValueV2_Result) String() string {
 func (v *KeyValue_SetValueV2_Result) Equals(rhs *KeyValue_SetValueV2_Result) bool {
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *KeyValue_SetValueV2_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // MethodName returns the name of the Thrift function as specified in

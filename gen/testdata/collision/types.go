@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"math"
 	"strconv"
 	"strings"
@@ -154,6 +155,19 @@ func (v *AccessorConflict) Equals(rhs *AccessorConflict) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.Name != nil {
+		enc.AddString("name", *v.Name)
+	}
+
+	if v.GetName2 != nil {
+		enc.AddString("get_name", *v.GetName2)
+	}
+
 }
 
 // GetName returns the value of Name if it is set or its
@@ -308,6 +322,19 @@ func (v *AccessorNoConflict) Equals(rhs *AccessorNoConflict) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *AccessorNoConflict) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.Getname != nil {
+		enc.AddString("getname", *v.Getname)
+	}
+
+	if v.GetName != nil {
+		enc.AddString("get_name", *v.GetName)
+	}
+
+}
+
 // GetGetname returns the value of Getname if it is set or its
 // zero value if it is unset.
 func (v *AccessorNoConflict) GetGetname() (o string) {
@@ -427,6 +454,24 @@ func (v MyEnum) MarshalText() ([]byte, error) {
 		return []byte("foo_bar"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// TODO()
+func (v MyEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 123:
+		enc.AddString("name", "X")
+	case 456:
+		enc.AddString("name", "Y")
+	case 789:
+		enc.AddString("name", "Z")
+	case 790:
+		enc.AddString("name", "FooBar")
+	case 791:
+		enc.AddString("name", "foo_bar")
+	}
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -893,6 +938,23 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.A != nil {
+		enc.AddReflected("ListOrSetOrMap", v.A)
+	}
+
+	if v.B != nil {
+		enc.AddReflected("List_Or_SetOrMap", v.B)
+	}
+
+	if v.C != nil {
+		enc.AddReflected("ListOrSet_Or_Map", v.C)
+	}
+
+}
+
 // GetA returns the value of A if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetA() (o []string) {
@@ -1053,6 +1115,15 @@ func (v *StructCollision) Equals(rhs *StructCollision) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *StructCollision) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddBool("collisionField", v.CollisionField)
+
+	enc.AddString("collision_field", v.CollisionField2)
+
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its
@@ -1220,6 +1291,19 @@ func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *UnionCollision) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.CollisionField != nil {
+		enc.AddBool("collisionField", *v.CollisionField)
+	}
+
+	if v.CollisionField2 != nil {
+		enc.AddString("collision_field", *v.CollisionField2)
+	}
+
+}
+
 // GetCollisionField returns the value of CollisionField if it is set or its
 // zero value if it is unset.
 func (v *UnionCollision) GetCollisionField() (o bool) {
@@ -1363,6 +1447,15 @@ func (v *WithDefault) Equals(rhs *WithDefault) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *WithDefault) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.Pouet != nil {
+		enc.AddReflected("pouet", v.Pouet)
+	}
+
+}
+
 // GetPouet returns the value of Pouet if it is set or its
 // default value if it is unset.
 func (v *WithDefault) GetPouet() (o *StructCollision2) {
@@ -1461,6 +1554,20 @@ func (v MyEnum2) MarshalText() ([]byte, error) {
 		return []byte("Z"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// TODO()
+func (v MyEnum2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 12:
+		enc.AddString("name", "X")
+	case 34:
+		enc.AddString("name", "Y")
+	case 56:
+		enc.AddString("name", "Z")
+	}
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -1701,6 +1808,15 @@ func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *StructCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddBool("collisionField", v.CollisionField)
+
+	enc.AddString("collision_field", v.CollisionField2)
+
+}
+
 // GetCollisionField returns the value of CollisionField if it is set or its
 // zero value if it is unset.
 func (v *StructCollision2) GetCollisionField() (o bool) { return v.CollisionField }
@@ -1854,6 +1970,19 @@ func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *UnionCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.CollisionField != nil {
+		enc.AddBool("collisionField", *v.CollisionField)
+	}
+
+	if v.CollisionField2 != nil {
+		enc.AddString("collision_field", *v.CollisionField2)
+	}
+
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its

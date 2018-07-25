@@ -12,6 +12,7 @@ import (
 	"go.uber.org/thriftrw/gen/testdata/typedefs"
 	"go.uber.org/thriftrw/gen/testdata/uuid_conflict"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -1652,6 +1653,47 @@ func (v *ContainersOfContainers) Equals(rhs *ContainersOfContainers) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *ContainersOfContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.ListOfLists != nil {
+		enc.AddReflected("listOfLists", v.ListOfLists)
+	}
+
+	if v.ListOfSets != nil {
+		enc.AddReflected("listOfSets", v.ListOfSets)
+	}
+
+	if v.ListOfMaps != nil {
+		enc.AddReflected("listOfMaps", v.ListOfMaps)
+	}
+
+	if v.SetOfSets != nil {
+		enc.AddReflected("setOfSets", v.SetOfSets)
+	}
+
+	if v.SetOfLists != nil {
+		enc.AddReflected("setOfLists", v.SetOfLists)
+	}
+
+	if v.SetOfMaps != nil {
+		enc.AddReflected("setOfMaps", v.SetOfMaps)
+	}
+
+	if v.MapOfMapToInt != nil {
+		enc.AddReflected("mapOfMapToInt", v.MapOfMapToInt)
+	}
+
+	if v.MapOfListToSet != nil {
+		enc.AddReflected("mapOfListToSet", v.MapOfListToSet)
+	}
+
+	if v.MapOfSetToListOfDouble != nil {
+		enc.AddReflected("mapOfSetToListOfDouble", v.MapOfSetToListOfDouble)
+	}
+
+}
+
 // GetListOfLists returns the value of ListOfLists if it is set or its
 // zero value if it is unset.
 func (v *ContainersOfContainers) GetListOfLists() (o [][]int32) {
@@ -2119,6 +2161,23 @@ func (v *EnumContainers) Equals(rhs *EnumContainers) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *EnumContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.ListOfEnums != nil {
+		enc.AddReflected("listOfEnums", v.ListOfEnums)
+	}
+
+	if v.SetOfEnums != nil {
+		enc.AddReflected("setOfEnums", v.SetOfEnums)
+	}
+
+	if v.MapOfEnums != nil {
+		enc.AddReflected("mapOfEnums", v.MapOfEnums)
+	}
+
+}
+
 // GetListOfEnums returns the value of ListOfEnums if it is set or its
 // zero value if it is unset.
 func (v *EnumContainers) GetListOfEnums() (o []enums.EnumDefault) {
@@ -2416,6 +2475,15 @@ func (v *ListOfConflictingEnums) Equals(rhs *ListOfConflictingEnums) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *ListOfConflictingEnums) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddReflected("records", v.Records)
+
+	enc.AddReflected("otherRecords", v.OtherRecords)
+
+}
+
 // GetRecords returns the value of Records if it is set or its
 // zero value if it is unset.
 func (v *ListOfConflictingEnums) GetRecords() (o []enum_conflict.RecordType) { return v.Records }
@@ -2692,6 +2760,15 @@ func (v *ListOfConflictingUUIDs) Equals(rhs *ListOfConflictingUUIDs) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *ListOfConflictingUUIDs) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddReflected("uuids", v.Uuids)
+
+	enc.AddReflected("otherUUIDs", v.OtherUUIDs)
+
 }
 
 // GetUuids returns the value of Uuids if it is set or its
@@ -3027,6 +3104,19 @@ func (v *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *MapOfBinaryAndString) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.BinaryToString != nil {
+		enc.AddReflected("binaryToString", v.BinaryToString)
+	}
+
+	if v.StringToBinary != nil {
+		enc.AddReflected("stringToBinary", v.StringToBinary)
+	}
+
 }
 
 // GetBinaryToString returns the value of BinaryToString if it is set or its
@@ -3616,6 +3706,35 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.ListOfBinary != nil {
+		enc.AddReflected("listOfBinary", v.ListOfBinary)
+	}
+
+	if v.ListOfInts != nil {
+		enc.AddReflected("listOfInts", v.ListOfInts)
+	}
+
+	if v.SetOfStrings != nil {
+		enc.AddReflected("setOfStrings", v.SetOfStrings)
+	}
+
+	if v.SetOfBytes != nil {
+		enc.AddReflected("setOfBytes", v.SetOfBytes)
+	}
+
+	if v.MapOfIntToString != nil {
+		enc.AddReflected("mapOfIntToString", v.MapOfIntToString)
+	}
+
+	if v.MapOfStringToBool != nil {
+		enc.AddReflected("mapOfStringToBool", v.MapOfStringToBool)
+	}
+
+}
+
 // GetListOfBinary returns the value of ListOfBinary if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetListOfBinary() (o [][]byte) {
@@ -3919,6 +4038,17 @@ func (v *PrimitiveContainersRequired) Equals(rhs *PrimitiveContainersRequired) b
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *PrimitiveContainersRequired) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	enc.AddReflected("listOfStrings", v.ListOfStrings)
+
+	enc.AddReflected("setOfInts", v.SetOfInts)
+
+	enc.AddReflected("mapOfIntsToDoubles", v.MapOfIntsToDoubles)
+
 }
 
 // GetListOfStrings returns the value of ListOfStrings if it is set or its

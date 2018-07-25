@@ -9,6 +9,7 @@ import (
 	"go.uber.org/thriftrw/gen/testdata/exceptions"
 	"go.uber.org/thriftrw/gen/testdata/unions"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -176,6 +177,15 @@ func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) b
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.Range != nil {
+		enc.AddReflected("range", v.Range)
+	}
+
 }
 
 // GetRange returns the value of Range if it is set or its
@@ -513,6 +523,19 @@ func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Resul
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+	if v.Success != nil {
+		enc.AddReflected("success", v.Success)
+	}
+
+	if v.DoesNotExist != nil {
+		enc.AddReflected("doesNotExist", v.DoesNotExist)
+	}
+
 }
 
 // GetSuccess returns the value of Success if it is set or its
