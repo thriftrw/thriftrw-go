@@ -1652,6 +1652,11 @@ func (v *ContainersOfContainers) Equals(rhs *ContainersOfContainers) bool {
 	return true
 }
 
+// TODO
+func (v *ContainersOfContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetListOfLists returns the value of ListOfLists if it is set or its
 // zero value if it is unset.
 func (v *ContainersOfContainers) GetListOfLists() (o [][]int32) {
@@ -2119,6 +2124,11 @@ func (v *EnumContainers) Equals(rhs *EnumContainers) bool {
 	return true
 }
 
+// TODO
+func (v *EnumContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetListOfEnums returns the value of ListOfEnums if it is set or its
 // zero value if it is unset.
 func (v *EnumContainers) GetListOfEnums() (o []enums.EnumDefault) {
@@ -2416,6 +2426,11 @@ func (v *ListOfConflictingEnums) Equals(rhs *ListOfConflictingEnums) bool {
 	return true
 }
 
+// TODO
+func (v *ListOfConflictingEnums) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetRecords returns the value of Records if it is set or its
 // zero value if it is unset.
 func (v *ListOfConflictingEnums) GetRecords() (o []enum_conflict.RecordType) { return v.Records }
@@ -2692,6 +2707,11 @@ func (v *ListOfConflictingUUIDs) Equals(rhs *ListOfConflictingUUIDs) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *ListOfConflictingUUIDs) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetUuids returns the value of Uuids if it is set or its
@@ -3027,6 +3047,11 @@ func (v *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *MapOfBinaryAndString) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetBinaryToString returns the value of BinaryToString if it is set or its
@@ -3616,6 +3641,11 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	return true
 }
 
+// TODO
+func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetListOfBinary returns the value of ListOfBinary if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetListOfBinary() (o [][]byte) {
@@ -3919,6 +3949,11 @@ func (v *PrimitiveContainersRequired) Equals(rhs *PrimitiveContainersRequired) b
 	}
 
 	return true
+}
+
+// TODO
+func (v *PrimitiveContainersRequired) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetListOfStrings returns the value of ListOfStrings if it is set or its

@@ -351,6 +351,11 @@ func (v *Records) Equals(rhs *Records) bool {
 	return true
 }
 
+// TODO
+func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetRecordType returns the value of RecordType if it is set or its
 // default value if it is unset.
 func (v *Records) GetRecordType() (o RecordType) {

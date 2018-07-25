@@ -121,6 +121,11 @@ func (v *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
 	return true
 }
 
+// TODO
+func (v *KeyValue_GetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_GetValue_Args) GetKey() (o Key) {
@@ -388,6 +393,11 @@ func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *KeyValue_GetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetSuccess returns the value of Success if it is set or its

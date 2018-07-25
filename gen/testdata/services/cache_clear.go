@@ -88,6 +88,11 @@ func (v *Cache_Clear_Args) Equals(rhs *Cache_Clear_Args) bool {
 	return true
 }
 
+// TODO
+func (v *Cache_Clear_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the arguments.
 //

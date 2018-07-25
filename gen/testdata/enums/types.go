@@ -1275,6 +1275,11 @@ func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 	return true
 }
 
+// TODO
+func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetE returns the value of E if it is set or its
 // zero value if it is unset.
 func (v *StructWithOptionalEnum) GetE() (o EnumDefault) {

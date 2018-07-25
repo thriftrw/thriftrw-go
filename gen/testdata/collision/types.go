@@ -156,6 +156,11 @@ func (v *AccessorConflict) Equals(rhs *AccessorConflict) bool {
 	return true
 }
 
+// TODO
+func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
 func (v *AccessorConflict) GetName() (o string) {
@@ -306,6 +311,11 @@ func (v *AccessorNoConflict) Equals(rhs *AccessorNoConflict) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *AccessorNoConflict) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetGetname returns the value of Getname if it is set or its
@@ -893,6 +903,11 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	return true
 }
 
+// TODO
+func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetA returns the value of A if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetA() (o []string) {
@@ -1053,6 +1068,11 @@ func (v *StructCollision) Equals(rhs *StructCollision) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *StructCollision) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its
@@ -1220,6 +1240,11 @@ func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
 	return true
 }
 
+// TODO
+func (v *UnionCollision) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetCollisionField returns the value of CollisionField if it is set or its
 // zero value if it is unset.
 func (v *UnionCollision) GetCollisionField() (o bool) {
@@ -1361,6 +1386,11 @@ func (v *WithDefault) Equals(rhs *WithDefault) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *WithDefault) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetPouet returns the value of Pouet if it is set or its
@@ -1701,6 +1731,11 @@ func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
 	return true
 }
 
+// TODO
+func (v *StructCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetCollisionField returns the value of CollisionField if it is set or its
 // zero value if it is unset.
 func (v *StructCollision2) GetCollisionField() (o bool) { return v.CollisionField }
@@ -1854,6 +1889,11 @@ func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *UnionCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its

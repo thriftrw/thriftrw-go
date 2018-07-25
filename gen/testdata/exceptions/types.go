@@ -154,6 +154,11 @@ func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
 	return true
 }
 
+// TODO
+func (v *DoesNotExistException) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
 func (v *DoesNotExistException) GetKey() (o string) { return v.Key }
@@ -246,6 +251,11 @@ func (v *EmptyException) String() string {
 func (v *EmptyException) Equals(rhs *EmptyException) bool {
 
 	return true
+}
+
+// TODO
+func (v *EmptyException) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 func (v *EmptyException) Error() string {

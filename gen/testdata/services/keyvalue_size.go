@@ -89,6 +89,11 @@ func (v *KeyValue_Size_Args) Equals(rhs *KeyValue_Size_Args) bool {
 	return true
 }
 
+// TODO
+func (v *KeyValue_Size_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the arguments.
 //
@@ -301,6 +306,11 @@ func (v *KeyValue_Size_Result) Equals(rhs *KeyValue_Size_Result) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *KeyValue_Size_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetSuccess returns the value of Success if it is set or its

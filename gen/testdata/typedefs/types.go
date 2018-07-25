@@ -246,6 +246,11 @@ func (v *DefaultPrimitiveTypedef) Equals(rhs *DefaultPrimitiveTypedef) bool {
 	return true
 }
 
+// TODO
+func (v *DefaultPrimitiveTypedef) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetState returns the value of State if it is set or its
 // default value if it is unset.
 func (v *DefaultPrimitiveTypedef) GetState() (o State) {
@@ -573,6 +578,11 @@ func (v *Event) Equals(rhs *Event) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *Event) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetUUID returns the value of UUID if it is set or its
@@ -1251,6 +1261,11 @@ func (v *Transition) Equals(rhs *Transition) bool {
 	return true
 }
 
+// TODO
+func (v *Transition) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetFromState returns the value of FromState if it is set or its
 // zero value if it is unset.
 func (v *Transition) GetFromState() (o State) { return v.FromState }
@@ -1428,6 +1443,11 @@ func (v *I128) Equals(rhs *I128) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *I128) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetHigh returns the value of High if it is set or its

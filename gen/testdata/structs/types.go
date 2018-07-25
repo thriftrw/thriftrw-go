@@ -119,6 +119,11 @@ func (v *ContactInfo) Equals(rhs *ContactInfo) bool {
 	return true
 }
 
+// TODO
+func (v *ContactInfo) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetEmailAddress returns the value of EmailAddress if it is set or its
 // zero value if it is unset.
 func (v *ContactInfo) GetEmailAddress() (o string) { return v.EmailAddress }
@@ -669,6 +674,11 @@ func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 	return true
 }
 
+// TODO
+func (v *DefaultsStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetRequiredPrimitive returns the value of RequiredPrimitive if it is set or its
 // default value if it is unset.
 func (v *DefaultsStruct) GetRequiredPrimitive() (o int32) {
@@ -917,6 +927,11 @@ func (v *Edge) Equals(rhs *Edge) bool {
 	return true
 }
 
+// TODO
+func (v *Edge) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetStartPoint returns the value of StartPoint if it is set or its
 // zero value if it is unset.
 func (v *Edge) GetStartPoint() (o *Point) { return v.StartPoint }
@@ -999,6 +1014,11 @@ func (v *EmptyStruct) String() string {
 func (v *EmptyStruct) Equals(rhs *EmptyStruct) bool {
 
 	return true
+}
+
+// TODO
+func (v *EmptyStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 type Frame struct {
@@ -1142,6 +1162,11 @@ func (v *Frame) Equals(rhs *Frame) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *Frame) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetTopLeft returns the value of TopLeft if it is set or its
@@ -1400,6 +1425,11 @@ func (v *GoTags) Equals(rhs *GoTags) bool {
 	return true
 }
 
+// TODO
+func (v *GoTags) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetFoo returns the value of Foo if it is set or its
 // zero value if it is unset.
 func (v *GoTags) GetFoo() (o string) { return v.Foo }
@@ -1611,6 +1641,11 @@ func (v *Graph) Equals(rhs *Graph) bool {
 	return true
 }
 
+// TODO
+func (v *Graph) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetEdges returns the value of Edges if it is set or its
 // zero value if it is unset.
 func (v *Graph) GetEdges() (o []*Edge) { return v.Edges }
@@ -1782,6 +1817,11 @@ func (v *Node) Equals(rhs *Node) bool {
 	return true
 }
 
+// TODO
+func (v *Node) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetValue returns the value of Value if it is set or its
 // zero value if it is unset.
 func (v *Node) GetValue() (o int32) { return v.Value }
@@ -1928,6 +1968,11 @@ func (v *Omit) Equals(rhs *Omit) bool {
 	return true
 }
 
+// TODO
+func (v *Omit) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetSerialized returns the value of Serialized if it is set or its
 // zero value if it is unset.
 func (v *Omit) GetSerialized() (o string) { return v.Serialized }
@@ -2067,6 +2112,11 @@ func (v *Point) Equals(rhs *Point) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *Point) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetX returns the value of X if it is set or its
@@ -2414,6 +2464,11 @@ func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *PrimitiveOptionalStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetBoolField returns the value of BoolField if it is set or its
@@ -2789,6 +2844,11 @@ func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
 	return true
 }
 
+// TODO
+func (v *PrimitiveRequiredStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetBoolField returns the value of BoolField if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveRequiredStruct) GetBoolField() (o bool) { return v.BoolField }
@@ -2953,6 +3013,11 @@ func (v *Rename) Equals(rhs *Rename) bool {
 	return true
 }
 
+// TODO
+func (v *Rename) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetDefault returns the value of Default if it is set or its
 // zero value if it is unset.
 func (v *Rename) GetDefault() (o string) { return v.Default }
@@ -3094,6 +3159,11 @@ func (v *Size) Equals(rhs *Size) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *Size) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetWidth returns the value of Width if it is set or its
@@ -3238,6 +3308,11 @@ func (v *User) Equals(rhs *User) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *User) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetName returns the value of Name if it is set or its

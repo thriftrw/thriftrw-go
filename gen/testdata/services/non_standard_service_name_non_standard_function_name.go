@@ -88,6 +88,11 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) Equals(rhs *NonSta
 	return true
 }
 
+// TODO
+func (v *NonStandardServiceName_NonStandardFunctionName_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the arguments.
 //
@@ -249,6 +254,11 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) String() string 
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) Equals(rhs *NonStandardServiceName_NonStandardFunctionName_Result) bool {
 
 	return true
+}
+
+// TODO
+func (v *NonStandardServiceName_NonStandardFunctionName_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // MethodName returns the name of the Thrift function as specified in

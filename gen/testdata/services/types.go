@@ -145,6 +145,11 @@ func (v *ConflictingNamesSetValueArgs) Equals(rhs *ConflictingNamesSetValueArgs)
 	return true
 }
 
+// TODO
+func (v *ConflictingNamesSetValueArgs) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
+}
+
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
 func (v *ConflictingNamesSetValueArgs) GetKey() (o string) { return v.Key }
@@ -267,6 +272,11 @@ func (v *InternalError) Equals(rhs *InternalError) bool {
 	}
 
 	return true
+}
+
+// TODO
+func (v *InternalError) MarshalLogObject(enc zapcore.ObjectEncoder) {
+
 }
 
 // GetMessage returns the value of Message if it is set or its
