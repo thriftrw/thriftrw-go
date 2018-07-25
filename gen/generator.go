@@ -215,6 +215,9 @@ func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOpt
 		"typeCode":         curryGenerator(TypeCode, g),
 		"equals":           curryGenerator(g.e.Equals, g),
 		"equalsPtr":        curryGenerator(g.e.EqualsPtr, g),
+		"zapEncoder":       curryGenerator(zapEncoder, g),
+		"zapMarshaler":     curryGenerator(zapMarshaler, g),
+		"zapMarshalerPtr":  curryGenerator(zapMarshalerPtr, g),
 	}
 
 	tmpl := template.New("thriftrw").Delims("<", ">").Funcs(templateFuncs)
