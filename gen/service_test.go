@@ -27,9 +27,9 @@ import (
 	"testing"
 
 	"go.uber.org/thriftrw/envelope"
-	tx "go.uber.org/thriftrw/gen/testdata/exceptions"
-	tv "go.uber.org/thriftrw/gen/testdata/services"
-	tu "go.uber.org/thriftrw/gen/testdata/unions"
+	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	tv "go.uber.org/thriftrw/gen/internal/tests/services"
+	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
 	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"

@@ -23,8 +23,8 @@ package gen
 import (
 	"testing"
 
-	ts "go.uber.org/thriftrw/gen/testdata/structs"
-	td "go.uber.org/thriftrw/gen/testdata/typedefs"
+	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
+	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"

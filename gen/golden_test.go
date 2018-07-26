@@ -38,12 +38,12 @@ import (
 var generatedByRegex = regexp.MustCompile(`^// Code generated .* DO NOT EDIT\.$`)
 
 func TestCodeIsUpToDate(t *testing.T) {
-	// This test just verifies that the generated code in testdata/ is up to
-	// date. If this test failed, run 'make' in the testdata/ directory and
+	// This test just verifies that the generated code in internal/tests/ is up to
+	// date. If this test failed, run 'make' in the internal/tests/ directory and
 	// commit the changes.
 
-	thriftRoot, err := filepath.Abs("testdata/thrift")
-	require.NoError(t, err, "could not resolve absolute path to testdata/thrift")
+	thriftRoot, err := filepath.Abs("internal/tests/thrift")
+	require.NoError(t, err, "could not resolve absolute path to internal/tests/thrift")
 
 	thriftFiles, err := filepath.Glob(thriftRoot + "/*.thrift")
 	require.NoError(t, err)
@@ -54,7 +54,7 @@ func TestCodeIsUpToDate(t *testing.T) {
 
 	for _, thriftFile := range thriftFiles {
 		pkgRelPath := strings.TrimSuffix(filepath.Base(thriftFile), ".thrift")
-		currentPackageDir := filepath.Join("testdata", pkgRelPath)
+		currentPackageDir := filepath.Join("internal/tests", pkgRelPath)
 		newPackageDir := filepath.Join(outputDir, pkgRelPath)
 
 		currentHash, err := dirhash(currentPackageDir)
@@ -65,7 +65,7 @@ func TestCodeIsUpToDate(t *testing.T) {
 
 		err = Generate(module, &Options{
 			OutputDir:     outputDir,
-			PackagePrefix: "go.uber.org/thriftrw/gen/testdata",
+			PackagePrefix: "go.uber.org/thriftrw/gen/internal/tests",
 			ThriftRoot:    thriftRoot,
 			NoRecurse:     true,
 		})
@@ -108,7 +108,7 @@ func TestCodeIsUpToDate(t *testing.T) {
 			// TODO(abg): Diff the two directories?
 			t.Fatalf(
 				"Generated code for %q is out of date. "+
-					"Please run 'make' in gen/testdata.", thriftFile)
+					"Please run 'make' in gen/internal/tests.", thriftFile)
 		}
 	}
 }
