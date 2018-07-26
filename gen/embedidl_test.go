@@ -29,13 +29,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	te "go.uber.org/thriftrw/gen/testdata/enums"
-	ts "go.uber.org/thriftrw/gen/testdata/structs"
+	te "go.uber.org/thriftrw/gen/internal/tests/enums"
+	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	"go.uber.org/thriftrw/thriftreflect"
 )
 
 func loadIDL(filename string) (string, string, error) {
-	f, err := os.Open("./testdata/thrift/" + filename)
+	f, err := os.Open("./internal/tests/thrift/" + filename)
 	if err != nil {
 		return "", "", err
 	}
@@ -63,7 +63,7 @@ func TestIDLEmbedding(t *testing.T) {
 	} {
 		tm := tt.TM
 		assert.Equal(t, tt.N, tm.Name)
-		assert.True(t, strings.HasSuffix(tm.Package, "thriftrw/gen/testdata/"+tt.N))
+		assert.True(t, strings.HasSuffix(tm.Package, "thriftrw/gen/internal/tests/"+tt.N))
 		assert.Equal(t, tt.N+".thrift", tm.FilePath)
 
 		rawIDL, sha1, err := loadIDL(tt.N + ".thrift")
