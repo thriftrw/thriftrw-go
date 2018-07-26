@@ -29,12 +29,14 @@ import (
 	// without causing a circular dependency.
 	. "go.uber.org/thriftrw/envelope"
 
-	tv "go.uber.org/thriftrw/gen/testdata/services"
+	tv "go.uber.org/thriftrw/envelope/internal/tests/services"
 	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
 )
+
+//go:generate ../thriftrw -o internal/tests ../gen/internal/tests/thrift/services.thrift
 
 type failToWire struct {
 	// Embed an Enveloper so we only need to implement the methods we expect.

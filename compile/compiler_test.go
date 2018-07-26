@@ -55,7 +55,7 @@ func TestFilesystem(t *testing.T) {
 }
 
 func TestCompile(t *testing.T) {
-	module, err := Compile("../gen/testdata/thrift/services.thrift")
+	module, err := Compile("../gen/internal/tests/thrift/services.thrift")
 	require.NoError(t, err, "Compile failed")
 
 	kvSvc, err := module.LookupService("KeyValue")
