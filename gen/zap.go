@@ -89,7 +89,7 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 		return fieldValue, nil
 	}
 
-	switch root.(type) {
+	switch t := root.(type) {
 	case *compile.BinarySpec:
 		// There is no AppendBinary for ArrayEncoder, so we opt for encoding it ourselves and
 		// appending it as a string. We also use AddString instead of AddBinary for ObjectEncoder
@@ -98,7 +98,45 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 		return fmt.Sprintf("%v.StdEncoding.EncodeToString(%v)", base64, fieldValue), nil
 	case *compile.MapSpec:
 		// TODO: use objects if the key is a string or array if not.
-		return fieldValue, nil
+		switch t.KeySpec.(type) {
+		case *compile.StringSpec:
+			// return fieldValue, nil
+		default:
+			name := "_" + g.MangleType(spec) + "_Zapper"
+			if err := g.EnsureDeclared(
+				`
+				type <.Name> <typeReference .Type>
+				<$zapcore := import "go.uber.org/zap/zapcore">
+				<$keyvals := newVar "keyvals">
+				<$k := newVar "k">
+				<$v := newVar "v">
+				<$i := newVar "i">
+				func (<$keyvals> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
+					<- if isHashable .Spec.KeySpec ->
+						for <$k>, <$v> := range <$keyvals> {
+					<else ->
+						for _, <$i> := range <$keyvals> {
+							<$k> := <$i>.Key
+							<$v> := <$i>.Value
+							enc.AppendObject("TODO")
+						}
+					<end>
+					return nil
+				}
+				`, struct {
+					Name string
+					Type compile.TypeSpec
+				}{
+					Name: name,
+					Type: root,
+				},
+			); err != nil {
+				return "", err
+			}
+
+			// TODO: generate wrapper types for sets and use those here
+			return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
+		}
 	case *compile.SetSpec:
 		name := "_" + g.MangleType(spec) + "_Zapper"
 		if err := g.EnsureDeclared(
@@ -106,7 +144,7 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 				type <.Name> <typeReference .Type>
 				<$zapcore := import "go.uber.org/zap/zapcore">
 				<$vals := newVar "vals">
-				func (<$v> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
+				func (<$vals> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
 					for val := range <$vals> {
 						enc.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec "val">)
 					}
@@ -132,7 +170,7 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 				type <.Name> <typeReference .Type>
 				<$zapcore := import "go.uber.org/zap/zapcore">
 				<$vals := newVar "vals">
-				func (<$v> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
+				func (<$vals> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
 					for _, val := range <$vals> {
 						enc.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec "val">)
 					}
