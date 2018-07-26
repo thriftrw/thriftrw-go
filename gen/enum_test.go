@@ -25,8 +25,8 @@ import (
 	"fmt"
 	"testing"
 
-	tec "go.uber.org/thriftrw/gen/testdata/enum_conflict"
-	te "go.uber.org/thriftrw/gen/testdata/enums"
+	tec "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
+	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
