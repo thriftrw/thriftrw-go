@@ -3,4 +3,8 @@
 set -e
 set -x
 
-python "$(dirname $0)"/updateLicense.py $(go list -json $(glide nv) | jq -r '.Dir + "/" + (.GoFiles | .[])')
+python "$(dirname $0)"/updateLicense.py \
+	$(go list -json $(glide nv) \
+	| jq -r '.Dir + "/" + (.GoFiles | .[])' \
+	| grep -v /gen/internal/tests/ \
+	)
