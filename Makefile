@@ -52,10 +52,10 @@ build:
 	go build -i $(BUILD_FLAGS)
 
 $(RAGEL_PATH)/bin/ragel:
-	mkdir $(RAGEL_PATH)
+	mkdir -p $(RAGEL_PATH)
 	curl https://www.colm.net/files/ragel/ragel-6.9.tar.gz | \
 		tar -xz -C $(RAGEL_PATH) --strip-components 1
-	cd ./vendor/ragel ; (./configure --prefix=$(RAGEL_PATH) && make install)
+	cd $(RAGEL_PATH) ; (./configure --prefix=$(RAGEL_PATH) && make install)
 
 .PHONY: generate
 generate: $(RAGEL_PATH)/bin/ragel
@@ -64,7 +64,7 @@ generate: $(RAGEL_PATH)/bin/ragel
 	go get -u golang.org/x/tools/cmd/goyacc
 	go build -i
 	PATH=$$(pwd):$$PATH:$(RAGEL_PATH)/bin go generate $$(glide nv)
-	make -C ./gen/testdata
+	make -C ./gen/internal/tests
 	./scripts/updateLicenses.sh
 
 .PHONY: lint
