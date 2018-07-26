@@ -26,13 +26,48 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
-func zapObjectEncode(
-	g Generator,
-	encoder string,
-	spec compile.TypeSpec,
-	fieldName string,
-	fieldValue string,
-) (string, error) {
+func zapEncoder(g Generator, spec compile.TypeSpec) string {
+	root := compile.RootTypeSpec(spec)
+
+	switch root.(type) {
+	// Primitives
+	case *compile.BoolSpec:
+		return ("Bool")
+	case *compile.I8Spec:
+		return ("Int8")
+	case *compile.I16Spec:
+		return ("Int16")
+	case *compile.I32Spec:
+		return ("Int32")
+	case *compile.I64Spec:
+		return ("Int64")
+	case *compile.DoubleSpec:
+		return ("Float64")
+	case *compile.StringSpec:
+		return ("String")
+	case *compile.BinarySpec:
+		return ("Binary")
+
+		// Containers
+	case *compile.MapSpec:
+		// TODO: use objects if the key is a string or array if not.
+		return ("Reflected")
+	case *compile.SetSpec:
+		// TODO: generate wrapper types for sets and use those here
+		return ("Reflected")
+	case *compile.ListSpec:
+
+		// User-defined
+	case *compile.EnumSpec:
+		return ("Object")
+	case *compile.StructSpec:
+		return ("Reflected")
+	default:
+	}
+	panic("Wat")
+}
+
+func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
 	root := compile.RootTypeSpec(spec)
 
 	if _, ok := spec.(*compile.TypedefSpec); ok {
@@ -44,36 +79,17 @@ func zapObjectEncode(
 		fieldValue = fmt.Sprintf("(%v)(%v)", rootName, fieldValue)
 	}
 
-	commonCase := func(method string) (string, error) {
-		return fmt.Sprintf("%v.Add%v(%q, %v)", encoder, method, fieldName, fieldValue), nil
+	if isPrimitiveType(spec) {
+		return fieldValue, nil
 	}
 
 	switch root.(type) {
-	// Primitives
-	case *compile.BoolSpec:
-		return commonCase("Bool")
-	case *compile.I8Spec:
-		return commonCase("Int8")
-	case *compile.I16Spec:
-		return commonCase("Int16")
-	case *compile.I32Spec:
-		return commonCase("Int32")
-	case *compile.I64Spec:
-		return commonCase("Int64")
-	case *compile.DoubleSpec:
-		return commonCase("Float64")
-	case *compile.StringSpec:
-		return commonCase("String")
-	case *compile.BinarySpec:
-		return commonCase("Binary")
-
-	// Containers
 	case *compile.MapSpec:
 		// TODO: use objects if the key is a string or array if not.
-		return commonCase("Reflected")
+		return fieldValue, nil
 	case *compile.SetSpec:
 		// TODO: generate wrapper types for sets and use those here
-		return commonCase("Reflected")
+		return fieldValue, nil
 	case *compile.ListSpec:
 		name := "_" + g.MangleType(spec) + "_Zapper"
 		if err := g.EnsureDeclared(
@@ -81,10 +97,11 @@ func zapObjectEncode(
 				type <.Name> <typeReference .Type>
 				<$zapcore := import "go.uber.org/zap/zapcore">
 				<$v := newVar "v">
-				func (<$v> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) {
+				func (<$v> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
 					for _, x := range <$v> {
-						<zapObjectEncode "enc" .Type.ValueSpec "someName" "x">
+						enc.Append<zapEncoder .Type>(<zapMarshaler .Type.ValueSpec "x">)
 					}
+					return nil
 				}
 				`, struct {
 				Name string
@@ -96,27 +113,19 @@ func zapObjectEncode(
 		); err != nil {
 			return "", err
 		}
+
 		// TODO: generate wrapper types for sets and use those here
-		return fmt.Sprintf("%v.AddArray(%q, (%v)(%v))", encoder, fieldName, name, fieldValue), nil
-	// User-defined types
-	case *compile.EnumSpec:
-		return fmt.Sprintf("%v.AddObject(%q, %v)", encoder, fieldName, fieldValue), nil
+		return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
 	case *compile.StructSpec:
-		return commonCase("Reflected")
+		return fieldValue, nil
 	default:
-		panic("Wat")
 	}
+	panic("Wat")
 }
 
-func zapObjectEncodePtr(
-	g Generator,
-	encoder string,
-	spec compile.TypeSpec,
-	fieldName string,
-	fieldValue string,
-) (string, error) {
+func zapMarshalerPtr(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
 	if isPrimitiveType(spec) {
 		fieldValue = "*" + fieldValue
 	}
-	return zapObjectEncode(g, encoder, spec, fieldName, fieldValue)
+	return zapMarshaler(g, spec, fieldValue)
 }

@@ -473,18 +473,19 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 		// TODO(minho): Make enc a newVar.
 
 		// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-		func (<$v> *<.Name>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) {
+		func (<$v> *<.Name>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
 			<range .Fields>
 				<$fname := goName .>
 				<$fval := printf "%s.%s" $v $fname>
 				<- if .Required ->
-					<zapObjectEncode "enc" .Type .Name $fval>
+					enc.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
 				<- else ->
 					if <$fval> != nil {
-						<zapObjectEncodePtr "enc" .Type .Name $fval>
+						enc.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>)
 					}
 				<- end>
 			<end>
+			return nil
 		}
 		`, f)
 }
