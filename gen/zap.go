@@ -56,7 +56,7 @@ func zapEncoder(g Generator, spec compile.TypeSpec) string {
 		// TODO: generate wrapper types for sets and use those here
 		return ("Reflected")
 	case *compile.ListSpec:
-
+		return ("Array")
 		// User-defined
 	case *compile.EnumSpec:
 		return ("Object")
@@ -64,7 +64,7 @@ func zapEncoder(g Generator, spec compile.TypeSpec) string {
 		return ("Reflected")
 	default:
 	}
-	panic("Wat")
+	panic(root)
 }
 
 func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
@@ -84,6 +84,8 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 	}
 
 	switch root.(type) {
+	case *compile.BinarySpec:
+		return fieldValue, nil
 	case *compile.MapSpec:
 		// TODO: use objects if the key is a string or array if not.
 		return fieldValue, nil
@@ -99,7 +101,7 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 				<$v := newVar "v">
 				func (<$v> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
 					for _, x := range <$v> {
-						enc.Append<zapEncoder .Type>(<zapMarshaler .Type.ValueSpec "x">)
+						enc.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec "x">)
 					}
 					return nil
 				}
@@ -120,7 +122,7 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 		return fieldValue, nil
 	default:
 	}
-	panic("Wat")
+	panic(root)
 }
 
 func zapMarshalerPtr(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
