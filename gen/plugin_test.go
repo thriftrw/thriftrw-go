@@ -35,7 +35,7 @@ func TestAddRootService(t *testing.T) {
 				},
 				Modules: map[api.ModuleID]*api.Module{
 					1: {
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/empty",
+						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/empty",
 						Directory:  "empty",
 					},
 				},
@@ -59,7 +59,7 @@ func TestAddRootService(t *testing.T) {
 				},
 				Modules: map[api.ModuleID]*api.Module{
 					1: {
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/service",
+						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/service",
 						Directory:  "service",
 					},
 				},
@@ -94,11 +94,11 @@ func TestAddRootService(t *testing.T) {
 				},
 				Modules: map[api.ModuleID]*api.Module{
 					1: {
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/common/abstract",
+						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/common/abstract",
 						Directory:  "common/abstract",
 					},
 					2: {
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/kv",
+						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/kv",
 						Directory:  "kv",
 					},
 				},
@@ -130,7 +130,7 @@ func TestAddRootService(t *testing.T) {
 				},
 				Modules: map[api.ModuleID]*api.Module{
 					1: {
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/empty",
+						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/empty",
 						Directory:  "empty",
 					},
 				},
@@ -146,7 +146,7 @@ func TestAddRootService(t *testing.T) {
 		}
 
 		importer := thriftPackageImporter{
-			ImportPrefix: "go.uber.org/thriftrw/gen/testdata",
+			ImportPrefix: "go.uber.org/thriftrw/gen/internal/tests",
 			ThriftRoot:   "idl",
 		}
 
@@ -213,7 +213,7 @@ func TestBuildFunction(t *testing.T) {
 							PointerType: &api.Type{
 								ReferenceType: &api.TypeReference{
 									Name:       "KeyDoesNotExist",
-									ImportPath: "go.uber.org/thriftrw/gen/testdata/keyvalue",
+									ImportPath: "go.uber.org/thriftrw/gen/internal/tests/keyvalue",
 								},
 							},
 						},
@@ -309,7 +309,7 @@ func TestBuildFunction(t *testing.T) {
 		}
 
 		importer := thriftPackageImporter{
-			ImportPrefix: "go.uber.org/thriftrw/gen/testdata",
+			ImportPrefix: "go.uber.org/thriftrw/gen/internal/tests",
 			ThriftRoot:   "idl",
 		}
 
@@ -480,7 +480,7 @@ func TestBuildType(t *testing.T) {
 					PointerType: &api.Type{
 						ReferenceType: &api.TypeReference{
 							Name:       "Foo",
-							ImportPath: "go.uber.org/thriftrw/gen/testdata/foo",
+							ImportPath: "go.uber.org/thriftrw/gen/internal/tests/foo",
 						},
 					},
 				},
@@ -521,7 +521,7 @@ func TestBuildType(t *testing.T) {
 			want: &api.Type{
 				ReferenceType: &api.TypeReference{
 					Name:       "Foo",
-					ImportPath: "go.uber.org/thriftrw/gen/testdata/bar",
+					ImportPath: "go.uber.org/thriftrw/gen/internal/tests/bar",
 				},
 			},
 		},
@@ -540,7 +540,7 @@ func TestBuildType(t *testing.T) {
 				PointerType: &api.Type{
 					ReferenceType: &api.TypeReference{
 						Name:       "Foo",
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/bar",
+						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/bar",
 					},
 				},
 			},
@@ -563,7 +563,7 @@ func TestBuildType(t *testing.T) {
 			want: &api.Type{
 				ReferenceType: &api.TypeReference{
 					Name:       "Foo",
-					ImportPath: "go.uber.org/thriftrw/gen/testdata/bar",
+					ImportPath: "go.uber.org/thriftrw/gen/internal/tests/bar",
 					Annotations: map[string]string{
 						"foo": "bar",
 						"baz": "",
@@ -591,7 +591,7 @@ func TestBuildType(t *testing.T) {
 				PointerType: &api.Type{
 					ReferenceType: &api.TypeReference{
 						Name:       "Foo",
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/foo",
+						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/foo",
 					},
 				},
 			},
@@ -619,7 +619,7 @@ func TestBuildType(t *testing.T) {
 				PointerType: &api.Type{
 					ReferenceType: &api.TypeReference{
 						Name:       "Foo",
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/foo",
+						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/foo",
 						Annotations: map[string]string{
 							"validate":  "true",
 							"obfuscate": "",
@@ -639,7 +639,7 @@ func TestBuildType(t *testing.T) {
 			want: &api.Type{
 				ReferenceType: &api.TypeReference{
 					Name:       "Foo",
-					ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+					ImportPath: "go.uber.org/thriftrw/gen/internal/tests/foo/bar",
 				},
 			},
 		},
@@ -654,7 +654,7 @@ func TestBuildType(t *testing.T) {
 				PointerType: &api.Type{
 					ReferenceType: &api.TypeReference{
 						Name:       "Foo",
-						ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/foo/bar",
 					},
 				},
 			},
@@ -670,7 +670,7 @@ func TestBuildType(t *testing.T) {
 			want: &api.Type{
 				ReferenceType: &api.TypeReference{
 					Name:       "Foo",
-					ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+					ImportPath: "go.uber.org/thriftrw/gen/internal/tests/foo/bar",
 				},
 			},
 		},
@@ -684,7 +684,7 @@ func TestBuildType(t *testing.T) {
 			want: &api.Type{
 				ReferenceType: &api.TypeReference{
 					Name:       "Foo",
-					ImportPath: "go.uber.org/thriftrw/gen/testdata/foo/bar",
+					ImportPath: "go.uber.org/thriftrw/gen/internal/tests/foo/bar",
 				},
 			},
 		},
@@ -702,7 +702,7 @@ func TestBuildType(t *testing.T) {
 			want: &api.Type{
 				ReferenceType: &api.TypeReference{
 					Name:       "Timestamp",
-					ImportPath: "go.uber.org/thriftrw/gen/testdata/common",
+					ImportPath: "go.uber.org/thriftrw/gen/internal/tests/common",
 					Annotations: map[string]string{
 						"format":   "ISO8601",
 						"validate": "true",
@@ -719,7 +719,7 @@ func TestBuildType(t *testing.T) {
 		}
 
 		importer := thriftPackageImporter{
-			ImportPrefix: "go.uber.org/thriftrw/gen/testdata",
+			ImportPrefix: "go.uber.org/thriftrw/gen/internal/tests",
 			ThriftRoot:   "idl",
 		}
 

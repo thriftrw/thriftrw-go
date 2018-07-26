@@ -24,9 +24,9 @@ import (
 	"encoding/json"
 	"testing"
 
-	tc "go.uber.org/thriftrw/gen/testdata/containers"
-	te "go.uber.org/thriftrw/gen/testdata/enums"
-	ts "go.uber.org/thriftrw/gen/testdata/structs"
+	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
+	te "go.uber.org/thriftrw/gen/internal/tests/enums"
+	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
