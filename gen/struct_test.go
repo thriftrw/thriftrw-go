@@ -26,12 +26,12 @@ import (
 	"reflect"
 	"testing"
 
-	tc "go.uber.org/thriftrw/gen/testdata/containers"
-	te "go.uber.org/thriftrw/gen/testdata/enums"
-	tx "go.uber.org/thriftrw/gen/testdata/exceptions"
-	ts "go.uber.org/thriftrw/gen/testdata/structs"
-	td "go.uber.org/thriftrw/gen/testdata/typedefs"
-	tu "go.uber.org/thriftrw/gen/testdata/unions"
+	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
+	te "go.uber.org/thriftrw/gen/internal/tests/enums"
+	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
+	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
+	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 

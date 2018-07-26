@@ -25,7 +25,7 @@ import (
 	"reflect"
 	"testing"
 
-	tc "go.uber.org/thriftrw/gen/testdata/collision"
+	tc "go.uber.org/thriftrw/gen/internal/tests/collision"
 	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
