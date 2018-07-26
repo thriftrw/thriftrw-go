@@ -489,8 +489,6 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 		`, f)
 }
 
-func (f fieldGroupGenerator)
-
 func (f fieldGroupGenerator) Accessors(g Generator) error {
 	fieldsAndAccessors := NewNamespace()
 	return g.DeclareFromTemplate(
