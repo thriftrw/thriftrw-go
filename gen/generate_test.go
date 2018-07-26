@@ -42,7 +42,7 @@ func testdata(t *testing.T, paths ...string) string {
 	cwd, err := os.Getwd()
 	require.NoError(t, err, "could not determine CWD")
 
-	args := []string{cwd, "testdata"}
+	args := []string{cwd, "internal/tests"}
 	args = append(args, paths...)
 	return filepath.Join(args...)
 }
@@ -55,17 +55,17 @@ func TestGenerateWithRelativePaths(t *testing.T) {
 	thriftRoot, err := os.Getwd()
 	require.NoError(t, err)
 
-	module, err := compile.Compile("testdata/thrift/structs.thrift")
+	module, err := compile.Compile("internal/tests/thrift/structs.thrift")
 	require.NoError(t, err)
 
 	opts := []*Options{
 		{
 			OutputDir:     outputDir,
 			PackagePrefix: "go.uber.org/thriftrw/gen",
-			ThriftRoot:    "testdata",
+			ThriftRoot:    "internal/tests",
 		},
 		{
-			OutputDir:     "testdata",
+			OutputDir:     "internal/tests",
 			PackagePrefix: "go.uber.org/thriftrw/gen",
 			ThriftRoot:    thriftRoot,
 		},
@@ -227,7 +227,7 @@ func TestGenerate(t *testing.T) {
 
 			err = Generate(module, &Options{
 				OutputDir:     outputDir,
-				PackagePrefix: "go.uber.org/thriftrw/gen/testdata",
+				PackagePrefix: "go.uber.org/thriftrw/gen/internal/tests",
 				ThriftRoot:    testdata(t, "thrift"),
 				Plugin:        p,
 				NoRecurse:     tt.noRecurse,
