@@ -431,8 +431,17 @@ func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
 	return true
 }
 
+type _List_ArbitraryValue_Zapper []*ArbitraryValue
+
+func (v _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendReflected(x)
+	}
+	return nil
+}
+
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.BoolValue != nil {
 		enc.AddBool("boolValue", *v.BoolValue)
@@ -447,13 +456,14 @@ func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) {
 	}
 
 	if v.ListValue != nil {
-		enc.AddReflected("listValue", v.ListValue)
+		enc.AddArray("listValue", (_List_ArbitraryValue_Zapper)(v.ListValue))
 	}
 
 	if v.MapValue != nil {
 		enc.AddReflected("mapValue", v.MapValue)
 	}
 
+	return nil
 }
 
 // GetBoolValue returns the value of BoolValue if it is set or its
@@ -658,7 +668,7 @@ func (v *Document) Equals(rhs *Document) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Pdf != nil {
 		enc.AddBinary("pdf", ([]byte)(v.Pdf))
@@ -668,6 +678,7 @@ func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddString("plainText", *v.PlainText)
 	}
 
+	return nil
 }
 
 // GetPdf returns the value of Pdf if it is set or its
@@ -767,6 +778,7 @@ func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *EmptyUnion) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *EmptyUnion) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
+	return nil
 }

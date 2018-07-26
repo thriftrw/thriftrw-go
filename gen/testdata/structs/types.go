@@ -121,10 +121,11 @@ func (v *ContactInfo) Equals(rhs *ContactInfo) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *ContactInfo) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *ContactInfo) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("emailAddress", v.EmailAddress)
 
+	return nil
 }
 
 // GetEmailAddress returns the value of EmailAddress if it is set or its
@@ -677,8 +678,26 @@ func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 	return true
 }
 
+type _List_String_Zapper []string
+
+func (v _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendString(x)
+	}
+	return nil
+}
+
+type _List_Double_Zapper []float64
+
+func (v _List_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendFloat64(x)
+	}
+	return nil
+}
+
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *DefaultsStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *DefaultsStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.RequiredPrimitive != nil {
 		enc.AddInt32("requiredPrimitive", *v.RequiredPrimitive)
@@ -697,11 +716,11 @@ func (v *DefaultsStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
 	}
 
 	if v.RequiredList != nil {
-		enc.AddReflected("requiredList", v.RequiredList)
+		enc.AddArray("requiredList", (_List_String_Zapper)(v.RequiredList))
 	}
 
 	if v.OptionalList != nil {
-		enc.AddReflected("optionalList", v.OptionalList)
+		enc.AddArray("optionalList", (_List_Double_Zapper)(v.OptionalList))
 	}
 
 	if v.RequiredStruct != nil {
@@ -712,6 +731,7 @@ func (v *DefaultsStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddReflected("optionalStruct", v.OptionalStruct)
 	}
 
+	return nil
 }
 
 // GetRequiredPrimitive returns the value of RequiredPrimitive if it is set or its
@@ -963,12 +983,13 @@ func (v *Edge) Equals(rhs *Edge) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Edge) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Edge) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddReflected("startPoint", v.StartPoint)
 
 	enc.AddReflected("endPoint", v.EndPoint)
 
+	return nil
 }
 
 // GetStartPoint returns the value of StartPoint if it is set or its
@@ -1056,8 +1077,9 @@ func (v *EmptyStruct) Equals(rhs *EmptyStruct) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *EmptyStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *EmptyStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
+	return nil
 }
 
 type Frame struct {
@@ -1204,12 +1226,13 @@ func (v *Frame) Equals(rhs *Frame) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Frame) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Frame) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddReflected("topLeft", v.TopLeft)
 
 	enc.AddReflected("size", v.Size)
 
+	return nil
 }
 
 // GetTopLeft returns the value of TopLeft if it is set or its
@@ -1469,7 +1492,7 @@ func (v *GoTags) Equals(rhs *GoTags) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *GoTags) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *GoTags) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("Foo", v.Foo)
 
@@ -1487,6 +1510,7 @@ func (v *GoTags) MarshalLogObject(enc zapcore.ObjectEncoder) {
 
 	enc.AddString("FooBarWithRequired", v.FooBarWithRequired)
 
+	return nil
 }
 
 // GetFoo returns the value of Foo if it is set or its
@@ -1700,11 +1724,21 @@ func (v *Graph) Equals(rhs *Graph) bool {
 	return true
 }
 
+type _List_Edge_Zapper []*Edge
+
+func (v _List_Edge_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendReflected(x)
+	}
+	return nil
+}
+
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Graph) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Graph) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
-	enc.AddReflected("edges", v.Edges)
+	enc.AddArray("edges", (_List_Edge_Zapper)(v.Edges))
 
+	return nil
 }
 
 // GetEdges returns the value of Edges if it is set or its
@@ -1879,7 +1913,7 @@ func (v *Node) Equals(rhs *Node) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Node) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Node) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddInt32("value", v.Value)
 
@@ -1887,6 +1921,7 @@ func (v *Node) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddReflected("tail", (*Node)(v.Tail))
 	}
 
+	return nil
 }
 
 // GetValue returns the value of Value if it is set or its
@@ -2036,12 +2071,13 @@ func (v *Omit) Equals(rhs *Omit) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Omit) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Omit) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("serialized", v.Serialized)
 
 	enc.AddString("hidden", v.Hidden)
 
+	return nil
 }
 
 // GetSerialized returns the value of Serialized if it is set or its
@@ -2186,12 +2222,13 @@ func (v *Point) Equals(rhs *Point) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Point) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Point) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddFloat64("x", v.X)
 
 	enc.AddFloat64("y", v.Y)
 
+	return nil
 }
 
 // GetX returns the value of X if it is set or its
@@ -2542,7 +2579,7 @@ func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *PrimitiveOptionalStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *PrimitiveOptionalStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.BoolField != nil {
 		enc.AddBool("boolField", *v.BoolField)
@@ -2576,6 +2613,7 @@ func (v *PrimitiveOptionalStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddBinary("binaryField", v.BinaryField)
 	}
 
+	return nil
 }
 
 // GetBoolField returns the value of BoolField if it is set or its
@@ -2952,7 +2990,7 @@ func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *PrimitiveRequiredStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *PrimitiveRequiredStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddBool("boolField", v.BoolField)
 
@@ -2970,6 +3008,7 @@ func (v *PrimitiveRequiredStruct) MarshalLogObject(enc zapcore.ObjectEncoder) {
 
 	enc.AddBinary("binaryField", v.BinaryField)
 
+	return nil
 }
 
 // GetBoolField returns the value of BoolField if it is set or its
@@ -3137,12 +3176,13 @@ func (v *Rename) Equals(rhs *Rename) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Rename) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Rename) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("Default", v.Default)
 
 	enc.AddString("camelCase", v.CamelCase)
 
+	return nil
 }
 
 // GetDefault returns the value of Default if it is set or its
@@ -3289,12 +3329,13 @@ func (v *Size) Equals(rhs *Size) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Size) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Size) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddFloat64("width", v.Width)
 
 	enc.AddFloat64("height", v.Height)
 
+	return nil
 }
 
 // GetWidth returns the value of Width if it is set or its
@@ -3442,7 +3483,7 @@ func (v *User) Equals(rhs *User) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *User) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *User) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("name", v.Name)
 
@@ -3450,6 +3491,7 @@ func (v *User) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddReflected("contact", v.Contact)
 	}
 
+	return nil
 }
 
 // GetName returns the value of Name if it is set or its

@@ -365,7 +365,7 @@ func (v *Records) Equals(rhs *Records) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.RecordType != nil {
 		enc.AddObject("recordType", *v.RecordType)
@@ -375,6 +375,7 @@ func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddObject("otherRecordType", *v.OtherRecordType)
 	}
 
+	return nil
 }
 
 // GetRecordType returns the value of RecordType if it is set or its

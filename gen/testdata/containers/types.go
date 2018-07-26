@@ -7,13 +7,14 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"strings"
+
 	"go.uber.org/thriftrw/gen/testdata/enum_conflict"
 	"go.uber.org/thriftrw/gen/testdata/enums"
 	"go.uber.org/thriftrw/gen/testdata/typedefs"
 	"go.uber.org/thriftrw/gen/testdata/uuid_conflict"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
-	"strings"
 )
 
 type ContainersOfContainers struct {
@@ -1653,19 +1654,55 @@ func (v *ContainersOfContainers) Equals(rhs *ContainersOfContainers) bool {
 	return true
 }
 
+type _List_I32_Zapper []int32
+
+func (v _List_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendInt32(x)
+	}
+	return nil
+}
+
+type _List_List_I32_Zapper [][]int32
+
+func (v _List_List_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendArray((_List_I32_Zapper)(x))
+	}
+	return nil
+}
+
+type _List_Set_I32_Zapper []map[int32]struct{}
+
+func (v _List_Set_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendReflected(x)
+	}
+	return nil
+}
+
+type _List_Map_I32_I32_Zapper []map[int32]int32
+
+func (v _List_Map_I32_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendReflected(x)
+	}
+	return nil
+}
+
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *ContainersOfContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *ContainersOfContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.ListOfLists != nil {
-		enc.AddReflected("listOfLists", v.ListOfLists)
+		enc.AddArray("listOfLists", (_List_List_I32_Zapper)(v.ListOfLists))
 	}
 
 	if v.ListOfSets != nil {
-		enc.AddReflected("listOfSets", v.ListOfSets)
+		enc.AddArray("listOfSets", (_List_Set_I32_Zapper)(v.ListOfSets))
 	}
 
 	if v.ListOfMaps != nil {
-		enc.AddReflected("listOfMaps", v.ListOfMaps)
+		enc.AddArray("listOfMaps", (_List_Map_I32_I32_Zapper)(v.ListOfMaps))
 	}
 
 	if v.SetOfSets != nil {
@@ -1692,6 +1729,7 @@ func (v *ContainersOfContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddReflected("mapOfSetToListOfDouble", v.MapOfSetToListOfDouble)
 	}
 
+	return nil
 }
 
 // GetListOfLists returns the value of ListOfLists if it is set or its
@@ -2161,11 +2199,20 @@ func (v *EnumContainers) Equals(rhs *EnumContainers) bool {
 	return true
 }
 
+type _List_EnumDefault_Zapper []enums.EnumDefault
+
+func (v _List_EnumDefault_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendObject(x)
+	}
+	return nil
+}
+
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *EnumContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *EnumContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.ListOfEnums != nil {
-		enc.AddReflected("listOfEnums", v.ListOfEnums)
+		enc.AddArray("listOfEnums", (_List_EnumDefault_Zapper)(v.ListOfEnums))
 	}
 
 	if v.SetOfEnums != nil {
@@ -2176,6 +2223,7 @@ func (v *EnumContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddReflected("mapOfEnums", v.MapOfEnums)
 	}
 
+	return nil
 }
 
 // GetListOfEnums returns the value of ListOfEnums if it is set or its
@@ -2475,13 +2523,32 @@ func (v *ListOfConflictingEnums) Equals(rhs *ListOfConflictingEnums) bool {
 	return true
 }
 
+type _List_RecordType_Zapper []enum_conflict.RecordType
+
+func (v _List_RecordType_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendObject(x)
+	}
+	return nil
+}
+
+type _List_RecordType_1_Zapper []enums.RecordType
+
+func (v _List_RecordType_1_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendObject(x)
+	}
+	return nil
+}
+
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *ListOfConflictingEnums) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *ListOfConflictingEnums) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
-	enc.AddReflected("records", v.Records)
+	enc.AddArray("records", (_List_RecordType_Zapper)(v.Records))
 
-	enc.AddReflected("otherRecords", v.OtherRecords)
+	enc.AddArray("otherRecords", (_List_RecordType_1_Zapper)(v.OtherRecords))
 
+	return nil
 }
 
 // GetRecords returns the value of Records if it is set or its
@@ -2762,13 +2829,32 @@ func (v *ListOfConflictingUUIDs) Equals(rhs *ListOfConflictingUUIDs) bool {
 	return true
 }
 
+type _List_UUID_Zapper []*typedefs.UUID
+
+func (v _List_UUID_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendReflected((*typedefs.I128)(x))
+	}
+	return nil
+}
+
+type _List_UUID_1_Zapper []uuid_conflict.UUID
+
+func (v _List_UUID_1_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendString((string)(x))
+	}
+	return nil
+}
+
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *ListOfConflictingUUIDs) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *ListOfConflictingUUIDs) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
-	enc.AddReflected("uuids", v.Uuids)
+	enc.AddArray("uuids", (_List_UUID_Zapper)(v.Uuids))
 
-	enc.AddReflected("otherUUIDs", v.OtherUUIDs)
+	enc.AddArray("otherUUIDs", (_List_UUID_1_Zapper)(v.OtherUUIDs))
 
+	return nil
 }
 
 // GetUuids returns the value of Uuids if it is set or its
@@ -3107,7 +3193,7 @@ func (v *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *MapOfBinaryAndString) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *MapOfBinaryAndString) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.BinaryToString != nil {
 		enc.AddReflected("binaryToString", v.BinaryToString)
@@ -3117,6 +3203,7 @@ func (v *MapOfBinaryAndString) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddReflected("stringToBinary", v.StringToBinary)
 	}
 
+	return nil
 }
 
 // GetBinaryToString returns the value of BinaryToString if it is set or its
@@ -3706,15 +3793,33 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	return true
 }
 
+type _List_Binary_Zapper [][]byte
+
+func (v _List_Binary_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendBinary(x)
+	}
+	return nil
+}
+
+type _List_I64_Zapper []int64
+
+func (v _List_I64_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendInt64(x)
+	}
+	return nil
+}
+
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.ListOfBinary != nil {
-		enc.AddReflected("listOfBinary", v.ListOfBinary)
+		enc.AddArray("listOfBinary", (_List_Binary_Zapper)(v.ListOfBinary))
 	}
 
 	if v.ListOfInts != nil {
-		enc.AddReflected("listOfInts", v.ListOfInts)
+		enc.AddArray("listOfInts", (_List_I64_Zapper)(v.ListOfInts))
 	}
 
 	if v.SetOfStrings != nil {
@@ -3733,6 +3838,7 @@ func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddReflected("mapOfStringToBool", v.MapOfStringToBool)
 	}
 
+	return nil
 }
 
 // GetListOfBinary returns the value of ListOfBinary if it is set or its
@@ -4040,15 +4146,25 @@ func (v *PrimitiveContainersRequired) Equals(rhs *PrimitiveContainersRequired) b
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *PrimitiveContainersRequired) MarshalLogObject(enc zapcore.ObjectEncoder) {
+type _List_String_Zapper []string
 
-	enc.AddReflected("listOfStrings", v.ListOfStrings)
+func (v _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendString(x)
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *PrimitiveContainersRequired) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddArray("listOfStrings", (_List_String_Zapper)(v.ListOfStrings))
 
 	enc.AddReflected("setOfInts", v.SetOfInts)
 
 	enc.AddReflected("mapOfIntsToDoubles", v.MapOfIntsToDoubles)
 
+	return nil
 }
 
 // GetListOfStrings returns the value of ListOfStrings if it is set or its

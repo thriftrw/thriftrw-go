@@ -179,13 +179,23 @@ func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) b
 	return true
 }
 
+type _List_Key_Zapper []Key
+
+func (v _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendString((string)(x))
+	}
+	return nil
+}
+
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Range != nil {
-		enc.AddReflected("range", v.Range)
+		enc.AddArray("range", (_List_Key_Zapper)(v.Range))
 	}
 
+	return nil
 }
 
 // GetRange returns the value of Range if it is set or its
@@ -525,17 +535,27 @@ func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Resul
 	return true
 }
 
+type _List_ArbitraryValue_Zapper []*unions.ArbitraryValue
+
+func (v _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendReflected(x)
+	}
+	return nil
+}
+
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Success != nil {
-		enc.AddReflected("success", v.Success)
+		enc.AddArray("success", (_List_ArbitraryValue_Zapper)(v.Success))
 	}
 
 	if v.DoesNotExist != nil {
 		enc.AddReflected("doesNotExist", v.DoesNotExist)
 	}
 
+	return nil
 }
 
 // GetSuccess returns the value of Success if it is set or its

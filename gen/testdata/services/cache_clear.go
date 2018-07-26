@@ -90,8 +90,9 @@ func (v *Cache_Clear_Args) Equals(rhs *Cache_Clear_Args) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Cache_Clear_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Cache_Clear_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
+	return nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

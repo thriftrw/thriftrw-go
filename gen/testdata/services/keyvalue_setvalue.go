@@ -145,7 +145,7 @@ func (v *KeyValue_SetValue_Args) Equals(rhs *KeyValue_SetValue_Args) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *KeyValue_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *KeyValue_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Key != nil {
 		enc.AddString("key", (string)(*v.Key))
@@ -155,6 +155,7 @@ func (v *KeyValue_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddReflected("value", v.Value)
 	}
 
+	return nil
 }
 
 // GetKey returns the value of Key if it is set or its
@@ -350,8 +351,9 @@ func (v *KeyValue_SetValue_Result) Equals(rhs *KeyValue_SetValue_Result) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *KeyValue_SetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *KeyValue_SetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
+	return nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

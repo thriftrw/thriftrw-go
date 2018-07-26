@@ -90,8 +90,9 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) Equals(rhs *NonSta
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *NonStandardServiceName_NonStandardFunctionName_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *NonStandardServiceName_NonStandardFunctionName_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
+	return nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -258,8 +259,9 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) Equals(rhs *NonS
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *NonStandardServiceName_NonStandardFunctionName_Result) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *NonStandardServiceName_NonStandardFunctionName_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
+	return nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

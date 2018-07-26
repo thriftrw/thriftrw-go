@@ -158,7 +158,7 @@ func (v *AccessorConflict) Equals(rhs *AccessorConflict) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Name != nil {
 		enc.AddString("name", *v.Name)
@@ -168,6 +168,7 @@ func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddString("get_name", *v.GetName2)
 	}
 
+	return nil
 }
 
 // GetName returns the value of Name if it is set or its
@@ -323,7 +324,7 @@ func (v *AccessorNoConflict) Equals(rhs *AccessorNoConflict) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *AccessorNoConflict) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *AccessorNoConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Getname != nil {
 		enc.AddString("getname", *v.Getname)
@@ -333,6 +334,7 @@ func (v *AccessorNoConflict) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddString("get_name", *v.GetName)
 	}
 
+	return nil
 }
 
 // GetGetname returns the value of Getname if it is set or its
@@ -938,11 +940,20 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	return true
 }
 
+type _List_String_Zapper []string
+
+func (v _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, x := range v {
+		enc.AppendString(x)
+	}
+	return nil
+}
+
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.A != nil {
-		enc.AddReflected("ListOrSetOrMap", v.A)
+		enc.AddArray("ListOrSetOrMap", (_List_String_Zapper)(v.A))
 	}
 
 	if v.B != nil {
@@ -953,6 +964,7 @@ func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddReflected("ListOrSet_Or_Map", v.C)
 	}
 
+	return nil
 }
 
 // GetA returns the value of A if it is set or its
@@ -1118,12 +1130,13 @@ func (v *StructCollision) Equals(rhs *StructCollision) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *StructCollision) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *StructCollision) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddBool("collisionField", v.CollisionField)
 
 	enc.AddString("collision_field", v.CollisionField2)
 
+	return nil
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its
@@ -1292,7 +1305,7 @@ func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *UnionCollision) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *UnionCollision) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.CollisionField != nil {
 		enc.AddBool("collisionField", *v.CollisionField)
@@ -1302,6 +1315,7 @@ func (v *UnionCollision) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddString("collision_field", *v.CollisionField2)
 	}
 
+	return nil
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its
@@ -1448,12 +1462,13 @@ func (v *WithDefault) Equals(rhs *WithDefault) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *WithDefault) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *WithDefault) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Pouet != nil {
 		enc.AddReflected("pouet", v.Pouet)
 	}
 
+	return nil
 }
 
 // GetPouet returns the value of Pouet if it is set or its
@@ -1809,12 +1824,13 @@ func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *StructCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *StructCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddBool("collisionField", v.CollisionField)
 
 	enc.AddString("collision_field", v.CollisionField2)
 
+	return nil
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its
@@ -1973,7 +1989,7 @@ func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *UnionCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *UnionCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.CollisionField != nil {
 		enc.AddBool("collisionField", *v.CollisionField)
@@ -1983,6 +1999,7 @@ func (v *UnionCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) {
 		enc.AddString("collision_field", *v.CollisionField2)
 	}
 
+	return nil
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its

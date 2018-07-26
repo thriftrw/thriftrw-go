@@ -130,12 +130,13 @@ func (v *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *Cache_ClearAfter_Args) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *Cache_ClearAfter_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.DurationMS != nil {
 		enc.AddInt64("durationMS", *v.DurationMS)
 	}
 
+	return nil
 }
 
 // GetDurationMS returns the value of DurationMS if it is set or its

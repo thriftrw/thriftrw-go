@@ -7,11 +7,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
 	"math"
 	"strconv"
 	"strings"
+
+	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 )
 
 type EmptyEnum int32
@@ -1375,12 +1376,13 @@ func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) {
+func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.E != nil {
 		enc.AddObject("e", *v.E)
 	}
 
+	return nil
 }
 
 // GetE returns the value of E if it is set or its
