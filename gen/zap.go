@@ -71,10 +71,33 @@ func zapObjectEncode(
 	case *compile.MapSpec:
 		// TODO: use objects if the key is a string or array if not.
 		return commonCase("Reflected")
-	case *compile.SetSpec, *compile.ListSpec:
+	case *compile.SetSpec:
 		// TODO: generate wrapper types for sets and use those here
 		return commonCase("Reflected")
-
+	case *compile.ListSpec:
+		name := "_" + g.MangleType(spec) + "_Zapper"
+		if err := g.EnsureDeclared(
+			`
+				type <.Name> <typeReference .Type>
+				<$zapcore := import "go.uber.org/zap/zapcore">
+				<$v := newVar "v">
+				func (<$v> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) {
+					for _, x := range <$v> {
+						<zapObjectEncode "enc" .Type.ValueSpec "someName" "x">
+					}
+				}
+				`, struct {
+				Name string
+				Type compile.TypeSpec
+			}{
+				Name: name,
+				Type: root,
+			},
+		); err != nil {
+			return "", err
+		}
+		// TODO: generate wrapper types for sets and use those here
+		return fmt.Sprintf("%v.AddArray(%q, (%v)(%v))", encoder, fieldName, name, fieldValue), nil
 	// User-defined types
 	case *compile.EnumSpec:
 		return fmt.Sprintf("%v.AddObject(%q, %v)", encoder, fieldName, fieldValue), nil
