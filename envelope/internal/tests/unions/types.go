@@ -454,6 +454,7 @@ func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
 
 type _List_ArbitraryValue_Zapper []*ArbitraryValue
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		if err := enc.AppendObject(val); err != nil {
@@ -465,6 +466,7 @@ func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder
 
 type _Map_String_ArbitraryValue_Zapper map[string]*ArbitraryValue
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (keyvals _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	for k, v := range keyvals {
 		if err := enc.AddObject((string)(k), v); err != nil {

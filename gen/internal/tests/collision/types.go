@@ -942,6 +942,7 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 
 type _List_String_Zapper []string
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		enc.AppendString(val)
@@ -951,6 +952,7 @@ func (vals _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error 
 
 type _Set_String_Zapper map[string]struct{}
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for v := range vals {
 		enc.AppendString(v)
@@ -960,6 +962,7 @@ func (vals _Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 
 type _Map_String_String_Zapper map[string]string
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (keyvals _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	for k, v := range keyvals {
 		enc.AddString((string)(k), v)

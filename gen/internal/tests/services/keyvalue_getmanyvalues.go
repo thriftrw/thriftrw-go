@@ -181,6 +181,7 @@ func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) b
 
 type _List_Key_Zapper []Key
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		enc.AppendString((string)(val))
@@ -539,6 +540,7 @@ func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Resul
 
 type _List_ArbitraryValue_Zapper []*unions.ArbitraryValue
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		if err := enc.AppendObject(val); err != nil {

@@ -1298,6 +1298,7 @@ func (v *Transition) Equals(rhs *Transition) bool {
 
 type _EventGroup_Zapper []*Event
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _EventGroup_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		if err := enc.AppendObject(val); err != nil {

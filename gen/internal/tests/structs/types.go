@@ -681,6 +681,7 @@ func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 
 type _List_String_Zapper []string
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		enc.AppendString(val)
@@ -690,6 +691,7 @@ func (vals _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error 
 
 type _List_Double_Zapper []float64
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _List_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		enc.AppendFloat64(val)
@@ -1747,6 +1749,7 @@ func (v *Graph) Equals(rhs *Graph) bool {
 
 type _List_Edge_Zapper []*Edge
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _List_Edge_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		if err := enc.AppendObject(val); err != nil {

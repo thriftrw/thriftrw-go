@@ -808,6 +808,7 @@ func (v *Function) Equals(rhs *Function) bool {
 
 type _List_Argument_Zapper []*Argument
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _List_Argument_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		if err := enc.AppendObject(val); err != nil {
@@ -819,6 +820,7 @@ func (vals _List_Argument_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) erro
 
 type _Map_String_String_Zapper map[string]string
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (keyvals _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	for k, v := range keyvals {
 		enc.AddString((string)(k), v)
@@ -1346,6 +1348,7 @@ func (v *GenerateServiceRequest) Equals(rhs *GenerateServiceRequest) bool {
 
 type _List_ServiceID_Zapper []ServiceID
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _List_ServiceID_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		enc.AppendInt32((int32)(val))
@@ -1358,6 +1361,7 @@ type _MapItem_ServiceID_Service_Zapper struct {
 	Value *Service
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (v _MapItem_ServiceID_Service_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("key", (int32)(v.Key))
 	if err := enc.AddObject("value", v.Value); err != nil {
@@ -1368,6 +1372,7 @@ func (v _MapItem_ServiceID_Service_Zapper) MarshalLogObject(enc zapcore.ObjectEn
 
 type _Map_ServiceID_Service_Zapper map[ServiceID]*Service
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (keyvals _Map_ServiceID_Service_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range keyvals {
 		if err := enc.AppendObject(_MapItem_ServiceID_Service_Zapper{Key: k, Value: v}); err != nil {
@@ -1382,6 +1387,7 @@ type _MapItem_ModuleID_Module_Zapper struct {
 	Value *Module
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (v _MapItem_ModuleID_Module_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("key", (int32)(v.Key))
 	if err := enc.AddObject("value", v.Value); err != nil {
@@ -1392,6 +1398,7 @@ func (v _MapItem_ModuleID_Module_Zapper) MarshalLogObject(enc zapcore.ObjectEnco
 
 type _Map_ModuleID_Module_Zapper map[ModuleID]*Module
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (keyvals _Map_ModuleID_Module_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range keyvals {
 		if err := enc.AppendObject(_MapItem_ModuleID_Module_Zapper{Key: k, Value: v}); err != nil {
@@ -1628,6 +1635,7 @@ func (v *GenerateServiceResponse) Equals(rhs *GenerateServiceResponse) bool {
 
 type _Map_String_Binary_Zapper map[string][]byte
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (keyvals _Map_String_Binary_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	for k, v := range keyvals {
 		enc.AddString((string)(k), base64.StdEncoding.EncodeToString(v))
@@ -2015,6 +2023,7 @@ func (v *HandshakeResponse) Equals(rhs *HandshakeResponse) bool {
 
 type _List_Feature_Zapper []Feature
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _List_Feature_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		if err := enc.AppendObject(val); err != nil {
@@ -2591,6 +2600,7 @@ func (v *Service) Equals(rhs *Service) bool {
 
 type _List_Function_Zapper []*Function
 
+// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 func (vals _List_Function_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
 		if err := enc.AppendObject(val); err != nil {
