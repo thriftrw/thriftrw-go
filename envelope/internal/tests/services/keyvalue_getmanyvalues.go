@@ -29,6 +29,7 @@ import (
 	"go.uber.org/thriftrw/envelope/internal/tests/exceptions"
 	"go.uber.org/thriftrw/envelope/internal/tests/unions"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -196,6 +197,25 @@ func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) b
 	}
 
 	return true
+}
+
+type _List_Key_Zapper []Key
+
+func (vals _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendString((string)(val))
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.Range != nil {
+		enc.AddArray("range", (_List_Key_Zapper)(v.Range))
+	}
+
+	return nil
 }
 
 // GetRange returns the value of Range if it is set or its
@@ -533,6 +553,29 @@ func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Resul
 	}
 
 	return true
+}
+
+type _List_ArbitraryValue_Zapper []*unions.ArbitraryValue
+
+func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.Success != nil {
+		enc.AddArray("success", (_List_ArbitraryValue_Zapper)(v.Success))
+	}
+
+	if v.DoesNotExist != nil {
+		enc.AddObject("doesNotExist", v.DoesNotExist)
+	}
+
+	return nil
 }
 
 // GetSuccess returns the value of Success if it is set or its
