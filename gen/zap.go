@@ -112,7 +112,11 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 				<$v := newVar "v">
 				func (<$keyvals> <.Name>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
 					for <$k>, <$v> := range <$keyvals> {
-						enc.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>)
+						<if (zapCanError .Type.ValueSpec)>if err := <end ->
+							enc.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>)
+							<- if (zapCanError .Type.ValueSpec) ->; err != nil {
+							return err
+						}<end>
 					}
 					return nil
 				}
@@ -147,7 +151,9 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 							<$k> := <$i>.Key
 							<$v> := <$i>.Value
 					<end ->
-						enc.AppendObject(<zapMapItemMarshaler .Type.KeySpec "k" .Type.ValueSpec "v">)
+						if err := enc.AppendObject(<zapMapItemMarshaler .Type.KeySpec "k" .Type.ValueSpec "v">); err != nil {
+							return err
+						}
 					}
 					return nil
 				}
@@ -178,8 +184,12 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 						for <$v> := range <$vals> {
 					<else ->
 						for _, <$v> := range <$vals> {
-					<end>
-						enc.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec "v">)
+					<end ->
+						<if (zapCanError .Type.ValueSpec)>if err := <end ->
+							enc.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec "v">)
+						<- if (zapCanError .Type.ValueSpec)>; err != nil {
+							return err
+						}<end>
 					}
 					return nil
 				}
@@ -205,7 +215,11 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 				<$vals := newVar "vals">
 				func (<$vals> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
 					for _, val := range <$vals> {
-						enc.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec "val">)
+						<if (zapCanError .Type.ValueSpec)>if err := <end ->
+							enc.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec "val">)
+						<- if (zapCanError .Type.ValueSpec)>; err != nil {
+							return err
+						}<end>
 					}
 					return nil
 				}
@@ -255,8 +269,16 @@ func zapMapItemMarshaler(
 			<$key := printf "%s.%s" $v "Key">
 			<$val := printf "%s.%s" $v "Value">
 			func (<$v> <.Name>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
+				<if (zapCanError .KeyType)>if err := <end ->
 				enc.Add<zapEncoder .KeyType>("key", <zapMarshaler .KeyType $key>)
+				<- if (zapCanError .KeyType)>; err != nil {
+						return err
+					}<end>
+				<if (zapCanError .ValueType)>if err := <end ->
 				enc.Add<zapEncoder .ValueType>("value", <zapMarshaler .ValueType $val>)
+				<- if (zapCanError .ValueType)>; err != nil {
+					return err
+				}<end>
 				return nil
 			}
 			`, struct {
@@ -274,4 +296,21 @@ func zapMapItemMarshaler(
 
 	// TODO: generate wrapper types for sets and use those here
 	return fmt.Sprintf("%v{Key: %v, Value: %v}", name, keyVar, valueVar), nil
+}
+
+func zapCanError(spec compile.TypeSpec) bool {
+	root := compile.RootTypeSpec(spec)
+
+	switch root.(type) {
+	// Primitives
+	case *compile.BoolSpec, *compile.I8Spec, *compile.I16Spec, *compile.I32Spec,
+		*compile.I64Spec, *compile.DoubleSpec, *compile.StringSpec, *compile.BinarySpec:
+		return false
+
+	case *compile.MapSpec, *compile.SetSpec, *compile.ListSpec, *compile.EnumSpec,
+		*compile.StructSpec:
+		return true
+	default:
+	}
+	panic(root)
 }
