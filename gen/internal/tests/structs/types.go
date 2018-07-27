@@ -5,6 +5,7 @@ package structs
 
 import (
 	"bytes"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/gen/internal/tests/enums"
@@ -680,18 +681,18 @@ func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 
 type _List_String_Zapper []string
 
-func (v _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for _, x := range v {
-		enc.AppendString(x)
+func (vals _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendString(val)
 	}
 	return nil
 }
 
 type _List_Double_Zapper []float64
 
-func (v _List_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for _, x := range v {
-		enc.AppendFloat64(x)
+func (vals _List_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendFloat64(val)
 	}
 	return nil
 }
@@ -724,11 +725,11 @@ func (v *DefaultsStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	}
 
 	if v.RequiredStruct != nil {
-		enc.AddReflected("requiredStruct", v.RequiredStruct)
+		enc.AddObject("requiredStruct", v.RequiredStruct)
 	}
 
 	if v.OptionalStruct != nil {
-		enc.AddReflected("optionalStruct", v.OptionalStruct)
+		enc.AddObject("optionalStruct", v.OptionalStruct)
 	}
 
 	return nil
@@ -985,9 +986,9 @@ func (v *Edge) Equals(rhs *Edge) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (v *Edge) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
-	enc.AddReflected("startPoint", v.StartPoint)
+	enc.AddObject("startPoint", v.StartPoint)
 
-	enc.AddReflected("endPoint", v.EndPoint)
+	enc.AddObject("endPoint", v.EndPoint)
 
 	return nil
 }
@@ -1228,9 +1229,9 @@ func (v *Frame) Equals(rhs *Frame) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (v *Frame) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
-	enc.AddReflected("topLeft", v.TopLeft)
+	enc.AddObject("topLeft", v.TopLeft)
 
-	enc.AddReflected("size", v.Size)
+	enc.AddObject("size", v.Size)
 
 	return nil
 }
@@ -1726,9 +1727,9 @@ func (v *Graph) Equals(rhs *Graph) bool {
 
 type _List_Edge_Zapper []*Edge
 
-func (v _List_Edge_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for _, x := range v {
-		enc.AppendReflected(x)
+func (vals _List_Edge_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
 	}
 	return nil
 }
@@ -1918,7 +1919,7 @@ func (v *Node) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", v.Value)
 
 	if v.Tail != nil {
-		enc.AddReflected("tail", (*Node)(v.Tail))
+		enc.AddObject("tail", (*Node)(v.Tail))
 	}
 
 	return nil
@@ -2610,7 +2611,7 @@ func (v *PrimitiveOptionalStruct) MarshalLogObject(enc zapcore.ObjectEncoder) er
 	}
 
 	if v.BinaryField != nil {
-		enc.AddBinary("binaryField", v.BinaryField)
+		enc.AddString("binaryField", base64.StdEncoding.EncodeToString(v.BinaryField))
 	}
 
 	return nil
@@ -3006,7 +3007,7 @@ func (v *PrimitiveRequiredStruct) MarshalLogObject(enc zapcore.ObjectEncoder) er
 
 	enc.AddString("stringField", v.StringField)
 
-	enc.AddBinary("binaryField", v.BinaryField)
+	enc.AddString("binaryField", base64.StdEncoding.EncodeToString(v.BinaryField))
 
 	return nil
 }
@@ -3488,7 +3489,7 @@ func (v *User) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("name", v.Name)
 
 	if v.Contact != nil {
-		enc.AddReflected("contact", v.Contact)
+		enc.AddObject("contact", v.Contact)
 	}
 
 	return nil

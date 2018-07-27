@@ -405,11 +405,11 @@ func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
 func (v *KeyValue_GetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Success != nil {
-		enc.AddReflected("success", v.Success)
+		enc.AddObject("success", v.Success)
 	}
 
 	if v.DoesNotExist != nil {
-		enc.AddReflected("doesNotExist", v.DoesNotExist)
+		enc.AddObject("doesNotExist", v.DoesNotExist)
 	}
 
 	return nil

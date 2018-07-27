@@ -4,6 +4,7 @@
 package unions
 
 import (
+	"encoding/base64"
 	"fmt"
 	"go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/thriftrw/wire"
@@ -433,9 +434,18 @@ func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
 
 type _List_ArbitraryValue_Zapper []*ArbitraryValue
 
-func (v _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for _, x := range v {
-		enc.AppendReflected(x)
+func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
+	}
+	return nil
+}
+
+type _Map_String_ArbitraryValue_Zapper map[string]*ArbitraryValue
+
+func (keyvals _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range keyvals {
+		enc.AddObject((string)(k), v)
 	}
 	return nil
 }
@@ -460,7 +470,7 @@ func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	}
 
 	if v.MapValue != nil {
-		enc.AddReflected("mapValue", v.MapValue)
+		enc.AddObject("mapValue", (_Map_String_ArbitraryValue_Zapper)(v.MapValue))
 	}
 
 	return nil
@@ -671,7 +681,7 @@ func (v *Document) Equals(rhs *Document) bool {
 func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Pdf != nil {
-		enc.AddBinary("pdf", ([]byte)(v.Pdf))
+		enc.AddString("pdf", base64.StdEncoding.EncodeToString(([]byte)(v.Pdf)))
 	}
 
 	if v.PlainText != nil {

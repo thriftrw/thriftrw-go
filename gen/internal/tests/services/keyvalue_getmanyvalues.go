@@ -181,9 +181,9 @@ func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) b
 
 type _List_Key_Zapper []Key
 
-func (v _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for _, x := range v {
-		enc.AppendString((string)(x))
+func (vals _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendString((string)(val))
 	}
 	return nil
 }
@@ -537,9 +537,9 @@ func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Resul
 
 type _List_ArbitraryValue_Zapper []*unions.ArbitraryValue
 
-func (v _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for _, x := range v {
-		enc.AppendReflected(x)
+func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
 	}
 	return nil
 }
@@ -552,7 +552,7 @@ func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncod
 	}
 
 	if v.DoesNotExist != nil {
-		enc.AddReflected("doesNotExist", v.DoesNotExist)
+		enc.AddObject("doesNotExist", v.DoesNotExist)
 	}
 
 	return nil

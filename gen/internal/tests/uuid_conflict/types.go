@@ -194,7 +194,7 @@ func (v *UUIDConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("localUUID", (string)(v.LocalUUID))
 
-	enc.AddReflected("importedUUID", (*typedefs.I128)(v.ImportedUUID))
+	enc.AddObject("importedUUID", (*typedefs.I128)(v.ImportedUUID))
 
 	return nil
 }

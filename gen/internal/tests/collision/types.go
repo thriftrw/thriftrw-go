@@ -942,9 +942,28 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 
 type _List_String_Zapper []string
 
-func (v _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for _, x := range v {
-		enc.AppendString(x)
+func (vals _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendString(val)
+	}
+	return nil
+}
+
+type _Set_String_Zapper map[string]struct{}
+
+func (vals _Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for v := range vals {
+
+		enc.AppendString(v)
+	}
+	return nil
+}
+
+type _Map_String_String_Zapper map[string]string
+
+func (keyvals _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range keyvals {
+		enc.AddString((string)(k), v)
 	}
 	return nil
 }
@@ -957,11 +976,11 @@ func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error 
 	}
 
 	if v.B != nil {
-		enc.AddReflected("List_Or_SetOrMap", v.B)
+		enc.AddArray("List_Or_SetOrMap", (_Set_String_Zapper)(v.B))
 	}
 
 	if v.C != nil {
-		enc.AddReflected("ListOrSet_Or_Map", v.C)
+		enc.AddObject("ListOrSet_Or_Map", (_Map_String_String_Zapper)(v.C))
 	}
 
 	return nil
@@ -1465,7 +1484,7 @@ func (v *WithDefault) Equals(rhs *WithDefault) bool {
 func (v *WithDefault) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Pouet != nil {
-		enc.AddReflected("pouet", v.Pouet)
+		enc.AddObject("pouet", v.Pouet)
 	}
 
 	return nil

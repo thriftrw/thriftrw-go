@@ -127,7 +127,7 @@ func (v *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_A
 func (v *ConflictingNames_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Request != nil {
-		enc.AddReflected("request", v.Request)
+		enc.AddObject("request", v.Request)
 	}
 
 	return nil

@@ -5,6 +5,7 @@ package services
 
 import (
 	"bytes"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
@@ -151,7 +152,7 @@ func (v *ConflictingNamesSetValueArgs) MarshalLogObject(enc zapcore.ObjectEncode
 
 	enc.AddString("key", v.Key)
 
-	enc.AddBinary("value", v.Value)
+	enc.AddString("value", base64.StdEncoding.EncodeToString(v.Value))
 
 	return nil
 }
