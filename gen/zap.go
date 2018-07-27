@@ -110,6 +110,7 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 				<$keyvals := newVar "keyvals">
 				<$k := newVar "k">
 				<$v := newVar "v">
+				// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 				func (<$keyvals> <.Name>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
 					for <$k>, <$v> := range <$keyvals> {
 						<if (zapCanError .Type.ValueSpec)>if err := <end ->
@@ -143,6 +144,7 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 				<$k := newVar "k">
 				<$v := newVar "v">
 				<$i := newVar "i">
+				// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 				func (<$keyvals> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
 					<- if isHashable .Type.KeySpec ->
 						for <$k>, <$v> := range <$keyvals> {
@@ -179,6 +181,7 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 				<$zapcore := import "go.uber.org/zap/zapcore">
 				<$vals := newVar "vals">
 				<$v := newVar "v">
+				// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 				func (<$vals> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
 					<- if isHashable .Type.ValueSpec ->
 						for <$v> := range <$vals> {
@@ -213,6 +216,7 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 				type <.Name> <typeReference .Type>
 				<$zapcore := import "go.uber.org/zap/zapcore">
 				<$vals := newVar "vals">
+				// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
 				func (<$vals> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
 					for _, val := range <$vals> {
 						<if (zapCanError .Type.ValueSpec)>if err := <end ->
@@ -268,6 +272,7 @@ func zapMapItemMarshaler(
 			<$v := newVar "v">
 			<$key := printf "%s.%s" $v "Key">
 			<$val := printf "%s.%s" $v "Value">
+			// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 			func (<$v> <.Name>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
 				<if (zapCanError .KeyType)>if err := <end ->
 				enc.Add<zapEncoder .KeyType>("key", <zapMarshaler .KeyType $key>)
