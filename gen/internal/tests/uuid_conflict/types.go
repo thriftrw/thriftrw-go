@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -186,6 +187,16 @@ func (v *UUIDConflict) Equals(rhs *UUIDConflict) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *UUIDConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddString("localUUID", (string)(v.LocalUUID))
+
+	enc.AddObject("importedUUID", (*typedefs.I128)(v.ImportedUUID))
+
+	return nil
 }
 
 // GetLocalUUID returns the value of LocalUUID if it is set or its

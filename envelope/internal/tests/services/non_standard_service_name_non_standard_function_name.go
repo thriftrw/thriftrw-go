@@ -26,6 +26,7 @@ package services
 import (
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -106,6 +107,12 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) String() string {
 func (v *NonStandardServiceName_NonStandardFunctionName_Args) Equals(rhs *NonStandardServiceName_NonStandardFunctionName_Args) bool {
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *NonStandardServiceName_NonStandardFunctionName_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	return nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -269,6 +276,12 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) String() string 
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) Equals(rhs *NonStandardServiceName_NonStandardFunctionName_Result) bool {
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *NonStandardServiceName_NonStandardFunctionName_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	return nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

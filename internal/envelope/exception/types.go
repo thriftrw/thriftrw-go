@@ -28,6 +28,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"math"
 	"strconv"
 	"strings"
@@ -143,6 +144,36 @@ func (v ExceptionType) MarshalText() ([]byte, error) {
 		return []byte("UNSUPPORTED_CLIENT_TYPE"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// TODO()
+func (v ExceptionType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 0:
+		enc.AddString("name", "UNKNOWN")
+	case 1:
+		enc.AddString("name", "UNKNOWN_METHOD")
+	case 2:
+		enc.AddString("name", "INVALID_MESSAGE_TYPE")
+	case 3:
+		enc.AddString("name", "WRONG_METHOD_NAME")
+	case 4:
+		enc.AddString("name", "BAD_SEQUENCE_ID")
+	case 5:
+		enc.AddString("name", "MISSING_RESULT")
+	case 6:
+		enc.AddString("name", "INTERNAL_ERROR")
+	case 7:
+		enc.AddString("name", "PROTOCOL_ERROR")
+	case 8:
+		enc.AddString("name", "INVALID_TRANSFORM")
+	case 9:
+		enc.AddString("name", "INVALID_PROTOCOL")
+	case 10:
+		enc.AddString("name", "UNSUPPORTED_CLIENT_TYPE")
+	}
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -439,6 +470,20 @@ func (v *TApplicationException) Equals(rhs *TApplicationException) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *TApplicationException) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.Message != nil {
+		enc.AddString("message", *v.Message)
+	}
+
+	if v.Type != nil {
+		enc.AddObject("type", *v.Type)
+	}
+
+	return nil
 }
 
 // GetMessage returns the value of Message if it is set or its

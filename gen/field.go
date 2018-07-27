@@ -91,6 +91,10 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 		return err
 	}
 
+	if err := f.Zap(g); err != nil {
+		return err
+	}
+
 	return f.Accessors(g)
 }
 
@@ -457,6 +461,31 @@ func (f fieldGroupGenerator) Equals(g Generator) error {
 				<- end>
 			<end>
 			return true
+		}
+		`, f)
+}
+
+func (f fieldGroupGenerator) Zap(g Generator) error {
+	return g.DeclareFromTemplate(
+		`
+		<$zapcore := import "go.uber.org/zap/zapcore">
+		<$v := newVar "v">
+		// TODO(minho): Make enc a newVar.
+
+		// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+		func (<$v> *<.Name>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
+			<range .Fields>
+				<$fname := goName .>
+				<$fval := printf "%s.%s" $v $fname>
+				<- if .Required ->
+					enc.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
+				<- else ->
+					if <$fval> != nil {
+						enc.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>)
+					}
+				<- end>
+			<end>
+			return nil
 		}
 		`, f)
 }

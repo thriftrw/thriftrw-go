@@ -25,10 +25,12 @@ package api
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"math"
 	"strconv"
 	"strings"
@@ -187,6 +189,16 @@ func (v *Argument) Equals(rhs *Argument) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Argument) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddString("name", v.Name)
+
+	enc.AddObject("type", v.Type)
+
+	return nil
+}
+
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
 func (v *Argument) GetName() (o string) { return v.Name }
@@ -241,6 +253,16 @@ func (v Feature) MarshalText() ([]byte, error) {
 		return []byte("SERVICE_GENERATOR"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// TODO()
+func (v Feature) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 1:
+		enc.AddString("name", "SERVICE_GENERATOR")
+	}
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -782,6 +804,52 @@ func (v *Function) Equals(rhs *Function) bool {
 	return true
 }
 
+type _List_Argument_Zapper []*Argument
+
+func (vals _List_Argument_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
+	}
+	return nil
+}
+
+type _Map_String_String_Zapper map[string]string
+
+func (keyvals _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range keyvals {
+		enc.AddString((string)(k), v)
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Function) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddString("name", v.Name)
+
+	enc.AddString("thriftName", v.ThriftName)
+
+	enc.AddArray("arguments", (_List_Argument_Zapper)(v.Arguments))
+
+	if v.ReturnType != nil {
+		enc.AddObject("returnType", v.ReturnType)
+	}
+
+	if v.Exceptions != nil {
+		enc.AddArray("exceptions", (_List_Argument_Zapper)(v.Exceptions))
+	}
+
+	if v.OneWay != nil {
+		enc.AddBool("oneWay", *v.OneWay)
+	}
+
+	if v.Annotations != nil {
+		enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations))
+	}
+
+	return nil
+}
+
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
 func (v *Function) GetName() (o string) { return v.Name }
@@ -1264,6 +1332,67 @@ func (v *GenerateServiceRequest) Equals(rhs *GenerateServiceRequest) bool {
 	return true
 }
 
+type _List_ServiceID_Zapper []ServiceID
+
+func (vals _List_ServiceID_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendInt32((int32)(val))
+	}
+	return nil
+}
+
+type _MapItem_ServiceID_Service_Zapper struct {
+	Key   ServiceID
+	Value *Service
+}
+
+func (v _MapItem_ServiceID_Service_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("key", (int32)(v.Key))
+	enc.AddObject("value", v.Value)
+	return nil
+}
+
+type _Map_ServiceID_Service_Zapper map[ServiceID]*Service
+
+func (keyvals _Map_ServiceID_Service_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for k, v := range keyvals {
+		enc.AppendObject(_MapItem_ServiceID_Service_Zapper{Key: k, Value: v})
+	}
+	return nil
+}
+
+type _MapItem_ModuleID_Module_Zapper struct {
+	Key   ModuleID
+	Value *Module
+}
+
+func (v _MapItem_ModuleID_Module_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("key", (int32)(v.Key))
+	enc.AddObject("value", v.Value)
+	return nil
+}
+
+type _Map_ModuleID_Module_Zapper map[ModuleID]*Module
+
+func (keyvals _Map_ModuleID_Module_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for k, v := range keyvals {
+		enc.AppendObject(_MapItem_ModuleID_Module_Zapper{Key: k, Value: v})
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *GenerateServiceRequest) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddArray("rootServices", (_List_ServiceID_Zapper)(v.RootServices))
+
+	enc.AddArray("services", (_Map_ServiceID_Service_Zapper)(v.Services))
+
+	enc.AddArray("modules", (_Map_ModuleID_Module_Zapper)(v.Modules))
+
+	return nil
+}
+
 // GetRootServices returns the value of RootServices if it is set or its
 // zero value if it is unset.
 func (v *GenerateServiceRequest) GetRootServices() (o []ServiceID) { return v.RootServices }
@@ -1471,6 +1600,25 @@ func (v *GenerateServiceResponse) Equals(rhs *GenerateServiceResponse) bool {
 	return true
 }
 
+type _Map_String_Binary_Zapper map[string][]byte
+
+func (keyvals _Map_String_Binary_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range keyvals {
+		enc.AddString((string)(k), base64.StdEncoding.EncodeToString(v))
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *GenerateServiceResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.Files != nil {
+		enc.AddObject("files", (_Map_String_Binary_Zapper)(v.Files))
+	}
+
+	return nil
+}
+
 // GetFiles returns the value of Files if it is set or its
 // zero value if it is unset.
 func (v *GenerateServiceResponse) GetFiles() (o map[string][]byte) {
@@ -1557,6 +1705,12 @@ func (v *HandshakeRequest) String() string {
 func (v *HandshakeRequest) Equals(rhs *HandshakeRequest) bool {
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *HandshakeRequest) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	return nil
 }
 
 // HandshakeResponse is the response from the plugin for a HandshakeRequest.
@@ -1831,6 +1985,31 @@ func (v *HandshakeResponse) Equals(rhs *HandshakeResponse) bool {
 	return true
 }
 
+type _List_Feature_Zapper []Feature
+
+func (vals _List_Feature_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *HandshakeResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddString("name", v.Name)
+
+	enc.AddInt32("apiVersion", v.APIVersion)
+
+	enc.AddArray("features", (_List_Feature_Zapper)(v.Features))
+
+	if v.LibraryVersion != nil {
+		enc.AddString("libraryVersion", *v.LibraryVersion)
+	}
+
+	return nil
+}
+
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
 func (v *HandshakeResponse) GetName() (o string) { return v.Name }
@@ -1992,6 +2171,16 @@ func (v *Module) Equals(rhs *Module) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Module) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddString("importPath", v.ImportPath)
+
+	enc.AddString("directory", v.Directory)
+
+	return nil
 }
 
 // GetImportPath returns the value of ImportPath if it is set or its
@@ -2368,6 +2557,37 @@ func (v *Service) Equals(rhs *Service) bool {
 	return true
 }
 
+type _List_Function_Zapper []*Function
+
+func (vals _List_Function_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Service) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddString("name", v.Name)
+
+	enc.AddString("thriftName", v.ThriftName)
+
+	if v.ParentID != nil {
+		enc.AddInt32("parentID", (int32)(*v.ParentID))
+	}
+
+	enc.AddArray("functions", (_List_Function_Zapper)(v.Functions))
+
+	enc.AddInt32("moduleID", (int32)(v.ModuleID))
+
+	if v.Annotations != nil {
+		enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations))
+	}
+
+	return nil
+}
+
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
 func (v *Service) GetName() (o string) { return v.Name }
@@ -2534,6 +2754,32 @@ func (v SimpleType) MarshalText() ([]byte, error) {
 		return []byte("STRUCT_EMPTY"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// TODO()
+func (v SimpleType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 1:
+		enc.AddString("name", "BOOL")
+	case 2:
+		enc.AddString("name", "BYTE")
+	case 3:
+		enc.AddString("name", "INT8")
+	case 4:
+		enc.AddString("name", "INT16")
+	case 5:
+		enc.AddString("name", "INT32")
+	case 6:
+		enc.AddString("name", "INT64")
+	case 7:
+		enc.AddString("name", "FLOAT64")
+	case 8:
+		enc.AddString("name", "STRING")
+	case 9:
+		enc.AddString("name", "STRUCT_EMPTY")
+	}
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -2959,6 +3205,36 @@ func (v *Type) Equals(rhs *Type) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Type) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.SimpleType != nil {
+		enc.AddObject("simpleType", *v.SimpleType)
+	}
+
+	if v.SliceType != nil {
+		enc.AddObject("sliceType", v.SliceType)
+	}
+
+	if v.KeyValueSliceType != nil {
+		enc.AddObject("keyValueSliceType", v.KeyValueSliceType)
+	}
+
+	if v.MapType != nil {
+		enc.AddObject("mapType", v.MapType)
+	}
+
+	if v.ReferenceType != nil {
+		enc.AddObject("referenceType", v.ReferenceType)
+	}
+
+	if v.PointerType != nil {
+		enc.AddObject("pointerType", v.PointerType)
+	}
+
+	return nil
+}
+
 // GetSimpleType returns the value of SimpleType if it is set or its
 // zero value if it is unset.
 func (v *Type) GetSimpleType() (o SimpleType) {
@@ -3157,6 +3433,16 @@ func (v *TypePair) Equals(rhs *TypePair) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *TypePair) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddObject("left", v.Left)
+
+	enc.AddObject("right", v.Right)
+
+	return nil
+}
+
 // GetLeft returns the value of Left if it is set or its
 // zero value if it is unset.
 func (v *TypePair) GetLeft() (o *Type) { return v.Left }
@@ -3339,6 +3625,20 @@ func (v *TypeReference) Equals(rhs *TypeReference) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *TypeReference) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddString("name", v.Name)
+
+	enc.AddString("importPath", v.ImportPath)
+
+	if v.Annotations != nil {
+		enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations))
+	}
+
+	return nil
 }
 
 // GetName returns the value of Name if it is set or its
