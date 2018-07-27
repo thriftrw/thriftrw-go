@@ -5,6 +5,7 @@ package containers
 
 import (
 	"bytes"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
@@ -12,6 +13,7 @@ import (
 	"go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/thriftrw/gen/internal/tests/uuid_conflict"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -1652,6 +1654,275 @@ func (v *ContainersOfContainers) Equals(rhs *ContainersOfContainers) bool {
 	return true
 }
 
+type _List_I32_Zapper []int32
+
+func (vals _List_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendInt32(val)
+	}
+	return nil
+}
+
+type _List_List_I32_Zapper [][]int32
+
+func (vals _List_List_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendArray((_List_I32_Zapper)(val))
+	}
+	return nil
+}
+
+type _Set_I32_Zapper map[int32]struct{}
+
+func (vals _Set_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for v := range vals {
+
+		enc.AppendInt32(v)
+	}
+	return nil
+}
+
+type _List_Set_I32_Zapper []map[int32]struct{}
+
+func (vals _List_Set_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendArray((_Set_I32_Zapper)(val))
+	}
+	return nil
+}
+
+type _MapItem_I32_I32_Zapper struct {
+	Key   int32
+	Value int32
+}
+
+func (v _MapItem_I32_I32_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("key", v.Key)
+	enc.AddInt32("value", v.Value)
+	return nil
+}
+
+type _Map_I32_I32_Zapper map[int32]int32
+
+func (keyvals _Map_I32_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for k, v := range keyvals {
+		enc.AppendObject(_MapItem_I32_I32_Zapper{Key: k, Value: v})
+	}
+	return nil
+}
+
+type _List_Map_I32_I32_Zapper []map[int32]int32
+
+func (vals _List_Map_I32_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendArray((_Map_I32_I32_Zapper)(val))
+	}
+	return nil
+}
+
+type _Set_String_Zapper map[string]struct{}
+
+func (vals _Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for v := range vals {
+
+		enc.AppendString(v)
+	}
+	return nil
+}
+
+type _Set_Set_String_Zapper []map[string]struct{}
+
+func (vals _Set_Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, v := range vals {
+
+		enc.AppendArray((_Set_String_Zapper)(v))
+	}
+	return nil
+}
+
+type _List_String_Zapper []string
+
+func (vals _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendString(val)
+	}
+	return nil
+}
+
+type _Set_List_String_Zapper [][]string
+
+func (vals _Set_List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, v := range vals {
+
+		enc.AppendArray((_List_String_Zapper)(v))
+	}
+	return nil
+}
+
+type _Map_String_String_Zapper map[string]string
+
+func (keyvals _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range keyvals {
+		enc.AddString((string)(k), v)
+	}
+	return nil
+}
+
+type _Set_Map_String_String_Zapper []map[string]string
+
+func (vals _Set_Map_String_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, v := range vals {
+
+		enc.AppendObject((_Map_String_String_Zapper)(v))
+	}
+	return nil
+}
+
+type _Map_String_I32_Zapper map[string]int32
+
+func (keyvals _Map_String_I32_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range keyvals {
+		enc.AddInt32((string)(k), v)
+	}
+	return nil
+}
+
+type _MapItem_Map_String_I32_I64_Zapper struct {
+	Key   map[string]int32
+	Value int64
+}
+
+func (v _MapItem_Map_String_I32_I64_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddObject("key", (_Map_String_I32_Zapper)(v.Key))
+	enc.AddInt64("value", v.Value)
+	return nil
+}
+
+type _Map_Map_String_I32_I64_Zapper []struct {
+	Key   map[string]int32
+	Value int64
+}
+
+func (keyvals _Map_Map_String_I32_I64_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, i := range keyvals {
+		k := i.Key
+		v := i.Value
+		enc.AppendObject(_MapItem_Map_String_I32_I64_Zapper{Key: k, Value: v})
+	}
+	return nil
+}
+
+type _Set_I64_Zapper map[int64]struct{}
+
+func (vals _Set_I64_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for v := range vals {
+
+		enc.AppendInt64(v)
+	}
+	return nil
+}
+
+type _MapItem_List_I32_Set_I64_Zapper struct {
+	Key   []int32
+	Value map[int64]struct{}
+}
+
+func (v _MapItem_List_I32_Set_I64_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddArray("key", (_List_I32_Zapper)(v.Key))
+	enc.AddArray("value", (_Set_I64_Zapper)(v.Value))
+	return nil
+}
+
+type _Map_List_I32_Set_I64_Zapper []struct {
+	Key   []int32
+	Value map[int64]struct{}
+}
+
+func (keyvals _Map_List_I32_Set_I64_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, i := range keyvals {
+		k := i.Key
+		v := i.Value
+		enc.AppendObject(_MapItem_List_I32_Set_I64_Zapper{Key: k, Value: v})
+	}
+	return nil
+}
+
+type _List_Double_Zapper []float64
+
+func (vals _List_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendFloat64(val)
+	}
+	return nil
+}
+
+type _MapItem_Set_I32_List_Double_Zapper struct {
+	Key   map[int32]struct{}
+	Value []float64
+}
+
+func (v _MapItem_Set_I32_List_Double_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddArray("key", (_Set_I32_Zapper)(v.Key))
+	enc.AddArray("value", (_List_Double_Zapper)(v.Value))
+	return nil
+}
+
+type _Map_Set_I32_List_Double_Zapper []struct {
+	Key   map[int32]struct{}
+	Value []float64
+}
+
+func (keyvals _Map_Set_I32_List_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, i := range keyvals {
+		k := i.Key
+		v := i.Value
+		enc.AppendObject(_MapItem_Set_I32_List_Double_Zapper{Key: k, Value: v})
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *ContainersOfContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.ListOfLists != nil {
+		enc.AddArray("listOfLists", (_List_List_I32_Zapper)(v.ListOfLists))
+	}
+
+	if v.ListOfSets != nil {
+		enc.AddArray("listOfSets", (_List_Set_I32_Zapper)(v.ListOfSets))
+	}
+
+	if v.ListOfMaps != nil {
+		enc.AddArray("listOfMaps", (_List_Map_I32_I32_Zapper)(v.ListOfMaps))
+	}
+
+	if v.SetOfSets != nil {
+		enc.AddArray("setOfSets", (_Set_Set_String_Zapper)(v.SetOfSets))
+	}
+
+	if v.SetOfLists != nil {
+		enc.AddArray("setOfLists", (_Set_List_String_Zapper)(v.SetOfLists))
+	}
+
+	if v.SetOfMaps != nil {
+		enc.AddArray("setOfMaps", (_Set_Map_String_String_Zapper)(v.SetOfMaps))
+	}
+
+	if v.MapOfMapToInt != nil {
+		enc.AddArray("mapOfMapToInt", (_Map_Map_String_I32_I64_Zapper)(v.MapOfMapToInt))
+	}
+
+	if v.MapOfListToSet != nil {
+		enc.AddArray("mapOfListToSet", (_Map_List_I32_Set_I64_Zapper)(v.MapOfListToSet))
+	}
+
+	if v.MapOfSetToListOfDouble != nil {
+		enc.AddArray("mapOfSetToListOfDouble", (_Map_Set_I32_List_Double_Zapper)(v.MapOfSetToListOfDouble))
+	}
+
+	return nil
+}
+
 // GetListOfLists returns the value of ListOfLists if it is set or its
 // zero value if it is unset.
 func (v *ContainersOfContainers) GetListOfLists() (o [][]int32) {
@@ -2119,6 +2390,63 @@ func (v *EnumContainers) Equals(rhs *EnumContainers) bool {
 	return true
 }
 
+type _List_EnumDefault_Zapper []enums.EnumDefault
+
+func (vals _List_EnumDefault_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
+	}
+	return nil
+}
+
+type _Set_EnumWithValues_Zapper map[enums.EnumWithValues]struct{}
+
+func (vals _Set_EnumWithValues_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for v := range vals {
+
+		enc.AppendObject(v)
+	}
+	return nil
+}
+
+type _MapItem_EnumWithDuplicateValues_I32_Zapper struct {
+	Key   enums.EnumWithDuplicateValues
+	Value int32
+}
+
+func (v _MapItem_EnumWithDuplicateValues_I32_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddObject("key", v.Key)
+	enc.AddInt32("value", v.Value)
+	return nil
+}
+
+type _Map_EnumWithDuplicateValues_I32_Zapper map[enums.EnumWithDuplicateValues]int32
+
+func (keyvals _Map_EnumWithDuplicateValues_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for k, v := range keyvals {
+		enc.AppendObject(_MapItem_EnumWithDuplicateValues_I32_Zapper{Key: k, Value: v})
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *EnumContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.ListOfEnums != nil {
+		enc.AddArray("listOfEnums", (_List_EnumDefault_Zapper)(v.ListOfEnums))
+	}
+
+	if v.SetOfEnums != nil {
+		enc.AddArray("setOfEnums", (_Set_EnumWithValues_Zapper)(v.SetOfEnums))
+	}
+
+	if v.MapOfEnums != nil {
+		enc.AddArray("mapOfEnums", (_Map_EnumWithDuplicateValues_I32_Zapper)(v.MapOfEnums))
+	}
+
+	return nil
+}
+
 // GetListOfEnums returns the value of ListOfEnums if it is set or its
 // zero value if it is unset.
 func (v *EnumContainers) GetListOfEnums() (o []enums.EnumDefault) {
@@ -2416,6 +2744,34 @@ func (v *ListOfConflictingEnums) Equals(rhs *ListOfConflictingEnums) bool {
 	return true
 }
 
+type _List_RecordType_Zapper []enum_conflict.RecordType
+
+func (vals _List_RecordType_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
+	}
+	return nil
+}
+
+type _List_RecordType_1_Zapper []enums.RecordType
+
+func (vals _List_RecordType_1_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *ListOfConflictingEnums) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddArray("records", (_List_RecordType_Zapper)(v.Records))
+
+	enc.AddArray("otherRecords", (_List_RecordType_1_Zapper)(v.OtherRecords))
+
+	return nil
+}
+
 // GetRecords returns the value of Records if it is set or its
 // zero value if it is unset.
 func (v *ListOfConflictingEnums) GetRecords() (o []enum_conflict.RecordType) { return v.Records }
@@ -2692,6 +3048,34 @@ func (v *ListOfConflictingUUIDs) Equals(rhs *ListOfConflictingUUIDs) bool {
 	}
 
 	return true
+}
+
+type _List_UUID_Zapper []*typedefs.UUID
+
+func (vals _List_UUID_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject((*typedefs.I128)(val))
+	}
+	return nil
+}
+
+type _List_UUID_1_Zapper []uuid_conflict.UUID
+
+func (vals _List_UUID_1_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendString((string)(val))
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *ListOfConflictingUUIDs) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddArray("uuids", (_List_UUID_Zapper)(v.Uuids))
+
+	enc.AddArray("otherUUIDs", (_List_UUID_1_Zapper)(v.OtherUUIDs))
+
+	return nil
 }
 
 // GetUuids returns the value of Uuids if it is set or its
@@ -3027,6 +3411,54 @@ func (v *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
 	}
 
 	return true
+}
+
+type _MapItem_Binary_String_Zapper struct {
+	Key   []byte
+	Value string
+}
+
+func (v _MapItem_Binary_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddString("key", base64.StdEncoding.EncodeToString(v.Key))
+	enc.AddString("value", v.Value)
+	return nil
+}
+
+type _Map_Binary_String_Zapper []struct {
+	Key   []byte
+	Value string
+}
+
+func (keyvals _Map_Binary_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, i := range keyvals {
+		k := i.Key
+		v := i.Value
+		enc.AppendObject(_MapItem_Binary_String_Zapper{Key: k, Value: v})
+	}
+	return nil
+}
+
+type _Map_String_Binary_Zapper map[string][]byte
+
+func (keyvals _Map_String_Binary_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range keyvals {
+		enc.AddString((string)(k), base64.StdEncoding.EncodeToString(v))
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *MapOfBinaryAndString) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.BinaryToString != nil {
+		enc.AddArray("binaryToString", (_Map_Binary_String_Zapper)(v.BinaryToString))
+	}
+
+	if v.StringToBinary != nil {
+		enc.AddObject("stringToBinary", (_Map_String_Binary_Zapper)(v.StringToBinary))
+	}
+
+	return nil
 }
 
 // GetBinaryToString returns the value of BinaryToString if it is set or its
@@ -3616,6 +4048,93 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	return true
 }
 
+type _List_Binary_Zapper [][]byte
+
+func (vals _List_Binary_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendString(base64.StdEncoding.EncodeToString(val))
+	}
+	return nil
+}
+
+type _List_I64_Zapper []int64
+
+func (vals _List_I64_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendInt64(val)
+	}
+	return nil
+}
+
+type _Set_Byte_Zapper map[int8]struct{}
+
+func (vals _Set_Byte_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for v := range vals {
+
+		enc.AppendInt8(v)
+	}
+	return nil
+}
+
+type _MapItem_I32_String_Zapper struct {
+	Key   int32
+	Value string
+}
+
+func (v _MapItem_I32_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("key", v.Key)
+	enc.AddString("value", v.Value)
+	return nil
+}
+
+type _Map_I32_String_Zapper map[int32]string
+
+func (keyvals _Map_I32_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for k, v := range keyvals {
+		enc.AppendObject(_MapItem_I32_String_Zapper{Key: k, Value: v})
+	}
+	return nil
+}
+
+type _Map_String_Bool_Zapper map[string]bool
+
+func (keyvals _Map_String_Bool_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range keyvals {
+		enc.AddBool((string)(k), v)
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.ListOfBinary != nil {
+		enc.AddArray("listOfBinary", (_List_Binary_Zapper)(v.ListOfBinary))
+	}
+
+	if v.ListOfInts != nil {
+		enc.AddArray("listOfInts", (_List_I64_Zapper)(v.ListOfInts))
+	}
+
+	if v.SetOfStrings != nil {
+		enc.AddArray("setOfStrings", (_Set_String_Zapper)(v.SetOfStrings))
+	}
+
+	if v.SetOfBytes != nil {
+		enc.AddArray("setOfBytes", (_Set_Byte_Zapper)(v.SetOfBytes))
+	}
+
+	if v.MapOfIntToString != nil {
+		enc.AddArray("mapOfIntToString", (_Map_I32_String_Zapper)(v.MapOfIntToString))
+	}
+
+	if v.MapOfStringToBool != nil {
+		enc.AddObject("mapOfStringToBool", (_Map_String_Bool_Zapper)(v.MapOfStringToBool))
+	}
+
+	return nil
+}
+
 // GetListOfBinary returns the value of ListOfBinary if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetListOfBinary() (o [][]byte) {
@@ -3919,6 +4438,38 @@ func (v *PrimitiveContainersRequired) Equals(rhs *PrimitiveContainersRequired) b
 	}
 
 	return true
+}
+
+type _MapItem_I64_Double_Zapper struct {
+	Key   int64
+	Value float64
+}
+
+func (v _MapItem_I64_Double_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt64("key", v.Key)
+	enc.AddFloat64("value", v.Value)
+	return nil
+}
+
+type _Map_I64_Double_Zapper map[int64]float64
+
+func (keyvals _Map_I64_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for k, v := range keyvals {
+		enc.AppendObject(_MapItem_I64_Double_Zapper{Key: k, Value: v})
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *PrimitiveContainersRequired) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddArray("listOfStrings", (_List_String_Zapper)(v.ListOfStrings))
+
+	enc.AddArray("setOfInts", (_Set_I32_Zapper)(v.SetOfInts))
+
+	enc.AddArray("mapOfIntsToDoubles", (_Map_I64_Double_Zapper)(v.MapOfIntsToDoubles))
+
+	return nil
 }
 
 // GetListOfStrings returns the value of ListOfStrings if it is set or its

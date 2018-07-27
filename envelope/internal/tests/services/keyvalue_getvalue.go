@@ -29,6 +29,7 @@ import (
 	"go.uber.org/thriftrw/envelope/internal/tests/exceptions"
 	"go.uber.org/thriftrw/envelope/internal/tests/unions"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -139,6 +140,16 @@ func (v *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *KeyValue_GetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.Key != nil {
+		enc.AddString("key", (string)(*v.Key))
+	}
+
+	return nil
 }
 
 // GetKey returns the value of Key if it is set or its
@@ -408,6 +419,20 @@ func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *KeyValue_GetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.Success != nil {
+		enc.AddObject("success", v.Success)
+	}
+
+	if v.DoesNotExist != nil {
+		enc.AddObject("doesNotExist", v.DoesNotExist)
+	}
+
+	return nil
 }
 
 // GetSuccess returns the value of Success if it is set or its

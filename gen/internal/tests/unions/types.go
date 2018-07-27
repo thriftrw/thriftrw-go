@@ -4,9 +4,11 @@
 package unions
 
 import (
+	"encoding/base64"
 	"fmt"
 	"go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -430,6 +432,50 @@ func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
 	return true
 }
 
+type _List_ArbitraryValue_Zapper []*ArbitraryValue
+
+func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
+	}
+	return nil
+}
+
+type _Map_String_ArbitraryValue_Zapper map[string]*ArbitraryValue
+
+func (keyvals _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range keyvals {
+		enc.AddObject((string)(k), v)
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.BoolValue != nil {
+		enc.AddBool("boolValue", *v.BoolValue)
+	}
+
+	if v.Int64Value != nil {
+		enc.AddInt64("int64Value", *v.Int64Value)
+	}
+
+	if v.StringValue != nil {
+		enc.AddString("stringValue", *v.StringValue)
+	}
+
+	if v.ListValue != nil {
+		enc.AddArray("listValue", (_List_ArbitraryValue_Zapper)(v.ListValue))
+	}
+
+	if v.MapValue != nil {
+		enc.AddObject("mapValue", (_Map_String_ArbitraryValue_Zapper)(v.MapValue))
+	}
+
+	return nil
+}
+
 // GetBoolValue returns the value of BoolValue if it is set or its
 // zero value if it is unset.
 func (v *ArbitraryValue) GetBoolValue() (o bool) {
@@ -631,6 +677,20 @@ func (v *Document) Equals(rhs *Document) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.Pdf != nil {
+		enc.AddString("pdf", base64.StdEncoding.EncodeToString(([]byte)(v.Pdf)))
+	}
+
+	if v.PlainText != nil {
+		enc.AddString("plainText", *v.PlainText)
+	}
+
+	return nil
+}
+
 // GetPdf returns the value of Pdf if it is set or its
 // zero value if it is unset.
 func (v *Document) GetPdf() (o typedefs.PDF) {
@@ -725,4 +785,10 @@ func (v *EmptyUnion) String() string {
 func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *EmptyUnion) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	return nil
 }

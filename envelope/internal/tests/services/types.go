@@ -25,9 +25,11 @@ package services
 
 import (
 	"bytes"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -165,6 +167,16 @@ func (v *ConflictingNamesSetValueArgs) Equals(rhs *ConflictingNamesSetValueArgs)
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *ConflictingNamesSetValueArgs) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddString("key", v.Key)
+
+	enc.AddString("value", base64.StdEncoding.EncodeToString(v.Value))
+
+	return nil
+}
+
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
 func (v *ConflictingNamesSetValueArgs) GetKey() (o string) { return v.Key }
@@ -287,6 +299,16 @@ func (v *InternalError) Equals(rhs *InternalError) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *InternalError) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.Message != nil {
+		enc.AddString("message", *v.Message)
+	}
+
+	return nil
 }
 
 // GetMessage returns the value of Message if it is set or its

@@ -27,6 +27,7 @@ import (
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -141,6 +142,16 @@ func (v *Plugin_Handshake_Args) Equals(rhs *Plugin_Handshake_Args) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Plugin_Handshake_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.Request != nil {
+		enc.AddObject("request", v.Request)
+	}
+
+	return nil
 }
 
 // GetRequest returns the value of Request if it is set or its
@@ -375,6 +386,16 @@ func (v *Plugin_Handshake_Result) Equals(rhs *Plugin_Handshake_Result) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Plugin_Handshake_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.Success != nil {
+		enc.AddObject("success", v.Success)
+	}
+
+	return nil
 }
 
 // GetSuccess returns the value of Success if it is set or its

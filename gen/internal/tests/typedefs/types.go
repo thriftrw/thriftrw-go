@@ -10,6 +10,7 @@ import (
 	"go.uber.org/thriftrw/gen/internal/tests/enums"
 	"go.uber.org/thriftrw/gen/internal/tests/structs"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -244,6 +245,16 @@ func (v *DefaultPrimitiveTypedef) Equals(rhs *DefaultPrimitiveTypedef) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *DefaultPrimitiveTypedef) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	if v.State != nil {
+		enc.AddString("state", (string)(*v.State))
+	}
+
+	return nil
 }
 
 // GetState returns the value of State if it is set or its
@@ -573,6 +584,18 @@ func (v *Event) Equals(rhs *Event) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Event) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddObject("uuid", (*I128)(v.UUID))
+
+	if v.Time != nil {
+		enc.AddInt64("time", (int64)(*v.Time))
+	}
+
+	return nil
 }
 
 // GetUUID returns the value of UUID if it is set or its
@@ -1251,6 +1274,29 @@ func (v *Transition) Equals(rhs *Transition) bool {
 	return true
 }
 
+type _EventGroup_Zapper []*Event
+
+func (vals _EventGroup_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, val := range vals {
+		enc.AppendObject(val)
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *Transition) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddString("fromState", (string)(v.FromState))
+
+	enc.AddString("toState", (string)(v.ToState))
+
+	if v.Events != nil {
+		enc.AddArray("events", (_EventGroup_Zapper)(([]*Event)(v.Events)))
+	}
+
+	return nil
+}
+
 // GetFromState returns the value of FromState if it is set or its
 // zero value if it is unset.
 func (v *Transition) GetFromState() (o State) { return v.FromState }
@@ -1428,6 +1474,16 @@ func (v *I128) Equals(rhs *I128) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+func (v *I128) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	enc.AddInt64("high", v.High)
+
+	enc.AddInt64("low", v.Low)
+
+	return nil
 }
 
 // GetHigh returns the value of High if it is set or its
