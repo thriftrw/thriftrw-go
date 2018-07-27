@@ -368,11 +368,15 @@ func (v *Records) Equals(rhs *Records) bool {
 func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.RecordType != nil {
-		enc.AddObject("recordType", *v.RecordType)
+		if err := enc.AddObject("recordType", *v.RecordType); err != nil {
+			return err
+		}
 	}
 
 	if v.OtherRecordType != nil {
-		enc.AddObject("otherRecordType", *v.OtherRecordType)
+		if err := enc.AddObject("otherRecordType", *v.OtherRecordType); err != nil {
+			return err
+		}
 	}
 
 	return nil

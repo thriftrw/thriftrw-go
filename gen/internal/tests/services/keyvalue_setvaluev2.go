@@ -158,7 +158,9 @@ func (v *KeyValue_SetValueV2_Args) MarshalLogObject(enc zapcore.ObjectEncoder) e
 
 	enc.AddString("key", (string)(v.Key))
 
-	enc.AddObject("value", v.Value)
+	if err := enc.AddObject("value", v.Value); err != nil {
+		return err
+	}
 
 	return nil
 }

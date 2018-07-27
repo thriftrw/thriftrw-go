@@ -435,11 +435,15 @@ func (v *KeyValue_DeleteValue_Result) Equals(rhs *KeyValue_DeleteValue_Result) b
 func (v *KeyValue_DeleteValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.DoesNotExist != nil {
-		enc.AddObject("doesNotExist", v.DoesNotExist)
+		if err := enc.AddObject("doesNotExist", v.DoesNotExist); err != nil {
+			return err
+		}
 	}
 
 	if v.InternalError != nil {
-		enc.AddObject("internalError", v.InternalError)
+		if err := enc.AddObject("internalError", v.InternalError); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -456,7 +456,9 @@ type _List_ArbitraryValue_Zapper []*ArbitraryValue
 
 func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
-		enc.AppendObject(val)
+		if err := enc.AppendObject(val); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -465,7 +467,9 @@ type _Map_String_ArbitraryValue_Zapper map[string]*ArbitraryValue
 
 func (keyvals _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	for k, v := range keyvals {
-		enc.AddObject((string)(k), v)
+		if err := enc.AddObject((string)(k), v); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -486,11 +490,15 @@ func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	}
 
 	if v.ListValue != nil {
-		enc.AddArray("listValue", (_List_ArbitraryValue_Zapper)(v.ListValue))
+		if err := enc.AddArray("listValue", (_List_ArbitraryValue_Zapper)(v.ListValue)); err != nil {
+			return err
+		}
 	}
 
 	if v.MapValue != nil {
-		enc.AddObject("mapValue", (_Map_String_ArbitraryValue_Zapper)(v.MapValue))
+		if err := enc.AddObject("mapValue", (_Map_String_ArbitraryValue_Zapper)(v.MapValue)); err != nil {
+			return err
+		}
 	}
 
 	return nil

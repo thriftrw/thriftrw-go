@@ -148,7 +148,9 @@ func (v *ServiceGenerator_Generate_Args) Equals(rhs *ServiceGenerator_Generate_A
 func (v *ServiceGenerator_Generate_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Request != nil {
-		enc.AddObject("request", v.Request)
+		if err := enc.AddObject("request", v.Request); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -392,7 +394,9 @@ func (v *ServiceGenerator_Generate_Result) Equals(rhs *ServiceGenerator_Generate
 func (v *ServiceGenerator_Generate_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Success != nil {
-		enc.AddObject("success", v.Success)
+		if err := enc.AddObject("success", v.Success); err != nil {
+			return err
+		}
 	}
 
 	return nil

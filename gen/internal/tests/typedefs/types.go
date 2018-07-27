@@ -589,7 +589,9 @@ func (v *Event) Equals(rhs *Event) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (v *Event) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
-	enc.AddObject("uuid", (*I128)(v.UUID))
+	if err := enc.AddObject("uuid", (*I128)(v.UUID)); err != nil {
+		return err
+	}
 
 	if v.Time != nil {
 		enc.AddInt64("time", (int64)(*v.Time))
@@ -1278,7 +1280,9 @@ type _EventGroup_Zapper []*Event
 
 func (vals _EventGroup_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
-		enc.AppendObject(val)
+		if err := enc.AppendObject(val); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -1291,7 +1295,9 @@ func (v *Transition) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("toState", (string)(v.ToState))
 
 	if v.Events != nil {
-		enc.AddArray("events", (_EventGroup_Zapper)(([]*Event)(v.Events)))
+		if err := enc.AddArray("events", (_EventGroup_Zapper)(([]*Event)(v.Events))); err != nil {
+			return err
+		}
 	}
 
 	return nil

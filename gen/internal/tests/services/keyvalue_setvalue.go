@@ -152,7 +152,9 @@ func (v *KeyValue_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) err
 	}
 
 	if v.Value != nil {
-		enc.AddObject("value", v.Value)
+		if err := enc.AddObject("value", v.Value); err != nil {
+			return err
+		}
 	}
 
 	return nil

@@ -212,7 +212,9 @@ func (vals _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Range != nil {
-		enc.AddArray("range", (_List_Key_Zapper)(v.Range))
+		if err := enc.AddArray("range", (_List_Key_Zapper)(v.Range)); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -559,7 +561,9 @@ type _List_ArbitraryValue_Zapper []*unions.ArbitraryValue
 
 func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
-		enc.AppendObject(val)
+		if err := enc.AppendObject(val); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -568,11 +572,15 @@ func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder
 func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Success != nil {
-		enc.AddArray("success", (_List_ArbitraryValue_Zapper)(v.Success))
+		if err := enc.AddArray("success", (_List_ArbitraryValue_Zapper)(v.Success)); err != nil {
+			return err
+		}
 	}
 
 	if v.DoesNotExist != nil {
-		enc.AddObject("doesNotExist", v.DoesNotExist)
+		if err := enc.AddObject("doesNotExist", v.DoesNotExist); err != nil {
+			return err
+		}
 	}
 
 	return nil

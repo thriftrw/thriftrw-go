@@ -194,7 +194,9 @@ func (v *Argument) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("name", v.Name)
 
-	enc.AddObject("type", v.Type)
+	if err := enc.AddObject("type", v.Type); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -808,7 +810,9 @@ type _List_Argument_Zapper []*Argument
 
 func (vals _List_Argument_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
-		enc.AppendObject(val)
+		if err := enc.AppendObject(val); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -829,14 +833,20 @@ func (v *Function) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddString("thriftName", v.ThriftName)
 
-	enc.AddArray("arguments", (_List_Argument_Zapper)(v.Arguments))
+	if err := enc.AddArray("arguments", (_List_Argument_Zapper)(v.Arguments)); err != nil {
+		return err
+	}
 
 	if v.ReturnType != nil {
-		enc.AddObject("returnType", v.ReturnType)
+		if err := enc.AddObject("returnType", v.ReturnType); err != nil {
+			return err
+		}
 	}
 
 	if v.Exceptions != nil {
-		enc.AddArray("exceptions", (_List_Argument_Zapper)(v.Exceptions))
+		if err := enc.AddArray("exceptions", (_List_Argument_Zapper)(v.Exceptions)); err != nil {
+			return err
+		}
 	}
 
 	if v.OneWay != nil {
@@ -844,7 +854,9 @@ func (v *Function) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	}
 
 	if v.Annotations != nil {
-		enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations))
+		if err := enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -1348,7 +1360,9 @@ type _MapItem_ServiceID_Service_Zapper struct {
 
 func (v _MapItem_ServiceID_Service_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("key", (int32)(v.Key))
-	enc.AddObject("value", v.Value)
+	if err := enc.AddObject("value", v.Value); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -1356,7 +1370,9 @@ type _Map_ServiceID_Service_Zapper map[ServiceID]*Service
 
 func (keyvals _Map_ServiceID_Service_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range keyvals {
-		enc.AppendObject(_MapItem_ServiceID_Service_Zapper{Key: k, Value: v})
+		if err := enc.AppendObject(_MapItem_ServiceID_Service_Zapper{Key: k, Value: v}); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -1368,7 +1384,9 @@ type _MapItem_ModuleID_Module_Zapper struct {
 
 func (v _MapItem_ModuleID_Module_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("key", (int32)(v.Key))
-	enc.AddObject("value", v.Value)
+	if err := enc.AddObject("value", v.Value); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -1376,7 +1394,9 @@ type _Map_ModuleID_Module_Zapper map[ModuleID]*Module
 
 func (keyvals _Map_ModuleID_Module_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range keyvals {
-		enc.AppendObject(_MapItem_ModuleID_Module_Zapper{Key: k, Value: v})
+		if err := enc.AppendObject(_MapItem_ModuleID_Module_Zapper{Key: k, Value: v}); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -1384,11 +1404,17 @@ func (keyvals _Map_ModuleID_Module_Zapper) MarshalLogArray(enc zapcore.ArrayEnco
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (v *GenerateServiceRequest) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
-	enc.AddArray("rootServices", (_List_ServiceID_Zapper)(v.RootServices))
+	if err := enc.AddArray("rootServices", (_List_ServiceID_Zapper)(v.RootServices)); err != nil {
+		return err
+	}
 
-	enc.AddArray("services", (_Map_ServiceID_Service_Zapper)(v.Services))
+	if err := enc.AddArray("services", (_Map_ServiceID_Service_Zapper)(v.Services)); err != nil {
+		return err
+	}
 
-	enc.AddArray("modules", (_Map_ModuleID_Module_Zapper)(v.Modules))
+	if err := enc.AddArray("modules", (_Map_ModuleID_Module_Zapper)(v.Modules)); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -1613,7 +1639,9 @@ func (keyvals _Map_String_Binary_Zapper) MarshalLogObject(enc zapcore.ObjectEnco
 func (v *GenerateServiceResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Files != nil {
-		enc.AddObject("files", (_Map_String_Binary_Zapper)(v.Files))
+		if err := enc.AddObject("files", (_Map_String_Binary_Zapper)(v.Files)); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -1989,7 +2017,9 @@ type _List_Feature_Zapper []Feature
 
 func (vals _List_Feature_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
-		enc.AppendObject(val)
+		if err := enc.AppendObject(val); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -2001,7 +2031,9 @@ func (v *HandshakeResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddInt32("apiVersion", v.APIVersion)
 
-	enc.AddArray("features", (_List_Feature_Zapper)(v.Features))
+	if err := enc.AddArray("features", (_List_Feature_Zapper)(v.Features)); err != nil {
+		return err
+	}
 
 	if v.LibraryVersion != nil {
 		enc.AddString("libraryVersion", *v.LibraryVersion)
@@ -2561,7 +2593,9 @@ type _List_Function_Zapper []*Function
 
 func (vals _List_Function_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
-		enc.AppendObject(val)
+		if err := enc.AppendObject(val); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -2577,12 +2611,16 @@ func (v *Service) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 		enc.AddInt32("parentID", (int32)(*v.ParentID))
 	}
 
-	enc.AddArray("functions", (_List_Function_Zapper)(v.Functions))
+	if err := enc.AddArray("functions", (_List_Function_Zapper)(v.Functions)); err != nil {
+		return err
+	}
 
 	enc.AddInt32("moduleID", (int32)(v.ModuleID))
 
 	if v.Annotations != nil {
-		enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations))
+		if err := enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -3209,27 +3247,39 @@ func (v *Type) Equals(rhs *Type) bool {
 func (v *Type) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.SimpleType != nil {
-		enc.AddObject("simpleType", *v.SimpleType)
+		if err := enc.AddObject("simpleType", *v.SimpleType); err != nil {
+			return err
+		}
 	}
 
 	if v.SliceType != nil {
-		enc.AddObject("sliceType", v.SliceType)
+		if err := enc.AddObject("sliceType", v.SliceType); err != nil {
+			return err
+		}
 	}
 
 	if v.KeyValueSliceType != nil {
-		enc.AddObject("keyValueSliceType", v.KeyValueSliceType)
+		if err := enc.AddObject("keyValueSliceType", v.KeyValueSliceType); err != nil {
+			return err
+		}
 	}
 
 	if v.MapType != nil {
-		enc.AddObject("mapType", v.MapType)
+		if err := enc.AddObject("mapType", v.MapType); err != nil {
+			return err
+		}
 	}
 
 	if v.ReferenceType != nil {
-		enc.AddObject("referenceType", v.ReferenceType)
+		if err := enc.AddObject("referenceType", v.ReferenceType); err != nil {
+			return err
+		}
 	}
 
 	if v.PointerType != nil {
-		enc.AddObject("pointerType", v.PointerType)
+		if err := enc.AddObject("pointerType", v.PointerType); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -3436,9 +3486,13 @@ func (v *TypePair) Equals(rhs *TypePair) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (v *TypePair) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
-	enc.AddObject("left", v.Left)
+	if err := enc.AddObject("left", v.Left); err != nil {
+		return err
+	}
 
-	enc.AddObject("right", v.Right)
+	if err := enc.AddObject("right", v.Right); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -3635,7 +3689,9 @@ func (v *TypeReference) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("importPath", v.ImportPath)
 
 	if v.Annotations != nil {
-		enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations))
+		if err := enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)); err != nil {
+			return err
+		}
 	}
 
 	return nil

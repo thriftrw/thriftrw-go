@@ -480,7 +480,9 @@ func (v *TApplicationException) MarshalLogObject(enc zapcore.ObjectEncoder) erro
 	}
 
 	if v.Type != nil {
-		enc.AddObject("type", *v.Type)
+		if err := enc.AddObject("type", *v.Type); err != nil {
+			return err
+		}
 	}
 
 	return nil

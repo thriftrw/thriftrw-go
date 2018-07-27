@@ -1398,7 +1398,9 @@ func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.E != nil {
-		enc.AddObject("e", *v.E)
+		if err := enc.AddObject("e", *v.E); err != nil {
+			return err
+		}
 	}
 
 	return nil

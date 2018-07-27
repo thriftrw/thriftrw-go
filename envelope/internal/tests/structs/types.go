@@ -729,27 +729,39 @@ func (v *DefaultsStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	}
 
 	if v.RequiredEnum != nil {
-		enc.AddObject("requiredEnum", *v.RequiredEnum)
+		if err := enc.AddObject("requiredEnum", *v.RequiredEnum); err != nil {
+			return err
+		}
 	}
 
 	if v.OptionalEnum != nil {
-		enc.AddObject("optionalEnum", *v.OptionalEnum)
+		if err := enc.AddObject("optionalEnum", *v.OptionalEnum); err != nil {
+			return err
+		}
 	}
 
 	if v.RequiredList != nil {
-		enc.AddArray("requiredList", (_List_String_Zapper)(v.RequiredList))
+		if err := enc.AddArray("requiredList", (_List_String_Zapper)(v.RequiredList)); err != nil {
+			return err
+		}
 	}
 
 	if v.OptionalList != nil {
-		enc.AddArray("optionalList", (_List_Double_Zapper)(v.OptionalList))
+		if err := enc.AddArray("optionalList", (_List_Double_Zapper)(v.OptionalList)); err != nil {
+			return err
+		}
 	}
 
 	if v.RequiredStruct != nil {
-		enc.AddObject("requiredStruct", v.RequiredStruct)
+		if err := enc.AddObject("requiredStruct", v.RequiredStruct); err != nil {
+			return err
+		}
 	}
 
 	if v.OptionalStruct != nil {
-		enc.AddObject("optionalStruct", v.OptionalStruct)
+		if err := enc.AddObject("optionalStruct", v.OptionalStruct); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -1006,9 +1018,13 @@ func (v *Edge) Equals(rhs *Edge) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (v *Edge) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
-	enc.AddObject("startPoint", v.StartPoint)
+	if err := enc.AddObject("startPoint", v.StartPoint); err != nil {
+		return err
+	}
 
-	enc.AddObject("endPoint", v.EndPoint)
+	if err := enc.AddObject("endPoint", v.EndPoint); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -1249,9 +1265,13 @@ func (v *Frame) Equals(rhs *Frame) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (v *Frame) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
-	enc.AddObject("topLeft", v.TopLeft)
+	if err := enc.AddObject("topLeft", v.TopLeft); err != nil {
+		return err
+	}
 
-	enc.AddObject("size", v.Size)
+	if err := enc.AddObject("size", v.Size); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -1749,7 +1769,9 @@ type _List_Edge_Zapper []*Edge
 
 func (vals _List_Edge_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, val := range vals {
-		enc.AppendObject(val)
+		if err := enc.AppendObject(val); err != nil {
+			return err
+		}
 	}
 	return nil
 }
@@ -1757,7 +1779,9 @@ func (vals _List_Edge_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 // MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
 func (v *Graph) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
-	enc.AddArray("edges", (_List_Edge_Zapper)(v.Edges))
+	if err := enc.AddArray("edges", (_List_Edge_Zapper)(v.Edges)); err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -1939,7 +1963,9 @@ func (v *Node) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", v.Value)
 
 	if v.Tail != nil {
-		enc.AddObject("tail", (*Node)(v.Tail))
+		if err := enc.AddObject("tail", (*Node)(v.Tail)); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -3509,7 +3535,9 @@ func (v *User) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("name", v.Name)
 
 	if v.Contact != nil {
-		enc.AddObject("contact", v.Contact)
+		if err := enc.AddObject("contact", v.Contact); err != nil {
+			return err
+		}
 	}
 
 	return nil
