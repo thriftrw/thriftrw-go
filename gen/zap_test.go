@@ -22,7 +22,6 @@ package gen
 
 import (
 	"encoding/base64"
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -32,21 +31,21 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-func jsonToComparableMap(jsonMap string) (map[string]interface{}, error) {
-	var retMap map[string]interface{}
-	if err := json.Unmarshal([]byte(jsonMap), &retMap); err != nil {
-		return nil, err
-	}
-	return retMap, nil
-}
+// func jsonToComparableMap(jsonMap string) (map[string]interface{}, error) {
+// 	var retMap map[string]interface{}
+// 	if err := json.Unmarshal([]byte(jsonMap), &retMap); err != nil {
+// 		return nil, err
+// 	}
+// 	return retMap, nil
+// }
 
-func mapTojson(mapThing map[string]interface{}) (string, error) {
-	retBytes, err := json.Marshal(mapThing)
-	if err != nil {
-		return "", err
-	}
-	return string(retBytes), nil
-}
+// func mapTojson(mapThing map[string]interface{}) (string, error) {
+// 	retBytes, err := json.Marshal(mapThing)
+// 	if err != nil {
+// 		return "", err
+// 	}
+// 	return string(retBytes), nil
+// }
 
 func TestCollectionsOfPrimitivesZapLogging(t *testing.T) {
 	// These types are created to ease building map[string]interface{}
@@ -93,19 +92,15 @@ func TestCollectionsOfPrimitivesZapLogging(t *testing.T) {
 			"set of strings",
 			tc.PrimitiveContainers{SetOfStrings: map[string]struct{}{
 				"foo": {},
-				"bar": {},
-				"baz": {},
 			}},
-			o{"setOfStrings": a{"foo", "bar", "baz"}},
+			o{"setOfStrings": a{"foo"}},
 		},
 		{
 			"set of bytes",
 			tc.PrimitiveContainers{SetOfBytes: map[int8]struct{}{
-				-1:  {},
-				1:   {},
 				125: {},
 			}},
-			o{"setOfBytes": a{int8(-1), int8(1), int8(125)}},
+			o{"setOfBytes": a{int8(125)}},
 		},
 		// Maps //////////////////////////////////////////////////////////////
 		{
@@ -116,24 +111,21 @@ func TestCollectionsOfPrimitivesZapLogging(t *testing.T) {
 		{
 			"map of int to string",
 			tc.PrimitiveContainers{MapOfIntToString: map[int32]string{
-				-1:    "foo",
-				1234:  "bar",
-				-9876: "baz",
+				1234: "bar",
 			}},
 			o{"mapOfIntToString": a{
-				o{"key": int32(-1), "value": "foo"},
-				o{"key": int32(1234), "value": "bar"},
-				o{"key": int32(-9876), "value": "baz"},
+				o{"key": int32(1234),
+					"value": "bar"},
 			}},
 		},
 		{
 			"map of string to bool",
 			tc.PrimitiveContainers{MapOfStringToBool: map[string]bool{
-				"foo": true,
-				"bar": false,
+				"foo": false,
+				"bar": true,
 				"baz": true,
 			}},
-			o{"mapOfStringToBool": o{"bar": false, "baz": true, "foo": true}},
+			o{"mapOfStringToBool": o{"foo": false, "bar": true, "baz": true}},
 		},
 	}
 
@@ -145,6 +137,57 @@ func TestCollectionsOfPrimitivesZapLogging(t *testing.T) {
 		assert.Equal(t, tt.v, mapEncoder.Fields)
 		// DeepEquals mapEncoder.Fields and tt.v
 	}
+}
+
+func TestNondeterministicZapLogging(t *testing.T) {
+	mapEncoder := zapcore.NewMapObjectEncoder()
+	// case SetOfStrings
+	test1 := tc.PrimitiveContainers{
+		SetOfStrings: map[string]struct{}{
+			"foo":   {},
+			"bar":   {},
+			"baz":   {},
+			"hello": {},
+			"world": {},
+		},
+	}
+	test1.MarshalLogObject(mapEncoder)
+	expected1 := []string{"foo", "bar", "baz", "hello", "world"}
+	assert.ElementsMatch(t, mapEncoder.Fields["setOfStrings"], expected1)
+
+	// case SetOfBytes
+	test2 := tc.PrimitiveContainers{
+		SetOfBytes: map[int8]struct{}{
+			125: {},
+			1:   {},
+			5:   {},
+			73:  {},
+			42:  {},
+		},
+	}
+	test2.MarshalLogObject(mapEncoder)
+	expected2 := []int8{1, 5, 42, 73, 125}
+	assert.ElementsMatch(t, mapEncoder.Fields["setOfBytes"], expected2)
+
+	// case MapOfIntToString
+	test3 := tc.PrimitiveContainers{
+		MapOfIntToString: map[int32]string{
+			125: "foo",
+			1:   "bar",
+			5:   "baz",
+			73:  "hello",
+			42:  "world",
+		},
+	}
+	test3.MarshalLogObject(mapEncoder)
+	expected3 := []map[string]interface{}{
+		{"key": int32(125), "value": "foo"},
+		{"key": int32(1), "value": "bar"},
+		{"key": int32(5), "value": "baz"},
+		{"key": int32(73), "value": "hello"},
+		{"key": int32(42), "value": "world"},
+	}
+	assert.ElementsMatch(t, mapEncoder.Fields["mapOfIntToString"], expected3)
 }
 
 func TestEnumContainersZapLogging(t *testing.T) {
@@ -159,36 +202,41 @@ func TestEnumContainersZapLogging(t *testing.T) {
 		{
 			tc.EnumContainers{
 				ListOfEnums: []te.EnumDefault{
-					te.EnumDefaultFoo,
 					te.EnumDefaultBar,
 				},
 			},
 			o{"listOfEnums": a{
-				o{"value": int32(0), "name": "Foo"},
-				o{"value": int32(1), "name": "Bar"}},
+				o{"name": "Bar", "value": int32(1)}},
 			},
 		},
 		{
 			tc.EnumContainers{
 				SetOfEnums: map[te.EnumWithValues]struct{}{
-					te.EnumWithValuesX: {},
 					te.EnumWithValuesZ: {},
 				},
 			},
 			o{"setOfEnums": a{
-				o{"name": "X", "value": 123},
-				o{"name": "Z", "value": 789}}},
+				o{"name": "Z", "value": int32(789)}},
+			},
 		},
 		{
 			tc.EnumContainers{
 				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
 					te.EnumWithDuplicateValuesP: 123,
-					te.EnumWithDuplicateValuesQ: 456,
 				},
 			},
 			o{"mapOfEnums": a{
-				o{"key": o{"value": 0, "name": "P"}, "value": 123},
-				o{"key": o{"name": "Q", "value": -1}, "value": 456}}},
+				o{"key": o{"value": int32(0), "name": "P"}, "value": int32(123)}}},
+		},
+		{
+			// unknown enum name
+			tc.EnumContainers{
+				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
+					te.EnumWithDuplicateValues(1523): 123,
+				},
+			},
+			o{"mapOfEnums": a{
+				o{"key": o{"value": int32(1523)}, "value": int32(123)}}},
 		},
 		{
 			// this is the same as the one above except we're using "R" intsead
@@ -196,12 +244,10 @@ func TestEnumContainersZapLogging(t *testing.T) {
 			tc.EnumContainers{
 				MapOfEnums: map[te.EnumWithDuplicateValues]int32{
 					te.EnumWithDuplicateValuesR: 123,
-					te.EnumWithDuplicateValuesQ: 456,
 				},
 			},
 			o{"mapOfEnums": a{
-				o{"key": o{"value": -1, "name": "Q"}, "value": 456},
-				o{"key": o{"value": 0, "name": "P"}, "value": 123}}},
+				o{"key": o{"value": int32(0), "name": "P"}, "value": int32(123)}}},
 		},
 	}
 
@@ -248,7 +294,8 @@ func TestListOfStructsZapLogging(t *testing.T) {
 				o{"startPoint": o{"x": float64(5), "y": float64(6)},
 					"endPoint": o{"y": float64(8), "x": float64(7)}},
 				o{"startPoint": o{"x": float64(9), "y": float64(10)},
-					"endPoint": o{"x": float64(11), "y": float64(12)}}},
+					"endPoint": o{"x": float64(11), "y": float64(12)}},
+			},
 			},
 		},
 	}
@@ -280,61 +327,65 @@ func TestCrazyTownZapLogging(t *testing.T) {
 					{4, 5, 6},
 				},
 			},
-			o{},
+			o{"listOfLists": a{
+				a{int32(1), int32(2), int32(3)},
+				a{int32(4), int32(5), int32(6)}},
+			},
 		},
 		{
 			"ListOfSets",
 			tc.ContainersOfContainers{
 				ListOfSets: []map[int32]struct{}{
 					{
-						1: struct{}{},
 						2: struct{}{},
-						3: struct{}{},
 					},
 					{
-						4: struct{}{},
 						5: struct{}{},
-						6: struct{}{},
 					},
 				},
 			},
-			o{},
+			o{"listOfSets": a{
+				a{int32(2)},
+				a{int32(5)}},
+			},
 		},
 		{
 			"ListOfMaps",
 			tc.ContainersOfContainers{
 				ListOfMaps: []map[int32]int32{
 					{
-						1: 100,
 						2: 200,
-						3: 300,
 					},
 					{
-						4: 400,
 						5: 500,
-						6: 600,
 					},
 				},
 			},
-			o{},
+			o{"listOfMaps": a{
+				a{
+					o{"key": int32(2),
+						"value": int32(200)}},
+				a{
+					o{"key": int32(5),
+						"value": int32(500)}}},
+			},
 		},
 		{
 			"SetOfSets",
 			tc.ContainersOfContainers{
 				SetOfSets: []map[string]struct{}{
 					{
-						"1": struct{}{},
 						"2": struct{}{},
-						"3": struct{}{},
 					},
 					{
-						"4": struct{}{},
 						"5": struct{}{},
-						"6": struct{}{},
 					},
 				},
 			},
-			o{},
+			o{"setOfSets": a{
+				a{"2"},
+				a{"5"}},
+			},
 		},
 		{
 			"SetOfLists",
@@ -344,25 +395,27 @@ func TestCrazyTownZapLogging(t *testing.T) {
 					{"4", "5", "6"},
 				},
 			},
-			o{},
+			o{"setOfLists": a{
+				a{"1", "2", "3"},
+				a{"4", "5", "6"}},
+			},
 		},
 		{
 			"SetOfMaps",
 			tc.ContainersOfContainers{
 				SetOfMaps: []map[string]string{
 					{
-						"1": "one",
 						"2": "two",
-						"3": "three",
 					},
 					{
-						"4": "four",
-						"5": "five",
 						"6": "six",
 					},
 				},
 			},
-			o{},
+			o{"setOfMaps": a{
+				o{"2": "two"},
+				o{"6": "six"}},
+			},
 		},
 		{
 			"MapOfMapToInt",
@@ -372,16 +425,21 @@ func TestCrazyTownZapLogging(t *testing.T) {
 					Value int64
 				}{
 					{
-						Key:   map[string]int32{"1": 1, "2": 2, "3": 3},
+						Key:   map[string]int32{"2": 2},
 						Value: 123,
 					},
 					{
-						Key:   map[string]int32{"4": 4, "5": 5, "6": 6},
-						Value: 456,
+						Key:   map[string]int32{"4": 4},
+						Value: 135,
 					},
 				},
 			},
-			o{},
+			o{"mapOfMapToInt": a{
+				o{"key": o{"2": int32(2)},
+					"value": int64(123)},
+				o{"key": o{"4": int32(4)},
+					"value": int64(135)}},
+			},
 		},
 		{
 			"MapOfListToSet",
@@ -394,21 +452,14 @@ func TestCrazyTownZapLogging(t *testing.T) {
 						Key: []int32{1, 2, 3},
 						Value: map[int64]struct{}{
 							1: {},
-							2: {},
-							3: {},
-						},
-					},
-					{
-						Key: []int32{4, 5, 6},
-						Value: map[int64]struct{}{
-							4: {},
-							5: {},
-							6: {},
 						},
 					},
 				},
 			},
-			o{},
+			o{"mapOfListToSet": a{
+				o{"value": a{int64(1)},
+					"key": a{int32(1), int32(2), int32(3)}}},
+			},
 		},
 		{
 			"MapOfSetToListOfDouble",
@@ -419,23 +470,24 @@ func TestCrazyTownZapLogging(t *testing.T) {
 				}{
 					{
 						Key: map[int32]struct{}{
-							1: {},
 							2: {},
-							3: {},
 						},
-						Value: []float64{1.0, 2.0, 3.0},
+						Value: []float64{1.1, 2.2, 3.3},
 					},
 					{
 						Key: map[int32]struct{}{
 							4: {},
-							5: {},
-							6: {},
 						},
-						Value: []float64{4.0, 5.0, 6.0},
+						Value: []float64{2.2, 3.3},
 					},
 				},
 			},
-			o{},
+			o{"mapOfSetToListOfDouble": a{
+				o{"key": a{int32(2)},
+					"value": a{float64(1.1), float64(2.2), float64(3.3)}},
+				o{"key": a{int32(4)},
+					"value": a{float64(2.2), float64(3.3)}}},
+			},
 		},
 	}
 
