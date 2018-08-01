@@ -64,7 +64,8 @@ func (v RecordType) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
-// TODO()
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of RecordType.
 func (v RecordType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -367,13 +368,11 @@ func (v *Records) Equals(rhs *Records) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Records.
 func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.RecordType != nil {
 		if err := enc.AddObject("recordType", *v.RecordType); err != nil {
 			return err
 		}
 	}
-
 	if v.OtherRecordType != nil {
 		if err := enc.AddObject("otherRecordType", *v.OtherRecordType); err != nil {
 			return err

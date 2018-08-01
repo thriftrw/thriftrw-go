@@ -481,25 +481,20 @@ func (m _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.ObjectEn
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of ArbitraryValue.
 func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.BoolValue != nil {
 		enc.AddBool("boolValue", *v.BoolValue)
 	}
-
 	if v.Int64Value != nil {
 		enc.AddInt64("int64Value", *v.Int64Value)
 	}
-
 	if v.StringValue != nil {
 		enc.AddString("stringValue", *v.StringValue)
 	}
-
 	if v.ListValue != nil {
 		if err := enc.AddArray("listValue", (_List_ArbitraryValue_Zapper)(v.ListValue)); err != nil {
 			return err
 		}
 	}
-
 	if v.MapValue != nil {
 		if err := enc.AddObject("mapValue", (_Map_String_ArbitraryValue_Zapper)(v.MapValue)); err != nil {
 			return err
@@ -713,11 +708,9 @@ func (v *Document) Equals(rhs *Document) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Document.
 func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.Pdf != nil {
 		enc.AddString("pdf", base64.StdEncoding.EncodeToString(([]byte)(v.Pdf)))
 	}
-
 	if v.PlainText != nil {
 		enc.AddString("plainText", *v.PlainText)
 	}

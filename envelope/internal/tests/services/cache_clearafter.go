@@ -152,7 +152,6 @@ func (v *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Cache_ClearAfter_Args.
 func (v *Cache_ClearAfter_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.DurationMS != nil {
 		enc.AddInt64("durationMS", *v.DurationMS)
 	}

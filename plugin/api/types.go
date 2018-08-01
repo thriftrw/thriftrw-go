@@ -192,9 +192,7 @@ func (v *Argument) Equals(rhs *Argument) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Argument.
 func (v *Argument) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	enc.AddString("name", v.Name)
-
 	if err := enc.AddObject("type", v.Type); err != nil {
 		return err
 	}
@@ -258,7 +256,8 @@ func (v Feature) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
-// TODO()
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of Feature.
 func (v Feature) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -834,31 +833,24 @@ func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) e
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Function.
 func (v *Function) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	enc.AddString("name", v.Name)
-
 	enc.AddString("thriftName", v.ThriftName)
-
 	if err := enc.AddArray("arguments", (_List_Argument_Zapper)(v.Arguments)); err != nil {
 		return err
 	}
-
 	if v.ReturnType != nil {
 		if err := enc.AddObject("returnType", v.ReturnType); err != nil {
 			return err
 		}
 	}
-
 	if v.Exceptions != nil {
 		if err := enc.AddArray("exceptions", (_List_Argument_Zapper)(v.Exceptions)); err != nil {
 			return err
 		}
 	}
-
 	if v.OneWay != nil {
 		enc.AddBool("oneWay", *v.OneWay)
 	}
-
 	if v.Annotations != nil {
 		if err := enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)); err != nil {
 			return err
@@ -1420,15 +1412,12 @@ func (m _Map_ModuleID_Module_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) e
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of GenerateServiceRequest.
 func (v *GenerateServiceRequest) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddArray("rootServices", (_List_ServiceID_Zapper)(v.RootServices)); err != nil {
 		return err
 	}
-
 	if err := enc.AddArray("services", (_Map_ServiceID_Service_Zapper)(v.Services)); err != nil {
 		return err
 	}
-
 	if err := enc.AddArray("modules", (_Map_ModuleID_Module_Zapper)(v.Modules)); err != nil {
 		return err
 	}
@@ -1657,7 +1646,6 @@ func (m _Map_String_Binary_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) e
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of GenerateServiceResponse.
 func (v *GenerateServiceResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.Files != nil {
 		if err := enc.AddObject("files", (_Map_String_Binary_Zapper)(v.Files)); err != nil {
 			return err
@@ -2050,15 +2038,11 @@ func (l _List_Feature_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of HandshakeResponse.
 func (v *HandshakeResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	enc.AddString("name", v.Name)
-
 	enc.AddInt32("apiVersion", v.APIVersion)
-
 	if err := enc.AddArray("features", (_List_Feature_Zapper)(v.Features)); err != nil {
 		return err
 	}
-
 	if v.LibraryVersion != nil {
 		enc.AddString("libraryVersion", *v.LibraryVersion)
 	}
@@ -2232,9 +2216,7 @@ func (v *Module) Equals(rhs *Module) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Module.
 func (v *Module) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	enc.AddString("importPath", v.ImportPath)
-
 	enc.AddString("directory", v.Directory)
 
 	return nil
@@ -2630,21 +2612,15 @@ func (l _List_Function_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Service.
 func (v *Service) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	enc.AddString("name", v.Name)
-
 	enc.AddString("thriftName", v.ThriftName)
-
 	if v.ParentID != nil {
 		enc.AddInt32("parentID", (int32)(*v.ParentID))
 	}
-
 	if err := enc.AddArray("functions", (_List_Function_Zapper)(v.Functions)); err != nil {
 		return err
 	}
-
 	enc.AddInt32("moduleID", (int32)(v.ModuleID))
-
 	if v.Annotations != nil {
 		if err := enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)); err != nil {
 			return err
@@ -2822,7 +2798,8 @@ func (v SimpleType) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
-// TODO()
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of SimpleType.
 func (v SimpleType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -3274,37 +3251,31 @@ func (v *Type) Equals(rhs *Type) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Type.
 func (v *Type) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.SimpleType != nil {
 		if err := enc.AddObject("simpleType", *v.SimpleType); err != nil {
 			return err
 		}
 	}
-
 	if v.SliceType != nil {
 		if err := enc.AddObject("sliceType", v.SliceType); err != nil {
 			return err
 		}
 	}
-
 	if v.KeyValueSliceType != nil {
 		if err := enc.AddObject("keyValueSliceType", v.KeyValueSliceType); err != nil {
 			return err
 		}
 	}
-
 	if v.MapType != nil {
 		if err := enc.AddObject("mapType", v.MapType); err != nil {
 			return err
 		}
 	}
-
 	if v.ReferenceType != nil {
 		if err := enc.AddObject("referenceType", v.ReferenceType); err != nil {
 			return err
 		}
 	}
-
 	if v.PointerType != nil {
 		if err := enc.AddObject("pointerType", v.PointerType); err != nil {
 			return err
@@ -3515,11 +3486,9 @@ func (v *TypePair) Equals(rhs *TypePair) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of TypePair.
 func (v *TypePair) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddObject("left", v.Left); err != nil {
 		return err
 	}
-
 	if err := enc.AddObject("right", v.Right); err != nil {
 		return err
 	}
@@ -3714,11 +3683,8 @@ func (v *TypeReference) Equals(rhs *TypeReference) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of TypeReference.
 func (v *TypeReference) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	enc.AddString("name", v.Name)
-
 	enc.AddString("importPath", v.ImportPath)
-
 	if v.Annotations != nil {
 		if err := enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)); err != nil {
 			return err

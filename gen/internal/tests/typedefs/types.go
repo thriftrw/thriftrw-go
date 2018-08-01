@@ -266,7 +266,6 @@ func (v *DefaultPrimitiveTypedef) Equals(rhs *DefaultPrimitiveTypedef) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of DefaultPrimitiveTypedef.
 func (v *DefaultPrimitiveTypedef) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.State != nil {
 		enc.AddString("state", (string)(*v.State))
 	}
@@ -648,11 +647,9 @@ func (v *Event) Equals(rhs *Event) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Event.
 func (v *Event) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddObject("uuid", (*I128)(v.UUID)); err != nil {
 		return err
 	}
-
 	if v.Time != nil {
 		enc.AddInt64("time", (int64)(*v.Time))
 	}
@@ -1419,11 +1416,8 @@ func (v *Transition) Equals(rhs *Transition) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Transition.
 func (v *Transition) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	enc.AddString("fromState", (string)(v.FromState))
-
 	enc.AddString("toState", (string)(v.ToState))
-
 	if v.Events != nil {
 		if err := enc.AddArray("events", (_EventGroup_Zapper)(([]*Event)(v.Events))); err != nil {
 			return err
@@ -1619,9 +1613,7 @@ func (v *I128) Equals(rhs *I128) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of I128.
 func (v *I128) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	enc.AddInt64("high", v.High)
-
 	enc.AddInt64("low", v.Low)
 
 	return nil

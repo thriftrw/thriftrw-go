@@ -167,11 +167,9 @@ func (v *KeyValue_SetValue_Args) Equals(rhs *KeyValue_SetValue_Args) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of KeyValue_SetValue_Args.
 func (v *KeyValue_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.Key != nil {
 		enc.AddString("key", (string)(*v.Key))
 	}
-
 	if v.Value != nil {
 		if err := enc.AddObject("value", v.Value); err != nil {
 			return err

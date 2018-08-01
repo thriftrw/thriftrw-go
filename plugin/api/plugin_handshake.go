@@ -147,7 +147,6 @@ func (v *Plugin_Handshake_Args) Equals(rhs *Plugin_Handshake_Args) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Plugin_Handshake_Args.
 func (v *Plugin_Handshake_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.Request != nil {
 		if err := enc.AddObject("request", v.Request); err != nil {
 			return err
@@ -394,7 +393,6 @@ func (v *Plugin_Handshake_Result) Equals(rhs *Plugin_Handshake_Result) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of Plugin_Handshake_Result.
 func (v *Plugin_Handshake_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.Success != nil {
 		if err := enc.AddObject("success", v.Success); err != nil {
 			return err

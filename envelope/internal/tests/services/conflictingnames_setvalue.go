@@ -146,7 +146,6 @@ func (v *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_A
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of ConflictingNames_SetValue_Args.
 func (v *ConflictingNames_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.Request != nil {
 		if err := enc.AddObject("request", v.Request); err != nil {
 			return err

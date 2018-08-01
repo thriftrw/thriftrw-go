@@ -160,11 +160,9 @@ func (v *AccessorConflict) Equals(rhs *AccessorConflict) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of AccessorConflict.
 func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.Name != nil {
 		enc.AddString("name", *v.Name)
 	}
-
 	if v.GetName2 != nil {
 		enc.AddString("get_name", *v.GetName2)
 	}
@@ -327,11 +325,9 @@ func (v *AccessorNoConflict) Equals(rhs *AccessorNoConflict) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of AccessorNoConflict.
 func (v *AccessorNoConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.Getname != nil {
 		enc.AddString("getname", *v.Getname)
 	}
-
 	if v.GetName != nil {
 		enc.AddString("get_name", *v.GetName)
 	}
@@ -460,7 +456,8 @@ func (v MyEnum) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
-// TODO()
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of MyEnum.
 func (v MyEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -978,19 +975,16 @@ func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) e
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of PrimitiveContainers.
 func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.A != nil {
 		if err := enc.AddArray("ListOrSetOrMap", (_List_String_Zapper)(v.A)); err != nil {
 			return err
 		}
 	}
-
 	if v.B != nil {
 		if err := enc.AddArray("List_Or_SetOrMap", (_Set_String_Zapper)(v.B)); err != nil {
 			return err
 		}
 	}
-
 	if v.C != nil {
 		if err := enc.AddObject("ListOrSet_Or_Map", (_Map_String_String_Zapper)(v.C)); err != nil {
 			return err
@@ -1165,9 +1159,7 @@ func (v *StructCollision) Equals(rhs *StructCollision) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of StructCollision.
 func (v *StructCollision) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	enc.AddBool("collisionField", v.CollisionField)
-
 	enc.AddString("collision_field", v.CollisionField2)
 
 	return nil
@@ -1341,11 +1333,9 @@ func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of UnionCollision.
 func (v *UnionCollision) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.CollisionField != nil {
 		enc.AddBool("collisionField", *v.CollisionField)
 	}
-
 	if v.CollisionField2 != nil {
 		enc.AddString("collision_field", *v.CollisionField2)
 	}
@@ -1499,7 +1489,6 @@ func (v *WithDefault) Equals(rhs *WithDefault) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of WithDefault.
 func (v *WithDefault) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.Pouet != nil {
 		if err := enc.AddObject("pouet", v.Pouet); err != nil {
 			return err
@@ -1609,7 +1598,8 @@ func (v MyEnum2) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
-// TODO()
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of MyEnum2.
 func (v MyEnum2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -1864,9 +1854,7 @@ func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of StructCollision2.
 func (v *StructCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	enc.AddBool("collisionField", v.CollisionField)
-
 	enc.AddString("collision_field", v.CollisionField2)
 
 	return nil
@@ -2030,11 +2018,9 @@ func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of UnionCollision2.
 func (v *UnionCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.CollisionField != nil {
 		enc.AddBool("collisionField", *v.CollisionField)
 	}
-
 	if v.CollisionField2 != nil {
 		enc.AddString("collision_field", *v.CollisionField2)
 	}

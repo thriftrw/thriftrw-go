@@ -213,7 +213,6 @@ func (l _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of KeyValue_GetManyValues_Args.
 func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.Range != nil {
 		if err := enc.AddArray("range", (_List_Key_Zapper)(v.Range)); err != nil {
 			return err
@@ -576,13 +575,11 @@ func (l _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) e
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of KeyValue_GetManyValues_Result.
 func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if v.Success != nil {
 		if err := enc.AddArray("success", (_List_ArbitraryValue_Zapper)(v.Success)); err != nil {
 			return err
 		}
 	}
-
 	if v.DoesNotExist != nil {
 		if err := enc.AddObject("doesNotExist", v.DoesNotExist); err != nil {
 			return err

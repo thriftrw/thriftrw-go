@@ -158,9 +158,7 @@ func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, allowing
 // fast logging of DoesNotExistException.
 func (v *DoesNotExistException) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	enc.AddString("key", v.Key)
-
 	if v.Error2 != nil {
 		enc.AddString("Error", *v.Error2)
 	}
