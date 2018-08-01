@@ -201,15 +201,17 @@ func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) b
 
 type _List_Key_Zapper []Key
 
-// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
-func (vals _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for _, val := range vals {
-		enc.AppendString((string)(val))
+// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// fast logging of _List_Key_Zapper.
+func (l _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, v := range l {
+		enc.AppendString((string)(v))
 	}
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of KeyValue_GetManyValues_Args.
 func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Range != nil {
@@ -560,17 +562,19 @@ func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Resul
 
 type _List_ArbitraryValue_Zapper []*unions.ArbitraryValue
 
-// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
-func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for _, val := range vals {
-		if err := enc.AppendObject(val); err != nil {
+// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// fast logging of _List_ArbitraryValue_Zapper.
+func (l _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, v := range l {
+		if err := enc.AppendObject(v); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of KeyValue_GetManyValues_Result.
 func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Success != nil {

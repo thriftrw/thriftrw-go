@@ -157,7 +157,8 @@ func (v *KeyValue_DeleteValue_Args) Equals(rhs *KeyValue_DeleteValue_Args) bool 
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of KeyValue_DeleteValue_Args.
 func (v *KeyValue_DeleteValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Key != nil {
@@ -451,7 +452,8 @@ func (v *KeyValue_DeleteValue_Result) Equals(rhs *KeyValue_DeleteValue_Result) b
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of KeyValue_DeleteValue_Result.
 func (v *KeyValue_DeleteValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.DoesNotExist != nil {

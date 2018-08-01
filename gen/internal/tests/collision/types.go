@@ -157,7 +157,8 @@ func (v *AccessorConflict) Equals(rhs *AccessorConflict) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of AccessorConflict.
 func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Name != nil {
@@ -323,7 +324,8 @@ func (v *AccessorNoConflict) Equals(rhs *AccessorNoConflict) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of AccessorNoConflict.
 func (v *AccessorNoConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Getname != nil {
@@ -942,19 +944,21 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 
 type _List_String_Zapper []string
 
-// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
-func (vals _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for _, val := range vals {
-		enc.AppendString(val)
+// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// fast logging of _List_String_Zapper.
+func (l _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, v := range l {
+		enc.AppendString(v)
 	}
 	return nil
 }
 
 type _Set_String_Zapper map[string]struct{}
 
-// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
-func (vals _Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for v := range vals {
+// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// fast logging of _Set_String_Zapper.
+func (s _Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for v := range s {
 		enc.AppendString(v)
 	}
 	return nil
@@ -962,15 +966,17 @@ func (vals _Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 
 type _Map_String_String_Zapper map[string]string
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (keyvals _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	for k, v := range keyvals {
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of _Map_String_String_Zapper.
+func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range m {
 		enc.AddString((string)(k), v)
 	}
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of PrimitiveContainers.
 func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.A != nil {
@@ -1156,7 +1162,8 @@ func (v *StructCollision) Equals(rhs *StructCollision) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of StructCollision.
 func (v *StructCollision) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddBool("collisionField", v.CollisionField)
@@ -1331,7 +1338,8 @@ func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of UnionCollision.
 func (v *UnionCollision) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.CollisionField != nil {
@@ -1488,7 +1496,8 @@ func (v *WithDefault) Equals(rhs *WithDefault) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of WithDefault.
 func (v *WithDefault) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Pouet != nil {
@@ -1852,7 +1861,8 @@ func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of StructCollision2.
 func (v *StructCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	enc.AddBool("collisionField", v.CollisionField)
@@ -2017,7 +2027,8 @@ func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of UnionCollision2.
 func (v *UnionCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.CollisionField != nil {

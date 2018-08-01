@@ -364,7 +364,8 @@ func (v *Records) Equals(rhs *Records) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of Records.
 func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.RecordType != nil {

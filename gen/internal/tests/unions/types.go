@@ -434,10 +434,11 @@ func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
 
 type _List_ArbitraryValue_Zapper []*ArbitraryValue
 
-// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
-func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	for _, val := range vals {
-		if err := enc.AppendObject(val); err != nil {
+// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// fast logging of _List_ArbitraryValue_Zapper.
+func (l _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, v := range l {
+		if err := enc.AppendObject(v); err != nil {
 			return err
 		}
 	}
@@ -446,9 +447,10 @@ func (vals _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder
 
 type _Map_String_ArbitraryValue_Zapper map[string]*ArbitraryValue
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-func (keyvals _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	for k, v := range keyvals {
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of _Map_String_ArbitraryValue_Zapper.
+func (m _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range m {
 		if err := enc.AddObject((string)(k), v); err != nil {
 			return err
 		}
@@ -456,7 +458,8 @@ func (keyvals _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.Ob
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of ArbitraryValue.
 func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.BoolValue != nil {
@@ -687,7 +690,8 @@ func (v *Document) Equals(rhs *Document) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of Document.
 func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.Pdf != nil {
@@ -797,7 +801,8 @@ func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of EmptyUnion.
 func (v *EmptyUnion) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	return nil

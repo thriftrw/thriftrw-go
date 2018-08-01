@@ -1374,7 +1374,8 @@ func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
+// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// fast logging of StructWithOptionalEnum.
 func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
 	if v.E != nil {
