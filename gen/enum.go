@@ -127,7 +127,8 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 
 		<$zapcore := import "go.uber.org/zap/zapcore">
 
-		// TODO()
+		// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+		// fast logging of <$enumName>.
 		func (<$v> <$enumName>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
 			enc.AddInt32("value", int32(<$v>))
 			<if len .Spec.Items ->

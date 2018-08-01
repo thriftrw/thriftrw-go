@@ -323,10 +323,7 @@ func (m *mapGenerator) zapMarshaler(
 		); err != nil {
 			return "", err
 		}
-
-		// TODO: generate wrapper types for sets and use those here
 		return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
-	// 	// return fieldValue, nil
 	default:
 		if err := g.EnsureDeclared(
 			`

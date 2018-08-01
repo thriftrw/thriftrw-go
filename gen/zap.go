@@ -56,7 +56,6 @@ func (z *zapGenerator) zapEncoder(g Generator, spec compile.TypeSpec) string {
 
 	// Containers
 	case *compile.MapSpec:
-		// TODO: use objects if the key is a string or array if not.
 		switch t.KeySpec.(type) {
 		case *compile.StringSpec:
 			return "Object"
@@ -126,6 +125,7 @@ func (z *zapGenerator) zapCanError(spec compile.TypeSpec) bool {
 		*compile.I64Spec, *compile.DoubleSpec, *compile.StringSpec, *compile.BinarySpec:
 		return false
 
+	// Else
 	case *compile.MapSpec, *compile.SetSpec, *compile.ListSpec, *compile.EnumSpec,
 		*compile.StructSpec:
 		return true
