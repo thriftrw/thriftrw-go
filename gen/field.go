@@ -493,7 +493,7 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 						}<end ->
 					}
 				<- end>
-			<- end>
+			<end>
 			return nil
 		}
 		`, f)
