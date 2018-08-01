@@ -26,27 +26,33 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
-func zapEncoder(g Generator, spec compile.TypeSpec) string {
+type zapGenerator struct {
+	mapG  mapGenerator
+	setG  setGenerator
+	listG listGenerator
+}
+
+func (z *zapGenerator) zapEncoder(g Generator, spec compile.TypeSpec) string {
 	root := compile.RootTypeSpec(spec)
 
 	switch t := root.(type) {
 	// Primitives
 	case *compile.BoolSpec:
-		return ("Bool")
+		return "Bool"
 	case *compile.I8Spec:
-		return ("Int8")
+		return "Int8"
 	case *compile.I16Spec:
-		return ("Int16")
+		return "Int16"
 	case *compile.I32Spec:
-		return ("Int32")
+		return "Int32"
 	case *compile.I64Spec:
-		return ("Int64")
+		return "Int64"
 	case *compile.DoubleSpec:
-		return ("Float64")
+		return "Float64"
 	case *compile.StringSpec:
-		return ("String")
+		return "String"
 	case *compile.BinarySpec:
-		return ("String")
+		return "String"
 
 	// Containers
 	case *compile.MapSpec:
@@ -57,23 +63,18 @@ func zapEncoder(g Generator, spec compile.TypeSpec) string {
 		default:
 			return "Array"
 		}
-	case *compile.SetSpec:
-		// TODO: generate wrapper types for sets and use those here
-		return ("Array")
-	case *compile.ListSpec:
-		return ("Array")
+	case *compile.SetSpec, *compile.ListSpec:
+		return "Array"
 
 	// User-defined
-	case *compile.EnumSpec:
-		return ("Object")
-	case *compile.StructSpec:
-		return ("Object")
+	case *compile.EnumSpec, *compile.StructSpec:
+		return "Object"
 	default:
 	}
 	panic(root)
 }
 
-func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
+func (z *zapGenerator) zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
 	root := compile.RootTypeSpec(spec)
 
 	if _, ok := spec.(*compile.TypedefSpec); ok {
@@ -97,158 +98,11 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 		base64 := g.Import("encoding/base64")
 		return fmt.Sprintf("%v.StdEncoding.EncodeToString(%v)", base64, fieldValue), nil
 	case *compile.MapSpec:
-		// TODO: use objects if the key is a string or array if not.
-		name := "_" + g.MangleType(spec) + "_Zapper"
-		switch t.KeySpec.(type) {
-		case *compile.StringSpec:
-			// t should already be the root type, so there's no need to check if it is a typedef of a
-			// string. For simplicity, we always cast the key to a string when logging this way.
-			if err := g.EnsureDeclared(
-				`
-				type <.Name> <typeReference .Type>
-				<$zapcore := import "go.uber.org/zap/zapcore">
-				<$m := newVar "m">
-				<$k := newVar "k">
-				<$v := newVar "v">
-				<$enc := newVar "enc">
-				// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
-				// fast logging of <.Name>.
-				func (<$m> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
-					for <$k>, <$v> := range <$m> {
-						<if (zapCanError .Type.ValueSpec)>if err := <end ->
-							<$enc>.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>)
-							<- if (zapCanError .Type.ValueSpec) ->; err != nil {
-							return err
-						}<end>
-					}
-					return nil
-				}
-				`, struct {
-					Name string
-					Type compile.TypeSpec
-				}{
-					Name: name,
-					Type: root,
-				},
-			); err != nil {
-				return "", err
-			}
-
-			// TODO: generate wrapper types for sets and use those here
-			return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
-		// 	// return fieldValue, nil
-		default:
-			if err := g.EnsureDeclared(
-				`
-				type <.Name> <typeReference .Type>
-				<$zapcore := import "go.uber.org/zap/zapcore">
-				<$m := newVar "m">
-				<$k := newVar "k">
-				<$v := newVar "v">
-				<$i := newVar "i">
-				<$enc := newVar "enc">
-				// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
-				// fast logging of <.Name>.
-				func (<$m> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
-					<- if isHashable .Type.KeySpec ->
-						for <$k>, <$v> := range <$m> {
-					<else ->
-						for _, <$i> := range <$m> {
-							<$k> := <$i>.Key
-							<$v> := <$i>.Value
-					<end ->
-						if err := <$enc>.AppendObject(<zapMapItemMarshaler .Type.KeySpec $k .Type.ValueSpec $v>); err != nil {
-							return err
-						}
-					}
-					return nil
-				}
-				`, struct {
-					Name string
-					Type compile.TypeSpec
-				}{
-					Name: name,
-					Type: root,
-				},
-			); err != nil {
-				return "", err
-			}
-
-			// TODO: generate wrapper types for sets and use those here
-			return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
-		}
+		return z.mapG.zapMarshaler(g, spec, t, fieldValue)
 	case *compile.SetSpec:
-		name := "_" + g.MangleType(spec) + "_Zapper"
-		if err := g.EnsureDeclared(
-			`
-				type <.Name> <typeReference .Type>
-				<$zapcore := import "go.uber.org/zap/zapcore">
-				<$s := newVar "s">
-				<$v := newVar "v">
-				<$enc := newVar "enc">
-				// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
-				// fast logging of <.Name>.
-				func (<$s> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
-					<- if isHashable .Type.ValueSpec ->
-						for <$v> := range <$s> {
-					<else ->
-						for _, <$v> := range <$s> {
-					<end ->
-						<if (zapCanError .Type.ValueSpec)>if err := <end ->
-							<$enc>.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec $v>)
-						<- if (zapCanError .Type.ValueSpec)>; err != nil {
-							return err
-						}<end>
-					}
-					return nil
-				}
-				`, struct {
-				Name string
-				Type compile.TypeSpec
-			}{
-				Name: name,
-				Type: root,
-			},
-		); err != nil {
-			return "", err
-		}
-
-		// TODO: generate wrapper types for sets and use those here
-		return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
+		return z.setG.zapMarshaler(g, spec, t, fieldValue)
 	case *compile.ListSpec:
-		name := "_" + g.MangleType(spec) + "_Zapper"
-		if err := g.EnsureDeclared(
-			`
-				type <.Name> <typeReference .Type>
-				<$zapcore := import "go.uber.org/zap/zapcore">
-				<$l := newVar "l">
-				<$v := newVar "v">
-				<$enc := newVar "enc">
-				// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
-				// fast logging of <.Name>.
-				func (<$l> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
-					for _, <$v> := range <$l> {
-						<if (zapCanError .Type.ValueSpec)>if err := <end ->
-							<$enc>.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec $v>)
-						<- if (zapCanError .Type.ValueSpec)>; err != nil {
-							return err
-						}<end>
-					}
-					return nil
-				}
-				`, struct {
-				Name string
-				Type compile.TypeSpec
-			}{
-				Name: name,
-				Type: root,
-			},
-		); err != nil {
-			return "", err
-		}
-
-		// TODO: generate wrapper types for sets and use those here
-		return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
+		return z.listG.zapMarshaler(g, spec, t, fieldValue)
 	case *compile.StructSpec:
 		return fieldValue, nil
 	default:
@@ -256,65 +110,14 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 	panic(root)
 }
 
-func zapMarshalerPtr(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
+func (z *zapGenerator) zapMarshalerPtr(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
 	if isPrimitiveType(spec) {
 		fieldValue = "*" + fieldValue
 	}
-	return zapMarshaler(g, spec, fieldValue)
+	return z.zapMarshaler(g, spec, fieldValue)
 }
 
-func zapMapItemMarshaler(
-	g Generator,
-	keySpec compile.TypeSpec,
-	keyVar string,
-	valueSpec compile.TypeSpec,
-	valueVar string,
-) (string, error) {
-	name := "_MapItem_" + g.MangleType(keySpec) + "_" + g.MangleType(valueSpec) + "_Zapper"
-	if err := g.EnsureDeclared(
-		`
-			type <.Name> struct {
-				Key   <typeReference .KeyType>
-				Value <typeReference .ValueType>
-			}
-			<$zapcore := import "go.uber.org/zap/zapcore">
-			<$v := newVar "v">
-			<$key := printf "%s.%s" $v "Key">
-			<$val := printf "%s.%s" $v "Value">
-			<$enc := newVar "enc">
-			// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
-			// fast logging of <.Name>.
-			func (<$v> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
-				<if (zapCanError .KeyType)>if err := <end ->
-				<$enc>.Add<zapEncoder .KeyType>("key", <zapMarshaler .KeyType $key>)
-				<- if (zapCanError .KeyType)>; err != nil {
-						return err
-					}<end>
-				<if (zapCanError .ValueType)>if err := <end ->
-				<$enc>.Add<zapEncoder .ValueType>("value", <zapMarshaler .ValueType $val>)
-				<- if (zapCanError .ValueType)>; err != nil {
-					return err
-				}<end>
-				return nil
-			}
-			`, struct {
-			Name      string
-			KeyType   compile.TypeSpec
-			ValueType compile.TypeSpec
-		}{
-			Name:      name,
-			KeyType:   keySpec,
-			ValueType: valueSpec,
-		},
-	); err != nil {
-		return "", err
-	}
-
-	// TODO: generate wrapper types for sets and use those here
-	return fmt.Sprintf("%v{Key: %v, Value: %v}", name, keyVar, valueVar), nil
-}
-
-func zapCanError(spec compile.TypeSpec) bool {
+func (z *zapGenerator) zapCanError(spec compile.TypeSpec) bool {
 	root := compile.RootTypeSpec(spec)
 
 	switch root.(type) {
