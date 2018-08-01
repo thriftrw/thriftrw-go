@@ -211,28 +211,28 @@ func (s *setGenerator) zapMarshaler(
 	name := zapperName(g, spec)
 	if err := g.EnsureDeclared(
 		`
-				type <.Name> <typeReference .Type>
-				<$zapcore := import "go.uber.org/zap/zapcore">
-				<$s := newVar "s">
-				<$v := newVar "v">
-				<$enc := newVar "enc">
-				// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
-				// fast logging of <.Name>.
-				func (<$s> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
-					<- if isHashable .Type.ValueSpec ->
-						for <$v> := range <$s> {
-					<else ->
-						for _, <$v> := range <$s> {
-					<end ->
-						<if (zapCanError .Type.ValueSpec)>if err := <end ->
-							<$enc>.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec $v>)
-						<- if (zapCanError .Type.ValueSpec)>; err != nil {
-							return err
-						}<end>
-					}
-					return nil
+			type <.Name> <typeReference .Type>
+			<$zapcore := import "go.uber.org/zap/zapcore">
+			<$s := newVar "s">
+			<$v := newVar "v">
+			<$enc := newVar "enc">
+			// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+			// fast logging of <.Name>.
+			func (<$s> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
+				<- if isHashable .Type.ValueSpec ->
+					for <$v> := range <$s> {
+				<else ->
+					for _, <$v> := range <$s> {
+				<end ->
+					<if (zapCanError .Type.ValueSpec)>if err := <end ->
+						<$enc>.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec $v>)
+					<- if (zapCanError .Type.ValueSpec)>; err != nil {
+						return err
+					}<end>
 				}
-				`, struct {
+				return nil
+			}
+			`, struct {
 			Name string
 			Type *compile.SetSpec
 		}{
