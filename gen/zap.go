@@ -107,14 +107,16 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 				`
 				type <.Name> <typeReference .Type>
 				<$zapcore := import "go.uber.org/zap/zapcore">
-				<$keyvals := newVar "keyvals">
+				<$m := newVar "m">
 				<$k := newVar "k">
 				<$v := newVar "v">
-				// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-				func (<$keyvals> <.Name>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
-					for <$k>, <$v> := range <$keyvals> {
+				<$enc := newVar "enc">
+				// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+				// fast logging of <.Name>.
+				func (<$m> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
+					for <$k>, <$v> := range <$m> {
 						<if (zapCanError .Type.ValueSpec)>if err := <end ->
-							enc.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>)
+							<$enc>.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>)
 							<- if (zapCanError .Type.ValueSpec) ->; err != nil {
 							return err
 						}<end>
@@ -140,20 +142,22 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 				`
 				type <.Name> <typeReference .Type>
 				<$zapcore := import "go.uber.org/zap/zapcore">
-				<$keyvals := newVar "keyvals">
+				<$m := newVar "m">
 				<$k := newVar "k">
 				<$v := newVar "v">
 				<$i := newVar "i">
-				// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
-				func (<$keyvals> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
+				<$enc := newVar "enc">
+				// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+				// fast logging of <.Name>.
+				func (<$m> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
 					<- if isHashable .Type.KeySpec ->
-						for <$k>, <$v> := range <$keyvals> {
+						for <$k>, <$v> := range <$m> {
 					<else ->
-						for _, <$i> := range <$keyvals> {
+						for _, <$i> := range <$m> {
 							<$k> := <$i>.Key
 							<$v> := <$i>.Value
 					<end ->
-						if err := enc.AppendObject(<zapMapItemMarshaler .Type.KeySpec "k" .Type.ValueSpec "v">); err != nil {
+						if err := <$enc>.AppendObject(<zapMapItemMarshaler .Type.KeySpec $k .Type.ValueSpec $v>); err != nil {
 							return err
 						}
 					}
@@ -179,17 +183,19 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 			`
 				type <.Name> <typeReference .Type>
 				<$zapcore := import "go.uber.org/zap/zapcore">
-				<$vals := newVar "vals">
+				<$s := newVar "s">
 				<$v := newVar "v">
-				// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
-				func (<$vals> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
+				<$enc := newVar "enc">
+				// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+				// fast logging of <.Name>.
+				func (<$s> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
 					<- if isHashable .Type.ValueSpec ->
-						for <$v> := range <$vals> {
+						for <$v> := range <$s> {
 					<else ->
-						for _, <$v> := range <$vals> {
+						for _, <$v> := range <$s> {
 					<end ->
 						<if (zapCanError .Type.ValueSpec)>if err := <end ->
-							enc.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec "v">)
+							<$enc>.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec $v>)
 						<- if (zapCanError .Type.ValueSpec)>; err != nil {
 							return err
 						}<end>
@@ -215,12 +221,15 @@ func zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string
 			`
 				type <.Name> <typeReference .Type>
 				<$zapcore := import "go.uber.org/zap/zapcore">
-				<$vals := newVar "vals">
-				// MarshalLogArray implements zapcore.ArrayMarshaler. (TODO)
-				func (<$vals> <.Name>) MarshalLogArray(enc <$zapcore>.ArrayEncoder) error {
-					for _, val := range <$vals> {
+				<$l := newVar "l">
+				<$v := newVar "v">
+				<$enc := newVar "enc">
+				// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+				// fast logging of <.Name>.
+				func (<$l> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
+					for _, <$v> := range <$l> {
 						<if (zapCanError .Type.ValueSpec)>if err := <end ->
-							enc.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec "val">)
+							<$enc>.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec $v>)
 						<- if (zapCanError .Type.ValueSpec)>; err != nil {
 							return err
 						}<end>
@@ -272,15 +281,17 @@ func zapMapItemMarshaler(
 			<$v := newVar "v">
 			<$key := printf "%s.%s" $v "Key">
 			<$val := printf "%s.%s" $v "Value">
-			// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-			func (<$v> <.Name>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
+			<$enc := newVar "enc">
+			// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+			// fast logging of <.Name>.
+			func (<$v> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
 				<if (zapCanError .KeyType)>if err := <end ->
-				enc.Add<zapEncoder .KeyType>("key", <zapMarshaler .KeyType $key>)
+				<$enc>.Add<zapEncoder .KeyType>("key", <zapMarshaler .KeyType $key>)
 				<- if (zapCanError .KeyType)>; err != nil {
 						return err
 					}<end>
 				<if (zapCanError .ValueType)>if err := <end ->
-				enc.Add<zapEncoder .ValueType>("value", <zapMarshaler .ValueType $val>)
+				<$enc>.Add<zapEncoder .ValueType>("value", <zapMarshaler .ValueType $val>)
 				<- if (zapCanError .ValueType)>; err != nil {
 					return err
 				}<end>

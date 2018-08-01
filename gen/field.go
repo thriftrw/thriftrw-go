@@ -470,23 +470,24 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 		`
 		<$zapcore := import "go.uber.org/zap/zapcore">
 		<$v := newVar "v">
-		// TODO(minho): Make enc a newVar.
+		<$enc := newVar "enc">
 
-		// MarshalLogObject implements zapcore.ObjectMarshaler. (TODO)
-		func (<$v> *<.Name>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
+		// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+		// fast logging of <.Name>.
+		func (<$v> *<.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
 			<range .Fields>
 				<$fname := goName .>
 				<$fval := printf "%s.%s" $v $fname>
 				<- if .Required ->
 					<if (zapCanError .Type)>if err := <end ->
-					enc.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
+					<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
 					<- if (zapCanError .Type)>; err != nil {
 						return err
 					}<end>
 				<- else ->
 					if <$fval> != nil {
 						<if (zapCanError .Type)>if err := <end ->
-						enc.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>)
+						<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>)
 						<- if (zapCanError .Type)>; err != nil {
 							return err
 						}<end>

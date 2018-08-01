@@ -28,24 +28,9 @@ import (
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
+	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/zap/zapcore"
 )
-
-// func jsonToComparableMap(jsonMap string) (map[string]interface{}, error) {
-// 	var retMap map[string]interface{}
-// 	if err := json.Unmarshal([]byte(jsonMap), &retMap); err != nil {
-// 		return nil, err
-// 	}
-// 	return retMap, nil
-// }
-
-// func mapTojson(mapThing map[string]interface{}) (string, error) {
-// 	retBytes, err := json.Marshal(mapThing)
-// 	if err != nil {
-// 		return "", err
-// 	}
-// 	return string(retBytes), nil
-// }
 
 func TestCollectionsOfPrimitivesZapLogging(t *testing.T) {
 	// These types are created to ease building map[string]interface{}
@@ -132,10 +117,7 @@ func TestCollectionsOfPrimitivesZapLogging(t *testing.T) {
 	for _, tt := range tests {
 		mapEncoder := zapcore.NewMapObjectEncoder()
 		tt.p.MarshalLogObject(mapEncoder)
-		// mapEncoder.AddObject("actual", &tt.p)
-		// t.Log(mapTojson(mapEncoder.Fields))
 		assert.Equal(t, tt.v, mapEncoder.Fields)
-		// DeepEquals mapEncoder.Fields and tt.v
 	}
 }
 
@@ -254,8 +236,6 @@ func TestEnumContainersZapLogging(t *testing.T) {
 	for _, tt := range tests {
 		mapEncoder := zapcore.NewMapObjectEncoder()
 		tt.r.MarshalLogObject(mapEncoder)
-		// mapEncoder.AddObject("actual", &tt.p)
-		// t.Log(mapTojson(mapEncoder.Fields))
 		assert.Equal(t, tt.v, mapEncoder.Fields)
 	}
 }
@@ -303,8 +283,6 @@ func TestListOfStructsZapLogging(t *testing.T) {
 	for _, tt := range tests {
 		mapEncoder := zapcore.NewMapObjectEncoder()
 		tt.r.MarshalLogObject(mapEncoder)
-		// mapEncoder.AddObject("actual", &tt.p)
-		// t.Log(mapTojson(mapEncoder.Fields))
 		assert.Equal(t, tt.v, mapEncoder.Fields)
 	}
 }
@@ -494,8 +472,61 @@ func TestCrazyTownZapLogging(t *testing.T) {
 	for _, tt := range tests {
 		mapEncoder := zapcore.NewMapObjectEncoder()
 		tt.r.MarshalLogObject(mapEncoder)
-		// mapEncoder.AddObject("actual", &tt.p)
-		// t.Log(mapTojson(mapEncoder.Fields))
 		assert.Equal(t, tt.v, mapEncoder.Fields)
 	}
+}
+
+func TestTypedefsZapLogging(t *testing.T) {
+	// These types are created to ease building map[string]interface{}
+	type o = map[string]interface{}
+	type a = []interface{}
+
+	// test alias of primitive
+	mapEncoder := zapcore.NewMapObjectEncoder()
+	testState := td.State("hello")
+	test1 := td.DefaultPrimitiveTypedef{State: &testState}
+	test1.MarshalLogObject(mapEncoder)
+	expected1 := o{"state": "hello"}
+	assert.Equal(t, expected1, mapEncoder.Fields)
+
+	// test alias of struct
+	mapEncoder = zapcore.NewMapObjectEncoder()
+	test2 := td.UUID{High: 123, Low: 456}
+	test2.MarshalLogObject(mapEncoder)
+	expected2 := o{"high": int64(123), "low": int64(456)}
+	assert.Equal(t, expected2, mapEncoder.Fields)
+
+	// test alias of list of structs
+	mapEncoder = zapcore.NewMapObjectEncoder()
+	testUUID := td.UUID(td.I128{High: 123, Low: 456})
+	testTimestamp := td.Timestamp(123)
+	test3 := td.EventGroup([]*td.Event{
+		&td.Event{
+			UUID: &testUUID,
+			Time: &testTimestamp,
+		},
+	})
+	mapEncoder.AddArray("addTypedefArrayTest", test3)
+	expected3 := o{"addTypedefArrayTest": a{o{"uuid": o{"high": int64(123), "low": int64(456)}, "time": int64(123)}}}
+	assert.Equal(t, expected3, mapEncoder.Fields)
+
+	// test alias of set
+	b64 := func(byteString string) string {
+		return base64.StdEncoding.EncodeToString([]byte(byteString))
+	}
+	mapEncoder = zapcore.NewMapObjectEncoder()
+	test4 := td.BinarySet([][]byte{
+		[]byte("foo"), {}, []byte("bar"), []byte("baz"),
+	})
+	mapEncoder.AddArray("addTypedefSetTest", test4)
+	// base64
+	expected4 := o{"addTypedefSetTest": a{b64("foo"), b64(""), b64("bar"), b64("baz")}}
+	assert.Equal(t, expected4, mapEncoder.Fields)
+
+	// test alias of enums
+	mapEncoder = zapcore.NewMapObjectEncoder()
+	test5 := td.MyEnum(te.EnumWithValuesX)
+	test5.MarshalLogObject(mapEncoder)
+	expected5 := o{"value": int32(123), "name": "X"}
+	assert.Equal(t, expected5, mapEncoder.Fields)
 }
