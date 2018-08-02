@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- No changes yet.
+- All structs and its underlying components, enums, and typedefs of non-primitives
+  now implement `zapcore.ObjectMarshaler` or `zapcore.ArrayMarshaler`, depending
+  on its underlying type.
 
 ## [1.12.0] - 2018-06-25
 ### Added
