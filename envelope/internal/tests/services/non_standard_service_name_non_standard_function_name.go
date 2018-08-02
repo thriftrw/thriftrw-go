@@ -109,7 +109,7 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) Equals(rhs *NonSta
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of NonStandardServiceName_NonStandardFunctionName_Args.
 func (v *NonStandardServiceName_NonStandardFunctionName_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
@@ -279,7 +279,7 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) Equals(rhs *NonS
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of NonStandardServiceName_NonStandardFunctionName_Result.
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 

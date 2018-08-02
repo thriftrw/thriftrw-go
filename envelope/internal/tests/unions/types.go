@@ -454,7 +454,7 @@ func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
 
 type _List_ArbitraryValue_Zapper []*ArbitraryValue
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_ArbitraryValue_Zapper.
 func (l _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, v := range l {
@@ -467,7 +467,7 @@ func (l _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) e
 
 type _Map_String_ArbitraryValue_Zapper map[string]*ArbitraryValue
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of _Map_String_ArbitraryValue_Zapper.
 func (m _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	for k, v := range m {
@@ -478,7 +478,7 @@ func (m _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.ObjectEn
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ArbitraryValue.
 func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.BoolValue != nil {
@@ -705,7 +705,7 @@ func (v *Document) Equals(rhs *Document) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Document.
 func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.Pdf != nil {
@@ -814,7 +814,7 @@ func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EmptyUnion.
 func (v *EmptyUnion) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 

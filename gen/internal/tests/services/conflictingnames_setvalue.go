@@ -123,7 +123,7 @@ func (v *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_A
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ConflictingNames_SetValue_Args.
 func (v *ConflictingNames_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.Request != nil {
@@ -314,7 +314,7 @@ func (v *ConflictingNames_SetValue_Result) Equals(rhs *ConflictingNames_SetValue
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ConflictingNames_SetValue_Result.
 func (v *ConflictingNames_SetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 

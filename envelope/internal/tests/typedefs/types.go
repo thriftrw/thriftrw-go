@@ -106,7 +106,7 @@ func _Set_Binary_Equals(lhs, rhs [][]byte) bool {
 
 type _BinarySet_Zapper [][]byte
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _BinarySet_Zapper.
 func (s _BinarySet_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, v := range s {
@@ -283,7 +283,7 @@ func (v *DefaultPrimitiveTypedef) Equals(rhs *DefaultPrimitiveTypedef) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of DefaultPrimitiveTypedef.
 func (v *DefaultPrimitiveTypedef) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.State != nil {
@@ -430,7 +430,7 @@ type _MapItem_Edge_Edge_Zapper struct {
 	Value *structs.Edge
 }
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _MapItem_Edge_Edge_Zapper.
 func (v _MapItem_Edge_Edge_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if err := enc.AddObject("key", v.Key); err != nil {
@@ -447,7 +447,7 @@ type _EdgeMap_Zapper []struct {
 	Value *structs.Edge
 }
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _EdgeMap_Zapper.
 func (m _EdgeMap_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, i := range m {
@@ -664,9 +664,10 @@ func (v *Event) Equals(rhs *Event) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Event.
 func (v *Event) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
 	if err := enc.AddObject("uuid", (*I128)(v.UUID)); err != nil {
 		return err
 	}
@@ -761,7 +762,7 @@ func _List_Event_Equals(lhs, rhs []*Event) bool {
 
 type _EventGroup_Zapper []*Event
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _EventGroup_Zapper.
 func (l _EventGroup_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, v := range l {
@@ -884,7 +885,7 @@ func _Set_Frame_Equals(lhs, rhs []*structs.Frame) bool {
 
 type _FrameGroup_Zapper []*structs.Frame
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _FrameGroup_Zapper.
 func (s _FrameGroup_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, v := range s {
@@ -1129,7 +1130,7 @@ type _MapItem_Point_Point_Zapper struct {
 	Value *structs.Point
 }
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _MapItem_Point_Point_Zapper.
 func (v _MapItem_Point_Point_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if err := enc.AddObject("key", v.Key); err != nil {
@@ -1146,7 +1147,7 @@ type _PointMap_Zapper []struct {
 	Value *structs.Point
 }
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _PointMap_Zapper.
 func (m _PointMap_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, i := range m {
@@ -1433,7 +1434,7 @@ func (v *Transition) Equals(rhs *Transition) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Transition.
 func (v *Transition) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("fromState", (string)(v.FromState))
@@ -1630,7 +1631,7 @@ func (v *I128) Equals(rhs *I128) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of I128.
 func (v *I128) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt64("high", v.High)

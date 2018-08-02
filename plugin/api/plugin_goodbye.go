@@ -109,7 +109,7 @@ func (v *Plugin_Goodbye_Args) Equals(rhs *Plugin_Goodbye_Args) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Plugin_Goodbye_Args.
 func (v *Plugin_Goodbye_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
@@ -279,7 +279,7 @@ func (v *Plugin_Goodbye_Result) Equals(rhs *Plugin_Goodbye_Result) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Plugin_Goodbye_Result.
 func (v *Plugin_Goodbye_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 

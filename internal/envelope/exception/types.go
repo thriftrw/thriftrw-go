@@ -146,7 +146,7 @@ func (v ExceptionType) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ExceptionType.
 func (v ExceptionType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
@@ -473,7 +473,7 @@ func (v *TApplicationException) Equals(rhs *TApplicationException) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of TApplicationException.
 func (v *TApplicationException) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.Message != nil {

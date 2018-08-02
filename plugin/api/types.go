@@ -189,10 +189,11 @@ func (v *Argument) Equals(rhs *Argument) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Argument.
 func (v *Argument) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("name", v.Name)
+
 	if err := enc.AddObject("type", v.Type); err != nil {
 		return err
 	}
@@ -256,7 +257,7 @@ func (v Feature) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Feature.
 func (v Feature) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
@@ -808,7 +809,7 @@ func (v *Function) Equals(rhs *Function) bool {
 
 type _List_Argument_Zapper []*Argument
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_Argument_Zapper.
 func (l _List_Argument_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, v := range l {
@@ -821,7 +822,7 @@ func (l _List_Argument_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 
 type _Map_String_String_Zapper map[string]string
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of _Map_String_String_Zapper.
 func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	for k, v := range m {
@@ -830,11 +831,12 @@ func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) e
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Function.
 func (v *Function) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("name", v.Name)
 	enc.AddString("thriftName", v.ThriftName)
+
 	if err := enc.AddArray("arguments", (_List_Argument_Zapper)(v.Arguments)); err != nil {
 		return err
 	}
@@ -1344,7 +1346,7 @@ func (v *GenerateServiceRequest) Equals(rhs *GenerateServiceRequest) bool {
 
 type _List_ServiceID_Zapper []ServiceID
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_ServiceID_Zapper.
 func (l _List_ServiceID_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, v := range l {
@@ -1358,7 +1360,7 @@ type _MapItem_ServiceID_Service_Zapper struct {
 	Value *Service
 }
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _MapItem_ServiceID_Service_Zapper.
 func (v _MapItem_ServiceID_Service_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("key", (int32)(v.Key))
@@ -1370,7 +1372,7 @@ func (v _MapItem_ServiceID_Service_Zapper) MarshalLogObject(enc zapcore.ObjectEn
 
 type _Map_ServiceID_Service_Zapper map[ServiceID]*Service
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _Map_ServiceID_Service_Zapper.
 func (m _Map_ServiceID_Service_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range m {
@@ -1386,7 +1388,7 @@ type _MapItem_ModuleID_Module_Zapper struct {
 	Value *Module
 }
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _MapItem_ModuleID_Module_Zapper.
 func (v _MapItem_ModuleID_Module_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("key", (int32)(v.Key))
@@ -1398,7 +1400,7 @@ func (v _MapItem_ModuleID_Module_Zapper) MarshalLogObject(enc zapcore.ObjectEnco
 
 type _Map_ModuleID_Module_Zapper map[ModuleID]*Module
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _Map_ModuleID_Module_Zapper.
 func (m _Map_ModuleID_Module_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range m {
@@ -1409,15 +1411,18 @@ func (m _Map_ModuleID_Module_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) e
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of GenerateServiceRequest.
 func (v *GenerateServiceRequest) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
 	if err := enc.AddArray("rootServices", (_List_ServiceID_Zapper)(v.RootServices)); err != nil {
 		return err
 	}
+
 	if err := enc.AddArray("services", (_Map_ServiceID_Service_Zapper)(v.Services)); err != nil {
 		return err
 	}
+
 	if err := enc.AddArray("modules", (_Map_ModuleID_Module_Zapper)(v.Modules)); err != nil {
 		return err
 	}
@@ -1634,7 +1639,7 @@ func (v *GenerateServiceResponse) Equals(rhs *GenerateServiceResponse) bool {
 
 type _Map_String_Binary_Zapper map[string][]byte
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of _Map_String_Binary_Zapper.
 func (m _Map_String_Binary_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	for k, v := range m {
@@ -1643,7 +1648,7 @@ func (m _Map_String_Binary_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) e
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of GenerateServiceResponse.
 func (v *GenerateServiceResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.Files != nil {
@@ -1743,7 +1748,7 @@ func (v *HandshakeRequest) Equals(rhs *HandshakeRequest) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of HandshakeRequest.
 func (v *HandshakeRequest) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
@@ -2024,7 +2029,7 @@ func (v *HandshakeResponse) Equals(rhs *HandshakeResponse) bool {
 
 type _List_Feature_Zapper []Feature
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_Feature_Zapper.
 func (l _List_Feature_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, v := range l {
@@ -2035,11 +2040,12 @@ func (l _List_Feature_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of HandshakeResponse.
 func (v *HandshakeResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("name", v.Name)
 	enc.AddInt32("apiVersion", v.APIVersion)
+
 	if err := enc.AddArray("features", (_List_Feature_Zapper)(v.Features)); err != nil {
 		return err
 	}
@@ -2213,7 +2219,7 @@ func (v *Module) Equals(rhs *Module) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Module.
 func (v *Module) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("importPath", v.ImportPath)
@@ -2598,7 +2604,7 @@ func (v *Service) Equals(rhs *Service) bool {
 
 type _List_Function_Zapper []*Function
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_Function_Zapper.
 func (l _List_Function_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, v := range l {
@@ -2609,7 +2615,7 @@ func (l _List_Function_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Service.
 func (v *Service) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("name", v.Name)
@@ -2617,6 +2623,7 @@ func (v *Service) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.ParentID != nil {
 		enc.AddInt32("parentID", (int32)(*v.ParentID))
 	}
+
 	if err := enc.AddArray("functions", (_List_Function_Zapper)(v.Functions)); err != nil {
 		return err
 	}
@@ -2798,7 +2805,7 @@ func (v SimpleType) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of SimpleType.
 func (v SimpleType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
@@ -3248,7 +3255,7 @@ func (v *Type) Equals(rhs *Type) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Type.
 func (v *Type) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.SimpleType != nil {
@@ -3483,12 +3490,14 @@ func (v *TypePair) Equals(rhs *TypePair) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of TypePair.
 func (v *TypePair) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
 	if err := enc.AddObject("left", v.Left); err != nil {
 		return err
 	}
+
 	if err := enc.AddObject("right", v.Right); err != nil {
 		return err
 	}
@@ -3680,7 +3689,7 @@ func (v *TypeReference) Equals(rhs *TypeReference) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of TypeReference.
 func (v *TypeReference) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("name", v.Name)

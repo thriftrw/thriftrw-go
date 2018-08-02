@@ -141,7 +141,7 @@ func (v *ContactInfo) Equals(rhs *ContactInfo) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ContactInfo.
 func (v *ContactInfo) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("emailAddress", v.EmailAddress)
@@ -701,7 +701,7 @@ func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
 
 type _List_String_Zapper []string
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_String_Zapper.
 func (l _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, v := range l {
@@ -712,7 +712,7 @@ func (l _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 
 type _List_Double_Zapper []float64
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_Double_Zapper.
 func (l _List_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, v := range l {
@@ -721,7 +721,7 @@ func (l _List_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of DefaultsStruct.
 func (v *DefaultsStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.RequiredPrimitive != nil {
@@ -1012,12 +1012,14 @@ func (v *Edge) Equals(rhs *Edge) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Edge.
 func (v *Edge) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
 	if err := enc.AddObject("startPoint", v.StartPoint); err != nil {
 		return err
 	}
+
 	if err := enc.AddObject("endPoint", v.EndPoint); err != nil {
 		return err
 	}
@@ -1109,7 +1111,7 @@ func (v *EmptyStruct) Equals(rhs *EmptyStruct) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EmptyStruct.
 func (v *EmptyStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 
@@ -1259,12 +1261,14 @@ func (v *Frame) Equals(rhs *Frame) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Frame.
 func (v *Frame) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
 	if err := enc.AddObject("topLeft", v.TopLeft); err != nil {
 		return err
 	}
+
 	if err := enc.AddObject("size", v.Size); err != nil {
 		return err
 	}
@@ -1528,7 +1532,7 @@ func (v *GoTags) Equals(rhs *GoTags) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of GoTags.
 func (v *GoTags) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("Foo", v.Foo)
@@ -1758,7 +1762,7 @@ func (v *Graph) Equals(rhs *Graph) bool {
 
 type _List_Edge_Zapper []*Edge
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_Edge_Zapper.
 func (l _List_Edge_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, v := range l {
@@ -1769,9 +1773,10 @@ func (l _List_Edge_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	return nil
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Graph.
 func (v *Graph) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
 	if err := enc.AddArray("edges", (_List_Edge_Zapper)(v.Edges)); err != nil {
 		return err
 	}
@@ -1954,7 +1959,7 @@ func (v *Node) Equals(rhs *Node) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Node.
 func (v *Node) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", v.Value)
@@ -2113,7 +2118,7 @@ func (v *Omit) Equals(rhs *Omit) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Omit.
 func (v *Omit) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("serialized", v.Serialized)
@@ -2263,7 +2268,7 @@ func (v *Point) Equals(rhs *Point) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Point.
 func (v *Point) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddFloat64("x", v.X)
@@ -2619,7 +2624,7 @@ func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of PrimitiveOptionalStruct.
 func (v *PrimitiveOptionalStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.BoolField != nil {
@@ -3023,7 +3028,7 @@ func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of PrimitiveRequiredStruct.
 func (v *PrimitiveRequiredStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddBool("boolField", v.BoolField)
@@ -3202,7 +3207,7 @@ func (v *Rename) Equals(rhs *Rename) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Rename.
 func (v *Rename) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("Default", v.Default)
@@ -3354,7 +3359,7 @@ func (v *Size) Equals(rhs *Size) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Size.
 func (v *Size) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddFloat64("width", v.Width)
@@ -3507,7 +3512,7 @@ func (v *User) Equals(rhs *User) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of User.
 func (v *User) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("name", v.Name)

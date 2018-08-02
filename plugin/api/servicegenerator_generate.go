@@ -144,7 +144,7 @@ func (v *ServiceGenerator_Generate_Args) Equals(rhs *ServiceGenerator_Generate_A
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ServiceGenerator_Generate_Args.
 func (v *ServiceGenerator_Generate_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.Request != nil {
@@ -390,7 +390,7 @@ func (v *ServiceGenerator_Generate_Result) Equals(rhs *ServiceGenerator_Generate
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ServiceGenerator_Generate_Result.
 func (v *ServiceGenerator_Generate_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.Success != nil {
