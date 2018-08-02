@@ -68,7 +68,6 @@ func (z *zapGenerator) zapEncoder(g Generator, spec compile.TypeSpec) string {
 	// User-defined
 	case *compile.EnumSpec, *compile.StructSpec:
 		return "Object"
-	default:
 	}
 	panic(root)
 }
@@ -104,7 +103,6 @@ func (z *zapGenerator) zapMarshaler(g Generator, spec compile.TypeSpec, fieldVal
 		return z.listG.zapMarshaler(g, spec, t, fieldValue)
 	case *compile.StructSpec:
 		return fieldValue, nil
-	default:
 	}
 	panic(root)
 }
@@ -125,11 +123,10 @@ func (z *zapGenerator) zapCanError(spec compile.TypeSpec) bool {
 		*compile.I64Spec, *compile.DoubleSpec, *compile.StringSpec, *compile.BinarySpec:
 		return false
 
-	// Else
+	// Non-primitives
 	case *compile.MapSpec, *compile.SetSpec, *compile.ListSpec, *compile.EnumSpec,
 		*compile.StructSpec:
 		return true
-	default:
 	}
 	panic(root)
 }

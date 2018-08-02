@@ -472,25 +472,29 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 		<$v := newVar "v">
 		<$enc := newVar "enc">
 
-		// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+		// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 		// fast logging of <.Name>.
 		func (<$v> *<.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
 			<range .Fields>
 				<- $fname := goName . ->
 				<- $fval := printf "%s.%s" $v $fname ->
 				<- if .Required ->
-					<- if (zapCanError .Type)>if err := <end ->
-					<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
-					<- if (zapCanError .Type)>; err != nil {
+					<- if (zapCanError .Type)>
+					if err := <$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>); err != nil {
 						return err
-					}<end ->
+					}
+					<- else ->
+					<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
+					<- end ->
 				<- else ->
 					if <$fval> != nil {
-						<- if (zapCanError .Type)>if err := <end ->
-						<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>)
-						<- if (zapCanError .Type)>; err != nil {
+						<- if (zapCanError .Type)>
+						if err := <$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>); err != nil {
 							return err
-						}<end ->
+						}
+						<- else ->
+						<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>)
+						<- end ->
 					}
 				<- end>
 			<end>

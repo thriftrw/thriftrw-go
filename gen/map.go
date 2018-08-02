@@ -301,7 +301,7 @@ func (m *mapGenerator) zapMarshaler(
 				<$k := newVar "k">
 				<$v := newVar "v">
 				<$enc := newVar "enc">
-				// MarshalLogObject implements zapcore.ObjectMarshaler, allowing
+				// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 				// fast logging of <.Name>.
 				func (<$m> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
 					for <$k>, <$v> := range <$m> {
@@ -334,7 +334,7 @@ func (m *mapGenerator) zapMarshaler(
 				<$v := newVar "v">
 				<$i := newVar "i">
 				<$enc := newVar "enc">
-				// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+				// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 				// fast logging of <.Name>.
 				func (<$m> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
 					<- if isHashable .Type.KeySpec ->
@@ -384,7 +384,7 @@ func (m *mapGenerator) zapMapItemMarshaler(
 			<$key := printf "%s.%s" $v "Key">
 			<$val := printf "%s.%s" $v "Value">
 			<$enc := newVar "enc">
-			// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 			// fast logging of <.Name>.
 			func (<$v> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
 				<if (zapCanError .KeyType)>if err := <end ->

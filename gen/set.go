@@ -216,7 +216,7 @@ func (s *setGenerator) zapMarshaler(
 			<$s := newVar "s">
 			<$v := newVar "v">
 			<$enc := newVar "enc">
-			// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 			// fast logging of <.Name>.
 			func (<$s> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
 				<- if isHashable .Type.ValueSpec ->

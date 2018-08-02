@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 - All structs and its underlying components, enums, and typedefs of non-primitives
   now implement `zapcore.ObjectMarshaler` or `zapcore.ArrayMarshaler`, depending
-  on its underlying type.
+  on its underlying type. For typedefs of primitives, the logging is up to the user, simply by casting it down to the root type and using the respective Add/Append... method of the Zap encoder.
 
 ## [1.12.0] - 2018-06-25
 ### Added

@@ -196,7 +196,7 @@ func (l *listGenerator) zapMarshaler(
 			<$l := newVar "l">
 			<$v := newVar "v">
 			<$enc := newVar "enc">
-			// MarshalLogArray implements zapcore.ArrayMarshaler, allowing
+			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 			// fast logging of <.Name>.
 			func (<$l> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
 				for _, <$v> := range <$l> {
