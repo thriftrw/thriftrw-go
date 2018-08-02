@@ -224,11 +224,13 @@ func (s *setGenerator) zapMarshaler(
 				<else ->
 					for _, <$v> := range <$s> {
 				<end ->
-					<if (zapCanError .Type.ValueSpec)>if err := <end ->
+					<if (zapCanError .Type.ValueSpec) ->
+						if err := <$enc>.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec $v>); err != nil {
+							return err
+						}
+					<- else ->
 						<$enc>.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec $v>)
-					<- if (zapCanError .Type.ValueSpec)>; err != nil {
-						return err
-					}<end>
+					<- end>
 				}
 				return nil
 			}
