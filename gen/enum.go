@@ -26,6 +26,11 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
+const (
+	// GoWireLabel overrides name on the wire
+	GoWireLabel = "go.wire.label"
+)
+
 // enumGenerator generates code to serialize and deserialize enums.
 type enumGenerator struct{}
 
@@ -98,7 +103,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			switch string(value) {
 			<- $enum := .Spec ->
 			<range .Spec.Items ->
-				case "<.Name>":
+				case "<enumItemWireName .>":
 					*<$v> = <enumItemName $enumName .>
 					return nil
 			<end ->
@@ -118,7 +123,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch int32(<$v>) {
 				<range .UniqueItems ->
 					case <.Value>:
-						return []byte("<.Name>"), nil
+						return []byte("<enumItemWireName .>"), nil
 				<end ->
 				}
 			<end ->
@@ -165,7 +170,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch <$w> {
 				<range .UniqueItems ->
 					case <.Value>:
-						return "<.Name>"
+						return "<enumItemWireName .>"
 				<end ->
 				}
 			<end ->
@@ -190,7 +195,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch int32(<$v>) {
 				<range .UniqueItems ->
 					case <.Value>:
-						return ([]byte)("\"<.Name>\""), nil
+						return ([]byte)("\"<enumItemWireName .>\""), nil
 				<end ->
 				}
 			<end ->
@@ -246,6 +251,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			UniqueItems: items,
 		},
 		TemplateFunc("enumItemName", enumItemName),
+		TemplateFunc("enumItemWireName", enumItemWireName),
 	)
 
 	return wrapGenerateError(spec.Name, err)
@@ -263,6 +269,17 @@ func enumItemName(enumName string, spec *compile.EnumItem) (string, error) {
 			strings.Split(spec.ThriftName(), "_")...)
 	}
 	return enumName + name, err
+}
+
+// enumItemWireName returns the actual name used for serialization/deserialization
+// default to EnumItem.Name, override by the value of GoWireLabel
+func enumItemWireName(spec *compile.EnumItem) string {
+	labelName := spec.Name
+	val, ok := spec.Annotations[GoWireLabel]
+	if ok && len(val) > 0 {
+		labelName = val
+	}
+	return labelName
 }
 
 // enumUniqueItems returns a subset of the given list of enum items where

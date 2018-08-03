@@ -399,3 +399,27 @@ func TestEnumAccessors(t *testing.T) {
 		})
 	})
 }
+
+func TestEnumWireLabel(t *testing.T) {
+	tests := []struct {
+		enumItem  te.EnumWithWireLabel
+		wireValue string
+	}{
+		{te.EnumWithWireLabelUsername, "surname"},
+		{te.EnumWithWireLabelPassword, "hashed_password"},
+		{te.EnumWithWireLabelSalt, "salt"},
+	}
+	for _, tt := range tests {
+		t.Run("compare label:"+tt.wireValue, func(t *testing.T) {
+			label := te.EnumWithWireLabel(tt.enumItem)
+			b, err := label.MarshalText()
+			assert.NoError(t, err)
+			assert.Equal(t, tt.wireValue, string(b))
+			assertRoundTrip(
+				t, &tt.enumItem,
+				wire.NewValueI32(int32(tt.enumItem)),
+				"test roundtrip "+tt.wireValue,
+			)
+		})
+	}
+}
