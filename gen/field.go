@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Uber Technologies, Inc.
+// Copyright (c) 2018 Uber Technologies, Inc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -479,12 +479,13 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 				<- $fname := goName . ->
 				<- $fval := printf "%s.%s" $v $fname ->
 				<- if .Required ->
+					<$encAdd := printf "%s.Add%s(%q,%s)" $enc (zapEncoder .Type) .Name (zapMarshaler .Type $fval)>
 					<- if (zapCanError .Type)>
-						if err := <$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>); err != nil {
+						if err := <$encAdd>; err != nil {
 							return err
 						}
 					<- else ->
-						<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
+						<$encAdd>
 					<- end ->
 				<- else ->
 					if <$fval> != nil {
