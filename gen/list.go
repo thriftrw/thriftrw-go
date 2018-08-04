@@ -200,7 +200,7 @@ func (l *listGenerator) zapMarshaler(
 			// fast logging of <.Name>.
 			func (<$l> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
 				for _, <$v> := range <$l> {
-					<$encAppend := printf "%s.Append%s(%s)" $enc (zapEncoder .Type.ValueSpec) (zapMarshaler .Type.ValueSpec $v)>
+					<- $encAppend := printf "%s.Append%s(%s)" $enc (zapEncoder .Type.ValueSpec) (zapMarshaler .Type.ValueSpec $v)>
 					<if (zapCanError .Type.ValueSpec) ->
 						if err := <$encAppend>; err != nil {
 							return err

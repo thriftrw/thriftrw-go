@@ -479,8 +479,8 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 				<- $fname := goName . ->
 				<- $fval := printf "%s.%s" $v $fname ->
 				<- if .Required ->
-					<$encAdd := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .Type) .Name (zapMarshaler .Type $fval)>
-					<- if (zapCanError .Type)>
+					<- $encAdd := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .Type) .Name (zapMarshaler .Type $fval) ->
+					<if (zapCanError .Type) ->
 						if err := <$encAdd>; err != nil {
 							return err
 						}
@@ -488,9 +488,9 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 						<$encAdd>
 					<- end ->
 				<- else ->
-					<$encAdd := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .Type) .Name (zapMarshalerPtr .Type $fval)>
+					<- $encAdd := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .Type) .Name (zapMarshalerPtr .Type $fval) ->
 					if <$fval> != nil {
-						<- if (zapCanError .Type)>
+						<if (zapCanError .Type) ->
 							if err := <$encAdd>; err != nil {
 								return err
 							}
