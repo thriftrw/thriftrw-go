@@ -305,12 +305,13 @@ func (m *mapGenerator) zapMarshaler(
 				// fast logging of <.Name>.
 				func (<$m> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
 					for <$k>, <$v> := range <$m> {
+						<$encAdd := printf "%s.Add%s((string)(%v), %s)" $enc (zapEncoder .Type.ValueSpec) $k, (zapMarshaler .Type.ValueSpec $v)>
 						<if (zapCanError .Type.ValueSpec) ->
-						if err := <$enc>.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>); err != nil {
-							return err
-						}
+							if err := <$encAdd>; err != nil {
+								return err
+							}
 						<- else ->
-						<$enc>.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>)
+							<$encAdd>
 						<- end>
 					}
 					return nil
@@ -389,19 +390,21 @@ func (m *mapGenerator) zapMapItemMarshaler(
 			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 			// fast logging of <.Name>.
 			func (<$v> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
+				<$encAddKey := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .KeyType) "key" (zapMarshaler .KeyType $key)>
 				<if (zapCanError .KeyType) ->
-					if err := <$enc>.Add<zapEncoder .KeyType>("key", <zapMarshaler .KeyType $key>); err != nil {
+					if err := <$encAddKey>; err != nil {
 						return err
 					}
 				<- else ->
-					<$enc>.Add<zapEncoder .KeyType>("key", <zapMarshaler .KeyType $key>)
+					<$encAddKey>
 				<- end>
+				<$encAddValue := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .ValueType) "value" (zapMarshaler .ValueType $val)>
 				<if (zapCanError .ValueType) ->
-					if err := <$enc>.Add<zapEncoder .ValueType>("value", <zapMarshaler .ValueType $val>); err != nil {
+					if err := <$$encAddValue>; err != nil {
 						return err
 					}
 				<- else ->
-					<$enc>.Add<zapEncoder .ValueType>("value", <zapMarshaler .ValueType $val>)
+					<$$encAddValue>
 				<- end>
 				return nil
 			}
