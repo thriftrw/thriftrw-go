@@ -305,7 +305,7 @@ func (m *mapGenerator) zapMarshaler(
 				// fast logging of <.Name>.
 				func (<$m> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
 					for <$k>, <$v> := range <$m> {
-						<$encAdd := printf "%s.Add%s((string)(%v), %s)" $enc (zapEncoder .Type.ValueSpec) $k, (zapMarshaler .Type.ValueSpec $v)>
+						<$encAdd := printf "%s.Add%s((string)(%s), %s)" $enc (zapEncoder .Type.ValueSpec) $k (zapMarshaler .Type.ValueSpec $v)>
 						<if (zapCanError .Type.ValueSpec) ->
 							if err := <$encAdd>; err != nil {
 								return err
@@ -400,11 +400,11 @@ func (m *mapGenerator) zapMapItemMarshaler(
 				<- end>
 				<$encAddValue := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .ValueType) "value" (zapMarshaler .ValueType $val)>
 				<if (zapCanError .ValueType) ->
-					if err := <$$encAddValue>; err != nil {
+					if err := <$encAddValue>; err != nil {
 						return err
 					}
 				<- else ->
-					<$$encAddValue>
+					<$encAddValue>
 				<- end>
 				return nil
 			}

@@ -488,8 +488,8 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 						<$encAdd>
 					<- end ->
 				<- else ->
+					<$encAdd := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .Type) .Name (zapMarshalerPtr .Type $fval)>
 					if <$fval> != nil {
-						<$encAdd := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .Type) .Name (zapMarshalerPtr .Type $fval)>
 						<- if (zapCanError .Type)>
 							if err := <$encAdd>; err != nil {
 								return err
