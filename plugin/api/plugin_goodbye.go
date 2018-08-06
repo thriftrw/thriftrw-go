@@ -26,7 +26,6 @@ package api
 import (
 	"fmt"
 	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -107,13 +106,6 @@ func (v *Plugin_Goodbye_Args) String() string {
 func (v *Plugin_Goodbye_Args) Equals(rhs *Plugin_Goodbye_Args) bool {
 
 	return true
-}
-
-// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-// fast logging of Plugin_Goodbye_Args.
-func (v *Plugin_Goodbye_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
-	return nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -277,13 +269,6 @@ func (v *Plugin_Goodbye_Result) String() string {
 func (v *Plugin_Goodbye_Result) Equals(rhs *Plugin_Goodbye_Result) bool {
 
 	return true
-}
-
-// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-// fast logging of Plugin_Goodbye_Result.
-func (v *Plugin_Goodbye_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
-	return nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

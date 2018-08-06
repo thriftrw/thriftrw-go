@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -135,16 +134,6 @@ func (v *KeyValue_DeleteValue_Args) Equals(rhs *KeyValue_DeleteValue_Args) bool 
 	}
 
 	return true
-}
-
-// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-// fast logging of KeyValue_DeleteValue_Args.
-func (v *KeyValue_DeleteValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if v.Key != nil {
-		enc.AddString("key", (string)(*v.Key))
-	}
-
-	return nil
 }
 
 // GetKey returns the value of Key if it is set or its
@@ -429,23 +418,6 @@ func (v *KeyValue_DeleteValue_Result) Equals(rhs *KeyValue_DeleteValue_Result) b
 	}
 
 	return true
-}
-
-// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-// fast logging of KeyValue_DeleteValue_Result.
-func (v *KeyValue_DeleteValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if v.DoesNotExist != nil {
-		if err := enc.AddObject("doesNotExist", v.DoesNotExist); err != nil {
-			return err
-		}
-	}
-	if v.InternalError != nil {
-		if err := enc.AddObject("internalError", v.InternalError); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 // GetDoesNotExist returns the value of DoesNotExist if it is set or its

@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Uber Technologies, Inc
+// Copyright (c) 2018 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -88,10 +88,6 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 	}
 
 	if err := f.Equals(g); err != nil {
-		return err
-	}
-
-	if err := f.Zap(g); err != nil {
 		return err
 	}
 
@@ -461,46 +457,6 @@ func (f fieldGroupGenerator) Equals(g Generator) error {
 				<- end>
 			<end>
 			return true
-		}
-		`, f)
-}
-
-func (f fieldGroupGenerator) Zap(g Generator) error {
-	return g.DeclareFromTemplate(
-		`
-		<$zapcore := import "go.uber.org/zap/zapcore">
-		<$v := newVar "v">
-		<$enc := newVar "enc">
-
-		// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-		// fast logging of <.Name>.
-		func (<$v> *<.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
-			<range .Fields>
-				<- $fname := goName . ->
-				<- $fval := printf "%s.%s" $v $fname ->
-				<- if .Required ->
-					<- $encAdd := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .Type) .Name (zapMarshaler .Type $fval) ->
-					<if (zapCanError .Type) ->
-						if err := <$encAdd>; err != nil {
-							return err
-						}
-					<- else ->
-						<$encAdd>
-					<- end ->
-				<- else ->
-					<- $encAdd := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .Type) .Name (zapMarshalerPtr .Type $fval) ->
-					if <$fval> != nil {
-						<if (zapCanError .Type) ->
-							if err := <$encAdd>; err != nil {
-								return err
-							}
-						<- else ->
-							<$encAdd>
-						<- end ->
-					}
-				<- end>
-			<end>
-			return nil
 		}
 		`, f)
 }

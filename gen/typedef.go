@@ -103,26 +103,6 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 				return <equals .Target $lhs $rhs>
 			<- end>
 		}
-
-		<if (eq (zapEncoder .Target) "Object") ->
-			<$zapcore := import "go.uber.org/zap/zapcore">
-			<$enc := newVar "enc">
-			func (<$v> <$typedefType>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
-				<if isStructType . ->
-					return ((<typeReference .Target>)(<$v>)).MarshalLogObject(<$enc>)
-				<- else ->
-					return (<zapMarshaler . $v>).MarshalLogObject(<$enc>)
-				<- end>
-			}
-		<- end>
-
-		<if (eq (zapEncoder .Target) "Array") ->
-			<$zapcore := import "go.uber.org/zap/zapcore">
-			<$enc := newVar "enc">
-			func (<$v> <$typedefType>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
-				return (<zapMarshaler . $v>).MarshalLogArray(<$enc>)
-			}
-		<- end>
 		`,
 		spec,
 	)

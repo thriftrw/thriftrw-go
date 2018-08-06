@@ -27,7 +27,6 @@ import (
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -142,18 +141,6 @@ func (v *ServiceGenerator_Generate_Args) Equals(rhs *ServiceGenerator_Generate_A
 	}
 
 	return true
-}
-
-// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-// fast logging of ServiceGenerator_Generate_Args.
-func (v *ServiceGenerator_Generate_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if v.Request != nil {
-		if err := enc.AddObject("request", v.Request); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 // GetRequest returns the value of Request if it is set or its
@@ -388,18 +375,6 @@ func (v *ServiceGenerator_Generate_Result) Equals(rhs *ServiceGenerator_Generate
 	}
 
 	return true
-}
-
-// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-// fast logging of ServiceGenerator_Generate_Result.
-func (v *ServiceGenerator_Generate_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if v.Success != nil {
-		if err := enc.AddObject("success", v.Success); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }
 
 // GetSuccess returns the value of Success if it is set or its

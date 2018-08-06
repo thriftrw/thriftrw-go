@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -155,17 +154,6 @@ func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
 	return true
 }
 
-// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-// fast logging of DoesNotExistException.
-func (v *DoesNotExistException) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	enc.AddString("key", v.Key)
-	if v.Error2 != nil {
-		enc.AddString("Error", *v.Error2)
-	}
-
-	return nil
-}
-
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
 func (v *DoesNotExistException) GetKey() (o string) { return v.Key }
@@ -258,13 +246,6 @@ func (v *EmptyException) String() string {
 func (v *EmptyException) Equals(rhs *EmptyException) bool {
 
 	return true
-}
-
-// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-// fast logging of EmptyException.
-func (v *EmptyException) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
-	return nil
 }
 
 func (v *EmptyException) Error() string {
