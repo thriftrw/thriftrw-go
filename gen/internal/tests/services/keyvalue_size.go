@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -87,6 +88,13 @@ func (v *KeyValue_Size_Args) String() string {
 func (v *KeyValue_Size_Args) Equals(rhs *KeyValue_Size_Args) bool {
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of KeyValue_Size_Args.
+func (v *KeyValue_Size_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	return nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -301,6 +309,16 @@ func (v *KeyValue_Size_Result) Equals(rhs *KeyValue_Size_Result) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of KeyValue_Size_Result.
+func (v *KeyValue_Size_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if v.Success != nil {
+		enc.AddInt64("success", *v.Success)
+	}
+
+	return nil
 }
 
 // GetSuccess returns the value of Success if it is set or its

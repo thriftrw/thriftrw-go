@@ -6,6 +6,7 @@ package services
 import (
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -86,6 +87,13 @@ func (v *Cache_Clear_Args) String() string {
 func (v *Cache_Clear_Args) Equals(rhs *Cache_Clear_Args) bool {
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of Cache_Clear_Args.
+func (v *Cache_Clear_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	return nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

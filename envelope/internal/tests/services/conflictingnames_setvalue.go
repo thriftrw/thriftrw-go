@@ -26,6 +26,7 @@ package services
 import (
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -140,6 +141,18 @@ func (v *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_A
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of ConflictingNames_SetValue_Args.
+func (v *ConflictingNames_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if v.Request != nil {
+		if err := enc.AddObject("request", v.Request); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // GetRequest returns the value of Request if it is set or its
@@ -319,6 +332,13 @@ func (v *ConflictingNames_SetValue_Result) String() string {
 func (v *ConflictingNames_SetValue_Result) Equals(rhs *ConflictingNames_SetValue_Result) bool {
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of ConflictingNames_SetValue_Result.
+func (v *ConflictingNames_SetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+
+	return nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
