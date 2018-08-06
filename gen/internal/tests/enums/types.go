@@ -670,6 +670,179 @@ func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
 	}
 }
 
+type EnumWithLabel int32
+
+const (
+	EnumWithLabelUsername EnumWithLabel = 0
+	EnumWithLabelPassword EnumWithLabel = 1
+	EnumWithLabelSalt     EnumWithLabel = 2
+	EnumWithLabelSugar    EnumWithLabel = 3
+)
+
+// EnumWithLabel_Values returns all recognized values of EnumWithLabel.
+func EnumWithLabel_Values() []EnumWithLabel {
+	return []EnumWithLabel{
+		EnumWithLabelUsername,
+		EnumWithLabelPassword,
+		EnumWithLabelSalt,
+		EnumWithLabelSugar,
+	}
+}
+
+// UnmarshalText tries to decode EnumWithLabel from a byte slice
+// containing its name.
+//
+//   var v EnumWithLabel
+//   err := v.UnmarshalText([]byte("username"))
+func (v *EnumWithLabel) UnmarshalText(value []byte) error {
+	switch string(value) {
+	case "surname":
+		*v = EnumWithLabelUsername
+		return nil
+	case "hashed_password":
+		*v = EnumWithLabelPassword
+		return nil
+	case "salt":
+		*v = EnumWithLabelSalt
+		return nil
+	case "sugar":
+		*v = EnumWithLabelSugar
+		return nil
+	default:
+		return fmt.Errorf("unknown enum value %q for %q", value, "EnumWithLabel")
+	}
+}
+
+// MarshalText encodes EnumWithLabel to text.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements the TextMarshaler interface.
+func (v EnumWithLabel) MarshalText() ([]byte, error) {
+	switch int32(v) {
+	case 0:
+		return []byte("surname"), nil
+	case 1:
+		return []byte("hashed_password"), nil
+	case 2:
+		return []byte("salt"), nil
+	case 3:
+		return []byte("sugar"), nil
+	}
+	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// Ptr returns a pointer to this enum value.
+func (v EnumWithLabel) Ptr() *EnumWithLabel {
+	return &v
+}
+
+// ToWire translates EnumWithLabel into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
+func (v EnumWithLabel) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
+}
+
+// FromWire deserializes EnumWithLabel from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return EnumWithLabel(0), err
+//   }
+//
+//   var v EnumWithLabel
+//   if err := v.FromWire(x); err != nil {
+//     return EnumWithLabel(0), err
+//   }
+//   return v, nil
+func (v *EnumWithLabel) FromWire(w wire.Value) error {
+	*v = (EnumWithLabel)(w.GetI32())
+	return nil
+}
+
+// String returns a readable string representation of EnumWithLabel.
+func (v EnumWithLabel) String() string {
+	w := int32(v)
+	switch w {
+	case 0:
+		return "surname"
+	case 1:
+		return "hashed_password"
+	case 2:
+		return "salt"
+	case 3:
+		return "sugar"
+	}
+	return fmt.Sprintf("EnumWithLabel(%d)", w)
+}
+
+// Equals returns true if this EnumWithLabel value matches the provided
+// value.
+func (v EnumWithLabel) Equals(rhs EnumWithLabel) bool {
+	return v == rhs
+}
+
+// MarshalJSON serializes EnumWithLabel into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
+func (v EnumWithLabel) MarshalJSON() ([]byte, error) {
+	switch int32(v) {
+	case 0:
+		return ([]byte)("\"surname\""), nil
+	case 1:
+		return ([]byte)("\"hashed_password\""), nil
+	case 2:
+		return ([]byte)("\"salt\""), nil
+	case 3:
+		return ([]byte)("\"sugar\""), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// UnmarshalJSON attempts to decode EnumWithLabel from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
+func (v *EnumWithLabel) UnmarshalJSON(text []byte) error {
+	d := json.NewDecoder(bytes.NewReader(text))
+	d.UseNumber()
+	t, err := d.Token()
+	if err != nil {
+		return err
+	}
+
+	switch w := t.(type) {
+	case json.Number:
+		x, err := w.Int64()
+		if err != nil {
+			return err
+		}
+		if x > math.MaxInt32 {
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumWithLabel")
+		}
+		if x < math.MinInt32 {
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumWithLabel")
+		}
+		*v = (EnumWithLabel)(x)
+		return nil
+	case string:
+		return v.UnmarshalText([]byte(w))
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithLabel")
+	}
+}
+
 type EnumWithValues int32
 
 const (
@@ -829,168 +1002,6 @@ func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
 		return v.UnmarshalText([]byte(w))
 	default:
 		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithValues")
-	}
-}
-
-type EnumWithWireLabel int32
-
-const (
-	EnumWithWireLabelUsername EnumWithWireLabel = 0
-	EnumWithWireLabelPassword EnumWithWireLabel = 1
-	EnumWithWireLabelSalt     EnumWithWireLabel = 2
-)
-
-// EnumWithWireLabel_Values returns all recognized values of EnumWithWireLabel.
-func EnumWithWireLabel_Values() []EnumWithWireLabel {
-	return []EnumWithWireLabel{
-		EnumWithWireLabelUsername,
-		EnumWithWireLabelPassword,
-		EnumWithWireLabelSalt,
-	}
-}
-
-// UnmarshalText tries to decode EnumWithWireLabel from a byte slice
-// containing its name.
-//
-//   var v EnumWithWireLabel
-//   err := v.UnmarshalText([]byte("username"))
-func (v *EnumWithWireLabel) UnmarshalText(value []byte) error {
-	switch string(value) {
-	case "surname":
-		*v = EnumWithWireLabelUsername
-		return nil
-	case "hashed_password":
-		*v = EnumWithWireLabelPassword
-		return nil
-	case "salt":
-		*v = EnumWithWireLabelSalt
-		return nil
-	default:
-		return fmt.Errorf("unknown enum value %q for %q", value, "EnumWithWireLabel")
-	}
-}
-
-// MarshalText encodes EnumWithWireLabel to text.
-//
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
-//
-// This implements the TextMarshaler interface.
-func (v EnumWithWireLabel) MarshalText() ([]byte, error) {
-	switch int32(v) {
-	case 0:
-		return []byte("surname"), nil
-	case 1:
-		return []byte("hashed_password"), nil
-	case 2:
-		return []byte("salt"), nil
-	}
-	return []byte(strconv.FormatInt(int64(v), 10)), nil
-}
-
-// Ptr returns a pointer to this enum value.
-func (v EnumWithWireLabel) Ptr() *EnumWithWireLabel {
-	return &v
-}
-
-// ToWire translates EnumWithWireLabel into a Thrift-level intermediate
-// representation. This intermediate representation may be serialized
-// into bytes using a ThriftRW protocol implementation.
-//
-// Enums are represented as 32-bit integers over the wire.
-func (v EnumWithWireLabel) ToWire() (wire.Value, error) {
-	return wire.NewValueI32(int32(v)), nil
-}
-
-// FromWire deserializes EnumWithWireLabel from its Thrift-level
-// representation.
-//
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return EnumWithWireLabel(0), err
-//   }
-//
-//   var v EnumWithWireLabel
-//   if err := v.FromWire(x); err != nil {
-//     return EnumWithWireLabel(0), err
-//   }
-//   return v, nil
-func (v *EnumWithWireLabel) FromWire(w wire.Value) error {
-	*v = (EnumWithWireLabel)(w.GetI32())
-	return nil
-}
-
-// String returns a readable string representation of EnumWithWireLabel.
-func (v EnumWithWireLabel) String() string {
-	w := int32(v)
-	switch w {
-	case 0:
-		return "surname"
-	case 1:
-		return "hashed_password"
-	case 2:
-		return "salt"
-	}
-	return fmt.Sprintf("EnumWithWireLabel(%d)", w)
-}
-
-// Equals returns true if this EnumWithWireLabel value matches the provided
-// value.
-func (v EnumWithWireLabel) Equals(rhs EnumWithWireLabel) bool {
-	return v == rhs
-}
-
-// MarshalJSON serializes EnumWithWireLabel into JSON.
-//
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
-//
-// This implements json.Marshaler.
-func (v EnumWithWireLabel) MarshalJSON() ([]byte, error) {
-	switch int32(v) {
-	case 0:
-		return ([]byte)("\"surname\""), nil
-	case 1:
-		return ([]byte)("\"hashed_password\""), nil
-	case 2:
-		return ([]byte)("\"salt\""), nil
-	}
-	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
-}
-
-// UnmarshalJSON attempts to decode EnumWithWireLabel from its JSON
-// representation.
-//
-// This implementation supports both, numeric and string inputs. If a
-// string is provided, it must be a known enum name.
-//
-// This implements json.Unmarshaler.
-func (v *EnumWithWireLabel) UnmarshalJSON(text []byte) error {
-	d := json.NewDecoder(bytes.NewReader(text))
-	d.UseNumber()
-	t, err := d.Token()
-	if err != nil {
-		return err
-	}
-
-	switch w := t.(type) {
-	case json.Number:
-		x, err := w.Int64()
-		if err != nil {
-			return err
-		}
-		if x > math.MaxInt32 {
-			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumWithWireLabel")
-		}
-		if x < math.MinInt32 {
-			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumWithWireLabel")
-		}
-		*v = (EnumWithWireLabel)(x)
-		return nil
-	case string:
-		return v.UnmarshalText([]byte(w))
-	default:
-		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithWireLabel")
 	}
 }
 

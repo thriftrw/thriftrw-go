@@ -52,11 +52,12 @@ enum lowerCaseEnum {
     containing, lower_case, items
 }
 
-// EnumWithWireLabel use label name in serialization/deserialization
-enum EnumWithWireLabel {
-    username (go.wire.label = "surname"),
-    password (go.wire.label = "hashed_password"),
-    salt (go.wire.label = "")
+// EnumWithLabel use label name in serialization/deserialization
+enum EnumWithLabel {
+    username (go.label = "surname"),
+    password (go.label = "hashed_password"),
+    salt (go.label = ""),
+    sugar (go.label)
 }
 
 // collision with RecordType_Values() function.

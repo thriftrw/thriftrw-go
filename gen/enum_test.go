@@ -400,26 +400,68 @@ func TestEnumAccessors(t *testing.T) {
 	})
 }
 
-func TestEnumWireLabel(t *testing.T) {
+func TestEnumLabelLegit(t *testing.T) {
 	tests := []struct {
-		enumItem  te.EnumWithWireLabel
+		enumItem  te.EnumWithLabel
 		wireValue string
 	}{
-		{te.EnumWithWireLabelUsername, "surname"},
-		{te.EnumWithWireLabelPassword, "hashed_password"},
-		{te.EnumWithWireLabelSalt, "salt"},
+		{te.EnumWithLabelUsername, "\"surname\""},
+		{te.EnumWithLabelPassword, "\"hashed_password\""},
+		{te.EnumWithLabelSalt, "\"salt\""},
+		{te.EnumWithLabelSugar, "\"sugar\""},
 	}
 	for _, tt := range tests {
 		t.Run("compare label:"+tt.wireValue, func(t *testing.T) {
-			label := te.EnumWithWireLabel(tt.enumItem)
-			b, err := label.MarshalText()
+			// marshal
+			label := te.EnumWithLabel(tt.enumItem)
+			b, err := json.Marshal(label)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.wireValue, string(b))
+
+			// unmarshal
+			var expectedLabel te.EnumWithLabel
+			err = json.Unmarshal(b, &expectedLabel)
+			assert.Equal(t, expectedLabel, label)
+
 			assertRoundTrip(
 				t, &tt.enumItem,
 				wire.NewValueI32(int32(tt.enumItem)),
 				"test roundtrip "+tt.wireValue,
 			)
 		})
+	}
+}
+
+func TestEnumLabelInvalid(t *testing.T) {
+
+	for _, tt := range []struct {
+		value te.EnumWithLabel
+		rep   string
+	}{
+		{-1, "-1"},
+		{1 << 10, "1024"},
+	} {
+		invalidEnumItem := te.EnumWithLabel(tt.value)
+		b, err := json.Marshal(invalidEnumItem)
+		assert.NoError(t, err)
+		assert.Equal(t, tt.rep, string(b))
+	}
+
+	for _, tt := range []struct {
+		errVal []byte
+		errMsg string
+	}{
+		{
+			[]byte("some-random-str"),
+			"invalid character 's' looking for beginning of value",
+		},
+		{
+			[]byte("\"; drop table users;\""),
+			"unknown enum value \"; drop table users;\" for \"EnumWithLabel\"",
+		},
+	} {
+		var expectedLabel te.EnumWithLabel
+		err := json.Unmarshal(tt.errVal, &expectedLabel)
+		assert.Equal(t, err.Error(), tt.errMsg)
 	}
 }

@@ -27,8 +27,8 @@ import (
 )
 
 const (
-	// GoWireLabel overrides name on the wire
-	GoWireLabel = "go.wire.label"
+	// GoLabel overrides name on the wire
+	GoLabel = "go.label"
 )
 
 // enumGenerator generates code to serialize and deserialize enums.
@@ -272,10 +272,10 @@ func enumItemName(enumName string, spec *compile.EnumItem) (string, error) {
 }
 
 // enumItemWireName returns the actual name used for serialization/deserialization
-// default to EnumItem.Name, override by the value of GoWireLabel
+// default to EnumItem.Name, override by the value of GoLabel
 func enumItemWireName(spec *compile.EnumItem) string {
 	labelName := spec.Name
-	val, ok := spec.Annotations[GoWireLabel]
+	val, ok := spec.Annotations[GoLabel]
 	if ok && len(val) > 0 {
 		labelName = val
 	}
