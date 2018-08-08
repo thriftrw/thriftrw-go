@@ -25,6 +25,7 @@ import (
 	"fmt"
 	"testing"
 
+	"go.uber.org/thriftrw/compile"
 	tec "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	"go.uber.org/thriftrw/wire"
@@ -441,10 +442,12 @@ func TestEnumLabelInvalid(t *testing.T) {
 		{-1, "-1"},
 		{1 << 10, "1024"},
 	} {
-		invalidEnumItem := te.EnumWithLabel(tt.value)
-		b, err := json.Marshal(invalidEnumItem)
-		assert.NoError(t, err)
-		assert.Equal(t, tt.rep, string(b))
+		t.Run("invalid marshal: "+tt.rep, func(t *testing.T) {
+			invalidEnumItem := te.EnumWithLabel(tt.value)
+			b, err := json.Marshal(invalidEnumItem)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.rep, string(b))
+		})
 	}
 
 	for _, tt := range []struct {
@@ -460,8 +463,44 @@ func TestEnumLabelInvalid(t *testing.T) {
 			"unknown enum value \"; drop table users;\" for \"EnumWithLabel\"",
 		},
 	} {
-		var expectedLabel te.EnumWithLabel
-		err := json.Unmarshal(tt.errVal, &expectedLabel)
-		assert.Equal(t, err.Error(), tt.errMsg)
+		t.Run("invalid unmarshal: "+tt.errMsg, func(t *testing.T) {
+			var expectedLabel te.EnumWithLabel
+			err := json.Unmarshal(tt.errVal, &expectedLabel)
+			assert.Equal(t, err.Error(), tt.errMsg)
+		})
+	}
+}
+
+func TestGenInvalidEnumFailure(t *testing.T) {
+	testCases := []struct {
+		spec     compile.EnumSpec
+		messages string
+	}{
+		{
+			compile.EnumSpec{
+				Name: "duplicate item name",
+				Items: []compile.EnumItem{
+					compile.EnumItem{
+						Name:  "A",
+						Value: 0,
+					},
+					compile.EnumItem{
+						Name:  "B",
+						Value: 1,
+						Annotations: map[string]string{
+							"go.label": "A",
+						},
+					},
+				},
+			},
+			"duplicated item name \"A\" found in enum \"duplicate item name\"",
+		},
+	}
+	for _, tt := range testCases {
+		t.Run(tt.spec.Name, func(t *testing.T) {
+			err := enum(nil, &tt.spec)
+			assert.Error(t, err)
+			assert.Equal(t, err.Error(), tt.messages)
+		})
 	}
 }

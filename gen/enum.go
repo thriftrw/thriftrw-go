@@ -21,6 +21,7 @@
 package gen
 
 import (
+	"fmt"
 	"strings"
 
 	"go.uber.org/thriftrw/compile"
@@ -58,6 +59,9 @@ func (e *enumGenerator) Reader(g Generator, spec *compile.EnumSpec) (string, err
 }
 
 func enum(g Generator, spec *compile.EnumSpec) error {
+	if err := validateEnumUniqueNames(spec); err != nil {
+		return err
+	}
 	items := enumUniqueItems(spec.Items)
 
 	// TODO(abg) define an error type in the library for unrecognized enums.
@@ -103,7 +107,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			switch string(value) {
 			<- $enum := .Spec ->
 			<range .Spec.Items ->
-				case "<enumItemWireName .>":
+				case "<enumItemLabelName .>":
 					*<$v> = <enumItemName $enumName .>
 					return nil
 			<end ->
@@ -123,7 +127,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch int32(<$v>) {
 				<range .UniqueItems ->
 					case <.Value>:
-						return []byte("<enumItemWireName .>"), nil
+						return []byte("<enumItemLabelName .>"), nil
 				<end ->
 				}
 			<end ->
@@ -170,7 +174,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch <$w> {
 				<range .UniqueItems ->
 					case <.Value>:
-						return "<enumItemWireName .>"
+						return "<enumItemLabelName .>"
 				<end ->
 				}
 			<end ->
@@ -195,7 +199,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch int32(<$v>) {
 				<range .UniqueItems ->
 					case <.Value>:
-						return ([]byte)("\"<enumItemWireName .>\""), nil
+						return ([]byte)("\"<enumItemLabelName .>\""), nil
 				<end ->
 				}
 			<end ->
@@ -251,7 +255,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			UniqueItems: items,
 		},
 		TemplateFunc("enumItemName", enumItemName),
-		TemplateFunc("enumItemWireName", enumItemWireName),
+		TemplateFunc("enumItemLabelName", enumItemLabelName),
 	)
 
 	return wrapGenerateError(spec.Name, err)
@@ -271,15 +275,32 @@ func enumItemName(enumName string, spec *compile.EnumItem) (string, error) {
 	return enumName + name, err
 }
 
-// enumItemWireName returns the actual name used for serialization/deserialization
+// enumItemLabelName returns the actual name used for serialization/deserialization
 // default to EnumItem.Name, override by the value of GoLabel
-func enumItemWireName(spec *compile.EnumItem) string {
+func enumItemLabelName(spec *compile.EnumItem) string {
 	labelName := spec.Name
 	val, ok := spec.Annotations[GoLabel]
 	if ok && len(val) > 0 {
 		labelName = val
 	}
 	return labelName
+}
+
+// validateEnumUniqueNames apply name label GoLabel and raise error if there's
+// duplicates in resolved enum item names
+func validateEnumUniqueNames(spec *compile.EnumSpec) error {
+	items := spec.Items
+	used := make(map[string]bool, len(items))
+	for _, i := range items {
+		itemName := enumItemLabelName(&i)
+		if _, isUsed := used[itemName]; isUsed {
+			return fmt.Errorf(
+				"duplicated item name %q found in enum %q",
+				itemName, spec.Name)
+		}
+		used[itemName] = true
+	}
+	return nil
 }
 
 // enumUniqueItems returns a subset of the given list of enum items where
