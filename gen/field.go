@@ -479,22 +479,14 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 				<- $fname := goName . ->
 				<- $fval := printf "%s.%s" $v $fname ->
 				<- if .Required ->
-					<- if (zapCanError .Type)>
-						if err := <$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>); err != nil {
-							return err
-						}
-					<- else ->
+					<zapEncodeBegin .Type ->
 						<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
-					<- end ->
+					<- zapEncodeEnd .Type>
 				<- else ->
 					if <$fval> != nil {
-						<- if (zapCanError .Type)>
-							if err := <$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>); err != nil {
-								return err
-							}
-						<- else ->
+						<zapEncodeBegin .Type ->
 							<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>)
-						<- end ->
+						<- zapEncodeEnd .Type>
 					}
 				<- end>
 			<end>

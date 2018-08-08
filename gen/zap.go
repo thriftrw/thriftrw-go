@@ -114,19 +114,28 @@ func (z *zapGenerator) zapMarshalerPtr(g Generator, spec compile.TypeSpec, field
 	return z.zapMarshaler(g, spec, fieldValue)
 }
 
-func (z *zapGenerator) zapCanError(spec compile.TypeSpec) bool {
+func (z *zapGenerator) zapEncodeBegin(spec compile.TypeSpec) string {
 	root := compile.RootTypeSpec(spec)
 
 	switch root.(type) {
-	// Primitives
-	case *compile.BoolSpec, *compile.I8Spec, *compile.I16Spec, *compile.I32Spec,
-		*compile.I64Spec, *compile.DoubleSpec, *compile.StringSpec, *compile.BinarySpec:
-		return false
-
 	// Non-primitives
 	case *compile.MapSpec, *compile.SetSpec, *compile.ListSpec, *compile.EnumSpec,
 		*compile.StructSpec:
-		return true
+		return "if err := "
 	}
-	panic(root)
+	return ""
+}
+
+func (z *zapGenerator) zapEncodeEnd(spec compile.TypeSpec) string {
+	root := compile.RootTypeSpec(spec)
+
+	switch root.(type) {
+	// Non-primitives
+	case *compile.MapSpec, *compile.SetSpec, *compile.ListSpec, *compile.EnumSpec,
+		*compile.StructSpec:
+		return `; err != nil {
+			return err
+		}`
+	}
+	return ""
 }
