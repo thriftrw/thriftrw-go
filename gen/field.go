@@ -476,8 +476,7 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 		// fast logging of <.Name>.
 		func (<$v> *<.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
 			<range .Fields>
-				<- $fname := goName . ->
-				<- $fval := printf "%s.%s" $v $fname ->
+				<- $fval := printf "%s.%s" $v (goName .) ->
 				<- if .Required ->
 					<zapEncodeBegin .Type ->
 						<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
