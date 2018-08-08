@@ -1997,7 +1997,6 @@ func (v *ContainersOfContainers) MarshalLogObject(enc zapcore.ObjectEncoder) err
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -2540,7 +2539,6 @@ func (v *EnumContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -2870,15 +2868,12 @@ func (l _List_RecordType_1_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) err
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ListOfConflictingEnums.
 func (v *ListOfConflictingEnums) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddArray("records", (_List_RecordType_Zapper)(v.Records)); err != nil {
 		return err
 	}
-
 	if err := enc.AddArray("otherRecords", (_List_RecordType_1_Zapper)(v.OtherRecords)); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -3187,15 +3182,12 @@ func (l _List_UUID_1_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ListOfConflictingUUIDs.
 func (v *ListOfConflictingUUIDs) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddArray("uuids", (_List_UUID_Zapper)(v.Uuids)); err != nil {
 		return err
 	}
-
 	if err := enc.AddArray("otherUUIDs", (_List_UUID_1_Zapper)(v.OtherUUIDs)); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -3589,7 +3581,6 @@ func (v *MapOfBinaryAndString) MarshalLogObject(enc zapcore.ObjectEncoder) error
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -4283,7 +4274,6 @@ func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error 
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -4621,19 +4611,15 @@ func (m _Map_I64_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of PrimitiveContainersRequired.
 func (v *PrimitiveContainersRequired) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddArray("listOfStrings", (_List_String_Zapper)(v.ListOfStrings)); err != nil {
 		return err
 	}
-
 	if err := enc.AddArray("setOfInts", (_Set_I32_Zapper)(v.SetOfInts)); err != nil {
 		return err
 	}
-
 	if err := enc.AddArray("mapOfIntsToDoubles", (_Map_I64_Double_Zapper)(v.MapOfIntsToDoubles)); err != nil {
 		return err
 	}
-
 	return nil
 }
 

@@ -1015,11 +1015,9 @@ func (v *Edge) Equals(rhs *Edge) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Edge.
 func (v *Edge) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddObject("startPoint", v.StartPoint); err != nil {
 		return err
 	}
-
 	if err := enc.AddObject("endPoint", v.EndPoint); err != nil {
 		return err
 	}
@@ -1264,11 +1262,9 @@ func (v *Frame) Equals(rhs *Frame) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Frame.
 func (v *Frame) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddObject("topLeft", v.TopLeft); err != nil {
 		return err
 	}
-
 	if err := enc.AddObject("size", v.Size); err != nil {
 		return err
 	}
@@ -1776,7 +1772,6 @@ func (l _List_Edge_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Graph.
 func (v *Graph) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddArray("edges", (_List_Edge_Zapper)(v.Edges)); err != nil {
 		return err
 	}

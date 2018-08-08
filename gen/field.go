@@ -489,7 +489,7 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 						<- zapEncodeEnd .Type>
 					}
 				<- end>
-			<end>
+			<end ->
 			return nil
 		}
 		`, f)

@@ -32,6 +32,8 @@ type zapGenerator struct {
 	listG listGenerator
 }
 
+// zapEncoder returns the Zap type name of the root spec, determining what type
+// the Zap marshaler needs to log it as (i.e. AddString, AppendObject, etc.)
 func (z *zapGenerator) zapEncoder(g Generator, spec compile.TypeSpec) string {
 	root := compile.RootTypeSpec(spec)
 
@@ -52,7 +54,7 @@ func (z *zapGenerator) zapEncoder(g Generator, spec compile.TypeSpec) string {
 	case *compile.StringSpec:
 		return "String"
 	case *compile.BinarySpec:
-		return "String"
+		return "String" // encode binary as a string and log as string
 
 	// Containers
 	case *compile.MapSpec:
@@ -72,6 +74,9 @@ func (z *zapGenerator) zapEncoder(g Generator, spec compile.TypeSpec) string {
 	panic(root)
 }
 
+// zapMarshaler takes a TypeSpec, evaluates whether there are underlying elements
+// that require more Zap implementation to log everything, and returns a string
+// that properly casts the fieldValue, if needed, for logging.
 func (z *zapGenerator) zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
 	root := compile.RootTypeSpec(spec)
 
@@ -96,17 +101,18 @@ func (z *zapGenerator) zapMarshaler(g Generator, spec compile.TypeSpec, fieldVal
 		base64 := g.Import("encoding/base64")
 		return fmt.Sprintf("%v.StdEncoding.EncodeToString(%v)", base64, fieldValue), nil
 	case *compile.MapSpec:
-		return z.mapG.zapMarshaler(g, spec, t, fieldValue)
+		return z.mapG.zapMarshaler(g, t, fieldValue)
 	case *compile.SetSpec:
-		return z.setG.zapMarshaler(g, spec, t, fieldValue)
+		return z.setG.zapMarshaler(g, t, fieldValue)
 	case *compile.ListSpec:
-		return z.listG.zapMarshaler(g, spec, t, fieldValue)
+		return z.listG.zapMarshaler(g, t, fieldValue)
 	case *compile.StructSpec:
 		return fieldValue, nil
 	}
 	panic(root)
 }
 
+// zapMarshalerPtr will dereference the pointer and call zapMarshal on it.
 func (z *zapGenerator) zapMarshalerPtr(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
 	if isPrimitiveType(spec) {
 		fieldValue = "*" + fieldValue
@@ -114,6 +120,7 @@ func (z *zapGenerator) zapMarshalerPtr(g Generator, spec compile.TypeSpec, field
 	return z.zapMarshaler(g, spec, fieldValue)
 }
 
+// zapEncodeBegin/End handle any logging that can error and add error handling logic.
 func (z *zapGenerator) zapEncodeBegin(spec compile.TypeSpec) string {
 	root := compile.RootTypeSpec(spec)
 

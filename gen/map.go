@@ -284,83 +284,100 @@ func (m *mapGenerator) equalsUnhashable(g Generator, spec *compile.MapSpec) (str
 
 func (m *mapGenerator) zapMarshaler(
 	g Generator,
-	spec compile.TypeSpec,
 	root *compile.MapSpec,
 	fieldValue string,
 ) (string, error) {
-	name := zapperName(g, spec)
-	switch root.KeySpec.(type) {
+	name := zapperName(g, root)
+	switch compile.RootTypeSpec(root.KeySpec).(type) {
 	case *compile.StringSpec:
-		// We are already at the root, so no need to check if it is a typedef of a
-		// string. For simplicity, we always cast the key to a string when logging this way.
-		if err := g.EnsureDeclared(
-			`
-				type <.Name> <typeReference .Type>
-				<$zapcore := import "go.uber.org/zap/zapcore">
-				<$m := newVar "m">
-				<$k := newVar "k">
-				<$v := newVar "v">
-				<$enc := newVar "enc">
-				// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-				// fast logging of <.Name>.
-				func (<$m> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
-					for <$k>, <$v> := range <$m> {
-						<zapEncodeBegin .Type.ValueSpec ->
-							<$enc>.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>)
-						<- zapEncodeEnd .Type.ValueSpec>
-					}
-					return nil
-				}
-				`, struct {
-				Name string
-				Type *compile.MapSpec
-			}{
-				Name: name,
-				Type: root,
-			},
-		); err != nil {
-			return "", err
-		}
-		return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
+		return m.zapStringKeyMarshaler(g, name, root, fieldValue)
 	default:
-		if err := g.EnsureDeclared(
-			`
-				type <.Name> <typeReference .Type>
-				<$zapcore := import "go.uber.org/zap/zapcore">
-				<$m := newVar "m">
-				<$k := newVar "k">
-				<$v := newVar "v">
-				<$i := newVar "i">
-				<$enc := newVar "enc">
-				// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-				// fast logging of <.Name>.
-				func (<$m> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
-					<- if isHashable .Type.KeySpec ->
-						for <$k>, <$v> := range <$m> {
-					<else ->
-						for _, <$i> := range <$m> {
-							<$k> := <$i>.Key
-							<$v> := <$i>.Value
-					<end ->
-						if err := <$enc>.AppendObject(<zapMapItemMarshaler .Type.KeySpec $k .Type.ValueSpec $v>); err != nil {
-							return err
-						}
-					}
-					return nil
-				}
-				`, struct {
-				Name string
-				Type *compile.MapSpec
-			}{
-				Name: name,
-				Type: root,
-			},
-			TemplateFunc("zapMapItemMarshaler", curryGenerator(m.zapMapItemMarshaler, g)),
-		); err != nil {
-			return "", err
-		}
-		return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
+		return m.zapNonstringKeyMarshaler(g, name, root, fieldValue)
 	}
+}
+
+func (m *mapGenerator) zapStringKeyMarshaler(
+	g Generator,
+	name string,
+	root *compile.MapSpec,
+	fieldValue string,
+) (string, error) {
+	if err := g.EnsureDeclared(
+		`
+			<$zapcore := import "go.uber.org/zap/zapcore">
+
+			type <.Name> <typeReference .Type>
+			<$m := newVar "m">
+			<$k := newVar "k">
+			<$v := newVar "v">
+			<$enc := newVar "enc">
+			// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+			// fast logging of <.Name>.
+			func (<$m> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
+				for <$k>, <$v> := range <$m> {
+					<zapEncodeBegin .Type.ValueSpec ->
+						<$enc>.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>)
+					<- zapEncodeEnd .Type.ValueSpec>
+				}
+				return nil
+			}
+			`, struct {
+			Name string
+			Type *compile.MapSpec
+		}{
+			Name: name,
+			Type: root,
+		},
+	); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
+}
+
+func (m *mapGenerator) zapNonstringKeyMarshaler(
+	g Generator,
+	name string,
+	root *compile.MapSpec,
+	fieldValue string,
+) (string, error) {
+	if err := g.EnsureDeclared(
+		`
+			<$zapcore := import "go.uber.org/zap/zapcore">
+
+			type <.Name> <typeReference .Type>
+			<$m := newVar "m">
+			<$k := newVar "k">
+			<$v := newVar "v">
+			<$i := newVar "i">
+			<$enc := newVar "enc">
+			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
+			// fast logging of <.Name>.
+			func (<$m> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
+				<- if isHashable .Type.KeySpec ->
+					for <$k>, <$v> := range <$m> {
+				<else ->
+					for _, <$i> := range <$m> {
+						<$k> := <$i>.Key
+						<$v> := <$i>.Value
+				<end ->
+					if err := <$enc>.AppendObject(<zapMapItemMarshaler .Type.KeySpec $k .Type.ValueSpec $v>); err != nil {
+						return err
+					}
+				}
+				return nil
+			}
+			`, struct {
+			Name string
+			Type *compile.MapSpec
+		}{
+			Name: name,
+			Type: root,
+		},
+		TemplateFunc("zapMapItemMarshaler", curryGenerator(m.zapMapItemMarshaler, g)),
+	); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
 }
 
 func (m *mapGenerator) zapMapItemMarshaler(
@@ -373,11 +390,12 @@ func (m *mapGenerator) zapMapItemMarshaler(
 	name := fmt.Sprintf("_MapItem_%s_%s_Zapper", g.MangleType(keySpec), g.MangleType(valueSpec))
 	if err := g.EnsureDeclared(
 		`
+			<$zapcore := import "go.uber.org/zap/zapcore">
+
 			type <.Name> struct {
 				Key   <typeReference .KeyType>
 				Value <typeReference .ValueType>
 			}
-			<$zapcore := import "go.uber.org/zap/zapcore">
 			<$v := newVar "v">
 			<$key := printf "%s.%s" $v "Key">
 			<$val := printf "%s.%s" $v "Value">

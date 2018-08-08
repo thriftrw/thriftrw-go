@@ -13,7 +13,7 @@ import:
 - package: github.com/fatih/structtag
   version: ^0.1.0
 - package: go.uber.org/zap
-  version: master
+  version: ^1
 testImport:
 - package: github.com/golang/mock
   subpackages:

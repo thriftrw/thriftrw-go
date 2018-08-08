@@ -184,15 +184,15 @@ func (l *listGenerator) Equals(g Generator, spec *compile.ListSpec) (string, err
 
 func (l *listGenerator) zapMarshaler(
 	g Generator,
-	spec compile.TypeSpec,
 	root *compile.ListSpec,
 	fieldValue string,
 ) (string, error) {
-	name := zapperName(g, spec)
+	name := zapperName(g, root)
 	if err := g.EnsureDeclared(
 		`
-			type <.Name> <typeReference .Type>
 			<$zapcore := import "go.uber.org/zap/zapcore">
+
+			type <.Name> <typeReference .Type>
 			<$l := newVar "l">
 			<$v := newVar "v">
 			<$enc := newVar "enc">

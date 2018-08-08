@@ -193,7 +193,6 @@ func (v *Argument) Equals(rhs *Argument) bool {
 // fast logging of Argument.
 func (v *Argument) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("name", v.Name)
-
 	if err := enc.AddObject("type", v.Type); err != nil {
 		return err
 	}
@@ -836,7 +835,6 @@ func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) e
 func (v *Function) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("name", v.Name)
 	enc.AddString("thriftName", v.ThriftName)
-
 	if err := enc.AddArray("arguments", (_List_Argument_Zapper)(v.Arguments)); err != nil {
 		return err
 	}
@@ -1414,15 +1412,12 @@ func (m _Map_ModuleID_Module_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) e
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of GenerateServiceRequest.
 func (v *GenerateServiceRequest) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddArray("rootServices", (_List_ServiceID_Zapper)(v.RootServices)); err != nil {
 		return err
 	}
-
 	if err := enc.AddArray("services", (_Map_ServiceID_Service_Zapper)(v.Services)); err != nil {
 		return err
 	}
-
 	if err := enc.AddArray("modules", (_Map_ModuleID_Module_Zapper)(v.Modules)); err != nil {
 		return err
 	}
@@ -2045,7 +2040,6 @@ func (l _List_Feature_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 func (v *HandshakeResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("name", v.Name)
 	enc.AddInt32("apiVersion", v.APIVersion)
-
 	if err := enc.AddArray("features", (_List_Feature_Zapper)(v.Features)); err != nil {
 		return err
 	}
@@ -2623,7 +2617,6 @@ func (v *Service) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.ParentID != nil {
 		enc.AddInt32("parentID", (int32)(*v.ParentID))
 	}
-
 	if err := enc.AddArray("functions", (_List_Function_Zapper)(v.Functions)); err != nil {
 		return err
 	}
@@ -3493,11 +3486,9 @@ func (v *TypePair) Equals(rhs *TypePair) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of TypePair.
 func (v *TypePair) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddObject("left", v.Left); err != nil {
 		return err
 	}
-
 	if err := enc.AddObject("right", v.Right); err != nil {
 		return err
 	}

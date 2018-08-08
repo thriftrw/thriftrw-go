@@ -193,11 +193,9 @@ func (v *UUIDConflict) Equals(rhs *UUIDConflict) bool {
 // fast logging of UUIDConflict.
 func (v *UUIDConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("localUUID", (string)(v.LocalUUID))
-
 	if err := enc.AddObject("importedUUID", (*typedefs.I128)(v.ImportedUUID)); err != nil {
 		return err
 	}
-
 	return nil
 }
 

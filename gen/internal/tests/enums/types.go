@@ -1389,7 +1389,6 @@ func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) err
 			return err
 		}
 	}
-
 	return nil
 }
 

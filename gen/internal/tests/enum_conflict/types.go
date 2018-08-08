@@ -378,7 +378,6 @@ func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			return err
 		}
 	}
-
 	return nil
 }
 

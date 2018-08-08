@@ -125,7 +125,6 @@ func (v *ContactInfo) Equals(rhs *ContactInfo) bool {
 // fast logging of ContactInfo.
 func (v *ContactInfo) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("emailAddress", v.EmailAddress)
-
 	return nil
 }
 
@@ -740,7 +739,6 @@ func (v *DefaultsStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -995,15 +993,12 @@ func (v *Edge) Equals(rhs *Edge) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Edge.
 func (v *Edge) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddObject("startPoint", v.StartPoint); err != nil {
 		return err
 	}
-
 	if err := enc.AddObject("endPoint", v.EndPoint); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -1094,7 +1089,6 @@ func (v *EmptyStruct) Equals(rhs *EmptyStruct) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EmptyStruct.
 func (v *EmptyStruct) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	return nil
 }
 
@@ -1244,15 +1238,12 @@ func (v *Frame) Equals(rhs *Frame) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Frame.
 func (v *Frame) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddObject("topLeft", v.TopLeft); err != nil {
 		return err
 	}
-
 	if err := enc.AddObject("size", v.Size); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -1525,7 +1516,6 @@ func (v *GoTags) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 		enc.AddString("FooBarWithOmitEmpty", *v.FooBarWithOmitEmpty)
 	}
 	enc.AddString("FooBarWithRequired", v.FooBarWithRequired)
-
 	return nil
 }
 
@@ -1756,11 +1746,9 @@ func (l _List_Edge_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Graph.
 func (v *Graph) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddArray("edges", (_List_Edge_Zapper)(v.Edges)); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -1948,7 +1936,6 @@ func (v *Node) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -2103,7 +2090,6 @@ func (v *Omit) Equals(rhs *Omit) bool {
 func (v *Omit) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("serialized", v.Serialized)
 	enc.AddString("hidden", v.Hidden)
-
 	return nil
 }
 
@@ -2253,7 +2239,6 @@ func (v *Point) Equals(rhs *Point) bool {
 func (v *Point) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddFloat64("x", v.X)
 	enc.AddFloat64("y", v.Y)
-
 	return nil
 }
 
@@ -2631,7 +2616,6 @@ func (v *PrimitiveOptionalStruct) MarshalLogObject(enc zapcore.ObjectEncoder) er
 	if v.BinaryField != nil {
 		enc.AddString("binaryField", base64.StdEncoding.EncodeToString(v.BinaryField))
 	}
-
 	return nil
 }
 
@@ -3019,7 +3003,6 @@ func (v *PrimitiveRequiredStruct) MarshalLogObject(enc zapcore.ObjectEncoder) er
 	enc.AddFloat64("doubleField", v.DoubleField)
 	enc.AddString("stringField", v.StringField)
 	enc.AddString("binaryField", base64.StdEncoding.EncodeToString(v.BinaryField))
-
 	return nil
 }
 
@@ -3192,7 +3175,6 @@ func (v *Rename) Equals(rhs *Rename) bool {
 func (v *Rename) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("Default", v.Default)
 	enc.AddString("camelCase", v.CamelCase)
-
 	return nil
 }
 
@@ -3344,7 +3326,6 @@ func (v *Size) Equals(rhs *Size) bool {
 func (v *Size) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddFloat64("width", v.Width)
 	enc.AddFloat64("height", v.Height)
-
 	return nil
 }
 
@@ -3501,7 +3482,6 @@ func (v *User) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			return err
 		}
 	}
-
 	return nil
 }
 

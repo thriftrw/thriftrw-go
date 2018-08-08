@@ -166,7 +166,6 @@ func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.GetName2 != nil {
 		enc.AddString("get_name", *v.GetName2)
 	}
-
 	return nil
 }
 
@@ -331,7 +330,6 @@ func (v *AccessorNoConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.GetName != nil {
 		enc.AddString("get_name", *v.GetName)
 	}
-
 	return nil
 }
 
@@ -990,7 +988,6 @@ func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error 
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -1161,7 +1158,6 @@ func (v *StructCollision) Equals(rhs *StructCollision) bool {
 func (v *StructCollision) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddBool("collisionField", v.CollisionField)
 	enc.AddString("collision_field", v.CollisionField2)
-
 	return nil
 }
 
@@ -1339,7 +1335,6 @@ func (v *UnionCollision) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.CollisionField2 != nil {
 		enc.AddString("collision_field", *v.CollisionField2)
 	}
-
 	return nil
 }
 
@@ -1494,7 +1489,6 @@ func (v *WithDefault) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -1856,7 +1850,6 @@ func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
 func (v *StructCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddBool("collisionField", v.CollisionField)
 	enc.AddString("collision_field", v.CollisionField2)
-
 	return nil
 }
 
@@ -2024,7 +2017,6 @@ func (v *UnionCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.CollisionField2 != nil {
 		enc.AddString("collision_field", *v.CollisionField2)
 	}
-
 	return nil
 }
 

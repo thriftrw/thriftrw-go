@@ -204,15 +204,15 @@ func (s *setGenerator) Equals(g Generator, spec *compile.SetSpec) (string, error
 
 func (s *setGenerator) zapMarshaler(
 	g Generator,
-	spec compile.TypeSpec,
 	root *compile.SetSpec,
 	fieldValue string,
 ) (string, error) {
-	name := zapperName(g, spec)
+	name := zapperName(g, root)
 	if err := g.EnsureDeclared(
 		`
-			type <.Name> <typeReference .Type>
 			<$zapcore := import "go.uber.org/zap/zapcore">
+
+			type <.Name> <typeReference .Type>
 			<$s := newVar "s">
 			<$v := newVar "v">
 			<$enc := newVar "enc">

@@ -667,7 +667,6 @@ func (v *Event) Equals(rhs *Event) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Event.
 func (v *Event) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	if err := enc.AddObject("uuid", (*I128)(v.UUID)); err != nil {
 		return err
 	}

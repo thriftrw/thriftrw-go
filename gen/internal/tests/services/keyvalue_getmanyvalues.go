@@ -198,7 +198,6 @@ func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -565,7 +564,6 @@ func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncod
 			return err
 		}
 	}
-
 	return nil
 }
 
