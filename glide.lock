@@ -1,16 +1,16 @@
-hash: de4f56d34612433b7a80991786d4a9bf401fbd8d74bfd4b53e8a277e7f93bd6e
-updated: 2018-08-06T11:16:47.428919733-07:00
+hash: 13611a214fe054d028621ae22f41fa294a2790cd6a0549bdbee33fada7c5bfab
+updated: 2018-07-31T17:03:57.682127592-07:00
 imports:
 - name: github.com/anmitsu/go-shlex
   version: 648efa622239a2f6ff949fed78ee37b48d499ba4
 - name: github.com/fatih/structtag
   version: da3d9ab5b78fdc25d3a7614853b085200bd10da9
 - name: github.com/golang/mock
-  version: c34cdb4725f4c3844d095133c6e40e448b86589b
+  version: 22bbf0ddf08105dfa364d0a2fa619dfa71014af5
   subpackages:
   - gomock
 - name: github.com/jessevdk/go-flags
-  version: c6ca198ec95c841fdb89fc0de7496fed11ab854e
+  version: 1c38ed7ad0cc3d9e66649ac398c30e45f395c4eb
 - name: github.com/kr/pretty
   version: 73f6ac0b30a98e433b289500d779f50c1a6f0712
 - name: github.com/kr/text
@@ -20,7 +20,7 @@ imports:
 - name: go.uber.org/multierr
   version: 3c4937480c32f4c13a875a1829af76c98ca3d40a
 - name: go.uber.org/zap
-  version: ff33455a0e382e8a81d14dd7c922020b6b5e7982
+  version: 1f8c4cad1e0417712b7d9f130a17b11eba6c8317
   subpackages:
   - buffer
   - internal/bufferpool
@@ -28,11 +28,11 @@ imports:
   - internal/exit
   - zapcore
 - name: golang.org/x/net
-  version: f4c29de78a2a91c00474a2e689954305c350adf9
+  version: 49c15d80dfbc983ea25246ee959d970efe09ec09
   subpackages:
   - context
 - name: golang.org/x/tools
-  version: 3c07937fe18c27668fd78bbaed3d6b8b39e202ea
+  version: 33176b2029f9538e722efa4a005f7aa00cf60010
   subpackages:
   - go/ast/astutil
 testImports:

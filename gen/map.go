@@ -305,13 +305,12 @@ func (m *mapGenerator) zapMarshaler(
 				// fast logging of <.Name>.
 				func (<$m> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
 					for <$k>, <$v> := range <$m> {
-						<- $encAdd := printf "%s.Add%s((string)(%s), %s)" $enc (zapEncoder .Type.ValueSpec) $k (zapMarshaler .Type.ValueSpec $v)>
 						<if (zapCanError .Type.ValueSpec) ->
-							if err := <$encAdd>; err != nil {
-								return err
-							}
+						if err := <$enc>.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>); err != nil {
+							return err
+						}
 						<- else ->
-							<$encAdd>
+						<$enc>.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>)
 						<- end>
 					}
 					return nil
@@ -340,13 +339,13 @@ func (m *mapGenerator) zapMarshaler(
 				// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 				// fast logging of <.Name>.
 				func (<$m> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
-					<if isHashable .Type.KeySpec ->
+					<- if isHashable .Type.KeySpec ->
 						for <$k>, <$v> := range <$m> {
-					<- else ->
+					<else ->
 						for _, <$i> := range <$m> {
 							<$k> := <$i>.Key
 							<$v> := <$i>.Value
-					<- end>
+					<end ->
 						if err := <$enc>.AppendObject(<zapMapItemMarshaler .Type.KeySpec $k .Type.ValueSpec $v>); err != nil {
 							return err
 						}
@@ -390,21 +389,19 @@ func (m *mapGenerator) zapMapItemMarshaler(
 			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 			// fast logging of <.Name>.
 			func (<$v> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
-				<- $encAddKey := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .KeyType) "key" (zapMarshaler .KeyType $key)>
 				<if (zapCanError .KeyType) ->
-					if err := <$encAddKey>; err != nil {
+					if err := <$enc>.Add<zapEncoder .KeyType>("key", <zapMarshaler .KeyType $key>); err != nil {
 						return err
 					}
 				<- else ->
-					<$encAddKey>
+					<$enc>.Add<zapEncoder .KeyType>("key", <zapMarshaler .KeyType $key>)
 				<- end>
-				<- $encAddValue := printf "%s.Add%s(%q, %s)" $enc (zapEncoder .ValueType) "value" (zapMarshaler .ValueType $val)>
 				<if (zapCanError .ValueType) ->
-					if err := <$encAddValue>; err != nil {
+					if err := <$enc>.Add<zapEncoder .ValueType>("value", <zapMarshaler .ValueType $val>); err != nil {
 						return err
 					}
 				<- else ->
-					<$encAddValue>
+					<$enc>.Add<zapEncoder .ValueType>("value", <zapMarshaler .ValueType $val>)
 				<- end>
 				return nil
 			}
