@@ -11,7 +11,7 @@ $ go get go.uber.org/thriftrw/cmd/thriftrw-list-deps
 ## Usage
 
 ```bash
-$ thriftrw-list-deps -relative=$(pwd) gen/testdata/thrift/structs.thrift
+$ thriftrw-list-deps --relative=$(pwd) gen/testdata/thrift/structs.thrift
 gen/testdata/thrift/enums.thrift
 $
 ```
