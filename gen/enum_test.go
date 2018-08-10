@@ -25,12 +25,12 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/thriftrw/compile"
 	tec "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	"go.uber.org/thriftrw/wire"
-
-	"github.com/stretchr/testify/assert"
 )
 
 func TestValueOfEnumDefault(t *testing.T) {
@@ -401,56 +401,45 @@ func TestEnumAccessors(t *testing.T) {
 	})
 }
 
-func TestEnumLabelLegit(t *testing.T) {
+func TestEnumLabelValid(t *testing.T) {
 	tests := []struct {
 		enumItem  te.EnumWithLabel
-		wireValue string
+		jsonValue string
 	}{
-		{te.EnumWithLabelUsername, "\"surname\""},
-		{te.EnumWithLabelPassword, "\"hashed_password\""},
-		{te.EnumWithLabelSalt, "\"salt\""},
-		{te.EnumWithLabelSugar, "\"sugar\""},
+		{te.EnumWithLabelUsername, `"surname"`},
+		{te.EnumWithLabelPassword, `"hashed_password"`},
+		{te.EnumWithLabelSalt, `"SALT"`},
+		{te.EnumWithLabelSugar, `"SUGAR"`},
+		{te.EnumWithLabelRelay, `"RELAY"`},
+		{te.EnumWithLabelNaive4N1, `"function"`},
+		{te.EnumWithLabel(42), `42`},
+		{te.EnumWithLabel(-1), `-1`},
+		{te.EnumWithLabel(1 << 10), `1024`},
 	}
 	for _, tt := range tests {
-		t.Run("compare label:"+tt.wireValue, func(t *testing.T) {
-			// marshal
-			label := te.EnumWithLabel(tt.enumItem)
-			b, err := json.Marshal(label)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.wireValue, string(b))
-
-			// unmarshal
-			var expectedLabel te.EnumWithLabel
-			err = json.Unmarshal(b, &expectedLabel)
-			assert.Equal(t, expectedLabel, label)
-
+		t.Run(tt.enumItem.String(), func(t *testing.T) {
+			t.Run("JSON round trip", func(t *testing.T) {
+				// marshal
+				label := te.EnumWithLabel(tt.enumItem)
+				b, err := json.Marshal(label)
+				require.NoError(t, err)
+				assert.Equal(t, []byte(tt.jsonValue), b)
+				// unmarshal
+				var gotLabel te.EnumWithLabel
+				err = json.Unmarshal(b, &gotLabel)
+				assert.Equal(t, label, gotLabel)
+			})
 			assertRoundTrip(
 				t, &tt.enumItem,
 				wire.NewValueI32(int32(tt.enumItem)),
-				"test roundtrip "+tt.wireValue,
+				"test roundtrip "+tt.jsonValue,
 			)
 		})
 	}
 }
 
-func TestEnumLabelInvalid(t *testing.T) {
-
-	for _, tt := range []struct {
-		value te.EnumWithLabel
-		rep   string
-	}{
-		{-1, "-1"},
-		{1 << 10, "1024"},
-	} {
-		t.Run("invalid marshal: "+tt.rep, func(t *testing.T) {
-			invalidEnumItem := te.EnumWithLabel(tt.value)
-			b, err := json.Marshal(invalidEnumItem)
-			assert.NoError(t, err)
-			assert.Equal(t, tt.rep, string(b))
-		})
-	}
-
-	for _, tt := range []struct {
+func TestEnumLabelInvalidUnmarshal(t *testing.T) {
+	tests := []struct {
 		errVal []byte
 		errMsg string
 	}{
@@ -459,11 +448,12 @@ func TestEnumLabelInvalid(t *testing.T) {
 			"invalid character 's' looking for beginning of value",
 		},
 		{
-			[]byte("\"; drop table users;\""),
-			"unknown enum value \"; drop table users;\" for \"EnumWithLabel\"",
+			[]byte(`"; drop table users;"`),
+			`unknown enum value "; drop table users;" for "EnumWithLabel"`,
 		},
-	} {
-		t.Run("invalid unmarshal: "+tt.errMsg, func(t *testing.T) {
+	}
+	for _, tt := range tests {
+		t.Run(string(tt.errVal), func(t *testing.T) {
 			var expectedLabel te.EnumWithLabel
 			err := json.Unmarshal(tt.errVal, &expectedLabel)
 			assert.Equal(t, err.Error(), tt.errMsg)
@@ -471,7 +461,7 @@ func TestEnumLabelInvalid(t *testing.T) {
 	}
 }
 
-func TestGenInvalidEnumFailure(t *testing.T) {
+func TestEnumLabelConflict(t *testing.T) {
 	testCases := []struct {
 		spec     compile.EnumSpec
 		messages string
@@ -493,14 +483,14 @@ func TestGenInvalidEnumFailure(t *testing.T) {
 					},
 				},
 			},
-			"duplicated item name \"A\" found in enum \"duplicate item name\"",
+			`item "B" with label "A" conflicts with item "A" in enum "duplicate item name"`,
 		},
 	}
 	for _, tt := range testCases {
 		t.Run(tt.spec.Name, func(t *testing.T) {
 			err := enum(nil, &tt.spec)
 			assert.Error(t, err)
-			assert.Equal(t, err.Error(), tt.messages)
+			assert.Equal(t, tt.messages, err.Error())
 		})
 	}
 }

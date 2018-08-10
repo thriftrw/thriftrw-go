@@ -677,6 +677,8 @@ const (
 	EnumWithLabelPassword EnumWithLabel = 1
 	EnumWithLabelSalt     EnumWithLabel = 2
 	EnumWithLabelSugar    EnumWithLabel = 3
+	EnumWithLabelRelay    EnumWithLabel = 4
+	EnumWithLabelNaive4N1 EnumWithLabel = 5
 )
 
 // EnumWithLabel_Values returns all recognized values of EnumWithLabel.
@@ -686,6 +688,8 @@ func EnumWithLabel_Values() []EnumWithLabel {
 		EnumWithLabelPassword,
 		EnumWithLabelSalt,
 		EnumWithLabelSugar,
+		EnumWithLabelRelay,
+		EnumWithLabelNaive4N1,
 	}
 }
 
@@ -693,7 +697,7 @@ func EnumWithLabel_Values() []EnumWithLabel {
 // containing its name.
 //
 //   var v EnumWithLabel
-//   err := v.UnmarshalText([]byte("username"))
+//   err := v.UnmarshalText([]byte("USERNAME"))
 func (v *EnumWithLabel) UnmarshalText(value []byte) error {
 	switch string(value) {
 	case "surname":
@@ -702,11 +706,17 @@ func (v *EnumWithLabel) UnmarshalText(value []byte) error {
 	case "hashed_password":
 		*v = EnumWithLabelPassword
 		return nil
-	case "salt":
+	case "SALT":
 		*v = EnumWithLabelSalt
 		return nil
-	case "sugar":
+	case "SUGAR":
 		*v = EnumWithLabelSugar
+		return nil
+	case "RELAY":
+		*v = EnumWithLabelRelay
+		return nil
+	case "function":
+		*v = EnumWithLabelNaive4N1
 		return nil
 	default:
 		return fmt.Errorf("unknown enum value %q for %q", value, "EnumWithLabel")
@@ -726,9 +736,13 @@ func (v EnumWithLabel) MarshalText() ([]byte, error) {
 	case 1:
 		return []byte("hashed_password"), nil
 	case 2:
-		return []byte("salt"), nil
+		return []byte("SALT"), nil
 	case 3:
-		return []byte("sugar"), nil
+		return []byte("SUGAR"), nil
+	case 4:
+		return []byte("RELAY"), nil
+	case 5:
+		return []byte("function"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
@@ -774,9 +788,13 @@ func (v EnumWithLabel) String() string {
 	case 1:
 		return "hashed_password"
 	case 2:
-		return "salt"
+		return "SALT"
 	case 3:
-		return "sugar"
+		return "SUGAR"
+	case 4:
+		return "RELAY"
+	case 5:
+		return "function"
 	}
 	return fmt.Sprintf("EnumWithLabel(%d)", w)
 }
@@ -800,9 +818,13 @@ func (v EnumWithLabel) MarshalJSON() ([]byte, error) {
 	case 1:
 		return ([]byte)("\"hashed_password\""), nil
 	case 2:
-		return ([]byte)("\"salt\""), nil
+		return ([]byte)("\"SALT\""), nil
 	case 3:
-		return ([]byte)("\"sugar\""), nil
+		return ([]byte)("\"SUGAR\""), nil
+	case 4:
+		return ([]byte)("\"RELAY\""), nil
+	case 5:
+		return ([]byte)("\"function\""), nil
 	}
 	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
 }

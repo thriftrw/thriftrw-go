@@ -27,10 +27,8 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
-const (
-	// GoLabel overrides name on the wire
-	GoLabel = "go.label"
-)
+// GoLabel is the annotation expected on enum items to override their label.
+const GoLabel = "go.label"
 
 // enumGenerator generates code to serialize and deserialize enums.
 type enumGenerator struct{}
@@ -275,12 +273,10 @@ func enumItemName(enumName string, spec *compile.EnumItem) (string, error) {
 	return enumName + name, err
 }
 
-// enumItemLabelName returns the actual name used for serialization/deserialization
-// default to EnumItem.Name, override by the value of GoLabel
+// enumItemLabelName returns the label we use for this enum item in the generated code.
 func enumItemLabelName(spec *compile.EnumItem) string {
 	labelName := spec.Name
-	val, ok := spec.Annotations[GoLabel]
-	if ok && len(val) > 0 {
+	if val := spec.Annotations[GoLabel]; len(val) > 0 {
 		labelName = val
 	}
 	return labelName
@@ -290,15 +286,15 @@ func enumItemLabelName(spec *compile.EnumItem) string {
 // duplicates in resolved enum item names
 func validateEnumUniqueNames(spec *compile.EnumSpec) error {
 	items := spec.Items
-	used := make(map[string]bool, len(items))
+	used := make(map[string]compile.EnumItem, len(items))
 	for _, i := range items {
 		itemName := enumItemLabelName(&i)
-		if _, isUsed := used[itemName]; isUsed {
+		if conflict, isUsed := used[itemName]; isUsed {
 			return fmt.Errorf(
-				"duplicated item name %q found in enum %q",
-				itemName, spec.Name)
+				"item %q with label %q conflicts with item %q in enum %q",
+				i.Name, itemName, conflict.Name, spec.Name)
 		}
-		used[itemName] = true
+		used[itemName] = i
 	}
 	return nil
 }
