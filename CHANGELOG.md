@@ -6,8 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
-- gen: Added `go.label` used in enum item to override enum
-  item name in codegen.
+- gen: Added `go.label="<TAGGED_NAME>"` annotation for enum items.
+  Corresponding items of the generated Go structs will be using
+  <TAGGED_NAME> for text marshal / unmarshal instead of its origin item
+  name.
 
 ## [1.12.0] - 2018-06-25
 ### Added

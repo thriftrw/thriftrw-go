@@ -28,6 +28,8 @@ import (
 )
 
 // GoLabel is the annotation expected on enum items to override their label.
+// Enum items tagged with `go.label=<TAGGED_NAME>` will generate go struct
+// using `TAGGED_NAME` for text Marshal/Unmarshal
 const GoLabel = "go.label"
 
 // enumGenerator generates code to serialize and deserialize enums.
@@ -275,11 +277,10 @@ func enumItemName(enumName string, spec *compile.EnumItem) (string, error) {
 
 // enumItemLabelName returns the label we use for this enum item in the generated code.
 func enumItemLabelName(spec *compile.EnumItem) string {
-	labelName := spec.Name
 	if val := spec.Annotations[GoLabel]; len(val) > 0 {
-		labelName = val
+		return val
 	}
-	return labelName
+	return spec.Name
 }
 
 // validateEnumUniqueNames apply name label GoLabel and raise error if there's

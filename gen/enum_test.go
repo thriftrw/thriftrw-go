@@ -25,12 +25,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"go.uber.org/thriftrw/compile"
 	tec "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	"go.uber.org/thriftrw/wire"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValueOfEnumDefault(t *testing.T) {
@@ -444,12 +445,20 @@ func TestEnumLabelInvalidUnmarshal(t *testing.T) {
 		errMsg string
 	}{
 		{
-			[]byte("some-random-str"),
-			"invalid character 's' looking for beginning of value",
+			[]byte(`"some-random-str"`),
+			`unknown enum value "some-random-str" for "EnumWithLabel"`,
 		},
 		{
 			[]byte(`"; drop table users;"`),
 			`unknown enum value "; drop table users;" for "EnumWithLabel"`,
+		},
+		{
+			[]byte(`"USERNAME"`),
+			`unknown enum value "USERNAME" for "EnumWithLabel"`,
+		},
+		{
+			[]byte(`"PASSWORD"`),
+			`unknown enum value "PASSWORD" for "EnumWithLabel"`,
 		},
 	}
 	for _, tt := range tests {
@@ -484,6 +493,29 @@ func TestEnumLabelConflict(t *testing.T) {
 				},
 			},
 			`item "B" with label "A" conflicts with item "A" in enum "duplicate item name"`,
+		},
+		{
+
+			compile.EnumSpec{
+				Name: "duplicate item name",
+				Items: []compile.EnumItem{
+					compile.EnumItem{
+						Name:  "A",
+						Value: 0,
+						Annotations: map[string]string{
+							"go.label": "C",
+						},
+					},
+					compile.EnumItem{
+						Name:  "B",
+						Value: 1,
+						Annotations: map[string]string{
+							"go.label": "C",
+						},
+					},
+				},
+			},
+			`item "B" with label "C" conflicts with item "A" in enum "duplicate item name"`,
 		},
 	}
 	for _, tt := range testCases {
