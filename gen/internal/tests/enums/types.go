@@ -818,6 +818,29 @@ func (v EnumWithLabel) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of EnumWithLabel.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v EnumWithLabel) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 0:
+		enc.AddString("name", "surname")
+	case 1:
+		enc.AddString("name", "hashed_password")
+	case 2:
+		enc.AddString("name", "SALT")
+	case 3:
+		enc.AddString("name", "SUGAR")
+	case 4:
+		enc.AddString("name", "RELAY")
+	case 5:
+		enc.AddString("name", "function")
+	}
+	return nil
+}
+
 // Ptr returns a pointer to this enum value.
 func (v EnumWithLabel) Ptr() *EnumWithLabel {
 	return &v

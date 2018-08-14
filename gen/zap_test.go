@@ -540,3 +540,45 @@ func TestTypedefsZapLogging(t *testing.T) {
 	expected6 := o{"foo": int64(1), "bar": int64(2)}
 	assert.Equal(t, expected6, mapEncoder.Fields)
 }
+
+func TestEnumWithLabelZapLogging(t *testing.T) {
+	// These types are created to ease building map[string]interface{}
+	type o = map[string]interface{}
+	type a = []interface{}
+	type i = int32
+
+	tests := []struct {
+		desc string
+		p    te.EnumWithLabel
+		v    interface{}
+	}{
+		{
+			desc: "with label",
+			p:    te.EnumWithLabelUsername,
+			v:    o{"name": "surname", "value": i(0)},
+		},
+		{
+			desc: "empty label",
+			p:    te.EnumWithLabelSalt,
+			v:    o{"name": "SALT", "value": i(2)},
+		},
+		{
+			desc: "unspecified label",
+			p:    te.EnumWithLabelSugar,
+			v:    o{"name": "SUGAR", "value": i(3)},
+		},
+		{
+			desc: "keyword label",
+			p:    te.EnumWithLabelNaive4N1,
+			v:    o{"name": "function", "value": i(5)},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			enc := zapcore.NewMapObjectEncoder()
+			tt.p.MarshalLogObject(enc)
+			assert.Equal(t, tt.v, enc.Fields)
+		})
+	}
+}

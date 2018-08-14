@@ -145,7 +145,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch int32(<$v>) {
 				<range .UniqueItems ->
 					case <.Value>:
-						enc.AddString("name", "<.Name>")
+						enc.AddString("name", "<enumItemLabelName .>")
 				<end ->
 				}
 			<end ->
