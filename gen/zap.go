@@ -58,7 +58,7 @@ func (z *zapGenerator) zapEncoder(g Generator, spec compile.TypeSpec) string {
 
 	// Containers
 	case *compile.MapSpec:
-		switch t.KeySpec.(type) {
+		switch compile.RootTypeSpec(t.KeySpec).(type) {
 		case *compile.StringSpec:
 			return "Object"
 		default:
@@ -77,6 +77,12 @@ func (z *zapGenerator) zapEncoder(g Generator, spec compile.TypeSpec) string {
 // zapMarshaler takes a TypeSpec, evaluates whether there are underlying elements
 // that require more Zap implementation to log everything, and returns a string
 // that properly casts the fieldValue, if needed, for logging.
+//
+// This should be used in conjunction with zapEncoder:
+//
+//   v := ...
+//   enc.Add<zapEncoder .Type>("foo", <zapMarshaler .Type "v">)
+//
 func (z *zapGenerator) zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
 	root := compile.RootTypeSpec(spec)
 

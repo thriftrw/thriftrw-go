@@ -529,4 +529,14 @@ func TestTypedefsZapLogging(t *testing.T) {
 	test5.MarshalLogObject(mapEncoder)
 	expected5 := o{"value": int32(123), "name": "X"}
 	assert.Equal(t, expected5, mapEncoder.Fields)
+
+	// test map with typedef of string key
+	mapEncoder = zapcore.NewMapObjectEncoder()
+	test6 := td.StateMap(map[td.State]int64{
+		td.State("foo"): 1,
+		td.State("bar"): 2,
+	})
+	test6.MarshalLogObject(mapEncoder)
+	expected6 := o{"foo": int64(1), "bar": int64(2)}
+	assert.Equal(t, expected6, mapEncoder.Fields)
 }

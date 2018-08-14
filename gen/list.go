@@ -182,12 +182,13 @@ func (l *listGenerator) Equals(g Generator, spec *compile.ListSpec) (string, err
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+// Slices are logged as JSON arrays.
 func (l *listGenerator) zapMarshaler(
 	g Generator,
-	root *compile.ListSpec,
+	spec *compile.ListSpec,
 	fieldValue string,
 ) (string, error) {
-	name := zapperName(g, root)
+	name := zapperName(g, spec)
 	if err := g.EnsureDeclared(
 		`
 			<$zapcore := import "go.uber.org/zap/zapcore">
@@ -211,7 +212,7 @@ func (l *listGenerator) zapMarshaler(
 			Type *compile.ListSpec
 		}{
 			Name: name,
-			Type: root,
+			Type: spec,
 		},
 	); err != nil {
 		return "", err

@@ -282,6 +282,15 @@ func (m *mapGenerator) equalsUnhashable(g Generator, spec *compile.MapSpec) (str
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+// Maps are logged as objects if the key is a string or a typedef of a
+// string. If the key is not a string, maps are logged as arrays of
+// objects with a key and value.
+//
+//   map[string]int32{"foo": 1, "bar": 2}
+//   => {"foo": 1, "bar": 2}
+//
+//   map[int32]string{1: "foo", 2: "bar"}
+//   => [{"key": 1, "value": "foo"}, {"key": 2, "value": "bar"}]
 func (m *mapGenerator) zapMarshaler(
 	g Generator,
 	root *compile.MapSpec,
@@ -302,7 +311,7 @@ func (m *mapGenerator) zapStringKeyMarshaler(
 	root *compile.MapSpec,
 	fieldValue string,
 ) (string, error) {
-	if err := g.EnsureDeclared(
+	err := g.EnsureDeclared(
 		`
 			<$zapcore := import "go.uber.org/zap/zapcore">
 
@@ -328,10 +337,8 @@ func (m *mapGenerator) zapStringKeyMarshaler(
 			Name: name,
 			Type: root,
 		},
-	); err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
+	)
+	return fmt.Sprintf("(%v)(%v)", name, fieldValue), err
 }
 
 func (m *mapGenerator) zapNonstringKeyMarshaler(
@@ -360,7 +367,7 @@ func (m *mapGenerator) zapNonstringKeyMarshaler(
 						<$k> := <$i>.Key
 						<$v> := <$i>.Value
 				<end ->
-					if err := <$enc>.AppendObject(<zapMapItemMarshaler .Type.KeySpec $k .Type.ValueSpec $v>); err != nil {
+					if err := <$enc>.AppendObject(<zapMapItemMarshaler .Type $k $v>); err != nil {
 						return err
 					}
 				}
@@ -373,7 +380,7 @@ func (m *mapGenerator) zapNonstringKeyMarshaler(
 			Name: name,
 			Type: root,
 		},
-		TemplateFunc("zapMapItemMarshaler", curryGenerator(m.zapMapItemMarshaler, g)),
+		TemplateFunc("zapMapItemMarshaler", m.zapMapItemMarshaler),
 	); err != nil {
 		return "", err
 	}
@@ -382,12 +389,11 @@ func (m *mapGenerator) zapNonstringKeyMarshaler(
 
 func (m *mapGenerator) zapMapItemMarshaler(
 	g Generator,
-	keySpec compile.TypeSpec,
+	mapSpec *compile.MapSpec,
 	keyVar string,
-	valueSpec compile.TypeSpec,
 	valueVar string,
 ) (string, error) {
-	name := fmt.Sprintf("_MapItem_%s_%s_Zapper", g.MangleType(keySpec), g.MangleType(valueSpec))
+	name := fmt.Sprintf("_%s_Item_Zapper", g.MangleType(mapSpec))
 	if err := g.EnsureDeclared(
 		`
 			<$zapcore := import "go.uber.org/zap/zapcore">
@@ -417,8 +423,8 @@ func (m *mapGenerator) zapMapItemMarshaler(
 			ValueType compile.TypeSpec
 		}{
 			Name:      name,
-			KeyType:   keySpec,
-			ValueType: valueSpec,
+			KeyType:   mapSpec.KeySpec,
+			ValueType: mapSpec.ValueSpec,
 		},
 	); err != nil {
 		return "", err
