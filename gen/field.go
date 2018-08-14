@@ -478,22 +478,25 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 		// fast logging of <.Name>.
 		func (<$v> *<.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
 			<range .Fields>
-				<- $fval := printf "%s.%s" $v (goName .) ->
-				<- if .Required ->
-					<zapEncodeBegin .Type ->
-						<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
-					<- zapEncodeEnd .Type>
-				<- else ->
-					if <$fval> != nil {
+				<- if not (zapOptOut .) ->
+					<- $fval := printf "%s.%s" $v (goName .) ->
+					<- if .Required ->
 						<zapEncodeBegin .Type ->
-							<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>)
+							<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
 						<- zapEncodeEnd .Type>
-					}
+					<- else ->
+						if <$fval> != nil {
+							<zapEncodeBegin .Type ->
+								<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>)
+							<- zapEncodeEnd .Type>
+						}
+					<- end>
 				<- end>
 			<end ->
 			return nil
 		}
-		`, f)
+		`, f,
+		TemplateFunc("zapOptOut", zapOptOut))
 }
 
 func (f fieldGroupGenerator) Accessors(g Generator) error {

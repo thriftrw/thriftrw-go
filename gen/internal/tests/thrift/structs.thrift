@@ -152,3 +152,10 @@ struct DefaultsStruct {
         "endPoint":   {"x": 3, "y": 4},
     }
 }
+
+//////////////////////////////////////////////////////////////////////////////
+// Opt-out of Zap
+struct ZapOptOutStruct {
+    1: required string name
+    2: required string optout (go.nolog)
+}

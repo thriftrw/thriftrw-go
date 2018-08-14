@@ -477,6 +477,20 @@ func TestCrazyTownZapLogging(t *testing.T) {
 	}
 }
 
+func TestOptOutOfZap(t *testing.T) {
+	// These types are created to ease building map[string]interface{}
+	type o = map[string]interface{}
+
+	mapEncoder := zapcore.NewMapObjectEncoder()
+	test := ts.ZapOptOutStruct{
+		Name:   "foo",
+		Optout: "bar",
+	}
+	test.MarshalLogObject(mapEncoder)
+	expected := o{"name": "foo"}
+	assert.Equal(t, expected, mapEncoder.Fields)
+}
+
 func TestTypedefsZapLogging(t *testing.T) {
 	// These types are created to ease building map[string]interface{}
 	type o = map[string]interface{}

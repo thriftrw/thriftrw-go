@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Generated types now implement zapcore.ObjectMarshaler or
   zapcore.ArrayMarshaler where appropriate. This should lead to much faster
   logging of these objects.
+- Added `go.nolog` annotation for struct fields: Those with
+  this annotation will not be included in Zap logging.
 
 ## [1.12.0] - 2018-06-25
 ### Added
