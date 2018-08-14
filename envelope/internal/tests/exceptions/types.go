@@ -182,7 +182,6 @@ func (v *DoesNotExistException) MarshalLogObject(enc zapcore.ObjectEncoder) erro
 	if v.Error2 != nil {
 		enc.AddString("Error", *v.Error2)
 	}
-
 	return nil
 }
 
@@ -283,7 +282,6 @@ func (v *EmptyException) Equals(rhs *EmptyException) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EmptyException.
 func (v *EmptyException) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	return nil
 }
 

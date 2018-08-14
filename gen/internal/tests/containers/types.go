@@ -1702,14 +1702,14 @@ func (l _List_Set_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	return nil
 }
 
-type _MapItem_I32_I32_Zapper struct {
+type _Map_I32_I32_Item_Zapper struct {
 	Key   int32
 	Value int32
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_I32_I32_Zapper.
-func (v _MapItem_I32_I32_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_I32_I32_Item_Zapper.
+func (v _Map_I32_I32_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("key", v.Key)
 	enc.AddInt32("value", v.Value)
 	return nil
@@ -1721,7 +1721,7 @@ type _Map_I32_I32_Zapper map[int32]int32
 // fast logging of _Map_I32_I32_Zapper.
 func (m _Map_I32_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range m {
-		if err := enc.AppendObject(_MapItem_I32_I32_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_I32_I32_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}
@@ -1824,14 +1824,14 @@ func (m _Map_String_I32_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) erro
 	return nil
 }
 
-type _MapItem_Map_String_I32_I64_Zapper struct {
+type _Map_Map_String_I32_I64_Item_Zapper struct {
 	Key   map[string]int32
 	Value int64
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_Map_String_I32_I64_Zapper.
-func (v _MapItem_Map_String_I32_I64_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_Map_String_I32_I64_Item_Zapper.
+func (v _Map_Map_String_I32_I64_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if err := enc.AddObject("key", (_Map_String_I32_Zapper)(v.Key)); err != nil {
 		return err
 	}
@@ -1850,7 +1850,7 @@ func (m _Map_Map_String_I32_I64_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
-		if err := enc.AppendObject(_MapItem_Map_String_I32_I64_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_Map_String_I32_I64_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}
@@ -1868,14 +1868,14 @@ func (s _Set_I64_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	return nil
 }
 
-type _MapItem_List_I32_Set_I64_Zapper struct {
+type _Map_List_I32_Set_I64_Item_Zapper struct {
 	Key   []int32
 	Value map[int64]struct{}
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_List_I32_Set_I64_Zapper.
-func (v _MapItem_List_I32_Set_I64_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_List_I32_Set_I64_Item_Zapper.
+func (v _Map_List_I32_Set_I64_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if err := enc.AddArray("key", (_List_I32_Zapper)(v.Key)); err != nil {
 		return err
 	}
@@ -1896,7 +1896,7 @@ func (m _Map_List_I32_Set_I64_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) 
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
-		if err := enc.AppendObject(_MapItem_List_I32_Set_I64_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_List_I32_Set_I64_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}
@@ -1914,14 +1914,14 @@ func (l _List_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	return nil
 }
 
-type _MapItem_Set_I32_List_Double_Zapper struct {
+type _Map_Set_I32_List_Double_Item_Zapper struct {
 	Key   map[int32]struct{}
 	Value []float64
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_Set_I32_List_Double_Zapper.
-func (v _MapItem_Set_I32_List_Double_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_Set_I32_List_Double_Item_Zapper.
+func (v _Map_Set_I32_List_Double_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if err := enc.AddArray("key", (_Set_I32_Zapper)(v.Key)); err != nil {
 		return err
 	}
@@ -1942,7 +1942,7 @@ func (m _Map_Set_I32_List_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncode
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
-		if err := enc.AppendObject(_MapItem_Set_I32_List_Double_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_Set_I32_List_Double_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}
@@ -2493,14 +2493,14 @@ func (s _Set_EnumWithValues_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) er
 	return nil
 }
 
-type _MapItem_EnumWithDuplicateValues_I32_Zapper struct {
+type _Map_EnumWithDuplicateValues_I32_Item_Zapper struct {
 	Key   enums.EnumWithDuplicateValues
 	Value int32
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_EnumWithDuplicateValues_I32_Zapper.
-func (v _MapItem_EnumWithDuplicateValues_I32_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_EnumWithDuplicateValues_I32_Item_Zapper.
+func (v _Map_EnumWithDuplicateValues_I32_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if err := enc.AddObject("key", v.Key); err != nil {
 		return err
 	}
@@ -2514,7 +2514,7 @@ type _Map_EnumWithDuplicateValues_I32_Zapper map[enums.EnumWithDuplicateValues]i
 // fast logging of _Map_EnumWithDuplicateValues_I32_Zapper.
 func (m _Map_EnumWithDuplicateValues_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range m {
-		if err := enc.AppendObject(_MapItem_EnumWithDuplicateValues_I32_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_EnumWithDuplicateValues_I32_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}
@@ -3526,14 +3526,14 @@ func (v *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
 	return true
 }
 
-type _MapItem_Binary_String_Zapper struct {
+type _Map_Binary_String_Item_Zapper struct {
 	Key   []byte
 	Value string
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_Binary_String_Zapper.
-func (v _MapItem_Binary_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_Binary_String_Item_Zapper.
+func (v _Map_Binary_String_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("key", base64.StdEncoding.EncodeToString(v.Key))
 	enc.AddString("value", v.Value)
 	return nil
@@ -3550,7 +3550,7 @@ func (m _Map_Binary_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) err
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
-		if err := enc.AppendObject(_MapItem_Binary_String_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_Binary_String_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}
@@ -4204,14 +4204,14 @@ func (s _Set_Byte_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	return nil
 }
 
-type _MapItem_I32_String_Zapper struct {
+type _Map_I32_String_Item_Zapper struct {
 	Key   int32
 	Value string
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_I32_String_Zapper.
-func (v _MapItem_I32_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_I32_String_Item_Zapper.
+func (v _Map_I32_String_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("key", v.Key)
 	enc.AddString("value", v.Value)
 	return nil
@@ -4223,7 +4223,7 @@ type _Map_I32_String_Zapper map[int32]string
 // fast logging of _Map_I32_String_Zapper.
 func (m _Map_I32_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range m {
-		if err := enc.AppendObject(_MapItem_I32_String_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_I32_String_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}
@@ -4582,14 +4582,14 @@ func (v *PrimitiveContainersRequired) Equals(rhs *PrimitiveContainersRequired) b
 	return true
 }
 
-type _MapItem_I64_Double_Zapper struct {
+type _Map_I64_Double_Item_Zapper struct {
 	Key   int64
 	Value float64
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_I64_Double_Zapper.
-func (v _MapItem_I64_Double_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_I64_Double_Item_Zapper.
+func (v _Map_I64_Double_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt64("key", v.Key)
 	enc.AddFloat64("value", v.Value)
 	return nil
@@ -4601,7 +4601,7 @@ type _Map_I64_Double_Zapper map[int64]float64
 // fast logging of _Map_I64_Double_Zapper.
 func (m _Map_I64_Double_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range m {
-		if err := enc.AppendObject(_MapItem_I64_Double_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_I64_Double_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}

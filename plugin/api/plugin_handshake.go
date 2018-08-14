@@ -152,7 +152,6 @@ func (v *Plugin_Handshake_Args) MarshalLogObject(enc zapcore.ObjectEncoder) erro
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -398,7 +397,6 @@ func (v *Plugin_Handshake_Result) MarshalLogObject(enc zapcore.ObjectEncoder) er
 			return err
 		}
 	}
-
 	return nil
 }
 

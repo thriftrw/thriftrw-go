@@ -404,14 +404,14 @@ func _Map_Edge_Edge_Equals(lhs, rhs []struct {
 	return true
 }
 
-type _MapItem_Edge_Edge_Zapper struct {
+type _Map_Edge_Edge_Item_Zapper struct {
 	Key   *structs.Edge
 	Value *structs.Edge
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_Edge_Edge_Zapper.
-func (v _MapItem_Edge_Edge_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_Edge_Edge_Item_Zapper.
+func (v _Map_Edge_Edge_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if err := enc.AddObject("key", v.Key); err != nil {
 		return err
 	}
@@ -432,7 +432,7 @@ func (m _Map_Edge_Edge_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
-		if err := enc.AppendObject(_MapItem_Edge_Edge_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_Edge_Edge_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}
@@ -1102,14 +1102,14 @@ func _Map_Point_Point_Equals(lhs, rhs []struct {
 	return true
 }
 
-type _MapItem_Point_Point_Zapper struct {
+type _Map_Point_Point_Item_Zapper struct {
 	Key   *structs.Point
 	Value *structs.Point
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_Point_Point_Zapper.
-func (v _MapItem_Point_Point_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_Point_Point_Item_Zapper.
+func (v _Map_Point_Point_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if err := enc.AddObject("key", v.Key); err != nil {
 		return err
 	}
@@ -1130,7 +1130,7 @@ func (m _Map_Point_Point_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error
 	for _, i := range m {
 		k := i.Key
 		v := i.Value
-		if err := enc.AppendObject(_MapItem_Point_Point_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_Point_Point_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}
@@ -1213,6 +1213,132 @@ func (v *State) FromWire(w wire.Value) error {
 // State.
 func (lhs State) Equals(rhs State) bool {
 	return (lhs == rhs)
+}
+
+type _Map_State_I64_MapItemList map[State]int64
+
+func (m _Map_State_I64_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for k, v := range m {
+		kw, err := k.ToWire()
+		if err != nil {
+			return err
+		}
+
+		vw, err := wire.NewValueI64(v), error(nil)
+		if err != nil {
+			return err
+		}
+		err = f(wire.MapItem{Key: kw, Value: vw})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_State_I64_MapItemList) Size() int {
+	return len(m)
+}
+
+func (_Map_State_I64_MapItemList) KeyType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Map_State_I64_MapItemList) ValueType() wire.Type {
+	return wire.TI64
+}
+
+func (_Map_State_I64_MapItemList) Close() {}
+
+func _Map_State_I64_Read(m wire.MapItemList) (map[State]int64, error) {
+	if m.KeyType() != wire.TBinary {
+		return nil, nil
+	}
+
+	if m.ValueType() != wire.TI64 {
+		return nil, nil
+	}
+
+	o := make(map[State]int64, m.Size())
+	err := m.ForEach(func(x wire.MapItem) error {
+		k, err := _State_Read(x.Key)
+		if err != nil {
+			return err
+		}
+
+		v, err := x.Value.GetI64(), error(nil)
+		if err != nil {
+			return err
+		}
+
+		o[k] = v
+		return nil
+	})
+	m.Close()
+	return o, err
+}
+
+func _Map_State_I64_Equals(lhs, rhs map[State]int64) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
+}
+
+type _Map_State_I64_Zapper map[State]int64
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of _Map_State_I64_Zapper.
+func (m _Map_State_I64_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	for k, v := range m {
+		enc.AddInt64((string)(k), v)
+	}
+	return nil
+}
+
+type StateMap map[State]int64
+
+// ToWire translates StateMap into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+func (v StateMap) ToWire() (wire.Value, error) {
+	x := (map[State]int64)(v)
+	return wire.NewValueMap(_Map_State_I64_MapItemList(x)), error(nil)
+}
+
+// String returns a readable string representation of StateMap.
+func (v StateMap) String() string {
+	x := (map[State]int64)(v)
+	return fmt.Sprint(x)
+}
+
+// FromWire deserializes StateMap from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+func (v *StateMap) FromWire(w wire.Value) error {
+	x, err := _Map_State_I64_Read(w.GetMap())
+	*v = (StateMap)(x)
+	return err
+}
+
+// Equals returns true if this StateMap is equal to the provided
+// StateMap.
+func (lhs StateMap) Equals(rhs StateMap) bool {
+	return _Map_State_I64_Equals(lhs, rhs)
+}
+
+func (v StateMap) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	return ((_Map_State_I64_Zapper)((map[State]int64)(v))).MarshalLogObject(enc)
 }
 
 // Number of seconds since epoch.

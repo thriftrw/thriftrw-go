@@ -152,7 +152,6 @@ func (v *ServiceGenerator_Generate_Args) MarshalLogObject(enc zapcore.ObjectEnco
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -398,7 +397,6 @@ func (v *ServiceGenerator_Generate_Result) MarshalLogObject(enc zapcore.ObjectEn
 			return err
 		}
 	}
-
 	return nil
 }
 

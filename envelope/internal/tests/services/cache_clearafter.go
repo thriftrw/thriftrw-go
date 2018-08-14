@@ -155,7 +155,6 @@ func (v *Cache_ClearAfter_Args) MarshalLogObject(enc zapcore.ObjectEncoder) erro
 	if v.DurationMS != nil {
 		enc.AddInt64("durationMS", *v.DurationMS)
 	}
-
 	return nil
 }
 

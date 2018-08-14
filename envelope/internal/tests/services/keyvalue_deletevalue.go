@@ -163,7 +163,6 @@ func (v *KeyValue_DeleteValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) 
 	if v.Key != nil {
 		enc.AddString("key", (string)(*v.Key))
 	}
-
 	return nil
 }
 
@@ -464,7 +463,6 @@ func (v *KeyValue_DeleteValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder
 			return err
 		}
 	}
-
 	return nil
 }
 

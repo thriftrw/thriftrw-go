@@ -43,4 +43,6 @@ typedef set<binary> BinarySet
 
 typedef map<structs.Edge, structs.Edge> EdgeMap
 
+typedef map<State, i64> StateMap
+
 typedef enums.EnumWithValues MyEnum

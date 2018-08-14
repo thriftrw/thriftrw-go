@@ -148,7 +148,6 @@ func (v *KeyValue_GetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) err
 	if v.Key != nil {
 		enc.AddString("key", (string)(*v.Key))
 	}
-
 	return nil
 }
 
@@ -434,7 +433,6 @@ func (v *KeyValue_GetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) e
 			return err
 		}
 	}
-
 	return nil
 }
 

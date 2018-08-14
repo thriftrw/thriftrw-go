@@ -113,7 +113,6 @@ func (v *KeyValue_Size_Args) Equals(rhs *KeyValue_Size_Args) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_Size_Args.
 func (v *KeyValue_Size_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	return nil
 }
 
@@ -337,7 +336,6 @@ func (v *KeyValue_Size_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error
 	if v.Success != nil {
 		enc.AddInt64("success", *v.Success)
 	}
-
 	return nil
 }
 

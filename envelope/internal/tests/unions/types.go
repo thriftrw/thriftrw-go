@@ -500,7 +500,6 @@ func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -714,7 +713,6 @@ func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.PlainText != nil {
 		enc.AddString("plainText", *v.PlainText)
 	}
-
 	return nil
 }
 
@@ -817,6 +815,5 @@ func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EmptyUnion.
 func (v *EmptyUnion) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	return nil
 }

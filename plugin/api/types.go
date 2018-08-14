@@ -196,7 +196,6 @@ func (v *Argument) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if err := enc.AddObject("type", v.Type); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -856,7 +855,6 @@ func (v *Function) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -1353,14 +1351,14 @@ func (l _List_ServiceID_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error 
 	return nil
 }
 
-type _MapItem_ServiceID_Service_Zapper struct {
+type _Map_ServiceID_Service_Item_Zapper struct {
 	Key   ServiceID
 	Value *Service
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_ServiceID_Service_Zapper.
-func (v _MapItem_ServiceID_Service_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_ServiceID_Service_Item_Zapper.
+func (v _Map_ServiceID_Service_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("key", (int32)(v.Key))
 	if err := enc.AddObject("value", v.Value); err != nil {
 		return err
@@ -1374,21 +1372,21 @@ type _Map_ServiceID_Service_Zapper map[ServiceID]*Service
 // fast logging of _Map_ServiceID_Service_Zapper.
 func (m _Map_ServiceID_Service_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range m {
-		if err := enc.AppendObject(_MapItem_ServiceID_Service_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_ServiceID_Service_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-type _MapItem_ModuleID_Module_Zapper struct {
+type _Map_ModuleID_Module_Item_Zapper struct {
 	Key   ModuleID
 	Value *Module
 }
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _MapItem_ModuleID_Module_Zapper.
-func (v _MapItem_ModuleID_Module_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+// fast logging of _Map_ModuleID_Module_Item_Zapper.
+func (v _Map_ModuleID_Module_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("key", (int32)(v.Key))
 	if err := enc.AddObject("value", v.Value); err != nil {
 		return err
@@ -1402,7 +1400,7 @@ type _Map_ModuleID_Module_Zapper map[ModuleID]*Module
 // fast logging of _Map_ModuleID_Module_Zapper.
 func (m _Map_ModuleID_Module_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	for k, v := range m {
-		if err := enc.AppendObject(_MapItem_ModuleID_Module_Zapper{Key: k, Value: v}); err != nil {
+		if err := enc.AppendObject(_Map_ModuleID_Module_Item_Zapper{Key: k, Value: v}); err != nil {
 			return err
 		}
 	}
@@ -1421,7 +1419,6 @@ func (v *GenerateServiceRequest) MarshalLogObject(enc zapcore.ObjectEncoder) err
 	if err := enc.AddArray("modules", (_Map_ModuleID_Module_Zapper)(v.Modules)); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -1651,7 +1648,6 @@ func (v *GenerateServiceResponse) MarshalLogObject(enc zapcore.ObjectEncoder) er
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -1746,7 +1742,6 @@ func (v *HandshakeRequest) Equals(rhs *HandshakeRequest) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of HandshakeRequest.
 func (v *HandshakeRequest) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-
 	return nil
 }
 
@@ -2046,7 +2041,6 @@ func (v *HandshakeResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if v.LibraryVersion != nil {
 		enc.AddString("libraryVersion", *v.LibraryVersion)
 	}
-
 	return nil
 }
 
@@ -2218,7 +2212,6 @@ func (v *Module) Equals(rhs *Module) bool {
 func (v *Module) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddString("importPath", v.ImportPath)
 	enc.AddString("directory", v.Directory)
-
 	return nil
 }
 
@@ -2626,7 +2619,6 @@ func (v *Service) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -3281,7 +3273,6 @@ func (v *Type) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
@@ -3492,7 +3483,6 @@ func (v *TypePair) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	if err := enc.AddObject("right", v.Right); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -3690,7 +3680,6 @@ func (v *TypeReference) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 			return err
 		}
 	}
-
 	return nil
 }
 

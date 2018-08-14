@@ -484,7 +484,6 @@ func (v *TApplicationException) MarshalLogObject(enc zapcore.ObjectEncoder) erro
 			return err
 		}
 	}
-
 	return nil
 }
 
