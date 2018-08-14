@@ -404,37 +404,99 @@ func TestEnumAccessors(t *testing.T) {
 
 func TestEnumLabelValid(t *testing.T) {
 	tests := []struct {
-		enumItem  te.EnumWithLabel
-		jsonValue string
+		item te.EnumWithLabel
+		json string // for JSON marshaling
+		text string // for encoding.TextMarshaler
+		str  string // for String()
 	}{
-		{te.EnumWithLabelUsername, `"surname"`},
-		{te.EnumWithLabelPassword, `"hashed_password"`},
-		{te.EnumWithLabelSalt, `"SALT"`},
-		{te.EnumWithLabelSugar, `"SUGAR"`},
-		{te.EnumWithLabelRelay, `"RELAY"`},
-		{te.EnumWithLabelNaive4N1, `"function"`},
-		{te.EnumWithLabel(42), `42`},
-		{te.EnumWithLabel(-1), `-1`},
-		{te.EnumWithLabel(1 << 10), `1024`},
+		{
+			item: te.EnumWithLabelUsername,
+			json: `"surname"`,
+			text: "surname",
+			str:  "surname",
+		},
+		{
+			item: te.EnumWithLabelPassword,
+			json: `"hashed_password"`,
+			text: "hashed_password",
+			str:  "hashed_password",
+		},
+		{
+			item: te.EnumWithLabelSalt,
+			json: `"SALT"`,
+			text: "SALT",
+			str:  "SALT",
+		},
+		{
+			item: te.EnumWithLabelSugar,
+			json: `"SUGAR"`,
+			text: "SUGAR",
+			str:  "SUGAR",
+		},
+		{
+			item: te.EnumWithLabelRelay,
+			json: `"RELAY"`,
+			text: "RELAY",
+			str:  "RELAY",
+		},
+		{
+			item: te.EnumWithLabelNaive4N1,
+			json: `"function"`,
+			text: "function",
+			str:  "function",
+		},
+		{
+			item: 42,
+			json: "42",
+			// TODO: text: "42", pending #368
+			str: "EnumWithLabel(42)",
+		},
+		{
+			item: -1,
+			json: "-1",
+			// TODO: text: "-1", pending #368
+			str: "EnumWithLabel(-1)",
+		},
+		{
+			item: 1 << 10,
+			json: "1024",
+			// TODO: text: "1024", pending #368
+			str: "EnumWithLabel(1024)",
+		},
 	}
 	for _, tt := range tests {
-		t.Run(tt.enumItem.String(), func(t *testing.T) {
-			t.Run("JSON round trip", func(t *testing.T) {
-				// marshal
-				label := te.EnumWithLabel(tt.enumItem)
-				b, err := json.Marshal(label)
+		t.Run(tt.item.String(), func(t *testing.T) {
+			t.Run("JSON", func(t *testing.T) {
+				b, err := json.Marshal(tt.item)
 				require.NoError(t, err)
-				assert.Equal(t, []byte(tt.jsonValue), b)
-				// unmarshal
-				var gotLabel te.EnumWithLabel
-				err = json.Unmarshal(b, &gotLabel)
-				assert.Equal(t, label, gotLabel)
+				assert.Equal(t, tt.json, string(b))
+
+				var got te.EnumWithLabel
+				require.NoError(t, json.Unmarshal(b, &got))
+				assert.Equal(t, tt.item, got)
 			})
-			assertRoundTrip(
-				t, &tt.enumItem,
-				wire.NewValueI32(int32(tt.enumItem)),
-				"test roundtrip "+tt.jsonValue,
-			)
+
+			// TODO Pending #368
+			if tt.text != "" {
+				t.Run("TextMarshaler", func(t *testing.T) {
+					b, err := tt.item.MarshalText()
+					require.NoError(t, err)
+					assert.Equal(t, tt.text, string(b))
+
+					var got te.EnumWithLabel
+					require.NoError(t, got.UnmarshalText(b))
+					assert.Equal(t, tt.item, got)
+				})
+			}
+
+			t.Run("String", func(t *testing.T) {
+				assert.Equal(t, tt.str, tt.item.String())
+			})
+
+			t.Run("wire", func(t *testing.T) {
+				assertRoundTrip(t, &tt.item, wire.NewValueI32(int32(tt.item)),
+					"%v", tt.item)
+			})
 		})
 	}
 }
