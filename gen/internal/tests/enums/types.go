@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"math"
 	"strconv"
 	"strings"
@@ -32,6 +33,15 @@ func (v *EmptyEnum) UnmarshalText(value []byte) error {
 // This implements the TextMarshaler interface.
 func (v EmptyEnum) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of EmptyEnum.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v EmptyEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -178,6 +188,23 @@ func (v EnumDefault) MarshalText() ([]byte, error) {
 		return []byte("Baz"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of EnumDefault.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v EnumDefault) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 0:
+		enc.AddString("name", "Foo")
+	case 1:
+		enc.AddString("name", "Bar")
+	case 2:
+		enc.AddString("name", "Baz")
+	}
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -384,6 +411,35 @@ func (v EnumWithDuplicateName) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of EnumWithDuplicateName.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v EnumWithDuplicateName) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 0:
+		enc.AddString("name", "A")
+	case 1:
+		enc.AddString("name", "B")
+	case 2:
+		enc.AddString("name", "C")
+	case 3:
+		enc.AddString("name", "P")
+	case 4:
+		enc.AddString("name", "Q")
+	case 5:
+		enc.AddString("name", "R")
+	case 6:
+		enc.AddString("name", "X")
+	case 7:
+		enc.AddString("name", "Y")
+	case 8:
+		enc.AddString("name", "Z")
+	}
+	return nil
+}
+
 // Ptr returns a pointer to this enum value.
 func (v EnumWithDuplicateName) Ptr() *EnumWithDuplicateName {
 	return &v
@@ -568,6 +624,21 @@ func (v EnumWithDuplicateValues) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of EnumWithDuplicateValues.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v EnumWithDuplicateValues) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 0:
+		enc.AddString("name", "P")
+	case -1:
+		enc.AddString("name", "Q")
+	}
+	return nil
+}
+
 // Ptr returns a pointer to this enum value.
 func (v EnumWithDuplicateValues) Ptr() *EnumWithDuplicateValues {
 	return &v
@@ -724,6 +795,23 @@ func (v EnumWithValues) MarshalText() ([]byte, error) {
 		return []byte("Z"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of EnumWithValues.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v EnumWithValues) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 123:
+		enc.AddString("name", "X")
+	case 456:
+		enc.AddString("name", "Y")
+	case 789:
+		enc.AddString("name", "Z")
+	}
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -896,6 +984,23 @@ func (v RecordType) MarshalText() ([]byte, error) {
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of RecordType.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v RecordType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 0:
+		enc.AddString("name", "NAME")
+	case 1:
+		enc.AddString("name", "HOME_ADDRESS")
+	case 2:
+		enc.AddString("name", "WORK_ADDRESS")
+	}
+	return nil
+}
+
 // Ptr returns a pointer to this enum value.
 func (v RecordType) Ptr() *RecordType {
 	return &v
@@ -1049,6 +1154,21 @@ func (v RecordTypeValues) MarshalText() ([]byte, error) {
 		return []byte("BAR"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of RecordTypeValues.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v RecordTypeValues) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 0:
+		enc.AddString("name", "FOO")
+	case 1:
+		enc.AddString("name", "BAR")
+	}
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -1275,6 +1395,17 @@ func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 	return true
 }
 
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of StructWithOptionalEnum.
+func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if v.E != nil {
+		if err := enc.AddObject("e", *v.E); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // GetE returns the value of E if it is set or its
 // zero value if it is unset.
 func (v *StructWithOptionalEnum) GetE() (o EnumDefault) {
@@ -1339,6 +1470,23 @@ func (v LowerCaseEnum) MarshalText() ([]byte, error) {
 		return []byte("items"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of LowerCaseEnum.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v LowerCaseEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 0:
+		enc.AddString("name", "containing")
+	case 1:
+		enc.AddString("name", "lower_case")
+	case 2:
+		enc.AddString("name", "items")
+	}
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.

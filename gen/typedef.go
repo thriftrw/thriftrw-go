@@ -103,6 +103,25 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 				return <equals .Target $lhs $rhs>
 			<- end>
 		}
+
+		</* We want the behavior of the underlying type for typedefs: in the case that
+				they are objects or arrays, we need to cast to the underlying object or array;
+				else, zapMarshaler in zap.go will take care of it. */>
+		<if (eq (zapEncoder .Target) "Object") ->
+			<$zapcore := import "go.uber.org/zap/zapcore">
+			<$enc := newVar "enc">
+			func (<$v> <$typedefType>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
+				return (<zapMarshaler . $v>).MarshalLogObject(<$enc>)
+			}
+		<- end>
+
+		<if (eq (zapEncoder .Target) "Array") ->
+			<$zapcore := import "go.uber.org/zap/zapcore">
+			<$enc := newVar "enc">
+			func (<$v> <$typedefType>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
+				return (<zapMarshaler . $v>).MarshalLogArray(<$enc>)
+			}
+		<- end>
 		`,
 		spec,
 	)

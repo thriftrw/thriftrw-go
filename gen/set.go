@@ -20,7 +20,11 @@
 
 package gen
 
-import "go.uber.org/thriftrw/compile"
+import (
+	"fmt"
+
+	"go.uber.org/thriftrw/compile"
+)
 
 // setGenerator generates logic to convert lists of arbitrary Thrift types to
 // and from ValueLists.
@@ -196,4 +200,45 @@ func (s *setGenerator) Equals(g Generator, spec *compile.SetSpec) (string, error
 	)
 
 	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
+func (s *setGenerator) zapMarshaler(
+	g Generator,
+	root *compile.SetSpec,
+	fieldValue string,
+) (string, error) {
+	name := zapperName(g, root)
+	if err := g.EnsureDeclared(
+		`
+			<$zapcore := import "go.uber.org/zap/zapcore">
+
+			type <.Name> <typeReference .Type>
+			<$s := newVar "s">
+			<$v := newVar "v">
+			<$enc := newVar "enc">
+			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
+			// fast logging of <.Name>.
+			func (<$s> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
+				<- if isHashable .Type.ValueSpec ->
+					for <$v> := range <$s> {
+				<else ->
+					for _, <$v> := range <$s> {
+				<end ->
+					<zapEncodeBegin .Type.ValueSpec ->
+						<$enc>.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec $v>)
+					<- zapEncodeEnd .Type.ValueSpec>
+				}
+				return nil
+			}
+			`, struct {
+			Name string
+			Type *compile.SetSpec
+		}{
+			Name: name,
+			Type: root,
+		},
+	); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
 }
