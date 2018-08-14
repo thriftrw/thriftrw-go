@@ -1,39 +1,51 @@
-hash: 26c2c55ca402d6605deed8219389876b6207f46109135620b0f6ec7f84ca1a84
-updated: 2018-04-24T13:31:10.646395712-07:00
+hash: 13611a214fe054d028621ae22f41fa294a2790cd6a0549bdbee33fada7c5bfab
+updated: 2018-07-31T17:03:57.682127592-07:00
 imports:
 - name: github.com/anmitsu/go-shlex
   version: 648efa622239a2f6ff949fed78ee37b48d499ba4
 - name: github.com/fatih/structtag
   version: da3d9ab5b78fdc25d3a7614853b085200bd10da9
 - name: github.com/golang/mock
-  version: 13f360950a79f5864a972c786a10a50e44b69541
+  version: 22bbf0ddf08105dfa364d0a2fa619dfa71014af5
   subpackages:
   - gomock
 - name: github.com/jessevdk/go-flags
-  version: 6cf8f02b4ae8ba723ddc64dcfd403e530c06d927
+  version: 1c38ed7ad0cc3d9e66649ac398c30e45f395c4eb
 - name: github.com/kr/pretty
-  version: cfb55aafdaf3ec08f0db22699ab822c50091b1c4
+  version: 73f6ac0b30a98e433b289500d779f50c1a6f0712
 - name: github.com/kr/text
-  version: 7cafcd837844e784b526369c9bce262804aebc60
+  version: e2ffdb16a802fe2bb95e2e35ff34f0e53aeef34f
 - name: go.uber.org/atomic
-  version: 8474b86a5a6f79c443ce4b2992817ff32cf208b8
+  version: 1ea20fb1cbb1cc08cbd0d913a96dead89aa18289
 - name: go.uber.org/multierr
   version: 3c4937480c32f4c13a875a1829af76c98ca3d40a
+- name: go.uber.org/zap
+  version: 1f8c4cad1e0417712b7d9f130a17b11eba6c8317
+  subpackages:
+  - buffer
+  - internal/bufferpool
+  - internal/color
+  - internal/exit
+  - zapcore
+- name: golang.org/x/net
+  version: 49c15d80dfbc983ea25246ee959d970efe09ec09
+  subpackages:
+  - context
 - name: golang.org/x/tools
-  version: 4e70a1b26a7875f00ca1916637a876b5ffaeec59
+  version: 33176b2029f9538e722efa4a005f7aa00cf60010
   subpackages:
   - go/ast/astutil
 testImports:
 - name: github.com/davecgh/go-spew
-  version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
+  version: 8991bc29aa16c548c550c7ff78260e27b9ab7c73
   subpackages:
   - spew
 - name: github.com/pmezard/go-difflib
-  version: d8ed2627bdf02c080bf22230dbb337003b7aba2d
+  version: 792786c7400a136282c1664665ae0a8db921c6c2
   subpackages:
   - difflib
 - name: github.com/stretchr/testify
-  version: 12b6f73e6084dad08a7c6e575284b177ecafbc71
+  version: f35b8ab0b5a2cef36673838d662e249dd9c94686
   subpackages:
   - assert
   - require

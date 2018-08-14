@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"go.uber.org/thriftrw/gen/internal/tests/enums"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"math"
 	"strconv"
 	"strings"
@@ -61,6 +62,21 @@ func (v RecordType) MarshalText() ([]byte, error) {
 		return []byte("Email"), nil
 	}
 	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of RecordType.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v RecordType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 0:
+		enc.AddString("name", "Name")
+	case 1:
+		enc.AddString("name", "Email")
+	}
+	return nil
 }
 
 // Ptr returns a pointer to this enum value.
@@ -349,6 +365,22 @@ func (v *Records) Equals(rhs *Records) bool {
 	}
 
 	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of Records.
+func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if v.RecordType != nil {
+		if err := enc.AddObject("recordType", *v.RecordType); err != nil {
+			return err
+		}
+	}
+	if v.OtherRecordType != nil {
+		if err := enc.AddObject("otherRecordType", *v.OtherRecordType); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // GetRecordType returns the value of RecordType if it is set or its

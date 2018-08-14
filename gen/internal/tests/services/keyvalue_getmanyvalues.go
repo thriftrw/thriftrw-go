@@ -9,6 +9,7 @@ import (
 	"go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	"go.uber.org/thriftrw/gen/internal/tests/unions"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 	"strings"
 )
 
@@ -176,6 +177,28 @@ func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) b
 	}
 
 	return true
+}
+
+type _List_Key_Zapper []Key
+
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
+// fast logging of _List_Key_Zapper.
+func (l _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, v := range l {
+		enc.AppendString((string)(v))
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of KeyValue_GetManyValues_Args.
+func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if v.Range != nil {
+		if err := enc.AddArray("range", (_List_Key_Zapper)(v.Range)); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // GetRange returns the value of Range if it is set or its
@@ -513,6 +536,35 @@ func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Resul
 	}
 
 	return true
+}
+
+type _List_ArbitraryValue_Zapper []*unions.ArbitraryValue
+
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
+// fast logging of _List_ArbitraryValue_Zapper.
+func (l _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	for _, v := range l {
+		if err := enc.AppendObject(v); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of KeyValue_GetManyValues_Result.
+func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if v.Success != nil {
+		if err := enc.AddArray("success", (_List_ArbitraryValue_Zapper)(v.Success)); err != nil {
+			return err
+		}
+	}
+	if v.DoesNotExist != nil {
+		if err := enc.AddObject("doesNotExist", v.DoesNotExist); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // GetSuccess returns the value of Success if it is set or its

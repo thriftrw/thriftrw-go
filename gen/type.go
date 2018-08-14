@@ -193,6 +193,13 @@ func valueListName(g Generator, spec compile.TypeSpec) string {
 	return fmt.Sprintf("_%s_ValueList", g.MangleType(spec))
 }
 
+// zapperName returns the name that should be used for wrapper types that
+// implement zap.ObjectMarshaler or zap.ArrayMarshaler for the provided
+// Thrift type.
+func zapperName(g Generator, spec compile.TypeSpec) string {
+	return fmt.Sprintf("_%s_Zapper", g.MangleType(spec))
+}
+
 // canBeConstant returns true if the given type can be a constant.
 func canBeConstant(t compile.TypeSpec) bool {
 	// Only primitives can use const declarations. Everything else has to be a

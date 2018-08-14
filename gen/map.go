@@ -281,3 +281,154 @@ func (m *mapGenerator) equalsUnhashable(g Generator, spec *compile.MapSpec) (str
 
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
+
+// Maps are logged as objects if the key is a string or a typedef of a
+// string. If the key is not a string, maps are logged as arrays of
+// objects with a key and value.
+//
+//   map[string]int32{"foo": 1, "bar": 2}
+//   => {"foo": 1, "bar": 2}
+//
+//   map[int32]string{1: "foo", 2: "bar"}
+//   => [{"key": 1, "value": "foo"}, {"key": 2, "value": "bar"}]
+//
+func (m *mapGenerator) zapMarshaler(
+	g Generator,
+	root *compile.MapSpec,
+	fieldValue string,
+) (string, error) {
+	name := zapperName(g, root)
+	switch compile.RootTypeSpec(root.KeySpec).(type) {
+	case *compile.StringSpec:
+		return m.zapStringKeyMarshaler(g, name, root, fieldValue)
+	default:
+		return m.zapNonstringKeyMarshaler(g, name, root, fieldValue)
+	}
+}
+
+func (m *mapGenerator) zapStringKeyMarshaler(
+	g Generator,
+	name string,
+	root *compile.MapSpec,
+	fieldValue string,
+) (string, error) {
+	err := g.EnsureDeclared(
+		`
+			<$zapcore := import "go.uber.org/zap/zapcore">
+
+			type <.Name> <typeReference .Type>
+			<$m := newVar "m">
+			<$k := newVar "k">
+			<$v := newVar "v">
+			<$enc := newVar "enc">
+			// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+			// fast logging of <.Name>.
+			func (<$m> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
+				for <$k>, <$v> := range <$m> {
+					<zapEncodeBegin .Type.ValueSpec ->
+						<$enc>.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>)
+					<- zapEncodeEnd .Type.ValueSpec>
+				}
+				return nil
+			}
+			`, struct {
+			Name string
+			Type *compile.MapSpec
+		}{
+			Name: name,
+			Type: root,
+		},
+	)
+	return fmt.Sprintf("(%v)(%v)", name, fieldValue), err
+}
+
+func (m *mapGenerator) zapNonstringKeyMarshaler(
+	g Generator,
+	name string,
+	root *compile.MapSpec,
+	fieldValue string,
+) (string, error) {
+	if err := g.EnsureDeclared(
+		`
+			<$zapcore := import "go.uber.org/zap/zapcore">
+
+			type <.Name> <typeReference .Type>
+			<$m := newVar "m">
+			<$k := newVar "k">
+			<$v := newVar "v">
+			<$i := newVar "i">
+			<$enc := newVar "enc">
+			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
+			// fast logging of <.Name>.
+			func (<$m> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
+				<- if isHashable .Type.KeySpec ->
+					for <$k>, <$v> := range <$m> {
+				<else ->
+					for _, <$i> := range <$m> {
+						<$k> := <$i>.Key
+						<$v> := <$i>.Value
+				<end ->
+					if err := <$enc>.AppendObject(<zapMapItemMarshaler .Type $k $v>); err != nil {
+						return err
+					}
+				}
+				return nil
+			}
+			`, struct {
+			Name string
+			Type *compile.MapSpec
+		}{
+			Name: name,
+			Type: root,
+		},
+		TemplateFunc("zapMapItemMarshaler", m.zapMapItemMarshaler),
+	); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("(%v)(%v)", name, fieldValue), nil
+}
+
+func (m *mapGenerator) zapMapItemMarshaler(
+	g Generator,
+	mapSpec *compile.MapSpec,
+	keyVar string,
+	valueVar string,
+) (string, error) {
+	name := fmt.Sprintf("_%s_Item_Zapper", g.MangleType(mapSpec))
+	if err := g.EnsureDeclared(
+		`
+			<$zapcore := import "go.uber.org/zap/zapcore">
+
+			type <.Name> struct {
+				Key   <typeReference .KeyType>
+				Value <typeReference .ValueType>
+			}
+			<$v := newVar "v">
+			<$key := printf "%s.%s" $v "Key">
+			<$val := printf "%s.%s" $v "Value">
+			<$enc := newVar "enc">
+			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
+			// fast logging of <.Name>.
+			func (<$v> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
+				<zapEncodeBegin .KeyType ->
+					<$enc>.Add<zapEncoder .KeyType>("key", <zapMarshaler .KeyType $key>)
+				<- zapEncodeEnd .KeyType>
+				<zapEncodeBegin .ValueType ->
+					<$enc>.Add<zapEncoder .ValueType>("value", <zapMarshaler .ValueType $val>)
+				<- zapEncodeEnd .ValueType>
+				return nil
+			}
+			`, struct {
+			Name      string
+			KeyType   compile.TypeSpec
+			ValueType compile.TypeSpec
+		}{
+			Name:      name,
+			KeyType:   mapSpec.KeySpec,
+			ValueType: mapSpec.ValueSpec,
+		},
+	); err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%v{Key: %v, Value: %v}", name, keyVar, valueVar), nil
+}
