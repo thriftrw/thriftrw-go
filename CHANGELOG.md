@@ -8,8 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - gen: Added `go.label="<TAGGED_NAME>"` annotation for enum items.
   Corresponding items of the generated Go structs will be using
-  <TAGGED_NAME> for text marshal / unmarshal instead of its origin item
-  name.
+  <TAGGED_NAME> for text marshalling/unmarshaling instead of the
+  original item name. This allows overriding the String/JSON/YAML
+  output for an enum.
 
 ## [1.12.0] - 2018-06-25
 ### Added

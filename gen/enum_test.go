@@ -441,31 +441,31 @@ func TestEnumLabelValid(t *testing.T) {
 
 func TestEnumLabelInvalidUnmarshal(t *testing.T) {
 	tests := []struct {
-		errVal []byte
+		errVal string
 		errMsg string
 	}{
 		{
-			[]byte(`"some-random-str"`),
+			`"some-random-str"`,
 			`unknown enum value "some-random-str" for "EnumWithLabel"`,
 		},
 		{
-			[]byte(`"; drop table users;"`),
+			`"; drop table users;"`,
 			`unknown enum value "; drop table users;" for "EnumWithLabel"`,
 		},
 		{
-			[]byte(`"USERNAME"`),
+			`"USERNAME"`,
 			`unknown enum value "USERNAME" for "EnumWithLabel"`,
 		},
 		{
-			[]byte(`"PASSWORD"`),
+			`"PASSWORD"`,
 			`unknown enum value "PASSWORD" for "EnumWithLabel"`,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(string(tt.errVal), func(t *testing.T) {
 			var expectedLabel te.EnumWithLabel
-			err := json.Unmarshal(tt.errVal, &expectedLabel)
-			assert.Equal(t, err.Error(), tt.errMsg)
+			err := json.Unmarshal([]byte(tt.errVal), &expectedLabel)
+			assert.EqualError(t, err, tt.errMsg)
 		})
 	}
 }
@@ -521,8 +521,7 @@ func TestEnumLabelConflict(t *testing.T) {
 	for _, tt := range testCases {
 		t.Run(tt.spec.Name, func(t *testing.T) {
 			err := enum(nil, &tt.spec)
-			assert.Error(t, err)
-			assert.Equal(t, tt.messages, err.Error())
+			assert.EqualError(t, err, tt.messages)
 		})
 	}
 }

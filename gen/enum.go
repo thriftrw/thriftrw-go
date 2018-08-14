@@ -27,9 +27,9 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
-// GoLabel is the annotation expected on enum items to override their label.
-// Enum items tagged with `go.label=<TAGGED_NAME>` will generate go struct
-// using `TAGGED_NAME` for text Marshal/Unmarshal
+// GoLabel allows overriding the text formatting of an enum.
+// Enum items will use the annotation value when serialized as
+// a string. This affects String(), as well as text marshalling, used by JSON/YAML.
 const GoLabel = "go.label"
 
 // enumGenerator generates code to serialize and deserialize enums.
