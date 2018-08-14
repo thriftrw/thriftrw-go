@@ -91,8 +91,10 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 		return err
 	}
 
-	if err := f.Zap(g); err != nil {
-		return err
+	if !CheckNoZap(g) {
+		if err := f.Zap(g); err != nil {
+			return err
+		}
 	}
 
 	return f.Accessors(g)
