@@ -164,8 +164,11 @@ func NewGenerator(o *GeneratorOptions) Generator {
 	}
 }
 
-// It is ifficult to get access to the NoZap flag without breaking API/refactoring,
-// so this is a hacky way to do so.
+// CheckNoZap casts to *generator and accesses the noZap field if it succeeds.
+// It defaults to false in the case it fails.
+//
+// It is difficult to get access to the NoZap flag without breaking API/refactoring,
+// so this is a hacky way to do so, by casting to generator and accessing it.
 func CheckNoZap(g Generator) bool {
 	if castedGenerator, ok := g.(*generator); ok {
 		return castedGenerator.noZap
