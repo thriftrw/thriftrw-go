@@ -27,6 +27,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
+	tz "go.uber.org/thriftrw/gen/internal/tests/nozap"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/zap/zapcore"
@@ -579,6 +580,42 @@ func TestEnumWithLabelZapLogging(t *testing.T) {
 			enc := zapcore.NewMapObjectEncoder()
 			tt.p.MarshalLogObject(enc)
 			assert.Equal(t, tt.v, enc.Fields)
+		})
+	}
+}
+
+func TestNoZapLogging(t *testing.T) {
+	tests := []struct {
+		desc string
+		p    interface{}
+	}{
+		{
+			desc: "enum no zap",
+			p:    tz.EnumDefaultFoo,
+		},
+		{
+			desc: "struct no zap",
+			p:    tz.PrimitiveRequiredStruct{},
+		},
+		{
+			desc: "typedef of map no zap",
+			p:    tz.StringMap{},
+		},
+		{
+			desc: "typedef of struct no zap",
+			p:    tz.Primitives{},
+		},
+		{
+			desc: "typedef of list no zap",
+			p:    tz.StringList{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			if _, ok := tt.p.(zapcore.ObjectMarshaler); ok {
+				t.Error("should not generate zap functions")
+			}
 		})
 	}
 }

@@ -134,7 +134,8 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			return []byte(<$strconv>.FormatInt(int64(<$v>), 10)), nil
 		}
 
-		<$zapcore := import "go.uber.org/zap/zapcore">
+		<if not (checkNoZap) ->
+		<- $zapcore := import "go.uber.org/zap/zapcore" ->
 		// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 		// fast logging of <$enumName>.
 		// Enums are logged as objects, where the value is logged with key "value", and
@@ -151,6 +152,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			<end ->
 			return nil
 		}
+		<- end>
 
 		// Ptr returns a pointer to this enum value.
 		func (<$v> <$enumName>) Ptr() *<$enumName> {
@@ -274,6 +276,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		},
 		TemplateFunc("enumItemName", enumItemName),
 		TemplateFunc("enumItemLabelName", enumItemLabelName),
+		TemplateFunc("checkNoZap", checkNoZap),
 	)
 
 	return wrapGenerateError(spec.Name, err)

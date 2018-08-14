@@ -14,5 +14,8 @@ clean:
 $(THRIFTRW):
 	make -C $(ROOT) build
 
+nozap: thrift/nozap.thrift $(THRIFTRW)
+	$(THRIFTRW) --no-recurse --no-zap $<
+
 %: thrift/%.thrift $(THRIFTRW)
 	$(THRIFTRW) --no-recurse $<
