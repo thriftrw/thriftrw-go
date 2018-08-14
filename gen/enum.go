@@ -126,9 +126,10 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		}
 
 		<$zapcore := import "go.uber.org/zap/zapcore">
-
 		// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 		// fast logging of <$enumName>.
+		// Enums are logged as objects, where the value is logged with key "value", and
+		// if this value's name is known, the name is logged with key "name".
 		func (<$v> <$enumName>) MarshalLogObject(enc <$zapcore>.ObjectEncoder) error {
 			enc.AddInt32("value", int32(<$v>))
 			<if len .Spec.Items ->

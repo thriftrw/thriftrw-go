@@ -456,6 +456,8 @@ func (v MyEnum) MarshalText() ([]byte, error) {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of MyEnum.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
 func (v MyEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -1594,6 +1596,8 @@ func (v MyEnum2) MarshalText() ([]byte, error) {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of MyEnum2.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
 func (v MyEnum2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {

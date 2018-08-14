@@ -66,6 +66,8 @@ func (v RecordType) MarshalText() ([]byte, error) {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of RecordType.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
 func (v RecordType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {

@@ -37,6 +37,8 @@ func (v EmptyEnum) MarshalText() ([]byte, error) {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EmptyEnum.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
 func (v EmptyEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	return nil
@@ -190,6 +192,8 @@ func (v EnumDefault) MarshalText() ([]byte, error) {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EnumDefault.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
 func (v EnumDefault) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -409,6 +413,8 @@ func (v EnumWithDuplicateName) MarshalText() ([]byte, error) {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EnumWithDuplicateName.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
 func (v EnumWithDuplicateName) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -620,6 +626,8 @@ func (v EnumWithDuplicateValues) MarshalText() ([]byte, error) {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EnumWithDuplicateValues.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
 func (v EnumWithDuplicateValues) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -791,6 +799,8 @@ func (v EnumWithValues) MarshalText() ([]byte, error) {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EnumWithValues.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
 func (v EnumWithValues) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -976,6 +986,8 @@ func (v RecordType) MarshalText() ([]byte, error) {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of RecordType.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
 func (v RecordType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -1146,6 +1158,8 @@ func (v RecordTypeValues) MarshalText() ([]byte, error) {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of RecordTypeValues.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
 func (v RecordTypeValues) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {
@@ -1460,6 +1474,8 @@ func (v LowerCaseEnum) MarshalText() ([]byte, error) {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of LowerCaseEnum.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
 func (v LowerCaseEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	enc.AddInt32("value", int32(v))
 	switch int32(v) {

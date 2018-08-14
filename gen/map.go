@@ -291,6 +291,7 @@ func (m *mapGenerator) equalsUnhashable(g Generator, spec *compile.MapSpec) (str
 //
 //   map[int32]string{1: "foo", 2: "bar"}
 //   => [{"key": 1, "value": "foo"}, {"key": 2, "value": "bar"}]
+//
 func (m *mapGenerator) zapMarshaler(
 	g Generator,
 	root *compile.MapSpec,
