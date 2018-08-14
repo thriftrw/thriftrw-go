@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+- gen: Added `go.label="<TAGGED_NAME>"` annotation for enum items.
+  Corresponding items of the generated Go structs will be using
+  <TAGGED_NAME> for text marshalling/unmarshaling instead of the
+  original item name. This allows overriding the String/JSON/YAML
+  output for an enum.
 - Generated types now implement zapcore.ObjectMarshaler or
   zapcore.ArrayMarshaler where appropriate. This should lead to much faster
   logging of these objects.

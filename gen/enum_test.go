@@ -25,11 +25,13 @@ import (
 	"fmt"
 	"testing"
 
+	"go.uber.org/thriftrw/compile"
 	tec "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestValueOfEnumDefault(t *testing.T) {
@@ -398,4 +400,190 @@ func TestEnumAccessors(t *testing.T) {
 			assert.Equal(t, te.EnumDefaultFoo, s.GetE())
 		})
 	})
+}
+
+func TestEnumLabelValid(t *testing.T) {
+	tests := []struct {
+		item te.EnumWithLabel
+		json string // for JSON marshaling
+		text string // for encoding.TextMarshaler
+		str  string // for String()
+	}{
+		{
+			item: te.EnumWithLabelUsername,
+			json: `"surname"`,
+			text: "surname",
+			str:  "surname",
+		},
+		{
+			item: te.EnumWithLabelPassword,
+			json: `"hashed_password"`,
+			text: "hashed_password",
+			str:  "hashed_password",
+		},
+		{
+			item: te.EnumWithLabelSalt,
+			json: `"SALT"`,
+			text: "SALT",
+			str:  "SALT",
+		},
+		{
+			item: te.EnumWithLabelSugar,
+			json: `"SUGAR"`,
+			text: "SUGAR",
+			str:  "SUGAR",
+		},
+		{
+			item: te.EnumWithLabelRelay,
+			json: `"RELAY"`,
+			text: "RELAY",
+			str:  "RELAY",
+		},
+		{
+			item: te.EnumWithLabelNaive4N1,
+			json: `"function"`,
+			text: "function",
+			str:  "function",
+		},
+		{
+			item: 42,
+			json: "42",
+			// TODO: text: "42", pending #368
+			str: "EnumWithLabel(42)",
+		},
+		{
+			item: -1,
+			json: "-1",
+			// TODO: text: "-1", pending #368
+			str: "EnumWithLabel(-1)",
+		},
+		{
+			item: 1 << 10,
+			json: "1024",
+			// TODO: text: "1024", pending #368
+			str: "EnumWithLabel(1024)",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.item.String(), func(t *testing.T) {
+			t.Run("JSON", func(t *testing.T) {
+				b, err := json.Marshal(tt.item)
+				require.NoError(t, err)
+				assert.Equal(t, tt.json, string(b))
+
+				var got te.EnumWithLabel
+				require.NoError(t, json.Unmarshal(b, &got))
+				assert.Equal(t, tt.item, got)
+			})
+
+			// TODO Pending #368
+			if tt.text != "" {
+				t.Run("TextMarshaler", func(t *testing.T) {
+					b, err := tt.item.MarshalText()
+					require.NoError(t, err)
+					assert.Equal(t, tt.text, string(b))
+
+					var got te.EnumWithLabel
+					require.NoError(t, got.UnmarshalText(b))
+					assert.Equal(t, tt.item, got)
+				})
+			}
+
+			t.Run("String", func(t *testing.T) {
+				assert.Equal(t, tt.str, tt.item.String())
+			})
+
+			t.Run("wire", func(t *testing.T) {
+				assertRoundTrip(t, &tt.item, wire.NewValueI32(int32(tt.item)),
+					"%v", tt.item)
+			})
+		})
+	}
+}
+
+func TestEnumLabelInvalidUnmarshal(t *testing.T) {
+	tests := []struct {
+		errVal string
+		errMsg string
+	}{
+		{
+			`"some-random-str"`,
+			`unknown enum value "some-random-str" for "EnumWithLabel"`,
+		},
+		{
+			`"; drop table users;"`,
+			`unknown enum value "; drop table users;" for "EnumWithLabel"`,
+		},
+		{
+			`"USERNAME"`,
+			`unknown enum value "USERNAME" for "EnumWithLabel"`,
+		},
+		{
+			`"PASSWORD"`,
+			`unknown enum value "PASSWORD" for "EnumWithLabel"`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(string(tt.errVal), func(t *testing.T) {
+			var expectedLabel te.EnumWithLabel
+			err := json.Unmarshal([]byte(tt.errVal), &expectedLabel)
+			assert.EqualError(t, err, tt.errMsg)
+		})
+	}
+}
+
+func TestEnumLabelConflict(t *testing.T) {
+	testCases := []struct {
+		spec     compile.EnumSpec
+		messages string
+	}{
+		{
+			compile.EnumSpec{
+				Name: "duplicate item name",
+				Items: []compile.EnumItem{
+					compile.EnumItem{
+						Name:  "A",
+						Value: 0,
+					},
+					compile.EnumItem{
+						Name:  "B",
+						Value: 1,
+						Annotations: map[string]string{
+							"go.label": "A",
+						},
+					},
+				},
+			},
+			`item "B" with label "A" conflicts with item "A" in enum "duplicate item name"`,
+		},
+		{
+
+			compile.EnumSpec{
+				Name: "duplicate item name",
+				Items: []compile.EnumItem{
+					compile.EnumItem{
+						Name:  "A",
+						Value: 0,
+						Annotations: map[string]string{
+							"go.label": "C",
+						},
+					},
+					compile.EnumItem{
+						Name:  "B",
+						Value: 1,
+						Annotations: map[string]string{
+							"go.label": "C",
+						},
+					},
+				},
+			},
+			`item "B" with label "C" conflicts with item "A" in enum "duplicate item name"`,
+		},
+	}
+	for _, tt := range testCases {
+		t.Run(tt.spec.Name, func(t *testing.T) {
+			err := enum(nil, &tt.spec)
+			assert.EqualError(t, err, tt.messages)
+		})
+	}
 }

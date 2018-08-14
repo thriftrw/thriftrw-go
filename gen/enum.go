@@ -21,10 +21,16 @@
 package gen
 
 import (
+	"fmt"
 	"strings"
 
 	"go.uber.org/thriftrw/compile"
 )
+
+// GoLabel allows overriding the text formatting of an enum.
+// Enum items will use the annotation value when serialized as
+// a string. This affects String(), as well as text marshalling, used by JSON/YAML.
+const GoLabel = "go.label"
 
 // enumGenerator generates code to serialize and deserialize enums.
 type enumGenerator struct{}
@@ -53,6 +59,9 @@ func (e *enumGenerator) Reader(g Generator, spec *compile.EnumSpec) (string, err
 }
 
 func enum(g Generator, spec *compile.EnumSpec) error {
+	if err := validateEnumUniqueNames(spec); err != nil {
+		return err
+	}
 	items := enumUniqueItems(spec.Items)
 
 	// TODO(abg) define an error type in the library for unrecognized enums.
@@ -98,7 +107,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			switch string(value) {
 			<- $enum := .Spec ->
 			<range .Spec.Items ->
-				case "<.Name>":
+				case "<enumItemLabelName .>":
 					*<$v> = <enumItemName $enumName .>
 					return nil
 			<end ->
@@ -118,7 +127,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch int32(<$v>) {
 				<range .UniqueItems ->
 					case <.Value>:
-						return []byte("<.Name>"), nil
+						return []byte("<enumItemLabelName .>"), nil
 				<end ->
 				}
 			<end ->
@@ -136,7 +145,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch int32(<$v>) {
 				<range .UniqueItems ->
 					case <.Value>:
-						enc.AddString("name", "<.Name>")
+						enc.AddString("name", "<enumItemLabelName .>")
 				<end ->
 				}
 			<end ->
@@ -183,7 +192,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch <$w> {
 				<range .UniqueItems ->
 					case <.Value>:
-						return "<.Name>"
+						return "<enumItemLabelName .>"
 				<end ->
 				}
 			<end ->
@@ -208,7 +217,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				switch int32(<$v>) {
 				<range .UniqueItems ->
 					case <.Value>:
-						return ([]byte)("\"<.Name>\""), nil
+						return ([]byte)("\"<enumItemLabelName .>\""), nil
 				<end ->
 				}
 			<end ->
@@ -264,6 +273,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			UniqueItems: items,
 		},
 		TemplateFunc("enumItemName", enumItemName),
+		TemplateFunc("enumItemLabelName", enumItemLabelName),
 	)
 
 	return wrapGenerateError(spec.Name, err)
@@ -281,6 +291,31 @@ func enumItemName(enumName string, spec *compile.EnumItem) (string, error) {
 			strings.Split(spec.ThriftName(), "_")...)
 	}
 	return enumName + name, err
+}
+
+// enumItemLabelName returns the label we use for this enum item in the generated code.
+func enumItemLabelName(spec *compile.EnumItem) string {
+	if val := spec.Annotations[GoLabel]; len(val) > 0 {
+		return val
+	}
+	return spec.Name
+}
+
+// validateEnumUniqueNames apply name label GoLabel and raise error if there's
+// duplicates in resolved enum item names
+func validateEnumUniqueNames(spec *compile.EnumSpec) error {
+	items := spec.Items
+	used := make(map[string]compile.EnumItem, len(items))
+	for _, i := range items {
+		itemName := enumItemLabelName(&i)
+		if conflict, isUsed := used[itemName]; isUsed {
+			return fmt.Errorf(
+				"item %q with label %q conflicts with item %q in enum %q",
+				i.Name, itemName, conflict.Name, spec.Name)
+		}
+		used[itemName] = i
+	}
+	return nil
 }
 
 // enumUniqueItems returns a subset of the given list of enum items where

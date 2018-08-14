@@ -52,5 +52,16 @@ enum lowerCaseEnum {
     containing, lower_case, items
 }
 
+// EnumWithLabel use label name in serialization/deserialization
+enum EnumWithLabel {
+    USERNAME (go.label = "surname"),
+    PASSWORD (go.label = "hashed_password"),
+    SALT (go.label = ""),
+    SUGAR (go.label),
+    relay (go.label = "RELAY")
+    NAIVE4_N1 (go.label = "function")
+
+}
+
 // collision with RecordType_Values() function.
 enum RecordType_Values { FOO, BAR }
