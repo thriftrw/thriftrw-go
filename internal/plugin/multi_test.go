@@ -147,7 +147,7 @@ func TestMultiServiceGeneratorGenerate(t *testing.T) {
 					"foo/d.go": {1, 2, 3},
 				}}},
 				{success: &api.GenerateServiceResponse{Files: map[string][]byte{
-				// no files
+					// no files
 				}}},
 				{success: &api.GenerateServiceResponse{Files: map[string][]byte{
 					"foo/keyvalue/e.go": {4, 5, 6},
