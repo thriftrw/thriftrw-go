@@ -541,11 +541,11 @@ func TestEnumLabelConflict(t *testing.T) {
 			compile.EnumSpec{
 				Name: "duplicate item name",
 				Items: []compile.EnumItem{
-					compile.EnumItem{
+					{
 						Name:  "A",
 						Value: 0,
 					},
-					compile.EnumItem{
+					{
 						Name:  "B",
 						Value: 1,
 						Annotations: map[string]string{
@@ -561,14 +561,14 @@ func TestEnumLabelConflict(t *testing.T) {
 			compile.EnumSpec{
 				Name: "duplicate item name",
 				Items: []compile.EnumItem{
-					compile.EnumItem{
+					{
 						Name:  "A",
 						Value: 0,
 						Annotations: map[string]string{
 							"go.label": "C",
 						},
 					},
-					compile.EnumItem{
+					{
 						Name:  "B",
 						Value: 1,
 						Annotations: map[string]string{

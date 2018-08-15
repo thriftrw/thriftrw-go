@@ -1,8 +1,5 @@
 WANT_VERSION = $(shell grep '^v[0-9]' CHANGELOG.md | head -n1 | cut -d' ' -f1)
 
-# Minor versions of Go for which the lint check should be run.
-LINTABLE_MINOR_VERSIONS := 8
-
 # Paths besides auto-detected generated files that should be excluded from
 # lint results. If generated code uses '//line' directives with a different
 # filename, that file won't be auto-detected.
@@ -19,10 +16,6 @@ export GO15VENDOREXPERIMENT=1
 
 GO_VERSION := $(shell go version | cut -d' ' -f3)   # e.g.: go1.6.2
 GO_MINOR_VERSION := $(word 2, $(subst ., , $(GO_VERSION)))
-
-ifneq ($(filter $(LINTABLE_MINOR_VERSIONS),$(GO_MINOR_VERSION)),)
-SHOULD_LINT := true
-endif
 
 PACKAGES := $(shell glide novendor)
 
@@ -69,7 +62,6 @@ generate: $(RAGEL_PATH)/bin/ragel
 
 .PHONY: lint
 lint:
-ifdef SHOULD_LINT
 	$(eval FMT_LOG := $(shell mktemp -t gofmt.XXXXX))
 	@gofmt -e -s -l $(GO_FILES) | $(FILTER_LINT) > $(FMT_LOG) || true
 	@[ ! -s "$(FMT_LOG)" ] || (echo "gofmt failed:" | cat - $(FMT_LOG) && false)
@@ -92,9 +84,6 @@ ifdef SHOULD_LINT
 	@cat /dev/null > $(ERRCHECK_LOG)
 	@$(foreach pkg, $(PACKAGES), errcheck $(ERRCHECK_FLAGS) $(pkg) | $(FILTER_LINT) >> $(ERRCHECK_LOG) || true;)
 	@[ ! -s "$(ERRCHECK_LOG)" ] || (echo "errcheck failed:" | cat - $(ERRCHECK_LOG) && false)
-else
-	@echo "Skipping linters for $(GO_VERSION)"
-endif
 
 .PHONY: verifyversion
 verifyversion: build
@@ -135,10 +124,8 @@ install:
 
 .PHONY: install_ci
 install_ci: install
-ifdef SHOULD_LINT
 	go get -u -f golang.org/x/lint/golint
 	go get -u -f github.com/kisielk/errcheck
-endif
 	go get -u github.com/wadey/gocovmerge
 	go get -u github.com/mattn/goveralls
 	go get -u golang.org/x/tools/cmd/cover

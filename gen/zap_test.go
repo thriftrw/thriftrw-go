@@ -501,7 +501,7 @@ func TestTypedefsZapLogging(t *testing.T) {
 	testUUID := td.UUID(td.I128{High: 123, Low: 456})
 	testTimestamp := td.Timestamp(123)
 	test3 := td.EventGroup([]*td.Event{
-		&td.Event{
+		{
 			UUID: &testUUID,
 			Time: &testTimestamp,
 		},
