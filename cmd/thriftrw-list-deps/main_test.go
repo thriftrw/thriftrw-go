@@ -42,4 +42,12 @@ func TestRecursiveImports(t *testing.T) {
 		assert.Equal(t, "structs.thrift", outputLines[1])
 		assert.Equal(t, "typedefs.thrift", outputLines[2])
 	})
+	t.Run("with open error", func(t *testing.T) {
+		_, err := listDependentThrifts("/does-not-exist", "")
+		require.Error(t, err)
+	})
+	t.Run("with relative error", func(t *testing.T) {
+		_, err := listDependentThrifts(filepath.Join(idlRoot, "unions.thrift"), "./")
+		require.Error(t, err)
+	})
 }

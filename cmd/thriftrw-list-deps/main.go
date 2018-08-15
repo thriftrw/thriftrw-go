@@ -30,7 +30,7 @@ func listDependentThrifts(input string, relativeTo string) ([]string, error) {
 		return nil, fmt.Errorf("could not compile %q: %v", input, err)
 	}
 
-	module.Walk(func(mod *compile.Module) error {
+	err = module.Walk(func(mod *compile.Module) error {
 		output := mod.ThriftPath
 
 		// Do not return a self-referencing dependency
@@ -49,6 +49,10 @@ func listDependentThrifts(input string, relativeTo string) ([]string, error) {
 		deps = append(deps, output)
 		return nil
 	})
+
+	if err != nil {
+		return nil, err
+	}
 
 	return deps, nil
 }
