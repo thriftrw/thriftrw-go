@@ -26,7 +26,7 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
-const NoZapLabel = "go.nozap"
+const NoZapLabel = "go.nolog"
 
 type zapGenerator struct {
 	mapG  mapGenerator
@@ -156,5 +156,6 @@ func (z *zapGenerator) zapEncodeEnd(spec compile.TypeSpec) string {
 }
 
 func zapOptOut(spec *compile.FieldSpec) bool {
-	return spec.Annotations[NoZapLabel] == "true"
+	_, ok := spec.Annotations[NoZapLabel]
+	return ok
 }

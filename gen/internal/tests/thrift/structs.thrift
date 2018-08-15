@@ -157,5 +157,5 @@ struct DefaultsStruct {
 // Opt-out of Zap
 struct ZapOptOutStruct {
     1: required string name
-    2: required string optout (go.nozap = "true")
+    2: required string optout (go.nolog)
 }
