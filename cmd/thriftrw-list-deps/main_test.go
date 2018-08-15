@@ -1,14 +1,11 @@
 package main
 
 import (
-	"path/filepath"
-	"testing"
-
-	"sort"
-
 	"io/ioutil"
-
 	"os"
+	"path/filepath"
+	"sort"
+	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
