@@ -26,6 +26,15 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
+// NoZapLabel allows opt out of Zap logging for struct fields.
+// Thrift structs will use this annotation to omit it from logging, i.e.
+//
+// struct ZapOptOutStruct {
+// 	1: required string name
+// 	2: required string optout (go.nolog)
+// }
+//
+// The above struct will be logged without the optout string.
 const NoZapLabel = "go.nolog"
 
 type zapGenerator struct {
