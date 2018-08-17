@@ -36,7 +36,7 @@ func RecordType_Values() []RecordType {
 //   var v RecordType
 //   err := v.UnmarshalText([]byte("Name"))
 func (v *RecordType) UnmarshalText(value []byte) error {
-	switch string(value) {
+	switch s := string(value); s {
 	case "Name":
 		*v = RecordTypeName
 		return nil
@@ -44,7 +44,12 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 		*v = RecordTypeEmail
 		return nil
 	default:
-		return fmt.Errorf("unknown enum value %q for %q", value, "RecordType")
+		val, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return fmt.Errorf("unknown enum value %q for %q: %v", value, "RecordType", err)
+		}
+		*v = RecordType(val)
+		return nil
 	}
 }
 

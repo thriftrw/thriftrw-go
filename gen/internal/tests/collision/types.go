@@ -411,7 +411,7 @@ func MyEnum_Values() []MyEnum {
 //   var v MyEnum
 //   err := v.UnmarshalText([]byte("X"))
 func (v *MyEnum) UnmarshalText(value []byte) error {
-	switch string(value) {
+	switch s := string(value); s {
 	case "X":
 		*v = MyEnumX
 		return nil
@@ -428,7 +428,12 @@ func (v *MyEnum) UnmarshalText(value []byte) error {
 		*v = MyEnumFooBar2
 		return nil
 	default:
-		return fmt.Errorf("unknown enum value %q for %q", value, "MyEnum")
+		val, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return fmt.Errorf("unknown enum value %q for %q: %v", value, "MyEnum", err)
+		}
+		*v = MyEnum(val)
+		return nil
 	}
 }
 
@@ -1561,7 +1566,7 @@ func MyEnum2_Values() []MyEnum2 {
 //   var v MyEnum2
 //   err := v.UnmarshalText([]byte("X"))
 func (v *MyEnum2) UnmarshalText(value []byte) error {
-	switch string(value) {
+	switch s := string(value); s {
 	case "X":
 		*v = MyEnum2X
 		return nil
@@ -1572,7 +1577,12 @@ func (v *MyEnum2) UnmarshalText(value []byte) error {
 		*v = MyEnum2Z
 		return nil
 	default:
-		return fmt.Errorf("unknown enum value %q for %q", value, "MyEnum2")
+		val, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return fmt.Errorf("unknown enum value %q for %q: %v", value, "MyEnum2", err)
+		}
+		*v = MyEnum2(val)
+		return nil
 	}
 }
 

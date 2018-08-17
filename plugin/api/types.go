@@ -232,12 +232,17 @@ func Feature_Values() []Feature {
 //   var v Feature
 //   err := v.UnmarshalText([]byte("SERVICE_GENERATOR"))
 func (v *Feature) UnmarshalText(value []byte) error {
-	switch string(value) {
+	switch s := string(value); s {
 	case "SERVICE_GENERATOR":
 		*v = FeatureServiceGenerator
 		return nil
 	default:
-		return fmt.Errorf("unknown enum value %q for %q", value, "Feature")
+		val, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return fmt.Errorf("unknown enum value %q for %q: %v", value, "Feature", err)
+		}
+		*v = Feature(val)
+		return nil
 	}
 }
 
@@ -2729,7 +2734,7 @@ func SimpleType_Values() []SimpleType {
 //   var v SimpleType
 //   err := v.UnmarshalText([]byte("BOOL"))
 func (v *SimpleType) UnmarshalText(value []byte) error {
-	switch string(value) {
+	switch s := string(value); s {
 	case "BOOL":
 		*v = SimpleTypeBool
 		return nil
@@ -2758,7 +2763,12 @@ func (v *SimpleType) UnmarshalText(value []byte) error {
 		*v = SimpleTypeStructEmpty
 		return nil
 	default:
-		return fmt.Errorf("unknown enum value %q for %q", value, "SimpleType")
+		val, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return fmt.Errorf("unknown enum value %q for %q: %v", value, "SimpleType", err)
+		}
+		*v = SimpleType(val)
+		return nil
 	}
 }
 
