@@ -367,11 +367,12 @@ func TestTextMarshaler(t *testing.T) {
 func TestTextMarshalerUnknownValue(t *testing.T) {
 	v := te.EnumDefault(42)
 	b, err := v.MarshalText()
-	if assert.NoError(t, err, "unable to marshall unknown value") {
-		assert.Equal(t, `42`, string(b), "text output doesn't match")
-		err = v.UnmarshalText(b)
-		assert.Error(t, err, "unmarshaling unknown enum value should return error")
-	}
+	require.NoError(t, err)
+	assert.Equal(t, `42`, string(b), "text output doesn't match")
+
+	var got te.EnumDefault
+	require.NoError(t, got.UnmarshalText(b))
+	assert.Equal(t, v, got)
 }
 
 func TestEnumAccessors(t *testing.T) {
@@ -448,20 +449,20 @@ func TestEnumLabelValid(t *testing.T) {
 		{
 			item: 42,
 			json: "42",
-			// TODO: text: "42", pending #368
-			str: "EnumWithLabel(42)",
+			text: "42",
+			str:  "EnumWithLabel(42)",
 		},
 		{
 			item: -1,
 			json: "-1",
-			// TODO: text: "-1", pending #368
-			str: "EnumWithLabel(-1)",
+			text: "-1",
+			str:  "EnumWithLabel(-1)",
 		},
 		{
 			item: 1 << 10,
 			json: "1024",
-			// TODO: text: "1024", pending #368
-			str: "EnumWithLabel(1024)",
+			text: "1024",
+			str:  "EnumWithLabel(1024)",
 		},
 	}
 	for _, tt := range tests {
@@ -476,7 +477,6 @@ func TestEnumLabelValid(t *testing.T) {
 				assert.Equal(t, tt.item, got)
 			})
 
-			// TODO Pending #368
 			if tt.text != "" {
 				t.Run("TextMarshaler", func(t *testing.T) {
 					b, err := tt.item.MarshalText()
@@ -508,19 +508,19 @@ func TestEnumLabelInvalidUnmarshal(t *testing.T) {
 	}{
 		{
 			`"some-random-str"`,
-			`unknown enum value "some-random-str" for "EnumWithLabel"`,
+			`unknown enum value "some-random-str" for "EnumWithLabel": strconv.ParseInt: parsing "some-random-str": invalid syntax`,
 		},
 		{
 			`"; drop table users;"`,
-			`unknown enum value "; drop table users;" for "EnumWithLabel"`,
+			`unknown enum value "; drop table users;" for "EnumWithLabel": strconv.ParseInt: parsing "; drop table users;": invalid syntax`,
 		},
 		{
 			`"USERNAME"`,
-			`unknown enum value "USERNAME" for "EnumWithLabel"`,
+			`unknown enum value "USERNAME" for "EnumWithLabel": strconv.ParseInt: parsing "USERNAME": invalid syntax`,
 		},
 		{
 			`"PASSWORD"`,
-			`unknown enum value "PASSWORD" for "EnumWithLabel"`,
+			`unknown enum value "PASSWORD" for "EnumWithLabel": strconv.ParseInt: parsing "PASSWORD": invalid syntax`,
 		},
 	}
 	for _, tt := range tests {

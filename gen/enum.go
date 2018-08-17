@@ -104,7 +104,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		//   err := <$v>.UnmarshalText([]byte("<(index .Spec.Items 0).Name>"))
 		<- end>
 		func (<$v> *<$enumName>) UnmarshalText(value []byte) error {
-			switch string(value) {
+			switch s := string(value); s {
 			<- $enum := .Spec ->
 			<range .Spec.Items ->
 				case "<enumItemLabelName .>":
@@ -112,7 +112,12 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 					return nil
 			<end ->
 				default:
-					return <$fmt>.Errorf("unknown enum value %q for %q", value, "<$enumName>")
+					val, err := <$strconv>.ParseInt(s, 10, 64)
+					*<$v> = <$enumName>(val)
+					if err != nil {
+						return <$fmt>.Errorf("unknown enum value %q for %q: %v", value, "<$enumName>", err)
+					}
+					return nil
 			}
 		}
 
