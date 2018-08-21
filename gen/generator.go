@@ -129,6 +129,7 @@ type generator struct {
 	w              WireGenerator
 	e              equalsGenerator
 	z              zapGenerator
+	noZap          bool
 	decls          []ast.Decl
 	thriftImporter ThriftPackageImporter
 	mangler        *mangler
@@ -139,19 +140,37 @@ type generator struct {
 	// TODO use something to group related decls together
 }
 
+// GeneratorOptions controls a generator's behavior
+type GeneratorOptions struct {
+	Importer    ThriftPackageImporter
+	ImportPath  string
+	PackageName string
+
+	NoZap bool
+}
+
 // NewGenerator sets up a new generator for Go code.
-func NewGenerator(timport ThriftPackageImporter, importPath string, packageName string) Generator {
+func NewGenerator(o *GeneratorOptions) Generator {
 	// TODO(abg): Determine package name from `namespace go` directive.
 	namespace := NewNamespace()
 	return &generator{
-		PackageName:    packageName,
-		ImportPath:     importPath,
+		PackageName:    o.PackageName,
+		ImportPath:     o.ImportPath,
 		Namespace:      namespace,
 		importer:       newImporter(namespace.Child()),
 		mangler:        newMangler(),
-		thriftImporter: timport,
+		thriftImporter: o.Importer,
 		fset:           token.NewFileSet(),
+		noZap:          o.NoZap,
 	}
+}
+
+// checkNoZap returns whether the NoZap flag is passed.
+func checkNoZap(g Generator) bool {
+	if gen, ok := g.(*generator); ok {
+		return gen.noZap
+	}
+	return false
 }
 
 func (g *generator) MangleType(t compile.TypeSpec) string {

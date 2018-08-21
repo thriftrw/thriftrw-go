@@ -37,6 +37,11 @@ import (
 // Header for generated code as per https://golang.org/s/generatedcode
 var generatedByRegex = regexp.MustCompile(`^// Code generated .* DO NOT EDIT\.$`)
 
+// Set of files that are passed a --no-zap flag in code generation
+var noZapFiles = map[string]struct{}{
+	"nozap": struct{}{},
+}
+
 func TestCodeIsUpToDate(t *testing.T) {
 	// This test just verifies that the generated code in internal/tests/ is up to
 	// date. If this test failed, run 'make' in the internal/tests/ directory and
@@ -63,11 +68,13 @@ func TestCodeIsUpToDate(t *testing.T) {
 		module, err := compile.Compile(thriftFile)
 		require.NoError(t, err, "failed to compile %q", thriftFile)
 
+		_, nozap := noZapFiles[pkgRelPath]
 		err = Generate(module, &Options{
 			OutputDir:     outputDir,
 			PackagePrefix: "go.uber.org/thriftrw/gen/internal/tests",
 			ThriftRoot:    thriftRoot,
 			NoRecurse:     true,
+			NoZap:         nozap,
 		})
 		require.NoError(t, err, "failed to generate code for %q", thriftFile)
 

@@ -58,6 +58,7 @@ type genOptions struct {
 	NoConstants       bool `long:"no-constants" description:"Do not generate code for const declarations."`
 	NoServiceHelpers  bool `long:"no-service-helpers" description:"Do not generate service helpers."`
 	NoEmbedIDL        bool `long:"no-embed-idl" description:"Do not embed IDLs into the generated code."`
+	NoZap             bool `long:"no-zap" description:"Do not generate code for Zap logging."`
 
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
@@ -178,6 +179,7 @@ func do() (err error) {
 		NoConstants:      gopts.NoConstants,
 		NoServiceHelpers: gopts.NoServiceHelpers || gopts.NoTypes,
 		NoEmbedIDL:       gopts.NoEmbedIDL,
+		NoZap:            gopts.NoZap,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {
 		return fmt.Errorf("Failed to generate code: %+v", err)

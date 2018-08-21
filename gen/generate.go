@@ -73,6 +73,9 @@ type Options struct {
 
 	// Do not embed IDLs in generated code
 	NoEmbedIDL bool
+
+	// Do not generate Zap logging code
+	NoZap bool
 }
 
 // Generate generates code based on the given options.
@@ -230,7 +233,13 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 	// will prepend $packageRelPath/ to all these paths.
 	files := make(map[string][]byte)
 
-	g := NewGenerator(i, importPath, packageName)
+	gopts := &GeneratorOptions{
+		Importer:    i,
+		ImportPath:  importPath,
+		PackageName: packageName,
+		NoZap:       o.NoZap,
+	}
+	g := NewGenerator(gopts)
 
 	if len(m.Constants) > 0 {
 		for _, constantName := range sortStringKeys(m.Constants) {

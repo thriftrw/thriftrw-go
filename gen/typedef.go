@@ -104,6 +104,7 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 			<- end>
 		}
 
+		<if not (checkNoZap) ->
 		</* We want the behavior of the underlying type for typedefs: in the case that
 				they are objects or arrays, we need to cast to the underlying object or array;
 				else, zapMarshaler in zap.go will take care of it. */>
@@ -122,8 +123,10 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 				return (<zapMarshaler . $v>).MarshalLogArray(<$enc>)
 			}
 		<- end>
+		<- end>
 		`,
 		spec,
+		TemplateFunc("checkNoZap", checkNoZap),
 	)
 	return wrapGenerateError(spec.Name, err)
 }
