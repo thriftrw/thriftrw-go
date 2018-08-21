@@ -508,26 +508,26 @@ func TestEnumLabelInvalidUnmarshal(t *testing.T) {
 	}{
 		{
 			`"some-random-str"`,
-			`unknown enum value "some-random-str" for "EnumWithLabel": strconv.ParseInt: parsing "some-random-str": invalid syntax`,
+			`unknown enum value "some-random-str" for "EnumWithLabel"`,
 		},
 		{
 			`"; drop table users;"`,
-			`unknown enum value "; drop table users;" for "EnumWithLabel": strconv.ParseInt: parsing "; drop table users;": invalid syntax`,
+			`unknown enum value "; drop table users;" for "EnumWithLabel"`,
 		},
 		{
 			`"USERNAME"`,
-			`unknown enum value "USERNAME" for "EnumWithLabel": strconv.ParseInt: parsing "USERNAME": invalid syntax`,
+			`unknown enum value "USERNAME" for "EnumWithLabel"`,
 		},
 		{
 			`"PASSWORD"`,
-			`unknown enum value "PASSWORD" for "EnumWithLabel": strconv.ParseInt: parsing "PASSWORD": invalid syntax`,
+			`unknown enum value "PASSWORD" for "EnumWithLabel"`,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(string(tt.errVal), func(t *testing.T) {
 			var expectedLabel te.EnumWithLabel
 			err := json.Unmarshal([]byte(tt.errVal), &expectedLabel)
-			assert.EqualError(t, err, tt.errMsg)
+			assert.Contains(t, err.Error(), tt.errMsg)
 		})
 	}
 }

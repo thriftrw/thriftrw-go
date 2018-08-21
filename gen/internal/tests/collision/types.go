@@ -430,7 +430,7 @@ func (v *MyEnum) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "MyEnum", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "MyEnum", err)
 		}
 		*v = MyEnum(val)
 		return nil
@@ -1579,7 +1579,7 @@ func (v *MyEnum2) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "MyEnum2", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "MyEnum2", err)
 		}
 		*v = MyEnum2(val)
 		return nil

@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Generated types now implement zapcore.ObjectMarshaler or
   zapcore.ArrayMarshaler where appropriate. This should lead to much faster
   logging of these objects.
+- gen/enum: `MarshalText` and `UnmarshalText` now round-trips, even if
+  the enum value is unrecognized..
 
 ## [1.12.0] - 2018-06-25
 ### Added

@@ -23,7 +23,7 @@ func (v *EmptyEnum) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "EmptyEnum", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "EmptyEnum", err)
 		}
 		*v = EmptyEnum(val)
 		return nil
@@ -175,7 +175,7 @@ func (v *EnumDefault) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "EnumDefault", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "EnumDefault", err)
 		}
 		*v = EnumDefault(val)
 		return nil
@@ -389,7 +389,7 @@ func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "EnumWithDuplicateName", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "EnumWithDuplicateName", err)
 		}
 		*v = EnumWithDuplicateName(val)
 		return nil
@@ -621,7 +621,7 @@ func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "EnumWithDuplicateValues", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "EnumWithDuplicateValues", err)
 		}
 		*v = EnumWithDuplicateValues(val)
 		return nil
@@ -812,7 +812,7 @@ func (v *EnumWithLabel) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "EnumWithLabel", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "EnumWithLabel", err)
 		}
 		*v = EnumWithLabel(val)
 		return nil
@@ -1020,7 +1020,7 @@ func (v *EnumWithValues) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "EnumWithValues", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "EnumWithValues", err)
 		}
 		*v = EnumWithValues(val)
 		return nil
@@ -1212,7 +1212,7 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "RecordType", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "RecordType", err)
 		}
 		*v = RecordType(val)
 		return nil
@@ -1391,7 +1391,7 @@ func (v *RecordTypeValues) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "RecordTypeValues", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "RecordTypeValues", err)
 		}
 		*v = RecordTypeValues(val)
 		return nil
@@ -1710,7 +1710,7 @@ func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "LowerCaseEnum", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "LowerCaseEnum", err)
 		}
 		*v = LowerCaseEnum(val)
 		return nil

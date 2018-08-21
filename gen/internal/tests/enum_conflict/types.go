@@ -46,7 +46,7 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "RecordType", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "RecordType", err)
 		}
 		*v = RecordType(val)
 		return nil

@@ -239,7 +239,7 @@ func (v *Feature) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "Feature", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "Feature", err)
 		}
 		*v = Feature(val)
 		return nil
@@ -2765,7 +2765,7 @@ func (v *SimpleType) UnmarshalText(value []byte) error {
 	default:
 		val, err := strconv.ParseInt(s, 10, 64)
 		if err != nil {
-			return fmt.Errorf("unknown enum value %q for %q: %v", value, "SimpleType", err)
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "SimpleType", err)
 		}
 		*v = SimpleType(val)
 		return nil
