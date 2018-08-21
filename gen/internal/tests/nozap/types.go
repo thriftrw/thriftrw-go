@@ -37,7 +37,7 @@ func EnumDefault_Values() []EnumDefault {
 //   var v EnumDefault
 //   err := v.UnmarshalText([]byte("Foo"))
 func (v *EnumDefault) UnmarshalText(value []byte) error {
-	switch string(value) {
+	switch s := string(value); s {
 	case "Foo":
 		*v = EnumDefaultFoo
 		return nil
@@ -48,7 +48,12 @@ func (v *EnumDefault) UnmarshalText(value []byte) error {
 		*v = EnumDefaultBaz
 		return nil
 	default:
-		return fmt.Errorf("unknown enum value %q for %q", value, "EnumDefault")
+		val, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "EnumDefault", err)
+		}
+		*v = EnumDefault(val)
+		return nil
 	}
 }
 
