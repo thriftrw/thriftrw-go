@@ -367,11 +367,12 @@ func TestTextMarshaler(t *testing.T) {
 func TestTextMarshalerUnknownValue(t *testing.T) {
 	v := te.EnumDefault(42)
 	b, err := v.MarshalText()
-	if assert.NoError(t, err, "unable to marshall unknown value") {
-		assert.Equal(t, `42`, string(b), "text output doesn't match")
-		err = v.UnmarshalText(b)
-		assert.Error(t, err, "unmarshaling unknown enum value should return error")
-	}
+	require.NoError(t, err)
+	assert.Equal(t, `42`, string(b), "text output doesn't match")
+
+	var got te.EnumDefault
+	require.NoError(t, got.UnmarshalText(b))
+	assert.Equal(t, v, got)
 }
 
 func TestEnumAccessors(t *testing.T) {
@@ -448,20 +449,20 @@ func TestEnumLabelValid(t *testing.T) {
 		{
 			item: 42,
 			json: "42",
-			// TODO: text: "42", pending #368
-			str: "EnumWithLabel(42)",
+			text: "42",
+			str:  "EnumWithLabel(42)",
 		},
 		{
 			item: -1,
 			json: "-1",
-			// TODO: text: "-1", pending #368
-			str: "EnumWithLabel(-1)",
+			text: "-1",
+			str:  "EnumWithLabel(-1)",
 		},
 		{
 			item: 1 << 10,
 			json: "1024",
-			// TODO: text: "1024", pending #368
-			str: "EnumWithLabel(1024)",
+			text: "1024",
+			str:  "EnumWithLabel(1024)",
 		},
 	}
 	for _, tt := range tests {
@@ -476,7 +477,6 @@ func TestEnumLabelValid(t *testing.T) {
 				assert.Equal(t, tt.item, got)
 			})
 
-			// TODO Pending #368
 			if tt.text != "" {
 				t.Run("TextMarshaler", func(t *testing.T) {
 					b, err := tt.item.MarshalText()
@@ -527,7 +527,7 @@ func TestEnumLabelInvalidUnmarshal(t *testing.T) {
 		t.Run(string(tt.errVal), func(t *testing.T) {
 			var expectedLabel te.EnumWithLabel
 			err := json.Unmarshal([]byte(tt.errVal), &expectedLabel)
-			assert.EqualError(t, err, tt.errMsg)
+			assert.Contains(t, err.Error(), tt.errMsg)
 		})
 	}
 }

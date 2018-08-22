@@ -73,7 +73,7 @@ func ExceptionType_Values() []ExceptionType {
 //   var v ExceptionType
 //   err := v.UnmarshalText([]byte("UNKNOWN"))
 func (v *ExceptionType) UnmarshalText(value []byte) error {
-	switch string(value) {
+	switch s := string(value); s {
 	case "UNKNOWN":
 		*v = ExceptionTypeUnknown
 		return nil
@@ -108,7 +108,12 @@ func (v *ExceptionType) UnmarshalText(value []byte) error {
 		*v = ExceptionTypeUnsupportedClientType
 		return nil
 	default:
-		return fmt.Errorf("unknown enum value %q for %q", value, "ExceptionType")
+		val, err := strconv.ParseInt(s, 10, 64)
+		if err != nil {
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "ExceptionType", err)
+		}
+		*v = ExceptionType(val)
+		return nil
 	}
 }
 
