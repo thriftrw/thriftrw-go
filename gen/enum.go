@@ -115,7 +115,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 					return nil
 			<end ->
 				default:
-					<$val>, err := <$strconv>.ParseInt(<$s>, 10, 64)
+					<$val>, err := <$strconv>.ParseInt(<$s>, 10, 32)
 					if err != nil {
 						return <$fmt>.Errorf("unknown enum value %q for %q: %v", <$s>, "<$enumName>", err)
 					}

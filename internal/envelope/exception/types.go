@@ -108,7 +108,7 @@ func (v *ExceptionType) UnmarshalText(value []byte) error {
 		*v = ExceptionTypeUnsupportedClientType
 		return nil
 	default:
-		val, err := strconv.ParseInt(s, 10, 64)
+		val, err := strconv.ParseInt(s, 10, 32)
 		if err != nil {
 			return fmt.Errorf("unknown enum value %q for %q: %v", s, "ExceptionType", err)
 		}
