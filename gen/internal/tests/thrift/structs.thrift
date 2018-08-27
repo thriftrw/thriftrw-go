@@ -155,7 +155,25 @@ struct DefaultsStruct {
 
 //////////////////////////////////////////////////////////////////////////////
 // Opt-out of Zap
+
 struct ZapOptOutStruct {
     1: required string name
     2: required string optout (go.nolog)
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Field jabels
+
+struct StructLabels {
+    // reserved keyword as label
+    1: optional bool isRequired (go.label = "required")
+
+    // go.tag's JSON tag takes precedence over go.label
+    2: optional string foo (go.label = "bar", go.tag = 'json:"not_bar"')
+
+    // Empty label
+    3: optional string qux (go.label = "")
+
+    // All-caps label
+    4: optional string quux (go.label = "QUUX")
 }

@@ -34,6 +34,7 @@ import (
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -1796,4 +1797,62 @@ func TestEmptyPrimitivesRoundTrip(t *testing.T) {
 		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
 		assert.Equal(t, give, got)
 	})
+}
+
+func TestStructLabel(t *testing.T) {
+	// Convenience type to build map[string]interface{}.
+	type attrs = map[string]interface{}
+
+	tests := []struct {
+		desc   string
+		give   ts.StructLabels
+		json   string
+		logged attrs
+	}{
+		{
+			desc:   "keyword as label",
+			give:   ts.StructLabels{IsRequired: ptr.Bool(true)},
+			json:   `{"required": true}`,
+			logged: attrs{"required": true},
+		},
+		{
+			desc:   "JSON tag overrides label",
+			give:   ts.StructLabels{Foo: ptr.String("foo")},
+			json:   `{"not_bar": "foo"}`,
+			logged: attrs{"bar": "foo"},
+		},
+		{
+			desc:   "empty label",
+			give:   ts.StructLabels{Qux: ptr.String("foo")},
+			json:   `{"qux": "foo"}`,
+			logged: attrs{"qux": "foo"},
+		},
+		{
+			desc:   "all caps",
+			give:   ts.StructLabels{Quux: ptr.String("foo")},
+			json:   `{"QUUX": "foo"}`,
+			logged: attrs{"QUUX": "foo"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			t.Run("JSON", func(t *testing.T) {
+				b, err := json.Marshal(tt.give)
+				require.NoError(t, err)
+
+				require.JSONEq(t, tt.json, string(b))
+
+				var got ts.StructLabels
+				require.NoError(t, json.Unmarshal(b, &got))
+				assert.Equal(t, tt.give, got)
+			})
+
+			t.Run("logging", func(t *testing.T) {
+				enc := zapcore.NewMapObjectEncoder()
+				tt.give.MarshalLogObject(enc)
+				assert.Equal(t, tt.logged, enc.Fields)
+			})
+		})
+	}
 }
