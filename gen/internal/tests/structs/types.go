@@ -3337,6 +3337,248 @@ func (v *Size) GetWidth() (o float64) { return v.Width }
 // zero value if it is unset.
 func (v *Size) GetHeight() (o float64) { return v.Height }
 
+type StructLabels struct {
+	IsRequired *bool   `json:"required,omitempty"`
+	Foo        *string `json:"not_bar,omitempty"`
+	Qux        *string `json:"qux,omitempty"`
+	Quux       *string `json:"QUUX,omitempty"`
+}
+
+// ToWire translates a StructLabels struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *StructLabels) ToWire() (wire.Value, error) {
+	var (
+		fields [4]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.IsRequired != nil {
+		w, err = wire.NewValueBool(*(v.IsRequired)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+	if v.Foo != nil {
+		w, err = wire.NewValueString(*(v.Foo)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
+	if v.Qux != nil {
+		w, err = wire.NewValueString(*(v.Qux)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
+		i++
+	}
+	if v.Quux != nil {
+		w, err = wire.NewValueString(*(v.Quux)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 4, Value: w}
+		i++
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+// FromWire deserializes a StructLabels struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a StructLabels struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v StructLabels
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *StructLabels) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TBool {
+				var x bool
+				x, err = field.Value.GetBool(), error(nil)
+				v.IsRequired = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.Foo = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.Qux = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 4:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.Quux = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a StructLabels
+// struct.
+func (v *StructLabels) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [4]string
+	i := 0
+	if v.IsRequired != nil {
+		fields[i] = fmt.Sprintf("IsRequired: %v", *(v.IsRequired))
+		i++
+	}
+	if v.Foo != nil {
+		fields[i] = fmt.Sprintf("Foo: %v", *(v.Foo))
+		i++
+	}
+	if v.Qux != nil {
+		fields[i] = fmt.Sprintf("Qux: %v", *(v.Qux))
+		i++
+	}
+	if v.Quux != nil {
+		fields[i] = fmt.Sprintf("Quux: %v", *(v.Quux))
+		i++
+	}
+
+	return fmt.Sprintf("StructLabels{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this StructLabels match the
+// provided StructLabels.
+//
+// This function performs a deep comparison.
+func (v *StructLabels) Equals(rhs *StructLabels) bool {
+	if !_Bool_EqualsPtr(v.IsRequired, rhs.IsRequired) {
+		return false
+	}
+	if !_String_EqualsPtr(v.Foo, rhs.Foo) {
+		return false
+	}
+	if !_String_EqualsPtr(v.Qux, rhs.Qux) {
+		return false
+	}
+	if !_String_EqualsPtr(v.Quux, rhs.Quux) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of StructLabels.
+func (v *StructLabels) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	if v.IsRequired != nil {
+		enc.AddBool("required", *v.IsRequired)
+	}
+	if v.Foo != nil {
+		enc.AddString("bar", *v.Foo)
+	}
+	if v.Qux != nil {
+		enc.AddString("qux", *v.Qux)
+	}
+	if v.Quux != nil {
+		enc.AddString("QUUX", *v.Quux)
+	}
+	return nil
+}
+
+// GetIsRequired returns the value of IsRequired if it is set or its
+// zero value if it is unset.
+func (v *StructLabels) GetIsRequired() (o bool) {
+	if v.IsRequired != nil {
+		return *v.IsRequired
+	}
+
+	return
+}
+
+// GetFoo returns the value of Foo if it is set or its
+// zero value if it is unset.
+func (v *StructLabels) GetFoo() (o string) {
+	if v.Foo != nil {
+		return *v.Foo
+	}
+
+	return
+}
+
+// GetQux returns the value of Qux if it is set or its
+// zero value if it is unset.
+func (v *StructLabels) GetQux() (o string) {
+	if v.Qux != nil {
+		return *v.Qux
+	}
+
+	return
+}
+
+// GetQuux returns the value of Quux if it is set or its
+// zero value if it is unset.
+func (v *StructLabels) GetQuux() (o string) {
+	if v.Quux != nil {
+		return *v.Quux
+	}
+
+	return
+}
+
 type User struct {
 	Name    string       `json:"name,required"`
 	Contact *ContactInfo `json:"contact,omitempty"`

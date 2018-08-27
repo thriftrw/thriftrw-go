@@ -71,6 +71,10 @@ func (f fieldGroupGenerator) checkReservedIdentifier(name string) error {
 }
 
 func (f fieldGroupGenerator) Generate(g Generator) error {
+	if err := verifyUniqueFieldLabels(f.Fields); err != nil {
+		return err
+	}
+
 	if err := f.DefineStruct(g); err != nil {
 		return err
 	}
@@ -124,11 +128,14 @@ func generateTags(f *compile.FieldSpec) (string, error) {
 		return "", fmt.Errorf("failed to parse tag: %v", err)
 	}
 
-	if err := tags.Set(compileJSONTag(f, f.Name)); err != nil {
+	// Default to the field name or label as the name used in the JSON
+	// representation.
+	if err := tags.Set(compileJSONTag(f, entityLabel(f))); err != nil {
 		return "", fmt.Errorf("failed to set tag: %v", err)
 	}
 
-	// process go tags and overwrite json tag if specified in thrift annotation
+	// Process go.tags and overwrite JSON tag if specified in Thrift
+	// annotation.
 	if goAnnotation := f.Annotations[goTagKey]; goAnnotation != "" {
 		goTags, err := structtag.Parse(goAnnotation)
 		if err != nil {
@@ -482,12 +489,12 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 					<- $fval := printf "%s.%s" $v (goName .) ->
 					<- if .Required ->
 						<zapEncodeBegin .Type ->
-							<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshaler .Type $fval>)
+							<$enc>.Add<zapEncoder .Type>("<fieldLabel .>", <zapMarshaler .Type $fval>)
 						<- zapEncodeEnd .Type>
 					<- else ->
 						if <$fval> != nil {
 							<zapEncodeBegin .Type ->
-								<$enc>.Add<zapEncoder .Type>("<.Name>", <zapMarshalerPtr .Type $fval>)
+								<$enc>.Add<zapEncoder .Type>("<fieldLabel .>", <zapMarshalerPtr .Type $fval>)
 							<- zapEncodeEnd .Type>
 						}
 					<- end>
@@ -496,7 +503,9 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 			return nil
 		}
 		`, f,
-		TemplateFunc("zapOptOut", zapOptOut))
+		TemplateFunc("zapOptOut", zapOptOut),
+		TemplateFunc("fieldLabel", entityLabel),
+	)
 }
 
 func (f fieldGroupGenerator) Accessors(g Generator) error {
@@ -537,4 +546,18 @@ func (f fieldGroupGenerator) Accessors(g Generator) error {
 			return "", err
 		}),
 	)
+}
+
+func verifyUniqueFieldLabels(fs compile.FieldGroup) error {
+	used := make(map[string]*compile.FieldSpec, len(fs))
+	for _, f := range fs {
+		label := entityLabel(f)
+		if conflict, isUsed := used[label]; isUsed {
+			return fmt.Errorf(
+				"field %q with label %q conflicts with field %q",
+				f.Name, label, conflict.Name)
+		}
+		used[label] = f
+	}
+	return nil
 }

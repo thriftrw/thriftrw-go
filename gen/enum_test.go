@@ -533,13 +533,14 @@ func TestEnumLabelInvalidUnmarshal(t *testing.T) {
 }
 
 func TestEnumLabelConflict(t *testing.T) {
-	testCases := []struct {
-		spec     compile.EnumSpec
-		messages string
+	tests := []struct {
+		desc    string
+		spec    compile.EnumSpec
+		wantErr string
 	}{
 		{
-			compile.EnumSpec{
-				Name: "duplicate item name",
+			desc: "duplicate item name",
+			spec: compile.EnumSpec{
 				Items: []compile.EnumItem{
 					{
 						Name:  "A",
@@ -554,36 +555,35 @@ func TestEnumLabelConflict(t *testing.T) {
 					},
 				},
 			},
-			`item "B" with label "A" conflicts with item "A" in enum "duplicate item name"`,
+			wantErr: `item "B" with label "A" conflicts with item "A" `,
 		},
 		{
-
-			compile.EnumSpec{
-				Name: "duplicate item name",
+			desc: "duplicate item name",
+			spec: compile.EnumSpec{
 				Items: []compile.EnumItem{
 					{
 						Name:  "A",
 						Value: 0,
-						Annotations: map[string]string{
+						Annotations: compile.Annotations{
 							"go.label": "C",
 						},
 					},
 					{
 						Name:  "B",
 						Value: 1,
-						Annotations: map[string]string{
+						Annotations: compile.Annotations{
 							"go.label": "C",
 						},
 					},
 				},
 			},
-			`item "B" with label "C" conflicts with item "A" in enum "duplicate item name"`,
+			wantErr: `item "B" with label "C" conflicts with item "A"`,
 		},
 	}
-	for _, tt := range testCases {
-		t.Run(tt.spec.Name, func(t *testing.T) {
-			err := enum(nil, &tt.spec)
-			assert.EqualError(t, err, tt.messages)
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			err := enum(nil /* generator */, &tt.spec)
+			assert.Contains(t, err.Error(), tt.wantErr)
 		})
 	}
 }

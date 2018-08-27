@@ -27,11 +27,6 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
-// GoLabel allows overriding the text formatting of an enum.
-// Enum items will use the annotation value when serialized as
-// a string. This affects String(), as well as text marshalling, used by JSON/YAML.
-const GoLabel = "go.label"
-
 // enumGenerator generates code to serialize and deserialize enums.
 type enumGenerator struct{}
 
@@ -59,7 +54,7 @@ func (e *enumGenerator) Reader(g Generator, spec *compile.EnumSpec) (string, err
 }
 
 func enum(g Generator, spec *compile.EnumSpec) error {
-	if err := validateEnumUniqueNames(spec); err != nil {
+	if err := verifyUniqueEnumItemLabels(spec); err != nil {
 		return err
 	}
 	items := enumUniqueItems(spec.Items)
@@ -283,7 +278,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			UniqueItems: items,
 		},
 		TemplateFunc("enumItemName", enumItemName),
-		TemplateFunc("enumItemLabelName", enumItemLabelName),
+		TemplateFunc("enumItemLabelName", entityLabel),
 		TemplateFunc("checkNoZap", checkNoZap),
 	)
 
@@ -304,21 +299,13 @@ func enumItemName(enumName string, spec *compile.EnumItem) (string, error) {
 	return enumName + name, err
 }
 
-// enumItemLabelName returns the label we use for this enum item in the generated code.
-func enumItemLabelName(spec *compile.EnumItem) string {
-	if val := spec.Annotations[GoLabel]; len(val) > 0 {
-		return val
-	}
-	return spec.Name
-}
-
-// validateEnumUniqueNames apply name label GoLabel and raise error if there's
-// duplicates in resolved enum item names
-func validateEnumUniqueNames(spec *compile.EnumSpec) error {
+// verifyUniqueEnumItemLabels verifies that the labels for the enum items in
+// the given enum don't conflict.
+func verifyUniqueEnumItemLabels(spec *compile.EnumSpec) error {
 	items := spec.Items
 	used := make(map[string]compile.EnumItem, len(items))
 	for _, i := range items {
-		itemName := enumItemLabelName(&i)
+		itemName := entityLabel(&i)
 		if conflict, isUsed := used[itemName]; isUsed {
 			return fmt.Errorf(
 				"item %q with label %q conflicts with item %q in enum %q",
