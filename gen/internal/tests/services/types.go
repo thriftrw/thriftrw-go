@@ -149,10 +149,10 @@ func (v *ConflictingNamesSetValueArgs) Equals(rhs *ConflictingNamesSetValueArgs)
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ConflictingNamesSetValueArgs.
-func (v *ConflictingNamesSetValueArgs) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *ConflictingNamesSetValueArgs) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddString("key", v.Key)
 	enc.AddString("value", base64.StdEncoding.EncodeToString(v.Value))
-	return nil
+	return err
 }
 
 // GetKey returns the value of Key if it is set or its
@@ -281,11 +281,11 @@ func (v *InternalError) Equals(rhs *InternalError) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of InternalError.
-func (v *InternalError) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *InternalError) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Message != nil {
 		enc.AddString("message", *v.Message)
 	}
-	return nil
+	return err
 }
 
 // GetMessage returns the value of Message if it is set or its

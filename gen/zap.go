@@ -139,14 +139,16 @@ func (z *zapGenerator) zapMarshalerPtr(g Generator, spec compile.TypeSpec, field
 }
 
 // zapEncodeBegin/End handle any logging that can error and add error handling logic.
-func (z *zapGenerator) zapEncodeBegin(spec compile.TypeSpec) string {
+//
+// Make sure that an `err` variable is declared when this is called.
+func (z *zapGenerator) zapEncodeBegin(g Generator, spec compile.TypeSpec) string {
 	root := compile.RootTypeSpec(spec)
 
 	switch root.(type) {
 	// Non-primitives
 	case *compile.MapSpec, *compile.SetSpec, *compile.ListSpec, *compile.EnumSpec,
 		*compile.StructSpec:
-		return "if err := "
+		return fmt.Sprintf("err = %v.Append(err, ", g.Import("go.uber.org/multierr"))
 	}
 	return ""
 }
@@ -158,9 +160,7 @@ func (z *zapGenerator) zapEncodeEnd(spec compile.TypeSpec) string {
 	// Non-primitives
 	case *compile.MapSpec, *compile.SetSpec, *compile.ListSpec, *compile.EnumSpec,
 		*compile.StructSpec:
-		return `; err != nil {
-			return err
-		}`
+		return ")"
 	}
 	return ""
 }

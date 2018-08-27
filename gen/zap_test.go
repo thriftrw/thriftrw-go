@@ -22,9 +22,12 @@ package gen
 
 import (
 	"encoding/base64"
+	"fmt"
 	"testing"
 
+	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tz "go.uber.org/thriftrw/gen/internal/tests/nozap"
@@ -117,7 +120,7 @@ func TestCollectionsOfPrimitivesZapLogging(t *testing.T) {
 
 	for _, tt := range tests {
 		mapEncoder := zapcore.NewMapObjectEncoder()
-		tt.p.MarshalLogObject(mapEncoder)
+		require.NoError(t, tt.p.MarshalLogObject(mapEncoder))
 		assert.Equal(t, tt.v, mapEncoder.Fields)
 	}
 }
@@ -134,7 +137,7 @@ func TestNondeterministicZapLogging(t *testing.T) {
 			"world": {},
 		},
 	}
-	test1.MarshalLogObject(mapEncoder)
+	require.NoError(t, test1.MarshalLogObject(mapEncoder))
 	expected1 := []string{"foo", "bar", "baz", "hello", "world"}
 	assert.ElementsMatch(t, mapEncoder.Fields["setOfStrings"], expected1)
 
@@ -148,7 +151,7 @@ func TestNondeterministicZapLogging(t *testing.T) {
 			42:  {},
 		},
 	}
-	test2.MarshalLogObject(mapEncoder)
+	require.NoError(t, test2.MarshalLogObject(mapEncoder))
 	expected2 := []int8{1, 5, 42, 73, 125}
 	assert.ElementsMatch(t, mapEncoder.Fields["setOfBytes"], expected2)
 
@@ -162,7 +165,7 @@ func TestNondeterministicZapLogging(t *testing.T) {
 			42:  "world",
 		},
 	}
-	test3.MarshalLogObject(mapEncoder)
+	require.NoError(t, test3.MarshalLogObject(mapEncoder))
 	expected3 := []map[string]interface{}{
 		{"key": int32(125), "value": "foo"},
 		{"key": int32(1), "value": "bar"},
@@ -236,7 +239,7 @@ func TestEnumContainersZapLogging(t *testing.T) {
 
 	for _, tt := range tests {
 		mapEncoder := zapcore.NewMapObjectEncoder()
-		tt.r.MarshalLogObject(mapEncoder)
+		require.NoError(t, tt.r.MarshalLogObject(mapEncoder))
 		assert.Equal(t, tt.v, mapEncoder.Fields)
 	}
 }
@@ -283,7 +286,7 @@ func TestListOfStructsZapLogging(t *testing.T) {
 
 	for _, tt := range tests {
 		mapEncoder := zapcore.NewMapObjectEncoder()
-		tt.r.MarshalLogObject(mapEncoder)
+		require.NoError(t, tt.r.MarshalLogObject(mapEncoder))
 		assert.Equal(t, tt.v, mapEncoder.Fields)
 	}
 }
@@ -472,7 +475,7 @@ func TestCrazyTownZapLogging(t *testing.T) {
 
 	for _, tt := range tests {
 		mapEncoder := zapcore.NewMapObjectEncoder()
-		tt.r.MarshalLogObject(mapEncoder)
+		require.NoError(t, tt.r.MarshalLogObject(mapEncoder))
 		assert.Equal(t, tt.v, mapEncoder.Fields)
 	}
 }
@@ -486,7 +489,7 @@ func TestOptOutOfZap(t *testing.T) {
 		Name:   "foo",
 		Optout: "bar",
 	}
-	test.MarshalLogObject(mapEncoder)
+	require.NoError(t, test.MarshalLogObject(mapEncoder))
 	expected := o{"name": "foo"}
 	assert.Equal(t, expected, mapEncoder.Fields)
 }
@@ -500,14 +503,14 @@ func TestTypedefsZapLogging(t *testing.T) {
 	mapEncoder := zapcore.NewMapObjectEncoder()
 	testState := td.State("hello")
 	test1 := td.DefaultPrimitiveTypedef{State: &testState}
-	test1.MarshalLogObject(mapEncoder)
+	require.NoError(t, test1.MarshalLogObject(mapEncoder))
 	expected1 := o{"state": "hello"}
 	assert.Equal(t, expected1, mapEncoder.Fields)
 
 	// test alias of struct
 	mapEncoder = zapcore.NewMapObjectEncoder()
 	test2 := td.UUID{High: 123, Low: 456}
-	test2.MarshalLogObject(mapEncoder)
+	require.NoError(t, test2.MarshalLogObject(mapEncoder))
 	expected2 := o{"high": int64(123), "low": int64(456)}
 	assert.Equal(t, expected2, mapEncoder.Fields)
 
@@ -541,7 +544,7 @@ func TestTypedefsZapLogging(t *testing.T) {
 	// test alias of enums
 	mapEncoder = zapcore.NewMapObjectEncoder()
 	test5 := td.MyEnum(te.EnumWithValuesX)
-	test5.MarshalLogObject(mapEncoder)
+	require.NoError(t, test5.MarshalLogObject(mapEncoder))
 	expected5 := o{"value": int32(123), "name": "X"}
 	assert.Equal(t, expected5, mapEncoder.Fields)
 
@@ -551,7 +554,7 @@ func TestTypedefsZapLogging(t *testing.T) {
 		td.State("foo"): 1,
 		td.State("bar"): 2,
 	})
-	test6.MarshalLogObject(mapEncoder)
+	require.NoError(t, test6.MarshalLogObject(mapEncoder))
 	expected6 := o{"foo": int64(1), "bar": int64(2)}
 	assert.Equal(t, expected6, mapEncoder.Fields)
 }
@@ -592,7 +595,7 @@ func TestEnumWithLabelZapLogging(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			enc := zapcore.NewMapObjectEncoder()
-			tt.p.MarshalLogObject(enc)
+			require.NoError(t, tt.p.MarshalLogObject(enc))
 			assert.Equal(t, tt.v, enc.Fields)
 		})
 	}
@@ -632,4 +635,151 @@ func TestNoZapLogging(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestMarshallingErrorCollation(t *testing.T) {
+	t.Run("struct", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		x := &ts.Edge{
+			StartPoint: &ts.Point{},
+			EndPoint:   &ts.Point{},
+		}
+
+		enc := NewMockObjectEncoder(ctrl)
+		enc.EXPECT().
+			AddObject(gomock.Any(), gomock.Any()).
+			DoAndReturn(func(name string, _ zapcore.ObjectMarshaler) error {
+				return fmt.Errorf("failed to add %q", name)
+			}).
+			Times(2)
+
+		err := x.MarshalLogObject(enc)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), `failed to add "startPoint"`)
+		assert.Contains(t, err.Error(), `failed to add "endPoint"`)
+	})
+
+	t.Run("array", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		graph := &ts.Graph{Edges: []*ts.Edge{{}, {}, {}}}
+
+		objEnc := NewMockObjectEncoder(ctrl)
+		arrEnc := NewMockArrayEncoder(ctrl)
+
+		objEnc.EXPECT().
+			AddArray("edges", gomock.Any()).
+			DoAndReturn(func(_ string, arr zapcore.ArrayMarshaler) error {
+				return arr.MarshalLogArray(arrEnc)
+			})
+
+		pos := 0
+		arrEnc.EXPECT().
+			AppendObject(gomock.Any()).
+			DoAndReturn(func(zapcore.ObjectMarshaler) error {
+				pos++
+				return fmt.Errorf("failed to append object %v", pos)
+			}).
+			Times(3)
+
+		err := graph.MarshalLogObject(objEnc)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to append object 1")
+		assert.Contains(t, err.Error(), "failed to append object 2")
+	})
+
+	t.Run("map/string key", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		x := ts.UserMap{
+			"foo": &ts.User{},
+			"bar": &ts.User{},
+			"baz": &ts.User{},
+		}
+
+		enc := NewMockObjectEncoder(ctrl)
+		enc.EXPECT().
+			AddObject(gomock.Any(), gomock.Any()).
+			DoAndReturn(func(name string, _ zapcore.ObjectMarshaler) error {
+				return fmt.Errorf("failed to add %q", name)
+			}).
+			Times(3)
+
+		err := x.MarshalLogObject(enc)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), `failed to add "foo"`)
+		assert.Contains(t, err.Error(), `failed to add "bar"`)
+		assert.Contains(t, err.Error(), `failed to add "baz"`)
+	})
+
+	t.Run("map/non-string key", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		x := td.PointMap{
+			{
+				Key:   &ts.Point{},
+				Value: &ts.Point{},
+			},
+			{
+				Key:   &ts.Point{},
+				Value: &ts.Point{},
+			},
+		}
+
+		idx := 0
+		enc := NewMockArrayEncoder(ctrl)
+		enc.EXPECT().
+			AppendObject(gomock.Any()).
+			DoAndReturn(func(obj zapcore.ObjectMarshaler) error {
+				idx++
+
+				objEnc := NewMockObjectEncoder(ctrl)
+				keyCall := objEnc.EXPECT().AddObject("key", gomock.Any())
+				valueCall := objEnc.EXPECT().AddObject("value", gomock.Any())
+
+				// Fail the value for the first item and the key for the
+				// second item.
+
+				if idx == 1 {
+					keyCall.Return(fmt.Errorf("failed to add key for item %v", idx))
+				} else {
+					valueCall.Return(fmt.Errorf("failed to add value for item %v", idx))
+				}
+
+				return obj.MarshalLogObject(objEnc)
+			}).
+			Times(2)
+
+		err := x.MarshalLogArray(enc)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), `failed to add key for item 1`)
+		assert.Contains(t, err.Error(), `failed to add value for item 2`)
+	})
+
+	t.Run("set", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		fs := td.FrameGroup{{}, {}}
+
+		idx := 0
+		enc := NewMockArrayEncoder(ctrl)
+		enc.EXPECT().
+			AppendObject(gomock.Any()).
+			DoAndReturn(func(obj zapcore.ObjectMarshaler) error {
+				idx++
+				return fmt.Errorf("could not add item %v", idx)
+			}).
+			Times(2)
+
+		err := fs.MarshalLogArray(enc)
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), `could not add item 1`)
+		assert.Contains(t, err.Error(), `could not add item 2`)
+	})
 }
