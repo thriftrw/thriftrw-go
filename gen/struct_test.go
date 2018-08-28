@@ -44,12 +44,9 @@ import (
 func TestStructRoundTripAndString(t *testing.T) {
 	tests := []struct {
 		desc string
-		x    interface {
-			thriftType
-			String() string
-		}
-		v wire.Value
-		s string
+		x    thriftType
+		v    wire.Value
+		s    string
 	}{
 		{
 			"PrimitiveRequiredStruct",

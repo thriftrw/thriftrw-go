@@ -23,6 +23,7 @@ package gen
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -40,7 +41,9 @@ import (
 
 // serviceType is the args or result struct for a thrift function.
 type serviceType interface {
+	fmt.Stringer
 	envelope.Enveloper
+
 	FromWire(wire.Value) error
 }
 

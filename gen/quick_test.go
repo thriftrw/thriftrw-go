@@ -252,6 +252,14 @@ func TestQuickRoundTrip(t *testing.T) {
 					assert.Equal(t, got, give)
 				}
 			})
+
+			t.Run("String", func(t *testing.T) {
+				for _, give := range values {
+					assert.NotPanics(t, func() {
+						_ = give.String()
+					}, "failed to String %#v", give)
+				}
+			})
 		})
 	}
 }
