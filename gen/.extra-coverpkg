@@ -1,9 +1,0 @@
-internal/tests/constants
-internal/tests/other_constants
-internal/tests/containers
-internal/tests/enums
-internal/tests/exceptions
-internal/tests/services
-internal/tests/structs
-internal/tests/typedefs
-internal/tests/unions
