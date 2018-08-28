@@ -126,7 +126,6 @@ install:
 install_ci: install
 	go get -u -f golang.org/x/lint/golint
 	go get -u -f github.com/kisielk/errcheck
-	go get -u github.com/wadey/gocovmerge
 	go get -u github.com/mattn/goveralls
 	go get -u golang.org/x/tools/cmd/cover
 	go install .
