@@ -102,11 +102,11 @@ verifyversion: build
 
 .PHONY: test
 test: build verifyversion
-	go test -race $(PACKAGES)
+	go test -race ./...
 
 .PHONY: cover
 cover:
-	./scripts/cover.sh $(shell go list $(PACKAGES))
+	go test -v -covermode=atomic -coverprofile cover.out -coverpkg=./... ./...
 	go tool cover -html=cover.out -o cover.html
 
 .PHONY: clean
@@ -138,5 +138,4 @@ build_ci: build
 lint_ci: lint
 
 .PHONY: test_ci
-test_ci: build_ci verifyversion
-	./scripts/cover.sh $(shell go list $(PACKAGES))
+test_ci: build_ci verifyversion cover
