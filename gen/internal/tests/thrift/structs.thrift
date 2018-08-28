@@ -94,6 +94,8 @@ struct User {
     2: optional ContactInfo contact
 }
 
+typedef map<string, User> UserMap
+
 //////////////////////////////////////////////////////////////////////////////
 // self-referential struct
 

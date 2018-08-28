@@ -483,7 +483,7 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 
 		// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 		// fast logging of <.Name>.
-		func (<$v> *<.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
+		func (<$v> *<.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) (err error) {
 			<range .Fields>
 				<- if not (zapOptOut .) ->
 					<- $fval := printf "%s.%s" $v (goName .) ->
@@ -500,7 +500,7 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 					<- end>
 				<- end>
 			<end ->
-			return nil
+			return err
 		}
 		`, f,
 		TemplateFunc("zapOptOut", zapOptOut),

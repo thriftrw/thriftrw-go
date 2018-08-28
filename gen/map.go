@@ -323,13 +323,13 @@ func (m *mapGenerator) zapStringKeyMarshaler(
 			<$enc := newVar "enc">
 			// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 			// fast logging of <.Name>.
-			func (<$m> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
+			func (<$m> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) (err error) {
 				for <$k>, <$v> := range <$m> {
 					<zapEncodeBegin .Type.ValueSpec ->
 						<$enc>.Add<zapEncoder .Type.ValueSpec>((string)(<$k>), <zapMarshaler .Type.ValueSpec $v>)
 					<- zapEncodeEnd .Type.ValueSpec>
 				}
-				return nil
+				return err
 			}
 			`, struct {
 			Name string
@@ -351,6 +351,7 @@ func (m *mapGenerator) zapNonstringKeyMarshaler(
 	if err := g.EnsureDeclared(
 		`
 			<$zapcore := import "go.uber.org/zap/zapcore">
+			<$multierr := import "go.uber.org/multierr">
 
 			type <.Name> <typeReference .Type>
 			<$m := newVar "m">
@@ -360,7 +361,7 @@ func (m *mapGenerator) zapNonstringKeyMarshaler(
 			<$enc := newVar "enc">
 			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 			// fast logging of <.Name>.
-			func (<$m> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
+			func (<$m> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) (err error) {
 				<- if isHashable .Type.KeySpec ->
 					for <$k>, <$v> := range <$m> {
 				<else ->
@@ -368,11 +369,9 @@ func (m *mapGenerator) zapNonstringKeyMarshaler(
 						<$k> := <$i>.Key
 						<$v> := <$i>.Value
 				<end ->
-					if err := <$enc>.AppendObject(<zapMapItemMarshaler .Type $k $v>); err != nil {
-						return err
-					}
+					err = <$multierr>.Append(err, <$enc>.AppendObject(<zapMapItemMarshaler .Type $k $v>))
 				}
-				return nil
+				return err
 			}
 			`, struct {
 			Name string
@@ -409,14 +408,14 @@ func (m *mapGenerator) zapMapItemMarshaler(
 			<$enc := newVar "enc">
 			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 			// fast logging of <.Name>.
-			func (<$v> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) error {
+			func (<$v> <.Name>) MarshalLogObject(<$enc> <$zapcore>.ObjectEncoder) (err error) {
 				<zapEncodeBegin .KeyType ->
 					<$enc>.Add<zapEncoder .KeyType>("key", <zapMarshaler .KeyType $key>)
 				<- zapEncodeEnd .KeyType>
 				<zapEncodeBegin .ValueType ->
 					<$enc>.Add<zapEncoder .ValueType>("value", <zapMarshaler .ValueType $val>)
 				<- zapEncodeEnd .ValueType>
-				return nil
+				return err
 			}
 			`, struct {
 			Name      string

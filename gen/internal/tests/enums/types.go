@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
 	"math"
@@ -1655,13 +1656,11 @@ func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of StructWithOptionalEnum.
-func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.E != nil {
-		if err := enc.AddObject("e", *v.E); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("e", *v.E))
 	}
-	return nil
+	return err
 }
 
 // GetE returns the value of E if it is set or its

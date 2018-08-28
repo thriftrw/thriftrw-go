@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/gen/internal/tests/enums"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
@@ -374,18 +375,14 @@ func (v *Records) Equals(rhs *Records) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Records.
-func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.RecordType != nil {
-		if err := enc.AddObject("recordType", *v.RecordType); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("recordType", *v.RecordType))
 	}
 	if v.OtherRecordType != nil {
-		if err := enc.AddObject("otherRecordType", *v.OtherRecordType); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("otherRecordType", *v.OtherRecordType))
 	}
-	return nil
+	return err
 }
 
 // GetRecordType returns the value of RecordType if it is set or its

@@ -235,7 +235,7 @@ func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOpt
 		"typeCode":         curryGenerator(TypeCode, g),
 		"equals":           curryGenerator(g.e.Equals, g),
 		"equalsPtr":        curryGenerator(g.e.EqualsPtr, g),
-		"zapEncodeBegin":   g.z.zapEncodeBegin,
+		"zapEncodeBegin":   curryGenerator(g.z.zapEncodeBegin, g),
 		"zapEncodeEnd":     g.z.zapEncodeEnd,
 		"zapEncoder":       curryGenerator(g.z.zapEncoder, g),
 		"zapMarshaler":     curryGenerator(g.z.zapMarshaler, g),
