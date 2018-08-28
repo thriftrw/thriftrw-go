@@ -557,17 +557,13 @@ func roundTrip(t *testing.T, x thriftType, msg string) thriftType {
 		xType = xType.Elem()
 	}
 
-	gotX := reflect.New(xType)
-	errval := gotX.MethodByName("FromWire").
-		Call([]reflect.Value{reflect.ValueOf(newV)})[0].
-		Interface()
-
-	if !assert.Nil(t, errval, "FromWire: %v", msg) {
+	gotX := reflect.New(xType).Interface().(thriftType)
+	if err := gotX.FromWire(newV); !assert.NoError(t, err, "FromWire: %v", msg) {
 		return nil
 	}
 
-	assert.Equal(t, x, gotX.Interface(), "FromWire: %v", msg)
-	return gotX.Interface().(thriftType)
+	assert.Equal(t, x, gotX, "FromWire: %v", msg)
+	return gotX
 }
 
 func TestCollisionAccessors(t *testing.T) {

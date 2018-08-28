@@ -1610,11 +1610,9 @@ func TestStructValidation(t *testing.T) {
 			t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
 		}
 
-		x := reflect.New(typ)
-		args := []reflect.Value{reflect.ValueOf(tt.deserialize)}
-		e := x.MethodByName("FromWire").Call(args)[0].Interface()
-		if assert.NotNil(t, e, "%v: expected failure but got %v", tt.desc, x) {
-			assert.Contains(t, e.(error).Error(), tt.wantError, tt.desc)
+		x := reflect.New(typ).Interface().(thriftType)
+		if err := x.FromWire(tt.deserialize); assert.Error(t, err, "%v: expected failure but got %v", tt.desc, x) {
+			assert.Contains(t, err.Error(), tt.wantError, tt.desc)
 		}
 	}
 }
