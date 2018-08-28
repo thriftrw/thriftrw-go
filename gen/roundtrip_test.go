@@ -32,11 +32,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type thriftType interface {
-	ToWire() (wire.Value, error)
-	FromWire(wire.Value) error
-}
-
 // assertRoundTrip checks if x.ToWire() results in the given Value and whether
 // x.FromWire() with the given value results in the original x.
 func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args ...interface{}) bool {
