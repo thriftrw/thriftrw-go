@@ -20,7 +20,11 @@
 
 package gen
 
-import "go.uber.org/thriftrw/wire"
+import (
+	"fmt"
+
+	"go.uber.org/thriftrw/wire"
+)
 
 // thriftType is implemented by all generated types that know how to encode
 // and decode themselves.
@@ -28,6 +32,8 @@ import "go.uber.org/thriftrw/wire"
 // Having this interface allows tests that use reflection to be more readable
 // by relying on the interface rather than reflection to call methods.
 type thriftType interface {
+	fmt.Stringer
+
 	ToWire() (wire.Value, error)
 	FromWire(wire.Value) error
 }
