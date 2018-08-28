@@ -85,6 +85,11 @@ func (v *Cache_Clear_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *Cache_Clear_Args) Equals(rhs *Cache_Clear_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }

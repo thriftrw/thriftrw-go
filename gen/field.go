@@ -454,6 +454,11 @@ func (f fieldGroupGenerator) Equals(g Generator) error {
 		//
 		// This function performs a deep comparison.
 		func (<$v> *<.Name>) Equals(<$rhs> *<.Name>) bool {
+			if <$v> == nil {
+				return <$rhs> == nil
+			} else if <$rhs> == nil {
+				return false
+			}
 			<range .Fields>
 				<- $fname := goName . ->
 				<- $lhsField := printf "%s.%s" $v $fname ->

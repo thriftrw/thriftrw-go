@@ -256,6 +256,11 @@ func _State_EqualsPtr(lhs, rhs *State) bool {
 //
 // This function performs a deep comparison.
 func (v *DefaultPrimitiveTypedef) Equals(rhs *DefaultPrimitiveTypedef) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_State_EqualsPtr(v.State, rhs.State) {
 		return false
 	}
@@ -633,6 +638,11 @@ func _Timestamp_EqualsPtr(lhs, rhs *Timestamp) bool {
 //
 // This function performs a deep comparison.
 func (v *Event) Equals(rhs *Event) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !v.UUID.Equals(rhs.UUID) {
 		return false
 	}
@@ -1524,6 +1534,11 @@ func (v *Transition) String() string {
 //
 // This function performs a deep comparison.
 func (v *Transition) Equals(rhs *Transition) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.FromState == rhs.FromState) {
 		return false
 	}
@@ -1723,6 +1738,11 @@ func (v *I128) String() string {
 //
 // This function performs a deep comparison.
 func (v *I128) Equals(rhs *I128) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.High == rhs.High) {
 		return false
 	}

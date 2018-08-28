@@ -179,6 +179,11 @@ func (v *UUIDConflict) String() string {
 //
 // This function performs a deep comparison.
 func (v *UUIDConflict) Equals(rhs *UUIDConflict) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.LocalUUID == rhs.LocalUUID) {
 		return false
 	}

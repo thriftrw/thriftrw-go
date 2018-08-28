@@ -1623,6 +1623,11 @@ func _Map_Set_I32_List_Double_Equals(lhs, rhs []struct {
 //
 // This function performs a deep comparison.
 func (v *ContainersOfContainers) Equals(rhs *ContainersOfContainers) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.ListOfLists == nil && rhs.ListOfLists == nil) || (v.ListOfLists != nil && rhs.ListOfLists != nil && _List_List_I32_Equals(v.ListOfLists, rhs.ListOfLists))) {
 		return false
 	}
@@ -2454,6 +2459,11 @@ func _Map_EnumWithDuplicateValues_I32_Equals(lhs, rhs map[enums.EnumWithDuplicat
 //
 // This function performs a deep comparison.
 func (v *EnumContainers) Equals(rhs *EnumContainers) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.ListOfEnums == nil && rhs.ListOfEnums == nil) || (v.ListOfEnums != nil && rhs.ListOfEnums != nil && _List_EnumDefault_Equals(v.ListOfEnums, rhs.ListOfEnums))) {
 		return false
 	}
@@ -2829,6 +2839,11 @@ func _List_RecordType_1_Equals(lhs, rhs []enums.RecordType) bool {
 //
 // This function performs a deep comparison.
 func (v *ListOfConflictingEnums) Equals(rhs *ListOfConflictingEnums) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_List_RecordType_Equals(v.Records, rhs.Records) {
 		return false
 	}
@@ -3145,6 +3160,11 @@ func _List_UUID_1_Equals(lhs, rhs []uuid_conflict.UUID) bool {
 //
 // This function performs a deep comparison.
 func (v *ListOfConflictingUUIDs) Equals(rhs *ListOfConflictingUUIDs) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_List_UUID_Equals(v.Uuids, rhs.Uuids) {
 		return false
 	}
@@ -3516,6 +3536,11 @@ func _Map_String_Binary_Equals(lhs, rhs map[string][]byte) bool {
 //
 // This function performs a deep comparison.
 func (v *MapOfBinaryAndString) Equals(rhs *MapOfBinaryAndString) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.BinaryToString == nil && rhs.BinaryToString == nil) || (v.BinaryToString != nil && rhs.BinaryToString != nil && _Map_Binary_String_Equals(v.BinaryToString, rhs.BinaryToString))) {
 		return false
 	}
@@ -4149,6 +4174,11 @@ func _Map_String_Bool_Equals(lhs, rhs map[string]bool) bool {
 //
 // This function performs a deep comparison.
 func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.ListOfBinary == nil && rhs.ListOfBinary == nil) || (v.ListOfBinary != nil && rhs.ListOfBinary != nil && _List_Binary_Equals(v.ListOfBinary, rhs.ListOfBinary))) {
 		return false
 	}
@@ -4569,6 +4599,11 @@ func _Map_I64_Double_Equals(lhs, rhs map[int64]float64) bool {
 //
 // This function performs a deep comparison.
 func (v *PrimitiveContainersRequired) Equals(rhs *PrimitiveContainersRequired) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_List_String_Equals(v.ListOfStrings, rhs.ListOfStrings) {
 		return false
 	}

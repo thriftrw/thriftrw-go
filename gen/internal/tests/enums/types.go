@@ -1646,6 +1646,11 @@ func _EnumDefault_EqualsPtr(lhs, rhs *EnumDefault) bool {
 //
 // This function performs a deep comparison.
 func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_EnumDefault_EqualsPtr(v.E, rhs.E) {
 		return false
 	}

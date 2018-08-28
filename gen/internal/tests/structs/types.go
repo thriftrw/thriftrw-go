@@ -114,6 +114,11 @@ func (v *ContactInfo) String() string {
 //
 // This function performs a deep comparison.
 func (v *ContactInfo) Equals(rhs *ContactInfo) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.EmailAddress == rhs.EmailAddress) {
 		return false
 	}
@@ -650,6 +655,11 @@ func _List_Double_Equals(lhs, rhs []float64) bool {
 //
 // This function performs a deep comparison.
 func (v *DefaultsStruct) Equals(rhs *DefaultsStruct) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_I32_EqualsPtr(v.RequiredPrimitive, rhs.RequiredPrimitive) {
 		return false
 	}
@@ -980,6 +990,11 @@ func (v *Edge) String() string {
 //
 // This function performs a deep comparison.
 func (v *Edge) Equals(rhs *Edge) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !v.StartPoint.Equals(rhs.StartPoint) {
 		return false
 	}
@@ -1082,6 +1097,11 @@ func (v *EmptyStruct) String() string {
 //
 // This function performs a deep comparison.
 func (v *EmptyStruct) Equals(rhs *EmptyStruct) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
@@ -1225,6 +1245,11 @@ func (v *Frame) String() string {
 //
 // This function performs a deep comparison.
 func (v *Frame) Equals(rhs *Frame) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !v.TopLeft.Equals(rhs.TopLeft) {
 		return false
 	}
@@ -1481,6 +1506,11 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 //
 // This function performs a deep comparison.
 func (v *GoTags) Equals(rhs *GoTags) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Foo == rhs.Foo) {
 		return false
 	}
@@ -1723,6 +1753,11 @@ func _List_Edge_Equals(lhs, rhs []*Edge) bool {
 //
 // This function performs a deep comparison.
 func (v *Graph) Equals(rhs *Graph) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_List_Edge_Equals(v.Edges, rhs.Edges) {
 		return false
 	}
@@ -1917,6 +1952,11 @@ func (v *Node) String() string {
 //
 // This function performs a deep comparison.
 func (v *Node) Equals(rhs *Node) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Value == rhs.Value) {
 		return false
 	}
@@ -2075,6 +2115,11 @@ func (v *Omit) String() string {
 //
 // This function performs a deep comparison.
 func (v *Omit) Equals(rhs *Omit) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Serialized == rhs.Serialized) {
 		return false
 	}
@@ -2224,6 +2269,11 @@ func (v *Point) String() string {
 //
 // This function performs a deep comparison.
 func (v *Point) Equals(rhs *Point) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.X == rhs.X) {
 		return false
 	}
@@ -2561,6 +2611,11 @@ func _Double_EqualsPtr(lhs, rhs *float64) bool {
 //
 // This function performs a deep comparison.
 func (v *PrimitiveOptionalStruct) Equals(rhs *PrimitiveOptionalStruct) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Bool_EqualsPtr(v.BoolField, rhs.BoolField) {
 		return false
 	}
@@ -2964,6 +3019,11 @@ func (v *PrimitiveRequiredStruct) String() string {
 //
 // This function performs a deep comparison.
 func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.BoolField == rhs.BoolField) {
 		return false
 	}
@@ -3160,6 +3220,11 @@ func (v *Rename) String() string {
 //
 // This function performs a deep comparison.
 func (v *Rename) Equals(rhs *Rename) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Default == rhs.Default) {
 		return false
 	}
@@ -3311,6 +3376,11 @@ func (v *Size) String() string {
 //
 // This function performs a deep comparison.
 func (v *Size) Equals(rhs *Size) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Width == rhs.Width) {
 		return false
 	}
@@ -3505,6 +3575,11 @@ func (v *StructLabels) String() string {
 //
 // This function performs a deep comparison.
 func (v *StructLabels) Equals(rhs *StructLabels) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Bool_EqualsPtr(v.IsRequired, rhs.IsRequired) {
 		return false
 	}
@@ -3705,6 +3780,11 @@ func (v *User) String() string {
 //
 // This function performs a deep comparison.
 func (v *User) Equals(rhs *User) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Name == rhs.Name) {
 		return false
 	}
@@ -3863,6 +3943,11 @@ func (v *ZapOptOutStruct) String() string {
 //
 // This function performs a deep comparison.
 func (v *ZapOptOutStruct) Equals(rhs *ZapOptOutStruct) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Name == rhs.Name) {
 		return false
 	}

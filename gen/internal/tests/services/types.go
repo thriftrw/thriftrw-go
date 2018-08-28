@@ -137,6 +137,11 @@ func (v *ConflictingNamesSetValueArgs) String() string {
 //
 // This function performs a deep comparison.
 func (v *ConflictingNamesSetValueArgs) Equals(rhs *ConflictingNamesSetValueArgs) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Key == rhs.Key) {
 		return false
 	}
@@ -272,6 +277,11 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 //
 // This function performs a deep comparison.
 func (v *InternalError) Equals(rhs *InternalError) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_String_EqualsPtr(v.Message, rhs.Message) {
 		return false
 	}

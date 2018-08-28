@@ -86,6 +86,11 @@ func (v *KeyValue_Size_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_Size_Args) Equals(rhs *KeyValue_Size_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
@@ -303,6 +308,11 @@ func (v *KeyValue_Size_Result) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_Size_Result) Equals(rhs *KeyValue_Size_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_I64_EqualsPtr(v.Success, rhs.Success) {
 		return false
 	}

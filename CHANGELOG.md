@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - gen/enum: `MarshalText` and `UnmarshalText` now round-trips, even if
   the enum value is unrecognized.
 
+### Fixed
+- gen: Equals methods on generated structs no longer panic if either value is
+  nil.
+
 ## [1.12.0] - 2018-06-25
 ### Added
 - gen: Added `ThriftPackageImporter` to control import path

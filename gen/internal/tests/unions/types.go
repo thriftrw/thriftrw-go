@@ -413,6 +413,11 @@ func _Map_String_ArbitraryValue_Equals(lhs, rhs map[string]*ArbitraryValue) bool
 //
 // This function performs a deep comparison.
 func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Bool_EqualsPtr(v.BoolValue, rhs.BoolValue) {
 		return false
 	}
@@ -674,6 +679,11 @@ func (v *Document) String() string {
 //
 // This function performs a deep comparison.
 func (v *Document) Equals(rhs *Document) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Pdf == nil && rhs.Pdf == nil) || (v.Pdf != nil && rhs.Pdf != nil && v.Pdf.Equals(rhs.Pdf))) {
 		return false
 	}
@@ -788,6 +798,11 @@ func (v *EmptyUnion) String() string {
 //
 // This function performs a deep comparison.
 func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }

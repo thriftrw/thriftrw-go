@@ -145,6 +145,11 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 //
 // This function performs a deep comparison.
 func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Key == rhs.Key) {
 		return false
 	}
@@ -255,6 +260,11 @@ func (v *EmptyException) String() string {
 //
 // This function performs a deep comparison.
 func (v *EmptyException) Equals(rhs *EmptyException) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }

@@ -130,6 +130,11 @@ func _Key_EqualsPtr(lhs, rhs *Key) bool {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_DeleteValue_Args) Equals(rhs *KeyValue_DeleteValue_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Key_EqualsPtr(v.Key, rhs.Key) {
 		return false
 	}
@@ -420,6 +425,11 @@ func (v *KeyValue_DeleteValue_Result) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_DeleteValue_Result) Equals(rhs *KeyValue_DeleteValue_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.DoesNotExist == nil && rhs.DoesNotExist == nil) || (v.DoesNotExist != nil && rhs.DoesNotExist != nil && v.DoesNotExist.Equals(rhs.DoesNotExist))) {
 		return false
 	}

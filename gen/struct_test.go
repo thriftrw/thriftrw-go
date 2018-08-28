@@ -1856,3 +1856,22 @@ func TestStructLabel(t *testing.T) {
 		})
 	}
 }
+
+func TestNilStructEquals(t *testing.T) {
+	t.Run("both nil", func(t *testing.T) {
+		var x, y *ts.Graph
+		assert.True(t, x.Equals(y))
+	})
+
+	t.Run("lhs not nil", func(t *testing.T) {
+		x := &ts.Graph{}
+		var y *ts.Graph
+		assert.False(t, x.Equals(y))
+	})
+
+	t.Run("rhs not nil", func(t *testing.T) {
+		var x *ts.Graph
+		y := &ts.Graph{}
+		assert.False(t, x.Equals(y))
+	})
+}
