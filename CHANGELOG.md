@@ -231,7 +231,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Initial release.
 
 [Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.12.0...HEAD
-[1.11.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.11.0...v1.12.0
+[1.12.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.8.0...v1.9.0
