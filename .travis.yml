@@ -6,13 +6,9 @@ go_import_path: go.uber.org/thriftrw
 
 matrix:
   include:
-    - go: 1.9
     - go: '1.10'
+    - go: '1.11'
       env: LINT=1
-
-env:
-    global:
-        - GO15VENDOREXPERIMENT=1
 
 install:
     - make install_ci
