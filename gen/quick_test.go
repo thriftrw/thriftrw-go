@@ -21,6 +21,7 @@
 package gen
 
 import (
+	"encoding"
 	"encoding/json"
 	"math/rand"
 	"reflect"
@@ -120,6 +121,10 @@ func TestQuickRoundTrip(t *testing.T) {
 		// round-trip with JSON successfully due to nil versus empty
 		// collection differences.
 		JSON bool
+
+		// Whether we should evaluate encoding.TextMarshaler round-tripping.
+		// This is only suported on enums.
+		Text bool
 	}
 
 	// The following types from our tests have been skipped.
@@ -201,46 +206,55 @@ func TestQuickRoundTrip(t *testing.T) {
 			Sample:    te.EmptyEnum(0),
 			Generator: enumValueGenerator(te.EmptyEnum_Values),
 			JSON:      true,
+			Text:      true,
 		},
 		{
 			Sample:    te.EnumDefault(0),
 			Generator: enumValueGenerator(te.EnumDefault_Values),
 			JSON:      true,
+			Text:      true,
 		},
 		{
 			Sample:    te.EnumWithDuplicateName(0),
 			Generator: enumValueGenerator(te.EnumWithDuplicateName_Values),
 			JSON:      true,
+			Text:      true,
 		},
 		{
 			Sample:    te.EnumWithDuplicateValues(0),
 			Generator: enumValueGenerator(te.EnumWithDuplicateValues_Values),
 			JSON:      true,
+			Text:      true,
 		},
 		{
 			Sample:    te.EnumWithLabel(0),
 			Generator: enumValueGenerator(te.EnumWithLabel_Values),
 			JSON:      true,
+			Text:      true,
 		},
 		{
 			Sample:    te.EnumWithValues(0),
 			Generator: enumValueGenerator(te.EnumWithValues_Values),
 			JSON:      true,
+			Text:      true,
 		},
 		{
 			Sample:    te.LowerCaseEnum(0),
 			Generator: enumValueGenerator(te.LowerCaseEnum_Values),
 			JSON:      true,
+			Text:      true,
 		},
 		{
 			Sample:    te.RecordType(0),
 			Generator: enumValueGenerator(te.RecordType_Values),
 			JSON:      true,
+			Text:      true,
 		},
 		{
 			Sample:    te.RecordTypeValues(0),
 			Generator: enumValueGenerator(te.RecordTypeValues_Values),
 			JSON:      true,
+			Text:      true,
 		},
 	}
 
@@ -296,6 +310,24 @@ func TestQuickRoundTrip(t *testing.T) {
 						require.True(t, ok, "Type does not implement json.Unmarshaler")
 
 						require.NoError(t, got.UnmarshalJSON(bs), "failed to decode from %q", bs)
+						assert.Equal(t, got, give, "could not round-trip")
+					}
+				})
+			}
+
+			if tt.Text {
+				t.Run("Text", func(t *testing.T) {
+					for _, giveValue := range values {
+						give, ok := giveValue.(encoding.TextMarshaler)
+						require.True(t, ok, "Type does not implement encoding.TextMarshaler")
+
+						bs, err := give.MarshalText()
+						require.NoError(t, err, "failed to encode %v", give)
+
+						got, ok := reflect.New(typ).Interface().(encoding.TextUnmarshaler)
+						require.True(t, ok, "Type does not implement encoding.TextUnmarshaler")
+
+						require.NoError(t, got.UnmarshalText(bs), "failed to decode from %q", bs)
 						assert.Equal(t, got, give, "could not round-trip")
 					}
 				})
