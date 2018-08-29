@@ -137,6 +137,11 @@ func (v *ConflictingNamesSetValueArgs) String() string {
 //
 // This function performs a deep comparison.
 func (v *ConflictingNamesSetValueArgs) Equals(rhs *ConflictingNamesSetValueArgs) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Key == rhs.Key) {
 		return false
 	}
@@ -149,10 +154,10 @@ func (v *ConflictingNamesSetValueArgs) Equals(rhs *ConflictingNamesSetValueArgs)
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ConflictingNamesSetValueArgs.
-func (v *ConflictingNamesSetValueArgs) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *ConflictingNamesSetValueArgs) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddString("key", v.Key)
 	enc.AddString("value", base64.StdEncoding.EncodeToString(v.Value))
-	return nil
+	return err
 }
 
 // GetKey returns the value of Key if it is set or its
@@ -272,6 +277,11 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 //
 // This function performs a deep comparison.
 func (v *InternalError) Equals(rhs *InternalError) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_String_EqualsPtr(v.Message, rhs.Message) {
 		return false
 	}
@@ -281,11 +291,11 @@ func (v *InternalError) Equals(rhs *InternalError) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of InternalError.
-func (v *InternalError) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *InternalError) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Message != nil {
 		enc.AddString("message", *v.Message)
 	}
-	return nil
+	return err
 }
 
 // GetMessage returns the value of Message if it is set or its
@@ -330,5 +340,5 @@ func (v *Key) FromWire(w wire.Value) error {
 // Equals returns true if this Key is equal to the provided
 // Key.
 func (lhs Key) Equals(rhs Key) bool {
-	return (lhs == rhs)
+	return ((string)(lhs) == (string)(rhs))
 }

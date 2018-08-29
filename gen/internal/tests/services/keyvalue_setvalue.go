@@ -5,6 +5,7 @@ package services
 
 import (
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/gen/internal/tests/unions"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
@@ -134,6 +135,11 @@ func (v *KeyValue_SetValue_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_SetValue_Args) Equals(rhs *KeyValue_SetValue_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Key_EqualsPtr(v.Key, rhs.Key) {
 		return false
 	}
@@ -146,16 +152,14 @@ func (v *KeyValue_SetValue_Args) Equals(rhs *KeyValue_SetValue_Args) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_SetValue_Args.
-func (v *KeyValue_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *KeyValue_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Key != nil {
 		enc.AddString("key", (string)(*v.Key))
 	}
 	if v.Value != nil {
-		if err := enc.AddObject("value", v.Value); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("value", v.Value))
 	}
-	return nil
+	return err
 }
 
 // GetKey returns the value of Key if it is set or its
@@ -346,14 +350,19 @@ func (v *KeyValue_SetValue_Result) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_SetValue_Result) Equals(rhs *KeyValue_SetValue_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_SetValue_Result.
-func (v *KeyValue_SetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	return nil
+func (v *KeyValue_SetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	return err
 }
 
 // MethodName returns the name of the Thrift function as specified in

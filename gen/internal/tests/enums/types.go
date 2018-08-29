@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
 	"math"
@@ -15,6 +16,11 @@ import (
 )
 
 type EmptyEnum int32
+
+// EmptyEnum_Values returns all recognized values of EmptyEnum.
+func EmptyEnum_Values() []EmptyEnum {
+	return []EmptyEnum{}
+}
 
 // UnmarshalText tries to decode EmptyEnum from a byte slice
 // containing its name.
@@ -1646,6 +1652,11 @@ func _EnumDefault_EqualsPtr(lhs, rhs *EnumDefault) bool {
 //
 // This function performs a deep comparison.
 func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_EnumDefault_EqualsPtr(v.E, rhs.E) {
 		return false
 	}
@@ -1655,13 +1666,11 @@ func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of StructWithOptionalEnum.
-func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.E != nil {
-		if err := enc.AddObject("e", *v.E); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("e", *v.E))
 	}
-	return nil
+	return err
 }
 
 // GetE returns the value of E if it is set or its

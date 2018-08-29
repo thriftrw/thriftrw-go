@@ -6,6 +6,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	"go.uber.org/thriftrw/gen/internal/tests/unions"
 	"go.uber.org/thriftrw/wire"
@@ -172,6 +173,11 @@ func _List_Key_Equals(lhs, rhs []Key) bool {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Range == nil && rhs.Range == nil) || (v.Range != nil && rhs.Range != nil && _List_Key_Equals(v.Range, rhs.Range))) {
 		return false
 	}
@@ -183,22 +189,20 @@ type _List_Key_Zapper []Key
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_Key_Zapper.
-func (l _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (l _List_Key_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range l {
 		enc.AppendString((string)(v))
 	}
-	return nil
+	return err
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_GetManyValues_Args.
-func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Range != nil {
-		if err := enc.AddArray("range", (_List_Key_Zapper)(v.Range)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddArray("range", (_List_Key_Zapper)(v.Range)))
 	}
-	return nil
+	return err
 }
 
 // GetRange returns the value of Range if it is set or its
@@ -528,6 +532,11 @@ func _List_ArbitraryValue_Equals(lhs, rhs []*unions.ArbitraryValue) bool {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && _List_ArbitraryValue_Equals(v.Success, rhs.Success))) {
 		return false
 	}
@@ -542,29 +551,23 @@ type _List_ArbitraryValue_Zapper []*unions.ArbitraryValue
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_ArbitraryValue_Zapper.
-func (l _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (l _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range l {
-		if err := enc.AppendObject(v); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AppendObject(v))
 	}
-	return nil
+	return err
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_GetManyValues_Result.
-func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Success != nil {
-		if err := enc.AddArray("success", (_List_ArbitraryValue_Zapper)(v.Success)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddArray("success", (_List_ArbitraryValue_Zapper)(v.Success)))
 	}
 	if v.DoesNotExist != nil {
-		if err := enc.AddObject("doesNotExist", v.DoesNotExist); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("doesNotExist", v.DoesNotExist))
 	}
-	return nil
+	return err
 }
 
 // GetSuccess returns the value of Success if it is set or its

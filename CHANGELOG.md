@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - gen: Added support for a `go.label` annotation that allows overriding the
   user-readable string names of enum items and struct fields. This has no
   effect on the names of the generated Go entities.
-- Generated types now implement zapcore.ObjectMarshaler or
-  zapcore.ArrayMarshaler where appropriate. This should lead to much faster
+- Generated types now implement `zapcore.ObjectMarshaler` or
+  `zapcore.ArrayMarshaler` where appropriate. This should lead to much faster
   logging of these objects.
 - Added `go.nolog` annotation for struct fields: Those with
   this annotation will not be included in Zap logging.
@@ -20,6 +20,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - ThriftRW now does a bounds-check on field identifiers rather than silently
   truncating them.
+- gen: Equals methods on generated structs no longer panic if either value is
+  nil.
+- gen: Fixed a bug where `*_Values` functions for empty enums would not be
+  generated.
+- gen: Fixed infinite loop in generated `Equals` methods of specific typedefs.
 
 ## [1.12.0] - 2018-06-25
 ### Added

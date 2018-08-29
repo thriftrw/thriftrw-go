@@ -85,14 +85,19 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *NonStandardServiceName_NonStandardFunctionName_Args) Equals(rhs *NonStandardServiceName_NonStandardFunctionName_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of NonStandardServiceName_NonStandardFunctionName_Args.
-func (v *NonStandardServiceName_NonStandardFunctionName_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	return nil
+func (v *NonStandardServiceName_NonStandardFunctionName_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	return err
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -254,14 +259,19 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) String() string 
 //
 // This function performs a deep comparison.
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) Equals(rhs *NonStandardServiceName_NonStandardFunctionName_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of NonStandardServiceName_NonStandardFunctionName_Result.
-func (v *NonStandardServiceName_NonStandardFunctionName_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	return nil
+func (v *NonStandardServiceName_NonStandardFunctionName_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	return err
 }
 
 // MethodName returns the name of the Thrift function as specified in

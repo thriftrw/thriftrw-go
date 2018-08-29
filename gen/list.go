@@ -199,13 +199,13 @@ func (l *listGenerator) zapMarshaler(
 			<$enc := newVar "enc">
 			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 			// fast logging of <.Name>.
-			func (<$l> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) error {
+			func (<$l> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) (err error) {
 				for _, <$v> := range <$l> {
 					<zapEncodeBegin .Type.ValueSpec ->
 						<$enc>.Append<zapEncoder .Type.ValueSpec>(<zapMarshaler .Type.ValueSpec $v>)
 					<- zapEncodeEnd .Type.ValueSpec>
 				}
-				return nil
+				return err
 			}
 			`, struct {
 			Name string

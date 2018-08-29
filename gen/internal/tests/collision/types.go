@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
 	"math"
@@ -147,6 +148,11 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 //
 // This function performs a deep comparison.
 func (v *AccessorConflict) Equals(rhs *AccessorConflict) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_String_EqualsPtr(v.Name, rhs.Name) {
 		return false
 	}
@@ -159,14 +165,14 @@ func (v *AccessorConflict) Equals(rhs *AccessorConflict) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of AccessorConflict.
-func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Name != nil {
 		enc.AddString("name", *v.Name)
 	}
 	if v.GetName2 != nil {
 		enc.AddString("get_name", *v.GetName2)
 	}
-	return nil
+	return err
 }
 
 // GetName returns the value of Name if it is set or its
@@ -311,6 +317,11 @@ func (v *AccessorNoConflict) String() string {
 //
 // This function performs a deep comparison.
 func (v *AccessorNoConflict) Equals(rhs *AccessorNoConflict) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_String_EqualsPtr(v.Getname, rhs.Getname) {
 		return false
 	}
@@ -323,14 +334,14 @@ func (v *AccessorNoConflict) Equals(rhs *AccessorNoConflict) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of AccessorNoConflict.
-func (v *AccessorNoConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *AccessorNoConflict) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Getname != nil {
 		enc.AddString("getname", *v.Getname)
 	}
 	if v.GetName != nil {
 		enc.AddString("get_name", *v.GetName)
 	}
-	return nil
+	return err
 }
 
 // GetGetname returns the value of Getname if it is set or its
@@ -381,7 +392,7 @@ func (v *LittlePotatoe) FromWire(w wire.Value) error {
 // Equals returns true if this LittlePotatoe is equal to the provided
 // LittlePotatoe.
 func (lhs LittlePotatoe) Equals(rhs LittlePotatoe) bool {
-	return (lhs == rhs)
+	return ((int64)(lhs) == (int64)(rhs))
 }
 
 type MyEnum int32
@@ -931,6 +942,11 @@ func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
 //
 // This function performs a deep comparison.
 func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.A == nil && rhs.A == nil) || (v.A != nil && rhs.A != nil && _List_String_Equals(v.A, rhs.A))) {
 		return false
 	}
@@ -948,54 +964,48 @@ type _List_String_Zapper []string
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_String_Zapper.
-func (l _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (l _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range l {
 		enc.AppendString(v)
 	}
-	return nil
+	return err
 }
 
 type _Set_String_Zapper map[string]struct{}
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _Set_String_Zapper.
-func (s _Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (s _Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for v := range s {
 		enc.AppendString(v)
 	}
-	return nil
+	return err
 }
 
 type _Map_String_String_Zapper map[string]string
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of _Map_String_String_Zapper.
-func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	for k, v := range m {
 		enc.AddString((string)(k), v)
 	}
-	return nil
+	return err
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of PrimitiveContainers.
-func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.A != nil {
-		if err := enc.AddArray("ListOrSetOrMap", (_List_String_Zapper)(v.A)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddArray("ListOrSetOrMap", (_List_String_Zapper)(v.A)))
 	}
 	if v.B != nil {
-		if err := enc.AddArray("List_Or_SetOrMap", (_Set_String_Zapper)(v.B)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddArray("List_Or_SetOrMap", (_Set_String_Zapper)(v.B)))
 	}
 	if v.C != nil {
-		if err := enc.AddObject("ListOrSet_Or_Map", (_Map_String_String_Zapper)(v.C)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("ListOrSet_Or_Map", (_Map_String_String_Zapper)(v.C)))
 	}
-	return nil
+	return err
 }
 
 // GetA returns the value of A if it is set or its
@@ -1150,6 +1160,11 @@ func (v *StructCollision) String() string {
 //
 // This function performs a deep comparison.
 func (v *StructCollision) Equals(rhs *StructCollision) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.CollisionField == rhs.CollisionField) {
 		return false
 	}
@@ -1162,10 +1177,10 @@ func (v *StructCollision) Equals(rhs *StructCollision) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of StructCollision.
-func (v *StructCollision) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *StructCollision) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddBool("collisionField", v.CollisionField)
 	enc.AddString("collision_field", v.CollisionField2)
-	return nil
+	return err
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its
@@ -1323,6 +1338,11 @@ func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 //
 // This function performs a deep comparison.
 func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Bool_EqualsPtr(v.CollisionField, rhs.CollisionField) {
 		return false
 	}
@@ -1335,14 +1355,14 @@ func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of UnionCollision.
-func (v *UnionCollision) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *UnionCollision) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.CollisionField != nil {
 		enc.AddBool("collisionField", *v.CollisionField)
 	}
 	if v.CollisionField2 != nil {
 		enc.AddString("collision_field", *v.CollisionField2)
 	}
-	return nil
+	return err
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its
@@ -1481,6 +1501,11 @@ func (v *WithDefault) String() string {
 //
 // This function performs a deep comparison.
 func (v *WithDefault) Equals(rhs *WithDefault) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Pouet == nil && rhs.Pouet == nil) || (v.Pouet != nil && rhs.Pouet != nil && v.Pouet.Equals(rhs.Pouet))) {
 		return false
 	}
@@ -1490,13 +1515,11 @@ func (v *WithDefault) Equals(rhs *WithDefault) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of WithDefault.
-func (v *WithDefault) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *WithDefault) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Pouet != nil {
-		if err := enc.AddObject("pouet", v.Pouet); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("pouet", v.Pouet))
 	}
-	return nil
+	return err
 }
 
 // GetPouet returns the value of Pouet if it is set or its
@@ -1540,7 +1563,7 @@ func (v *LittlePotatoe2) FromWire(w wire.Value) error {
 // Equals returns true if this LittlePotatoe2 is equal to the provided
 // LittlePotatoe2.
 func (lhs LittlePotatoe2) Equals(rhs LittlePotatoe2) bool {
-	return (lhs == rhs)
+	return ((float64)(lhs) == (float64)(rhs))
 }
 
 type MyEnum2 int32
@@ -1849,6 +1872,11 @@ func (v *StructCollision2) String() string {
 //
 // This function performs a deep comparison.
 func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.CollisionField == rhs.CollisionField) {
 		return false
 	}
@@ -1861,10 +1889,10 @@ func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of StructCollision2.
-func (v *StructCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *StructCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddBool("collisionField", v.CollisionField)
 	enc.AddString("collision_field", v.CollisionField2)
-	return nil
+	return err
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its
@@ -2012,6 +2040,11 @@ func (v *UnionCollision2) String() string {
 //
 // This function performs a deep comparison.
 func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Bool_EqualsPtr(v.CollisionField, rhs.CollisionField) {
 		return false
 	}
@@ -2024,14 +2057,14 @@ func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of UnionCollision2.
-func (v *UnionCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *UnionCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.CollisionField != nil {
 		enc.AddBool("collisionField", *v.CollisionField)
 	}
 	if v.CollisionField2 != nil {
 		enc.AddString("collision_field", *v.CollisionField2)
 	}
-	return nil
+	return err
 }
 
 // GetCollisionField returns the value of CollisionField if it is set or its

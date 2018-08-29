@@ -86,14 +86,19 @@ func (v *KeyValue_Size_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_Size_Args) Equals(rhs *KeyValue_Size_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_Size_Args.
-func (v *KeyValue_Size_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	return nil
+func (v *KeyValue_Size_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	return err
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -303,6 +308,11 @@ func (v *KeyValue_Size_Result) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_Size_Result) Equals(rhs *KeyValue_Size_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_I64_EqualsPtr(v.Success, rhs.Success) {
 		return false
 	}
@@ -312,11 +322,11 @@ func (v *KeyValue_Size_Result) Equals(rhs *KeyValue_Size_Result) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_Size_Result.
-func (v *KeyValue_Size_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *KeyValue_Size_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Success != nil {
 		enc.AddInt64("success", *v.Success)
 	}
-	return nil
+	return err
 }
 
 // GetSuccess returns the value of Success if it is set or its

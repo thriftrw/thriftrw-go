@@ -145,6 +145,11 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 //
 // This function performs a deep comparison.
 func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Key == rhs.Key) {
 		return false
 	}
@@ -157,12 +162,12 @@ func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of DoesNotExistException.
-func (v *DoesNotExistException) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *DoesNotExistException) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddString("key", v.Key)
 	if v.Error2 != nil {
 		enc.AddString("Error", *v.Error2)
 	}
-	return nil
+	return err
 }
 
 // GetKey returns the value of Key if it is set or its
@@ -255,14 +260,19 @@ func (v *EmptyException) String() string {
 //
 // This function performs a deep comparison.
 func (v *EmptyException) Equals(rhs *EmptyException) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EmptyException.
-func (v *EmptyException) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	return nil
+func (v *EmptyException) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	return err
 }
 
 func (v *EmptyException) Error() string {

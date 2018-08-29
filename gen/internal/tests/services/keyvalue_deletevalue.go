@@ -6,6 +6,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
@@ -130,6 +131,11 @@ func _Key_EqualsPtr(lhs, rhs *Key) bool {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_DeleteValue_Args) Equals(rhs *KeyValue_DeleteValue_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Key_EqualsPtr(v.Key, rhs.Key) {
 		return false
 	}
@@ -139,11 +145,11 @@ func (v *KeyValue_DeleteValue_Args) Equals(rhs *KeyValue_DeleteValue_Args) bool 
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_DeleteValue_Args.
-func (v *KeyValue_DeleteValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *KeyValue_DeleteValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Key != nil {
 		enc.AddString("key", (string)(*v.Key))
 	}
-	return nil
+	return err
 }
 
 // GetKey returns the value of Key if it is set or its
@@ -420,6 +426,11 @@ func (v *KeyValue_DeleteValue_Result) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_DeleteValue_Result) Equals(rhs *KeyValue_DeleteValue_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.DoesNotExist == nil && rhs.DoesNotExist == nil) || (v.DoesNotExist != nil && rhs.DoesNotExist != nil && v.DoesNotExist.Equals(rhs.DoesNotExist))) {
 		return false
 	}
@@ -432,18 +443,14 @@ func (v *KeyValue_DeleteValue_Result) Equals(rhs *KeyValue_DeleteValue_Result) b
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_DeleteValue_Result.
-func (v *KeyValue_DeleteValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *KeyValue_DeleteValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.DoesNotExist != nil {
-		if err := enc.AddObject("doesNotExist", v.DoesNotExist); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("doesNotExist", v.DoesNotExist))
 	}
 	if v.InternalError != nil {
-		if err := enc.AddObject("internalError", v.InternalError); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("internalError", v.InternalError))
 	}
-	return nil
+	return err
 }
 
 // GetDoesNotExist returns the value of DoesNotExist if it is set or its

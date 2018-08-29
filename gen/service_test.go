@@ -23,6 +23,7 @@ package gen
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"reflect"
 	"testing"
 
@@ -40,7 +41,9 @@ import (
 
 // serviceType is the args or result struct for a thrift function.
 type serviceType interface {
+	fmt.Stringer
 	envelope.Enveloper
+
 	FromWire(wire.Value) error
 }
 
@@ -665,11 +668,9 @@ func TestArgsAndResultValidation(t *testing.T) {
 			t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
 		}
 
-		x := reflect.New(typ)
-		args := []reflect.Value{reflect.ValueOf(tt.deserialize)}
-		e := x.MethodByName("FromWire").Call(args)[0].Interface()
-		if assert.NotNil(t, e, "%v: expected failure but got %v", tt.desc, x) {
-			assert.Contains(t, e.(error).Error(), tt.wantError, tt.desc)
+		x := reflect.New(typ).Interface().(serviceType)
+		if err := x.FromWire(tt.deserialize); assert.Errorf(t, err, "%v: expected failure but got %v", tt.desc, x) {
+			assert.Contains(t, err.Error(), tt.wantError, tt.desc)
 		}
 	}
 }

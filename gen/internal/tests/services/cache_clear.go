@@ -85,14 +85,19 @@ func (v *Cache_Clear_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *Cache_Clear_Args) Equals(rhs *Cache_Clear_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Cache_Clear_Args.
-func (v *Cache_Clear_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	return nil
+func (v *Cache_Clear_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	return err
 }
 
 // MethodName returns the name of the Thrift function as specified in

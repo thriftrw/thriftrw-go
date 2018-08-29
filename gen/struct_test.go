@@ -29,6 +29,7 @@ import (
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	tf "go.uber.org/thriftrw/gen/internal/tests/services"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
@@ -43,12 +44,9 @@ import (
 func TestStructRoundTripAndString(t *testing.T) {
 	tests := []struct {
 		desc string
-		x    interface {
-			thriftType
-			String() string
-		}
-		v wire.Value
-		s string
+		x    thriftType
+		v    wire.Value
+		s    string
 	}{
 		{
 			"PrimitiveRequiredStruct",
@@ -1609,11 +1607,9 @@ func TestStructValidation(t *testing.T) {
 			t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
 		}
 
-		x := reflect.New(typ)
-		args := []reflect.Value{reflect.ValueOf(tt.deserialize)}
-		e := x.MethodByName("FromWire").Call(args)[0].Interface()
-		if assert.NotNil(t, e, "%v: expected failure but got %v", tt.desc, x) {
-			assert.Contains(t, e.(error).Error(), tt.wantError, tt.desc)
+		x := reflect.New(typ).Interface().(thriftType)
+		if err := x.FromWire(tt.deserialize); assert.Error(t, err, "%v: expected failure but got %v", tt.desc, x) {
+			assert.Contains(t, err.Error(), tt.wantError, tt.desc)
 		}
 	}
 }
@@ -1855,4 +1851,113 @@ func TestStructLabel(t *testing.T) {
 			})
 		})
 	}
+}
+
+func TestNilStructEquals(t *testing.T) {
+	// Samples of values being tested.
+	samples := []interface{}{
+		te.StructWithOptionalEnum{},
+		tx.DoesNotExistException{},
+		tx.EmptyException{},
+		tu.ArbitraryValue{},
+		tu.Document{},
+		tu.EmptyUnion{},
+		td.DefaultPrimitiveTypedef{},
+		td.Event{},
+		td.Transition{},
+		td.I128{},
+		tf.Cache_Clear_Args{},
+		ts.ContactInfo{},
+		ts.DefaultsStruct{},
+		ts.Edge{},
+		ts.EmptyStruct{},
+		ts.Frame{},
+		ts.GoTags{},
+		ts.Graph{},
+		ts.Node{},
+		ts.Omit{},
+		ts.Point{},
+		ts.PrimitiveOptionalStruct{},
+		ts.PrimitiveRequiredStruct{},
+		ts.Rename{},
+		ts.Size{},
+		ts.StructLabels{},
+		ts.User{},
+		ts.ZapOptOutStruct{},
+		tc.ContainersOfContainers{},
+		tc.EnumContainers{},
+		tc.ListOfConflictingEnums{},
+		tc.ListOfConflictingUUIDs{},
+		tc.MapOfBinaryAndString{},
+		tc.PrimitiveContainers{},
+		tc.PrimitiveContainersRequired{},
+		tf.ConflictingNames_SetValue_Args{},
+		tf.ConflictingNames_SetValue_Result{},
+		tf.KeyValue_GetManyValues_Args{},
+		tf.KeyValue_GetManyValues_Result{},
+		tf.ConflictingNamesSetValueArgs{},
+		tf.InternalError{},
+		tf.KeyValue_SetValueV2_Args{},
+		tf.KeyValue_SetValueV2_Result{},
+		tf.KeyValue_SetValue_Args{},
+		tf.KeyValue_SetValue_Result{},
+		tf.KeyValue_DeleteValue_Args{},
+		tf.KeyValue_DeleteValue_Result{},
+		tf.KeyValue_GetValue_Args{},
+		tf.KeyValue_GetValue_Result{},
+		tf.NonStandardServiceName_NonStandardFunctionName_Args{},
+		tf.NonStandardServiceName_NonStandardFunctionName_Result{},
+		tf.Cache_ClearAfter_Args{},
+		tf.KeyValue_Size_Args{},
+		tf.KeyValue_Size_Result{},
+	}
+
+	for _, sample := range samples {
+		structType := reflect.TypeOf(sample)
+		ptrType := reflect.PtrTo(structType)
+
+		t.Run(structType.Name(), func(t *testing.T) {
+			t.Run("both nil", func(t *testing.T) {
+				// var x, y *Type
+				x := reflect.New(ptrType).Elem()
+				y := reflect.New(ptrType).Elem()
+
+				// x.Equals(y)
+				result := x.MethodByName("Equals").
+					Call([]reflect.Value{y})[0].
+					Interface().(bool)
+
+				assert.True(t, result)
+			})
+
+			t.Run("lhs not nil", func(t *testing.T) {
+				// var x Type
+				// var y *Type
+				x := reflect.New(structType)
+				y := reflect.New(ptrType).Elem()
+
+				// x.Equals(y)
+				result := x.MethodByName("Equals").
+					Call([]reflect.Value{y})[0].
+					Interface().(bool)
+
+				assert.False(t, result)
+			})
+
+			t.Run("rhs not nil", func(t *testing.T) {
+				// var x *Type
+				// var y Type
+				x := reflect.New(ptrType).Elem()
+				y := reflect.New(structType)
+
+				// x.Equals(y)
+				result := x.MethodByName("Equals").
+					Call([]reflect.Value{y})[0].
+					Interface().(bool)
+
+				assert.False(t, result)
+			})
+		})
+	}
+
 }

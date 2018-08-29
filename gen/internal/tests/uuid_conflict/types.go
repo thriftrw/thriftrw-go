@@ -6,6 +6,7 @@ package uuid_conflict
 import (
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
@@ -40,7 +41,7 @@ func (v *UUID) FromWire(w wire.Value) error {
 // Equals returns true if this UUID is equal to the provided
 // UUID.
 func (lhs UUID) Equals(rhs UUID) bool {
-	return (lhs == rhs)
+	return ((string)(lhs) == (string)(rhs))
 }
 
 type UUIDConflict struct {
@@ -179,6 +180,11 @@ func (v *UUIDConflict) String() string {
 //
 // This function performs a deep comparison.
 func (v *UUIDConflict) Equals(rhs *UUIDConflict) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.LocalUUID == rhs.LocalUUID) {
 		return false
 	}
@@ -191,12 +197,10 @@ func (v *UUIDConflict) Equals(rhs *UUIDConflict) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of UUIDConflict.
-func (v *UUIDConflict) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *UUIDConflict) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddString("localUUID", (string)(v.LocalUUID))
-	if err := enc.AddObject("importedUUID", (*typedefs.I128)(v.ImportedUUID)); err != nil {
-		return err
-	}
-	return nil
+	err = multierr.Append(err, enc.AddObject("importedUUID", (*typedefs.I128)(v.ImportedUUID)))
+	return err
 }
 
 // GetLocalUUID returns the value of LocalUUID if it is set or its

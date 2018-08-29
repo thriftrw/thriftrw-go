@@ -6,6 +6,7 @@ package unions
 import (
 	"encoding/base64"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
@@ -413,6 +414,11 @@ func _Map_String_ArbitraryValue_Equals(lhs, rhs map[string]*ArbitraryValue) bool
 //
 // This function performs a deep comparison.
 func (v *ArbitraryValue) Equals(rhs *ArbitraryValue) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Bool_EqualsPtr(v.BoolValue, rhs.BoolValue) {
 		return false
 	}
@@ -436,31 +442,27 @@ type _List_ArbitraryValue_Zapper []*ArbitraryValue
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_ArbitraryValue_Zapper.
-func (l _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (l _List_ArbitraryValue_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range l {
-		if err := enc.AppendObject(v); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AppendObject(v))
 	}
-	return nil
+	return err
 }
 
 type _Map_String_ArbitraryValue_Zapper map[string]*ArbitraryValue
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of _Map_String_ArbitraryValue_Zapper.
-func (m _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (m _Map_String_ArbitraryValue_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	for k, v := range m {
-		if err := enc.AddObject((string)(k), v); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject((string)(k), v))
 	}
-	return nil
+	return err
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ArbitraryValue.
-func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.BoolValue != nil {
 		enc.AddBool("boolValue", *v.BoolValue)
 	}
@@ -471,16 +473,12 @@ func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 		enc.AddString("stringValue", *v.StringValue)
 	}
 	if v.ListValue != nil {
-		if err := enc.AddArray("listValue", (_List_ArbitraryValue_Zapper)(v.ListValue)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddArray("listValue", (_List_ArbitraryValue_Zapper)(v.ListValue)))
 	}
 	if v.MapValue != nil {
-		if err := enc.AddObject("mapValue", (_Map_String_ArbitraryValue_Zapper)(v.MapValue)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("mapValue", (_Map_String_ArbitraryValue_Zapper)(v.MapValue)))
 	}
-	return nil
+	return err
 }
 
 // GetBoolValue returns the value of BoolValue if it is set or its
@@ -674,6 +672,11 @@ func (v *Document) String() string {
 //
 // This function performs a deep comparison.
 func (v *Document) Equals(rhs *Document) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Pdf == nil && rhs.Pdf == nil) || (v.Pdf != nil && rhs.Pdf != nil && v.Pdf.Equals(rhs.Pdf))) {
 		return false
 	}
@@ -686,14 +689,14 @@ func (v *Document) Equals(rhs *Document) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Document.
-func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Pdf != nil {
 		enc.AddString("pdf", base64.StdEncoding.EncodeToString(([]byte)(v.Pdf)))
 	}
 	if v.PlainText != nil {
 		enc.AddString("plainText", *v.PlainText)
 	}
-	return nil
+	return err
 }
 
 // GetPdf returns the value of Pdf if it is set or its
@@ -788,12 +791,17 @@ func (v *EmptyUnion) String() string {
 //
 // This function performs a deep comparison.
 func (v *EmptyUnion) Equals(rhs *EmptyUnion) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of EmptyUnion.
-func (v *EmptyUnion) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	return nil
+func (v *EmptyUnion) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	return err
 }

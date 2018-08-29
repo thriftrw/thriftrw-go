@@ -6,6 +6,7 @@ package services
 import (
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	"go.uber.org/thriftrw/gen/internal/tests/unions"
 	"go.uber.org/thriftrw/wire"
@@ -115,6 +116,11 @@ func (v *KeyValue_GetValue_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Key_EqualsPtr(v.Key, rhs.Key) {
 		return false
 	}
@@ -124,11 +130,11 @@ func (v *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_GetValue_Args.
-func (v *KeyValue_GetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *KeyValue_GetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Key != nil {
 		enc.AddString("key", (string)(*v.Key))
 	}
-	return nil
+	return err
 }
 
 // GetKey returns the value of Key if it is set or its
@@ -390,6 +396,11 @@ func (v *KeyValue_GetValue_Result) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
 		return false
 	}
@@ -402,18 +413,14 @@ func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_GetValue_Result.
-func (v *KeyValue_GetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *KeyValue_GetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Success != nil {
-		if err := enc.AddObject("success", v.Success); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("success", v.Success))
 	}
 	if v.DoesNotExist != nil {
-		if err := enc.AddObject("doesNotExist", v.DoesNotExist); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("doesNotExist", v.DoesNotExist))
 	}
-	return nil
+	return err
 }
 
 // GetSuccess returns the value of Success if it is set or its
