@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - gen: Equals methods on generated structs no longer panic if either value is
   nil.
+- gen: Fixed a bug where `*_Values` functions for empty enums would not be
+  generated.
 
 ## [1.12.0] - 2018-06-25
 ### Added

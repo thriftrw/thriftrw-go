@@ -17,6 +17,11 @@ import (
 
 type EmptyEnum int32
 
+// EmptyEnum_Values returns all recognized values of EmptyEnum.
+func EmptyEnum_Values() []EmptyEnum {
+	return []EmptyEnum{}
+}
+
 // UnmarshalText tries to decode EmptyEnum from a byte slice
 // containing its name.
 func (v *EmptyEnum) UnmarshalText(value []byte) error {
