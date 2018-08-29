@@ -1859,7 +1859,8 @@ func TestStructLabel(t *testing.T) {
 }
 
 func TestNilStructEquals(t *testing.T) {
-	structTypes := []interface{}{
+	// Samples of values being tested.
+	samples := []interface{}{
 		te.StructWithOptionalEnum{},
 		tx.DoesNotExistException{},
 		tx.EmptyException{},
@@ -1916,8 +1917,8 @@ func TestNilStructEquals(t *testing.T) {
 		tf.KeyValue_Size_Result{},
 	}
 
-	for _, st := range structTypes {
-		structType := reflect.TypeOf(st)
+	for _, sample := range samples {
+		structType := reflect.TypeOf(sample)
 		ptrType := reflect.PtrTo(structType)
 
 		t.Run(structType.Name(), func(t *testing.T) {
