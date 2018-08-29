@@ -116,6 +116,13 @@ func TestQuickRoundTrip(t *testing.T) {
 		// ObjectMarshaler.
 		NoLog bool
 
+		// If set, the Equals check will not be performed. The check should be
+		// disabled for types for which we cannot reliably generate random
+		// values at this time: maps with unhashable keys. The randomly
+		// generated values will have duplicate keys.
+		NoEquals bool
+		// TODO(abg): Use a custom generator for these types^
+
 		// Whether we should evaluate JSON round-tripping. This is opt-in
 		// rather than opt-out because struct types that use collections won't
 		// round-trip with JSON successfully due to nil versus empty
@@ -139,11 +146,11 @@ func TestQuickRoundTrip(t *testing.T) {
 
 	tests := []testCase{
 		// structs, unions, and exceptions
-		{Sample: tc.ContainersOfContainers{}},
+		{Sample: tc.ContainersOfContainers{}, NoEquals: true},
 		{Sample: tc.EnumContainers{}},
 		{Sample: tc.ListOfConflictingEnums{}},
 		{Sample: tc.ListOfConflictingUUIDs{}},
-		{Sample: tc.MapOfBinaryAndString{}},
+		{Sample: tc.MapOfBinaryAndString{}, NoEquals: true},
 		{Sample: tc.PrimitiveContainersRequired{}},
 		{Sample: tc.PrimitiveContainers{}},
 		{Sample: td.DefaultPrimitiveTypedef{}},
@@ -356,6 +363,29 @@ func TestQuickRoundTrip(t *testing.T) {
 					}
 				})
 			}
+
+			if !tt.NoEquals {
+				t.Run("Equals", func(t *testing.T) {
+					for _, giveValue := range values {
+						give := reflect.ValueOf(giveValue)
+						rhs := give
+
+						equals := give.MethodByName("Equals")
+						require.True(t, equals.IsValid(), "Type does not implement Equals()")
+
+						if equals.Type().In(0) != rhs.Type() {
+							// We were passing the objects around by pointer but
+							// we need the value-form here.
+							rhs = rhs.Elem()
+						}
+
+						assert.True(t,
+							equals.Call([]reflect.Value{rhs})[0].Bool(),
+							"%v should be equal to itself", giveValue)
+					}
+				})
+			}
+
 		})
 	}
 }
