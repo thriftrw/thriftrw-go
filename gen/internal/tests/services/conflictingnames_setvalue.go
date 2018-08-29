@@ -117,6 +117,11 @@ func (v *ConflictingNames_SetValue_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
 		return false
 	}
@@ -308,6 +313,11 @@ func (v *ConflictingNames_SetValue_Result) String() string {
 //
 // This function performs a deep comparison.
 func (v *ConflictingNames_SetValue_Result) Equals(rhs *ConflictingNames_SetValue_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }

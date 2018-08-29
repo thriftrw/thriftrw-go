@@ -363,6 +363,11 @@ func _RecordType_1_EqualsPtr(lhs, rhs *enums.RecordType) bool {
 //
 // This function performs a deep comparison.
 func (v *Records) Equals(rhs *Records) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_RecordType_EqualsPtr(v.RecordType, rhs.RecordType) {
 		return false
 	}

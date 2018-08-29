@@ -85,6 +85,11 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *NonStandardServiceName_NonStandardFunctionName_Args) Equals(rhs *NonStandardServiceName_NonStandardFunctionName_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
@@ -254,6 +259,11 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) String() string 
 //
 // This function performs a deep comparison.
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) Equals(rhs *NonStandardServiceName_NonStandardFunctionName_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }

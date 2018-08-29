@@ -144,6 +144,11 @@ func (v *KeyValue_SetValueV2_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_SetValueV2_Args) Equals(rhs *KeyValue_SetValueV2_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Key == rhs.Key) {
 		return false
 	}
@@ -338,6 +343,11 @@ func (v *KeyValue_SetValueV2_Result) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_SetValueV2_Result) Equals(rhs *KeyValue_SetValueV2_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }

@@ -116,6 +116,11 @@ func (v *KeyValue_GetValue_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Key_EqualsPtr(v.Key, rhs.Key) {
 		return false
 	}
@@ -391,6 +396,11 @@ func (v *KeyValue_GetValue_Result) String() string {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
 		return false
 	}

@@ -148,6 +148,11 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 //
 // This function performs a deep comparison.
 func (v *AccessorConflict) Equals(rhs *AccessorConflict) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_String_EqualsPtr(v.Name, rhs.Name) {
 		return false
 	}
@@ -312,6 +317,11 @@ func (v *AccessorNoConflict) String() string {
 //
 // This function performs a deep comparison.
 func (v *AccessorNoConflict) Equals(rhs *AccessorNoConflict) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_String_EqualsPtr(v.Getname, rhs.Getname) {
 		return false
 	}
@@ -932,6 +942,11 @@ func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
 //
 // This function performs a deep comparison.
 func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.A == nil && rhs.A == nil) || (v.A != nil && rhs.A != nil && _List_String_Equals(v.A, rhs.A))) {
 		return false
 	}
@@ -1145,6 +1160,11 @@ func (v *StructCollision) String() string {
 //
 // This function performs a deep comparison.
 func (v *StructCollision) Equals(rhs *StructCollision) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.CollisionField == rhs.CollisionField) {
 		return false
 	}
@@ -1318,6 +1338,11 @@ func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 //
 // This function performs a deep comparison.
 func (v *UnionCollision) Equals(rhs *UnionCollision) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Bool_EqualsPtr(v.CollisionField, rhs.CollisionField) {
 		return false
 	}
@@ -1476,6 +1501,11 @@ func (v *WithDefault) String() string {
 //
 // This function performs a deep comparison.
 func (v *WithDefault) Equals(rhs *WithDefault) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Pouet == nil && rhs.Pouet == nil) || (v.Pouet != nil && rhs.Pouet != nil && v.Pouet.Equals(rhs.Pouet))) {
 		return false
 	}
@@ -1842,6 +1872,11 @@ func (v *StructCollision2) String() string {
 //
 // This function performs a deep comparison.
 func (v *StructCollision2) Equals(rhs *StructCollision2) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.CollisionField == rhs.CollisionField) {
 		return false
 	}
@@ -2005,6 +2040,11 @@ func (v *UnionCollision2) String() string {
 //
 // This function performs a deep comparison.
 func (v *UnionCollision2) Equals(rhs *UnionCollision2) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_Bool_EqualsPtr(v.CollisionField, rhs.CollisionField) {
 		return false
 	}

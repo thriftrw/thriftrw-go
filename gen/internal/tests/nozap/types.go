@@ -716,6 +716,11 @@ func _Map_I64_Double_Equals(lhs, rhs map[int64]float64) bool {
 //
 // This function performs a deep comparison.
 func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.BoolField == rhs.BoolField) {
 		return false
 	}

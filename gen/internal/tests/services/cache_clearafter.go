@@ -122,6 +122,11 @@ func _I64_EqualsPtr(lhs, rhs *int64) bool {
 //
 // This function performs a deep comparison.
 func (v *Cache_ClearAfter_Args) Equals(rhs *Cache_ClearAfter_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_I64_EqualsPtr(v.DurationMS, rhs.DurationMS) {
 		return false
 	}

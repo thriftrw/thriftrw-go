@@ -173,6 +173,11 @@ func _List_Key_Equals(lhs, rhs []Key) bool {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_GetManyValues_Args) Equals(rhs *KeyValue_GetManyValues_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Range == nil && rhs.Range == nil) || (v.Range != nil && rhs.Range != nil && _List_Key_Equals(v.Range, rhs.Range))) {
 		return false
 	}
@@ -527,6 +532,11 @@ func _List_ArbitraryValue_Equals(lhs, rhs []*unions.ArbitraryValue) bool {
 //
 // This function performs a deep comparison.
 func (v *KeyValue_GetManyValues_Result) Equals(rhs *KeyValue_GetManyValues_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && _List_ArbitraryValue_Equals(v.Success, rhs.Success))) {
 		return false
 	}
