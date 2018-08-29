@@ -40,36 +40,62 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func generateValue(t *testing.T, typ reflect.Type, rand *rand.Rand) thriftType {
-	for {
-		// We will keep trying to generate a value until a valid one
-		// is found.
+func defaultValueGenerator(typ reflect.Type) func(*testing.T, *rand.Rand) thriftType {
+	return func(t *testing.T, rand *rand.Rand) thriftType {
+		for {
+			// We will keep trying to generate a value until a valid one
+			// is found.
 
-		v, ok := quick.Value(typ, rand)
-		require.True(t, ok, "failed to generate a value")
+			v, ok := quick.Value(typ, rand)
+			require.True(t, ok, "failed to generate a value")
 
-		tval := v.Addr().Interface().(thriftType)
+			tval := v.Addr().Interface().(thriftType)
 
-		// TODO(abg): ToWire + EvaluateValue to validate here means we end
-		// up serializing this value twice. We may want to include a
-		// Validate method on generated types.
+			// TODO(abg): ToWire + EvaluateValue to validate here means we end
+			// up serializing this value twice. We may want to include a
+			// Validate method on generated types.
 
-		w, err := tval.ToWire()
-		if err != nil {
-			// Value fails validity check. Try again.
-			continue
+			w, err := tval.ToWire()
+			if err != nil {
+				// Value fails validity check. Try again.
+				continue
+			}
+
+			// Because we evaluate collections lazily, validation issues
+			// with items in them won't be known until we try to serialize
+			// it or explicitly evaluate the lazy lists with
+			// wire.EvaluateValue.
+			if err := wire.EvaluateValue(w); err != nil {
+				// Value fails validity check. Try again.
+				continue
+			}
+
+			return tval
+		}
+	}
+}
+
+// enumValueGenerator builds a generator for random enum values given the
+// `*_Values` function for that enum.
+func enumValueGenerator(valuesFunc interface{}) func(*testing.T, *rand.Rand) thriftType {
+	vfunc := reflect.ValueOf(valuesFunc)
+	typ := vfunc.Type().Out(0).Elem() // Foo_Values() []Foo -> Foo
+	return func(t *testing.T, rand *rand.Rand) thriftType {
+		knownValues := vfunc.Call(nil)[0]
+
+		var giveV reflect.Value
+		// Flip a coin to decide whether we're evaluating a known or
+		// unknown value.
+		if rand.Int()%2 == 0 && knownValues.Len() > 0 {
+			// Pick a known value at random
+			giveV = knownValues.Index(rand.Intn(knownValues.Len()))
+		} else {
+			// give = MyEnum($randomValue)
+			giveV = reflect.New(typ).Elem()
+			giveV.Set(reflect.ValueOf(rand.Int31()).Convert(typ))
 		}
 
-		// Because we evaluate collections lazily, validation issues
-		// with items in them won't be known until we try to serialize
-		// it or explicitly evaluate the lazy lists with
-		// wire.EvaluateValue.
-		if err := wire.EvaluateValue(w); err != nil {
-			// Value fails validity check. Try again.
-			continue
-		}
-
-		return tval
+		return giveV.Addr().Interface().(thriftType)
 	}
 }
 
@@ -77,6 +103,10 @@ func TestQuickRoundTrip(t *testing.T) {
 	type testCase struct {
 		// Sample value of the type to be tested.
 		Sample interface{}
+
+		// Specifies how we generate valid values of this type. Defaults to
+		// defaultValueGenerator(Type) if unspecified.
+		Generator func(*testing.T, *rand.Rand) thriftType
 	}
 
 	// The following types from our tests have been skipped.
@@ -152,6 +182,44 @@ func TestQuickRoundTrip(t *testing.T) {
 		{Sample: td.StateMap{}},
 		{Sample: td.Timestamp(0)},
 		{Sample: td.UUID{}},
+
+		// enums
+		{
+			Sample:    te.EmptyEnum(0),
+			Generator: enumValueGenerator(te.EmptyEnum_Values),
+		},
+		{
+			Sample:    te.EnumDefault(0),
+			Generator: enumValueGenerator(te.EnumDefault_Values),
+		},
+		{
+			Sample:    te.EnumWithDuplicateName(0),
+			Generator: enumValueGenerator(te.EnumWithDuplicateName_Values),
+		},
+		{
+			Sample:    te.EnumWithDuplicateValues(0),
+			Generator: enumValueGenerator(te.EnumWithDuplicateValues_Values),
+		},
+		{
+			Sample:    te.EnumWithLabel(0),
+			Generator: enumValueGenerator(te.EnumWithLabel_Values),
+		},
+		{
+			Sample:    te.EnumWithValues(0),
+			Generator: enumValueGenerator(te.EnumWithValues_Values),
+		},
+		{
+			Sample:    te.LowerCaseEnum(0),
+			Generator: enumValueGenerator(te.LowerCaseEnum_Values),
+		},
+		{
+			Sample:    te.RecordType(0),
+			Generator: enumValueGenerator(te.RecordType_Values),
+		},
+		{
+			Sample:    te.RecordTypeValues(0),
+			Generator: enumValueGenerator(te.RecordTypeValues_Values),
+		},
 	}
 
 	// Log the seed so that we can reproduce this if it ever fails.
@@ -163,16 +231,27 @@ func TestQuickRoundTrip(t *testing.T) {
 	for _, tt := range tests {
 		typ := reflect.TypeOf(tt.Sample)
 		t.Run(typ.Name(), func(t *testing.T) {
-			for i := 0; i < numValues; i++ {
-				give := generateValue(t, typ, rand)
-				w, err := give.ToWire()
-				require.NoError(t, err, "failed to Thrift encode %v", give)
-
-				got := reflect.New(typ).Interface().(thriftType)
-				require.NoError(t, got.FromWire(w), "failed to Thrift decode from %v", w)
-
-				assert.Equal(t, got, give)
+			generator := tt.Generator
+			if generator == nil {
+				generator = defaultValueGenerator(typ)
 			}
+
+			values := make([]thriftType, numValues)
+			for i := range values {
+				values[i] = generator(t, rand)
+			}
+
+			t.Run("Thrift", func(t *testing.T) {
+				for _, give := range values {
+					w, err := give.ToWire()
+					require.NoError(t, err, "failed to Thrift encode %v", give)
+
+					got := reflect.New(typ).Interface().(thriftType)
+					require.NoError(t, got.FromWire(w), "failed to Thrift decode from %v", w)
+
+					assert.Equal(t, got, give)
+				}
+			})
 		})
 	}
 }

@@ -79,6 +79,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				<- formatDoc .Doc><enumItemName $enumName .> <$enumName> = <.Value>
 			<end>
 			)
+		<end>
 
 		// <$enumName>_Values returns all recognized values of <$enumName>.
 		func <$enumName>_Values() []<$enumName> {
@@ -88,7 +89,6 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				<end>
 			}
 		}
-		<end>
 
 		<$v := newVar "v">
 		<$value := newVar "value">
