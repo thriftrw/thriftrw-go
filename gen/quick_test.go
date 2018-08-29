@@ -21,6 +21,7 @@
 package gen
 
 import (
+	"encoding/json"
 	"math/rand"
 	"reflect"
 	"testing"
@@ -113,6 +114,12 @@ func TestQuickRoundTrip(t *testing.T) {
 		// for typedefs of primitives which can't implement ArrayMarshaler or
 		// ObjectMarshaler.
 		NoLog bool
+
+		// Whether we should evaluate JSON round-tripping. This is opt-in
+		// rather than opt-out because struct types that use collections won't
+		// round-trip with JSON successfully due to nil versus empty
+		// collection differences.
+		JSON bool
 	}
 
 	// The following types from our tests have been skipped.
@@ -193,38 +200,47 @@ func TestQuickRoundTrip(t *testing.T) {
 		{
 			Sample:    te.EmptyEnum(0),
 			Generator: enumValueGenerator(te.EmptyEnum_Values),
+			JSON:      true,
 		},
 		{
 			Sample:    te.EnumDefault(0),
 			Generator: enumValueGenerator(te.EnumDefault_Values),
+			JSON:      true,
 		},
 		{
 			Sample:    te.EnumWithDuplicateName(0),
 			Generator: enumValueGenerator(te.EnumWithDuplicateName_Values),
+			JSON:      true,
 		},
 		{
 			Sample:    te.EnumWithDuplicateValues(0),
 			Generator: enumValueGenerator(te.EnumWithDuplicateValues_Values),
+			JSON:      true,
 		},
 		{
 			Sample:    te.EnumWithLabel(0),
 			Generator: enumValueGenerator(te.EnumWithLabel_Values),
+			JSON:      true,
 		},
 		{
 			Sample:    te.EnumWithValues(0),
 			Generator: enumValueGenerator(te.EnumWithValues_Values),
+			JSON:      true,
 		},
 		{
 			Sample:    te.LowerCaseEnum(0),
 			Generator: enumValueGenerator(te.LowerCaseEnum_Values),
+			JSON:      true,
 		},
 		{
 			Sample:    te.RecordType(0),
 			Generator: enumValueGenerator(te.RecordType_Values),
+			JSON:      true,
 		},
 		{
 			Sample:    te.RecordTypeValues(0),
 			Generator: enumValueGenerator(te.RecordTypeValues_Values),
+			JSON:      true,
 		},
 	}
 
@@ -266,6 +282,24 @@ func TestQuickRoundTrip(t *testing.T) {
 					}, "failed to String %#v", give)
 				}
 			})
+
+			if tt.JSON {
+				t.Run("JSON", func(t *testing.T) {
+					for _, giveValue := range values {
+						give, ok := giveValue.(json.Marshaler)
+						require.True(t, ok, "Type does not implement json.Marshaler")
+
+						bs, err := give.MarshalJSON()
+						require.NoError(t, err, "failed to encode %v", give)
+
+						got, ok := reflect.New(typ).Interface().(json.Unmarshaler)
+						require.True(t, ok, "Type does not implement json.Unmarshaler")
+
+						require.NoError(t, got.UnmarshalJSON(bs), "failed to decode from %q", bs)
+						assert.Equal(t, got, give, "could not round-trip")
+					}
+				})
+			}
 
 			if !tt.NoLog {
 				t.Run("Zap", func(t *testing.T) {
