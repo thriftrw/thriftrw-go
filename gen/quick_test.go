@@ -35,6 +35,7 @@ import (
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
 	"go.uber.org/thriftrw/wire"
+	"go.uber.org/zap/zapcore"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -107,6 +108,11 @@ func TestQuickRoundTrip(t *testing.T) {
 		// Specifies how we generate valid values of this type. Defaults to
 		// defaultValueGenerator(Type) if unspecified.
 		Generator func(*testing.T, *rand.Rand) thriftType
+
+		// If set, logging for this type will not be tested. This is needed
+		// for typedefs of primitives which can't implement ArrayMarshaler or
+		// ObjectMarshaler.
+		NoLog bool
 	}
 
 	// The following types from our tests have been skipped.
@@ -176,11 +182,11 @@ func TestQuickRoundTrip(t *testing.T) {
 		{Sample: td.EdgeMap{}},
 		{Sample: td.FrameGroup{}},
 		{Sample: td.MyEnum(0)},
-		{Sample: td.PDF{}},
+		{Sample: td.PDF{}, NoLog: true},
 		{Sample: td.PointMap{}},
-		{Sample: td.State("")},
+		{Sample: td.State(""), NoLog: true},
 		{Sample: td.StateMap{}},
-		{Sample: td.Timestamp(0)},
+		{Sample: td.Timestamp(0), NoLog: true},
 		{Sample: td.UUID{}},
 
 		// enums
@@ -260,6 +266,30 @@ func TestQuickRoundTrip(t *testing.T) {
 					}, "failed to String %#v", give)
 				}
 			})
+
+			if !tt.NoLog {
+				t.Run("Zap", func(t *testing.T) {
+					for _, give := range values {
+						assert.NotPanics(t, func() {
+							enc := zapcore.NewMapObjectEncoder()
+
+							if obj, ok := give.(zapcore.ObjectMarshaler); ok {
+								assert.NoErrorf(t, obj.MarshalLogObject(enc), "failed to log %v", give)
+								return
+							}
+
+							if arr, ok := give.(zapcore.ArrayMarshaler); ok {
+								assert.NoErrorf(t, enc.AddArray("values", arr), "failed to log %v", give)
+								return
+							}
+
+							t.Fatal(
+								"Type does not implement zapcore.ObjectMarshaler or zapcore.ArrayMarshaler. "+
+									"Did you mean to add NoLog?", typ)
+						}, "failed to log %v", give)
+					}
+				})
+			}
 		})
 	}
 }
