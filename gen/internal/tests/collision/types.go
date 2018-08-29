@@ -392,7 +392,7 @@ func (v *LittlePotatoe) FromWire(w wire.Value) error {
 // Equals returns true if this LittlePotatoe is equal to the provided
 // LittlePotatoe.
 func (lhs LittlePotatoe) Equals(rhs LittlePotatoe) bool {
-	return (lhs == rhs)
+	return ((int64)(lhs) == (int64)(rhs))
 }
 
 type MyEnum int32
@@ -1563,7 +1563,7 @@ func (v *LittlePotatoe2) FromWire(w wire.Value) error {
 // Equals returns true if this LittlePotatoe2 is equal to the provided
 // LittlePotatoe2.
 func (lhs LittlePotatoe2) Equals(rhs LittlePotatoe2) bool {
-	return (lhs == rhs)
+	return ((float64)(lhs) == (float64)(rhs))
 }
 
 type MyEnum2 int32

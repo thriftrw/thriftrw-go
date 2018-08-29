@@ -41,7 +41,7 @@ func (v *UUID) FromWire(w wire.Value) error {
 // Equals returns true if this UUID is equal to the provided
 // UUID.
 func (lhs UUID) Equals(rhs UUID) bool {
-	return (lhs == rhs)
+	return ((string)(lhs) == (string)(rhs))
 }
 
 type UUIDConflict struct {

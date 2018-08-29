@@ -97,11 +97,9 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 		// Equals returns true if this <typeName .> is equal to the provided
 		// <typeName .>.
 		func (<$lhs> <$typedefType>) Equals(<$rhs> <$typedefType>) bool {
-			<if isStructType . ->
-				return (<typeReference .Target>)(<$lhs>).Equals((<typeReference .Target>)(<$rhs>))
-			<- else ->
-				return <equals .Target $lhs $rhs>
-			<- end>
+			<- $lhsCast := printf "(%v)(%v)" (typeReference .Target) $lhs ->
+			<- $rhsCast := printf "(%v)(%v)" (typeReference .Target) $rhs ->
+			return <equals .Target $lhsCast $rhsCast>
 		}
 
 		<if not (checkNoZap) ->

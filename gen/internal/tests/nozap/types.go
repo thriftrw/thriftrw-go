@@ -861,7 +861,7 @@ func (v *StringList) FromWire(w wire.Value) error {
 // Equals returns true if this StringList is equal to the provided
 // StringList.
 func (lhs StringList) Equals(rhs StringList) bool {
-	return _List_String_Equals(lhs, rhs)
+	return _List_String_Equals(([]string)(lhs), ([]string)(rhs))
 }
 
 type _Map_String_String_MapItemList map[string]string
@@ -972,5 +972,5 @@ func (v *StringMap) FromWire(w wire.Value) error {
 // Equals returns true if this StringMap is equal to the provided
 // StringMap.
 func (lhs StringMap) Equals(rhs StringMap) bool {
-	return _Map_String_String_Equals(lhs, rhs)
+	return _Map_String_String_Equals((map[string]string)(lhs), (map[string]string)(rhs))
 }

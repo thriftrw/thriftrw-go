@@ -340,5 +340,5 @@ func (v *Key) FromWire(w wire.Value) error {
 // Equals returns true if this Key is equal to the provided
 // Key.
 func (lhs Key) Equals(rhs Key) bool {
-	return (lhs == rhs)
+	return ((string)(lhs) == (string)(rhs))
 }

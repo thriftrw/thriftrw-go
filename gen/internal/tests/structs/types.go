@@ -3922,7 +3922,7 @@ func (v *UserMap) FromWire(w wire.Value) error {
 // Equals returns true if this UserMap is equal to the provided
 // UserMap.
 func (lhs UserMap) Equals(rhs UserMap) bool {
-	return _Map_String_User_Equals(lhs, rhs)
+	return _Map_String_User_Equals((map[string]*User)(lhs), (map[string]*User)(rhs))
 }
 
 func (v UserMap) MarshalLogObject(enc zapcore.ObjectEncoder) error {

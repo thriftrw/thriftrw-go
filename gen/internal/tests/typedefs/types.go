@@ -124,7 +124,7 @@ func (v *BinarySet) FromWire(w wire.Value) error {
 // Equals returns true if this BinarySet is equal to the provided
 // BinarySet.
 func (lhs BinarySet) Equals(rhs BinarySet) bool {
-	return _Set_Binary_Equals(lhs, rhs)
+	return _Set_Binary_Equals(([][]byte)(lhs), ([][]byte)(rhs))
 }
 
 func (v BinarySet) MarshalLogArray(enc zapcore.ArrayEncoder) error {
@@ -476,7 +476,13 @@ func (v *EdgeMap) FromWire(w wire.Value) error {
 // Equals returns true if this EdgeMap is equal to the provided
 // EdgeMap.
 func (lhs EdgeMap) Equals(rhs EdgeMap) bool {
-	return _Map_Edge_Edge_Equals(lhs, rhs)
+	return _Map_Edge_Edge_Equals(([]struct {
+		Key   *structs.Edge
+		Value *structs.Edge
+	})(lhs), ([]struct {
+		Key   *structs.Edge
+		Value *structs.Edge
+	})(rhs))
 }
 
 func (v EdgeMap) MarshalLogArray(enc zapcore.ArrayEncoder) error {
@@ -779,7 +785,7 @@ func (v *EventGroup) FromWire(w wire.Value) error {
 // Equals returns true if this EventGroup is equal to the provided
 // EventGroup.
 func (lhs EventGroup) Equals(rhs EventGroup) bool {
-	return _List_Event_Equals(lhs, rhs)
+	return _List_Event_Equals(([]*Event)(lhs), ([]*Event)(rhs))
 }
 
 func (v EventGroup) MarshalLogArray(enc zapcore.ArrayEncoder) error {
@@ -900,7 +906,7 @@ func (v *FrameGroup) FromWire(w wire.Value) error {
 // Equals returns true if this FrameGroup is equal to the provided
 // FrameGroup.
 func (lhs FrameGroup) Equals(rhs FrameGroup) bool {
-	return _Set_Frame_Equals(lhs, rhs)
+	return _Set_Frame_Equals(([]*structs.Frame)(lhs), ([]*structs.Frame)(rhs))
 }
 
 func (v FrameGroup) MarshalLogArray(enc zapcore.ArrayEncoder) error {
@@ -941,7 +947,7 @@ func (v *MyEnum) FromWire(w wire.Value) error {
 // Equals returns true if this MyEnum is equal to the provided
 // MyEnum.
 func (lhs MyEnum) Equals(rhs MyEnum) bool {
-	return lhs.Equals(rhs)
+	return (enums.EnumWithValues)(lhs).Equals((enums.EnumWithValues)(rhs))
 }
 
 func (v MyEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
@@ -976,7 +982,7 @@ func (v *PDF) FromWire(w wire.Value) error {
 // Equals returns true if this PDF is equal to the provided
 // PDF.
 func (lhs PDF) Equals(rhs PDF) bool {
-	return bytes.Equal(lhs, rhs)
+	return bytes.Equal(([]byte)(lhs), ([]byte)(rhs))
 }
 
 type _Map_Point_Point_MapItemList []struct {
@@ -1167,7 +1173,13 @@ func (v *PointMap) FromWire(w wire.Value) error {
 // Equals returns true if this PointMap is equal to the provided
 // PointMap.
 func (lhs PointMap) Equals(rhs PointMap) bool {
-	return _Map_Point_Point_Equals(lhs, rhs)
+	return _Map_Point_Point_Equals(([]struct {
+		Key   *structs.Point
+		Value *structs.Point
+	})(lhs), ([]struct {
+		Key   *structs.Point
+		Value *structs.Point
+	})(rhs))
 }
 
 func (v PointMap) MarshalLogArray(enc zapcore.ArrayEncoder) error {
@@ -1205,7 +1217,7 @@ func (v *State) FromWire(w wire.Value) error {
 // Equals returns true if this State is equal to the provided
 // State.
 func (lhs State) Equals(rhs State) bool {
-	return (lhs == rhs)
+	return ((string)(lhs) == (string)(rhs))
 }
 
 type _Map_State_I64_MapItemList map[State]int64
@@ -1327,7 +1339,7 @@ func (v *StateMap) FromWire(w wire.Value) error {
 // Equals returns true if this StateMap is equal to the provided
 // StateMap.
 func (lhs StateMap) Equals(rhs StateMap) bool {
-	return _Map_State_I64_Equals(lhs, rhs)
+	return _Map_State_I64_Equals((map[State]int64)(lhs), (map[State]int64)(rhs))
 }
 
 func (v StateMap) MarshalLogObject(enc zapcore.ObjectEncoder) error {
@@ -1365,7 +1377,7 @@ func (v *Timestamp) FromWire(w wire.Value) error {
 // Equals returns true if this Timestamp is equal to the provided
 // Timestamp.
 func (lhs Timestamp) Equals(rhs Timestamp) bool {
-	return (lhs == rhs)
+	return ((int64)(lhs) == (int64)(rhs))
 }
 
 type Transition struct {
