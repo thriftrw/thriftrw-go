@@ -309,7 +309,7 @@ func TestBinaryDecodeFailure(t *testing.T) {
 func TestBinaryEOFFailure(t *testing.T) {
 	tests := []failureTest{
 		{},
-		{0x00}, // incomplete length
+		{0x00},                   // incomplete length
 		{0x00, 0x00, 0x00, 0x01}, // length mismatch
 		{0x22, 0x6e, 0x6f, 0x74}, // really long length
 	}
@@ -443,7 +443,7 @@ func TestMapDecodeFailure(t *testing.T) {
 
 func TestMapEOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{}, // empty
+		{},                                   // empty
 		{0x08, 0x0B, 0x00, 0x00, 0x00, 0x01}, // no values
 	}
 
@@ -475,7 +475,7 @@ func TestSetDecodeFailure(t *testing.T) {
 
 func TestSetEOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{}, // empty
+		{},                             // empty
 		{0x08, 0x00, 0x00, 0x00, 0x01}, // no values
 	}
 
@@ -549,7 +549,7 @@ func TestListDecodeFailure(t *testing.T) {
 
 func TestListEOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{}, // empty
+		{},                             // empty
 		{0x08, 0x00, 0x00, 0x00, 0x01}, // no values
 	}
 
