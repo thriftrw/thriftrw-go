@@ -47,6 +47,27 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func thriftTypeIsValid(v thriftType) bool {
+	// TODO(abg): ToWire + EvaluateValue to validate here means we end
+	// up serializing this value twice. We may want to include a
+	// Validate method on generated types.
+
+	// We validate while serializing.
+	w, err := v.ToWire()
+	if err != nil {
+		return false
+	}
+
+	// Because we evaluate collections lazily, validation issues with items in
+	// them won't be known until we try to serialize it or explicitly evaluate
+	// the lazy lists with wire.EvaluateValue.
+	if err := wire.EvaluateValue(w); err != nil {
+		return false
+	}
+
+	return true
+}
+
 func defaultValueGenerator(typ reflect.Type) func(*testing.T, *rand.Rand) thriftType {
 	return func(t *testing.T, rand *rand.Rand) thriftType {
 		for {
@@ -57,22 +78,38 @@ func defaultValueGenerator(typ reflect.Type) func(*testing.T, *rand.Rand) thrift
 			require.True(t, ok, "failed to generate a value")
 
 			tval := v.Addr().Interface().(thriftType)
-
-			// TODO(abg): ToWire + EvaluateValue to validate here means we end
-			// up serializing this value twice. We may want to include a
-			// Validate method on generated types.
-
-			w, err := tval.ToWire()
-			if err != nil {
+			if !thriftTypeIsValid(tval) {
 				// Value fails validity check. Try again.
 				continue
 			}
 
-			// Because we evaluate collections lazily, validation issues
-			// with items in them won't be known until we try to serialize
-			// it or explicitly evaluate the lazy lists with
-			// wire.EvaluateValue.
-			if err := wire.EvaluateValue(w); err != nil {
+			return tval
+		}
+	}
+}
+
+// Version fo defaultValueGenerator that sets only one of the fields of a
+// union.
+func unionValueGenerator(sample interface{}) func(*testing.T, *rand.Rand) thriftType {
+	typ := reflect.TypeOf(sample)
+	return func(t *testing.T, rand *rand.Rand) thriftType {
+		for {
+			// We will keep trying to generate a value until a valid one
+			// is found.
+
+			v := reflect.New(typ)
+			if typ.NumField() == 0 {
+				return v.Interface().(thriftType)
+			}
+
+			field := typ.Field(rand.Intn(typ.NumField()))
+			fieldValue, ok := quick.Value(field.Type, rand)
+			require.True(t, ok, "failed to generate a value for field %q", field.Name)
+
+			v.Elem().FieldByIndex(field.Index).Set(fieldValue)
+
+			tval := v.Interface().(thriftType)
+			if !thriftTypeIsValid(tval) {
 				// Value fails validity check. Try again.
 				continue
 			}
@@ -138,13 +175,14 @@ func TestQuickRoundTrip(t *testing.T) {
 		Text bool
 	}
 
-	// The following types from our tests have been skipped.
-	// - unions.ArbitraryValue: Self-reference causes testing/quick to loop
-	//   for too long
-	// - services.KeyValue_SetValue_Args{}: Accepts an ArbitraryValue
-	// - services.KeyValue_SetValueV2_Args: Accepts an ArbitraryValue
-	// - services.KeyValue_GetManyValues_Result{}: Produces an ArbitraryValue
-	// - services.KeyValue_GetValue_Result{}: Produces an ArbitraryValue
+	// The following types from our tests have been skipped because they have
+	// recursive references (ArbitraryValue) and we don't have a way of
+	// addressing that at this time.
+	//
+	// - services.KeyValue_SetValue_Args
+	// - services.KeyValue_SetValueV2_Args
+	// - services.KeyValue_GetManyValues_Result
+	// - services.KeyValue_GetValue_Result
 
 	// TODO(abg): ^Use custom generators to make this not-a-problem.
 
@@ -183,8 +221,8 @@ func TestQuickRoundTrip(t *testing.T) {
 		{Sample: tl.PrimitiveContainers{}},
 		{Sample: tl.StructCollision2{}},
 		{Sample: tl.StructCollision{}},
-		{Sample: tl.UnionCollision2{}},
-		{Sample: tl.UnionCollision{}},
+		{Sample: tl.UnionCollision2{}, Generator: unionValueGenerator(tl.UnionCollision2{})},
+		{Sample: tl.UnionCollision{}, Generator: unionValueGenerator(tl.UnionCollision{})},
 		{Sample: tl.WithDefault{}},
 		{Sample: tle.Records{}},
 		{Sample: ts.ContactInfo{}},
@@ -204,8 +242,9 @@ func TestQuickRoundTrip(t *testing.T) {
 		{Sample: ts.StructLabels{}},
 		{Sample: ts.User{}},
 		{Sample: ts.ZapOptOutStruct{}},
-		{Sample: tu.Document{}},
-		{Sample: tu.EmptyUnion{}},
+		{Sample: tu.ArbitraryValue{}, Generator: unionValueGenerator(tu.ArbitraryValue{})},
+		{Sample: tu.Document{}, Generator: unionValueGenerator(tu.Document{})},
+		{Sample: tu.EmptyUnion{}, Generator: unionValueGenerator(tu.EmptyUnion{})},
 		{Sample: tul.UUIDConflict{}},
 		{Sample: tx.DoesNotExistException{}},
 		{Sample: tx.EmptyException{}},
