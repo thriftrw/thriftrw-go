@@ -143,7 +143,7 @@ func enumValueGenerator(valuesFunc interface{}) func(*testing.T, *rand.Rand) thr
 	}
 }
 
-func TestQuickRoundTrip(t *testing.T) {
+func TestQuickSuite(t *testing.T) {
 	type testCase struct {
 		// Sample value of the type to be tested.
 		Sample interface{}
@@ -358,6 +358,8 @@ func TestQuickRoundTrip(t *testing.T) {
 	const numValues = 1000 // number of values to test against
 	for _, tt := range tests {
 		typ := reflect.TypeOf(tt.Sample)
+		suite := quickSuite{Type: typ}
+
 		t.Run(typ.Name(), func(t *testing.T) {
 			generator := tt.Generator
 			if generator == nil {
@@ -371,56 +373,28 @@ func TestQuickRoundTrip(t *testing.T) {
 
 			t.Run("Thrift", func(t *testing.T) {
 				for _, give := range values {
-					w, err := give.ToWire()
-					require.NoError(t, err, "failed to Thrift encode %v", give)
-
-					got := reflect.New(typ).Interface().(thriftType)
-					require.NoError(t, got.FromWire(w), "failed to Thrift decode from %v", w)
-
-					assert.Equal(t, got, give)
+					suite.testThriftRoundTrip(t, give)
 				}
 			})
 
 			t.Run("String", func(t *testing.T) {
 				for _, give := range values {
-					assert.NotPanics(t, func() {
-						_ = give.String()
-					}, "failed to String %#v", give)
+					suite.testString(t, give)
 				}
 			})
 
 			if tt.JSON {
 				t.Run("JSON", func(t *testing.T) {
-					for _, giveValue := range values {
-						give, ok := giveValue.(json.Marshaler)
-						require.True(t, ok, "Type does not implement json.Marshaler")
-
-						bs, err := give.MarshalJSON()
-						require.NoError(t, err, "failed to encode %v", give)
-
-						got, ok := reflect.New(typ).Interface().(json.Unmarshaler)
-						require.True(t, ok, "Type does not implement json.Unmarshaler")
-
-						require.NoError(t, got.UnmarshalJSON(bs), "failed to decode from %q", bs)
-						assert.Equal(t, got, give, "could not round-trip")
+					for _, give := range values {
+						suite.testJSONRoundTrip(t, give)
 					}
 				})
 			}
 
 			if tt.Text {
 				t.Run("Text", func(t *testing.T) {
-					for _, giveValue := range values {
-						give, ok := giveValue.(encoding.TextMarshaler)
-						require.True(t, ok, "Type does not implement encoding.TextMarshaler")
-
-						bs, err := give.MarshalText()
-						require.NoError(t, err, "failed to encode %v", give)
-
-						got, ok := reflect.New(typ).Interface().(encoding.TextUnmarshaler)
-						require.True(t, ok, "Type does not implement encoding.TextUnmarshaler")
-
-						require.NoError(t, got.UnmarshalText(bs), "failed to decode from %q", bs)
-						assert.Equal(t, got, give, "could not round-trip")
+					for _, give := range values {
+						suite.testTextRoundtrip(t, give)
 					}
 				})
 			}
@@ -428,49 +402,141 @@ func TestQuickRoundTrip(t *testing.T) {
 			if !tt.NoLog {
 				t.Run("Zap", func(t *testing.T) {
 					for _, give := range values {
-						assert.NotPanics(t, func() {
-							enc := zapcore.NewMapObjectEncoder()
-
-							if obj, ok := give.(zapcore.ObjectMarshaler); ok {
-								assert.NoErrorf(t, obj.MarshalLogObject(enc), "failed to log %v", give)
-								return
-							}
-
-							if arr, ok := give.(zapcore.ArrayMarshaler); ok {
-								assert.NoErrorf(t, enc.AddArray("values", arr), "failed to log %v", give)
-								return
-							}
-
-							t.Fatal(
-								"Type does not implement zapcore.ObjectMarshaler or zapcore.ArrayMarshaler. "+
-									"Did you mean to add NoLog?", typ)
-						}, "failed to log %v", give)
+						suite.testLogging(t, give)
 					}
 				})
 			}
 
 			if !tt.NoEquals {
 				t.Run("Equals", func(t *testing.T) {
-					for _, giveValue := range values {
-						give := reflect.ValueOf(giveValue)
-						rhs := give
-
-						equals := give.MethodByName("Equals")
-						require.True(t, equals.IsValid(), "Type does not implement Equals()")
-
-						if equals.Type().In(0) != rhs.Type() {
-							// We were passing the objects around by pointer but
-							// we need the value-form here.
-							rhs = rhs.Elem()
-						}
-
-						assert.True(t,
-							equals.Call([]reflect.Value{rhs})[0].Bool(),
-							"%v should be equal to itself", giveValue)
+					for _, give := range values {
+						suite.testEquals(t, give)
 					}
 				})
 			}
 
 		})
 	}
+}
+
+type quickSuite struct {
+	Type reflect.Type
+}
+
+// Builds a new empty value of the underlying type.
+//
+// For structs, returns a pointer to an empty struct. For containers, an empty
+// container (not nil) is returned. For everything else, zero value is
+// returned.
+func (q *quickSuite) newEmpty() reflect.Value {
+	v := reflect.New(q.Type).Elem()
+	switch q.Type.Kind() {
+	case reflect.Map:
+		v.Set(reflect.MakeMap(q.Type))
+		return v
+	case reflect.Slice:
+		v.Set(reflect.MakeSlice(q.Type, 0, 0))
+		return v
+	case reflect.Struct:
+		v.Set(reflect.Zero(q.Type))
+		return v.Addr()
+	default:
+		return v
+	}
+}
+
+// Same as newEmpty but a pointer to the value is returned.
+func (q *quickSuite) newEmptyPtr() reflect.Value {
+	if q.Type.Kind() == reflect.Struct {
+		return q.newEmpty()
+	}
+	return q.newEmpty().Addr()
+}
+
+// Tests that the provided value round-trips successfully with wire.Value.
+func (q *quickSuite) testThriftRoundTrip(t *testing.T, give thriftType) {
+	w, err := give.ToWire()
+	require.NoError(t, err, "failed to Thrift encode %v", give)
+
+	got := q.newEmptyPtr().Interface().(thriftType)
+	require.NoError(t, got.FromWire(w), "failed to Thrift decode from %v", w)
+
+	assert.Equal(t, got, give)
+}
+
+// Tests that String() works on any valid value of this type.
+func (q *quickSuite) testString(t *testing.T, give thriftType) {
+	assert.NotPanics(t, func() {
+		_ = give.String()
+	}, "failed to String %#v", give)
+}
+
+// For types that support it (enums only at this time), tests that JSON
+// representations round-trip successfully.
+func (q *quickSuite) testJSONRoundTrip(t *testing.T, giveVal thriftType) {
+	give, ok := giveVal.(json.Marshaler)
+	require.True(t, ok, "does not implement json.Marshaler")
+
+	bs, err := give.MarshalJSON()
+	require.NoError(t, err, "failed to encode %v", give)
+
+	got, ok := q.newEmptyPtr().Interface().(json.Unmarshaler)
+	require.True(t, ok, "does not implement json.Unmarshaler")
+
+	require.NoError(t, got.UnmarshalJSON(bs), "failed to decode from %q", bs)
+	assert.Equal(t, got, give, "could not round-trip")
+}
+
+// For types that support it (enums only at this time), tests that
+// encoding.TextMarshaler representations round-trip successfully.
+func (q *quickSuite) testTextRoundtrip(t *testing.T, giveVal thriftType) {
+	give, ok := giveVal.(encoding.TextMarshaler)
+	require.True(t, ok, "does not implement encoding.TextMarshaler")
+
+	bs, err := give.MarshalText()
+	require.NoError(t, err, "failed to encode %v", give)
+
+	got, ok := q.newEmptyPtr().Interface().(encoding.TextUnmarshaler)
+	require.True(t, ok, "does not implement encoding.TextUnmarshaler")
+
+	require.NoError(t, got.UnmarshalText(bs), "failed to decode from %q", bs)
+	assert.Equal(t, got, give, "could not round-trip")
+}
+
+// Tests that the object can be logged by Zap.
+func (q *quickSuite) testLogging(t *testing.T, give thriftType) {
+	enc := zapcore.NewMapObjectEncoder()
+
+	if obj, ok := give.(zapcore.ObjectMarshaler); ok {
+		assert.NoErrorf(t, obj.MarshalLogObject(enc), "failed to log %v", give)
+		return
+	}
+
+	if arr, ok := give.(zapcore.ArrayMarshaler); ok {
+		assert.NoErrorf(t, enc.AddArray("values", arr), "failed to log %v", give)
+		return
+	}
+
+	t.Fatal(
+		"Type does not implement zapcore.ObjectMarshaler or zapcore.ArrayMarshaler. "+
+			"Did you mean to add NoLog?", q.Type)
+}
+
+// Tests that the v.Equals(v) always returns true.
+func (q *quickSuite) testEquals(t *testing.T, giveVal thriftType) {
+	give := reflect.ValueOf(giveVal)
+	rhs := give
+
+	equals := give.MethodByName("Equals")
+	require.True(t, equals.IsValid(), "Type does not implement Equals()")
+
+	if equals.Type().In(0) != rhs.Type() {
+		// We were passing the objects around by pointer but
+		// we need the value-form here.
+		rhs = rhs.Elem()
+	}
+
+	assert.True(t,
+		equals.Call([]reflect.Value{rhs})[0].Bool(),
+		"%v should be equal to itself", giveVal)
 }
