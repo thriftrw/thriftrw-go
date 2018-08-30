@@ -29,13 +29,17 @@ import (
 	"testing/quick"
 	"time"
 
+	tl "go.uber.org/thriftrw/gen/internal/tests/collision"
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
+	tle "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	tz "go.uber.org/thriftrw/gen/internal/tests/nozap"
 	tf "go.uber.org/thriftrw/gen/internal/tests/services"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
+	tul "go.uber.org/thriftrw/gen/internal/tests/uuid_conflict"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
 
@@ -174,6 +178,15 @@ func TestQuickRoundTrip(t *testing.T) {
 		{Sample: tf.KeyValue_Size_Result{}},
 		{Sample: tf.NonStandardServiceName_NonStandardFunctionName_Args{}},
 		{Sample: tf.NonStandardServiceName_NonStandardFunctionName_Result{}},
+		{Sample: tl.AccessorConflict{}},
+		{Sample: tl.AccessorNoConflict{}},
+		{Sample: tl.PrimitiveContainers{}},
+		{Sample: tl.StructCollision2{}},
+		{Sample: tl.StructCollision{}},
+		{Sample: tl.UnionCollision2{}},
+		{Sample: tl.UnionCollision{}},
+		{Sample: tl.WithDefault{}},
+		{Sample: tle.Records{}},
 		{Sample: ts.ContactInfo{}},
 		{Sample: ts.DefaultsStruct{}},
 		{Sample: ts.Edge{}},
@@ -193,8 +206,10 @@ func TestQuickRoundTrip(t *testing.T) {
 		{Sample: ts.ZapOptOutStruct{}},
 		{Sample: tu.Document{}},
 		{Sample: tu.EmptyUnion{}},
+		{Sample: tul.UUIDConflict{}},
 		{Sample: tx.DoesNotExistException{}},
 		{Sample: tx.EmptyException{}},
+		{Sample: tz.PrimitiveRequiredStruct{}, NoLog: true},
 
 		// typedefs
 		{Sample: td.BinarySet{}},
@@ -207,6 +222,12 @@ func TestQuickRoundTrip(t *testing.T) {
 		{Sample: td.StateMap{}},
 		{Sample: td.Timestamp(0), NoLog: true},
 		{Sample: td.UUID{}},
+		{Sample: tl.LittlePotatoe(0), NoLog: true},
+		{Sample: tl.LittlePotatoe2(0.0), NoLog: true},
+		{Sample: tul.UUID(""), NoLog: true},
+		{Sample: tz.StringMap{}, NoLog: true},
+		{Sample: tz.Primitives{}, NoLog: true},
+		{Sample: tz.StringList{}, NoLog: true},
 
 		// enums
 		{
@@ -262,6 +283,31 @@ func TestQuickRoundTrip(t *testing.T) {
 			Generator: enumValueGenerator(te.RecordTypeValues_Values),
 			JSON:      true,
 			Text:      true,
+		},
+		{
+			Sample:    tl.MyEnum(0),
+			Generator: enumValueGenerator(tl.MyEnum_Values),
+			JSON:      true,
+			Text:      true,
+		},
+		{
+			Sample:    tl.MyEnum2(0),
+			Generator: enumValueGenerator(tl.MyEnum2_Values),
+			JSON:      true,
+			Text:      true,
+		},
+		{
+			Sample:    tle.RecordType(0),
+			Generator: enumValueGenerator(tle.RecordType_Values),
+			JSON:      true,
+			Text:      true,
+		},
+		{
+			Sample:    tz.EnumDefault(0),
+			Generator: enumValueGenerator(tz.EnumDefault_Values),
+			JSON:      true,
+			Text:      true,
+			NoLog:     true,
 		},
 	}
 
