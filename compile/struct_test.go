@@ -218,6 +218,23 @@ func TestCompileStructFailure(t *testing.T) {
 			}`,
 			[]string{`field "foo" has already used ID 1`},
 		},
+		{
+			// field ID 0 is reserved for the return value of non-void
+			// functions.
+			"field ID 0",
+			`struct Foo { 0: optional string success }`,
+			[]string{`field ID 0 of "success" is out of bounds`},
+		},
+		{
+			"negative field ID",
+			`struct Foo { -1: optional string wat }`,
+			[]string{`field ID -1 of "wat" is out of bounds`},
+		},
+		{
+			"field ID too large",
+			`struct Foo { 139847139847: optional string too_many_fields }`,
+			[]string{`field ID 139847139847 of "too_many_fields" is out of bounds`},
+		},
 	}
 
 	for _, tt := range tests {

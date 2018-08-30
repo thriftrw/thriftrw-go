@@ -22,6 +22,7 @@ package compile
 
 import (
 	"fmt"
+	"math"
 
 	"go.uber.org/thriftrw/ast"
 )
@@ -102,6 +103,10 @@ type FieldSpec struct {
 
 // compileField compiles the given Field source into a FieldSpec.
 func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
+	if src.ID < 1 || src.ID > math.MaxInt16 {
+		return nil, fieldIDOutOfBoundsError{ID: src.ID, Name: src.Name}
+	}
+
 	required, err := options.requiredness.isRequired(src)
 	if err != nil {
 		return nil, err
