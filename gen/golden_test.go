@@ -39,7 +39,7 @@ var generatedByRegex = regexp.MustCompile(`^// Code generated .* DO NOT EDIT\.$`
 
 // Set of files that are passed a --no-zap flag in code generation
 var noZapFiles = map[string]struct{}{
-	"nozap": struct{}{},
+	"nozap": {},
 }
 
 func TestCodeIsUpToDate(t *testing.T) {
