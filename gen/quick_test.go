@@ -23,6 +23,7 @@ package gen
 import (
 	"encoding"
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"reflect"
 	"testing"
@@ -141,6 +142,17 @@ func enumValueGenerator(valuesFunc interface{}) func(*testing.T, *rand.Rand) thr
 
 		return giveV.Addr().Interface().(thriftType)
 	}
+}
+
+// Returns true for Go types that are nillable from Thrift's point-of-view.
+func isThriftNillable(typ reflect.Type) bool {
+	// Only struct types and typedefs of nillable Go native types are
+	// nillable.
+	switch typ.Kind() {
+	case reflect.Map, reflect.Ptr, reflect.Slice, reflect.Struct:
+		return true
+	}
+	return false
 }
 
 func TestQuickSuite(t *testing.T) {
@@ -383,6 +395,10 @@ func TestQuickSuite(t *testing.T) {
 				}
 			})
 
+			if isThriftNillable(typ) {
+				t.Run("StringNil", suite.testStringNil)
+			}
+
 			if tt.JSON {
 				t.Run("JSON", func(t *testing.T) {
 					for _, give := range values {
@@ -453,6 +469,24 @@ func (q *quickSuite) newEmptyPtr() reflect.Value {
 	return q.newEmpty().Addr()
 }
 
+// Builds a new nil value of the underlying type.
+//
+// For structs, a nil pointer to the struct is returned. For containers, a nil
+// pointer to the container is returned. Using this with non-nillable types is
+// invalid.
+func (q *quickSuite) newNil(t *testing.T) (v reflect.Value) {
+	defer func() {
+		require.True(t, v.IsNil(), "bug: newNil generated non-nil value") // sanity check
+	}()
+
+	switch q.Type.Kind() {
+	case reflect.Struct:
+		return reflect.Zero(reflect.PtrTo(q.Type))
+	default:
+		return reflect.Zero(q.Type)
+	}
+}
+
 // Tests that the provided value round-trips successfully with wire.Value.
 func (q *quickSuite) testThriftRoundTrip(t *testing.T, give thriftType) {
 	w, err := give.ToWire()
@@ -469,6 +503,14 @@ func (q *quickSuite) testString(t *testing.T, give thriftType) {
 	assert.NotPanics(t, func() {
 		_ = give.String()
 	}, "failed to String %#v", give)
+}
+
+// Tests that String does not panic with a nil value of this type.
+func (q *quickSuite) testStringNil(t *testing.T) {
+	v := q.newNil(t).Interface().(fmt.Stringer)
+	assert.NotPanics(t, func() {
+		_ = v.String()
+	})
 }
 
 // For types that support it (enums only at this time), tests that JSON
