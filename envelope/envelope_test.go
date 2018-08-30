@@ -22,48 +22,62 @@ package envelope_test
 
 import (
 	"bytes"
-	"errors"
+	"fmt"
 	"testing"
 
 	// Use . import so the generated Thrift code can import envelope
 	// without causing a circular dependency.
 	. "go.uber.org/thriftrw/envelope"
 
-	tv "go.uber.org/thriftrw/envelope/internal/tests/services"
 	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/wire"
 
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
-//go:generate ../thriftrw -o internal/tests ../gen/internal/tests/thrift/services.thrift
-
-type failToWire struct {
-	// Embed an Enveloper so we only need to implement the methods we expect.
-	Enveloper
+type fakeEnveloper struct {
+	Name  string
+	Type  wire.EnvelopeType
+	Value wire.Value
+	Err   error
 }
 
-func (failToWire) ToWire() (wire.Value, error) {
-	return wire.Value{}, errors.New("failed")
-}
+var _ Enveloper = fakeEnveloper{}
 
-func stringp(s string) *string {
-	return &s
+func (e fakeEnveloper) MethodName() string { return e.Name }
+
+func (e fakeEnveloper) EnvelopeType() wire.EnvelopeType { return e.Type }
+
+func (e fakeEnveloper) ToWire() (wire.Value, error) {
+	return e.Value, e.Err
 }
 
 func TestWrite(t *testing.T) {
-	tests := []struct {
-		e       Enveloper
-		want    []byte
-		wantErr bool
-	}{
-		{
-			e:       failToWire{},
-			wantErr: true,
-		},
-		{
-			e: tv.KeyValue_GetValue_Helper.Args((*tv.Key)(stringp("foo"))),
-			want: []byte{
+	// This enveloper represents the arguments of a method,
+	//   getValue(1: string key)
+	enveloper := fakeEnveloper{
+		Name: "getValue",
+		Type: wire.Call,
+		Value: wire.NewValueStruct(wire.Struct{
+			Fields: []wire.Field{
+				{
+					ID:    1,
+					Value: wire.NewValueString("foo"),
+				},
+			},
+		}),
+	}
+
+	t.Run("success", func(t *testing.T) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+
+		var buff bytes.Buffer
+		require.NoError(t, Write(protocol.Binary, &buff, 1234, enveloper))
+		assert.Equal(t,
+			[]byte{
 				0x80, 0x01, 0x00, 0x01, // version|type:4 = 1 | call
 				0x00, 0x00, 0x00, 0x08, // name length = 8
 				'g', 'e', 't', 'V', 'a', 'l', 'u', 'e', // "getValue"
@@ -75,23 +89,16 @@ func TestWrite(t *testing.T) {
 				0x00, 0x00, 0x00, 0x03, // length = 3
 				'f', 'o', 'o', // "foo"
 				0x00, // stop
-			},
-		},
-	}
+			}, buff.Bytes())
+	})
 
-	for _, tt := range tests {
-		buf := &bytes.Buffer{}
-		err := Write(protocol.Binary, buf, 1234, tt.e)
-		if tt.wantErr {
-			assert.Error(t, err, "%T should fail to be enveloped", tt.e)
-			continue
-		}
-		if !assert.NoError(t, err, "%T should not fail to be enveloped", tt.e) {
-			continue
-		}
+	t.Run("failure", func(t *testing.T) {
+		errEnveloper := enveloper
+		errEnveloper.Err = fmt.Errorf("great sadness")
 
-		assert.Equal(t, tt.want, buf.Bytes(), "%T enveloped mismatch")
-	}
+		var buff bytes.Buffer
+		require.Error(t, Write(protocol.Binary, &buff, 1234, errEnveloper))
+	})
 }
 
 func TestReadReply(t *testing.T) {
