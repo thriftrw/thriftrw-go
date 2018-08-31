@@ -176,15 +176,9 @@ func TestQuickSuite(t *testing.T) {
 		NoEquals bool
 		// TODO(abg): Use a custom generator for these types^
 
-		// Whether we should evaluate JSON round-tripping. This is opt-in
-		// rather than opt-out because struct types that use collections won't
-		// round-trip with JSON successfully due to nil versus empty
-		// collection differences.
-		JSON bool
-
-		// Whether we should evaluate encoding.TextMarshaler round-tripping.
-		// This is only suported on enums.
-		Text bool
+		// If this is an enum, we run a series of additional tests that aren't
+		// valid for other types.
+		IsEnum bool
 	}
 
 	// The following types from our tests have been skipped because they have
@@ -284,80 +278,67 @@ func TestQuickSuite(t *testing.T) {
 		{
 			Sample:    te.EmptyEnum(0),
 			Generator: enumValueGenerator(te.EmptyEnum_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    te.EnumDefault(0),
 			Generator: enumValueGenerator(te.EnumDefault_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    te.EnumWithDuplicateName(0),
 			Generator: enumValueGenerator(te.EnumWithDuplicateName_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    te.EnumWithDuplicateValues(0),
 			Generator: enumValueGenerator(te.EnumWithDuplicateValues_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    te.EnumWithLabel(0),
 			Generator: enumValueGenerator(te.EnumWithLabel_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    te.EnumWithValues(0),
 			Generator: enumValueGenerator(te.EnumWithValues_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    te.LowerCaseEnum(0),
 			Generator: enumValueGenerator(te.LowerCaseEnum_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    te.RecordType(0),
 			Generator: enumValueGenerator(te.RecordType_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    te.RecordTypeValues(0),
 			Generator: enumValueGenerator(te.RecordTypeValues_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    tl.MyEnum(0),
 			Generator: enumValueGenerator(tl.MyEnum_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    tl.MyEnum2(0),
 			Generator: enumValueGenerator(tl.MyEnum2_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    tle.RecordType(0),
 			Generator: enumValueGenerator(tle.RecordType_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 		},
 		{
 			Sample:    tz.EnumDefault(0),
 			Generator: enumValueGenerator(tz.EnumDefault_Values),
-			JSON:      true,
-			Text:      true,
+			IsEnum:    true,
 			NoLog:     true,
 		},
 	}
@@ -399,18 +380,22 @@ func TestQuickSuite(t *testing.T) {
 				t.Run("StringNil", suite.testStringNil)
 			}
 
-			if tt.JSON {
+			if tt.IsEnum {
 				t.Run("JSON", func(t *testing.T) {
 					for _, give := range values {
 						suite.testJSONRoundTrip(t, give)
 					}
 				})
-			}
 
-			if tt.Text {
 				t.Run("Text", func(t *testing.T) {
 					for _, give := range values {
 						suite.testTextRoundtrip(t, give)
+					}
+				})
+
+				t.Run("Ptr", func(t *testing.T) {
+					for _, give := range values {
+						suite.testEnumPtr(t, give)
 					}
 				})
 			}
@@ -629,4 +614,14 @@ func (q *quickSuite) testEqualsNil(t *testing.T) {
 
 		assert.False(t, result)
 	})
+}
+
+// Tests that Ptr methods on enums return the same value back.
+func (q *quickSuite) testEnumPtr(t *testing.T, give thriftType) {
+	// TODO(abg): should we generate Ptr and _Values for typedefs of enums?
+	v := reflect.ValueOf(give)
+	ptr := v.MethodByName("Ptr").Call(nil)[0]
+	require.Equal(t, reflect.Ptr, ptr.Kind(), "must be a pointer")
+	assert.Equal(t, give, ptr.Interface(),
+		"pointer must point back to original value")
 }
