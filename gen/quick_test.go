@@ -155,6 +155,14 @@ func isThriftNillable(typ reflect.Type) bool {
 	return false
 }
 
+type thriftKind int
+
+const (
+	thriftStruct thriftKind = iota + 1
+	thriftEnum
+	thriftTypedef
+)
+
 func TestQuickSuite(t *testing.T) {
 	type testCase struct {
 		// Sample value of the type to be tested.
@@ -176,9 +184,9 @@ func TestQuickSuite(t *testing.T) {
 		NoEquals bool
 		// TODO(abg): Use a custom generator for these types^
 
-		// If this is an enum, we run a series of additional tests that aren't
-		// valid for other types.
-		IsEnum bool
+		// Kind of Thrift type we're testing. Some tests only run on certain
+		// Thrift kinds.
+		Kind thriftKind
 	}
 
 	// The following types from our tests have been skipped because they have
@@ -194,151 +202,181 @@ func TestQuickSuite(t *testing.T) {
 
 	tests := []testCase{
 		// structs, unions, and exceptions
-		{Sample: tc.ContainersOfContainers{}, NoEquals: true},
-		{Sample: tc.EnumContainers{}},
-		{Sample: tc.ListOfConflictingEnums{}},
-		{Sample: tc.ListOfConflictingUUIDs{}},
-		{Sample: tc.MapOfBinaryAndString{}, NoEquals: true},
-		{Sample: tc.PrimitiveContainersRequired{}},
-		{Sample: tc.PrimitiveContainers{}},
-		{Sample: td.DefaultPrimitiveTypedef{}},
-		{Sample: td.Event{}},
-		{Sample: td.I128{}},
-		{Sample: td.Transition{}},
-		{Sample: te.StructWithOptionalEnum{}},
-		{Sample: tf.Cache_Clear_Args{}},
-		{Sample: tf.Cache_ClearAfter_Args{}},
-		{Sample: tf.ConflictingNames_SetValue_Args{}},
-		{Sample: tf.ConflictingNames_SetValue_Result{}},
-		{Sample: tf.ConflictingNamesSetValueArgs{}},
-		{Sample: tf.InternalError{}},
-		{Sample: tf.KeyValue_DeleteValue_Args{}},
-		{Sample: tf.KeyValue_DeleteValue_Result{}},
-		{Sample: tf.KeyValue_GetManyValues_Args{}},
-		{Sample: tf.KeyValue_GetValue_Args{}},
-		{Sample: tf.KeyValue_SetValue_Result{}},
-		{Sample: tf.KeyValue_SetValueV2_Result{}},
-		{Sample: tf.KeyValue_Size_Args{}},
-		{Sample: tf.KeyValue_Size_Result{}},
-		{Sample: tf.NonStandardServiceName_NonStandardFunctionName_Args{}},
-		{Sample: tf.NonStandardServiceName_NonStandardFunctionName_Result{}},
-		{Sample: tl.AccessorConflict{}},
-		{Sample: tl.AccessorNoConflict{}},
-		{Sample: tl.PrimitiveContainers{}},
-		{Sample: tl.StructCollision2{}},
-		{Sample: tl.StructCollision{}},
-		{Sample: tl.UnionCollision2{}, Generator: unionValueGenerator(tl.UnionCollision2{})},
-		{Sample: tl.UnionCollision{}, Generator: unionValueGenerator(tl.UnionCollision{})},
-		{Sample: tl.WithDefault{}},
-		{Sample: tle.Records{}},
-		{Sample: ts.ContactInfo{}},
-		{Sample: ts.DefaultsStruct{}},
-		{Sample: ts.Edge{}},
-		{Sample: ts.EmptyStruct{}},
-		{Sample: ts.Frame{}},
-		{Sample: ts.GoTags{}},
-		{Sample: ts.Graph{}},
-		{Sample: ts.Node{}},
-		{Sample: ts.Omit{}},
-		{Sample: ts.Point{}},
-		{Sample: ts.PrimitiveOptionalStruct{}},
-		{Sample: ts.PrimitiveRequiredStruct{}},
-		{Sample: ts.Rename{}},
-		{Sample: ts.Size{}},
-		{Sample: ts.StructLabels{}},
-		{Sample: ts.User{}},
-		{Sample: ts.ZapOptOutStruct{}},
-		{Sample: tu.ArbitraryValue{}, Generator: unionValueGenerator(tu.ArbitraryValue{})},
-		{Sample: tu.Document{}, Generator: unionValueGenerator(tu.Document{})},
-		{Sample: tu.EmptyUnion{}, Generator: unionValueGenerator(tu.EmptyUnion{})},
-		{Sample: tul.UUIDConflict{}},
-		{Sample: tx.DoesNotExistException{}},
-		{Sample: tx.EmptyException{}},
-		{Sample: tz.PrimitiveRequiredStruct{}, NoLog: true},
+		{Sample: tc.ContainersOfContainers{}, NoEquals: true, Kind: thriftStruct},
+		{Sample: tc.EnumContainers{}, Kind: thriftStruct},
+		{Sample: tc.ListOfConflictingEnums{}, Kind: thriftStruct},
+		{Sample: tc.ListOfConflictingUUIDs{}, Kind: thriftStruct},
+		{Sample: tc.MapOfBinaryAndString{}, NoEquals: true, Kind: thriftStruct},
+		{Sample: tc.PrimitiveContainersRequired{}, Kind: thriftStruct},
+		{Sample: tc.PrimitiveContainers{}, Kind: thriftStruct},
+		{Sample: td.DefaultPrimitiveTypedef{}, Kind: thriftStruct},
+		{Sample: td.Event{}, Kind: thriftStruct},
+		{Sample: td.I128{}, Kind: thriftStruct},
+		{Sample: td.Transition{}, Kind: thriftStruct},
+		{Sample: te.StructWithOptionalEnum{}, Kind: thriftStruct},
+		{Sample: tf.Cache_Clear_Args{}, Kind: thriftStruct},
+		{Sample: tf.Cache_ClearAfter_Args{}, Kind: thriftStruct},
+		{Sample: tf.ConflictingNames_SetValue_Args{}, Kind: thriftStruct},
+		{Sample: tf.ConflictingNames_SetValue_Result{}, Kind: thriftStruct},
+		{Sample: tf.ConflictingNamesSetValueArgs{}, Kind: thriftStruct},
+		{Sample: tf.InternalError{}, Kind: thriftStruct},
+		{Sample: tf.KeyValue_DeleteValue_Args{}, Kind: thriftStruct},
+		{Sample: tf.KeyValue_DeleteValue_Result{}, Kind: thriftStruct},
+		{Sample: tf.KeyValue_GetManyValues_Args{}, Kind: thriftStruct},
+		{Sample: tf.KeyValue_GetValue_Args{}, Kind: thriftStruct},
+		{Sample: tf.KeyValue_SetValue_Result{}, Kind: thriftStruct},
+		{Sample: tf.KeyValue_SetValueV2_Result{}, Kind: thriftStruct},
+		{Sample: tf.KeyValue_Size_Args{}, Kind: thriftStruct},
+		{Sample: tf.KeyValue_Size_Result{}, Kind: thriftStruct},
+		{
+			Sample: tf.NonStandardServiceName_NonStandardFunctionName_Args{},
+			Kind:   thriftStruct,
+		},
+		{
+			Sample: tf.NonStandardServiceName_NonStandardFunctionName_Result{},
+			Kind:   thriftStruct,
+		},
+		{Sample: tl.AccessorConflict{}, Kind: thriftStruct},
+		{Sample: tl.AccessorNoConflict{}, Kind: thriftStruct},
+		{Sample: tl.PrimitiveContainers{}, Kind: thriftStruct},
+		{Sample: tl.StructCollision2{}, Kind: thriftStruct},
+		{Sample: tl.StructCollision{}, Kind: thriftStruct},
+		{
+			Sample:    tl.UnionCollision2{},
+			Generator: unionValueGenerator(tl.UnionCollision2{}),
+			Kind:      thriftStruct,
+		},
+		{
+			Sample:    tl.UnionCollision{},
+			Generator: unionValueGenerator(tl.UnionCollision{}),
+			Kind:      thriftStruct,
+		},
+		{Sample: tl.WithDefault{}, Kind: thriftStruct},
+		{Sample: tle.Records{}, Kind: thriftStruct},
+		{Sample: ts.ContactInfo{}, Kind: thriftStruct},
+		{Sample: ts.DefaultsStruct{}, Kind: thriftStruct},
+		{Sample: ts.Edge{}, Kind: thriftStruct},
+		{Sample: ts.EmptyStruct{}, Kind: thriftStruct},
+		{Sample: ts.Frame{}, Kind: thriftStruct},
+		{Sample: ts.GoTags{}, Kind: thriftStruct},
+		{Sample: ts.Graph{}, Kind: thriftStruct},
+		{Sample: ts.Node{}, Kind: thriftStruct},
+		{Sample: ts.Omit{}, Kind: thriftStruct},
+		{Sample: ts.Point{}, Kind: thriftStruct},
+		{Sample: ts.PrimitiveOptionalStruct{}, Kind: thriftStruct},
+		{Sample: ts.PrimitiveRequiredStruct{}, Kind: thriftStruct},
+		{Sample: ts.Rename{}, Kind: thriftStruct},
+		{Sample: ts.Size{}, Kind: thriftStruct},
+		{Sample: ts.StructLabels{}, Kind: thriftStruct},
+		{Sample: ts.User{}, Kind: thriftStruct},
+		{Sample: ts.ZapOptOutStruct{}, Kind: thriftStruct},
+		{
+			Sample:    tu.ArbitraryValue{},
+			Generator: unionValueGenerator(tu.ArbitraryValue{}),
+			Kind:      thriftStruct,
+		},
+		{
+			Sample:    tu.Document{},
+			Generator: unionValueGenerator(tu.Document{}),
+			Kind:      thriftStruct,
+		},
+		{
+			Sample:    tu.EmptyUnion{},
+			Generator: unionValueGenerator(tu.EmptyUnion{}),
+			Kind:      thriftStruct,
+		},
+		{Sample: tul.UUIDConflict{}, Kind: thriftStruct},
+		{Sample: tx.DoesNotExistException{}, Kind: thriftStruct},
+		{Sample: tx.EmptyException{}, Kind: thriftStruct},
+		{
+			Sample: tz.PrimitiveRequiredStruct{},
+			NoLog:  true,
+			Kind:   thriftStruct,
+		},
 
 		// typedefs
-		{Sample: td.BinarySet{}},
-		{Sample: td.EdgeMap{}},
-		{Sample: td.FrameGroup{}},
-		{Sample: td.MyEnum(0)},
-		{Sample: td.PDF{}, NoLog: true},
-		{Sample: td.PointMap{}},
-		{Sample: td.State(""), NoLog: true},
-		{Sample: td.StateMap{}},
-		{Sample: td.Timestamp(0), NoLog: true},
-		{Sample: td.UUID{}},
-		{Sample: tl.LittlePotatoe(0), NoLog: true},
-		{Sample: tl.LittlePotatoe2(0.0), NoLog: true},
-		{Sample: tul.UUID(""), NoLog: true},
-		{Sample: tz.StringMap{}, NoLog: true},
-		{Sample: tz.Primitives{}, NoLog: true},
-		{Sample: tz.StringList{}, NoLog: true},
+		{Sample: td.BinarySet{}, Kind: thriftTypedef},
+		{Sample: td.EdgeMap{}, Kind: thriftTypedef},
+		{Sample: td.FrameGroup{}, Kind: thriftTypedef},
+		{Sample: td.MyEnum(0), Kind: thriftTypedef},
+		{Sample: td.PDF{}, NoLog: true, Kind: thriftTypedef},
+		{Sample: td.PointMap{}, Kind: thriftTypedef},
+		{Sample: td.State(""), NoLog: true, Kind: thriftTypedef},
+		{Sample: td.StateMap{}, Kind: thriftTypedef},
+		{Sample: td.Timestamp(0), NoLog: true, Kind: thriftTypedef},
+		{Sample: td.UUID{}, Kind: thriftTypedef},
+		{Sample: tl.LittlePotatoe(0), NoLog: true, Kind: thriftTypedef},
+		{Sample: tl.LittlePotatoe2(0.0), NoLog: true, Kind: thriftTypedef},
+		{Sample: tul.UUID(""), NoLog: true, Kind: thriftTypedef},
+		{Sample: tz.StringMap{}, NoLog: true, Kind: thriftTypedef},
+		{Sample: tz.Primitives{}, NoLog: true, Kind: thriftTypedef},
+		{Sample: tz.StringList{}, NoLog: true, Kind: thriftTypedef},
 
 		// enums
 		{
 			Sample:    te.EmptyEnum(0),
 			Generator: enumValueGenerator(te.EmptyEnum_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    te.EnumDefault(0),
 			Generator: enumValueGenerator(te.EnumDefault_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    te.EnumWithDuplicateName(0),
 			Generator: enumValueGenerator(te.EnumWithDuplicateName_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    te.EnumWithDuplicateValues(0),
 			Generator: enumValueGenerator(te.EnumWithDuplicateValues_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    te.EnumWithLabel(0),
 			Generator: enumValueGenerator(te.EnumWithLabel_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    te.EnumWithValues(0),
 			Generator: enumValueGenerator(te.EnumWithValues_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    te.LowerCaseEnum(0),
 			Generator: enumValueGenerator(te.LowerCaseEnum_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    te.RecordType(0),
 			Generator: enumValueGenerator(te.RecordType_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    te.RecordTypeValues(0),
 			Generator: enumValueGenerator(te.RecordTypeValues_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    tl.MyEnum(0),
 			Generator: enumValueGenerator(tl.MyEnum_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    tl.MyEnum2(0),
 			Generator: enumValueGenerator(tl.MyEnum2_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    tle.RecordType(0),
 			Generator: enumValueGenerator(tle.RecordType_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 		},
 		{
 			Sample:    tz.EnumDefault(0),
 			Generator: enumValueGenerator(tz.EnumDefault_Values),
-			IsEnum:    true,
+			Kind:      thriftEnum,
 			NoLog:     true,
 		},
 	}
@@ -380,7 +418,8 @@ func TestQuickSuite(t *testing.T) {
 				t.Run("StringNil", suite.testStringNil)
 			}
 
-			if tt.IsEnum {
+			switch tt.Kind {
+			case thriftEnum:
 				t.Run("JSON", func(t *testing.T) {
 					for _, give := range values {
 						suite.testJSONRoundTrip(t, give)
@@ -396,6 +435,13 @@ func TestQuickSuite(t *testing.T) {
 				t.Run("Ptr", func(t *testing.T) {
 					for _, give := range values {
 						suite.testEnumPtr(t, give)
+					}
+				})
+
+			case thriftStruct:
+				t.Run("Accessors", func(t *testing.T) {
+					for _, give := range values {
+						suite.testStructAccessors(t, give)
 					}
 				})
 			}
@@ -624,4 +670,30 @@ func (q *quickSuite) testEnumPtr(t *testing.T, give thriftType) {
 	require.Equal(t, reflect.Ptr, ptr.Kind(), "must be a pointer")
 	assert.Equal(t, give, ptr.Interface(),
 		"pointer must point back to original value")
+}
+
+// Tests that each field of a struct has an accessor that returns the same
+// value as the field.
+func (q *quickSuite) testStructAccessors(t *testing.T, giveVal thriftType) {
+	// TODO(abg): should we generate accessors for typedefs of structs?
+	give := reflect.ValueOf(giveVal)
+	for i := 0; i < q.Type.NumField(); i++ {
+		field := q.Type.Field(i)
+		fieldValue := give.Elem().FieldByIndex(field.Index)
+		accessorValue := give.MethodByName("Get" + field.Name).Call(nil)[0]
+
+		// For optional primitive fields, we use pointers but the accessors
+		// return the derefenced value (defaulting to the zero-value of that
+		// type). So we'll do the same before comparing results.
+		if field.Type.Kind() == reflect.Ptr && field.Type.Elem().Kind() != reflect.Struct {
+			valueType := field.Type.Elem()
+			if fieldValue.IsNil() {
+				fieldValue = reflect.Zero(valueType)
+			} else {
+				fieldValue = fieldValue.Elem()
+			}
+		}
+
+		assert.Equal(t, fieldValue.Interface(), accessorValue.Interface())
+	}
 }
