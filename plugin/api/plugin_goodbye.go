@@ -105,14 +105,19 @@ func (v *Plugin_Goodbye_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *Plugin_Goodbye_Args) Equals(rhs *Plugin_Goodbye_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Plugin_Goodbye_Args.
-func (v *Plugin_Goodbye_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	return nil
+func (v *Plugin_Goodbye_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	return err
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -274,14 +279,19 @@ func (v *Plugin_Goodbye_Result) String() string {
 //
 // This function performs a deep comparison.
 func (v *Plugin_Goodbye_Result) Equals(rhs *Plugin_Goodbye_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Plugin_Goodbye_Result.
-func (v *Plugin_Goodbye_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	return nil
+func (v *Plugin_Goodbye_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	return err
 }
 
 // MethodName returns the name of the Thrift function as specified in

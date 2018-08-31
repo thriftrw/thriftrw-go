@@ -41,6 +41,7 @@ import (
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
 	tul "go.uber.org/thriftrw/gen/internal/tests/uuid_conflict"
+	envex "go.uber.org/thriftrw/internal/envelope/exception"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
 
@@ -248,6 +249,7 @@ func TestQuickSuite(t *testing.T) {
 
 	tests := []testCase{
 		// structs, unions, and exceptions
+		{Sample: envex.TApplicationException{}, Kind: thriftStruct},
 		{Sample: tc.ContainersOfContainers{}, NoEquals: true, Kind: thriftStruct},
 		{Sample: tc.EnumContainers{}, Kind: thriftStruct},
 		{Sample: tc.ListOfConflictingEnums{}, Kind: thriftStruct},
@@ -379,6 +381,11 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: tz.StringList{}, NoLog: true, Kind: thriftTypedef},
 
 		// enums
+		{
+			Sample:    envex.ExceptionType(0),
+			Generator: enumValueGenerator(envex.ExceptionType_Values),
+			Kind:      thriftEnum,
+		},
 		{
 			Sample:    te.EmptyEnum(0),
 			Generator: enumValueGenerator(te.EmptyEnum_Values),

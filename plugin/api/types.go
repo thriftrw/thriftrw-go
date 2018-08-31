@@ -29,6 +29,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
 	"math"
@@ -179,6 +180,11 @@ func (v *Argument) String() string {
 //
 // This function performs a deep comparison.
 func (v *Argument) Equals(rhs *Argument) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Name == rhs.Name) {
 		return false
 	}
@@ -191,12 +197,10 @@ func (v *Argument) Equals(rhs *Argument) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Argument.
-func (v *Argument) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *Argument) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddString("name", v.Name)
-	if err := enc.AddObject("type", v.Type); err != nil {
-		return err
-	}
-	return nil
+	err = multierr.Append(err, enc.AddObject("type", v.Type))
+	return err
 }
 
 // GetName returns the value of Name if it is set or its
@@ -787,6 +791,11 @@ func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
 //
 // This function performs a deep comparison.
 func (v *Function) Equals(rhs *Function) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Name == rhs.Name) {
 		return false
 	}
@@ -816,53 +825,43 @@ type _List_Argument_Zapper []*Argument
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_Argument_Zapper.
-func (l _List_Argument_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (l _List_Argument_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range l {
-		if err := enc.AppendObject(v); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AppendObject(v))
 	}
-	return nil
+	return err
 }
 
 type _Map_String_String_Zapper map[string]string
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of _Map_String_String_Zapper.
-func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	for k, v := range m {
 		enc.AddString((string)(k), v)
 	}
-	return nil
+	return err
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Function.
-func (v *Function) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *Function) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddString("name", v.Name)
 	enc.AddString("thriftName", v.ThriftName)
-	if err := enc.AddArray("arguments", (_List_Argument_Zapper)(v.Arguments)); err != nil {
-		return err
-	}
+	err = multierr.Append(err, enc.AddArray("arguments", (_List_Argument_Zapper)(v.Arguments)))
 	if v.ReturnType != nil {
-		if err := enc.AddObject("returnType", v.ReturnType); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("returnType", v.ReturnType))
 	}
 	if v.Exceptions != nil {
-		if err := enc.AddArray("exceptions", (_List_Argument_Zapper)(v.Exceptions)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddArray("exceptions", (_List_Argument_Zapper)(v.Exceptions)))
 	}
 	if v.OneWay != nil {
 		enc.AddBool("oneWay", *v.OneWay)
 	}
 	if v.Annotations != nil {
-		if err := enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)))
 	}
-	return nil
+	return err
 }
 
 // GetName returns the value of Name if it is set or its
@@ -1334,6 +1333,11 @@ func _Map_ModuleID_Module_Equals(lhs, rhs map[ModuleID]*Module) bool {
 //
 // This function performs a deep comparison.
 func (v *GenerateServiceRequest) Equals(rhs *GenerateServiceRequest) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_List_ServiceID_Equals(v.RootServices, rhs.RootServices) {
 		return false
 	}
@@ -1351,11 +1355,11 @@ type _List_ServiceID_Zapper []ServiceID
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_ServiceID_Zapper.
-func (l _List_ServiceID_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (l _List_ServiceID_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range l {
 		enc.AppendInt32((int32)(v))
 	}
-	return nil
+	return err
 }
 
 type _Map_ServiceID_Service_Item_Zapper struct {
@@ -1365,25 +1369,21 @@ type _Map_ServiceID_Service_Item_Zapper struct {
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _Map_ServiceID_Service_Item_Zapper.
-func (v _Map_ServiceID_Service_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v _Map_ServiceID_Service_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddInt32("key", (int32)(v.Key))
-	if err := enc.AddObject("value", v.Value); err != nil {
-		return err
-	}
-	return nil
+	err = multierr.Append(err, enc.AddObject("value", v.Value))
+	return err
 }
 
 type _Map_ServiceID_Service_Zapper map[ServiceID]*Service
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _Map_ServiceID_Service_Zapper.
-func (m _Map_ServiceID_Service_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (m _Map_ServiceID_Service_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for k, v := range m {
-		if err := enc.AppendObject(_Map_ServiceID_Service_Item_Zapper{Key: k, Value: v}); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AppendObject(_Map_ServiceID_Service_Item_Zapper{Key: k, Value: v}))
 	}
-	return nil
+	return err
 }
 
 type _Map_ModuleID_Module_Item_Zapper struct {
@@ -1393,40 +1393,30 @@ type _Map_ModuleID_Module_Item_Zapper struct {
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _Map_ModuleID_Module_Item_Zapper.
-func (v _Map_ModuleID_Module_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v _Map_ModuleID_Module_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddInt32("key", (int32)(v.Key))
-	if err := enc.AddObject("value", v.Value); err != nil {
-		return err
-	}
-	return nil
+	err = multierr.Append(err, enc.AddObject("value", v.Value))
+	return err
 }
 
 type _Map_ModuleID_Module_Zapper map[ModuleID]*Module
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _Map_ModuleID_Module_Zapper.
-func (m _Map_ModuleID_Module_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (m _Map_ModuleID_Module_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for k, v := range m {
-		if err := enc.AppendObject(_Map_ModuleID_Module_Item_Zapper{Key: k, Value: v}); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AppendObject(_Map_ModuleID_Module_Item_Zapper{Key: k, Value: v}))
 	}
-	return nil
+	return err
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of GenerateServiceRequest.
-func (v *GenerateServiceRequest) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if err := enc.AddArray("rootServices", (_List_ServiceID_Zapper)(v.RootServices)); err != nil {
-		return err
-	}
-	if err := enc.AddArray("services", (_Map_ServiceID_Service_Zapper)(v.Services)); err != nil {
-		return err
-	}
-	if err := enc.AddArray("modules", (_Map_ModuleID_Module_Zapper)(v.Modules)); err != nil {
-		return err
-	}
-	return nil
+func (v *GenerateServiceRequest) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	err = multierr.Append(err, enc.AddArray("rootServices", (_List_ServiceID_Zapper)(v.RootServices)))
+	err = multierr.Append(err, enc.AddArray("services", (_Map_ServiceID_Service_Zapper)(v.Services)))
+	err = multierr.Append(err, enc.AddArray("modules", (_Map_ModuleID_Module_Zapper)(v.Modules)))
+	return err
 }
 
 // GetRootServices returns the value of RootServices if it is set or its
@@ -1629,6 +1619,11 @@ func _Map_String_Binary_Equals(lhs, rhs map[string][]byte) bool {
 //
 // This function performs a deep comparison.
 func (v *GenerateServiceResponse) Equals(rhs *GenerateServiceResponse) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Files == nil && rhs.Files == nil) || (v.Files != nil && rhs.Files != nil && _Map_String_Binary_Equals(v.Files, rhs.Files))) {
 		return false
 	}
@@ -1640,22 +1635,20 @@ type _Map_String_Binary_Zapper map[string][]byte
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of _Map_String_Binary_Zapper.
-func (m _Map_String_Binary_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (m _Map_String_Binary_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	for k, v := range m {
 		enc.AddString((string)(k), base64.StdEncoding.EncodeToString(v))
 	}
-	return nil
+	return err
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of GenerateServiceResponse.
-func (v *GenerateServiceResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *GenerateServiceResponse) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Files != nil {
-		if err := enc.AddObject("files", (_Map_String_Binary_Zapper)(v.Files)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("files", (_Map_String_Binary_Zapper)(v.Files)))
 	}
-	return nil
+	return err
 }
 
 // GetFiles returns the value of Files if it is set or its
@@ -1742,14 +1735,19 @@ func (v *HandshakeRequest) String() string {
 //
 // This function performs a deep comparison.
 func (v *HandshakeRequest) Equals(rhs *HandshakeRequest) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 
 	return true
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of HandshakeRequest.
-func (v *HandshakeRequest) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	return nil
+func (v *HandshakeRequest) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	return err
 }
 
 // HandshakeResponse is the response from the plugin for a HandshakeRequest.
@@ -2008,6 +2006,11 @@ func _String_EqualsPtr(lhs, rhs *string) bool {
 //
 // This function performs a deep comparison.
 func (v *HandshakeResponse) Equals(rhs *HandshakeResponse) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Name == rhs.Name) {
 		return false
 	}
@@ -2028,27 +2031,23 @@ type _List_Feature_Zapper []Feature
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_Feature_Zapper.
-func (l _List_Feature_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (l _List_Feature_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range l {
-		if err := enc.AppendObject(v); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AppendObject(v))
 	}
-	return nil
+	return err
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of HandshakeResponse.
-func (v *HandshakeResponse) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *HandshakeResponse) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddString("name", v.Name)
 	enc.AddInt32("apiVersion", v.APIVersion)
-	if err := enc.AddArray("features", (_List_Feature_Zapper)(v.Features)); err != nil {
-		return err
-	}
+	err = multierr.Append(err, enc.AddArray("features", (_List_Feature_Zapper)(v.Features)))
 	if v.LibraryVersion != nil {
 		enc.AddString("libraryVersion", *v.LibraryVersion)
 	}
-	return nil
+	return err
 }
 
 // GetName returns the value of Name if it is set or its
@@ -2204,6 +2203,11 @@ func (v *Module) String() string {
 //
 // This function performs a deep comparison.
 func (v *Module) Equals(rhs *Module) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.ImportPath == rhs.ImportPath) {
 		return false
 	}
@@ -2216,10 +2220,10 @@ func (v *Module) Equals(rhs *Module) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Module.
-func (v *Module) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *Module) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddString("importPath", v.ImportPath)
 	enc.AddString("directory", v.Directory)
-	return nil
+	return err
 }
 
 // GetImportPath returns the value of ImportPath if it is set or its
@@ -2260,7 +2264,7 @@ func (v *ModuleID) FromWire(w wire.Value) error {
 // Equals returns true if this ModuleID is equal to the provided
 // ModuleID.
 func (lhs ModuleID) Equals(rhs ModuleID) bool {
-	return (lhs == rhs)
+	return ((int32)(lhs) == (int32)(rhs))
 }
 
 // Service is a service defined by the user in the Thrift file.
@@ -2574,6 +2578,11 @@ func _List_Function_Equals(lhs, rhs []*Function) bool {
 //
 // This function performs a deep comparison.
 func (v *Service) Equals(rhs *Service) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Name == rhs.Name) {
 		return false
 	}
@@ -2600,33 +2609,27 @@ type _List_Function_Zapper []*Function
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 // fast logging of _List_Function_Zapper.
-func (l _List_Function_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (l _List_Function_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range l {
-		if err := enc.AppendObject(v); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AppendObject(v))
 	}
-	return nil
+	return err
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Service.
-func (v *Service) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *Service) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddString("name", v.Name)
 	enc.AddString("thriftName", v.ThriftName)
 	if v.ParentID != nil {
 		enc.AddInt32("parentID", (int32)(*v.ParentID))
 	}
-	if err := enc.AddArray("functions", (_List_Function_Zapper)(v.Functions)); err != nil {
-		return err
-	}
+	err = multierr.Append(err, enc.AddArray("functions", (_List_Function_Zapper)(v.Functions)))
 	enc.AddInt32("moduleID", (int32)(v.ModuleID))
 	if v.Annotations != nil {
-		if err := enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)))
 	}
-	return nil
+	return err
 }
 
 // GetName returns the value of Name if it is set or its
@@ -2695,7 +2698,7 @@ func (v *ServiceID) FromWire(w wire.Value) error {
 // Equals returns true if this ServiceID is equal to the provided
 // ServiceID.
 func (lhs ServiceID) Equals(rhs ServiceID) bool {
-	return (lhs == rhs)
+	return ((int32)(lhs) == (int32)(rhs))
 }
 
 // SimpleType is a standalone native Go type.
@@ -3232,6 +3235,11 @@ func _SimpleType_EqualsPtr(lhs, rhs *SimpleType) bool {
 //
 // This function performs a deep comparison.
 func (v *Type) Equals(rhs *Type) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_SimpleType_EqualsPtr(v.SimpleType, rhs.SimpleType) {
 		return false
 	}
@@ -3256,38 +3264,26 @@ func (v *Type) Equals(rhs *Type) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Type.
-func (v *Type) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *Type) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.SimpleType != nil {
-		if err := enc.AddObject("simpleType", *v.SimpleType); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("simpleType", *v.SimpleType))
 	}
 	if v.SliceType != nil {
-		if err := enc.AddObject("sliceType", v.SliceType); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("sliceType", v.SliceType))
 	}
 	if v.KeyValueSliceType != nil {
-		if err := enc.AddObject("keyValueSliceType", v.KeyValueSliceType); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("keyValueSliceType", v.KeyValueSliceType))
 	}
 	if v.MapType != nil {
-		if err := enc.AddObject("mapType", v.MapType); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("mapType", v.MapType))
 	}
 	if v.ReferenceType != nil {
-		if err := enc.AddObject("referenceType", v.ReferenceType); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("referenceType", v.ReferenceType))
 	}
 	if v.PointerType != nil {
-		if err := enc.AddObject("pointerType", v.PointerType); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("pointerType", v.PointerType))
 	}
-	return nil
+	return err
 }
 
 // GetSimpleType returns the value of SimpleType if it is set or its
@@ -3478,6 +3474,11 @@ func (v *TypePair) String() string {
 //
 // This function performs a deep comparison.
 func (v *TypePair) Equals(rhs *TypePair) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !v.Left.Equals(rhs.Left) {
 		return false
 	}
@@ -3490,14 +3491,10 @@ func (v *TypePair) Equals(rhs *TypePair) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of TypePair.
-func (v *TypePair) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	if err := enc.AddObject("left", v.Left); err != nil {
-		return err
-	}
-	if err := enc.AddObject("right", v.Right); err != nil {
-		return err
-	}
-	return nil
+func (v *TypePair) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	err = multierr.Append(err, enc.AddObject("left", v.Left))
+	err = multierr.Append(err, enc.AddObject("right", v.Right))
+	return err
 }
 
 // GetLeft returns the value of Left if it is set or its
@@ -3671,6 +3668,11 @@ func (v *TypeReference) String() string {
 //
 // This function performs a deep comparison.
 func (v *TypeReference) Equals(rhs *TypeReference) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !(v.Name == rhs.Name) {
 		return false
 	}
@@ -3686,15 +3688,13 @@ func (v *TypeReference) Equals(rhs *TypeReference) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of TypeReference.
-func (v *TypeReference) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *TypeReference) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddString("name", v.Name)
 	enc.AddString("importPath", v.ImportPath)
 	if v.Annotations != nil {
-		if err := enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)))
 	}
-	return nil
+	return err
 }
 
 // GetName returns the value of Name if it is set or its

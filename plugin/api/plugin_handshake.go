@@ -26,6 +26,7 @@ package api
 import (
 	"errors"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
 	"strings"
@@ -137,6 +138,11 @@ func (v *Plugin_Handshake_Args) String() string {
 //
 // This function performs a deep comparison.
 func (v *Plugin_Handshake_Args) Equals(rhs *Plugin_Handshake_Args) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Request == nil && rhs.Request == nil) || (v.Request != nil && rhs.Request != nil && v.Request.Equals(rhs.Request))) {
 		return false
 	}
@@ -146,13 +152,11 @@ func (v *Plugin_Handshake_Args) Equals(rhs *Plugin_Handshake_Args) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Plugin_Handshake_Args.
-func (v *Plugin_Handshake_Args) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *Plugin_Handshake_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Request != nil {
-		if err := enc.AddObject("request", v.Request); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("request", v.Request))
 	}
-	return nil
+	return err
 }
 
 // GetRequest returns the value of Request if it is set or its
@@ -382,6 +386,11 @@ func (v *Plugin_Handshake_Result) String() string {
 //
 // This function performs a deep comparison.
 func (v *Plugin_Handshake_Result) Equals(rhs *Plugin_Handshake_Result) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !((v.Success == nil && rhs.Success == nil) || (v.Success != nil && rhs.Success != nil && v.Success.Equals(rhs.Success))) {
 		return false
 	}
@@ -391,13 +400,11 @@ func (v *Plugin_Handshake_Result) Equals(rhs *Plugin_Handshake_Result) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of Plugin_Handshake_Result.
-func (v *Plugin_Handshake_Result) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *Plugin_Handshake_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Success != nil {
-		if err := enc.AddObject("success", v.Success); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("success", v.Success))
 	}
-	return nil
+	return err
 }
 
 // GetSuccess returns the value of Success if it is set or its

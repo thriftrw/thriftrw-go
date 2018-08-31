@@ -27,6 +27,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
 	"math"
@@ -470,6 +471,11 @@ func _ExceptionType_EqualsPtr(lhs, rhs *ExceptionType) bool {
 //
 // This function performs a deep comparison.
 func (v *TApplicationException) Equals(rhs *TApplicationException) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
 	if !_String_EqualsPtr(v.Message, rhs.Message) {
 		return false
 	}
@@ -482,16 +488,14 @@ func (v *TApplicationException) Equals(rhs *TApplicationException) bool {
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of TApplicationException.
-func (v *TApplicationException) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+func (v *TApplicationException) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Message != nil {
 		enc.AddString("message", *v.Message)
 	}
 	if v.Type != nil {
-		if err := enc.AddObject("type", *v.Type); err != nil {
-			return err
-		}
+		err = multierr.Append(err, enc.AddObject("type", *v.Type))
 	}
-	return nil
+	return err
 }
 
 // GetMessage returns the value of Message if it is set or its
