@@ -144,6 +144,63 @@ func enumValueGenerator(valuesFunc interface{}) func(*testing.T, *rand.Rand) thr
 	}
 }
 
+func keyValueSetValueArgsGenerator() func(*testing.T, *rand.Rand) thriftType {
+	keyGenerator := defaultValueGenerator(reflect.TypeOf(tf.Key("")))
+	valueGenerator := unionValueGenerator(tu.ArbitraryValue{})
+	return func(t *testing.T, rand *rand.Rand) thriftType {
+		return &tf.KeyValue_SetValue_Args{
+			Key:   keyGenerator(t, rand).(*tf.Key),
+			Value: valueGenerator(t, rand).(*tu.ArbitraryValue),
+		}
+	}
+}
+
+func keyValueSetValueV2ArgsGenerator() func(*testing.T, *rand.Rand) thriftType {
+	keyGenerator := defaultValueGenerator(reflect.TypeOf(tf.Key("")))
+	valueGenerator := unionValueGenerator(tu.ArbitraryValue{})
+	return func(t *testing.T, rand *rand.Rand) thriftType {
+		return &tf.KeyValue_SetValueV2_Args{
+			Key:   *keyGenerator(t, rand).(*tf.Key),
+			Value: valueGenerator(t, rand).(*tu.ArbitraryValue),
+		}
+	}
+}
+
+func keyValueGetValueResultGenerator() func(*testing.T, *rand.Rand) thriftType {
+	successGenerator := unionValueGenerator(tu.ArbitraryValue{})
+	doesNotExistGenerator := defaultValueGenerator(reflect.TypeOf(tx.DoesNotExistException{}))
+	return func(t *testing.T, rand *rand.Rand) thriftType {
+		var result tf.KeyValue_GetValue_Result
+		if rand.Int()%2 == 0 {
+			result.Success = successGenerator(t, rand).(*tu.ArbitraryValue)
+		} else {
+			result.DoesNotExist = doesNotExistGenerator(t, rand).(*tx.DoesNotExistException)
+		}
+		return &result
+	}
+}
+
+func keyValueGetManyValuesResultGenerator() func(*testing.T, *rand.Rand) thriftType {
+	arbitraryValueGenerator := unionValueGenerator(tu.ArbitraryValue{})
+	successGenerator := func(t *testing.T, rand *rand.Rand) []*tu.ArbitraryValue {
+		values := make([]*tu.ArbitraryValue, rand.Intn(10))
+		for i := range values {
+			values[i] = arbitraryValueGenerator(t, rand).(*tu.ArbitraryValue)
+		}
+		return values
+	}
+	doesNotExistGenerator := defaultValueGenerator(reflect.TypeOf(tx.DoesNotExistException{}))
+	return func(t *testing.T, rand *rand.Rand) thriftType {
+		var result tf.KeyValue_GetManyValues_Result
+		if rand.Int()%2 == 0 {
+			result.Success = successGenerator(t, rand)
+		} else {
+			result.DoesNotExist = doesNotExistGenerator(t, rand).(*tx.DoesNotExistException)
+		}
+		return &result
+	}
+}
+
 // Returns true for Go types that are nillable from Thrift's point-of-view.
 func isThriftNillable(typ reflect.Type) bool {
 	// Only struct types and typedefs of nillable Go native types are
@@ -189,17 +246,6 @@ func TestQuickSuite(t *testing.T) {
 		Kind thriftKind
 	}
 
-	// The following types from our tests have been skipped because they have
-	// recursive references (ArbitraryValue) and we don't have a way of
-	// addressing that at this time.
-	//
-	// - services.KeyValue_SetValue_Args
-	// - services.KeyValue_SetValueV2_Args
-	// - services.KeyValue_GetManyValues_Result
-	// - services.KeyValue_GetValue_Result
-
-	// TODO(abg): ^Use custom generators to make this not-a-problem.
-
 	tests := []testCase{
 		// structs, unions, and exceptions
 		{Sample: tc.ContainersOfContainers{}, NoEquals: true, Kind: thriftStruct},
@@ -223,7 +269,27 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: tf.KeyValue_DeleteValue_Args{}, Kind: thriftStruct},
 		{Sample: tf.KeyValue_DeleteValue_Result{}, Kind: thriftStruct},
 		{Sample: tf.KeyValue_GetManyValues_Args{}, Kind: thriftStruct},
+		{
+			Sample:    tf.KeyValue_GetManyValues_Result{},
+			Kind:      thriftStruct,
+			Generator: keyValueGetManyValuesResultGenerator(),
+		},
 		{Sample: tf.KeyValue_GetValue_Args{}, Kind: thriftStruct},
+		{
+			Sample:    tf.KeyValue_GetValue_Result{},
+			Kind:      thriftStruct,
+			Generator: keyValueGetValueResultGenerator(),
+		},
+		{
+			Sample:    tf.KeyValue_SetValue_Args{},
+			Kind:      thriftStruct,
+			Generator: keyValueSetValueArgsGenerator(),
+		},
+		{
+			Sample:    tf.KeyValue_SetValueV2_Args{},
+			Kind:      thriftStruct,
+			Generator: keyValueSetValueV2ArgsGenerator(),
+		},
 		{Sample: tf.KeyValue_SetValue_Result{}, Kind: thriftStruct},
 		{Sample: tf.KeyValue_SetValueV2_Result{}, Kind: thriftStruct},
 		{Sample: tf.KeyValue_Size_Args{}, Kind: thriftStruct},
@@ -686,9 +752,8 @@ func (q *quickSuite) testStructAccessors(t *testing.T, giveVal thriftType) {
 		// return the derefenced value (defaulting to the zero-value of that
 		// type). So we'll do the same before comparing results.
 		if field.Type.Kind() == reflect.Ptr && field.Type.Elem().Kind() != reflect.Struct {
-			valueType := field.Type.Elem()
 			if fieldValue.IsNil() {
-				fieldValue = reflect.Zero(valueType)
+				fieldValue = reflect.Zero(field.Type.Elem())
 			} else {
 				fieldValue = fieldValue.Elem()
 			}
