@@ -429,6 +429,10 @@ func TestQuickSuite(t *testing.T) {
 						suite.testEquals(t, give)
 					}
 				})
+
+				if typ.Kind() == reflect.Struct {
+					t.Run("EqualsNil", suite.testEqualsNil)
+				}
 			}
 
 		})
@@ -581,4 +585,48 @@ func (q *quickSuite) testEquals(t *testing.T, giveVal thriftType) {
 	assert.True(t,
 		equals.Call([]reflect.Value{rhs})[0].Bool(),
 		"%v should be equal to itself", giveVal)
+}
+
+// Tests that Equals methods work with nil values and receivers.
+func (q *quickSuite) testEqualsNil(t *testing.T) {
+	t.Run("both nil", func(t *testing.T) {
+		// var x, y *Type
+		x := q.newNil(t)
+		y := q.newNil(t)
+
+		// x.Equals(y)
+		result := x.MethodByName("Equals").
+			Call([]reflect.Value{y})[0].
+			Interface().(bool)
+
+		assert.True(t, result)
+	})
+
+	t.Run("lhs not nil", func(t *testing.T) {
+		// var x Type
+		// var y *Type
+		x := q.newEmpty()
+		y := q.newNil(t)
+
+		// x.Equals(y)
+		result := x.MethodByName("Equals").
+			Call([]reflect.Value{y})[0].
+			Interface().(bool)
+
+		assert.False(t, result)
+	})
+
+	t.Run("rhs not nil", func(t *testing.T) {
+		// var x *Type
+		// var y Type
+		x := q.newNil(t)
+		y := q.newEmpty()
+
+		// x.Equals(y)
+		result := x.MethodByName("Equals").
+			Call([]reflect.Value{y})[0].
+			Interface().(bool)
+
+		assert.False(t, result)
+	})
 }
