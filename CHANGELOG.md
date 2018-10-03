@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Fixed
 - gen/plugin: Fixed a bug where typedefs of structs were mishandled; while they
-  should have been pointers, they were generated without '*' and failed to
+  should have been pointers, they were generated without `*` and failed to
   compile.
 
 ## [1.13.0] - 2018-09-10
