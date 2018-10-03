@@ -343,7 +343,8 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 			},
 		}
 
-		if !required && !isReferenceType(spec) {
+		if (!required && !isReferenceType(spec)) ||
+			isStructType(spec) {
 			t = &api.Type{PointerType: t}
 		}
 

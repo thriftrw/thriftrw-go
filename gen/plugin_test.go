@@ -710,6 +710,23 @@ func TestBuildType(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "typedef of struct",
+			spec: &compile.TypedefSpec{
+				Name:   "Foo",
+				File:   "idl/foo/bar.thrift",
+				Target: &compile.StructSpec{},
+			},
+			required: true,
+			want: &api.Type{
+				PointerType: &api.Type{
+					ReferenceType: &api.TypeReference{
+						Name:       "Foo",
+						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/foo/bar",
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
