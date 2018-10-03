@@ -132,6 +132,9 @@ func (v *ConflictingNames_SetValue_Args) Equals(rhs *ConflictingNames_SetValue_A
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ConflictingNames_SetValue_Args.
 func (v *ConflictingNames_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
 	if v.Request != nil {
 		err = multierr.Append(err, enc.AddObject("request", v.Request))
 	}
@@ -325,6 +328,9 @@ func (v *ConflictingNames_SetValue_Result) Equals(rhs *ConflictingNames_SetValue
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of ConflictingNames_SetValue_Result.
 func (v *ConflictingNames_SetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
 	return err
 }
 

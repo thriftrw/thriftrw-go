@@ -525,6 +525,10 @@ func TestQuickSuite(t *testing.T) {
 						suite.testLogging(t, give)
 					}
 				})
+
+				if isThriftNillable(typ) {
+					t.Run("Zap/Nil", suite.testLoggingNil)
+				}
 			}
 
 			if !tt.NoEquals {
@@ -664,6 +668,26 @@ func (q *quickSuite) testLogging(t *testing.T, give thriftType) {
 
 	if arr, ok := give.(zapcore.ArrayMarshaler); ok {
 		assert.NoErrorf(t, enc.AddArray("values", arr), "failed to log %v", give)
+		return
+	}
+
+	t.Fatal(
+		"Type does not implement zapcore.ObjectMarshaler or zapcore.ArrayMarshaler. "+
+			"Did you mean to add NoLog?", q.Type)
+}
+
+func (q *quickSuite) testLoggingNil(t *testing.T) {
+	enc := zapcore.NewMapObjectEncoder()
+
+	v := q.newNil(t).Interface()
+
+	if obj, ok := v.(zapcore.ObjectMarshaler); ok {
+		assert.NoErrorf(t, obj.MarshalLogObject(enc), "failed to log %v", v)
+		return
+	}
+
+	if arr, ok := v.(zapcore.ArrayMarshaler); ok {
+		assert.NoErrorf(t, enc.AddArray("values", arr), "failed to log %v", v)
 		return
 	}
 
