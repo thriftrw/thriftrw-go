@@ -660,7 +660,7 @@ yydefault:
 
 	case 1:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line thrift.y:95
+//line thrift.y:95
 		{
 			yyVAL.prog = &ast.Program{Headers: yyDollar[1].headers, Definitions: yyDollar[2].definitions}
 			yylex.(*lexer).program = yyVAL.prog
@@ -668,19 +668,19 @@ yydefault:
 		}
 	case 2:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:107
+//line thrift.y:107
 		{
 			yyVAL.headers = nil
 		}
 	case 3:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line thrift.y:108
+//line thrift.y:108
 		{
 			yyVAL.headers = append(yyDollar[1].headers, yyDollar[2].header)
 		}
 	case 4:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:113
+//line thrift.y:113
 		{
 			yyVAL.header = &ast.Include{
 				Path: yyDollar[3].str,
@@ -689,7 +689,7 @@ yydefault:
 		}
 	case 5:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line thrift.y:120
+//line thrift.y:120
 		{
 			yyVAL.header = &ast.Include{
 				Name: yyDollar[3].str,
@@ -699,7 +699,7 @@ yydefault:
 		}
 	case 6:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line thrift.y:128
+//line thrift.y:128
 		{
 			yyVAL.header = &ast.Namespace{
 				Scope: "*",
@@ -709,7 +709,7 @@ yydefault:
 		}
 	case 7:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line thrift.y:136
+//line thrift.y:136
 		{
 			yyVAL.header = &ast.Namespace{
 				Scope: yyDollar[3].str,
@@ -719,19 +719,19 @@ yydefault:
 		}
 	case 8:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:150
+//line thrift.y:150
 		{
 			yyVAL.definitions = nil
 		}
 	case 9:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:151
+//line thrift.y:151
 		{
 			yyVAL.definitions = append(yyDollar[1].definitions, yyDollar[2].definition)
 		}
 	case 10:
 		yyDollar = yyS[yypt-7 : yypt+1]
-		//line thrift.y:158
+//line thrift.y:158
 		{
 			yyVAL.definition = &ast.Constant{
 				Name:  yyDollar[5].str,
@@ -743,7 +743,7 @@ yydefault:
 		}
 	case 11:
 		yyDollar = yyS[yypt-6 : yypt+1]
-		//line thrift.y:169
+//line thrift.y:169
 		{
 			yyVAL.definition = &ast.Typedef{
 				Name:        yyDollar[5].str,
@@ -755,7 +755,7 @@ yydefault:
 		}
 	case 12:
 		yyDollar = yyS[yypt-8 : yypt+1]
-		//line thrift.y:179
+//line thrift.y:179
 		{
 			yyVAL.definition = &ast.Enum{
 				Name:        yyDollar[4].str,
@@ -767,7 +767,7 @@ yydefault:
 		}
 	case 13:
 		yyDollar = yyS[yypt-8 : yypt+1]
-		//line thrift.y:189
+//line thrift.y:189
 		{
 			yyVAL.definition = &ast.Struct{
 				Name:        yyDollar[4].str,
@@ -780,7 +780,7 @@ yydefault:
 		}
 	case 14:
 		yyDollar = yyS[yypt-8 : yypt+1]
-		//line thrift.y:201
+//line thrift.y:201
 		{
 			yyVAL.definition = &ast.Service{
 				Name:        yyDollar[4].str,
@@ -792,7 +792,7 @@ yydefault:
 		}
 	case 15:
 		yyDollar = yyS[yypt-11 : yypt+1]
-		//line thrift.y:212
+//line thrift.y:212
 		{
 			parent := &ast.ServiceReference{
 				Name: yyDollar[7].str,
@@ -810,37 +810,37 @@ yydefault:
 		}
 	case 16:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:230
+//line thrift.y:230
 		{
 			yyVAL.structType = ast.StructType
 		}
 	case 17:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:231
+//line thrift.y:231
 		{
 			yyVAL.structType = ast.UnionType
 		}
 	case 18:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:232
+//line thrift.y:232
 		{
 			yyVAL.structType = ast.ExceptionType
 		}
 	case 19:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:236
+//line thrift.y:236
 		{
 			yyVAL.enumItems = nil
 		}
 	case 20:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:237
+//line thrift.y:237
 		{
 			yyVAL.enumItems = append(yyDollar[1].enumItems, yyDollar[2].enumItem)
 		}
 	case 21:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line thrift.y:242
+//line thrift.y:242
 		{
 			yyVAL.enumItem = &ast.EnumItem{
 				Name:        yyDollar[3].str,
@@ -851,7 +851,7 @@ yydefault:
 		}
 	case 22:
 		yyDollar = yyS[yypt-6 : yypt+1]
-		//line thrift.y:251
+//line thrift.y:251
 		{
 			value := int(yyDollar[5].i64)
 			yyVAL.enumItem = &ast.EnumItem{
@@ -864,19 +864,19 @@ yydefault:
 		}
 	case 23:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:264
+//line thrift.y:264
 		{
 			yyVAL.fields = nil
 		}
 	case 24:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:265
+//line thrift.y:265
 		{
 			yyVAL.fields = append(yyDollar[1].fields, yyDollar[2].field)
 		}
 	case 25:
 		yyDollar = yyS[yypt-8 : yypt+1]
-		//line thrift.y:271
+//line thrift.y:271
 		{
 			yyVAL.field = &ast.Field{
 				ID:           int(yyDollar[3].i64),
@@ -890,7 +890,7 @@ yydefault:
 		}
 	case 26:
 		yyDollar = yyS[yypt-10 : yypt+1]
-		//line thrift.y:284
+//line thrift.y:284
 		{
 			yyVAL.field = &ast.Field{
 				ID:           int(yyDollar[3].i64),
@@ -905,37 +905,37 @@ yydefault:
 		}
 	case 27:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:299
+//line thrift.y:299
 		{
 			yyVAL.fieldRequired = ast.Required
 		}
 	case 28:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:300
+//line thrift.y:300
 		{
 			yyVAL.fieldRequired = ast.Optional
 		}
 	case 29:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:301
+//line thrift.y:301
 		{
 			yyVAL.fieldRequired = ast.Unspecified
 		}
 	case 30:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:305
+//line thrift.y:305
 		{
 			yyVAL.functions = nil
 		}
 	case 31:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:306
+//line thrift.y:306
 		{
 			yyVAL.functions = append(yyDollar[1].functions, yyDollar[2].function)
 		}
 	case 32:
 		yyDollar = yyS[yypt-10 : yypt+1]
-		//line thrift.y:312
+//line thrift.y:312
 		{
 			yyVAL.function = &ast.Function{
 				Name:        yyDollar[5].str,
@@ -950,235 +950,235 @@ yydefault:
 		}
 	case 33:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:327
+//line thrift.y:327
 		{
 			yyVAL.bul = true
 		}
 	case 34:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:328
+//line thrift.y:328
 		{
 			yyVAL.bul = false
 		}
 	case 35:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:332
+//line thrift.y:332
 		{
 			yyVAL.fieldType = nil
 		}
 	case 36:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:333
+//line thrift.y:333
 		{
 			yyVAL.fieldType = yyDollar[1].fieldType
 		}
 	case 37:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:337
+//line thrift.y:337
 		{
 			yyVAL.fields = nil
 		}
 	case 38:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line thrift.y:338
+//line thrift.y:338
 		{
 			yyVAL.fields = yyDollar[3].fields
 		}
 	case 39:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:347
+//line thrift.y:347
 		{
 			yyVAL.fieldType = ast.BaseType{ID: yyDollar[2].baseTypeID, Annotations: yyDollar[3].typeAnnotations, Line: yyDollar[1].line}
 		}
 	case 40:
 		yyDollar = yyS[yypt-8 : yypt+1]
-		//line thrift.y:351
+//line thrift.y:351
 		{
 			yyVAL.fieldType = ast.MapType{KeyType: yyDollar[4].fieldType, ValueType: yyDollar[6].fieldType, Annotations: yyDollar[8].typeAnnotations, Line: yyDollar[1].line}
 		}
 	case 41:
 		yyDollar = yyS[yypt-6 : yypt+1]
-		//line thrift.y:353
+//line thrift.y:353
 		{
 			yyVAL.fieldType = ast.ListType{ValueType: yyDollar[4].fieldType, Annotations: yyDollar[6].typeAnnotations, Line: yyDollar[1].line}
 		}
 	case 42:
 		yyDollar = yyS[yypt-6 : yypt+1]
-		//line thrift.y:355
+//line thrift.y:355
 		{
 			yyVAL.fieldType = ast.SetType{ValueType: yyDollar[4].fieldType, Annotations: yyDollar[6].typeAnnotations, Line: yyDollar[1].line}
 		}
 	case 43:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line thrift.y:357
+//line thrift.y:357
 		{
 			yyVAL.fieldType = ast.TypeReference{Name: yyDollar[2].str, Line: yyDollar[1].line}
 		}
 	case 44:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:361
+//line thrift.y:361
 		{
 			yyVAL.baseTypeID = ast.BoolTypeID
 		}
 	case 45:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:362
+//line thrift.y:362
 		{
 			yyVAL.baseTypeID = ast.I8TypeID
 		}
 	case 46:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:363
+//line thrift.y:363
 		{
 			yyVAL.baseTypeID = ast.I8TypeID
 		}
 	case 47:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:364
+//line thrift.y:364
 		{
 			yyVAL.baseTypeID = ast.I16TypeID
 		}
 	case 48:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:365
+//line thrift.y:365
 		{
 			yyVAL.baseTypeID = ast.I32TypeID
 		}
 	case 49:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:366
+//line thrift.y:366
 		{
 			yyVAL.baseTypeID = ast.I64TypeID
 		}
 	case 50:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:367
+//line thrift.y:367
 		{
 			yyVAL.baseTypeID = ast.DoubleTypeID
 		}
 	case 51:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:368
+//line thrift.y:368
 		{
 			yyVAL.baseTypeID = ast.StringTypeID
 		}
 	case 52:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:369
+//line thrift.y:369
 		{
 			yyVAL.baseTypeID = ast.BinaryTypeID
 		}
 	case 53:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:377
+//line thrift.y:377
 		{
 			yyVAL.constantValue = ast.ConstantInteger(yyDollar[1].i64)
 		}
 	case 54:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:378
+//line thrift.y:378
 		{
 			yyVAL.constantValue = ast.ConstantDouble(yyDollar[1].dub)
 		}
 	case 55:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:379
+//line thrift.y:379
 		{
 			yyVAL.constantValue = ast.ConstantBoolean(true)
 		}
 	case 56:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:380
+//line thrift.y:380
 		{
 			yyVAL.constantValue = ast.ConstantBoolean(false)
 		}
 	case 57:
 		yyDollar = yyS[yypt-1 : yypt+1]
-		//line thrift.y:381
+//line thrift.y:381
 		{
 			yyVAL.constantValue = ast.ConstantString(yyDollar[1].str)
 		}
 	case 58:
 		yyDollar = yyS[yypt-2 : yypt+1]
-		//line thrift.y:383
+//line thrift.y:383
 		{
 			yyVAL.constantValue = ast.ConstantReference{Name: yyDollar[2].str, Line: yyDollar[1].line}
 		}
 	case 59:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line thrift.y:385
+//line thrift.y:385
 		{
 			yyVAL.constantValue = ast.ConstantList{Items: yyDollar[3].constantValues, Line: yyDollar[1].line}
 		}
 	case 60:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line thrift.y:386
+//line thrift.y:386
 		{
 			yyVAL.constantValue = ast.ConstantMap{Items: yyDollar[3].constantMapItems, Line: yyDollar[1].line}
 		}
 	case 61:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:390
+//line thrift.y:390
 		{
 			yyVAL.constantValues = nil
 		}
 	case 62:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:392
+//line thrift.y:392
 		{
 			yyVAL.constantValues = append(yyDollar[1].constantValues, yyDollar[2].constantValue)
 		}
 	case 63:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:396
+//line thrift.y:396
 		{
 			yyVAL.constantMapItems = nil
 		}
 	case 64:
 		yyDollar = yyS[yypt-6 : yypt+1]
-		//line thrift.y:398
+//line thrift.y:398
 		{
 			yyVAL.constantMapItems = append(yyDollar[1].constantMapItems, ast.ConstantMapItem{Key: yyDollar[3].constantValue, Value: yyDollar[5].constantValue, Line: yyDollar[2].line})
 		}
 	case 65:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:406
+//line thrift.y:406
 		{
 			yyVAL.typeAnnotations = nil
 		}
 	case 66:
 		yyDollar = yyS[yypt-3 : yypt+1]
-		//line thrift.y:407
+//line thrift.y:407
 		{
 			yyVAL.typeAnnotations = yyDollar[2].typeAnnotations
 		}
 	case 67:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:411
+//line thrift.y:411
 		{
 			yyVAL.typeAnnotations = nil
 		}
 	case 68:
 		yyDollar = yyS[yypt-6 : yypt+1]
-		//line thrift.y:413
+//line thrift.y:413
 		{
 			yyVAL.typeAnnotations = append(yyDollar[1].typeAnnotations, &ast.Annotation{Name: yyDollar[3].str, Value: yyDollar[5].str, Line: yyDollar[2].line})
 		}
 	case 69:
 		yyDollar = yyS[yypt-4 : yypt+1]
-		//line thrift.y:415
+//line thrift.y:415
 		{
 			yyVAL.typeAnnotations = append(yyDollar[1].typeAnnotations, &ast.Annotation{Name: yyDollar[3].str, Line: yyDollar[2].line})
 		}
 	case 70:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:432
+//line thrift.y:432
 		{
 			yyVAL.line = yylex.(*lexer).line
 		}
 	case 71:
 		yyDollar = yyS[yypt-0 : yypt+1]
-		//line thrift.y:436
+//line thrift.y:436
 		{
 			yyVAL.docstring = yylex.(*lexer).LastDocstring()
 		}
