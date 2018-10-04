@@ -131,6 +131,9 @@ func (v *KeyValue_GetValue_Args) Equals(rhs *KeyValue_GetValue_Args) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_GetValue_Args.
 func (v *KeyValue_GetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
 	if v.Key != nil {
 		enc.AddString("key", (string)(*v.Key))
 	}
@@ -414,6 +417,9 @@ func (v *KeyValue_GetValue_Result) Equals(rhs *KeyValue_GetValue_Result) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of KeyValue_GetValue_Result.
 func (v *KeyValue_GetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
 	if v.Success != nil {
 		err = multierr.Append(err, enc.AddObject("success", v.Success))
 	}

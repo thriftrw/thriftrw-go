@@ -783,3 +783,11 @@ func TestMarshallingErrorCollation(t *testing.T) {
 		assert.Contains(t, err.Error(), `could not add item 2`)
 	})
 }
+
+func TestLogNilStruct(t *testing.T) {
+	enc := zapcore.NewMapObjectEncoder()
+
+	var x *ts.Edge
+	require.NoError(t, x.MarshalLogObject(enc))
+	assert.Empty(t, enc.Fields)
+}

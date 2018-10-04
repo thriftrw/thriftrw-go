@@ -1667,6 +1667,9 @@ func (v *StructWithOptionalEnum) Equals(rhs *StructWithOptionalEnum) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of StructWithOptionalEnum.
 func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
 	if v.E != nil {
 		err = multierr.Append(err, enc.AddObject("e", *v.E))
 	}

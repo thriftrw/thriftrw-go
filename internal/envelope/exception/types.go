@@ -489,6 +489,9 @@ func (v *TApplicationException) Equals(rhs *TApplicationException) bool {
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
 // fast logging of TApplicationException.
 func (v *TApplicationException) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
 	if v.Message != nil {
 		enc.AddString("message", *v.Message)
 	}
