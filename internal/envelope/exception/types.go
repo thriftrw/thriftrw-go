@@ -511,6 +511,11 @@ func (v *TApplicationException) GetMessage() (o string) {
 	return
 }
 
+// IsSetMessage returns true if Message is not nil.
+func (v *TApplicationException) IsSetMessage() bool {
+	return v.Message != nil
+}
+
 // GetType returns the value of Type if it is set or its
 // zero value if it is unset.
 func (v *TApplicationException) GetType() (o ExceptionType) {
@@ -519,6 +524,11 @@ func (v *TApplicationException) GetType() (o ExceptionType) {
 	}
 
 	return
+}
+
+// IsSetType returns true if Type is not nil.
+func (v *TApplicationException) IsSetType() bool {
+	return v.Type != nil
 }
 
 func (v *TApplicationException) Error() string {

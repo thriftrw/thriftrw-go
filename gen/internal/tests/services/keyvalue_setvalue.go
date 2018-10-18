@@ -175,6 +175,11 @@ func (v *KeyValue_SetValue_Args) GetKey() (o Key) {
 	return
 }
 
+// IsSetKey returns true if Key is not nil.
+func (v *KeyValue_SetValue_Args) IsSetKey() bool {
+	return v.Key != nil
+}
+
 // GetValue returns the value of Value if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_SetValue_Args) GetValue() (o *unions.ArbitraryValue) {
@@ -183,6 +188,11 @@ func (v *KeyValue_SetValue_Args) GetValue() (o *unions.ArbitraryValue) {
 	}
 
 	return
+}
+
+// IsSetValue returns true if Value is not nil.
+func (v *KeyValue_SetValue_Args) IsSetValue() bool {
+	return v.Value != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

@@ -517,7 +517,9 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 }
 
 func (f fieldGroupGenerator) Accessors(g Generator) error {
-	fieldsAndAccessors := NewNamespace()
+	// Namespace to ensure that field names don't conflict with method names.
+	fieldsAndMethods := NewNamespace()
+
 	return g.DeclareFromTemplate(
 		`
 		<$v := newVar "v">
@@ -527,6 +529,7 @@ func (f fieldGroupGenerator) Accessors(g Generator) error {
 		<range .Fields>
 			<$fname := goName .>
 			<reserveFieldOrMethod $fname>
+
 			<reserveFieldOrMethod (printf "Get%v" $fname)>
 			// Get<$fname> returns the value of <$fname> if it is set or its
 			// <if .Default>default<else>zero<end> value if it is unset.
@@ -545,12 +548,25 @@ func (f fieldGroupGenerator) Accessors(g Generator) error {
 				  return
 				<- end ->
 			}
+
+			<if shouldGenerateIsSet .>
+				<reserveFieldOrMethod (printf "IsSet%v" $fname)>
+				// IsSet<$fname> returns true if <$fname> is not nil.
+				func (<$v> *<$name>) IsSet<$fname>() bool {
+					return <$v>.<$fname> != nil
+				}
+			<end>
 		<end>
 		`, f,
 		TemplateFunc("constantValue", ConstantValue),
+		TemplateFunc("shouldGenerateIsSet", func(f *compile.FieldSpec) bool {
+			// Generate IsSet functions for a field only if the field is
+			// optional or the field value itself is nillable.
+			return !f.Required || isReferenceType(f.Type) || isStructType(f.Type)
+		}),
 		TemplateFunc("reserveFieldOrMethod", func(name string) (string, error) {
 			// we return an empty string for the sake of the templating system
-			err := fieldsAndAccessors.Reserve(name)
+			err := fieldsAndMethods.Reserve(name)
 			return "", err
 		}),
 	)

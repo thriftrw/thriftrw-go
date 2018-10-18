@@ -172,6 +172,11 @@ func (v *ServiceGenerator_Generate_Args) GetRequest() (o *GenerateServiceRequest
 	return
 }
 
+// IsSetRequest returns true if Request is not nil.
+func (v *ServiceGenerator_Generate_Args) IsSetRequest() bool {
+	return v.Request != nil
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the arguments.
 //
@@ -421,6 +426,11 @@ func (v *ServiceGenerator_Generate_Result) GetSuccess() (o *GenerateServiceRespo
 	}
 
 	return
+}
+
+// IsSetSuccess returns true if Success is not nil.
+func (v *ServiceGenerator_Generate_Result) IsSetSuccess() bool {
+	return v.Success != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

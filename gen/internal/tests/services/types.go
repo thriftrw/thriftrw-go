@@ -171,6 +171,11 @@ func (v *ConflictingNamesSetValueArgs) GetKey() (o string) { return v.Key }
 // zero value if it is unset.
 func (v *ConflictingNamesSetValueArgs) GetValue() (o []byte) { return v.Value }
 
+// IsSetValue returns true if Value is not nil.
+func (v *ConflictingNamesSetValueArgs) IsSetValue() bool {
+	return v.Value != nil
+}
+
 type InternalError struct {
 	Message *string `json:"message,omitempty"`
 }
@@ -312,6 +317,11 @@ func (v *InternalError) GetMessage() (o string) {
 	}
 
 	return
+}
+
+// IsSetMessage returns true if Message is not nil.
+func (v *InternalError) IsSetMessage() bool {
+	return v.Message != nil
 }
 
 func (v *InternalError) Error() string {

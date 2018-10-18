@@ -345,6 +345,11 @@ func (v *KeyValue_Size_Result) GetSuccess() (o int64) {
 	return
 }
 
+// IsSetSuccess returns true if Success is not nil.
+func (v *KeyValue_Size_Result) IsSetSuccess() bool {
+	return v.Success != nil
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the result.
 //

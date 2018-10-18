@@ -156,6 +156,11 @@ func (v *Cache_ClearAfter_Args) GetDurationMS() (o int64) {
 	return
 }
 
+// IsSetDurationMS returns true if DurationMS is not nil.
+func (v *Cache_ClearAfter_Args) IsSetDurationMS() bool {
+	return v.DurationMS != nil
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the arguments.
 //

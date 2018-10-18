@@ -26,6 +26,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
@@ -35,9 +37,6 @@ import (
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestStructRoundTripAndString(t *testing.T) {
@@ -1617,10 +1616,12 @@ func TestStructAccessors(t *testing.T) {
 	t.Run("DoesNotExistException", func(t *testing.T) {
 		t.Run("set", func(t *testing.T) {
 			err := tx.DoesNotExistException{Error2: ptr.String("foo")}
+			assert.True(t, err.IsSetError2())
 			assert.Equal(t, "foo", err.GetError2())
 		})
 		t.Run("unset", func(t *testing.T) {
 			var err tx.DoesNotExistException
+			assert.False(t, err.IsSetError2())
 			assert.Equal(t, "", err.GetError2())
 		})
 	})
@@ -1628,10 +1629,12 @@ func TestStructAccessors(t *testing.T) {
 		t.Run("RequiredPrimitive", func(t *testing.T) {
 			t.Run("set", func(t *testing.T) {
 				s := ts.DefaultsStruct{RequiredPrimitive: ptr.Int32(42)}
+				assert.True(t, s.IsSetRequiredPrimitive())
 				assert.Equal(t, int32(42), s.GetRequiredPrimitive())
 			})
 			t.Run("unset", func(t *testing.T) {
 				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetRequiredPrimitive())
 				assert.Equal(t, int32(100), s.GetRequiredPrimitive())
 			})
 		})
@@ -1639,10 +1642,12 @@ func TestStructAccessors(t *testing.T) {
 		t.Run("OptionalPrimitive", func(t *testing.T) {
 			t.Run("set", func(t *testing.T) {
 				s := ts.DefaultsStruct{OptionalPrimitive: ptr.Int32(100)}
+				assert.True(t, s.IsSetOptionalPrimitive())
 				assert.Equal(t, int32(100), s.GetOptionalPrimitive())
 			})
 			t.Run("unset", func(t *testing.T) {
 				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetOptionalPrimitive())
 				assert.Equal(t, int32(200), s.GetOptionalPrimitive())
 			})
 		})
@@ -1651,10 +1656,12 @@ func TestStructAccessors(t *testing.T) {
 			t.Run("set", func(t *testing.T) {
 				e := te.EnumDefaultFoo
 				s := ts.DefaultsStruct{RequiredEnum: &e}
+				assert.True(t, s.IsSetRequiredEnum())
 				assert.Equal(t, te.EnumDefaultFoo, s.GetRequiredEnum())
 			})
 			t.Run("unset", func(t *testing.T) {
 				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetRequiredEnum())
 				assert.Equal(t, te.EnumDefaultBar, s.GetRequiredEnum())
 			})
 		})
@@ -1663,10 +1670,12 @@ func TestStructAccessors(t *testing.T) {
 			t.Run("set", func(t *testing.T) {
 				e := te.EnumDefaultFoo
 				s := ts.DefaultsStruct{OptionalEnum: &e}
+				assert.True(t, s.IsSetOptionalEnum())
 				assert.Equal(t, te.EnumDefaultFoo, s.GetOptionalEnum())
 			})
 			t.Run("unset", func(t *testing.T) {
 				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetOptionalEnum())
 				assert.Equal(t, te.EnumDefaultBaz, s.GetOptionalEnum())
 			})
 		})
@@ -1675,10 +1684,12 @@ func TestStructAccessors(t *testing.T) {
 			t.Run("set", func(t *testing.T) {
 				lst := []string{"foo", "bar", "baz"}
 				s := ts.DefaultsStruct{RequiredList: lst}
+				assert.True(t, s.IsSetRequiredList())
 				assert.Equal(t, lst, s.GetRequiredList())
 			})
 			t.Run("unset", func(t *testing.T) {
 				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetRequiredList())
 				assert.Equal(t, []string{"hello", "world"}, s.GetRequiredList())
 			})
 		})
@@ -1686,10 +1697,12 @@ func TestStructAccessors(t *testing.T) {
 			t.Run("set", func(t *testing.T) {
 				lst := []float64{0, 1, 2}
 				s := ts.DefaultsStruct{OptionalList: lst}
+				assert.True(t, s.IsSetOptionalList())
 				assert.Equal(t, lst, s.GetOptionalList())
 			})
 			t.Run("unset", func(t *testing.T) {
 				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetOptionalList())
 				assert.Equal(t, []float64{1, 2, 3}, s.GetOptionalList())
 			})
 		})
@@ -1700,10 +1713,12 @@ func TestStructAccessors(t *testing.T) {
 					Size:    &ts.Size{Width: 1, Height: 1},
 				}
 				s := ts.DefaultsStruct{RequiredStruct: f}
+				assert.True(t, s.IsSetRequiredStruct())
 				assert.Equal(t, f, s.GetRequiredStruct())
 			})
 			t.Run("unset", func(t *testing.T) {
 				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetRequiredStruct())
 				assert.Equal(t,
 					&ts.Frame{
 						TopLeft: &ts.Point{X: 1, Y: 2},
@@ -1721,10 +1736,12 @@ func TestStructAccessors(t *testing.T) {
 					EndPoint:   &ts.Point{X: 1.0, Y: 1.0},
 				}
 				s := ts.DefaultsStruct{OptionalStruct: e}
+				assert.True(t, s.IsSetOptionalStruct())
 				assert.Equal(t, e, s.GetOptionalStruct())
 			})
 			t.Run("unset", func(t *testing.T) {
 				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetOptionalStruct())
 				assert.Equal(t,
 					&ts.Edge{
 						StartPoint: &ts.Point{X: 1.0, Y: 2.0},

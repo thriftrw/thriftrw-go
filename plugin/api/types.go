@@ -214,6 +214,11 @@ func (v *Argument) GetName() (o string) { return v.Name }
 // zero value if it is unset.
 func (v *Argument) GetType() (o *Type) { return v.Type }
 
+// IsSetType returns true if Type is not nil.
+func (v *Argument) IsSetType() bool {
+	return v.Type != nil
+}
+
 // Feature is a functionality offered by a ThriftRW plugin.
 type Feature int32
 
@@ -882,6 +887,11 @@ func (v *Function) GetThriftName() (o string) { return v.ThriftName }
 // zero value if it is unset.
 func (v *Function) GetArguments() (o []*Argument) { return v.Arguments }
 
+// IsSetArguments returns true if Arguments is not nil.
+func (v *Function) IsSetArguments() bool {
+	return v.Arguments != nil
+}
+
 // GetReturnType returns the value of ReturnType if it is set or its
 // zero value if it is unset.
 func (v *Function) GetReturnType() (o *Type) {
@@ -890,6 +900,11 @@ func (v *Function) GetReturnType() (o *Type) {
 	}
 
 	return
+}
+
+// IsSetReturnType returns true if ReturnType is not nil.
+func (v *Function) IsSetReturnType() bool {
+	return v.ReturnType != nil
 }
 
 // GetExceptions returns the value of Exceptions if it is set or its
@@ -902,6 +917,11 @@ func (v *Function) GetExceptions() (o []*Argument) {
 	return
 }
 
+// IsSetExceptions returns true if Exceptions is not nil.
+func (v *Function) IsSetExceptions() bool {
+	return v.Exceptions != nil
+}
+
 // GetOneWay returns the value of OneWay if it is set or its
 // zero value if it is unset.
 func (v *Function) GetOneWay() (o bool) {
@@ -912,6 +932,11 @@ func (v *Function) GetOneWay() (o bool) {
 	return
 }
 
+// IsSetOneWay returns true if OneWay is not nil.
+func (v *Function) IsSetOneWay() bool {
+	return v.OneWay != nil
+}
+
 // GetAnnotations returns the value of Annotations if it is set or its
 // zero value if it is unset.
 func (v *Function) GetAnnotations() (o map[string]string) {
@@ -920,6 +945,11 @@ func (v *Function) GetAnnotations() (o map[string]string) {
 	}
 
 	return
+}
+
+// IsSetAnnotations returns true if Annotations is not nil.
+func (v *Function) IsSetAnnotations() bool {
+	return v.Annotations != nil
 }
 
 // GenerateServiceRequest is a request to generate code for zero or more
@@ -1432,13 +1462,28 @@ func (v *GenerateServiceRequest) MarshalLogObject(enc zapcore.ObjectEncoder) (er
 // zero value if it is unset.
 func (v *GenerateServiceRequest) GetRootServices() (o []ServiceID) { return v.RootServices }
 
+// IsSetRootServices returns true if RootServices is not nil.
+func (v *GenerateServiceRequest) IsSetRootServices() bool {
+	return v.RootServices != nil
+}
+
 // GetServices returns the value of Services if it is set or its
 // zero value if it is unset.
 func (v *GenerateServiceRequest) GetServices() (o map[ServiceID]*Service) { return v.Services }
 
+// IsSetServices returns true if Services is not nil.
+func (v *GenerateServiceRequest) IsSetServices() bool {
+	return v.Services != nil
+}
+
 // GetModules returns the value of Modules if it is set or its
 // zero value if it is unset.
 func (v *GenerateServiceRequest) GetModules() (o map[ModuleID]*Module) { return v.Modules }
+
+// IsSetModules returns true if Modules is not nil.
+func (v *GenerateServiceRequest) IsSetModules() bool {
+	return v.Modules != nil
+}
 
 // GenerateServiceResponse is response to a GenerateServiceRequest.
 type GenerateServiceResponse struct {
@@ -1671,6 +1716,11 @@ func (v *GenerateServiceResponse) GetFiles() (o map[string][]byte) {
 	}
 
 	return
+}
+
+// IsSetFiles returns true if Files is not nil.
+func (v *GenerateServiceResponse) IsSetFiles() bool {
+	return v.Files != nil
 }
 
 // HandshakeRequest is the initial request sent to the plugin as part of
@@ -2080,6 +2130,11 @@ func (v *HandshakeResponse) GetAPIVersion() (o int32) { return v.APIVersion }
 // zero value if it is unset.
 func (v *HandshakeResponse) GetFeatures() (o []Feature) { return v.Features }
 
+// IsSetFeatures returns true if Features is not nil.
+func (v *HandshakeResponse) IsSetFeatures() bool {
+	return v.Features != nil
+}
+
 // GetLibraryVersion returns the value of LibraryVersion if it is set or its
 // zero value if it is unset.
 func (v *HandshakeResponse) GetLibraryVersion() (o string) {
@@ -2088,6 +2143,11 @@ func (v *HandshakeResponse) GetLibraryVersion() (o string) {
 	}
 
 	return
+}
+
+// IsSetLibraryVersion returns true if LibraryVersion is not nil.
+func (v *HandshakeResponse) IsSetLibraryVersion() bool {
+	return v.LibraryVersion != nil
 }
 
 // Module is a module generated from a single Thrift file. Each module
@@ -2674,9 +2734,19 @@ func (v *Service) GetParentID() (o ServiceID) {
 	return
 }
 
+// IsSetParentID returns true if ParentID is not nil.
+func (v *Service) IsSetParentID() bool {
+	return v.ParentID != nil
+}
+
 // GetFunctions returns the value of Functions if it is set or its
 // zero value if it is unset.
 func (v *Service) GetFunctions() (o []*Function) { return v.Functions }
+
+// IsSetFunctions returns true if Functions is not nil.
+func (v *Service) IsSetFunctions() bool {
+	return v.Functions != nil
+}
 
 // GetModuleID returns the value of ModuleID if it is set or its
 // zero value if it is unset.
@@ -2690,6 +2760,11 @@ func (v *Service) GetAnnotations() (o map[string]string) {
 	}
 
 	return
+}
+
+// IsSetAnnotations returns true if Annotations is not nil.
+func (v *Service) IsSetAnnotations() bool {
+	return v.Annotations != nil
 }
 
 // ServiceID is an arbitrary unique identifier to reference the different
@@ -3323,6 +3398,11 @@ func (v *Type) GetSimpleType() (o SimpleType) {
 	return
 }
 
+// IsSetSimpleType returns true if SimpleType is not nil.
+func (v *Type) IsSetSimpleType() bool {
+	return v.SimpleType != nil
+}
+
 // GetSliceType returns the value of SliceType if it is set or its
 // zero value if it is unset.
 func (v *Type) GetSliceType() (o *Type) {
@@ -3331,6 +3411,11 @@ func (v *Type) GetSliceType() (o *Type) {
 	}
 
 	return
+}
+
+// IsSetSliceType returns true if SliceType is not nil.
+func (v *Type) IsSetSliceType() bool {
+	return v.SliceType != nil
 }
 
 // GetKeyValueSliceType returns the value of KeyValueSliceType if it is set or its
@@ -3343,6 +3428,11 @@ func (v *Type) GetKeyValueSliceType() (o *TypePair) {
 	return
 }
 
+// IsSetKeyValueSliceType returns true if KeyValueSliceType is not nil.
+func (v *Type) IsSetKeyValueSliceType() bool {
+	return v.KeyValueSliceType != nil
+}
+
 // GetMapType returns the value of MapType if it is set or its
 // zero value if it is unset.
 func (v *Type) GetMapType() (o *TypePair) {
@@ -3351,6 +3441,11 @@ func (v *Type) GetMapType() (o *TypePair) {
 	}
 
 	return
+}
+
+// IsSetMapType returns true if MapType is not nil.
+func (v *Type) IsSetMapType() bool {
+	return v.MapType != nil
 }
 
 // GetReferenceType returns the value of ReferenceType if it is set or its
@@ -3363,6 +3458,11 @@ func (v *Type) GetReferenceType() (o *TypeReference) {
 	return
 }
 
+// IsSetReferenceType returns true if ReferenceType is not nil.
+func (v *Type) IsSetReferenceType() bool {
+	return v.ReferenceType != nil
+}
+
 // GetPointerType returns the value of PointerType if it is set or its
 // zero value if it is unset.
 func (v *Type) GetPointerType() (o *Type) {
@@ -3371,6 +3471,11 @@ func (v *Type) GetPointerType() (o *Type) {
 	}
 
 	return
+}
+
+// IsSetPointerType returns true if PointerType is not nil.
+func (v *Type) IsSetPointerType() bool {
+	return v.PointerType != nil
 }
 
 // TypePair is a pair of two types.
@@ -3531,9 +3636,19 @@ func (v *TypePair) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 // zero value if it is unset.
 func (v *TypePair) GetLeft() (o *Type) { return v.Left }
 
+// IsSetLeft returns true if Left is not nil.
+func (v *TypePair) IsSetLeft() bool {
+	return v.Left != nil
+}
+
 // GetRight returns the value of Right if it is set or its
 // zero value if it is unset.
 func (v *TypePair) GetRight() (o *Type) { return v.Right }
+
+// IsSetRight returns true if Right is not nil.
+func (v *TypePair) IsSetRight() bool {
+	return v.Right != nil
+}
 
 // TypeReference is a reference to a user-defined type.
 type TypeReference struct {
@@ -3746,4 +3861,9 @@ func (v *TypeReference) GetAnnotations() (o map[string]string) {
 	}
 
 	return
+}
+
+// IsSetAnnotations returns true if Annotations is not nil.
+func (v *TypeReference) IsSetAnnotations() bool {
+	return v.Annotations != nil
 }

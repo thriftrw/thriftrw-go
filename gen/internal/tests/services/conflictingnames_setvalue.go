@@ -151,6 +151,11 @@ func (v *ConflictingNames_SetValue_Args) GetRequest() (o *ConflictingNamesSetVal
 	return
 }
 
+// IsSetRequest returns true if Request is not nil.
+func (v *ConflictingNames_SetValue_Args) IsSetRequest() bool {
+	return v.Request != nil
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the arguments.
 //
