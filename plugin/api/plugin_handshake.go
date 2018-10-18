@@ -172,6 +172,11 @@ func (v *Plugin_Handshake_Args) GetRequest() (o *HandshakeRequest) {
 	return
 }
 
+// IsSetRequest returns true if Request is not nil.
+func (v *Plugin_Handshake_Args) IsSetRequest() bool {
+	return v.Request != nil
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the arguments.
 //
@@ -421,6 +426,11 @@ func (v *Plugin_Handshake_Result) GetSuccess() (o *HandshakeResponse) {
 	}
 
 	return
+}
+
+// IsSetSuccess returns true if Success is not nil.
+func (v *Plugin_Handshake_Result) IsSetSuccess() bool {
+	return v.Success != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

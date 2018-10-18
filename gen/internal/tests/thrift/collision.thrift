@@ -59,4 +59,5 @@ struct AccessorNoConflict {
 struct AccessorConflict {
     1: optional string name
     2: optional string get_name (go.name = "GetName2")
+    3: optional bool is_set_name (go.name = "IsSetName2")
 }

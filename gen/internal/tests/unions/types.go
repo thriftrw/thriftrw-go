@@ -494,6 +494,11 @@ func (v *ArbitraryValue) GetBoolValue() (o bool) {
 	return
 }
 
+// IsSetBoolValue returns true if BoolValue is not nil.
+func (v *ArbitraryValue) IsSetBoolValue() bool {
+	return v.BoolValue != nil
+}
+
 // GetInt64Value returns the value of Int64Value if it is set or its
 // zero value if it is unset.
 func (v *ArbitraryValue) GetInt64Value() (o int64) {
@@ -502,6 +507,11 @@ func (v *ArbitraryValue) GetInt64Value() (o int64) {
 	}
 
 	return
+}
+
+// IsSetInt64Value returns true if Int64Value is not nil.
+func (v *ArbitraryValue) IsSetInt64Value() bool {
+	return v.Int64Value != nil
 }
 
 // GetStringValue returns the value of StringValue if it is set or its
@@ -514,6 +524,11 @@ func (v *ArbitraryValue) GetStringValue() (o string) {
 	return
 }
 
+// IsSetStringValue returns true if StringValue is not nil.
+func (v *ArbitraryValue) IsSetStringValue() bool {
+	return v.StringValue != nil
+}
+
 // GetListValue returns the value of ListValue if it is set or its
 // zero value if it is unset.
 func (v *ArbitraryValue) GetListValue() (o []*ArbitraryValue) {
@@ -524,6 +539,11 @@ func (v *ArbitraryValue) GetListValue() (o []*ArbitraryValue) {
 	return
 }
 
+// IsSetListValue returns true if ListValue is not nil.
+func (v *ArbitraryValue) IsSetListValue() bool {
+	return v.ListValue != nil
+}
+
 // GetMapValue returns the value of MapValue if it is set or its
 // zero value if it is unset.
 func (v *ArbitraryValue) GetMapValue() (o map[string]*ArbitraryValue) {
@@ -532,6 +552,11 @@ func (v *ArbitraryValue) GetMapValue() (o map[string]*ArbitraryValue) {
 	}
 
 	return
+}
+
+// IsSetMapValue returns true if MapValue is not nil.
+func (v *ArbitraryValue) IsSetMapValue() bool {
+	return v.MapValue != nil
 }
 
 type Document struct {
@@ -715,6 +740,11 @@ func (v *Document) GetPdf() (o typedefs.PDF) {
 	return
 }
 
+// IsSetPdf returns true if Pdf is not nil.
+func (v *Document) IsSetPdf() bool {
+	return v.Pdf != nil
+}
+
 // GetPlainText returns the value of PlainText if it is set or its
 // zero value if it is unset.
 func (v *Document) GetPlainText() (o string) {
@@ -723,6 +753,11 @@ func (v *Document) GetPlainText() (o string) {
 	}
 
 	return
+}
+
+// IsSetPlainText returns true if PlainText is not nil.
+func (v *Document) IsSetPlainText() bool {
+	return v.PlainText != nil
 }
 
 type EmptyUnion struct {

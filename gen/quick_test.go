@@ -30,6 +30,8 @@ import (
 	"testing/quick"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	tl "go.uber.org/thriftrw/gen/internal/tests/collision"
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	tle "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
@@ -44,9 +46,6 @@ import (
 	envex "go.uber.org/thriftrw/internal/envelope/exception"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func thriftTypeIsValid(v thriftType) bool {
@@ -512,9 +511,15 @@ func TestQuickSuite(t *testing.T) {
 				})
 
 			case thriftStruct:
-				t.Run("Accessors", func(t *testing.T) {
+				t.Run("Accessors/Get", func(t *testing.T) {
 					for _, give := range values {
-						suite.testStructAccessors(t, give)
+						suite.testGetAccessors(t, give)
+					}
+				})
+
+				t.Run("Accessors/IsSet", func(t *testing.T) {
+					for _, give := range values {
+						suite.testIsSetAccessors(t, give)
 					}
 				})
 			}
@@ -771,7 +776,7 @@ func (q *quickSuite) testEnumPtr(t *testing.T, give thriftType) {
 
 // Tests that each field of a struct has an accessor that returns the same
 // value as the field.
-func (q *quickSuite) testStructAccessors(t *testing.T, giveVal thriftType) {
+func (q *quickSuite) testGetAccessors(t *testing.T, giveVal thriftType) {
 	// TODO(abg): should we generate accessors for typedefs of structs?
 	give := reflect.ValueOf(giveVal)
 	for i := 0; i < q.Type.NumField(); i++ {
@@ -791,5 +796,25 @@ func (q *quickSuite) testStructAccessors(t *testing.T, giveVal thriftType) {
 		}
 
 		assert.Equal(t, fieldValue.Interface(), accessorValue.Interface())
+	}
+}
+
+func (q *quickSuite) testIsSetAccessors(t *testing.T, giveVal thriftType) {
+	give := reflect.ValueOf(giveVal)
+	for i := 0; i < q.Type.NumField(); i++ {
+		field := q.Type.Field(i)
+		if !isThriftNillable(field.Type) {
+			// The field isn't nillable.
+			continue
+		}
+
+		isSetMethod := give.MethodByName("IsSet" + field.Name)
+		if !assert.Truef(t, isSetMethod.IsValid(), "must have an IsSet%v method", field.Name) {
+			continue
+		}
+
+		fieldValue := give.Elem().FieldByIndex(field.Index)
+		isSet, _ := isSetMethod.Call(nil)[0].Interface().(bool)
+		assert.Equal(t, !fieldValue.IsNil(), isSet)
 	}
 }

@@ -1686,6 +1686,11 @@ func (v *StructWithOptionalEnum) GetE() (o EnumDefault) {
 	return
 }
 
+// IsSetE returns true if E is not nil.
+func (v *StructWithOptionalEnum) IsSetE() bool {
+	return v.E != nil
+}
+
 type LowerCaseEnum int32
 
 const (

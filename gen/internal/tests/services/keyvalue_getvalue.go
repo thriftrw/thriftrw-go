@@ -150,6 +150,11 @@ func (v *KeyValue_GetValue_Args) GetKey() (o Key) {
 	return
 }
 
+// IsSetKey returns true if Key is not nil.
+func (v *KeyValue_GetValue_Args) IsSetKey() bool {
+	return v.Key != nil
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the arguments.
 //
@@ -439,6 +444,11 @@ func (v *KeyValue_GetValue_Result) GetSuccess() (o *unions.ArbitraryValue) {
 	return
 }
 
+// IsSetSuccess returns true if Success is not nil.
+func (v *KeyValue_GetValue_Result) IsSetSuccess() bool {
+	return v.Success != nil
+}
+
 // GetDoesNotExist returns the value of DoesNotExist if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_GetValue_Result) GetDoesNotExist() (o *exceptions.DoesNotExistException) {
@@ -447,6 +457,11 @@ func (v *KeyValue_GetValue_Result) GetDoesNotExist() (o *exceptions.DoesNotExist
 	}
 
 	return
+}
+
+// IsSetDoesNotExist returns true if DoesNotExist is not nil.
+func (v *KeyValue_GetValue_Result) IsSetDoesNotExist() bool {
+	return v.DoesNotExist != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

@@ -17,8 +17,9 @@ import (
 )
 
 type AccessorConflict struct {
-	Name     *string `json:"name,omitempty"`
-	GetName2 *string `json:"get_name,omitempty"`
+	Name       *string `json:"name,omitempty"`
+	GetName2   *string `json:"get_name,omitempty"`
+	IsSetName2 *bool   `json:"is_set_name,omitempty"`
 }
 
 // ToWire translates a AccessorConflict struct into a Thrift-level intermediate
@@ -38,7 +39,7 @@ type AccessorConflict struct {
 //   }
 func (v *AccessorConflict) ToWire() (wire.Value, error) {
 	var (
-		fields [2]wire.Field
+		fields [3]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -58,6 +59,14 @@ func (v *AccessorConflict) ToWire() (wire.Value, error) {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
+	if v.IsSetName2 != nil {
+		w, err = wire.NewValueBool(*(v.IsSetName2)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
 		i++
 	}
 
@@ -106,6 +115,16 @@ func (v *AccessorConflict) FromWire(w wire.Value) error {
 				}
 
 			}
+		case 3:
+			if field.Value.Type() == wire.TBool {
+				var x bool
+				x, err = field.Value.GetBool(), error(nil)
+				v.IsSetName2 = &x
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -119,7 +138,7 @@ func (v *AccessorConflict) String() string {
 		return "<nil>"
 	}
 
-	var fields [2]string
+	var fields [3]string
 	i := 0
 	if v.Name != nil {
 		fields[i] = fmt.Sprintf("Name: %v", *(v.Name))
@@ -129,11 +148,25 @@ func (v *AccessorConflict) String() string {
 		fields[i] = fmt.Sprintf("GetName2: %v", *(v.GetName2))
 		i++
 	}
+	if v.IsSetName2 != nil {
+		fields[i] = fmt.Sprintf("IsSetName2: %v", *(v.IsSetName2))
+		i++
+	}
 
 	return fmt.Sprintf("AccessorConflict{%v}", strings.Join(fields[:i], ", "))
 }
 
 func _String_EqualsPtr(lhs, rhs *string) bool {
+	if lhs != nil && rhs != nil {
+
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 	if lhs != nil && rhs != nil {
 
 		x := *lhs
@@ -159,6 +192,9 @@ func (v *AccessorConflict) Equals(rhs *AccessorConflict) bool {
 	if !_String_EqualsPtr(v.GetName2, rhs.GetName2) {
 		return false
 	}
+	if !_Bool_EqualsPtr(v.IsSetName2, rhs.IsSetName2) {
+		return false
+	}
 
 	return true
 }
@@ -175,6 +211,9 @@ func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) (err erro
 	if v.GetName2 != nil {
 		enc.AddString("get_name", *v.GetName2)
 	}
+	if v.IsSetName2 != nil {
+		enc.AddBool("is_set_name", *v.IsSetName2)
+	}
 	return err
 }
 
@@ -188,6 +227,11 @@ func (v *AccessorConflict) GetName() (o string) {
 	return
 }
 
+// IsSetName returns true if Name is not nil.
+func (v *AccessorConflict) IsSetName() bool {
+	return v.Name != nil
+}
+
 // GetGetName2 returns the value of GetName2 if it is set or its
 // zero value if it is unset.
 func (v *AccessorConflict) GetGetName2() (o string) {
@@ -196,6 +240,26 @@ func (v *AccessorConflict) GetGetName2() (o string) {
 	}
 
 	return
+}
+
+// IsSetGetName2 returns true if GetName2 is not nil.
+func (v *AccessorConflict) IsSetGetName2() bool {
+	return v.GetName2 != nil
+}
+
+// GetIsSetName2 returns the value of IsSetName2 if it is set or its
+// zero value if it is unset.
+func (v *AccessorConflict) GetIsSetName2() (o bool) {
+	if v.IsSetName2 != nil {
+		return *v.IsSetName2
+	}
+
+	return
+}
+
+// IsSetIsSetName2 returns true if IsSetName2 is not nil.
+func (v *AccessorConflict) IsSetIsSetName2() bool {
+	return v.IsSetName2 != nil
 }
 
 type AccessorNoConflict struct {
@@ -360,6 +424,11 @@ func (v *AccessorNoConflict) GetGetname() (o string) {
 	return
 }
 
+// IsSetGetname returns true if Getname is not nil.
+func (v *AccessorNoConflict) IsSetGetname() bool {
+	return v.Getname != nil
+}
+
 // GetGetName returns the value of GetName if it is set or its
 // zero value if it is unset.
 func (v *AccessorNoConflict) GetGetName() (o string) {
@@ -368,6 +437,11 @@ func (v *AccessorNoConflict) GetGetName() (o string) {
 	}
 
 	return
+}
+
+// IsSetGetName returns true if GetName is not nil.
+func (v *AccessorNoConflict) IsSetGetName() bool {
+	return v.GetName != nil
 }
 
 type LittlePotatoe int64
@@ -1027,6 +1101,11 @@ func (v *PrimitiveContainers) GetA() (o []string) {
 	return
 }
 
+// IsSetA returns true if A is not nil.
+func (v *PrimitiveContainers) IsSetA() bool {
+	return v.A != nil
+}
+
 // GetB returns the value of B if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetB() (o map[string]struct{}) {
@@ -1037,6 +1116,11 @@ func (v *PrimitiveContainers) GetB() (o map[string]struct{}) {
 	return
 }
 
+// IsSetB returns true if B is not nil.
+func (v *PrimitiveContainers) IsSetB() bool {
+	return v.B != nil
+}
+
 // GetC returns the value of C if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetC() (o map[string]string) {
@@ -1045,6 +1129,11 @@ func (v *PrimitiveContainers) GetC() (o map[string]string) {
 	}
 
 	return
+}
+
+// IsSetC returns true if C is not nil.
+func (v *PrimitiveContainers) IsSetC() bool {
+	return v.C != nil
 }
 
 type StructCollision struct {
@@ -1335,16 +1424,6 @@ func (v *UnionCollision) String() string {
 	return fmt.Sprintf("UnionCollision{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _Bool_EqualsPtr(lhs, rhs *bool) bool {
-	if lhs != nil && rhs != nil {
-
-		x := *lhs
-		y := *rhs
-		return (x == y)
-	}
-	return lhs == nil && rhs == nil
-}
-
 // Equals returns true if all the fields of this UnionCollision match the
 // provided UnionCollision.
 //
@@ -1390,6 +1469,11 @@ func (v *UnionCollision) GetCollisionField() (o bool) {
 	return
 }
 
+// IsSetCollisionField returns true if CollisionField is not nil.
+func (v *UnionCollision) IsSetCollisionField() bool {
+	return v.CollisionField != nil
+}
+
 // GetCollisionField2 returns the value of CollisionField2 if it is set or its
 // zero value if it is unset.
 func (v *UnionCollision) GetCollisionField2() (o string) {
@@ -1398,6 +1482,11 @@ func (v *UnionCollision) GetCollisionField2() (o string) {
 	}
 
 	return
+}
+
+// IsSetCollisionField2 returns true if CollisionField2 is not nil.
+func (v *UnionCollision) IsSetCollisionField2() bool {
+	return v.CollisionField2 != nil
 }
 
 type WithDefault struct {
@@ -1551,6 +1640,11 @@ func (v *WithDefault) GetPouet() (o *StructCollision2) {
 		CollisionField2: "false indeed",
 	}
 	return
+}
+
+// IsSetPouet returns true if Pouet is not nil.
+func (v *WithDefault) IsSetPouet() bool {
+	return v.Pouet != nil
 }
 
 type LittlePotatoe2 float64
@@ -2101,6 +2195,11 @@ func (v *UnionCollision2) GetCollisionField() (o bool) {
 	return
 }
 
+// IsSetCollisionField returns true if CollisionField is not nil.
+func (v *UnionCollision2) IsSetCollisionField() bool {
+	return v.CollisionField != nil
+}
+
 // GetCollisionField2 returns the value of CollisionField2 if it is set or its
 // zero value if it is unset.
 func (v *UnionCollision2) GetCollisionField2() (o string) {
@@ -2109,4 +2208,9 @@ func (v *UnionCollision2) GetCollisionField2() (o string) {
 	}
 
 	return
+}
+
+// IsSetCollisionField2 returns true if CollisionField2 is not nil.
+func (v *UnionCollision2) IsSetCollisionField2() bool {
+	return v.CollisionField2 != nil
 }

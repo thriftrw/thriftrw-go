@@ -213,3 +213,8 @@ func (v *UUIDConflict) GetLocalUUID() (o UUID) { return v.LocalUUID }
 // GetImportedUUID returns the value of ImportedUUID if it is set or its
 // zero value if it is unset.
 func (v *UUIDConflict) GetImportedUUID() (o *typedefs.UUID) { return v.ImportedUUID }
+
+// IsSetImportedUUID returns true if ImportedUUID is not nil.
+func (v *UUIDConflict) IsSetImportedUUID() bool {
+	return v.ImportedUUID != nil
+}

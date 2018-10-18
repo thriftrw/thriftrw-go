@@ -165,6 +165,11 @@ func (v *KeyValue_DeleteValue_Args) GetKey() (o Key) {
 	return
 }
 
+// IsSetKey returns true if Key is not nil.
+func (v *KeyValue_DeleteValue_Args) IsSetKey() bool {
+	return v.Key != nil
+}
+
 // MethodName returns the name of the Thrift function as specified in
 // the IDL, for which this struct represent the arguments.
 //
@@ -469,6 +474,11 @@ func (v *KeyValue_DeleteValue_Result) GetDoesNotExist() (o *exceptions.DoesNotEx
 	return
 }
 
+// IsSetDoesNotExist returns true if DoesNotExist is not nil.
+func (v *KeyValue_DeleteValue_Result) IsSetDoesNotExist() bool {
+	return v.DoesNotExist != nil
+}
+
 // GetInternalError returns the value of InternalError if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_DeleteValue_Result) GetInternalError() (o *InternalError) {
@@ -477,6 +487,11 @@ func (v *KeyValue_DeleteValue_Result) GetInternalError() (o *InternalError) {
 	}
 
 	return
+}
+
+// IsSetInternalError returns true if InternalError is not nil.
+func (v *KeyValue_DeleteValue_Result) IsSetInternalError() bool {
+	return v.InternalError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

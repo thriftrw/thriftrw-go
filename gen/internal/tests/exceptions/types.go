@@ -187,6 +187,11 @@ func (v *DoesNotExistException) GetError2() (o string) {
 	return
 }
 
+// IsSetError2 returns true if Error2 is not nil.
+func (v *DoesNotExistException) IsSetError2() bool {
+	return v.Error2 != nil
+}
+
 func (v *DoesNotExistException) Error() string {
 	return v.String()
 }

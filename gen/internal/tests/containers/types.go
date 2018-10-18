@@ -1971,6 +1971,11 @@ func (v *ContainersOfContainers) GetListOfLists() (o [][]int32) {
 	return
 }
 
+// IsSetListOfLists returns true if ListOfLists is not nil.
+func (v *ContainersOfContainers) IsSetListOfLists() bool {
+	return v.ListOfLists != nil
+}
+
 // GetListOfSets returns the value of ListOfSets if it is set or its
 // zero value if it is unset.
 func (v *ContainersOfContainers) GetListOfSets() (o []map[int32]struct{}) {
@@ -1979,6 +1984,11 @@ func (v *ContainersOfContainers) GetListOfSets() (o []map[int32]struct{}) {
 	}
 
 	return
+}
+
+// IsSetListOfSets returns true if ListOfSets is not nil.
+func (v *ContainersOfContainers) IsSetListOfSets() bool {
+	return v.ListOfSets != nil
 }
 
 // GetListOfMaps returns the value of ListOfMaps if it is set or its
@@ -1991,6 +2001,11 @@ func (v *ContainersOfContainers) GetListOfMaps() (o []map[int32]int32) {
 	return
 }
 
+// IsSetListOfMaps returns true if ListOfMaps is not nil.
+func (v *ContainersOfContainers) IsSetListOfMaps() bool {
+	return v.ListOfMaps != nil
+}
+
 // GetSetOfSets returns the value of SetOfSets if it is set or its
 // zero value if it is unset.
 func (v *ContainersOfContainers) GetSetOfSets() (o []map[string]struct{}) {
@@ -1999,6 +2014,11 @@ func (v *ContainersOfContainers) GetSetOfSets() (o []map[string]struct{}) {
 	}
 
 	return
+}
+
+// IsSetSetOfSets returns true if SetOfSets is not nil.
+func (v *ContainersOfContainers) IsSetSetOfSets() bool {
+	return v.SetOfSets != nil
 }
 
 // GetSetOfLists returns the value of SetOfLists if it is set or its
@@ -2011,6 +2031,11 @@ func (v *ContainersOfContainers) GetSetOfLists() (o [][]string) {
 	return
 }
 
+// IsSetSetOfLists returns true if SetOfLists is not nil.
+func (v *ContainersOfContainers) IsSetSetOfLists() bool {
+	return v.SetOfLists != nil
+}
+
 // GetSetOfMaps returns the value of SetOfMaps if it is set or its
 // zero value if it is unset.
 func (v *ContainersOfContainers) GetSetOfMaps() (o []map[string]string) {
@@ -2019,6 +2044,11 @@ func (v *ContainersOfContainers) GetSetOfMaps() (o []map[string]string) {
 	}
 
 	return
+}
+
+// IsSetSetOfMaps returns true if SetOfMaps is not nil.
+func (v *ContainersOfContainers) IsSetSetOfMaps() bool {
+	return v.SetOfMaps != nil
 }
 
 // GetMapOfMapToInt returns the value of MapOfMapToInt if it is set or its
@@ -2034,6 +2064,11 @@ func (v *ContainersOfContainers) GetMapOfMapToInt() (o []struct {
 	return
 }
 
+// IsSetMapOfMapToInt returns true if MapOfMapToInt is not nil.
+func (v *ContainersOfContainers) IsSetMapOfMapToInt() bool {
+	return v.MapOfMapToInt != nil
+}
+
 // GetMapOfListToSet returns the value of MapOfListToSet if it is set or its
 // zero value if it is unset.
 func (v *ContainersOfContainers) GetMapOfListToSet() (o []struct {
@@ -2047,6 +2082,11 @@ func (v *ContainersOfContainers) GetMapOfListToSet() (o []struct {
 	return
 }
 
+// IsSetMapOfListToSet returns true if MapOfListToSet is not nil.
+func (v *ContainersOfContainers) IsSetMapOfListToSet() bool {
+	return v.MapOfListToSet != nil
+}
+
 // GetMapOfSetToListOfDouble returns the value of MapOfSetToListOfDouble if it is set or its
 // zero value if it is unset.
 func (v *ContainersOfContainers) GetMapOfSetToListOfDouble() (o []struct {
@@ -2058,6 +2098,11 @@ func (v *ContainersOfContainers) GetMapOfSetToListOfDouble() (o []struct {
 	}
 
 	return
+}
+
+// IsSetMapOfSetToListOfDouble returns true if MapOfSetToListOfDouble is not nil.
+func (v *ContainersOfContainers) IsSetMapOfSetToListOfDouble() bool {
+	return v.MapOfSetToListOfDouble != nil
 }
 
 type EnumContainers struct {
@@ -2507,6 +2552,11 @@ func (v *EnumContainers) GetListOfEnums() (o []enums.EnumDefault) {
 	return
 }
 
+// IsSetListOfEnums returns true if ListOfEnums is not nil.
+func (v *EnumContainers) IsSetListOfEnums() bool {
+	return v.ListOfEnums != nil
+}
+
 // GetSetOfEnums returns the value of SetOfEnums if it is set or its
 // zero value if it is unset.
 func (v *EnumContainers) GetSetOfEnums() (o map[enums.EnumWithValues]struct{}) {
@@ -2517,6 +2567,11 @@ func (v *EnumContainers) GetSetOfEnums() (o map[enums.EnumWithValues]struct{}) {
 	return
 }
 
+// IsSetSetOfEnums returns true if SetOfEnums is not nil.
+func (v *EnumContainers) IsSetSetOfEnums() bool {
+	return v.SetOfEnums != nil
+}
+
 // GetMapOfEnums returns the value of MapOfEnums if it is set or its
 // zero value if it is unset.
 func (v *EnumContainers) GetMapOfEnums() (o map[enums.EnumWithDuplicateValues]int32) {
@@ -2525,6 +2580,11 @@ func (v *EnumContainers) GetMapOfEnums() (o map[enums.EnumWithDuplicateValues]in
 	}
 
 	return
+}
+
+// IsSetMapOfEnums returns true if MapOfEnums is not nil.
+func (v *EnumContainers) IsSetMapOfEnums() bool {
+	return v.MapOfEnums != nil
 }
 
 type ListOfConflictingEnums struct {
@@ -2836,9 +2896,19 @@ func (v *ListOfConflictingEnums) MarshalLogObject(enc zapcore.ObjectEncoder) (er
 // zero value if it is unset.
 func (v *ListOfConflictingEnums) GetRecords() (o []enum_conflict.RecordType) { return v.Records }
 
+// IsSetRecords returns true if Records is not nil.
+func (v *ListOfConflictingEnums) IsSetRecords() bool {
+	return v.Records != nil
+}
+
 // GetOtherRecords returns the value of OtherRecords if it is set or its
 // zero value if it is unset.
 func (v *ListOfConflictingEnums) GetOtherRecords() (o []enums.RecordType) { return v.OtherRecords }
+
+// IsSetOtherRecords returns true if OtherRecords is not nil.
+func (v *ListOfConflictingEnums) IsSetOtherRecords() bool {
+	return v.OtherRecords != nil
+}
 
 type ListOfConflictingUUIDs struct {
 	Uuids      []*typedefs.UUID     `json:"uuids,required"`
@@ -3152,9 +3222,19 @@ func (v *ListOfConflictingUUIDs) MarshalLogObject(enc zapcore.ObjectEncoder) (er
 // zero value if it is unset.
 func (v *ListOfConflictingUUIDs) GetUuids() (o []*typedefs.UUID) { return v.Uuids }
 
+// IsSetUuids returns true if Uuids is not nil.
+func (v *ListOfConflictingUUIDs) IsSetUuids() bool {
+	return v.Uuids != nil
+}
+
 // GetOtherUUIDs returns the value of OtherUUIDs if it is set or its
 // zero value if it is unset.
 func (v *ListOfConflictingUUIDs) GetOtherUUIDs() (o []uuid_conflict.UUID) { return v.OtherUUIDs }
+
+// IsSetOtherUUIDs returns true if OtherUUIDs is not nil.
+func (v *ListOfConflictingUUIDs) IsSetOtherUUIDs() bool {
+	return v.OtherUUIDs != nil
+}
 
 type MapOfBinaryAndString struct {
 	BinaryToString []struct {
@@ -3556,6 +3636,11 @@ func (v *MapOfBinaryAndString) GetBinaryToString() (o []struct {
 	return
 }
 
+// IsSetBinaryToString returns true if BinaryToString is not nil.
+func (v *MapOfBinaryAndString) IsSetBinaryToString() bool {
+	return v.BinaryToString != nil
+}
+
 // GetStringToBinary returns the value of StringToBinary if it is set or its
 // zero value if it is unset.
 func (v *MapOfBinaryAndString) GetStringToBinary() (o map[string][]byte) {
@@ -3564,6 +3649,11 @@ func (v *MapOfBinaryAndString) GetStringToBinary() (o map[string][]byte) {
 	}
 
 	return
+}
+
+// IsSetStringToBinary returns true if StringToBinary is not nil.
+func (v *MapOfBinaryAndString) IsSetStringToBinary() bool {
+	return v.StringToBinary != nil
 }
 
 type PrimitiveContainers struct {
@@ -4240,6 +4330,11 @@ func (v *PrimitiveContainers) GetListOfBinary() (o [][]byte) {
 	return
 }
 
+// IsSetListOfBinary returns true if ListOfBinary is not nil.
+func (v *PrimitiveContainers) IsSetListOfBinary() bool {
+	return v.ListOfBinary != nil
+}
+
 // GetListOfInts returns the value of ListOfInts if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetListOfInts() (o []int64) {
@@ -4248,6 +4343,11 @@ func (v *PrimitiveContainers) GetListOfInts() (o []int64) {
 	}
 
 	return
+}
+
+// IsSetListOfInts returns true if ListOfInts is not nil.
+func (v *PrimitiveContainers) IsSetListOfInts() bool {
+	return v.ListOfInts != nil
 }
 
 // GetSetOfStrings returns the value of SetOfStrings if it is set or its
@@ -4260,6 +4360,11 @@ func (v *PrimitiveContainers) GetSetOfStrings() (o map[string]struct{}) {
 	return
 }
 
+// IsSetSetOfStrings returns true if SetOfStrings is not nil.
+func (v *PrimitiveContainers) IsSetSetOfStrings() bool {
+	return v.SetOfStrings != nil
+}
+
 // GetSetOfBytes returns the value of SetOfBytes if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetSetOfBytes() (o map[int8]struct{}) {
@@ -4268,6 +4373,11 @@ func (v *PrimitiveContainers) GetSetOfBytes() (o map[int8]struct{}) {
 	}
 
 	return
+}
+
+// IsSetSetOfBytes returns true if SetOfBytes is not nil.
+func (v *PrimitiveContainers) IsSetSetOfBytes() bool {
+	return v.SetOfBytes != nil
 }
 
 // GetMapOfIntToString returns the value of MapOfIntToString if it is set or its
@@ -4280,6 +4390,11 @@ func (v *PrimitiveContainers) GetMapOfIntToString() (o map[int32]string) {
 	return
 }
 
+// IsSetMapOfIntToString returns true if MapOfIntToString is not nil.
+func (v *PrimitiveContainers) IsSetMapOfIntToString() bool {
+	return v.MapOfIntToString != nil
+}
+
 // GetMapOfStringToBool returns the value of MapOfStringToBool if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetMapOfStringToBool() (o map[string]bool) {
@@ -4288,6 +4403,11 @@ func (v *PrimitiveContainers) GetMapOfStringToBool() (o map[string]bool) {
 	}
 
 	return
+}
+
+// IsSetMapOfStringToBool returns true if MapOfStringToBool is not nil.
+func (v *PrimitiveContainers) IsSetMapOfStringToBool() bool {
+	return v.MapOfStringToBool != nil
 }
 
 type PrimitiveContainersRequired struct {
@@ -4580,12 +4700,27 @@ func (v *PrimitiveContainersRequired) MarshalLogObject(enc zapcore.ObjectEncoder
 // zero value if it is unset.
 func (v *PrimitiveContainersRequired) GetListOfStrings() (o []string) { return v.ListOfStrings }
 
+// IsSetListOfStrings returns true if ListOfStrings is not nil.
+func (v *PrimitiveContainersRequired) IsSetListOfStrings() bool {
+	return v.ListOfStrings != nil
+}
+
 // GetSetOfInts returns the value of SetOfInts if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainersRequired) GetSetOfInts() (o map[int32]struct{}) { return v.SetOfInts }
+
+// IsSetSetOfInts returns true if SetOfInts is not nil.
+func (v *PrimitiveContainersRequired) IsSetSetOfInts() bool {
+	return v.SetOfInts != nil
+}
 
 // GetMapOfIntsToDoubles returns the value of MapOfIntsToDoubles if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainersRequired) GetMapOfIntsToDoubles() (o map[int64]float64) {
 	return v.MapOfIntsToDoubles
+}
+
+// IsSetMapOfIntsToDoubles returns true if MapOfIntsToDoubles is not nil.
+func (v *PrimitiveContainersRequired) IsSetMapOfIntsToDoubles() bool {
+	return v.MapOfIntsToDoubles != nil
 }

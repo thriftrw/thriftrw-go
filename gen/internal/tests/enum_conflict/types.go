@@ -403,6 +403,11 @@ func (v *Records) GetRecordType() (o RecordType) {
 	return
 }
 
+// IsSetRecordType returns true if RecordType is not nil.
+func (v *Records) IsSetRecordType() bool {
+	return v.RecordType != nil
+}
+
 // GetOtherRecordType returns the value of OtherRecordType if it is set or its
 // default value if it is unset.
 func (v *Records) GetOtherRecordType() (o enums.RecordType) {
@@ -411,4 +416,9 @@ func (v *Records) GetOtherRecordType() (o enums.RecordType) {
 	}
 	o = DefaultOtherRecordType
 	return
+}
+
+// IsSetOtherRecordType returns true if OtherRecordType is not nil.
+func (v *Records) IsSetOtherRecordType() bool {
+	return v.OtherRecordType != nil
 }
