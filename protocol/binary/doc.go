@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+// Package binary implements the Thrift Binary protocol.
+//
+// See "go.uber.org/thriftrw/protocol".Binary for a higher-level Encode/Decode
+// API.
 package binary
-
-import "encoding/binary"
-
-var bigEndian = binary.BigEndian
