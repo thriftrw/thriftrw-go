@@ -165,7 +165,7 @@ func (v *Plugin_Handshake_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err
 // GetRequest returns the value of Request if it is set or its
 // zero value if it is unset.
 func (v *Plugin_Handshake_Args) GetRequest() (o *HandshakeRequest) {
-	if v.Request != nil {
+	if v != nil && v.Request != nil {
 		return v.Request
 	}
 
@@ -174,7 +174,7 @@ func (v *Plugin_Handshake_Args) GetRequest() (o *HandshakeRequest) {
 
 // IsSetRequest returns true if Request is not nil.
 func (v *Plugin_Handshake_Args) IsSetRequest() bool {
-	return v.Request != nil
+	return v != nil && v.Request != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -421,7 +421,7 @@ func (v *Plugin_Handshake_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (e
 // GetSuccess returns the value of Success if it is set or its
 // zero value if it is unset.
 func (v *Plugin_Handshake_Result) GetSuccess() (o *HandshakeResponse) {
-	if v.Success != nil {
+	if v != nil && v.Success != nil {
 		return v.Success
 	}
 
@@ -430,7 +430,7 @@ func (v *Plugin_Handshake_Result) GetSuccess() (o *HandshakeResponse) {
 
 // IsSetSuccess returns true if Success is not nil.
 func (v *Plugin_Handshake_Result) IsSetSuccess() bool {
-	return v.Success != nil
+	return v != nil && v.Success != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
