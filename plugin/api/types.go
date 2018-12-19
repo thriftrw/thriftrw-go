@@ -216,7 +216,7 @@ func (v *Argument) GetType() (o *Type) { return v.Type }
 
 // IsSetType returns true if Type is not nil.
 func (v *Argument) IsSetType() bool {
-	return v.Type != nil
+	return v != nil && v.Type != nil
 }
 
 // Feature is a functionality offered by a ThriftRW plugin.
@@ -889,13 +889,13 @@ func (v *Function) GetArguments() (o []*Argument) { return v.Arguments }
 
 // IsSetArguments returns true if Arguments is not nil.
 func (v *Function) IsSetArguments() bool {
-	return v.Arguments != nil
+	return v != nil && v.Arguments != nil
 }
 
 // GetReturnType returns the value of ReturnType if it is set or its
 // zero value if it is unset.
 func (v *Function) GetReturnType() (o *Type) {
-	if v.ReturnType != nil {
+	if v != nil && v.ReturnType != nil {
 		return v.ReturnType
 	}
 
@@ -904,13 +904,13 @@ func (v *Function) GetReturnType() (o *Type) {
 
 // IsSetReturnType returns true if ReturnType is not nil.
 func (v *Function) IsSetReturnType() bool {
-	return v.ReturnType != nil
+	return v != nil && v.ReturnType != nil
 }
 
 // GetExceptions returns the value of Exceptions if it is set or its
 // zero value if it is unset.
 func (v *Function) GetExceptions() (o []*Argument) {
-	if v.Exceptions != nil {
+	if v != nil && v.Exceptions != nil {
 		return v.Exceptions
 	}
 
@@ -919,13 +919,13 @@ func (v *Function) GetExceptions() (o []*Argument) {
 
 // IsSetExceptions returns true if Exceptions is not nil.
 func (v *Function) IsSetExceptions() bool {
-	return v.Exceptions != nil
+	return v != nil && v.Exceptions != nil
 }
 
 // GetOneWay returns the value of OneWay if it is set or its
 // zero value if it is unset.
 func (v *Function) GetOneWay() (o bool) {
-	if v.OneWay != nil {
+	if v != nil && v.OneWay != nil {
 		return *v.OneWay
 	}
 
@@ -934,13 +934,13 @@ func (v *Function) GetOneWay() (o bool) {
 
 // IsSetOneWay returns true if OneWay is not nil.
 func (v *Function) IsSetOneWay() bool {
-	return v.OneWay != nil
+	return v != nil && v.OneWay != nil
 }
 
 // GetAnnotations returns the value of Annotations if it is set or its
 // zero value if it is unset.
 func (v *Function) GetAnnotations() (o map[string]string) {
-	if v.Annotations != nil {
+	if v != nil && v.Annotations != nil {
 		return v.Annotations
 	}
 
@@ -949,7 +949,7 @@ func (v *Function) GetAnnotations() (o map[string]string) {
 
 // IsSetAnnotations returns true if Annotations is not nil.
 func (v *Function) IsSetAnnotations() bool {
-	return v.Annotations != nil
+	return v != nil && v.Annotations != nil
 }
 
 // GenerateServiceRequest is a request to generate code for zero or more
@@ -1464,7 +1464,7 @@ func (v *GenerateServiceRequest) GetRootServices() (o []ServiceID) { return v.Ro
 
 // IsSetRootServices returns true if RootServices is not nil.
 func (v *GenerateServiceRequest) IsSetRootServices() bool {
-	return v.RootServices != nil
+	return v != nil && v.RootServices != nil
 }
 
 // GetServices returns the value of Services if it is set or its
@@ -1473,7 +1473,7 @@ func (v *GenerateServiceRequest) GetServices() (o map[ServiceID]*Service) { retu
 
 // IsSetServices returns true if Services is not nil.
 func (v *GenerateServiceRequest) IsSetServices() bool {
-	return v.Services != nil
+	return v != nil && v.Services != nil
 }
 
 // GetModules returns the value of Modules if it is set or its
@@ -1482,7 +1482,7 @@ func (v *GenerateServiceRequest) GetModules() (o map[ModuleID]*Module) { return 
 
 // IsSetModules returns true if Modules is not nil.
 func (v *GenerateServiceRequest) IsSetModules() bool {
-	return v.Modules != nil
+	return v != nil && v.Modules != nil
 }
 
 // GenerateServiceResponse is response to a GenerateServiceRequest.
@@ -1711,7 +1711,7 @@ func (v *GenerateServiceResponse) MarshalLogObject(enc zapcore.ObjectEncoder) (e
 // GetFiles returns the value of Files if it is set or its
 // zero value if it is unset.
 func (v *GenerateServiceResponse) GetFiles() (o map[string][]byte) {
-	if v.Files != nil {
+	if v != nil && v.Files != nil {
 		return v.Files
 	}
 
@@ -1720,7 +1720,7 @@ func (v *GenerateServiceResponse) GetFiles() (o map[string][]byte) {
 
 // IsSetFiles returns true if Files is not nil.
 func (v *GenerateServiceResponse) IsSetFiles() bool {
-	return v.Files != nil
+	return v != nil && v.Files != nil
 }
 
 // HandshakeRequest is the initial request sent to the plugin as part of
@@ -2132,13 +2132,13 @@ func (v *HandshakeResponse) GetFeatures() (o []Feature) { return v.Features }
 
 // IsSetFeatures returns true if Features is not nil.
 func (v *HandshakeResponse) IsSetFeatures() bool {
-	return v.Features != nil
+	return v != nil && v.Features != nil
 }
 
 // GetLibraryVersion returns the value of LibraryVersion if it is set or its
 // zero value if it is unset.
 func (v *HandshakeResponse) GetLibraryVersion() (o string) {
-	if v.LibraryVersion != nil {
+	if v != nil && v.LibraryVersion != nil {
 		return *v.LibraryVersion
 	}
 
@@ -2147,7 +2147,7 @@ func (v *HandshakeResponse) GetLibraryVersion() (o string) {
 
 // IsSetLibraryVersion returns true if LibraryVersion is not nil.
 func (v *HandshakeResponse) IsSetLibraryVersion() bool {
-	return v.LibraryVersion != nil
+	return v != nil && v.LibraryVersion != nil
 }
 
 // Module is a module generated from a single Thrift file. Each module
@@ -2727,7 +2727,7 @@ func (v *Service) GetThriftName() (o string) { return v.ThriftName }
 // GetParentID returns the value of ParentID if it is set or its
 // zero value if it is unset.
 func (v *Service) GetParentID() (o ServiceID) {
-	if v.ParentID != nil {
+	if v != nil && v.ParentID != nil {
 		return *v.ParentID
 	}
 
@@ -2736,7 +2736,7 @@ func (v *Service) GetParentID() (o ServiceID) {
 
 // IsSetParentID returns true if ParentID is not nil.
 func (v *Service) IsSetParentID() bool {
-	return v.ParentID != nil
+	return v != nil && v.ParentID != nil
 }
 
 // GetFunctions returns the value of Functions if it is set or its
@@ -2745,7 +2745,7 @@ func (v *Service) GetFunctions() (o []*Function) { return v.Functions }
 
 // IsSetFunctions returns true if Functions is not nil.
 func (v *Service) IsSetFunctions() bool {
-	return v.Functions != nil
+	return v != nil && v.Functions != nil
 }
 
 // GetModuleID returns the value of ModuleID if it is set or its
@@ -2755,7 +2755,7 @@ func (v *Service) GetModuleID() (o ModuleID) { return v.ModuleID }
 // GetAnnotations returns the value of Annotations if it is set or its
 // zero value if it is unset.
 func (v *Service) GetAnnotations() (o map[string]string) {
-	if v.Annotations != nil {
+	if v != nil && v.Annotations != nil {
 		return v.Annotations
 	}
 
@@ -2764,7 +2764,7 @@ func (v *Service) GetAnnotations() (o map[string]string) {
 
 // IsSetAnnotations returns true if Annotations is not nil.
 func (v *Service) IsSetAnnotations() bool {
-	return v.Annotations != nil
+	return v != nil && v.Annotations != nil
 }
 
 // ServiceID is an arbitrary unique identifier to reference the different
@@ -3391,7 +3391,7 @@ func (v *Type) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 // GetSimpleType returns the value of SimpleType if it is set or its
 // zero value if it is unset.
 func (v *Type) GetSimpleType() (o SimpleType) {
-	if v.SimpleType != nil {
+	if v != nil && v.SimpleType != nil {
 		return *v.SimpleType
 	}
 
@@ -3400,13 +3400,13 @@ func (v *Type) GetSimpleType() (o SimpleType) {
 
 // IsSetSimpleType returns true if SimpleType is not nil.
 func (v *Type) IsSetSimpleType() bool {
-	return v.SimpleType != nil
+	return v != nil && v.SimpleType != nil
 }
 
 // GetSliceType returns the value of SliceType if it is set or its
 // zero value if it is unset.
 func (v *Type) GetSliceType() (o *Type) {
-	if v.SliceType != nil {
+	if v != nil && v.SliceType != nil {
 		return v.SliceType
 	}
 
@@ -3415,13 +3415,13 @@ func (v *Type) GetSliceType() (o *Type) {
 
 // IsSetSliceType returns true if SliceType is not nil.
 func (v *Type) IsSetSliceType() bool {
-	return v.SliceType != nil
+	return v != nil && v.SliceType != nil
 }
 
 // GetKeyValueSliceType returns the value of KeyValueSliceType if it is set or its
 // zero value if it is unset.
 func (v *Type) GetKeyValueSliceType() (o *TypePair) {
-	if v.KeyValueSliceType != nil {
+	if v != nil && v.KeyValueSliceType != nil {
 		return v.KeyValueSliceType
 	}
 
@@ -3430,13 +3430,13 @@ func (v *Type) GetKeyValueSliceType() (o *TypePair) {
 
 // IsSetKeyValueSliceType returns true if KeyValueSliceType is not nil.
 func (v *Type) IsSetKeyValueSliceType() bool {
-	return v.KeyValueSliceType != nil
+	return v != nil && v.KeyValueSliceType != nil
 }
 
 // GetMapType returns the value of MapType if it is set or its
 // zero value if it is unset.
 func (v *Type) GetMapType() (o *TypePair) {
-	if v.MapType != nil {
+	if v != nil && v.MapType != nil {
 		return v.MapType
 	}
 
@@ -3445,13 +3445,13 @@ func (v *Type) GetMapType() (o *TypePair) {
 
 // IsSetMapType returns true if MapType is not nil.
 func (v *Type) IsSetMapType() bool {
-	return v.MapType != nil
+	return v != nil && v.MapType != nil
 }
 
 // GetReferenceType returns the value of ReferenceType if it is set or its
 // zero value if it is unset.
 func (v *Type) GetReferenceType() (o *TypeReference) {
-	if v.ReferenceType != nil {
+	if v != nil && v.ReferenceType != nil {
 		return v.ReferenceType
 	}
 
@@ -3460,13 +3460,13 @@ func (v *Type) GetReferenceType() (o *TypeReference) {
 
 // IsSetReferenceType returns true if ReferenceType is not nil.
 func (v *Type) IsSetReferenceType() bool {
-	return v.ReferenceType != nil
+	return v != nil && v.ReferenceType != nil
 }
 
 // GetPointerType returns the value of PointerType if it is set or its
 // zero value if it is unset.
 func (v *Type) GetPointerType() (o *Type) {
-	if v.PointerType != nil {
+	if v != nil && v.PointerType != nil {
 		return v.PointerType
 	}
 
@@ -3475,7 +3475,7 @@ func (v *Type) GetPointerType() (o *Type) {
 
 // IsSetPointerType returns true if PointerType is not nil.
 func (v *Type) IsSetPointerType() bool {
-	return v.PointerType != nil
+	return v != nil && v.PointerType != nil
 }
 
 // TypePair is a pair of two types.
@@ -3638,7 +3638,7 @@ func (v *TypePair) GetLeft() (o *Type) { return v.Left }
 
 // IsSetLeft returns true if Left is not nil.
 func (v *TypePair) IsSetLeft() bool {
-	return v.Left != nil
+	return v != nil && v.Left != nil
 }
 
 // GetRight returns the value of Right if it is set or its
@@ -3647,7 +3647,7 @@ func (v *TypePair) GetRight() (o *Type) { return v.Right }
 
 // IsSetRight returns true if Right is not nil.
 func (v *TypePair) IsSetRight() bool {
-	return v.Right != nil
+	return v != nil && v.Right != nil
 }
 
 // TypeReference is a reference to a user-defined type.
@@ -3856,7 +3856,7 @@ func (v *TypeReference) GetImportPath() (o string) { return v.ImportPath }
 // GetAnnotations returns the value of Annotations if it is set or its
 // zero value if it is unset.
 func (v *TypeReference) GetAnnotations() (o map[string]string) {
-	if v.Annotations != nil {
+	if v != nil && v.Annotations != nil {
 		return v.Annotations
 	}
 
@@ -3865,5 +3865,5 @@ func (v *TypeReference) GetAnnotations() (o map[string]string) {
 
 // IsSetAnnotations returns true if Annotations is not nil.
 func (v *TypeReference) IsSetAnnotations() bool {
-	return v.Annotations != nil
+	return v != nil && v.Annotations != nil
 }

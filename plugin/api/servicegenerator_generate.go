@@ -165,7 +165,7 @@ func (v *ServiceGenerator_Generate_Args) MarshalLogObject(enc zapcore.ObjectEnco
 // GetRequest returns the value of Request if it is set or its
 // zero value if it is unset.
 func (v *ServiceGenerator_Generate_Args) GetRequest() (o *GenerateServiceRequest) {
-	if v.Request != nil {
+	if v != nil && v.Request != nil {
 		return v.Request
 	}
 
@@ -174,7 +174,7 @@ func (v *ServiceGenerator_Generate_Args) GetRequest() (o *GenerateServiceRequest
 
 // IsSetRequest returns true if Request is not nil.
 func (v *ServiceGenerator_Generate_Args) IsSetRequest() bool {
-	return v.Request != nil
+	return v != nil && v.Request != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -421,7 +421,7 @@ func (v *ServiceGenerator_Generate_Result) MarshalLogObject(enc zapcore.ObjectEn
 // GetSuccess returns the value of Success if it is set or its
 // zero value if it is unset.
 func (v *ServiceGenerator_Generate_Result) GetSuccess() (o *GenerateServiceResponse) {
-	if v.Success != nil {
+	if v != nil && v.Success != nil {
 		return v.Success
 	}
 
@@ -430,7 +430,7 @@ func (v *ServiceGenerator_Generate_Result) GetSuccess() (o *GenerateServiceRespo
 
 // IsSetSuccess returns true if Success is not nil.
 func (v *ServiceGenerator_Generate_Result) IsSetSuccess() bool {
-	return v.Success != nil
+	return v != nil && v.Success != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

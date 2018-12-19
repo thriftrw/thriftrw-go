@@ -504,7 +504,7 @@ func (v *TApplicationException) MarshalLogObject(enc zapcore.ObjectEncoder) (err
 // GetMessage returns the value of Message if it is set or its
 // zero value if it is unset.
 func (v *TApplicationException) GetMessage() (o string) {
-	if v.Message != nil {
+	if v != nil && v.Message != nil {
 		return *v.Message
 	}
 
@@ -513,13 +513,13 @@ func (v *TApplicationException) GetMessage() (o string) {
 
 // IsSetMessage returns true if Message is not nil.
 func (v *TApplicationException) IsSetMessage() bool {
-	return v.Message != nil
+	return v != nil && v.Message != nil
 }
 
 // GetType returns the value of Type if it is set or its
 // zero value if it is unset.
 func (v *TApplicationException) GetType() (o ExceptionType) {
-	if v.Type != nil {
+	if v != nil && v.Type != nil {
 		return *v.Type
 	}
 
@@ -528,7 +528,7 @@ func (v *TApplicationException) GetType() (o ExceptionType) {
 
 // IsSetType returns true if Type is not nil.
 func (v *TApplicationException) IsSetType() bool {
-	return v.Type != nil
+	return v != nil && v.Type != nil
 }
 
 func (v *TApplicationException) Error() string {
