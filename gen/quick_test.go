@@ -518,10 +518,18 @@ func TestQuickSuite(t *testing.T) {
 					}
 				})
 
+				t.Run("Accessors/GetOnNil", func(t *testing.T) {
+					suite.testGetAccessorsOnNil(t)
+				})
+
 				t.Run("Accessors/IsSet", func(t *testing.T) {
 					for _, give := range values {
 						suite.testIsSetAccessors(t, give)
 					}
+				})
+
+				t.Run("Accessors/IsSetOnNil", func(t *testing.T) {
+					suite.testIsSetAccessorsOnNil(t)
 				})
 			}
 
@@ -817,5 +825,31 @@ func (q *quickSuite) testIsSetAccessors(t *testing.T, giveVal thriftType) {
 		fieldValue := give.Elem().FieldByIndex(field.Index)
 		isSet, _ := isSetMethod.Call(nil)[0].Interface().(bool)
 		assert.Equal(t, !fieldValue.IsNil(), isSet)
+	}
+}
+
+// Tests accessors on nil structs.
+func (q *quickSuite) testGetAccessorsOnNil(t *testing.T) {
+	give := q.newNil(t)
+	for i := 0; i < q.Type.NumField(); i++ {
+		field := q.Type.Field(i)
+
+		assert.NotPanics(t, func() {
+			give.MethodByName("Get" + field.Name).Call(nil)
+		})
+	}
+}
+
+func (q *quickSuite) testIsSetAccessorsOnNil(t *testing.T) {
+	give := q.newNil(t)
+	for i := 0; i < q.Type.NumField(); i++ {
+		field := q.Type.Field(i)
+		if !isThriftNillable(field.Type) {
+			// The field isn't nillable.
+			continue
+		}
+
+		require.Falsef(t, give.MethodByName("IsSet" + field.Name).Call(nil)[0].Bool(),
+			"field %q must be unset", field.Name)
 	}
 }
