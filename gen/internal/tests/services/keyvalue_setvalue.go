@@ -168,7 +168,7 @@ func (v *KeyValue_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (er
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_SetValue_Args) GetKey() (o Key) {
-	if v.Key != nil {
+	if v != nil && v.Key != nil {
 		return *v.Key
 	}
 
@@ -177,13 +177,13 @@ func (v *KeyValue_SetValue_Args) GetKey() (o Key) {
 
 // IsSetKey returns true if Key is not nil.
 func (v *KeyValue_SetValue_Args) IsSetKey() bool {
-	return v.Key != nil
+	return v != nil && v.Key != nil
 }
 
 // GetValue returns the value of Value if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_SetValue_Args) GetValue() (o *unions.ArbitraryValue) {
-	if v.Value != nil {
+	if v != nil && v.Value != nil {
 		return v.Value
 	}
 
@@ -192,7 +192,7 @@ func (v *KeyValue_SetValue_Args) GetValue() (o *unions.ArbitraryValue) {
 
 // IsSetValue returns true if Value is not nil.
 func (v *KeyValue_SetValue_Args) IsSetValue() bool {
-	return v.Value != nil
+	return v != nil && v.Value != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

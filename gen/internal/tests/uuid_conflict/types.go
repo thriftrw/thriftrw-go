@@ -216,5 +216,5 @@ func (v *UUIDConflict) GetImportedUUID() (o *typedefs.UUID) { return v.ImportedU
 
 // IsSetImportedUUID returns true if ImportedUUID is not nil.
 func (v *UUIDConflict) IsSetImportedUUID() bool {
-	return v.ImportedUUID != nil
+	return v != nil && v.ImportedUUID != nil
 }

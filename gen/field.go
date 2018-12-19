@@ -537,7 +537,7 @@ func (f fieldGroupGenerator) Accessors(g Generator) error {
 				<- if .Required ->
 				  return <$v>.<$fname>
 				<- else ->
-				  if <$v>.<$fname> != nil {
+				  if <$v> != nil && <$v>.<$fname> != nil {
 					<- if and (not .Required) (isPrimitiveType .Type) ->
 					  return *<$v>.<$fname>
 					<- else ->
@@ -553,7 +553,7 @@ func (f fieldGroupGenerator) Accessors(g Generator) error {
 				<reserveFieldOrMethod (printf "IsSet%v" $fname)>
 				// IsSet<$fname> returns true if <$fname> is not nil.
 				func (<$v> *<$name>) IsSet<$fname>() bool {
-					return <$v>.<$fname> != nil
+					return <$v> != nil && <$v>.<$fname> != nil
 				}
 			<end>
 		<end>

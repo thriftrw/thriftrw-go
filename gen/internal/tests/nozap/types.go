@@ -792,7 +792,7 @@ func (v *PrimitiveRequiredStruct) GetBinaryField() (o []byte) { return v.BinaryF
 
 // IsSetBinaryField returns true if BinaryField is not nil.
 func (v *PrimitiveRequiredStruct) IsSetBinaryField() bool {
-	return v.BinaryField != nil
+	return v != nil && v.BinaryField != nil
 }
 
 // GetListOfStrings returns the value of ListOfStrings if it is set or its
@@ -801,7 +801,7 @@ func (v *PrimitiveRequiredStruct) GetListOfStrings() (o []string) { return v.Lis
 
 // IsSetListOfStrings returns true if ListOfStrings is not nil.
 func (v *PrimitiveRequiredStruct) IsSetListOfStrings() bool {
-	return v.ListOfStrings != nil
+	return v != nil && v.ListOfStrings != nil
 }
 
 // GetSetOfInts returns the value of SetOfInts if it is set or its
@@ -810,7 +810,7 @@ func (v *PrimitiveRequiredStruct) GetSetOfInts() (o map[int32]struct{}) { return
 
 // IsSetSetOfInts returns true if SetOfInts is not nil.
 func (v *PrimitiveRequiredStruct) IsSetSetOfInts() bool {
-	return v.SetOfInts != nil
+	return v != nil && v.SetOfInts != nil
 }
 
 // GetMapOfIntsToDoubles returns the value of MapOfIntsToDoubles if it is set or its
@@ -821,7 +821,7 @@ func (v *PrimitiveRequiredStruct) GetMapOfIntsToDoubles() (o map[int64]float64) 
 
 // IsSetMapOfIntsToDoubles returns true if MapOfIntsToDoubles is not nil.
 func (v *PrimitiveRequiredStruct) IsSetMapOfIntsToDoubles() bool {
-	return v.MapOfIntsToDoubles != nil
+	return v != nil && v.MapOfIntsToDoubles != nil
 }
 
 type Primitives PrimitiveRequiredStruct

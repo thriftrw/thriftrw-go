@@ -158,7 +158,7 @@ func (v *KeyValue_DeleteValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) 
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_DeleteValue_Args) GetKey() (o Key) {
-	if v.Key != nil {
+	if v != nil && v.Key != nil {
 		return *v.Key
 	}
 
@@ -167,7 +167,7 @@ func (v *KeyValue_DeleteValue_Args) GetKey() (o Key) {
 
 // IsSetKey returns true if Key is not nil.
 func (v *KeyValue_DeleteValue_Args) IsSetKey() bool {
-	return v.Key != nil
+	return v != nil && v.Key != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -467,7 +467,7 @@ func (v *KeyValue_DeleteValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder
 // GetDoesNotExist returns the value of DoesNotExist if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_DeleteValue_Result) GetDoesNotExist() (o *exceptions.DoesNotExistException) {
-	if v.DoesNotExist != nil {
+	if v != nil && v.DoesNotExist != nil {
 		return v.DoesNotExist
 	}
 
@@ -476,13 +476,13 @@ func (v *KeyValue_DeleteValue_Result) GetDoesNotExist() (o *exceptions.DoesNotEx
 
 // IsSetDoesNotExist returns true if DoesNotExist is not nil.
 func (v *KeyValue_DeleteValue_Result) IsSetDoesNotExist() bool {
-	return v.DoesNotExist != nil
+	return v != nil && v.DoesNotExist != nil
 }
 
 // GetInternalError returns the value of InternalError if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_DeleteValue_Result) GetInternalError() (o *InternalError) {
-	if v.InternalError != nil {
+	if v != nil && v.InternalError != nil {
 		return v.InternalError
 	}
 
@@ -491,7 +491,7 @@ func (v *KeyValue_DeleteValue_Result) GetInternalError() (o *InternalError) {
 
 // IsSetInternalError returns true if InternalError is not nil.
 func (v *KeyValue_DeleteValue_Result) IsSetInternalError() bool {
-	return v.InternalError != nil
+	return v != nil && v.InternalError != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

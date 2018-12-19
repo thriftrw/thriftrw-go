@@ -89,9 +89,14 @@ struct ContactInfo {
     1: required string emailAddress
 }
 
+struct PersonalInfo {
+    1: optional i32 age
+}
+
 struct User {
     1: required string name
     2: optional ContactInfo contact
+    3: optional PersonalInfo personal
 }
 
 typedef map<string, User> UserMap

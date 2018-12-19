@@ -1679,7 +1679,7 @@ func (v *StructWithOptionalEnum) MarshalLogObject(enc zapcore.ObjectEncoder) (er
 // GetE returns the value of E if it is set or its
 // zero value if it is unset.
 func (v *StructWithOptionalEnum) GetE() (o EnumDefault) {
-	if v.E != nil {
+	if v != nil && v.E != nil {
 		return *v.E
 	}
 
@@ -1688,7 +1688,7 @@ func (v *StructWithOptionalEnum) GetE() (o EnumDefault) {
 
 // IsSetE returns true if E is not nil.
 func (v *StructWithOptionalEnum) IsSetE() bool {
-	return v.E != nil
+	return v != nil && v.E != nil
 }
 
 type LowerCaseEnum int32

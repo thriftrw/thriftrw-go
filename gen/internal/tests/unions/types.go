@@ -487,7 +487,7 @@ func (v *ArbitraryValue) MarshalLogObject(enc zapcore.ObjectEncoder) (err error)
 // GetBoolValue returns the value of BoolValue if it is set or its
 // zero value if it is unset.
 func (v *ArbitraryValue) GetBoolValue() (o bool) {
-	if v.BoolValue != nil {
+	if v != nil && v.BoolValue != nil {
 		return *v.BoolValue
 	}
 
@@ -496,13 +496,13 @@ func (v *ArbitraryValue) GetBoolValue() (o bool) {
 
 // IsSetBoolValue returns true if BoolValue is not nil.
 func (v *ArbitraryValue) IsSetBoolValue() bool {
-	return v.BoolValue != nil
+	return v != nil && v.BoolValue != nil
 }
 
 // GetInt64Value returns the value of Int64Value if it is set or its
 // zero value if it is unset.
 func (v *ArbitraryValue) GetInt64Value() (o int64) {
-	if v.Int64Value != nil {
+	if v != nil && v.Int64Value != nil {
 		return *v.Int64Value
 	}
 
@@ -511,13 +511,13 @@ func (v *ArbitraryValue) GetInt64Value() (o int64) {
 
 // IsSetInt64Value returns true if Int64Value is not nil.
 func (v *ArbitraryValue) IsSetInt64Value() bool {
-	return v.Int64Value != nil
+	return v != nil && v.Int64Value != nil
 }
 
 // GetStringValue returns the value of StringValue if it is set or its
 // zero value if it is unset.
 func (v *ArbitraryValue) GetStringValue() (o string) {
-	if v.StringValue != nil {
+	if v != nil && v.StringValue != nil {
 		return *v.StringValue
 	}
 
@@ -526,13 +526,13 @@ func (v *ArbitraryValue) GetStringValue() (o string) {
 
 // IsSetStringValue returns true if StringValue is not nil.
 func (v *ArbitraryValue) IsSetStringValue() bool {
-	return v.StringValue != nil
+	return v != nil && v.StringValue != nil
 }
 
 // GetListValue returns the value of ListValue if it is set or its
 // zero value if it is unset.
 func (v *ArbitraryValue) GetListValue() (o []*ArbitraryValue) {
-	if v.ListValue != nil {
+	if v != nil && v.ListValue != nil {
 		return v.ListValue
 	}
 
@@ -541,13 +541,13 @@ func (v *ArbitraryValue) GetListValue() (o []*ArbitraryValue) {
 
 // IsSetListValue returns true if ListValue is not nil.
 func (v *ArbitraryValue) IsSetListValue() bool {
-	return v.ListValue != nil
+	return v != nil && v.ListValue != nil
 }
 
 // GetMapValue returns the value of MapValue if it is set or its
 // zero value if it is unset.
 func (v *ArbitraryValue) GetMapValue() (o map[string]*ArbitraryValue) {
-	if v.MapValue != nil {
+	if v != nil && v.MapValue != nil {
 		return v.MapValue
 	}
 
@@ -556,7 +556,7 @@ func (v *ArbitraryValue) GetMapValue() (o map[string]*ArbitraryValue) {
 
 // IsSetMapValue returns true if MapValue is not nil.
 func (v *ArbitraryValue) IsSetMapValue() bool {
-	return v.MapValue != nil
+	return v != nil && v.MapValue != nil
 }
 
 type Document struct {
@@ -733,7 +733,7 @@ func (v *Document) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 // GetPdf returns the value of Pdf if it is set or its
 // zero value if it is unset.
 func (v *Document) GetPdf() (o typedefs.PDF) {
-	if v.Pdf != nil {
+	if v != nil && v.Pdf != nil {
 		return v.Pdf
 	}
 
@@ -742,13 +742,13 @@ func (v *Document) GetPdf() (o typedefs.PDF) {
 
 // IsSetPdf returns true if Pdf is not nil.
 func (v *Document) IsSetPdf() bool {
-	return v.Pdf != nil
+	return v != nil && v.Pdf != nil
 }
 
 // GetPlainText returns the value of PlainText if it is set or its
 // zero value if it is unset.
 func (v *Document) GetPlainText() (o string) {
-	if v.PlainText != nil {
+	if v != nil && v.PlainText != nil {
 		return *v.PlainText
 	}
 
@@ -757,7 +757,7 @@ func (v *Document) GetPlainText() (o string) {
 
 // IsSetPlainText returns true if PlainText is not nil.
 func (v *Document) IsSetPlainText() bool {
-	return v.PlainText != nil
+	return v != nil && v.PlainText != nil
 }
 
 type EmptyUnion struct {

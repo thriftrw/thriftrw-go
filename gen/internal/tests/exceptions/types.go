@@ -180,7 +180,7 @@ func (v *DoesNotExistException) GetKey() (o string) { return v.Key }
 // GetError2 returns the value of Error2 if it is set or its
 // zero value if it is unset.
 func (v *DoesNotExistException) GetError2() (o string) {
-	if v.Error2 != nil {
+	if v != nil && v.Error2 != nil {
 		return *v.Error2
 	}
 
@@ -189,7 +189,7 @@ func (v *DoesNotExistException) GetError2() (o string) {
 
 // IsSetError2 returns true if Error2 is not nil.
 func (v *DoesNotExistException) IsSetError2() bool {
-	return v.Error2 != nil
+	return v != nil && v.Error2 != nil
 }
 
 func (v *DoesNotExistException) Error() string {

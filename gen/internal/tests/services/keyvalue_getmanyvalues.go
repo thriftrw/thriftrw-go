@@ -211,7 +211,7 @@ func (v *KeyValue_GetManyValues_Args) MarshalLogObject(enc zapcore.ObjectEncoder
 // GetRange returns the value of Range if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_GetManyValues_Args) GetRange() (o []Key) {
-	if v.Range != nil {
+	if v != nil && v.Range != nil {
 		return v.Range
 	}
 
@@ -220,7 +220,7 @@ func (v *KeyValue_GetManyValues_Args) GetRange() (o []Key) {
 
 // IsSetRange returns true if Range is not nil.
 func (v *KeyValue_GetManyValues_Args) IsSetRange() bool {
-	return v.Range != nil
+	return v != nil && v.Range != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -584,7 +584,7 @@ func (v *KeyValue_GetManyValues_Result) MarshalLogObject(enc zapcore.ObjectEncod
 // GetSuccess returns the value of Success if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_GetManyValues_Result) GetSuccess() (o []*unions.ArbitraryValue) {
-	if v.Success != nil {
+	if v != nil && v.Success != nil {
 		return v.Success
 	}
 
@@ -593,13 +593,13 @@ func (v *KeyValue_GetManyValues_Result) GetSuccess() (o []*unions.ArbitraryValue
 
 // IsSetSuccess returns true if Success is not nil.
 func (v *KeyValue_GetManyValues_Result) IsSetSuccess() bool {
-	return v.Success != nil
+	return v != nil && v.Success != nil
 }
 
 // GetDoesNotExist returns the value of DoesNotExist if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_GetManyValues_Result) GetDoesNotExist() (o *exceptions.DoesNotExistException) {
-	if v.DoesNotExist != nil {
+	if v != nil && v.DoesNotExist != nil {
 		return v.DoesNotExist
 	}
 
@@ -608,7 +608,7 @@ func (v *KeyValue_GetManyValues_Result) GetDoesNotExist() (o *exceptions.DoesNot
 
 // IsSetDoesNotExist returns true if DoesNotExist is not nil.
 func (v *KeyValue_GetManyValues_Result) IsSetDoesNotExist() bool {
-	return v.DoesNotExist != nil
+	return v != nil && v.DoesNotExist != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

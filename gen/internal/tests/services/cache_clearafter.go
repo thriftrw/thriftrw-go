@@ -149,7 +149,7 @@ func (v *Cache_ClearAfter_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (err
 // GetDurationMS returns the value of DurationMS if it is set or its
 // zero value if it is unset.
 func (v *Cache_ClearAfter_Args) GetDurationMS() (o int64) {
-	if v.DurationMS != nil {
+	if v != nil && v.DurationMS != nil {
 		return *v.DurationMS
 	}
 
@@ -158,7 +158,7 @@ func (v *Cache_ClearAfter_Args) GetDurationMS() (o int64) {
 
 // IsSetDurationMS returns true if DurationMS is not nil.
 func (v *Cache_ClearAfter_Args) IsSetDurationMS() bool {
-	return v.DurationMS != nil
+	return v != nil && v.DurationMS != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

@@ -143,7 +143,7 @@ func (v *KeyValue_GetValue_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (er
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_GetValue_Args) GetKey() (o Key) {
-	if v.Key != nil {
+	if v != nil && v.Key != nil {
 		return *v.Key
 	}
 
@@ -152,7 +152,7 @@ func (v *KeyValue_GetValue_Args) GetKey() (o Key) {
 
 // IsSetKey returns true if Key is not nil.
 func (v *KeyValue_GetValue_Args) IsSetKey() bool {
-	return v.Key != nil
+	return v != nil && v.Key != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
@@ -437,7 +437,7 @@ func (v *KeyValue_GetValue_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (
 // GetSuccess returns the value of Success if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_GetValue_Result) GetSuccess() (o *unions.ArbitraryValue) {
-	if v.Success != nil {
+	if v != nil && v.Success != nil {
 		return v.Success
 	}
 
@@ -446,13 +446,13 @@ func (v *KeyValue_GetValue_Result) GetSuccess() (o *unions.ArbitraryValue) {
 
 // IsSetSuccess returns true if Success is not nil.
 func (v *KeyValue_GetValue_Result) IsSetSuccess() bool {
-	return v.Success != nil
+	return v != nil && v.Success != nil
 }
 
 // GetDoesNotExist returns the value of DoesNotExist if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_GetValue_Result) GetDoesNotExist() (o *exceptions.DoesNotExistException) {
-	if v.DoesNotExist != nil {
+	if v != nil && v.DoesNotExist != nil {
 		return v.DoesNotExist
 	}
 
@@ -461,7 +461,7 @@ func (v *KeyValue_GetValue_Result) GetDoesNotExist() (o *exceptions.DoesNotExist
 
 // IsSetDoesNotExist returns true if DoesNotExist is not nil.
 func (v *KeyValue_GetValue_Result) IsSetDoesNotExist() bool {
-	return v.DoesNotExist != nil
+	return v != nil && v.DoesNotExist != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

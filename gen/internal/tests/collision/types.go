@@ -220,7 +220,7 @@ func (v *AccessorConflict) MarshalLogObject(enc zapcore.ObjectEncoder) (err erro
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
 func (v *AccessorConflict) GetName() (o string) {
-	if v.Name != nil {
+	if v != nil && v.Name != nil {
 		return *v.Name
 	}
 
@@ -229,13 +229,13 @@ func (v *AccessorConflict) GetName() (o string) {
 
 // IsSetName returns true if Name is not nil.
 func (v *AccessorConflict) IsSetName() bool {
-	return v.Name != nil
+	return v != nil && v.Name != nil
 }
 
 // GetGetName2 returns the value of GetName2 if it is set or its
 // zero value if it is unset.
 func (v *AccessorConflict) GetGetName2() (o string) {
-	if v.GetName2 != nil {
+	if v != nil && v.GetName2 != nil {
 		return *v.GetName2
 	}
 
@@ -244,13 +244,13 @@ func (v *AccessorConflict) GetGetName2() (o string) {
 
 // IsSetGetName2 returns true if GetName2 is not nil.
 func (v *AccessorConflict) IsSetGetName2() bool {
-	return v.GetName2 != nil
+	return v != nil && v.GetName2 != nil
 }
 
 // GetIsSetName2 returns the value of IsSetName2 if it is set or its
 // zero value if it is unset.
 func (v *AccessorConflict) GetIsSetName2() (o bool) {
-	if v.IsSetName2 != nil {
+	if v != nil && v.IsSetName2 != nil {
 		return *v.IsSetName2
 	}
 
@@ -259,7 +259,7 @@ func (v *AccessorConflict) GetIsSetName2() (o bool) {
 
 // IsSetIsSetName2 returns true if IsSetName2 is not nil.
 func (v *AccessorConflict) IsSetIsSetName2() bool {
-	return v.IsSetName2 != nil
+	return v != nil && v.IsSetName2 != nil
 }
 
 type AccessorNoConflict struct {
@@ -417,7 +417,7 @@ func (v *AccessorNoConflict) MarshalLogObject(enc zapcore.ObjectEncoder) (err er
 // GetGetname returns the value of Getname if it is set or its
 // zero value if it is unset.
 func (v *AccessorNoConflict) GetGetname() (o string) {
-	if v.Getname != nil {
+	if v != nil && v.Getname != nil {
 		return *v.Getname
 	}
 
@@ -426,13 +426,13 @@ func (v *AccessorNoConflict) GetGetname() (o string) {
 
 // IsSetGetname returns true if Getname is not nil.
 func (v *AccessorNoConflict) IsSetGetname() bool {
-	return v.Getname != nil
+	return v != nil && v.Getname != nil
 }
 
 // GetGetName returns the value of GetName if it is set or its
 // zero value if it is unset.
 func (v *AccessorNoConflict) GetGetName() (o string) {
-	if v.GetName != nil {
+	if v != nil && v.GetName != nil {
 		return *v.GetName
 	}
 
@@ -441,7 +441,7 @@ func (v *AccessorNoConflict) GetGetName() (o string) {
 
 // IsSetGetName returns true if GetName is not nil.
 func (v *AccessorNoConflict) IsSetGetName() bool {
-	return v.GetName != nil
+	return v != nil && v.GetName != nil
 }
 
 type LittlePotatoe int64
@@ -1094,7 +1094,7 @@ func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) (err e
 // GetA returns the value of A if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetA() (o []string) {
-	if v.A != nil {
+	if v != nil && v.A != nil {
 		return v.A
 	}
 
@@ -1103,13 +1103,13 @@ func (v *PrimitiveContainers) GetA() (o []string) {
 
 // IsSetA returns true if A is not nil.
 func (v *PrimitiveContainers) IsSetA() bool {
-	return v.A != nil
+	return v != nil && v.A != nil
 }
 
 // GetB returns the value of B if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetB() (o map[string]struct{}) {
-	if v.B != nil {
+	if v != nil && v.B != nil {
 		return v.B
 	}
 
@@ -1118,13 +1118,13 @@ func (v *PrimitiveContainers) GetB() (o map[string]struct{}) {
 
 // IsSetB returns true if B is not nil.
 func (v *PrimitiveContainers) IsSetB() bool {
-	return v.B != nil
+	return v != nil && v.B != nil
 }
 
 // GetC returns the value of C if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainers) GetC() (o map[string]string) {
-	if v.C != nil {
+	if v != nil && v.C != nil {
 		return v.C
 	}
 
@@ -1133,7 +1133,7 @@ func (v *PrimitiveContainers) GetC() (o map[string]string) {
 
 // IsSetC returns true if C is not nil.
 func (v *PrimitiveContainers) IsSetC() bool {
-	return v.C != nil
+	return v != nil && v.C != nil
 }
 
 type StructCollision struct {
@@ -1462,7 +1462,7 @@ func (v *UnionCollision) MarshalLogObject(enc zapcore.ObjectEncoder) (err error)
 // GetCollisionField returns the value of CollisionField if it is set or its
 // zero value if it is unset.
 func (v *UnionCollision) GetCollisionField() (o bool) {
-	if v.CollisionField != nil {
+	if v != nil && v.CollisionField != nil {
 		return *v.CollisionField
 	}
 
@@ -1471,13 +1471,13 @@ func (v *UnionCollision) GetCollisionField() (o bool) {
 
 // IsSetCollisionField returns true if CollisionField is not nil.
 func (v *UnionCollision) IsSetCollisionField() bool {
-	return v.CollisionField != nil
+	return v != nil && v.CollisionField != nil
 }
 
 // GetCollisionField2 returns the value of CollisionField2 if it is set or its
 // zero value if it is unset.
 func (v *UnionCollision) GetCollisionField2() (o string) {
-	if v.CollisionField2 != nil {
+	if v != nil && v.CollisionField2 != nil {
 		return *v.CollisionField2
 	}
 
@@ -1486,7 +1486,7 @@ func (v *UnionCollision) GetCollisionField2() (o string) {
 
 // IsSetCollisionField2 returns true if CollisionField2 is not nil.
 func (v *UnionCollision) IsSetCollisionField2() bool {
-	return v.CollisionField2 != nil
+	return v != nil && v.CollisionField2 != nil
 }
 
 type WithDefault struct {
@@ -1632,7 +1632,7 @@ func (v *WithDefault) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 // GetPouet returns the value of Pouet if it is set or its
 // default value if it is unset.
 func (v *WithDefault) GetPouet() (o *StructCollision2) {
-	if v.Pouet != nil {
+	if v != nil && v.Pouet != nil {
 		return v.Pouet
 	}
 	o = &StructCollision2{
@@ -1644,7 +1644,7 @@ func (v *WithDefault) GetPouet() (o *StructCollision2) {
 
 // IsSetPouet returns true if Pouet is not nil.
 func (v *WithDefault) IsSetPouet() bool {
-	return v.Pouet != nil
+	return v != nil && v.Pouet != nil
 }
 
 type LittlePotatoe2 float64
@@ -2188,7 +2188,7 @@ func (v *UnionCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) (err error
 // GetCollisionField returns the value of CollisionField if it is set or its
 // zero value if it is unset.
 func (v *UnionCollision2) GetCollisionField() (o bool) {
-	if v.CollisionField != nil {
+	if v != nil && v.CollisionField != nil {
 		return *v.CollisionField
 	}
 
@@ -2197,13 +2197,13 @@ func (v *UnionCollision2) GetCollisionField() (o bool) {
 
 // IsSetCollisionField returns true if CollisionField is not nil.
 func (v *UnionCollision2) IsSetCollisionField() bool {
-	return v.CollisionField != nil
+	return v != nil && v.CollisionField != nil
 }
 
 // GetCollisionField2 returns the value of CollisionField2 if it is set or its
 // zero value if it is unset.
 func (v *UnionCollision2) GetCollisionField2() (o string) {
-	if v.CollisionField2 != nil {
+	if v != nil && v.CollisionField2 != nil {
 		return *v.CollisionField2
 	}
 
@@ -2212,5 +2212,5 @@ func (v *UnionCollision2) GetCollisionField2() (o string) {
 
 // IsSetCollisionField2 returns true if CollisionField2 is not nil.
 func (v *UnionCollision2) IsSetCollisionField2() bool {
-	return v.CollisionField2 != nil
+	return v != nil && v.CollisionField2 != nil
 }

@@ -144,7 +144,7 @@ func (v *ConflictingNames_SetValue_Args) MarshalLogObject(enc zapcore.ObjectEnco
 // GetRequest returns the value of Request if it is set or its
 // zero value if it is unset.
 func (v *ConflictingNames_SetValue_Args) GetRequest() (o *ConflictingNamesSetValueArgs) {
-	if v.Request != nil {
+	if v != nil && v.Request != nil {
 		return v.Request
 	}
 
@@ -153,7 +153,7 @@ func (v *ConflictingNames_SetValue_Args) GetRequest() (o *ConflictingNamesSetVal
 
 // IsSetRequest returns true if Request is not nil.
 func (v *ConflictingNames_SetValue_Args) IsSetRequest() bool {
-	return v.Request != nil
+	return v != nil && v.Request != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in
