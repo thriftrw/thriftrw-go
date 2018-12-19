@@ -1286,11 +1286,21 @@ func (v *StructCollision) MarshalLogObject(enc zapcore.ObjectEncoder) (err error
 
 // GetCollisionField returns the value of CollisionField if it is set or its
 // zero value if it is unset.
-func (v *StructCollision) GetCollisionField() (o bool) { return v.CollisionField }
+func (v *StructCollision) GetCollisionField() (o bool) {
+	if v != nil {
+		o = v.CollisionField
+	}
+	return
+}
 
 // GetCollisionField2 returns the value of CollisionField2 if it is set or its
 // zero value if it is unset.
-func (v *StructCollision) GetCollisionField2() (o string) { return v.CollisionField2 }
+func (v *StructCollision) GetCollisionField2() (o string) {
+	if v != nil {
+		o = v.CollisionField2
+	}
+	return
+}
 
 type UnionCollision struct {
 	CollisionField  *bool   `json:"collisionField,omitempty"`
@@ -2012,11 +2022,21 @@ func (v *StructCollision2) MarshalLogObject(enc zapcore.ObjectEncoder) (err erro
 
 // GetCollisionField returns the value of CollisionField if it is set or its
 // zero value if it is unset.
-func (v *StructCollision2) GetCollisionField() (o bool) { return v.CollisionField }
+func (v *StructCollision2) GetCollisionField() (o bool) {
+	if v != nil {
+		o = v.CollisionField
+	}
+	return
+}
 
 // GetCollisionField2 returns the value of CollisionField2 if it is set or its
 // zero value if it is unset.
-func (v *StructCollision2) GetCollisionField2() (o string) { return v.CollisionField2 }
+func (v *StructCollision2) GetCollisionField2() (o string) {
+	if v != nil {
+		o = v.CollisionField2
+	}
+	return
+}
 
 type UnionCollision2 struct {
 	CollisionField  *bool   `json:"collisionField,omitempty"`

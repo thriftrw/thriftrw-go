@@ -535,7 +535,10 @@ func (f fieldGroupGenerator) Accessors(g Generator) error {
 			// <if .Default>default<else>zero<end> value if it is unset.
 			func (<$v> *<$name>) Get<$fname>() (<$o> <typeReference .Type>) {
 				<- if .Required ->
-				  return <$v>.<$fname>
+				  if <$v> != nil {
+				    <$o> = <$v>.<$fname>
+				  }
+				  return
 				<- else ->
 				  if <$v> != nil && <$v>.<$fname> != nil {
 					<- if and (not .Required) (isPrimitiveType .Type) ->

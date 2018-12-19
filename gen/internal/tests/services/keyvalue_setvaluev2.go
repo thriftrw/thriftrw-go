@@ -172,11 +172,21 @@ func (v *KeyValue_SetValueV2_Args) MarshalLogObject(enc zapcore.ObjectEncoder) (
 
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
-func (v *KeyValue_SetValueV2_Args) GetKey() (o Key) { return v.Key }
+func (v *KeyValue_SetValueV2_Args) GetKey() (o Key) {
+	if v != nil {
+		o = v.Key
+	}
+	return
+}
 
 // GetValue returns the value of Value if it is set or its
 // zero value if it is unset.
-func (v *KeyValue_SetValueV2_Args) GetValue() (o *unions.ArbitraryValue) { return v.Value }
+func (v *KeyValue_SetValueV2_Args) GetValue() (o *unions.ArbitraryValue) {
+	if v != nil {
+		o = v.Value
+	}
+	return
+}
 
 // IsSetValue returns true if Value is not nil.
 func (v *KeyValue_SetValueV2_Args) IsSetValue() bool {

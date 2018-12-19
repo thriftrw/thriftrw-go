@@ -760,35 +760,75 @@ func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
 
 // GetBoolField returns the value of BoolField if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetBoolField() (o bool) { return v.BoolField }
+func (v *PrimitiveRequiredStruct) GetBoolField() (o bool) {
+	if v != nil {
+		o = v.BoolField
+	}
+	return
+}
 
 // GetByteField returns the value of ByteField if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetByteField() (o int8) { return v.ByteField }
+func (v *PrimitiveRequiredStruct) GetByteField() (o int8) {
+	if v != nil {
+		o = v.ByteField
+	}
+	return
+}
 
 // GetInt16Field returns the value of Int16Field if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetInt16Field() (o int16) { return v.Int16Field }
+func (v *PrimitiveRequiredStruct) GetInt16Field() (o int16) {
+	if v != nil {
+		o = v.Int16Field
+	}
+	return
+}
 
 // GetInt32Field returns the value of Int32Field if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetInt32Field() (o int32) { return v.Int32Field }
+func (v *PrimitiveRequiredStruct) GetInt32Field() (o int32) {
+	if v != nil {
+		o = v.Int32Field
+	}
+	return
+}
 
 // GetInt64Field returns the value of Int64Field if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetInt64Field() (o int64) { return v.Int64Field }
+func (v *PrimitiveRequiredStruct) GetInt64Field() (o int64) {
+	if v != nil {
+		o = v.Int64Field
+	}
+	return
+}
 
 // GetDoubleField returns the value of DoubleField if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetDoubleField() (o float64) { return v.DoubleField }
+func (v *PrimitiveRequiredStruct) GetDoubleField() (o float64) {
+	if v != nil {
+		o = v.DoubleField
+	}
+	return
+}
 
 // GetStringField returns the value of StringField if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetStringField() (o string) { return v.StringField }
+func (v *PrimitiveRequiredStruct) GetStringField() (o string) {
+	if v != nil {
+		o = v.StringField
+	}
+	return
+}
 
 // GetBinaryField returns the value of BinaryField if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetBinaryField() (o []byte) { return v.BinaryField }
+func (v *PrimitiveRequiredStruct) GetBinaryField() (o []byte) {
+	if v != nil {
+		o = v.BinaryField
+	}
+	return
+}
 
 // IsSetBinaryField returns true if BinaryField is not nil.
 func (v *PrimitiveRequiredStruct) IsSetBinaryField() bool {
@@ -797,7 +837,12 @@ func (v *PrimitiveRequiredStruct) IsSetBinaryField() bool {
 
 // GetListOfStrings returns the value of ListOfStrings if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetListOfStrings() (o []string) { return v.ListOfStrings }
+func (v *PrimitiveRequiredStruct) GetListOfStrings() (o []string) {
+	if v != nil {
+		o = v.ListOfStrings
+	}
+	return
+}
 
 // IsSetListOfStrings returns true if ListOfStrings is not nil.
 func (v *PrimitiveRequiredStruct) IsSetListOfStrings() bool {
@@ -806,7 +851,12 @@ func (v *PrimitiveRequiredStruct) IsSetListOfStrings() bool {
 
 // GetSetOfInts returns the value of SetOfInts if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetSetOfInts() (o map[int32]struct{}) { return v.SetOfInts }
+func (v *PrimitiveRequiredStruct) GetSetOfInts() (o map[int32]struct{}) {
+	if v != nil {
+		o = v.SetOfInts
+	}
+	return
+}
 
 // IsSetSetOfInts returns true if SetOfInts is not nil.
 func (v *PrimitiveRequiredStruct) IsSetSetOfInts() bool {
@@ -816,7 +866,10 @@ func (v *PrimitiveRequiredStruct) IsSetSetOfInts() bool {
 // GetMapOfIntsToDoubles returns the value of MapOfIntsToDoubles if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveRequiredStruct) GetMapOfIntsToDoubles() (o map[int64]float64) {
-	return v.MapOfIntsToDoubles
+	if v != nil {
+		o = v.MapOfIntsToDoubles
+	}
+	return
 }
 
 // IsSetMapOfIntsToDoubles returns true if MapOfIntsToDoubles is not nil.

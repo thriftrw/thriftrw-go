@@ -139,7 +139,12 @@ func (v *ContactInfo) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetEmailAddress returns the value of EmailAddress if it is set or its
 // zero value if it is unset.
-func (v *ContactInfo) GetEmailAddress() (o string) { return v.EmailAddress }
+func (v *ContactInfo) GetEmailAddress() (o string) {
+	if v != nil {
+		o = v.EmailAddress
+	}
+	return
+}
 
 type DefaultsStruct struct {
 	RequiredPrimitive *int32             `json:"requiredPrimitive,omitempty"`
@@ -1053,7 +1058,12 @@ func (v *Edge) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetStartPoint returns the value of StartPoint if it is set or its
 // zero value if it is unset.
-func (v *Edge) GetStartPoint() (o *Point) { return v.StartPoint }
+func (v *Edge) GetStartPoint() (o *Point) {
+	if v != nil {
+		o = v.StartPoint
+	}
+	return
+}
 
 // IsSetStartPoint returns true if StartPoint is not nil.
 func (v *Edge) IsSetStartPoint() bool {
@@ -1062,7 +1072,12 @@ func (v *Edge) IsSetStartPoint() bool {
 
 // GetEndPoint returns the value of EndPoint if it is set or its
 // zero value if it is unset.
-func (v *Edge) GetEndPoint() (o *Point) { return v.EndPoint }
+func (v *Edge) GetEndPoint() (o *Point) {
+	if v != nil {
+		o = v.EndPoint
+	}
+	return
+}
 
 // IsSetEndPoint returns true if EndPoint is not nil.
 func (v *Edge) IsSetEndPoint() bool {
@@ -1320,7 +1335,12 @@ func (v *Frame) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetTopLeft returns the value of TopLeft if it is set or its
 // zero value if it is unset.
-func (v *Frame) GetTopLeft() (o *Point) { return v.TopLeft }
+func (v *Frame) GetTopLeft() (o *Point) {
+	if v != nil {
+		o = v.TopLeft
+	}
+	return
+}
 
 // IsSetTopLeft returns true if TopLeft is not nil.
 func (v *Frame) IsSetTopLeft() bool {
@@ -1329,7 +1349,12 @@ func (v *Frame) IsSetTopLeft() bool {
 
 // GetSize returns the value of Size if it is set or its
 // zero value if it is unset.
-func (v *Frame) GetSize() (o *Size) { return v.Size }
+func (v *Frame) GetSize() (o *Size) {
+	if v != nil {
+		o = v.Size
+	}
+	return
+}
 
 // IsSetSize returns true if Size is not nil.
 func (v *Frame) IsSetSize() bool {
@@ -1610,7 +1635,12 @@ func (v *GoTags) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetFoo returns the value of Foo if it is set or its
 // zero value if it is unset.
-func (v *GoTags) GetFoo() (o string) { return v.Foo }
+func (v *GoTags) GetFoo() (o string) {
+	if v != nil {
+		o = v.Foo
+	}
+	return
+}
 
 // GetBar returns the value of Bar if it is set or its
 // zero value if it is unset.
@@ -1629,11 +1659,21 @@ func (v *GoTags) IsSetBar() bool {
 
 // GetFooBar returns the value of FooBar if it is set or its
 // zero value if it is unset.
-func (v *GoTags) GetFooBar() (o string) { return v.FooBar }
+func (v *GoTags) GetFooBar() (o string) {
+	if v != nil {
+		o = v.FooBar
+	}
+	return
+}
 
 // GetFooBarWithSpace returns the value of FooBarWithSpace if it is set or its
 // zero value if it is unset.
-func (v *GoTags) GetFooBarWithSpace() (o string) { return v.FooBarWithSpace }
+func (v *GoTags) GetFooBarWithSpace() (o string) {
+	if v != nil {
+		o = v.FooBarWithSpace
+	}
+	return
+}
 
 // GetFooBarWithOmitEmpty returns the value of FooBarWithOmitEmpty if it is set or its
 // zero value if it is unset.
@@ -1652,7 +1692,12 @@ func (v *GoTags) IsSetFooBarWithOmitEmpty() bool {
 
 // GetFooBarWithRequired returns the value of FooBarWithRequired if it is set or its
 // zero value if it is unset.
-func (v *GoTags) GetFooBarWithRequired() (o string) { return v.FooBarWithRequired }
+func (v *GoTags) GetFooBarWithRequired() (o string) {
+	if v != nil {
+		o = v.FooBarWithRequired
+	}
+	return
+}
 
 // A graph is comprised of zero or more edges.
 type Graph struct {
@@ -1857,7 +1902,12 @@ func (v *Graph) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetEdges returns the value of Edges if it is set or its
 // zero value if it is unset.
-func (v *Graph) GetEdges() (o []*Edge) { return v.Edges }
+func (v *Graph) GetEdges() (o []*Edge) {
+	if v != nil {
+		o = v.Edges
+	}
+	return
+}
 
 // IsSetEdges returns true if Edges is not nil.
 func (v *Graph) IsSetEdges() bool {
@@ -2055,7 +2105,12 @@ func (v *Node) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetValue returns the value of Value if it is set or its
 // zero value if it is unset.
-func (v *Node) GetValue() (o int32) { return v.Value }
+func (v *Node) GetValue() (o int32) {
+	if v != nil {
+		o = v.Value
+	}
+	return
+}
 
 // GetTail returns the value of Tail if it is set or its
 // zero value if it is unset.
@@ -2222,11 +2277,21 @@ func (v *Omit) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetSerialized returns the value of Serialized if it is set or its
 // zero value if it is unset.
-func (v *Omit) GetSerialized() (o string) { return v.Serialized }
+func (v *Omit) GetSerialized() (o string) {
+	if v != nil {
+		o = v.Serialized
+	}
+	return
+}
 
 // GetHidden returns the value of Hidden if it is set or its
 // zero value if it is unset.
-func (v *Omit) GetHidden() (o string) { return v.Hidden }
+func (v *Omit) GetHidden() (o string) {
+	if v != nil {
+		o = v.Hidden
+	}
+	return
+}
 
 type PersonalInfo struct {
 	Age *int32 `json:"age,omitempty"`
@@ -2517,11 +2582,21 @@ func (v *Point) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetX returns the value of X if it is set or its
 // zero value if it is unset.
-func (v *Point) GetX() (o float64) { return v.X }
+func (v *Point) GetX() (o float64) {
+	if v != nil {
+		o = v.X
+	}
+	return
+}
 
 // GetY returns the value of Y if it is set or its
 // zero value if it is unset.
-func (v *Point) GetY() (o float64) { return v.Y }
+func (v *Point) GetY() (o float64) {
+	if v != nil {
+		o = v.Y
+	}
+	return
+}
 
 // A struct that contains primitive fields exclusively.
 //
@@ -3337,35 +3412,75 @@ func (v *PrimitiveRequiredStruct) MarshalLogObject(enc zapcore.ObjectEncoder) (e
 
 // GetBoolField returns the value of BoolField if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetBoolField() (o bool) { return v.BoolField }
+func (v *PrimitiveRequiredStruct) GetBoolField() (o bool) {
+	if v != nil {
+		o = v.BoolField
+	}
+	return
+}
 
 // GetByteField returns the value of ByteField if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetByteField() (o int8) { return v.ByteField }
+func (v *PrimitiveRequiredStruct) GetByteField() (o int8) {
+	if v != nil {
+		o = v.ByteField
+	}
+	return
+}
 
 // GetInt16Field returns the value of Int16Field if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetInt16Field() (o int16) { return v.Int16Field }
+func (v *PrimitiveRequiredStruct) GetInt16Field() (o int16) {
+	if v != nil {
+		o = v.Int16Field
+	}
+	return
+}
 
 // GetInt32Field returns the value of Int32Field if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetInt32Field() (o int32) { return v.Int32Field }
+func (v *PrimitiveRequiredStruct) GetInt32Field() (o int32) {
+	if v != nil {
+		o = v.Int32Field
+	}
+	return
+}
 
 // GetInt64Field returns the value of Int64Field if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetInt64Field() (o int64) { return v.Int64Field }
+func (v *PrimitiveRequiredStruct) GetInt64Field() (o int64) {
+	if v != nil {
+		o = v.Int64Field
+	}
+	return
+}
 
 // GetDoubleField returns the value of DoubleField if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetDoubleField() (o float64) { return v.DoubleField }
+func (v *PrimitiveRequiredStruct) GetDoubleField() (o float64) {
+	if v != nil {
+		o = v.DoubleField
+	}
+	return
+}
 
 // GetStringField returns the value of StringField if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetStringField() (o string) { return v.StringField }
+func (v *PrimitiveRequiredStruct) GetStringField() (o string) {
+	if v != nil {
+		o = v.StringField
+	}
+	return
+}
 
 // GetBinaryField returns the value of BinaryField if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveRequiredStruct) GetBinaryField() (o []byte) { return v.BinaryField }
+func (v *PrimitiveRequiredStruct) GetBinaryField() (o []byte) {
+	if v != nil {
+		o = v.BinaryField
+	}
+	return
+}
 
 // IsSetBinaryField returns true if BinaryField is not nil.
 func (v *PrimitiveRequiredStruct) IsSetBinaryField() bool {
@@ -3522,11 +3637,21 @@ func (v *Rename) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetDefault returns the value of Default if it is set or its
 // zero value if it is unset.
-func (v *Rename) GetDefault() (o string) { return v.Default }
+func (v *Rename) GetDefault() (o string) {
+	if v != nil {
+		o = v.Default
+	}
+	return
+}
 
 // GetCamelCase returns the value of CamelCase if it is set or its
 // zero value if it is unset.
-func (v *Rename) GetCamelCase() (o string) { return v.CamelCase }
+func (v *Rename) GetCamelCase() (o string) {
+	if v != nil {
+		o = v.CamelCase
+	}
+	return
+}
 
 // Size of something.
 type Size struct {
@@ -3681,11 +3806,21 @@ func (v *Size) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetWidth returns the value of Width if it is set or its
 // zero value if it is unset.
-func (v *Size) GetWidth() (o float64) { return v.Width }
+func (v *Size) GetWidth() (o float64) {
+	if v != nil {
+		o = v.Width
+	}
+	return
+}
 
 // GetHeight returns the value of Height if it is set or its
 // zero value if it is unset.
-func (v *Size) GetHeight() (o float64) { return v.Height }
+func (v *Size) GetHeight() (o float64) {
+	if v != nil {
+		o = v.Height
+	}
+	return
+}
 
 type StructLabels struct {
 	IsRequired *bool   `json:"required,omitempty"`
@@ -4146,7 +4281,12 @@ func (v *User) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
-func (v *User) GetName() (o string) { return v.Name }
+func (v *User) GetName() (o string) {
+	if v != nil {
+		o = v.Name
+	}
+	return
+}
 
 // GetContact returns the value of Contact if it is set or its
 // zero value if it is unset.
@@ -4463,8 +4603,18 @@ func (v *ZapOptOutStruct) MarshalLogObject(enc zapcore.ObjectEncoder) (err error
 
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
-func (v *ZapOptOutStruct) GetName() (o string) { return v.Name }
+func (v *ZapOptOutStruct) GetName() (o string) {
+	if v != nil {
+		o = v.Name
+	}
+	return
+}
 
 // GetOptout returns the value of Optout if it is set or its
 // zero value if it is unset.
-func (v *ZapOptOutStruct) GetOptout() (o string) { return v.Optout }
+func (v *ZapOptOutStruct) GetOptout() (o string) {
+	if v != nil {
+		o = v.Optout
+	}
+	return
+}
