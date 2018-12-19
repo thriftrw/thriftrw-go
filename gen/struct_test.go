@@ -1613,6 +1613,24 @@ func TestStructValidation(t *testing.T) {
 }
 
 func TestStructAccessors(t *testing.T) {
+	t.Run("User", func(t *testing.T) {
+		t.Run("Personal", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				u := ts.User{
+					Personal: &ts.PersonalInfo{
+						Age: ptr.Int32(30),
+					},
+				}
+				assert.True(t, u.GetPersonal().IsSetAge())
+				assert.Equal(t, int32(30), u.GetPersonal().GetAge())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var u *ts.User
+				assert.False(t, u.GetPersonal().IsSetAge())
+				assert.Equal(t, int32(0), u.GetPersonal().GetAge())
+			})
+		})
+	})
 	t.Run("DoesNotExistException", func(t *testing.T) {
 		t.Run("set", func(t *testing.T) {
 			err := tx.DoesNotExistException{Error2: ptr.String("foo")}

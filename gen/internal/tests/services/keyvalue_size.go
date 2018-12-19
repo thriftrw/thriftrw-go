@@ -338,7 +338,7 @@ func (v *KeyValue_Size_Result) MarshalLogObject(enc zapcore.ObjectEncoder) (err 
 // GetSuccess returns the value of Success if it is set or its
 // zero value if it is unset.
 func (v *KeyValue_Size_Result) GetSuccess() (o int64) {
-	if v.Success != nil {
+	if v != nil && v.Success != nil {
 		return *v.Success
 	}
 
@@ -347,7 +347,7 @@ func (v *KeyValue_Size_Result) GetSuccess() (o int64) {
 
 // IsSetSuccess returns true if Success is not nil.
 func (v *KeyValue_Size_Result) IsSetSuccess() bool {
-	return v.Success != nil
+	return v != nil && v.Success != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

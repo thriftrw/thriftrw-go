@@ -750,7 +750,7 @@ func (v *DefaultsStruct) MarshalLogObject(enc zapcore.ObjectEncoder) (err error)
 // GetRequiredPrimitive returns the value of RequiredPrimitive if it is set or its
 // default value if it is unset.
 func (v *DefaultsStruct) GetRequiredPrimitive() (o int32) {
-	if v.RequiredPrimitive != nil {
+	if v != nil && v.RequiredPrimitive != nil {
 		return *v.RequiredPrimitive
 	}
 	o = 100
@@ -759,13 +759,13 @@ func (v *DefaultsStruct) GetRequiredPrimitive() (o int32) {
 
 // IsSetRequiredPrimitive returns true if RequiredPrimitive is not nil.
 func (v *DefaultsStruct) IsSetRequiredPrimitive() bool {
-	return v.RequiredPrimitive != nil
+	return v != nil && v.RequiredPrimitive != nil
 }
 
 // GetOptionalPrimitive returns the value of OptionalPrimitive if it is set or its
 // default value if it is unset.
 func (v *DefaultsStruct) GetOptionalPrimitive() (o int32) {
-	if v.OptionalPrimitive != nil {
+	if v != nil && v.OptionalPrimitive != nil {
 		return *v.OptionalPrimitive
 	}
 	o = 200
@@ -774,13 +774,13 @@ func (v *DefaultsStruct) GetOptionalPrimitive() (o int32) {
 
 // IsSetOptionalPrimitive returns true if OptionalPrimitive is not nil.
 func (v *DefaultsStruct) IsSetOptionalPrimitive() bool {
-	return v.OptionalPrimitive != nil
+	return v != nil && v.OptionalPrimitive != nil
 }
 
 // GetRequiredEnum returns the value of RequiredEnum if it is set or its
 // default value if it is unset.
 func (v *DefaultsStruct) GetRequiredEnum() (o enums.EnumDefault) {
-	if v.RequiredEnum != nil {
+	if v != nil && v.RequiredEnum != nil {
 		return *v.RequiredEnum
 	}
 	o = enums.EnumDefaultBar
@@ -789,13 +789,13 @@ func (v *DefaultsStruct) GetRequiredEnum() (o enums.EnumDefault) {
 
 // IsSetRequiredEnum returns true if RequiredEnum is not nil.
 func (v *DefaultsStruct) IsSetRequiredEnum() bool {
-	return v.RequiredEnum != nil
+	return v != nil && v.RequiredEnum != nil
 }
 
 // GetOptionalEnum returns the value of OptionalEnum if it is set or its
 // default value if it is unset.
 func (v *DefaultsStruct) GetOptionalEnum() (o enums.EnumDefault) {
-	if v.OptionalEnum != nil {
+	if v != nil && v.OptionalEnum != nil {
 		return *v.OptionalEnum
 	}
 	o = enums.EnumDefaultBaz
@@ -804,13 +804,13 @@ func (v *DefaultsStruct) GetOptionalEnum() (o enums.EnumDefault) {
 
 // IsSetOptionalEnum returns true if OptionalEnum is not nil.
 func (v *DefaultsStruct) IsSetOptionalEnum() bool {
-	return v.OptionalEnum != nil
+	return v != nil && v.OptionalEnum != nil
 }
 
 // GetRequiredList returns the value of RequiredList if it is set or its
 // default value if it is unset.
 func (v *DefaultsStruct) GetRequiredList() (o []string) {
-	if v.RequiredList != nil {
+	if v != nil && v.RequiredList != nil {
 		return v.RequiredList
 	}
 	o = []string{
@@ -822,13 +822,13 @@ func (v *DefaultsStruct) GetRequiredList() (o []string) {
 
 // IsSetRequiredList returns true if RequiredList is not nil.
 func (v *DefaultsStruct) IsSetRequiredList() bool {
-	return v.RequiredList != nil
+	return v != nil && v.RequiredList != nil
 }
 
 // GetOptionalList returns the value of OptionalList if it is set or its
 // default value if it is unset.
 func (v *DefaultsStruct) GetOptionalList() (o []float64) {
-	if v.OptionalList != nil {
+	if v != nil && v.OptionalList != nil {
 		return v.OptionalList
 	}
 	o = []float64{
@@ -841,13 +841,13 @@ func (v *DefaultsStruct) GetOptionalList() (o []float64) {
 
 // IsSetOptionalList returns true if OptionalList is not nil.
 func (v *DefaultsStruct) IsSetOptionalList() bool {
-	return v.OptionalList != nil
+	return v != nil && v.OptionalList != nil
 }
 
 // GetRequiredStruct returns the value of RequiredStruct if it is set or its
 // default value if it is unset.
 func (v *DefaultsStruct) GetRequiredStruct() (o *Frame) {
-	if v.RequiredStruct != nil {
+	if v != nil && v.RequiredStruct != nil {
 		return v.RequiredStruct
 	}
 	o = &Frame{
@@ -865,13 +865,13 @@ func (v *DefaultsStruct) GetRequiredStruct() (o *Frame) {
 
 // IsSetRequiredStruct returns true if RequiredStruct is not nil.
 func (v *DefaultsStruct) IsSetRequiredStruct() bool {
-	return v.RequiredStruct != nil
+	return v != nil && v.RequiredStruct != nil
 }
 
 // GetOptionalStruct returns the value of OptionalStruct if it is set or its
 // default value if it is unset.
 func (v *DefaultsStruct) GetOptionalStruct() (o *Edge) {
-	if v.OptionalStruct != nil {
+	if v != nil && v.OptionalStruct != nil {
 		return v.OptionalStruct
 	}
 	o = &Edge{
@@ -889,7 +889,7 @@ func (v *DefaultsStruct) GetOptionalStruct() (o *Edge) {
 
 // IsSetOptionalStruct returns true if OptionalStruct is not nil.
 func (v *DefaultsStruct) IsSetOptionalStruct() bool {
-	return v.OptionalStruct != nil
+	return v != nil && v.OptionalStruct != nil
 }
 
 type Edge struct {
@@ -1057,7 +1057,7 @@ func (v *Edge) GetStartPoint() (o *Point) { return v.StartPoint }
 
 // IsSetStartPoint returns true if StartPoint is not nil.
 func (v *Edge) IsSetStartPoint() bool {
-	return v.StartPoint != nil
+	return v != nil && v.StartPoint != nil
 }
 
 // GetEndPoint returns the value of EndPoint if it is set or its
@@ -1066,7 +1066,7 @@ func (v *Edge) GetEndPoint() (o *Point) { return v.EndPoint }
 
 // IsSetEndPoint returns true if EndPoint is not nil.
 func (v *Edge) IsSetEndPoint() bool {
-	return v.EndPoint != nil
+	return v != nil && v.EndPoint != nil
 }
 
 type EmptyStruct struct {
@@ -1324,7 +1324,7 @@ func (v *Frame) GetTopLeft() (o *Point) { return v.TopLeft }
 
 // IsSetTopLeft returns true if TopLeft is not nil.
 func (v *Frame) IsSetTopLeft() bool {
-	return v.TopLeft != nil
+	return v != nil && v.TopLeft != nil
 }
 
 // GetSize returns the value of Size if it is set or its
@@ -1333,7 +1333,7 @@ func (v *Frame) GetSize() (o *Size) { return v.Size }
 
 // IsSetSize returns true if Size is not nil.
 func (v *Frame) IsSetSize() bool {
-	return v.Size != nil
+	return v != nil && v.Size != nil
 }
 
 type GoTags struct {
@@ -1615,7 +1615,7 @@ func (v *GoTags) GetFoo() (o string) { return v.Foo }
 // GetBar returns the value of Bar if it is set or its
 // zero value if it is unset.
 func (v *GoTags) GetBar() (o string) {
-	if v.Bar != nil {
+	if v != nil && v.Bar != nil {
 		return *v.Bar
 	}
 
@@ -1624,7 +1624,7 @@ func (v *GoTags) GetBar() (o string) {
 
 // IsSetBar returns true if Bar is not nil.
 func (v *GoTags) IsSetBar() bool {
-	return v.Bar != nil
+	return v != nil && v.Bar != nil
 }
 
 // GetFooBar returns the value of FooBar if it is set or its
@@ -1638,7 +1638,7 @@ func (v *GoTags) GetFooBarWithSpace() (o string) { return v.FooBarWithSpace }
 // GetFooBarWithOmitEmpty returns the value of FooBarWithOmitEmpty if it is set or its
 // zero value if it is unset.
 func (v *GoTags) GetFooBarWithOmitEmpty() (o string) {
-	if v.FooBarWithOmitEmpty != nil {
+	if v != nil && v.FooBarWithOmitEmpty != nil {
 		return *v.FooBarWithOmitEmpty
 	}
 
@@ -1647,7 +1647,7 @@ func (v *GoTags) GetFooBarWithOmitEmpty() (o string) {
 
 // IsSetFooBarWithOmitEmpty returns true if FooBarWithOmitEmpty is not nil.
 func (v *GoTags) IsSetFooBarWithOmitEmpty() bool {
-	return v.FooBarWithOmitEmpty != nil
+	return v != nil && v.FooBarWithOmitEmpty != nil
 }
 
 // GetFooBarWithRequired returns the value of FooBarWithRequired if it is set or its
@@ -1861,7 +1861,7 @@ func (v *Graph) GetEdges() (o []*Edge) { return v.Edges }
 
 // IsSetEdges returns true if Edges is not nil.
 func (v *Graph) IsSetEdges() bool {
-	return v.Edges != nil
+	return v != nil && v.Edges != nil
 }
 
 type List Node
@@ -2060,7 +2060,7 @@ func (v *Node) GetValue() (o int32) { return v.Value }
 // GetTail returns the value of Tail if it is set or its
 // zero value if it is unset.
 func (v *Node) GetTail() (o *List) {
-	if v.Tail != nil {
+	if v != nil && v.Tail != nil {
 		return v.Tail
 	}
 
@@ -2069,7 +2069,7 @@ func (v *Node) GetTail() (o *List) {
 
 // IsSetTail returns true if Tail is not nil.
 func (v *Node) IsSetTail() bool {
-	return v.Tail != nil
+	return v != nil && v.Tail != nil
 }
 
 type Omit struct {
@@ -2227,6 +2227,144 @@ func (v *Omit) GetSerialized() (o string) { return v.Serialized }
 // GetHidden returns the value of Hidden if it is set or its
 // zero value if it is unset.
 func (v *Omit) GetHidden() (o string) { return v.Hidden }
+
+type PersonalInfo struct {
+	Age *int32 `json:"age,omitempty"`
+}
+
+// ToWire translates a PersonalInfo struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *PersonalInfo) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.Age != nil {
+		w, err = wire.NewValueI32(*(v.Age)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+// FromWire deserializes a PersonalInfo struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a PersonalInfo struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v PersonalInfo
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *PersonalInfo) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TI32 {
+				var x int32
+				x, err = field.Value.GetI32(), error(nil)
+				v.Age = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a PersonalInfo
+// struct.
+func (v *PersonalInfo) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [1]string
+	i := 0
+	if v.Age != nil {
+		fields[i] = fmt.Sprintf("Age: %v", *(v.Age))
+		i++
+	}
+
+	return fmt.Sprintf("PersonalInfo{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this PersonalInfo match the
+// provided PersonalInfo.
+//
+// This function performs a deep comparison.
+func (v *PersonalInfo) Equals(rhs *PersonalInfo) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !_I32_EqualsPtr(v.Age, rhs.Age) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of PersonalInfo.
+func (v *PersonalInfo) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	if v.Age != nil {
+		enc.AddInt32("age", *v.Age)
+	}
+	return err
+}
+
+// GetAge returns the value of Age if it is set or its
+// zero value if it is unset.
+func (v *PersonalInfo) GetAge() (o int32) {
+	if v != nil && v.Age != nil {
+		return *v.Age
+	}
+
+	return
+}
+
+// IsSetAge returns true if Age is not nil.
+func (v *PersonalInfo) IsSetAge() bool {
+	return v != nil && v.Age != nil
+}
 
 // A point in 2D space.
 type Point struct {
@@ -2765,7 +2903,7 @@ func (v *PrimitiveOptionalStruct) MarshalLogObject(enc zapcore.ObjectEncoder) (e
 // GetBoolField returns the value of BoolField if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetBoolField() (o bool) {
-	if v.BoolField != nil {
+	if v != nil && v.BoolField != nil {
 		return *v.BoolField
 	}
 
@@ -2774,13 +2912,13 @@ func (v *PrimitiveOptionalStruct) GetBoolField() (o bool) {
 
 // IsSetBoolField returns true if BoolField is not nil.
 func (v *PrimitiveOptionalStruct) IsSetBoolField() bool {
-	return v.BoolField != nil
+	return v != nil && v.BoolField != nil
 }
 
 // GetByteField returns the value of ByteField if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetByteField() (o int8) {
-	if v.ByteField != nil {
+	if v != nil && v.ByteField != nil {
 		return *v.ByteField
 	}
 
@@ -2789,13 +2927,13 @@ func (v *PrimitiveOptionalStruct) GetByteField() (o int8) {
 
 // IsSetByteField returns true if ByteField is not nil.
 func (v *PrimitiveOptionalStruct) IsSetByteField() bool {
-	return v.ByteField != nil
+	return v != nil && v.ByteField != nil
 }
 
 // GetInt16Field returns the value of Int16Field if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetInt16Field() (o int16) {
-	if v.Int16Field != nil {
+	if v != nil && v.Int16Field != nil {
 		return *v.Int16Field
 	}
 
@@ -2804,13 +2942,13 @@ func (v *PrimitiveOptionalStruct) GetInt16Field() (o int16) {
 
 // IsSetInt16Field returns true if Int16Field is not nil.
 func (v *PrimitiveOptionalStruct) IsSetInt16Field() bool {
-	return v.Int16Field != nil
+	return v != nil && v.Int16Field != nil
 }
 
 // GetInt32Field returns the value of Int32Field if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetInt32Field() (o int32) {
-	if v.Int32Field != nil {
+	if v != nil && v.Int32Field != nil {
 		return *v.Int32Field
 	}
 
@@ -2819,13 +2957,13 @@ func (v *PrimitiveOptionalStruct) GetInt32Field() (o int32) {
 
 // IsSetInt32Field returns true if Int32Field is not nil.
 func (v *PrimitiveOptionalStruct) IsSetInt32Field() bool {
-	return v.Int32Field != nil
+	return v != nil && v.Int32Field != nil
 }
 
 // GetInt64Field returns the value of Int64Field if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetInt64Field() (o int64) {
-	if v.Int64Field != nil {
+	if v != nil && v.Int64Field != nil {
 		return *v.Int64Field
 	}
 
@@ -2834,13 +2972,13 @@ func (v *PrimitiveOptionalStruct) GetInt64Field() (o int64) {
 
 // IsSetInt64Field returns true if Int64Field is not nil.
 func (v *PrimitiveOptionalStruct) IsSetInt64Field() bool {
-	return v.Int64Field != nil
+	return v != nil && v.Int64Field != nil
 }
 
 // GetDoubleField returns the value of DoubleField if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetDoubleField() (o float64) {
-	if v.DoubleField != nil {
+	if v != nil && v.DoubleField != nil {
 		return *v.DoubleField
 	}
 
@@ -2849,13 +2987,13 @@ func (v *PrimitiveOptionalStruct) GetDoubleField() (o float64) {
 
 // IsSetDoubleField returns true if DoubleField is not nil.
 func (v *PrimitiveOptionalStruct) IsSetDoubleField() bool {
-	return v.DoubleField != nil
+	return v != nil && v.DoubleField != nil
 }
 
 // GetStringField returns the value of StringField if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetStringField() (o string) {
-	if v.StringField != nil {
+	if v != nil && v.StringField != nil {
 		return *v.StringField
 	}
 
@@ -2864,13 +3002,13 @@ func (v *PrimitiveOptionalStruct) GetStringField() (o string) {
 
 // IsSetStringField returns true if StringField is not nil.
 func (v *PrimitiveOptionalStruct) IsSetStringField() bool {
-	return v.StringField != nil
+	return v != nil && v.StringField != nil
 }
 
 // GetBinaryField returns the value of BinaryField if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveOptionalStruct) GetBinaryField() (o []byte) {
-	if v.BinaryField != nil {
+	if v != nil && v.BinaryField != nil {
 		return v.BinaryField
 	}
 
@@ -2879,7 +3017,7 @@ func (v *PrimitiveOptionalStruct) GetBinaryField() (o []byte) {
 
 // IsSetBinaryField returns true if BinaryField is not nil.
 func (v *PrimitiveOptionalStruct) IsSetBinaryField() bool {
-	return v.BinaryField != nil
+	return v != nil && v.BinaryField != nil
 }
 
 // A struct that contains primitive fields exclusively.
@@ -3231,7 +3369,7 @@ func (v *PrimitiveRequiredStruct) GetBinaryField() (o []byte) { return v.BinaryF
 
 // IsSetBinaryField returns true if BinaryField is not nil.
 func (v *PrimitiveRequiredStruct) IsSetBinaryField() bool {
-	return v.BinaryField != nil
+	return v != nil && v.BinaryField != nil
 }
 
 type Rename struct {
@@ -3762,7 +3900,7 @@ func (v *StructLabels) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 // GetIsRequired returns the value of IsRequired if it is set or its
 // zero value if it is unset.
 func (v *StructLabels) GetIsRequired() (o bool) {
-	if v.IsRequired != nil {
+	if v != nil && v.IsRequired != nil {
 		return *v.IsRequired
 	}
 
@@ -3771,13 +3909,13 @@ func (v *StructLabels) GetIsRequired() (o bool) {
 
 // IsSetIsRequired returns true if IsRequired is not nil.
 func (v *StructLabels) IsSetIsRequired() bool {
-	return v.IsRequired != nil
+	return v != nil && v.IsRequired != nil
 }
 
 // GetFoo returns the value of Foo if it is set or its
 // zero value if it is unset.
 func (v *StructLabels) GetFoo() (o string) {
-	if v.Foo != nil {
+	if v != nil && v.Foo != nil {
 		return *v.Foo
 	}
 
@@ -3786,13 +3924,13 @@ func (v *StructLabels) GetFoo() (o string) {
 
 // IsSetFoo returns true if Foo is not nil.
 func (v *StructLabels) IsSetFoo() bool {
-	return v.Foo != nil
+	return v != nil && v.Foo != nil
 }
 
 // GetQux returns the value of Qux if it is set or its
 // zero value if it is unset.
 func (v *StructLabels) GetQux() (o string) {
-	if v.Qux != nil {
+	if v != nil && v.Qux != nil {
 		return *v.Qux
 	}
 
@@ -3801,13 +3939,13 @@ func (v *StructLabels) GetQux() (o string) {
 
 // IsSetQux returns true if Qux is not nil.
 func (v *StructLabels) IsSetQux() bool {
-	return v.Qux != nil
+	return v != nil && v.Qux != nil
 }
 
 // GetQuux returns the value of Quux if it is set or its
 // zero value if it is unset.
 func (v *StructLabels) GetQuux() (o string) {
-	if v.Quux != nil {
+	if v != nil && v.Quux != nil {
 		return *v.Quux
 	}
 
@@ -3816,12 +3954,13 @@ func (v *StructLabels) GetQuux() (o string) {
 
 // IsSetQuux returns true if Quux is not nil.
 func (v *StructLabels) IsSetQuux() bool {
-	return v.Quux != nil
+	return v != nil && v.Quux != nil
 }
 
 type User struct {
-	Name    string       `json:"name,required"`
-	Contact *ContactInfo `json:"contact,omitempty"`
+	Name     string        `json:"name,required"`
+	Contact  *ContactInfo  `json:"contact,omitempty"`
+	Personal *PersonalInfo `json:"personal,omitempty"`
 }
 
 // ToWire translates a User struct into a Thrift-level intermediate
@@ -3841,7 +3980,7 @@ type User struct {
 //   }
 func (v *User) ToWire() (wire.Value, error) {
 	var (
-		fields [2]wire.Field
+		fields [3]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -3861,12 +4000,26 @@ func (v *User) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
+	if v.Personal != nil {
+		w, err = v.Personal.ToWire()
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
+		i++
+	}
 
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
 func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
 	var v ContactInfo
+	err := v.FromWire(w)
+	return &v, err
+}
+
+func _PersonalInfo_Read(w wire.Value) (*PersonalInfo, error) {
+	var v PersonalInfo
 	err := v.FromWire(w)
 	return &v, err
 }
@@ -3911,6 +4064,14 @@ func (v *User) FromWire(w wire.Value) error {
 				}
 
 			}
+		case 3:
+			if field.Value.Type() == wire.TStruct {
+				v.Personal, err = _PersonalInfo_Read(field.Value)
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -3928,12 +4089,16 @@ func (v *User) String() string {
 		return "<nil>"
 	}
 
-	var fields [2]string
+	var fields [3]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
 	if v.Contact != nil {
 		fields[i] = fmt.Sprintf("Contact: %v", v.Contact)
+		i++
+	}
+	if v.Personal != nil {
+		fields[i] = fmt.Sprintf("Personal: %v", v.Personal)
 		i++
 	}
 
@@ -3956,6 +4121,9 @@ func (v *User) Equals(rhs *User) bool {
 	if !((v.Contact == nil && rhs.Contact == nil) || (v.Contact != nil && rhs.Contact != nil && v.Contact.Equals(rhs.Contact))) {
 		return false
 	}
+	if !((v.Personal == nil && rhs.Personal == nil) || (v.Personal != nil && rhs.Personal != nil && v.Personal.Equals(rhs.Personal))) {
+		return false
+	}
 
 	return true
 }
@@ -3970,6 +4138,9 @@ func (v *User) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.Contact != nil {
 		err = multierr.Append(err, enc.AddObject("contact", v.Contact))
 	}
+	if v.Personal != nil {
+		err = multierr.Append(err, enc.AddObject("personal", v.Personal))
+	}
 	return err
 }
 
@@ -3980,7 +4151,7 @@ func (v *User) GetName() (o string) { return v.Name }
 // GetContact returns the value of Contact if it is set or its
 // zero value if it is unset.
 func (v *User) GetContact() (o *ContactInfo) {
-	if v.Contact != nil {
+	if v != nil && v.Contact != nil {
 		return v.Contact
 	}
 
@@ -3989,7 +4160,22 @@ func (v *User) GetContact() (o *ContactInfo) {
 
 // IsSetContact returns true if Contact is not nil.
 func (v *User) IsSetContact() bool {
-	return v.Contact != nil
+	return v != nil && v.Contact != nil
+}
+
+// GetPersonal returns the value of Personal if it is set or its
+// zero value if it is unset.
+func (v *User) GetPersonal() (o *PersonalInfo) {
+	if v != nil && v.Personal != nil {
+		return v.Personal
+	}
+
+	return
+}
+
+// IsSetPersonal returns true if Personal is not nil.
+func (v *User) IsSetPersonal() bool {
+	return v != nil && v.Personal != nil
 }
 
 type _Map_String_User_MapItemList map[string]*User

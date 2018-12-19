@@ -284,7 +284,7 @@ func (v *DefaultPrimitiveTypedef) MarshalLogObject(enc zapcore.ObjectEncoder) (e
 // GetState returns the value of State if it is set or its
 // default value if it is unset.
 func (v *DefaultPrimitiveTypedef) GetState() (o State) {
-	if v.State != nil {
+	if v != nil && v.State != nil {
 		return *v.State
 	}
 	o = "hello"
@@ -293,7 +293,7 @@ func (v *DefaultPrimitiveTypedef) GetState() (o State) {
 
 // IsSetState returns true if State is not nil.
 func (v *DefaultPrimitiveTypedef) IsSetState() bool {
-	return v.State != nil
+	return v != nil && v.State != nil
 }
 
 type _Map_Edge_Edge_MapItemList []struct {
@@ -681,13 +681,13 @@ func (v *Event) GetUUID() (o *UUID) { return v.UUID }
 
 // IsSetUUID returns true if UUID is not nil.
 func (v *Event) IsSetUUID() bool {
-	return v.UUID != nil
+	return v != nil && v.UUID != nil
 }
 
 // GetTime returns the value of Time if it is set or its
 // zero value if it is unset.
 func (v *Event) GetTime() (o Timestamp) {
-	if v.Time != nil {
+	if v != nil && v.Time != nil {
 		return *v.Time
 	}
 
@@ -696,7 +696,7 @@ func (v *Event) GetTime() (o Timestamp) {
 
 // IsSetTime returns true if Time is not nil.
 func (v *Event) IsSetTime() bool {
-	return v.Time != nil
+	return v != nil && v.Time != nil
 }
 
 type _List_Event_ValueList []*Event
@@ -1593,7 +1593,7 @@ func (v *Transition) GetToState() (o State) { return v.ToState }
 // GetEvents returns the value of Events if it is set or its
 // zero value if it is unset.
 func (v *Transition) GetEvents() (o EventGroup) {
-	if v.Events != nil {
+	if v != nil && v.Events != nil {
 		return v.Events
 	}
 
@@ -1602,7 +1602,7 @@ func (v *Transition) GetEvents() (o EventGroup) {
 
 // IsSetEvents returns true if Events is not nil.
 func (v *Transition) IsSetEvents() bool {
-	return v.Events != nil
+	return v != nil && v.Events != nil
 }
 
 type UUID I128

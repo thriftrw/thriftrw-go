@@ -180,7 +180,7 @@ func (v *KeyValue_SetValueV2_Args) GetValue() (o *unions.ArbitraryValue) { retur
 
 // IsSetValue returns true if Value is not nil.
 func (v *KeyValue_SetValueV2_Args) IsSetValue() bool {
-	return v.Value != nil
+	return v != nil && v.Value != nil
 }
 
 // MethodName returns the name of the Thrift function as specified in

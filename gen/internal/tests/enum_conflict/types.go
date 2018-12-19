@@ -396,7 +396,7 @@ func (v *Records) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 // GetRecordType returns the value of RecordType if it is set or its
 // default value if it is unset.
 func (v *Records) GetRecordType() (o RecordType) {
-	if v.RecordType != nil {
+	if v != nil && v.RecordType != nil {
 		return *v.RecordType
 	}
 	o = DefaultRecordType
@@ -405,13 +405,13 @@ func (v *Records) GetRecordType() (o RecordType) {
 
 // IsSetRecordType returns true if RecordType is not nil.
 func (v *Records) IsSetRecordType() bool {
-	return v.RecordType != nil
+	return v != nil && v.RecordType != nil
 }
 
 // GetOtherRecordType returns the value of OtherRecordType if it is set or its
 // default value if it is unset.
 func (v *Records) GetOtherRecordType() (o enums.RecordType) {
-	if v.OtherRecordType != nil {
+	if v != nil && v.OtherRecordType != nil {
 		return *v.OtherRecordType
 	}
 	o = DefaultOtherRecordType
@@ -420,5 +420,5 @@ func (v *Records) GetOtherRecordType() (o enums.RecordType) {
 
 // IsSetOtherRecordType returns true if OtherRecordType is not nil.
 func (v *Records) IsSetOtherRecordType() bool {
-	return v.OtherRecordType != nil
+	return v != nil && v.OtherRecordType != nil
 }

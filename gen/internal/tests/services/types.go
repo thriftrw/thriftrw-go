@@ -173,7 +173,7 @@ func (v *ConflictingNamesSetValueArgs) GetValue() (o []byte) { return v.Value }
 
 // IsSetValue returns true if Value is not nil.
 func (v *ConflictingNamesSetValueArgs) IsSetValue() bool {
-	return v.Value != nil
+	return v != nil && v.Value != nil
 }
 
 type InternalError struct {
@@ -312,7 +312,7 @@ func (v *InternalError) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) 
 // GetMessage returns the value of Message if it is set or its
 // zero value if it is unset.
 func (v *InternalError) GetMessage() (o string) {
-	if v.Message != nil {
+	if v != nil && v.Message != nil {
 		return *v.Message
 	}
 
@@ -321,7 +321,7 @@ func (v *InternalError) GetMessage() (o string) {
 
 // IsSetMessage returns true if Message is not nil.
 func (v *InternalError) IsSetMessage() bool {
-	return v.Message != nil
+	return v != nil && v.Message != nil
 }
 
 func (v *InternalError) Error() string {
