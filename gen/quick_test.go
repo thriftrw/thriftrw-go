@@ -330,6 +330,7 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: ts.Node{}, Kind: thriftStruct},
 		{Sample: ts.Omit{}, Kind: thriftStruct},
 		{Sample: ts.Point{}, Kind: thriftStruct},
+		{Sample: ts.PersonalInfo{}, Kind: thriftStruct},
 		{Sample: ts.PrimitiveOptionalStruct{}, Kind: thriftStruct},
 		{Sample: ts.PrimitiveRequiredStruct{}, Kind: thriftStruct},
 		{Sample: ts.Rename{}, Kind: thriftStruct},
