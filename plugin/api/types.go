@@ -208,11 +208,21 @@ func (v *Argument) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
-func (v *Argument) GetName() (o string) { return v.Name }
+func (v *Argument) GetName() (o string) {
+	if v != nil {
+		o = v.Name
+	}
+	return
+}
 
 // GetType returns the value of Type if it is set or its
 // zero value if it is unset.
-func (v *Argument) GetType() (o *Type) { return v.Type }
+func (v *Argument) GetType() (o *Type) {
+	if v != nil {
+		o = v.Type
+	}
+	return
+}
 
 // IsSetType returns true if Type is not nil.
 func (v *Argument) IsSetType() bool {
@@ -877,15 +887,30 @@ func (v *Function) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
-func (v *Function) GetName() (o string) { return v.Name }
+func (v *Function) GetName() (o string) {
+	if v != nil {
+		o = v.Name
+	}
+	return
+}
 
 // GetThriftName returns the value of ThriftName if it is set or its
 // zero value if it is unset.
-func (v *Function) GetThriftName() (o string) { return v.ThriftName }
+func (v *Function) GetThriftName() (o string) {
+	if v != nil {
+		o = v.ThriftName
+	}
+	return
+}
 
 // GetArguments returns the value of Arguments if it is set or its
 // zero value if it is unset.
-func (v *Function) GetArguments() (o []*Argument) { return v.Arguments }
+func (v *Function) GetArguments() (o []*Argument) {
+	if v != nil {
+		o = v.Arguments
+	}
+	return
+}
 
 // IsSetArguments returns true if Arguments is not nil.
 func (v *Function) IsSetArguments() bool {
@@ -1460,7 +1485,12 @@ func (v *GenerateServiceRequest) MarshalLogObject(enc zapcore.ObjectEncoder) (er
 
 // GetRootServices returns the value of RootServices if it is set or its
 // zero value if it is unset.
-func (v *GenerateServiceRequest) GetRootServices() (o []ServiceID) { return v.RootServices }
+func (v *GenerateServiceRequest) GetRootServices() (o []ServiceID) {
+	if v != nil {
+		o = v.RootServices
+	}
+	return
+}
 
 // IsSetRootServices returns true if RootServices is not nil.
 func (v *GenerateServiceRequest) IsSetRootServices() bool {
@@ -1469,7 +1499,12 @@ func (v *GenerateServiceRequest) IsSetRootServices() bool {
 
 // GetServices returns the value of Services if it is set or its
 // zero value if it is unset.
-func (v *GenerateServiceRequest) GetServices() (o map[ServiceID]*Service) { return v.Services }
+func (v *GenerateServiceRequest) GetServices() (o map[ServiceID]*Service) {
+	if v != nil {
+		o = v.Services
+	}
+	return
+}
 
 // IsSetServices returns true if Services is not nil.
 func (v *GenerateServiceRequest) IsSetServices() bool {
@@ -1478,7 +1513,12 @@ func (v *GenerateServiceRequest) IsSetServices() bool {
 
 // GetModules returns the value of Modules if it is set or its
 // zero value if it is unset.
-func (v *GenerateServiceRequest) GetModules() (o map[ModuleID]*Module) { return v.Modules }
+func (v *GenerateServiceRequest) GetModules() (o map[ModuleID]*Module) {
+	if v != nil {
+		o = v.Modules
+	}
+	return
+}
 
 // IsSetModules returns true if Modules is not nil.
 func (v *GenerateServiceRequest) IsSetModules() bool {
@@ -2120,15 +2160,30 @@ func (v *HandshakeResponse) MarshalLogObject(enc zapcore.ObjectEncoder) (err err
 
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
-func (v *HandshakeResponse) GetName() (o string) { return v.Name }
+func (v *HandshakeResponse) GetName() (o string) {
+	if v != nil {
+		o = v.Name
+	}
+	return
+}
 
 // GetAPIVersion returns the value of APIVersion if it is set or its
 // zero value if it is unset.
-func (v *HandshakeResponse) GetAPIVersion() (o int32) { return v.APIVersion }
+func (v *HandshakeResponse) GetAPIVersion() (o int32) {
+	if v != nil {
+		o = v.APIVersion
+	}
+	return
+}
 
 // GetFeatures returns the value of Features if it is set or its
 // zero value if it is unset.
-func (v *HandshakeResponse) GetFeatures() (o []Feature) { return v.Features }
+func (v *HandshakeResponse) GetFeatures() (o []Feature) {
+	if v != nil {
+		o = v.Features
+	}
+	return
+}
 
 // IsSetFeatures returns true if Features is not nil.
 func (v *HandshakeResponse) IsSetFeatures() bool {
@@ -2309,11 +2364,21 @@ func (v *Module) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetImportPath returns the value of ImportPath if it is set or its
 // zero value if it is unset.
-func (v *Module) GetImportPath() (o string) { return v.ImportPath }
+func (v *Module) GetImportPath() (o string) {
+	if v != nil {
+		o = v.ImportPath
+	}
+	return
+}
 
 // GetDirectory returns the value of Directory if it is set or its
 // zero value if it is unset.
-func (v *Module) GetDirectory() (o string) { return v.Directory }
+func (v *Module) GetDirectory() (o string) {
+	if v != nil {
+		o = v.Directory
+	}
+	return
+}
 
 // ModuleID is an arbitrary unique identifier to reference the different
 // modules in this request.
@@ -2718,11 +2783,21 @@ func (v *Service) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
-func (v *Service) GetName() (o string) { return v.Name }
+func (v *Service) GetName() (o string) {
+	if v != nil {
+		o = v.Name
+	}
+	return
+}
 
 // GetThriftName returns the value of ThriftName if it is set or its
 // zero value if it is unset.
-func (v *Service) GetThriftName() (o string) { return v.ThriftName }
+func (v *Service) GetThriftName() (o string) {
+	if v != nil {
+		o = v.ThriftName
+	}
+	return
+}
 
 // GetParentID returns the value of ParentID if it is set or its
 // zero value if it is unset.
@@ -2741,7 +2816,12 @@ func (v *Service) IsSetParentID() bool {
 
 // GetFunctions returns the value of Functions if it is set or its
 // zero value if it is unset.
-func (v *Service) GetFunctions() (o []*Function) { return v.Functions }
+func (v *Service) GetFunctions() (o []*Function) {
+	if v != nil {
+		o = v.Functions
+	}
+	return
+}
 
 // IsSetFunctions returns true if Functions is not nil.
 func (v *Service) IsSetFunctions() bool {
@@ -2750,7 +2830,12 @@ func (v *Service) IsSetFunctions() bool {
 
 // GetModuleID returns the value of ModuleID if it is set or its
 // zero value if it is unset.
-func (v *Service) GetModuleID() (o ModuleID) { return v.ModuleID }
+func (v *Service) GetModuleID() (o ModuleID) {
+	if v != nil {
+		o = v.ModuleID
+	}
+	return
+}
 
 // GetAnnotations returns the value of Annotations if it is set or its
 // zero value if it is unset.
@@ -3634,7 +3719,12 @@ func (v *TypePair) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetLeft returns the value of Left if it is set or its
 // zero value if it is unset.
-func (v *TypePair) GetLeft() (o *Type) { return v.Left }
+func (v *TypePair) GetLeft() (o *Type) {
+	if v != nil {
+		o = v.Left
+	}
+	return
+}
 
 // IsSetLeft returns true if Left is not nil.
 func (v *TypePair) IsSetLeft() bool {
@@ -3643,7 +3733,12 @@ func (v *TypePair) IsSetLeft() bool {
 
 // GetRight returns the value of Right if it is set or its
 // zero value if it is unset.
-func (v *TypePair) GetRight() (o *Type) { return v.Right }
+func (v *TypePair) GetRight() (o *Type) {
+	if v != nil {
+		o = v.Right
+	}
+	return
+}
 
 // IsSetRight returns true if Right is not nil.
 func (v *TypePair) IsSetRight() bool {
@@ -3847,11 +3942,21 @@ func (v *TypeReference) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) 
 
 // GetName returns the value of Name if it is set or its
 // zero value if it is unset.
-func (v *TypeReference) GetName() (o string) { return v.Name }
+func (v *TypeReference) GetName() (o string) {
+	if v != nil {
+		o = v.Name
+	}
+	return
+}
 
 // GetImportPath returns the value of ImportPath if it is set or its
 // zero value if it is unset.
-func (v *TypeReference) GetImportPath() (o string) { return v.ImportPath }
+func (v *TypeReference) GetImportPath() (o string) {
+	if v != nil {
+		o = v.ImportPath
+	}
+	return
+}
 
 // GetAnnotations returns the value of Annotations if it is set or its
 // zero value if it is unset.

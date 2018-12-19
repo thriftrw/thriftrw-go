@@ -208,11 +208,21 @@ func (v *UUIDConflict) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetLocalUUID returns the value of LocalUUID if it is set or its
 // zero value if it is unset.
-func (v *UUIDConflict) GetLocalUUID() (o UUID) { return v.LocalUUID }
+func (v *UUIDConflict) GetLocalUUID() (o UUID) {
+	if v != nil {
+		o = v.LocalUUID
+	}
+	return
+}
 
 // GetImportedUUID returns the value of ImportedUUID if it is set or its
 // zero value if it is unset.
-func (v *UUIDConflict) GetImportedUUID() (o *typedefs.UUID) { return v.ImportedUUID }
+func (v *UUIDConflict) GetImportedUUID() (o *typedefs.UUID) {
+	if v != nil {
+		o = v.ImportedUUID
+	}
+	return
+}
 
 // IsSetImportedUUID returns true if ImportedUUID is not nil.
 func (v *UUIDConflict) IsSetImportedUUID() bool {

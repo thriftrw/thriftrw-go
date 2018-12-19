@@ -677,7 +677,12 @@ func (v *Event) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetUUID returns the value of UUID if it is set or its
 // zero value if it is unset.
-func (v *Event) GetUUID() (o *UUID) { return v.UUID }
+func (v *Event) GetUUID() (o *UUID) {
+	if v != nil {
+		o = v.UUID
+	}
+	return
+}
 
 // IsSetUUID returns true if UUID is not nil.
 func (v *Event) IsSetUUID() bool {
@@ -1584,11 +1589,21 @@ func (v *Transition) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetFromState returns the value of FromState if it is set or its
 // zero value if it is unset.
-func (v *Transition) GetFromState() (o State) { return v.FromState }
+func (v *Transition) GetFromState() (o State) {
+	if v != nil {
+		o = v.FromState
+	}
+	return
+}
 
 // GetToState returns the value of ToState if it is set or its
 // zero value if it is unset.
-func (v *Transition) GetToState() (o State) { return v.ToState }
+func (v *Transition) GetToState() (o State) {
+	if v != nil {
+		o = v.ToState
+	}
+	return
+}
 
 // GetEvents returns the value of Events if it is set or its
 // zero value if it is unset.
@@ -1788,8 +1803,18 @@ func (v *I128) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 
 // GetHigh returns the value of High if it is set or its
 // zero value if it is unset.
-func (v *I128) GetHigh() (o int64) { return v.High }
+func (v *I128) GetHigh() (o int64) {
+	if v != nil {
+		o = v.High
+	}
+	return
+}
 
 // GetLow returns the value of Low if it is set or its
 // zero value if it is unset.
-func (v *I128) GetLow() (o int64) { return v.Low }
+func (v *I128) GetLow() (o int64) {
+	if v != nil {
+		o = v.Low
+	}
+	return
+}

@@ -165,11 +165,21 @@ func (v *ConflictingNamesSetValueArgs) MarshalLogObject(enc zapcore.ObjectEncode
 
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
-func (v *ConflictingNamesSetValueArgs) GetKey() (o string) { return v.Key }
+func (v *ConflictingNamesSetValueArgs) GetKey() (o string) {
+	if v != nil {
+		o = v.Key
+	}
+	return
+}
 
 // GetValue returns the value of Value if it is set or its
 // zero value if it is unset.
-func (v *ConflictingNamesSetValueArgs) GetValue() (o []byte) { return v.Value }
+func (v *ConflictingNamesSetValueArgs) GetValue() (o []byte) {
+	if v != nil {
+		o = v.Value
+	}
+	return
+}
 
 // IsSetValue returns true if Value is not nil.
 func (v *ConflictingNamesSetValueArgs) IsSetValue() bool {

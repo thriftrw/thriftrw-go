@@ -2894,7 +2894,12 @@ func (v *ListOfConflictingEnums) MarshalLogObject(enc zapcore.ObjectEncoder) (er
 
 // GetRecords returns the value of Records if it is set or its
 // zero value if it is unset.
-func (v *ListOfConflictingEnums) GetRecords() (o []enum_conflict.RecordType) { return v.Records }
+func (v *ListOfConflictingEnums) GetRecords() (o []enum_conflict.RecordType) {
+	if v != nil {
+		o = v.Records
+	}
+	return
+}
 
 // IsSetRecords returns true if Records is not nil.
 func (v *ListOfConflictingEnums) IsSetRecords() bool {
@@ -2903,7 +2908,12 @@ func (v *ListOfConflictingEnums) IsSetRecords() bool {
 
 // GetOtherRecords returns the value of OtherRecords if it is set or its
 // zero value if it is unset.
-func (v *ListOfConflictingEnums) GetOtherRecords() (o []enums.RecordType) { return v.OtherRecords }
+func (v *ListOfConflictingEnums) GetOtherRecords() (o []enums.RecordType) {
+	if v != nil {
+		o = v.OtherRecords
+	}
+	return
+}
 
 // IsSetOtherRecords returns true if OtherRecords is not nil.
 func (v *ListOfConflictingEnums) IsSetOtherRecords() bool {
@@ -3220,7 +3230,12 @@ func (v *ListOfConflictingUUIDs) MarshalLogObject(enc zapcore.ObjectEncoder) (er
 
 // GetUuids returns the value of Uuids if it is set or its
 // zero value if it is unset.
-func (v *ListOfConflictingUUIDs) GetUuids() (o []*typedefs.UUID) { return v.Uuids }
+func (v *ListOfConflictingUUIDs) GetUuids() (o []*typedefs.UUID) {
+	if v != nil {
+		o = v.Uuids
+	}
+	return
+}
 
 // IsSetUuids returns true if Uuids is not nil.
 func (v *ListOfConflictingUUIDs) IsSetUuids() bool {
@@ -3229,7 +3244,12 @@ func (v *ListOfConflictingUUIDs) IsSetUuids() bool {
 
 // GetOtherUUIDs returns the value of OtherUUIDs if it is set or its
 // zero value if it is unset.
-func (v *ListOfConflictingUUIDs) GetOtherUUIDs() (o []uuid_conflict.UUID) { return v.OtherUUIDs }
+func (v *ListOfConflictingUUIDs) GetOtherUUIDs() (o []uuid_conflict.UUID) {
+	if v != nil {
+		o = v.OtherUUIDs
+	}
+	return
+}
 
 // IsSetOtherUUIDs returns true if OtherUUIDs is not nil.
 func (v *ListOfConflictingUUIDs) IsSetOtherUUIDs() bool {
@@ -4698,7 +4718,12 @@ func (v *PrimitiveContainersRequired) MarshalLogObject(enc zapcore.ObjectEncoder
 
 // GetListOfStrings returns the value of ListOfStrings if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveContainersRequired) GetListOfStrings() (o []string) { return v.ListOfStrings }
+func (v *PrimitiveContainersRequired) GetListOfStrings() (o []string) {
+	if v != nil {
+		o = v.ListOfStrings
+	}
+	return
+}
 
 // IsSetListOfStrings returns true if ListOfStrings is not nil.
 func (v *PrimitiveContainersRequired) IsSetListOfStrings() bool {
@@ -4707,7 +4732,12 @@ func (v *PrimitiveContainersRequired) IsSetListOfStrings() bool {
 
 // GetSetOfInts returns the value of SetOfInts if it is set or its
 // zero value if it is unset.
-func (v *PrimitiveContainersRequired) GetSetOfInts() (o map[int32]struct{}) { return v.SetOfInts }
+func (v *PrimitiveContainersRequired) GetSetOfInts() (o map[int32]struct{}) {
+	if v != nil {
+		o = v.SetOfInts
+	}
+	return
+}
 
 // IsSetSetOfInts returns true if SetOfInts is not nil.
 func (v *PrimitiveContainersRequired) IsSetSetOfInts() bool {
@@ -4717,7 +4747,10 @@ func (v *PrimitiveContainersRequired) IsSetSetOfInts() bool {
 // GetMapOfIntsToDoubles returns the value of MapOfIntsToDoubles if it is set or its
 // zero value if it is unset.
 func (v *PrimitiveContainersRequired) GetMapOfIntsToDoubles() (o map[int64]float64) {
-	return v.MapOfIntsToDoubles
+	if v != nil {
+		o = v.MapOfIntsToDoubles
+	}
+	return
 }
 
 // IsSetMapOfIntsToDoubles returns true if MapOfIntsToDoubles is not nil.

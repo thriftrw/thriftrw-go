@@ -175,7 +175,12 @@ func (v *DoesNotExistException) MarshalLogObject(enc zapcore.ObjectEncoder) (err
 
 // GetKey returns the value of Key if it is set or its
 // zero value if it is unset.
-func (v *DoesNotExistException) GetKey() (o string) { return v.Key }
+func (v *DoesNotExistException) GetKey() (o string) {
+	if v != nil {
+		o = v.Key
+	}
+	return
+}
 
 // GetError2 returns the value of Error2 if it is set or its
 // zero value if it is unset.
