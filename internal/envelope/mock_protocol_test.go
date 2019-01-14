@@ -36,6 +36,7 @@ func (m *MockProtocol) EXPECT() *MockProtocolMockRecorder {
 
 // Decode mocks base method
 func (m *MockProtocol) Decode(arg0 io.ReaderAt, arg1 wire.Type) (wire.Value, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Decode", arg0, arg1)
 	ret0, _ := ret[0].(wire.Value)
 	ret1, _ := ret[1].(error)
@@ -44,11 +45,13 @@ func (m *MockProtocol) Decode(arg0 io.ReaderAt, arg1 wire.Type) (wire.Value, err
 
 // Decode indicates an expected call of Decode
 func (mr *MockProtocolMockRecorder) Decode(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Decode", reflect.TypeOf((*MockProtocol)(nil).Decode), arg0, arg1)
 }
 
 // DecodeEnveloped mocks base method
 func (m *MockProtocol) DecodeEnveloped(arg0 io.ReaderAt) (wire.Envelope, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DecodeEnveloped", arg0)
 	ret0, _ := ret[0].(wire.Envelope)
 	ret1, _ := ret[1].(error)
@@ -57,11 +60,13 @@ func (m *MockProtocol) DecodeEnveloped(arg0 io.ReaderAt) (wire.Envelope, error) 
 
 // DecodeEnveloped indicates an expected call of DecodeEnveloped
 func (mr *MockProtocolMockRecorder) DecodeEnveloped(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DecodeEnveloped", reflect.TypeOf((*MockProtocol)(nil).DecodeEnveloped), arg0)
 }
 
 // Encode mocks base method
 func (m *MockProtocol) Encode(arg0 wire.Value, arg1 io.Writer) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Encode", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -69,11 +74,13 @@ func (m *MockProtocol) Encode(arg0 wire.Value, arg1 io.Writer) error {
 
 // Encode indicates an expected call of Encode
 func (mr *MockProtocolMockRecorder) Encode(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Encode", reflect.TypeOf((*MockProtocol)(nil).Encode), arg0, arg1)
 }
 
 // EncodeEnveloped mocks base method
 func (m *MockProtocol) EncodeEnveloped(arg0 wire.Envelope, arg1 io.Writer) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "EncodeEnveloped", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -81,5 +88,6 @@ func (m *MockProtocol) EncodeEnveloped(arg0 wire.Envelope, arg1 io.Writer) error
 
 // EncodeEnveloped indicates an expected call of EncodeEnveloped
 func (mr *MockProtocolMockRecorder) EncodeEnveloped(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EncodeEnveloped", reflect.TypeOf((*MockProtocol)(nil).EncodeEnveloped), arg0, arg1)
 }
