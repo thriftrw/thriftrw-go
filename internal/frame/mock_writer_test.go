@@ -34,6 +34,7 @@ func (m *MockWriter) EXPECT() *MockWriterMockRecorder {
 
 // Write mocks base method
 func (m *MockWriter) Write(arg0 []byte) (int, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Write", arg0)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
@@ -42,6 +43,7 @@ func (m *MockWriter) Write(arg0 []byte) (int, error) {
 
 // Write indicates an expected call of Write
 func (mr *MockWriterMockRecorder) Write(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockWriter)(nil).Write), arg0)
 }
 
@@ -70,6 +72,7 @@ func (m *MockWriteCloser) EXPECT() *MockWriteCloserMockRecorder {
 
 // Close mocks base method
 func (m *MockWriteCloser) Close() error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Close")
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -77,11 +80,13 @@ func (m *MockWriteCloser) Close() error {
 
 // Close indicates an expected call of Close
 func (mr *MockWriteCloserMockRecorder) Close() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockWriteCloser)(nil).Close))
 }
 
 // Write mocks base method
 func (m *MockWriteCloser) Write(arg0 []byte) (int, error) {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Write", arg0)
 	ret0, _ := ret[0].(int)
 	ret1, _ := ret[1].(error)
@@ -90,5 +95,6 @@ func (m *MockWriteCloser) Write(arg0 []byte) (int, error) {
 
 // Write indicates an expected call of Write
 func (mr *MockWriteCloserMockRecorder) Write(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Write", reflect.TypeOf((*MockWriteCloser)(nil).Write), arg0)
 }

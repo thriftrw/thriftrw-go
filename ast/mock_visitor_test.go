@@ -34,6 +34,7 @@ func (m *MockVisitor) EXPECT() *MockVisitorMockRecorder {
 
 // Visit mocks base method
 func (m *MockVisitor) Visit(arg0 Walker, arg1 Node) Visitor {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Visit", arg0, arg1)
 	ret0, _ := ret[0].(Visitor)
 	return ret0
@@ -41,5 +42,6 @@ func (m *MockVisitor) Visit(arg0 Walker, arg1 Node) Visitor {
 
 // Visit indicates an expected call of Visit
 func (mr *MockVisitorMockRecorder) Visit(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Visit", reflect.TypeOf((*MockVisitor)(nil).Visit), arg0, arg1)
 }
