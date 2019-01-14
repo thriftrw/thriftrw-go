@@ -1,16 +1,16 @@
-hash: 13611a214fe054d028621ae22f41fa294a2790cd6a0549bdbee33fada7c5bfab
-updated: 2018-07-31T17:03:57.682127592-07:00
+hash: eb3ef3cd2f75d80a4fa6e66edbcd1331787f7076204355019ca2f19f047337c3
+updated: 2019-01-14T10:00:08.98076259-08:00
 imports:
 - name: github.com/anmitsu/go-shlex
   version: 648efa622239a2f6ff949fed78ee37b48d499ba4
 - name: github.com/fatih/structtag
-  version: da3d9ab5b78fdc25d3a7614853b085200bd10da9
+  version: 76ae1d6d2117609598c7d4e8f3e938145f204e8f
 - name: github.com/golang/mock
-  version: 22bbf0ddf08105dfa364d0a2fa619dfa71014af5
+  version: 51421b967af1f557f93a59e0057aaf15ca02e29c
   subpackages:
   - gomock
 - name: github.com/jessevdk/go-flags
-  version: 1c38ed7ad0cc3d9e66649ac398c30e45f395c4eb
+  version: c6ca198ec95c841fdb89fc0de7496fed11ab854e
 - name: github.com/kr/pretty
   version: 73f6ac0b30a98e433b289500d779f50c1a6f0712
 - name: github.com/kr/text
@@ -20,32 +20,28 @@ imports:
 - name: go.uber.org/multierr
   version: 3c4937480c32f4c13a875a1829af76c98ca3d40a
 - name: go.uber.org/zap
-  version: 1f8c4cad1e0417712b7d9f130a17b11eba6c8317
+  version: ff33455a0e382e8a81d14dd7c922020b6b5e7982
   subpackages:
   - buffer
   - internal/bufferpool
   - internal/color
   - internal/exit
   - zapcore
-- name: golang.org/x/net
-  version: 49c15d80dfbc983ea25246ee959d970efe09ec09
-  subpackages:
-  - context
 - name: golang.org/x/tools
-  version: 33176b2029f9538e722efa4a005f7aa00cf60010
+  version: 36f37f8f5c8169a4482a16bcccc34b26413e704c
   subpackages:
   - go/ast/astutil
 testImports:
 - name: github.com/davecgh/go-spew
-  version: 8991bc29aa16c548c550c7ff78260e27b9ab7c73
+  version: d8f796af33cc11cb798c1aaeb27a4ebc5099927d
   subpackages:
   - spew
 - name: github.com/pmezard/go-difflib
-  version: 792786c7400a136282c1664665ae0a8db921c6c2
+  version: 5d4384ee4fb2527b0a1256a821ebfc92f91efefc
   subpackages:
   - difflib
 - name: github.com/stretchr/testify
-  version: f35b8ab0b5a2cef36673838d662e249dd9c94686
+  version: ffdc059bfe9ce6a4e144ba849dbedead332c6053
   subpackages:
   - assert
   - require

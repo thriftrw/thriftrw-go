@@ -1,21 +1,27 @@
 package: go.uber.org/thriftrw
 import:
 - package: go.uber.org/atomic
+  version: ^1
 - package: github.com/kr/pretty
+  version: ~0.1
 - package: github.com/kr/text
+  version: ~0.1
 - package: golang.org/x/tools
   subpackages:
   - go/ast/astutil
 - package: github.com/jessevdk/go-flags
+  version: ^1
 - package: github.com/anmitsu/go-shlex
 - package: go.uber.org/multierr
   version: ^1
 - package: github.com/fatih/structtag
-  version: ^0.1.0
+  version: ^1
 - package: go.uber.org/zap
   version: ^1
-testImport:
 - package: github.com/golang/mock
+  version: ^1
   subpackages:
   - gomock
+testImport:
 - package: github.com/stretchr/testify
+  version: ^1
