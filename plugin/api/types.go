@@ -997,6 +997,14 @@ type GenerateServiceRequest struct {
 	// Any module IDs present in the request will have a corresponding module
 	// definition in this map.
 	Modules map[ModuleID]*Module `json:"modules,required"`
+	// Prefix for import paths of generated module In general, plugins should
+	// not need to use the thrift root unless instantiating a new
+	// Generator for more custom plugin generation.
+	PackagePrefix string `json:"packagePrefix,required"`
+	// Directory whose descendants contain all Thrift files. In general,
+	// plugins should not need to use the thrift root unless instantiating a
+	// new Generator for more custom plugin generation.
+	ThriftRoot string `json:"thriftRoot,required"`
 }
 
 type _List_ServiceID_ValueList []ServiceID
@@ -1118,7 +1126,7 @@ func (_Map_ModuleID_Module_MapItemList) Close() {}
 //   }
 func (v *GenerateServiceRequest) ToWire() (wire.Value, error) {
 	var (
-		fields [3]wire.Field
+		fields [5]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -1150,6 +1158,20 @@ func (v *GenerateServiceRequest) ToWire() (wire.Value, error) {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 3, Value: w}
+	i++
+
+	w, err = wire.NewValueString(v.PackagePrefix), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 4, Value: w}
+	i++
+
+	w, err = wire.NewValueString(v.ThriftRoot), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 5, Value: w}
 	i++
 
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
@@ -1276,6 +1298,8 @@ func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
 	rootServicesIsSet := false
 	servicesIsSet := false
 	modulesIsSet := false
+	packagePrefixIsSet := false
+	thriftRootIsSet := false
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -1303,6 +1327,22 @@ func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
 				}
 				modulesIsSet = true
 			}
+		case 4:
+			if field.Value.Type() == wire.TBinary {
+				v.PackagePrefix, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				packagePrefixIsSet = true
+			}
+		case 5:
+			if field.Value.Type() == wire.TBinary {
+				v.ThriftRoot, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				thriftRootIsSet = true
+			}
 		}
 	}
 
@@ -1318,6 +1358,14 @@ func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
 		return errors.New("field Modules of GenerateServiceRequest is required")
 	}
 
+	if !packagePrefixIsSet {
+		return errors.New("field PackagePrefix of GenerateServiceRequest is required")
+	}
+
+	if !thriftRootIsSet {
+		return errors.New("field ThriftRoot of GenerateServiceRequest is required")
+	}
+
 	return nil
 }
 
@@ -1328,13 +1376,17 @@ func (v *GenerateServiceRequest) String() string {
 		return "<nil>"
 	}
 
-	var fields [3]string
+	var fields [5]string
 	i := 0
 	fields[i] = fmt.Sprintf("RootServices: %v", v.RootServices)
 	i++
 	fields[i] = fmt.Sprintf("Services: %v", v.Services)
 	i++
 	fields[i] = fmt.Sprintf("Modules: %v", v.Modules)
+	i++
+	fields[i] = fmt.Sprintf("PackagePrefix: %v", v.PackagePrefix)
+	i++
+	fields[i] = fmt.Sprintf("ThriftRoot: %v", v.ThriftRoot)
 	i++
 
 	return fmt.Sprintf("GenerateServiceRequest{%v}", strings.Join(fields[:i], ", "))
@@ -1406,6 +1458,12 @@ func (v *GenerateServiceRequest) Equals(rhs *GenerateServiceRequest) bool {
 		return false
 	}
 	if !_Map_ModuleID_Module_Equals(v.Modules, rhs.Modules) {
+		return false
+	}
+	if !(v.PackagePrefix == rhs.PackagePrefix) {
+		return false
+	}
+	if !(v.ThriftRoot == rhs.ThriftRoot) {
 		return false
 	}
 
@@ -1480,6 +1538,8 @@ func (v *GenerateServiceRequest) MarshalLogObject(enc zapcore.ObjectEncoder) (er
 	err = multierr.Append(err, enc.AddArray("rootServices", (_List_ServiceID_Zapper)(v.RootServices)))
 	err = multierr.Append(err, enc.AddArray("services", (_Map_ServiceID_Service_Zapper)(v.Services)))
 	err = multierr.Append(err, enc.AddArray("modules", (_Map_ModuleID_Module_Zapper)(v.Modules)))
+	enc.AddString("packagePrefix", v.PackagePrefix)
+	enc.AddString("thriftRoot", v.ThriftRoot)
 	return err
 }
 
@@ -1523,6 +1583,24 @@ func (v *GenerateServiceRequest) GetModules() (o map[ModuleID]*Module) {
 // IsSetModules returns true if Modules is not nil.
 func (v *GenerateServiceRequest) IsSetModules() bool {
 	return v != nil && v.Modules != nil
+}
+
+// GetPackagePrefix returns the value of PackagePrefix if it is set or its
+// zero value if it is unset.
+func (v *GenerateServiceRequest) GetPackagePrefix() (o string) {
+	if v != nil {
+		o = v.PackagePrefix
+	}
+	return
+}
+
+// GetThriftRoot returns the value of ThriftRoot if it is set or its
+// zero value if it is unset.
+func (v *GenerateServiceRequest) GetThriftRoot() (o string) {
+	if v != nil {
+		o = v.ThriftRoot
+	}
+	return
 }
 
 // GenerateServiceResponse is response to a GenerateServiceRequest.
@@ -2217,6 +2295,8 @@ type Module struct {
 	// generating code. Plugins SHOULD NOT make any assumptions about the
 	// absolute location of the directory.
 	Directory string `json:"directory,required"`
+	// Import path for the thrift file from which the module was generated
+	ThriftFilePath string `json:"thriftFilePath,required"`
 }
 
 // ToWire translates a Module struct into a Thrift-level intermediate
@@ -2236,7 +2316,7 @@ type Module struct {
 //   }
 func (v *Module) ToWire() (wire.Value, error) {
 	var (
-		fields [2]wire.Field
+		fields [3]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -2254,6 +2334,13 @@ func (v *Module) ToWire() (wire.Value, error) {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
+	i++
+
+	w, err = wire.NewValueString(v.ThriftFilePath), error(nil)
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 3, Value: w}
 	i++
 
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
@@ -2281,6 +2368,7 @@ func (v *Module) FromWire(w wire.Value) error {
 
 	importPathIsSet := false
 	directoryIsSet := false
+	thriftFilePathIsSet := false
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -2300,6 +2388,14 @@ func (v *Module) FromWire(w wire.Value) error {
 				}
 				directoryIsSet = true
 			}
+		case 3:
+			if field.Value.Type() == wire.TBinary {
+				v.ThriftFilePath, err = field.Value.GetString(), error(nil)
+				if err != nil {
+					return err
+				}
+				thriftFilePathIsSet = true
+			}
 		}
 	}
 
@@ -2309,6 +2405,10 @@ func (v *Module) FromWire(w wire.Value) error {
 
 	if !directoryIsSet {
 		return errors.New("field Directory of Module is required")
+	}
+
+	if !thriftFilePathIsSet {
+		return errors.New("field ThriftFilePath of Module is required")
 	}
 
 	return nil
@@ -2321,11 +2421,13 @@ func (v *Module) String() string {
 		return "<nil>"
 	}
 
-	var fields [2]string
+	var fields [3]string
 	i := 0
 	fields[i] = fmt.Sprintf("ImportPath: %v", v.ImportPath)
 	i++
 	fields[i] = fmt.Sprintf("Directory: %v", v.Directory)
+	i++
+	fields[i] = fmt.Sprintf("ThriftFilePath: %v", v.ThriftFilePath)
 	i++
 
 	return fmt.Sprintf("Module{%v}", strings.Join(fields[:i], ", "))
@@ -2347,6 +2449,9 @@ func (v *Module) Equals(rhs *Module) bool {
 	if !(v.Directory == rhs.Directory) {
 		return false
 	}
+	if !(v.ThriftFilePath == rhs.ThriftFilePath) {
+		return false
+	}
 
 	return true
 }
@@ -2359,6 +2464,7 @@ func (v *Module) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	}
 	enc.AddString("importPath", v.ImportPath)
 	enc.AddString("directory", v.Directory)
+	enc.AddString("thriftFilePath", v.ThriftFilePath)
 	return err
 }
 
@@ -2376,6 +2482,15 @@ func (v *Module) GetImportPath() (o string) {
 func (v *Module) GetDirectory() (o string) {
 	if v != nil {
 		o = v.Directory
+	}
+	return
+}
+
+// GetThriftFilePath returns the value of ThriftFilePath if it is set or its
+// zero value if it is unset.
+func (v *Module) GetThriftFilePath() (o string) {
+	if v != nil {
+		o = v.ThriftFilePath
 	}
 	return
 }

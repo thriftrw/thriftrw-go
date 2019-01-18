@@ -11,6 +11,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+const (
+	_testPackagePrefix = "go.uber.org/thriftrw/gen/internal/tests"
+	_testThriftRoot = "idl"
+)
+
 func TestAddRootService(t *testing.T) {
 	tests := []struct {
 		desc string
@@ -37,8 +42,11 @@ func TestAddRootService(t *testing.T) {
 					1: {
 						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/empty",
 						Directory:  "empty",
+						ThriftFilePath: "idl/empty.thrift",
 					},
 				},
+				PackagePrefix: _testPackagePrefix,
+				ThriftRoot:   _testThriftRoot,
 			},
 		},
 		{
@@ -61,8 +69,11 @@ func TestAddRootService(t *testing.T) {
 					1: {
 						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/service",
 						Directory:  "service",
+						ThriftFilePath: "idl/service.thrift",
 					},
 				},
+				PackagePrefix: _testPackagePrefix,
+				ThriftRoot:   _testThriftRoot,
 			},
 		},
 		{
@@ -96,12 +107,16 @@ func TestAddRootService(t *testing.T) {
 					1: {
 						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/common/abstract",
 						Directory:  "common/abstract",
+						ThriftFilePath: "idl/common/abstract.thrift",
 					},
 					2: {
 						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/kv",
 						Directory:  "kv",
+						ThriftFilePath: "idl/kv.thrift",
 					},
 				},
+				PackagePrefix: _testPackagePrefix,
+				ThriftRoot:   _testThriftRoot,
 			},
 		},
 		{
@@ -132,8 +147,11 @@ func TestAddRootService(t *testing.T) {
 					1: {
 						ImportPath: "go.uber.org/thriftrw/gen/internal/tests/empty",
 						Directory:  "empty",
+						ThriftFilePath: "idl/empty.thrift",
 					},
 				},
+				PackagePrefix: _testPackagePrefix,
+				ThriftRoot:   _testThriftRoot,
 			},
 		},
 	}

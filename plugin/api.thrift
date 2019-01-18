@@ -242,6 +242,10 @@ struct Module {
      * absolute location of the directory.
      */
     2: required string directory
+    /**
+     * Import path for the thrift file from which the module was generated
+     */
+    3: required string thriftFilePath
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -341,6 +345,18 @@ struct GenerateServiceRequest {
      * definition in this map.
      */
     3: required map<ModuleID, Module> modules
+    /**
+     * Prefix for import paths of generated module In general, plugins should
+     * not need to use the thrift root unless instantiating a new
+     * Generator for more custom plugin generation.
+     */
+    4: required string packagePrefix
+    /**
+     * Directory whose descendants contain all Thrift files. In general,
+     * plugins should not need to use the thrift root unless instantiating a
+     * new Generator for more custom plugin generation.
+     */
+    5: required string thriftRoot
 }
 
 /**
