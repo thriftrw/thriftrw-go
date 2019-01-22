@@ -144,42 +144,6 @@ func TestTransportHandleHandshakeError(t *testing.T) {
 			wantError: `handshake with plugin "foo" failed: ` +
 				fmt.Sprintf("plugin API version mismatch: expected %d but got 42", api.APIVersion),
 		},
-		{
-			desc: "missing version",
-			name: "foo",
-			response: &api.HandshakeResponse{
-				Name:           "foo",
-				APIVersion:     api.APIVersion,
-				LibraryVersion: nil,
-				Features:       []api.Feature{},
-			},
-			wantError: `handshake with plugin "foo" failed: Version is required`,
-		},
-		{
-			desc: "unparseable version",
-			name: "foo",
-			response: &api.HandshakeResponse{
-				Name:           "foo",
-				APIVersion:     api.APIVersion,
-				LibraryVersion: ptr.String("hello"),
-				Features:       []api.Feature{},
-			},
-			wantError: `handshake with plugin "foo" failed: ` +
-				`cannot parse as semantic version: "hello"`,
-		},
-		{
-			desc: "semver mismatch",
-			name: "foo",
-			response: &api.HandshakeResponse{
-				Name:           "foo",
-				APIVersion:     api.APIVersion,
-				LibraryVersion: ptr.String("12.3.4"),
-				Features:       []api.Feature{},
-			},
-			wantError: `handshake with plugin "foo" failed: ` +
-				"plugin compiled with the wrong version of ThriftRW: " +
-				fmt.Sprintf("expected >=%v and <%v but got 12.3.4", &compatRange.Begin, &compatRange.End),
-		},
 	}
 
 	for _, tt := range tests {
