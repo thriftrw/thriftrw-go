@@ -347,7 +347,7 @@ struct GenerateServiceRequest {
     3: required map<ModuleID, Module> modules
     /**
      * Prefix for import paths of generated module In general, plugins should
-     * not need to use the thrift root unless instantiating a new
+     * not need to use the package prefix unless instantiating a new
      * Generator for more custom plugin generation.
      */
     4: required string packagePrefix
