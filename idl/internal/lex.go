@@ -20,9 +20,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-
-
-
 package internal
 
 import (
@@ -37,7 +34,6 @@ const thrift_first_final int = 19
 const thrift_error int = 0
 
 const thrift_en_main int = 19
-
 
 type lexer struct {
 	line    int
@@ -16115,7 +16111,6 @@ func (lex *lexer) Lex(out *yySymType) int {
 		{
 		}
 	}
-
 
 	if lex.cs == thrift_error {
 		lex.Error(fmt.Sprintf("unknown token at index %d", lex.p))

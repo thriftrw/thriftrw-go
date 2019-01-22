@@ -51,9 +51,11 @@ type generateServiceBuilder struct {
 func newGenerateServiceBuilder(i thriftPackageImporter) *generateServiceBuilder {
 	return &generateServiceBuilder{
 		GenerateServiceRequest: api.GenerateServiceRequest{
-			RootServices: make([]api.ServiceID, 0, 10),
-			Services:     make(map[api.ServiceID]*api.Service),
-			Modules:      make(map[api.ModuleID]*api.Module),
+			RootServices:  make([]api.ServiceID, 0, 10),
+			Services:      make(map[api.ServiceID]*api.Service),
+			Modules:       make(map[api.ModuleID]*api.Module),
+			ThriftRoot:    i.ThriftRoot,
+			PackagePrefix: i.ImportPrefix,
 		},
 		importer:      i,
 		nextModuleID:  1,
@@ -104,8 +106,9 @@ func (g *generateServiceBuilder) addModule(thriftPath string) (api.ModuleID, err
 	}
 
 	g.Modules[id] = &api.Module{
-		ImportPath: importPath,
-		Directory:  dir,
+		ImportPath:     importPath,
+		Directory:      dir,
+		ThriftFilePath: thriftPath,
 	}
 	return id, nil
 }
