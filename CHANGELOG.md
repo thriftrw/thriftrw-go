@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Expose Thrift file names, package prefix, and Thrift root directory to
   plugins.
 
+### Fixed
+- plugin: Library version matching was dropped.
+
 ## [1.15.0] - 2019-01-14
 ### Changed
 -  Generated`Get*` and `IsSet*` methods on structs are now nil-safe.
