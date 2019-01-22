@@ -243,7 +243,7 @@ struct Module {
      */
     2: required string directory
     /**
-     * Import path for the thrift file from which the module was generated
+     * Path to the Thrift file from which this module was generated.
      */
     3: required string thriftFilePath
 }
