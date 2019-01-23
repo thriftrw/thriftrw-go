@@ -3,7 +3,7 @@
  *
  * This MUST be provided in the HandshakeResponse.
  */
-const i32 API_VERSION = 3
+const i32 API_VERSION = 4
 
 /**
  * ServiceID is an arbitrary unique identifier to reference the different
