@@ -53,7 +53,61 @@ type Argument struct {
 	Name string `json:"name,required"`
 	// Argument type.
 	Type *Type `json:"type,required"`
+	// Annotations defined on this type.
+	//
+	// Note that these are the Thrift annotations listed after the type
+	// declaration in the Thrift file.
+	//
+	// Given,
+	//
+	//   struct User {
+	//     1: required i32 id
+	//     2: required string name
+	//   } (key = "id", validate)
+	//
+	// The annotations will be,
+	//
+	//   {
+	//     "key": "id",
+	//     "validate": "",
+	//   }
+	Annotations map[string]string `json:"annotations,omitempty"`
 }
+
+type _Map_String_String_MapItemList map[string]string
+
+func (m _Map_String_String_MapItemList) ForEach(f func(wire.MapItem) error) error {
+	for k, v := range m {
+		kw, err := wire.NewValueString(k), error(nil)
+		if err != nil {
+			return err
+		}
+
+		vw, err := wire.NewValueString(v), error(nil)
+		if err != nil {
+			return err
+		}
+		err = f(wire.MapItem{Key: kw, Value: vw})
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (m _Map_String_String_MapItemList) Size() int {
+	return len(m)
+}
+
+func (_Map_String_String_MapItemList) KeyType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Map_String_String_MapItemList) ValueType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Map_String_String_MapItemList) Close() {}
 
 // ToWire translates a Argument struct into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
@@ -72,7 +126,7 @@ type Argument struct {
 //   }
 func (v *Argument) ToWire() (wire.Value, error) {
 	var (
-		fields [2]wire.Field
+		fields [3]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -93,6 +147,14 @@ func (v *Argument) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
+	if v.Annotations != nil {
+		w, err = wire.NewValueMap(_Map_String_String_MapItemList(v.Annotations)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
+		i++
+	}
 
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
@@ -101,6 +163,34 @@ func _Type_Read(w wire.Value) (*Type, error) {
 	var v Type
 	err := v.FromWire(w)
 	return &v, err
+}
+
+func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
+	if m.KeyType() != wire.TBinary {
+		return nil, nil
+	}
+
+	if m.ValueType() != wire.TBinary {
+		return nil, nil
+	}
+
+	o := make(map[string]string, m.Size())
+	err := m.ForEach(func(x wire.MapItem) error {
+		k, err := x.Key.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+
+		v, err := x.Value.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+
+		o[k] = v
+		return nil
+	})
+	m.Close()
+	return o, err
 }
 
 // FromWire deserializes a Argument struct from its Thrift-level
@@ -144,6 +234,14 @@ func (v *Argument) FromWire(w wire.Value) error {
 				}
 				typeIsSet = true
 			}
+		case 3:
+			if field.Value.Type() == wire.TMap {
+				v.Annotations, err = _Map_String_String_Read(field.Value.GetMap())
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -165,14 +263,35 @@ func (v *Argument) String() string {
 		return "<nil>"
 	}
 
-	var fields [2]string
+	var fields [3]string
 	i := 0
 	fields[i] = fmt.Sprintf("Name: %v", v.Name)
 	i++
 	fields[i] = fmt.Sprintf("Type: %v", v.Type)
 	i++
+	if v.Annotations != nil {
+		fields[i] = fmt.Sprintf("Annotations: %v", v.Annotations)
+		i++
+	}
 
 	return fmt.Sprintf("Argument{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+
+	for lk, lv := range lhs {
+		rv, ok := rhs[lk]
+		if !ok {
+			return false
+		}
+		if !(lv == rv) {
+			return false
+		}
+	}
+	return true
 }
 
 // Equals returns true if all the fields of this Argument match the
@@ -191,8 +310,22 @@ func (v *Argument) Equals(rhs *Argument) bool {
 	if !v.Type.Equals(rhs.Type) {
 		return false
 	}
+	if !((v.Annotations == nil && rhs.Annotations == nil) || (v.Annotations != nil && rhs.Annotations != nil && _Map_String_String_Equals(v.Annotations, rhs.Annotations))) {
+		return false
+	}
 
 	return true
+}
+
+type _Map_String_String_Zapper map[string]string
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of _Map_String_String_Zapper.
+func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	for k, v := range m {
+		enc.AddString((string)(k), v)
+	}
+	return err
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
@@ -203,6 +336,9 @@ func (v *Argument) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	}
 	enc.AddString("name", v.Name)
 	err = multierr.Append(err, enc.AddObject("type", v.Type))
+	if v.Annotations != nil {
+		err = multierr.Append(err, enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)))
+	}
 	return err
 }
 
@@ -227,6 +363,21 @@ func (v *Argument) GetType() (o *Type) {
 // IsSetType returns true if Type is not nil.
 func (v *Argument) IsSetType() bool {
 	return v != nil && v.Type != nil
+}
+
+// GetAnnotations returns the value of Annotations if it is set or its
+// zero value if it is unset.
+func (v *Argument) GetAnnotations() (o map[string]string) {
+	if v != nil && v.Annotations != nil {
+		return v.Annotations
+	}
+
+	return
+}
+
+// IsSetAnnotations returns true if Annotations is not nil.
+func (v *Argument) IsSetAnnotations() bool {
+	return v != nil && v.Annotations != nil
 }
 
 // Feature is a functionality offered by a ThriftRW plugin.
@@ -457,41 +608,6 @@ func (_List_Argument_ValueList) ValueType() wire.Type {
 
 func (_List_Argument_ValueList) Close() {}
 
-type _Map_String_String_MapItemList map[string]string
-
-func (m _Map_String_String_MapItemList) ForEach(f func(wire.MapItem) error) error {
-	for k, v := range m {
-		kw, err := wire.NewValueString(k), error(nil)
-		if err != nil {
-			return err
-		}
-
-		vw, err := wire.NewValueString(v), error(nil)
-		if err != nil {
-			return err
-		}
-		err = f(wire.MapItem{Key: kw, Value: vw})
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func (m _Map_String_String_MapItemList) Size() int {
-	return len(m)
-}
-
-func (_Map_String_String_MapItemList) KeyType() wire.Type {
-	return wire.TBinary
-}
-
-func (_Map_String_String_MapItemList) ValueType() wire.Type {
-	return wire.TBinary
-}
-
-func (_Map_String_String_MapItemList) Close() {}
-
 // ToWire translates a Function struct into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -594,34 +710,6 @@ func _List_Argument_Read(l wire.ValueList) ([]*Argument, error) {
 		return nil
 	})
 	l.Close()
-	return o, err
-}
-
-func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
-	if m.KeyType() != wire.TBinary {
-		return nil, nil
-	}
-
-	if m.ValueType() != wire.TBinary {
-		return nil, nil
-	}
-
-	o := make(map[string]string, m.Size())
-	err := m.ForEach(func(x wire.MapItem) error {
-		k, err := x.Key.GetString(), error(nil)
-		if err != nil {
-			return err
-		}
-
-		v, err := x.Value.GetString(), error(nil)
-		if err != nil {
-			return err
-		}
-
-		o[k] = v
-		return nil
-	})
-	m.Close()
 	return o, err
 }
 
@@ -787,23 +875,6 @@ func _Bool_EqualsPtr(lhs, rhs *bool) bool {
 	return lhs == nil && rhs == nil
 }
 
-func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
-	if len(lhs) != len(rhs) {
-		return false
-	}
-
-	for lk, lv := range lhs {
-		rv, ok := rhs[lk]
-		if !ok {
-			return false
-		}
-		if !(lv == rv) {
-			return false
-		}
-	}
-	return true
-}
-
 // Equals returns true if all the fields of this Function match the
 // provided Function.
 //
@@ -846,17 +917,6 @@ type _List_Argument_Zapper []*Argument
 func (l _List_Argument_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range l {
 		err = multierr.Append(err, enc.AppendObject(v))
-	}
-	return err
-}
-
-type _Map_String_String_Zapper map[string]string
-
-// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-// fast logging of _Map_String_String_Zapper.
-func (m _Map_String_String_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
-	for k, v := range m {
-		enc.AddString((string)(k), v)
 	}
 	return err
 }

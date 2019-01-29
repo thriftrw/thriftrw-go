@@ -130,6 +130,27 @@ struct Argument {
      * Argument type.
      */
     2: required Type type
+    /**
+     * Annotations defined on this type.
+     *
+     * Note that these are the Thrift annotations listed after the type
+     * declaration in the Thrift file.
+     *
+     * Given,
+     *
+     *   struct User {
+     *     1: required i32 id
+     *     2: required string name
+     *   } (key = "id", validate)
+     *
+     * The annotations will be,
+     *
+     *   {
+     *     "key": "id",
+     *     "validate": "",
+     *   }
+     */
+    3: optional map<string, string> annotations
 }
 
 /**
