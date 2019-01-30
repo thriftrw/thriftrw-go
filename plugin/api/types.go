@@ -53,10 +53,10 @@ type Argument struct {
 	Name string `json:"name,required"`
 	// Argument type.
 	Type *Type `json:"type,required"`
-	// Annotations defined on this type.
+	// Annotations defined on this argument.
 	//
-	// Note that these are the Thrift annotations listed after the type
-	// declaration in the Thrift file.
+	// Note that these are the Thrift annotations listed after the
+	// parameter or exception name.
 	//
 	// Given,
 	//
@@ -71,6 +71,12 @@ type Argument struct {
 	//   {
 	//     "foo": "bar",
 	//     "validate": "",
+	//   }
+	//
+	// and the annotations for BazError will be,
+	//
+	//   {
+	//     "bar": "foo",
 	//   }
 	Annotations map[string]string `json:"annotations,omitempty"`
 }

@@ -131,10 +131,10 @@ struct Argument {
      */
     2: required Type type
     /**
-     * Annotations defined on this type.
+     * Annotations defined on this argument.
      *
-     * Note that these are the Thrift annotations listed after the type
-     * declaration in the Thrift file.
+     * Note that these are the Thrift annotations listed after the 
+     * parameter or exception name.
      *
      * Given,
      *
@@ -150,6 +150,13 @@ struct Argument {
      *     "foo": "bar",
      *     "validate": "",
      *   }
+     *
+     * and the annotations for BazError will be,
+     * 
+     *   {
+     *     "bar": "foo",
+     *   }
+     *
      */
     3: optional map<string, string> annotations
 }
