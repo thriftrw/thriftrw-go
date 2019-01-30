@@ -60,15 +60,16 @@ type Argument struct {
 	//
 	// Given,
 	//
-	//   struct User {
-	//     1: required i32 id
-	//     2: required string name
-	//   } (key = "id", validate)
+	//   void foo(
+	//     1: string bar (foo = "bar", validate)
+	//   ) throws (
+	//     1: BazError fail (bar = "foo")
+	//   )
 	//
-	// The annotations will be,
+	// The annotations for the first argument will be,
 	//
 	//   {
-	//     "key": "id",
+	//     "foo": "bar",
 	//     "validate": "",
 	//   }
 	Annotations map[string]string `json:"annotations,omitempty"`
