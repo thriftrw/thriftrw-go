@@ -127,35 +127,34 @@ var NoErrorService_Size_Helper = struct {
 	// the arguments struct for the function.
 	Args func() *NoErrorService_Size_Args
 
-	// IsException returns true if the given error can be thrown
+	// IsException returns true if the given value can be thrown
 	// by size.
 	//
-	// An error can be thrown by size only if the
+	// An exception can be thrown by size only if the
 	// corresponding exception type was mentioned in the 'throws'
 	// section for it in the Thrift file.
-	IsException func(error) bool
+	IsException func(interface{}) bool
 
 	// WrapResponse returns the result struct for size
-	// given its return value and error.
+	// given its return value.
 	//
-	// This allows mapping values and errors returned by
+	// This allows mapping values and exceptions returned by
 	// size into a serializable result struct.
 	// WrapResponse returns a non-nil error if the provided
-	// error cannot be thrown by size
+	// value cannot be returned by size
 	//
 	//   value, err := size(args)
-	//   result, err := NoErrorService_Size_Helper.WrapResponse(value, err)
+	//   result, err := NoErrorService_Size_Helper.WrapResponse(value)
 	//   if err != nil {
 	//     return fmt.Errorf("unexpected error from size: %v", err)
 	//   }
 	//   serialize(result)
-	WrapResponse func(int64, error) (*NoErrorService_Size_Result, error)
+	WrapResponse func(interface{}) (*NoErrorService_Size_Result, error)
 
 	// UnwrapResponse takes the result struct for size
-	// and returns the value or error returned by it.
+	// and returns the value or exception returned by it.
 	//
-	// The error is non-nil only if size threw an
-	// exception.
+	// The error is non-nil only if the result is unrecognized.
 	//
 	//   result := deserialize(bytes)
 	//   value, err := NoErrorService_Size_Helper.UnwrapResponse(result)
@@ -167,19 +166,19 @@ func init() {
 		return &NoErrorService_Size_Args{}
 	}
 
-	NoErrorService_Size_Helper.IsException = func(err error) bool {
+	NoErrorService_Size_Helper.IsException = func(err interface{}) bool {
 		switch err.(type) {
 		default:
 			return false
 		}
 	}
 
-	NoErrorService_Size_Helper.WrapResponse = func(success int64, err error) (*NoErrorService_Size_Result, error) {
-		if err == nil {
-			return &NoErrorService_Size_Result{Success: &success}, nil
+	NoErrorService_Size_Helper.WrapResponse = func(val interface{}) (*NoErrorService_Size_Result, error) {
+		if retVal, ok := val.(int64); ok {
+			return &NoErrorService_Size_Result{Success: &retVal}, nil
 		}
 
-		return nil, err
+		return nil, fmt.Errorf("WrapResponse received an unrecognized type for NoErrorService_Size_Result: %v", val)
 	}
 	NoErrorService_Size_Helper.UnwrapResponse = func(result *NoErrorService_Size_Result) (success int64, err error) {
 

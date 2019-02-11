@@ -76,6 +76,9 @@ type Options struct {
 
 	// Do not generate Zap logging code
 	NoZap bool
+
+	// Do not generate Error methods on Exceptions
+	NoError bool
 }
 
 // Generate generates code based on the given options.
@@ -238,6 +241,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		ImportPath:  importPath,
 		PackageName: packageName,
 		NoZap:       o.NoZap,
+		NoError:     o.NoError,
 	}
 	g := NewGenerator(gopts)
 

@@ -17,5 +17,8 @@ $(THRIFTRW):
 nozap: thrift/nozap.thrift $(THRIFTRW)
 	$(THRIFTRW) --no-recurse --no-zap $<
 
+noerror: thrift/noerror.thrift $(THRIFTRW)
+	$(THRIFTRW) --no-recurse --no-error $<
+
 %: thrift/%.thrift $(THRIFTRW)
 	$(THRIFTRW) --no-recurse $<

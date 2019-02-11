@@ -178,39 +178,38 @@ var NoErrorService_GetValue_Helper = struct {
 		key *Key,
 	) *NoErrorService_GetValue_Args
 
-	// IsException returns true if the given error can be thrown
+	// IsException returns true if the given value can be thrown
 	// by getValue.
 	//
-	// An error can be thrown by getValue only if the
+	// An exception can be thrown by getValue only if the
 	// corresponding exception type was mentioned in the 'throws'
 	// section for it in the Thrift file.
-	IsException func(error) bool
+	IsException func(interface{}) bool
 
 	// WrapResponse returns the result struct for getValue
-	// given its return value and error.
+	// given its return value.
 	//
-	// This allows mapping values and errors returned by
+	// This allows mapping values and exceptions returned by
 	// getValue into a serializable result struct.
 	// WrapResponse returns a non-nil error if the provided
-	// error cannot be thrown by getValue
+	// value cannot be returned by getValue
 	//
 	//   value, err := getValue(args)
-	//   result, err := NoErrorService_GetValue_Helper.WrapResponse(value, err)
+	//   result, err := NoErrorService_GetValue_Helper.WrapResponse(value)
 	//   if err != nil {
 	//     return fmt.Errorf("unexpected error from getValue: %v", err)
 	//   }
 	//   serialize(result)
-	WrapResponse func(Key, error) (*NoErrorService_GetValue_Result, error)
+	WrapResponse func(interface{}) (*NoErrorService_GetValue_Result, error)
 
 	// UnwrapResponse takes the result struct for getValue
-	// and returns the value or error returned by it.
+	// and returns the value or exception returned by it.
 	//
-	// The error is non-nil only if getValue threw an
-	// exception.
+	// The error is non-nil only if the result is unrecognized.
 	//
 	//   result := deserialize(bytes)
-	//   value, err := NoErrorService_GetValue_Helper.UnwrapResponse(result)
-	UnwrapResponse func(*NoErrorService_GetValue_Result) (Key, error)
+	//   value, exception, err := NoErrorService_GetValue_Helper.UnwrapResponse(result)
+	UnwrapResponse func(*NoErrorService_GetValue_Result) (Key, interface{}, error)
 }{}
 
 func init() {
@@ -222,7 +221,7 @@ func init() {
 		}
 	}
 
-	NoErrorService_GetValue_Helper.IsException = func(err error) bool {
+	NoErrorService_GetValue_Helper.IsException = func(err interface{}) bool {
 		switch err.(type) {
 		case *NoErrorException:
 			return true
@@ -231,12 +230,12 @@ func init() {
 		}
 	}
 
-	NoErrorService_GetValue_Helper.WrapResponse = func(success Key, err error) (*NoErrorService_GetValue_Result, error) {
-		if err == nil {
-			return &NoErrorService_GetValue_Result{Success: &success}, nil
+	NoErrorService_GetValue_Helper.WrapResponse = func(val interface{}) (*NoErrorService_GetValue_Result, error) {
+		if retVal, ok := val.(Key); ok {
+			return &NoErrorService_GetValue_Result{Success: &retVal}, nil
 		}
 
-		switch e := err.(type) {
+		switch e := val.(type) {
 		case *NoErrorException:
 			if e == nil {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for NoErrorService_GetValue_Result.DoesNotExist")
@@ -244,11 +243,11 @@ func init() {
 			return &NoErrorService_GetValue_Result{DoesNotExist: e}, nil
 		}
 
-		return nil, err
+		return nil, fmt.Errorf("WrapResponse received an unrecognized type for NoErrorService_GetValue_Result: %v", val)
 	}
-	NoErrorService_GetValue_Helper.UnwrapResponse = func(result *NoErrorService_GetValue_Result) (success Key, err error) {
+	NoErrorService_GetValue_Helper.UnwrapResponse = func(result *NoErrorService_GetValue_Result) (success Key, exception interface{}, err error) {
 		if result.DoesNotExist != nil {
-			err = result.DoesNotExist
+			exception = result.DoesNotExist
 			return
 		}
 

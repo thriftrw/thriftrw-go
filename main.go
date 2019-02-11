@@ -35,7 +35,7 @@ import (
 	"go.uber.org/thriftrw/internal/plugin/builtin/pluginapigen"
 	"go.uber.org/thriftrw/version"
 
-	"github.com/jessevdk/go-flags"
+	flags "github.com/jessevdk/go-flags"
 	"go.uber.org/multierr"
 )
 
@@ -59,6 +59,7 @@ type genOptions struct {
 	NoServiceHelpers  bool `long:"no-service-helpers" description:"Do not generate service helpers."`
 	NoEmbedIDL        bool `long:"no-embed-idl" description:"Do not embed IDLs into the generated code."`
 	NoZap             bool `long:"no-zap" description:"Do not generate code for Zap logging."`
+	NoError           bool `long:"no-error" description:"Do not generate Error method for Thrift Exception types."`
 
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
@@ -180,6 +181,7 @@ func do() (err error) {
 		NoServiceHelpers: gopts.NoServiceHelpers || gopts.NoTypes,
 		NoEmbedIDL:       gopts.NoEmbedIDL,
 		NoZap:            gopts.NoZap,
+		NoError:          gopts.NoError,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {
 		return fmt.Errorf("Failed to generate code: %+v", err)

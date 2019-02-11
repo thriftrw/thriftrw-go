@@ -130,7 +130,3 @@ func (v *NoErrorException) MarshalLogObject(enc zapcore.ObjectEncoder) (err erro
 	}
 	return err
 }
-
-func (v *NoErrorException) Error() string {
-	return v.String()
-}

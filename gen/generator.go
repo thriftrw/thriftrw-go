@@ -130,6 +130,7 @@ type generator struct {
 	e              equalsGenerator
 	z              zapGenerator
 	noZap          bool
+	noError        bool
 	decls          []ast.Decl
 	thriftImporter ThriftPackageImporter
 	mangler        *mangler
@@ -146,7 +147,8 @@ type GeneratorOptions struct {
 	ImportPath  string
 	PackageName string
 
-	NoZap bool
+	NoZap   bool
+	NoError bool
 }
 
 // NewGenerator sets up a new generator for Go code.
@@ -162,6 +164,7 @@ func NewGenerator(o *GeneratorOptions) Generator {
 		thriftImporter: o.Importer,
 		fset:           token.NewFileSet(),
 		noZap:          o.NoZap,
+		noError:        o.NoError,
 	}
 }
 
@@ -169,6 +172,14 @@ func NewGenerator(o *GeneratorOptions) Generator {
 func checkNoZap(g Generator) bool {
 	if gen, ok := g.(*generator); ok {
 		return gen.noZap
+	}
+	return false
+}
+
+// checkNoError returns whether the NoError flag is passed.
+func checkNoError(g Generator) bool {
+	if gen, ok := g.(*generator); ok {
+		return gen.noError
 	}
 	return false
 }

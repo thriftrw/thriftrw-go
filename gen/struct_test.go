@@ -31,6 +31,7 @@ import (
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	"go.uber.org/thriftrw/gen/internal/tests/noerror"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
@@ -1885,4 +1886,11 @@ func TestStructLabel(t *testing.T) {
 			})
 		})
 	}
+}
+
+func TestNoErrorFlagExceptions(t *testing.T) {
+	var noErrorException interface{}
+	noErrorException = &noerror.NoErrorException{}
+	_, ok := noErrorException.(error)
+	assert.False(t, ok)
 }

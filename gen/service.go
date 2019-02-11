@@ -156,14 +156,39 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 			// the arguments struct for the function.
 			Args func(<params $f>) *<$prefix>Args
 			<if not $f.OneWay>
+				<if (checkNoError) ->
+				// IsException returns true if the given value can be thrown
+				// by <$f.Name>.
+				//
+				// An exception can be thrown by <$f.Name> only if the
+				// corresponding exception type was mentioned in the 'throws'
+				// section for it in the Thrift file.
+				<- else ->
 				// IsException returns true if the given error can be thrown
 				// by <$f.Name>.
 				//
 				// An error can be thrown by <$f.Name> only if the
 				// corresponding exception type was mentioned in the 'throws'
 				// section for it in the Thrift file.
-				IsException func(error) bool
+				<- end>
+				IsException func(<if (checkNoError)>interface{}<else>error<end>) bool
 				<if $f.ResultSpec.ReturnType>
+					<if (checkNoError) ->
+					// WrapResponse returns the result struct for <$f.Name>
+					// given its return value.
+					//
+					// This allows mapping values and exceptions returned by
+					// <$f.Name> into a serializable result struct.
+					// WrapResponse returns a non-nil error if the provided
+					// value cannot be returned by <$f.Name>
+					//
+					//   value, err := <$f.Name>(args)
+					//   result, err := <$prefix>Helper.WrapResponse(value)
+					//   if err != nil {
+					//     return fmt.Errorf("unexpected error from <$f.Name>: %v", err)
+					//   }
+					//   serialize(result)
+					<- else ->
 					// WrapResponse returns the result struct for <$f.Name>
 					// given its return value and error.
 					//
@@ -178,8 +203,18 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 					//     return fmt.Errorf("unexpected error from <$f.Name>: %v", err)
 					//   }
 					//   serialize(result)
-					WrapResponse func(<typeReference $f.ResultSpec.ReturnType>, error) (*<$prefix>Result, error)
+					<- end>
+					WrapResponse func(<if (checkNoError) -> interface{} <- else -> <typeReference $f.ResultSpec.ReturnType>, error <- end>) (*<$prefix>Result, error)
 
+					<if (checkNoError) ->
+					// UnwrapResponse takes the result struct for <$f.Name>
+					// and returns the value or exception returned by it.
+					//
+					// The error is non-nil only if the result is unrecognized.
+					//
+					//   result := deserialize(bytes)
+					//   value,<if $f.ResultSpec.Exceptions> exception,<end> err := <$prefix>Helper.UnwrapResponse(result)
+					<- else ->
 					// UnwrapResponse takes the result struct for <$f.Name>
 					// and returns the value or error returned by it.
 					//
@@ -188,8 +223,34 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 					//
 					//   result := deserialize(bytes)
 					//   value, err := <$prefix>Helper.UnwrapResponse(result)
-					UnwrapResponse func(*<$prefix>Result) (<typeReference $f.ResultSpec.ReturnType>, error)
+					<- end>
+					<- /* if no-error: UnwrapResponse func(Result) (success, interface{}, error)
+					      else:        UnwrapResponse func(Result) (success, error) */>
+					UnwrapResponse func(*<$prefix>Result) (
+						<- typeReference $f.ResultSpec.ReturnType>,
+						<- if and (checkNoError) $f.ResultSpec.Exceptions>interface{}, <end ->
+						error)
 				<else>
+					<if (checkNoError) ->
+					// WrapResponse returns the result struct for <$f.Name>
+					// given the value returned by it. The value should hold
+					// an exception that can be thrown by <$f.Name>.
+					//
+					// This allows mapping exceptions returned by <$f.Name> into a
+					// serializable result struct. WrapResponse returns a
+					// non-nil error if the provided error cannot be thrown by
+					// <$f.Name>
+					//
+					//   val, err := <$f.Name>(args)
+					//   if err != nil {
+					//     return err
+					//   }
+					//   result, err := <$prefix>Helper.WrapResponse(val)
+					//   if err != nil {
+					//     return fmt.Errorf("unexpected error from <$f.Name>: %v", err)
+					//   }
+					//   serialize(result)
+					<- else ->
 					// WrapResponse returns the result struct for <$f.Name>
 					// given the error returned by it. The provided error may
 					// be nil if <$f.Name> did not fail.
@@ -205,8 +266,19 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 					//     return fmt.Errorf("unexpected error from <$f.Name>: %v", err)
 					//   }
 					//   serialize(result)
-					WrapResponse func(error) (*<$prefix>Result, error)
+					<- end>
+					WrapResponse func(<if (checkNoError)>interface{}<else>error<end>) (*<$prefix>Result, error)
 
+					<if (checkNoError) ->
+					// UnwrapResponse takes the result struct for <$f.Name>
+					// and returns the exception returned by it (if any).
+					//
+					// The error is non-nil only if <$f.Name> returned an
+					// unrecognized value.
+					//
+					//   result := deserialize(bytes)
+					//   <if $f.ResultSpec.Exceptions>exception,<end> err := <$prefix>Helper.UnwrapResponse(result)
+					<- else ->
 					// UnwrapResponse takes the result struct for <$f.Name>
 					// and returns the erorr returned by it (if any).
 					//
@@ -215,7 +287,10 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 					//
 					//   result := deserialize(bytes)
 					//   err := <$prefix>Helper.UnwrapResponse(result)
-					UnwrapResponse func(*<$prefix>Result) error
+					<- end>
+					<- /* if no-error: UnwrapResponse func(Result) (interface{}, error)
+					      else:        UnwrapResponse func(Result) error */>
+					UnwrapResponse func(*<$prefix>Result) (<if and (checkNoError) $f.ResultSpec.Exceptions>interface{}, <end>error)
 				<end>
 			<end>
 		}{}
@@ -243,6 +318,7 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 		TemplateFunc("wrapResponse", functionWrapResponse),
 		TemplateFunc("unwrapResponse", functionUnwrapResponse),
 		TemplateFunc("namePrefix", functionNamePrefix),
+		TemplateFunc("checkNoError", checkNoError),
 	)
 }
 
@@ -250,7 +326,7 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 // function for the given Thrift function.
 func functionIsException(g Generator, f *compile.FunctionSpec) (string, error) {
 	return g.TextTemplate(
-		`func(err error) bool {
+		`func(err <if (checkNoError)>interface{}<else>error<end>) bool {
 			switch err.(type) {
 			<range .ResultSpec.Exceptions ->
 				case <typeReferencePtr .Type>:
@@ -259,7 +335,9 @@ func functionIsException(g Generator, f *compile.FunctionSpec) (string, error) {
 			default:
 				return false
 			}
-		}`, f)
+		}`, f,
+		TemplateFunc("checkNoError", checkNoError),
+	)
 }
 
 // functionNewArgs generates an expression which provides the NewArgs function
@@ -307,35 +385,64 @@ func functionWrapResponse(g Generator, s *compile.ServiceSpec, f *compile.Functi
 		`
 		<- $f := .Function ->
 		<- $prefix := namePrefix .Service $f ->
-
-		<- if $f.ResultSpec.ReturnType ->
-			func(success <typeReference $f.ResultSpec.ReturnType>, err error) (*<$prefix>Result, error) {
-				if err == nil {
+		<- if (checkNoError) ->
+			func(val interface{}) (*<$prefix>Result, error) {
+			<- if $f.ResultSpec.ReturnType ->
+				if retVal, ok := val.(<typeReference $f.ResultSpec.ReturnType>); ok {
 					<if isPrimitiveType $f.ResultSpec.ReturnType ->
-						return &<$prefix>Result{Success: &success}, nil
+						return &<$prefix>Result{Success: &retVal}, nil
 					<- else ->
-						return &<$prefix>Result{Success: success}, nil
+						return &<$prefix>Result{Success: retVal}, nil
 					<- end>
 				}
-		<- else ->
-			func(err error) (*<$prefix>Result, error) {
-				if err == nil {
+			<- else ->
+				if val == nil {
 					return &<$prefix>Result{}, nil
 				}
-		<- end>
-				<if $f.ResultSpec.Exceptions>
-					switch e := err.(type) {
-						<range $f.ResultSpec.Exceptions ->
-						case <typeReferencePtr .Type>:
-							if e == nil {
-								return nil, <import "errors">.New("WrapResponse received non-nil error type with nil value for <$prefix>Result.<goCase .Name>")
-							}
-							return &<$prefix>Result{<goCase .Name>: e}, nil
-						<end ->
+			<- end>
+			<if $f.ResultSpec.Exceptions>
+				switch e := val.(type) {
+					<range $f.ResultSpec.Exceptions ->
+					case <typeReferencePtr .Type>:
+						if e == nil {
+							return nil, <import "errors">.New("WrapResponse received non-nil error type with nil value for <$prefix>Result.<goCase .Name>")
+						}
+						return &<$prefix>Result{<goCase .Name>: e}, nil
+					<end ->
+				}
+			<end>
+				return nil, <import "fmt">.Errorf("WrapResponse received an unrecognized type for <$prefix>Result: %v", val)
+			}
+		<- else ->
+			<- if $f.ResultSpec.ReturnType ->
+				func(success <typeReference $f.ResultSpec.ReturnType>, err error) (*<$prefix>Result, error) {
+					if err == nil {
+						<if isPrimitiveType $f.ResultSpec.ReturnType ->
+							return &<$prefix>Result{Success: &success}, nil
+						<- else ->
+							return &<$prefix>Result{Success: success}, nil
+						<- end>
 					}
-				<end>
+			<- else ->
+				func(err error) (*<$prefix>Result, error) {
+					if err == nil {
+						return &<$prefix>Result{}, nil
+					}
+			<- end>
+			<if $f.ResultSpec.Exceptions>
+				switch e := err.(type) {
+					<range $f.ResultSpec.Exceptions ->
+					case <typeReferencePtr .Type>:
+						if e == nil {
+							return nil, <import "errors">.New("WrapResponse received non-nil error type with nil value for <$prefix>Result.<goCase .Name>")
+						}
+						return &<$prefix>Result{<goCase .Name>: e}, nil
+					<end ->
+				}
+			<end>
 				return nil, err
-			}`,
+			}
+		<- end>`,
 		struct {
 			Service  *compile.ServiceSpec
 			Function *compile.FunctionSpec
@@ -343,7 +450,9 @@ func functionWrapResponse(g Generator, s *compile.ServiceSpec, f *compile.Functi
 			Service:  s,
 			Function: f,
 		},
-		TemplateFunc("namePrefix", functionNamePrefix))
+		TemplateFunc("namePrefix", functionNamePrefix),
+		TemplateFunc("checkNoError", checkNoError),
+	)
 }
 
 // functionUnwrapResponse generates an expression that provides the
@@ -354,32 +463,64 @@ func functionUnwrapResponse(g Generator, s *compile.ServiceSpec, f *compile.Func
 		<- $f := .Function ->
 		<- $prefix := namePrefix .Service $f ->
 
-		<- if $f.ResultSpec.ReturnType ->
-			func(result *<$prefix>Result) (success <typeReference $f.ResultSpec.ReturnType>, err error) {
+		<- if (checkNoError) ->
+			func(result *<$prefix>Result) (
+			<- if $f.ResultSpec.ReturnType ->
+				success <typeReference $f.ResultSpec.ReturnType>,
+			<- end ->
+			<- if $f.ResultSpec.Exceptions ->
+				exception interface{},
+			<- end ->
+			err error) {
+					<range $f.ResultSpec.Exceptions ->
+						if result.<goCase .Name> != nil {
+							exception = result.<goCase .Name>
+							return
+						}
+					<end ->
+
+					<if $f.ResultSpec.ReturnType>
+						if result.Success != nil {
+							<- if isPrimitiveType $f.ResultSpec.ReturnType>
+								success = *result.Success
+							<- else>
+								success = result.Success
+							<- end>
+							return
+						}
+
+						err = <import "errors">.New("expected a non-void result")
+					<end ->
+					return
+				}
 		<- else ->
-			func(result *<$prefix>Result) (err error) {
+			<- if $f.ResultSpec.ReturnType ->
+				func(result *<$prefix>Result) (success <typeReference $f.ResultSpec.ReturnType>, err error) {
+			<- else ->
+				func(result *<$prefix>Result) (err error) {
+			<- end>
+					<range $f.ResultSpec.Exceptions ->
+						if result.<goCase .Name> != nil {
+							err = result.<goCase .Name>
+							return
+						}
+					<end ->
+
+					<if $f.ResultSpec.ReturnType>
+						if result.Success != nil {
+							<- if isPrimitiveType $f.ResultSpec.ReturnType>
+								success = *result.Success
+							<- else>
+								success = result.Success
+							<- end>
+							return
+						}
+
+						err = <import "errors">.New("expected a non-void result")
+					<end ->
+					return
+				}
 		<- end>
-				<range $f.ResultSpec.Exceptions ->
-					if result.<goCase .Name> != nil {
-						err = result.<goCase .Name>
-						return
-					}
-				<end ->
-
-				<if $f.ResultSpec.ReturnType>
-					if result.Success != nil {
-						<- if isPrimitiveType $f.ResultSpec.ReturnType>
-							success = *result.Success
-						<- else>
-							success = result.Success
-						<- end>
-						return
-					}
-
-					err = <import "errors">.New("expected a non-void result")
-				<end ->
-				return
-			}
 		`, struct {
 			Service  *compile.ServiceSpec
 			Function *compile.FunctionSpec
@@ -387,7 +528,9 @@ func functionUnwrapResponse(g Generator, s *compile.ServiceSpec, f *compile.Func
 			Service:  s,
 			Function: f,
 		},
-		TemplateFunc("namePrefix", functionNamePrefix))
+		TemplateFunc("namePrefix", functionNamePrefix),
+		TemplateFunc("checkNoError", checkNoError),
+	)
 }
 
 func functionArgsEnveloper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) error {

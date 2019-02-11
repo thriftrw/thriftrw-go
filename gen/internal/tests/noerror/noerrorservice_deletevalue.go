@@ -194,40 +194,43 @@ var NoErrorService_DeleteValue_Helper = struct {
 		key *Key,
 	) *NoErrorService_DeleteValue_Args
 
-	// IsException returns true if the given error can be thrown
+	// IsException returns true if the given value can be thrown
 	// by deleteValue.
 	//
-	// An error can be thrown by deleteValue only if the
+	// An exception can be thrown by deleteValue only if the
 	// corresponding exception type was mentioned in the 'throws'
 	// section for it in the Thrift file.
-	IsException func(error) bool
+	IsException func(interface{}) bool
 
 	// WrapResponse returns the result struct for deleteValue
-	// given the error returned by it. The provided error may
-	// be nil if deleteValue did not fail.
+	// given the value returned by it. The value should hold
+	// an exception that can be thrown by deleteValue.
 	//
-	// This allows mapping errors returned by deleteValue into a
+	// This allows mapping exceptions returned by deleteValue into a
 	// serializable result struct. WrapResponse returns a
 	// non-nil error if the provided error cannot be thrown by
 	// deleteValue
 	//
-	//   err := deleteValue(args)
-	//   result, err := NoErrorService_DeleteValue_Helper.WrapResponse(err)
+	//   val, err := deleteValue(args)
+	//   if err != nil {
+	//     return err
+	//   }
+	//   result, err := NoErrorService_DeleteValue_Helper.WrapResponse(val)
 	//   if err != nil {
 	//     return fmt.Errorf("unexpected error from deleteValue: %v", err)
 	//   }
 	//   serialize(result)
-	WrapResponse func(error) (*NoErrorService_DeleteValue_Result, error)
+	WrapResponse func(interface{}) (*NoErrorService_DeleteValue_Result, error)
 
 	// UnwrapResponse takes the result struct for deleteValue
-	// and returns the erorr returned by it (if any).
+	// and returns the exception returned by it (if any).
 	//
-	// The error is non-nil only if deleteValue threw an
-	// exception.
+	// The error is non-nil only if deleteValue returned an
+	// unrecognized value.
 	//
 	//   result := deserialize(bytes)
-	//   err := NoErrorService_DeleteValue_Helper.UnwrapResponse(result)
-	UnwrapResponse func(*NoErrorService_DeleteValue_Result) error
+	//   exception, err := NoErrorService_DeleteValue_Helper.UnwrapResponse(result)
+	UnwrapResponse func(*NoErrorService_DeleteValue_Result) (interface{}, error)
 }{}
 
 func init() {
@@ -239,7 +242,7 @@ func init() {
 		}
 	}
 
-	NoErrorService_DeleteValue_Helper.IsException = func(err error) bool {
+	NoErrorService_DeleteValue_Helper.IsException = func(err interface{}) bool {
 		switch err.(type) {
 		case *NoErrorException:
 			return true
@@ -248,12 +251,12 @@ func init() {
 		}
 	}
 
-	NoErrorService_DeleteValue_Helper.WrapResponse = func(err error) (*NoErrorService_DeleteValue_Result, error) {
-		if err == nil {
+	NoErrorService_DeleteValue_Helper.WrapResponse = func(val interface{}) (*NoErrorService_DeleteValue_Result, error) {
+		if val == nil {
 			return &NoErrorService_DeleteValue_Result{}, nil
 		}
 
-		switch e := err.(type) {
+		switch e := val.(type) {
 		case *NoErrorException:
 			if e == nil {
 				return nil, errors.New("WrapResponse received non-nil error type with nil value for NoErrorService_DeleteValue_Result.DoesNotExist")
@@ -261,11 +264,11 @@ func init() {
 			return &NoErrorService_DeleteValue_Result{DoesNotExist: e}, nil
 		}
 
-		return nil, err
+		return nil, fmt.Errorf("WrapResponse received an unrecognized type for NoErrorService_DeleteValue_Result: %v", val)
 	}
-	NoErrorService_DeleteValue_Helper.UnwrapResponse = func(result *NoErrorService_DeleteValue_Result) (err error) {
+	NoErrorService_DeleteValue_Helper.UnwrapResponse = func(result *NoErrorService_DeleteValue_Result) (exception interface{}, err error) {
 		if result.DoesNotExist != nil {
-			err = result.DoesNotExist
+			exception = result.DoesNotExist
 			return
 		}
 		return

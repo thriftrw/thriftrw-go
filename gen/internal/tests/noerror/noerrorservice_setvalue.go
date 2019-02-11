@@ -231,39 +231,42 @@ var NoErrorService_SetValue_Helper = struct {
 		value *string,
 	) *NoErrorService_SetValue_Args
 
-	// IsException returns true if the given error can be thrown
+	// IsException returns true if the given value can be thrown
 	// by setValue.
 	//
-	// An error can be thrown by setValue only if the
+	// An exception can be thrown by setValue only if the
 	// corresponding exception type was mentioned in the 'throws'
 	// section for it in the Thrift file.
-	IsException func(error) bool
+	IsException func(interface{}) bool
 
 	// WrapResponse returns the result struct for setValue
-	// given the error returned by it. The provided error may
-	// be nil if setValue did not fail.
+	// given the value returned by it. The value should hold
+	// an exception that can be thrown by setValue.
 	//
-	// This allows mapping errors returned by setValue into a
+	// This allows mapping exceptions returned by setValue into a
 	// serializable result struct. WrapResponse returns a
 	// non-nil error if the provided error cannot be thrown by
 	// setValue
 	//
-	//   err := setValue(args)
-	//   result, err := NoErrorService_SetValue_Helper.WrapResponse(err)
+	//   val, err := setValue(args)
+	//   if err != nil {
+	//     return err
+	//   }
+	//   result, err := NoErrorService_SetValue_Helper.WrapResponse(val)
 	//   if err != nil {
 	//     return fmt.Errorf("unexpected error from setValue: %v", err)
 	//   }
 	//   serialize(result)
-	WrapResponse func(error) (*NoErrorService_SetValue_Result, error)
+	WrapResponse func(interface{}) (*NoErrorService_SetValue_Result, error)
 
 	// UnwrapResponse takes the result struct for setValue
-	// and returns the erorr returned by it (if any).
+	// and returns the exception returned by it (if any).
 	//
-	// The error is non-nil only if setValue threw an
-	// exception.
+	// The error is non-nil only if setValue returned an
+	// unrecognized value.
 	//
 	//   result := deserialize(bytes)
-	//   err := NoErrorService_SetValue_Helper.UnwrapResponse(result)
+	//    err := NoErrorService_SetValue_Helper.UnwrapResponse(result)
 	UnwrapResponse func(*NoErrorService_SetValue_Result) error
 }{}
 
@@ -278,19 +281,19 @@ func init() {
 		}
 	}
 
-	NoErrorService_SetValue_Helper.IsException = func(err error) bool {
+	NoErrorService_SetValue_Helper.IsException = func(err interface{}) bool {
 		switch err.(type) {
 		default:
 			return false
 		}
 	}
 
-	NoErrorService_SetValue_Helper.WrapResponse = func(err error) (*NoErrorService_SetValue_Result, error) {
-		if err == nil {
+	NoErrorService_SetValue_Helper.WrapResponse = func(val interface{}) (*NoErrorService_SetValue_Result, error) {
+		if val == nil {
 			return &NoErrorService_SetValue_Result{}, nil
 		}
 
-		return nil, err
+		return nil, fmt.Errorf("WrapResponse received an unrecognized type for NoErrorService_SetValue_Result: %v", val)
 	}
 	NoErrorService_SetValue_Helper.UnwrapResponse = func(result *NoErrorService_SetValue_Result) (err error) {
 		return

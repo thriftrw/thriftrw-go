@@ -42,6 +42,11 @@ var noZapFiles = map[string]struct{}{
 	"nozap": {},
 }
 
+// Set of files that are passed a --no-error flag in code generation
+var noErrorFiles = map[string]struct{}{
+	"noerror": {},
+}
+
 func TestCodeIsUpToDate(t *testing.T) {
 	// This test just verifies that the generated code in internal/tests/ is up to
 	// date. If this test failed, run 'make' in the internal/tests/ directory and
@@ -69,12 +74,14 @@ func TestCodeIsUpToDate(t *testing.T) {
 		require.NoError(t, err, "failed to compile %q", thriftFile)
 
 		_, nozap := noZapFiles[pkgRelPath]
+		_, noerror := noErrorFiles[pkgRelPath]
 		err = Generate(module, &Options{
 			OutputDir:     outputDir,
 			PackagePrefix: "go.uber.org/thriftrw/gen/internal/tests",
 			ThriftRoot:    thriftRoot,
 			NoRecurse:     true,
 			NoZap:         nozap,
+			NoError:       noerror,
 		})
 		require.NoError(t, err, "failed to generate code for %q", thriftFile)
 

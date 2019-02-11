@@ -70,7 +70,7 @@ func structure(g Generator, spec *compile.StructSpec) error {
 		return wrapGenerateError(spec.ThriftName(), err)
 	}
 
-	if spec.Type == ast.ExceptionType {
+	if spec.Type == ast.ExceptionType && !checkNoError(g) {
 		err := g.DeclareFromTemplate(
 			`
 			<$v := newVar "v">
