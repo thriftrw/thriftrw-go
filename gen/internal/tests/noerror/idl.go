@@ -10,8 +10,8 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "noerror",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/noerror",
 	FilePath: "noerror.thrift",
-	SHA1:     "4c49a6eff3563deb4af5bc1a715cd30fa0ce5c1a",
+	SHA1:     "c00c4b2e48eb62efa6b3f4cdb68a70a8db94010d",
 	Raw:      rawIDL,
 }
 
-const rawIDL = "exception NoErrorException {}\n\ntypedef string Key\n\nservice NoErrorService {\n    // void and no exceptions\n    void setValue(1: Key key, 2: string value)\n\n    // Return with exceptions\n    Key getValue(1: Key key)\n        throws (1: NoErrorException doesNotExist)\n\n    // void with exceptions\n    void deleteValue(1: Key key)\n        throws (1: NoErrorException doesNotExist)\n\n    i64 size()  // < primitve return value\n}\n"
+const rawIDL = "exception NoErrorException {}\n\ntypedef string Key\n\nservice NoErrorService {\n    // void and no exceptions\n    void setValue(1: Key key, 2: string value)\n\n    // Return with exceptions\n    Key getValue(1: Key key)\n        throws (1: NoErrorException doesNotExist)\n\n    // void with exceptions\n    void deleteValue(1: Key key)\n        throws (1: NoErrorException doesNotExist)\n\n    i64 size()  // primitive return value\n}\n"

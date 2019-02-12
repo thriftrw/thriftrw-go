@@ -14,5 +14,5 @@ service NoErrorService {
     void deleteValue(1: Key key)
         throws (1: NoErrorException doesNotExist)
 
-    i64 size()  // < primitve return value
+    i64 size()  // primitive return value
 }

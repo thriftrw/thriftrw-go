@@ -131,8 +131,7 @@ var NoErrorService_Size_Helper = struct {
 	// by size.
 	//
 	// An exception can be thrown by size only if the
-	// corresponding exception type was mentioned in the 'throws'
-	// section for it in the Thrift file.
+	// type was mentioned in the 'throws' section of the IDL.
 	IsException func(interface{}) bool
 
 	// WrapResponse returns the result struct for size
@@ -140,8 +139,8 @@ var NoErrorService_Size_Helper = struct {
 	//
 	// This allows mapping values and exceptions returned by
 	// size into a serializable result struct.
-	// WrapResponse returns a non-nil error if the provided
-	// value cannot be returned by size
+	// WrapResponse returns an error if the provided
+	// value cannot be returned by size.
 	//
 	//   value, err := size(args)
 	//   result, err := NoErrorService_Size_Helper.WrapResponse(value)

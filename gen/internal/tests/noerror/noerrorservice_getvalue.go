@@ -182,8 +182,7 @@ var NoErrorService_GetValue_Helper = struct {
 	// by getValue.
 	//
 	// An exception can be thrown by getValue only if the
-	// corresponding exception type was mentioned in the 'throws'
-	// section for it in the Thrift file.
+	// type was mentioned in the 'throws' section of the IDL.
 	IsException func(interface{}) bool
 
 	// WrapResponse returns the result struct for getValue
@@ -191,8 +190,8 @@ var NoErrorService_GetValue_Helper = struct {
 	//
 	// This allows mapping values and exceptions returned by
 	// getValue into a serializable result struct.
-	// WrapResponse returns a non-nil error if the provided
-	// value cannot be returned by getValue
+	// WrapResponse returns an error if the provided
+	// value cannot be returned by getValue.
 	//
 	//   value, err := getValue(args)
 	//   result, err := NoErrorService_GetValue_Helper.WrapResponse(value)
@@ -223,7 +222,7 @@ func init() {
 
 	NoErrorService_GetValue_Helper.IsException = func(err interface{}) bool {
 		switch err.(type) {
-		case *NoErrorException:
+		case *NoErrorException, NoErrorException:
 			return true
 		default:
 			return false

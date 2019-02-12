@@ -198,8 +198,7 @@ var NoErrorService_DeleteValue_Helper = struct {
 	// by deleteValue.
 	//
 	// An exception can be thrown by deleteValue only if the
-	// corresponding exception type was mentioned in the 'throws'
-	// section for it in the Thrift file.
+	// type was mentioned in the 'throws' section of the IDL.
 	IsException func(interface{}) bool
 
 	// WrapResponse returns the result struct for deleteValue
@@ -209,7 +208,7 @@ var NoErrorService_DeleteValue_Helper = struct {
 	// This allows mapping exceptions returned by deleteValue into a
 	// serializable result struct. WrapResponse returns a
 	// non-nil error if the provided error cannot be thrown by
-	// deleteValue
+	// deleteValue.
 	//
 	//   val, err := deleteValue(args)
 	//   if err != nil {
@@ -230,6 +229,9 @@ var NoErrorService_DeleteValue_Helper = struct {
 	//
 	//   result := deserialize(bytes)
 	//   exception, err := NoErrorService_DeleteValue_Helper.UnwrapResponse(result)
+	//   if err != nil {
+	//     return err
+	//   }
 	UnwrapResponse func(*NoErrorService_DeleteValue_Result) (interface{}, error)
 }{}
 
@@ -244,7 +246,7 @@ func init() {
 
 	NoErrorService_DeleteValue_Helper.IsException = func(err interface{}) bool {
 		switch err.(type) {
-		case *NoErrorException:
+		case *NoErrorException, NoErrorException:
 			return true
 		default:
 			return false

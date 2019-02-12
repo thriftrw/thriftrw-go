@@ -161,8 +161,7 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 				// by <$f.Name>.
 				//
 				// An exception can be thrown by <$f.Name> only if the
-				// corresponding exception type was mentioned in the 'throws'
-				// section for it in the Thrift file.
+				// type was mentioned in the 'throws' section of the IDL.
 				<- else ->
 				// IsException returns true if the given error can be thrown
 				// by <$f.Name>.
@@ -179,8 +178,8 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 					//
 					// This allows mapping values and exceptions returned by
 					// <$f.Name> into a serializable result struct.
-					// WrapResponse returns a non-nil error if the provided
-					// value cannot be returned by <$f.Name>
+					// WrapResponse returns an error if the provided
+					// value cannot be returned by <$f.Name>.
 					//
 					//   value, err := <$f.Name>(args)
 					//   result, err := <$prefix>Helper.WrapResponse(value)
@@ -239,7 +238,7 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 					// This allows mapping exceptions returned by <$f.Name> into a
 					// serializable result struct. WrapResponse returns a
 					// non-nil error if the provided error cannot be thrown by
-					// <$f.Name>
+					// <$f.Name>.
 					//
 					//   val, err := <$f.Name>(args)
 					//   if err != nil {
@@ -278,6 +277,9 @@ func functionHelper(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec
 					//
 					//   result := deserialize(bytes)
 					//   <if $f.ResultSpec.Exceptions>exception,<end> err := <$prefix>Helper.UnwrapResponse(result)
+					//   if err != nil {
+					//     return err
+					//   }
 					<- else ->
 					// UnwrapResponse takes the result struct for <$f.Name>
 					// and returns the erorr returned by it (if any).
@@ -329,7 +331,7 @@ func functionIsException(g Generator, f *compile.FunctionSpec) (string, error) {
 		`func(err <if (checkNoError)>interface{}<else>error<end>) bool {
 			switch err.(type) {
 			<range .ResultSpec.Exceptions ->
-				case <typeReferencePtr .Type>:
+				case <typeReferencePtr .Type><if (checkNoError)>, <typeName .Type><end>:
 					return true
 			<end ->
 			default:

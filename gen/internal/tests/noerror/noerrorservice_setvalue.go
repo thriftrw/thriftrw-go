@@ -235,8 +235,7 @@ var NoErrorService_SetValue_Helper = struct {
 	// by setValue.
 	//
 	// An exception can be thrown by setValue only if the
-	// corresponding exception type was mentioned in the 'throws'
-	// section for it in the Thrift file.
+	// type was mentioned in the 'throws' section of the IDL.
 	IsException func(interface{}) bool
 
 	// WrapResponse returns the result struct for setValue
@@ -246,7 +245,7 @@ var NoErrorService_SetValue_Helper = struct {
 	// This allows mapping exceptions returned by setValue into a
 	// serializable result struct. WrapResponse returns a
 	// non-nil error if the provided error cannot be thrown by
-	// setValue
+	// setValue.
 	//
 	//   val, err := setValue(args)
 	//   if err != nil {
@@ -267,6 +266,9 @@ var NoErrorService_SetValue_Helper = struct {
 	//
 	//   result := deserialize(bytes)
 	//    err := NoErrorService_SetValue_Helper.UnwrapResponse(result)
+	//   if err != nil {
+	//     return err
+	//   }
 	UnwrapResponse func(*NoErrorService_SetValue_Result) error
 }{}
 

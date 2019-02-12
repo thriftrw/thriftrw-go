@@ -77,7 +77,7 @@ type Options struct {
 	// Do not generate Zap logging code
 	NoZap bool
 
-	// Do not generate Error methods on Exceptions
+	// Do not generate Error methods on Exceptions.
 	NoError bool
 }
 

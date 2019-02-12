@@ -37,20 +37,20 @@ import (
 // Header for generated code as per https://golang.org/s/generatedcode
 var generatedByRegex = regexp.MustCompile(`^// Code generated .* DO NOT EDIT\.$`)
 
-// Set of files that are passed a --no-zap flag in code generation
-var noZapFiles = map[string]struct{}{
-	"nozap": {},
-}
-
-// Set of files that are passed a --no-error flag in code generation
-var noErrorFiles = map[string]struct{}{
-	"noerror": {},
-}
-
 func TestCodeIsUpToDate(t *testing.T) {
 	// This test just verifies that the generated code in internal/tests/ is up to
 	// date. If this test failed, run 'make' in the internal/tests/ directory and
 	// commit the changes.
+	var (
+		// Set of files that are passed a --no-zap flag in code generation
+		noZapFiles = map[string]struct{}{
+			"nozap": {},
+		}
+		// Set of files that are passed a --no-error flag in code generation
+		noErrorFiles = map[string]struct{}{
+			"noerror": {},
+		}
+	)
 
 	thriftRoot, err := filepath.Abs("internal/tests/thrift")
 	require.NoError(t, err, "could not resolve absolute path to internal/tests/thrift")
