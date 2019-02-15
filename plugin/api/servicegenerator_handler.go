@@ -24,8 +24,8 @@
 package api
 
 import (
-	"go.uber.org/thriftrw/internal/envelope"
-	"go.uber.org/thriftrw/wire"
+	envelope "go.uber.org/thriftrw/internal/envelope"
+	wire "go.uber.org/thriftrw/wire"
 )
 
 // ServiceGeneratorHandler serves an implementation of the ServiceGenerator service.
