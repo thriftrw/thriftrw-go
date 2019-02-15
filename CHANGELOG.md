@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Changed
-- Changed generated code to always include import aliases.
+- Imports in generated code are now always named imports.
 
 ## [1.16.1] - 2019-01-23
 ### Fixed
