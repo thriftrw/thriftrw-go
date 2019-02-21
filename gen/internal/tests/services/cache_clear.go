@@ -4,10 +4,10 @@
 package services
 
 import (
-	"fmt"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"strings"
+	fmt "fmt"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	strings "strings"
 )
 
 // Cache_Clear_Args represents the arguments for the Cache.clear function.

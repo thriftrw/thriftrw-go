@@ -4,13 +4,13 @@
 package constants
 
 import (
-	"go.uber.org/thriftrw/gen/internal/tests/containers"
-	"go.uber.org/thriftrw/gen/internal/tests/enums"
-	"go.uber.org/thriftrw/gen/internal/tests/exceptions"
-	"go.uber.org/thriftrw/gen/internal/tests/structs"
-	"go.uber.org/thriftrw/gen/internal/tests/typedefs"
-	"go.uber.org/thriftrw/gen/internal/tests/unions"
-	"go.uber.org/thriftrw/ptr"
+	containers "go.uber.org/thriftrw/gen/internal/tests/containers"
+	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	exceptions "go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	structs "go.uber.org/thriftrw/gen/internal/tests/structs"
+	typedefs "go.uber.org/thriftrw/gen/internal/tests/typedefs"
+	unions "go.uber.org/thriftrw/gen/internal/tests/unions"
+	ptr "go.uber.org/thriftrw/ptr"
 )
 
 const Home enums.RecordType = enums.RecordTypeHomeAddress

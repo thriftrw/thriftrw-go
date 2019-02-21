@@ -4,16 +4,16 @@
 package structs
 
 import (
-	"bytes"
-	"encoding/base64"
-	"errors"
-	"fmt"
-	"go.uber.org/multierr"
-	"go.uber.org/thriftrw/gen/internal/tests/enums"
-	"go.uber.org/thriftrw/ptr"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"strings"
+	bytes "bytes"
+	base64 "encoding/base64"
+	errors "errors"
+	fmt "fmt"
+	multierr "go.uber.org/multierr"
+	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	ptr "go.uber.org/thriftrw/ptr"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	strings "strings"
 )
 
 type ContactInfo struct {

@@ -4,8 +4,8 @@
 package unions
 
 import (
-	"go.uber.org/thriftrw/gen/internal/tests/typedefs"
-	"go.uber.org/thriftrw/thriftreflect"
+	typedefs "go.uber.org/thriftrw/gen/internal/tests/typedefs"
+	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 )
 
 // ThriftModule represents the IDL file used to generate this package.

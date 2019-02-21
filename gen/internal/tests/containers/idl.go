@@ -4,11 +4,11 @@
 package containers
 
 import (
-	"go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
-	"go.uber.org/thriftrw/gen/internal/tests/enums"
-	"go.uber.org/thriftrw/gen/internal/tests/typedefs"
-	"go.uber.org/thriftrw/gen/internal/tests/uuid_conflict"
-	"go.uber.org/thriftrw/thriftreflect"
+	enum_conflict "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
+	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	typedefs "go.uber.org/thriftrw/gen/internal/tests/typedefs"
+	uuid_conflict "go.uber.org/thriftrw/gen/internal/tests/uuid_conflict"
+	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 )
 
 // ThriftModule represents the IDL file used to generate this package.

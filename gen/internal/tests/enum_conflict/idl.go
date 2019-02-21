@@ -4,8 +4,8 @@
 package enum_conflict
 
 import (
-	"go.uber.org/thriftrw/gen/internal/tests/enums"
-	"go.uber.org/thriftrw/thriftreflect"
+	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 )
 
 // ThriftModule represents the IDL file used to generate this package.

@@ -23,6 +23,7 @@ package goast
 import (
 	"path/filepath"
 	"strings"
+	"unicode"
 )
 
 // DeterminePackageName determines the name of the package at the given import
@@ -32,5 +33,13 @@ func DeterminePackageName(importPath string) string {
 	if strings.HasSuffix(packageName, "-go") {
 		packageName = packageName[:len(packageName)-3]
 	}
-	return strings.Replace(packageName, "-", "_", -1)
+
+	return strings.Map(func(c rune) rune {
+		switch {
+		case unicode.IsLetter(c), unicode.IsDigit(c):
+			return c
+		default:
+			return '_'
+		}
+	}, packageName)
 }
