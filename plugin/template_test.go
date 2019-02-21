@@ -34,15 +34,15 @@ func TestGoFileFromTemplate(t *testing.T) {
 			data: &api.Type{
 				ReferenceType: &api.TypeReference{
 					Name:       "Foo",
-					ImportPath: "go.uber.org/thriftrw/bar",
+					ImportPath: "go.uber.org/thriftrw/bar.git",
 				},
 			},
 			wantBody: unlines(
 				`package foo`,
 				``,
-				`import bar "go.uber.org/thriftrw/bar"`,
+				`import bar_git "go.uber.org/thriftrw/bar.git"`,
 				``,
-				`var foo bar.Foo = nil`,
+				`var foo bar_git.Foo = nil`,
 			),
 		},
 		{

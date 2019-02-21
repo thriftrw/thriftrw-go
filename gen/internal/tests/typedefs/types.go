@@ -4,16 +4,16 @@
 package typedefs
 
 import (
-	"bytes"
-	"encoding/base64"
-	"errors"
-	"fmt"
-	"go.uber.org/multierr"
-	"go.uber.org/thriftrw/gen/internal/tests/enums"
-	"go.uber.org/thriftrw/gen/internal/tests/structs"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"strings"
+	bytes "bytes"
+	base64 "encoding/base64"
+	errors "errors"
+	fmt "fmt"
+	multierr "go.uber.org/multierr"
+	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	structs "go.uber.org/thriftrw/gen/internal/tests/structs"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	strings "strings"
 )
 
 type _Set_Binary_ValueList [][]byte

@@ -4,10 +4,10 @@
 package services
 
 import (
-	"fmt"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"strings"
+	fmt "fmt"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	strings "strings"
 )
 
 // NonStandardServiceName_NonStandardFunctionName_Args represents the arguments for the non_standard_service_name.non_standard_function_name function.

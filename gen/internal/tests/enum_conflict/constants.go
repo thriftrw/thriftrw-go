@@ -3,7 +3,7 @@
 
 package enum_conflict
 
-import "go.uber.org/thriftrw/gen/internal/tests/enums"
+import enums "go.uber.org/thriftrw/gen/internal/tests/enums"
 
 const DefaultOtherRecordType enums.RecordType = enums.RecordTypeName
 

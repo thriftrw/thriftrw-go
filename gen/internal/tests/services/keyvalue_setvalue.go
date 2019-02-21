@@ -4,12 +4,12 @@
 package services
 
 import (
-	"fmt"
-	"go.uber.org/multierr"
-	"go.uber.org/thriftrw/gen/internal/tests/unions"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"strings"
+	fmt "fmt"
+	multierr "go.uber.org/multierr"
+	unions "go.uber.org/thriftrw/gen/internal/tests/unions"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	strings "strings"
 )
 
 // KeyValue_SetValue_Args represents the arguments for the KeyValue.setValue function.

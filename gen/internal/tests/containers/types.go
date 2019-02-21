@@ -4,18 +4,18 @@
 package containers
 
 import (
-	"bytes"
-	"encoding/base64"
-	"errors"
-	"fmt"
-	"go.uber.org/multierr"
-	"go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
-	"go.uber.org/thriftrw/gen/internal/tests/enums"
-	"go.uber.org/thriftrw/gen/internal/tests/typedefs"
-	"go.uber.org/thriftrw/gen/internal/tests/uuid_conflict"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"strings"
+	bytes "bytes"
+	base64 "encoding/base64"
+	errors "errors"
+	fmt "fmt"
+	multierr "go.uber.org/multierr"
+	enum_conflict "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
+	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	typedefs "go.uber.org/thriftrw/gen/internal/tests/typedefs"
+	uuid_conflict "go.uber.org/thriftrw/gen/internal/tests/uuid_conflict"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	strings "strings"
 )
 
 type ContainersOfContainers struct {

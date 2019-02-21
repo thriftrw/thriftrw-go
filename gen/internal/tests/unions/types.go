@@ -4,13 +4,13 @@
 package unions
 
 import (
-	"encoding/base64"
-	"fmt"
-	"go.uber.org/multierr"
-	"go.uber.org/thriftrw/gen/internal/tests/typedefs"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"strings"
+	base64 "encoding/base64"
+	fmt "fmt"
+	multierr "go.uber.org/multierr"
+	typedefs "go.uber.org/thriftrw/gen/internal/tests/typedefs"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	strings "strings"
 )
 
 // ArbitraryValue allows constructing complex values without a schema.

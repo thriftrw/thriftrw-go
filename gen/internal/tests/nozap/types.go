@@ -4,14 +4,14 @@
 package nozap
 
 import (
-	"bytes"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"go.uber.org/thriftrw/wire"
-	"math"
-	"strconv"
-	"strings"
+	bytes "bytes"
+	json "encoding/json"
+	errors "errors"
+	fmt "fmt"
+	wire "go.uber.org/thriftrw/wire"
+	math "math"
+	strconv "strconv"
+	strings "strings"
 )
 
 type EnumDefault int32

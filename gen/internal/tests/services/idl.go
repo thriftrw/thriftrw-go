@@ -4,9 +4,9 @@
 package services
 
 import (
-	"go.uber.org/thriftrw/gen/internal/tests/exceptions"
-	"go.uber.org/thriftrw/gen/internal/tests/unions"
-	"go.uber.org/thriftrw/thriftreflect"
+	exceptions "go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	unions "go.uber.org/thriftrw/gen/internal/tests/unions"
+	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 )
 
 // ThriftModule represents the IDL file used to generate this package.

@@ -4,9 +4,9 @@
 package typedefs
 
 import (
-	"go.uber.org/thriftrw/gen/internal/tests/enums"
-	"go.uber.org/thriftrw/gen/internal/tests/structs"
-	"go.uber.org/thriftrw/thriftreflect"
+	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	structs "go.uber.org/thriftrw/gen/internal/tests/structs"
+	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 )
 
 // ThriftModule represents the IDL file used to generate this package.
