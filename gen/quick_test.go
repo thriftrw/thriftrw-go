@@ -37,6 +37,7 @@ import (
 	tle "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	ter "go.uber.org/thriftrw/gen/internal/tests/noerror"
 	tz "go.uber.org/thriftrw/gen/internal/tests/nozap"
 	tf "go.uber.org/thriftrw/gen/internal/tests/services"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
@@ -201,6 +202,31 @@ func keyValueGetManyValuesResultGenerator() func(*testing.T, *rand.Rand) thriftT
 	}
 }
 
+func noErrorSetValueArgsGenerator() func(*testing.T, *rand.Rand) thriftType {
+	keyGenerator := defaultValueGenerator(reflect.TypeOf(ter.Key("")))
+	value := "value"
+	return func(t *testing.T, rand *rand.Rand) thriftType {
+		return &ter.NoErrorService_SetValue_Args{
+			Key:   keyGenerator(t, rand).(*ter.Key),
+			Value: &value,
+		}
+	}
+}
+
+func noErrorGetValueResultGenerator() func(*testing.T, *rand.Rand) thriftType {
+	successGenerator := defaultValueGenerator(reflect.TypeOf(ter.Key("")))
+	noErrorExceptionGenerator := defaultValueGenerator(reflect.TypeOf(ter.NoErrorException{}))
+	return func(t *testing.T, rand *rand.Rand) thriftType {
+		var result ter.NoErrorService_GetValue_Result
+		if rand.Int()%2 == 0 {
+			result.Success = successGenerator(t, rand).(*ter.Key)
+		} else {
+			result.DoesNotExist = noErrorExceptionGenerator(t, rand).(*ter.NoErrorException)
+		}
+		return &result
+	}
+}
+
 // Returns true for Go types that are nillable from Thrift's point-of-view.
 func isThriftNillable(typ reflect.Type) bool {
 	// Only struct types and typedefs of nillable Go native types are
@@ -261,6 +287,23 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: td.I128{}, Kind: thriftStruct},
 		{Sample: td.Transition{}, Kind: thriftStruct},
 		{Sample: te.StructWithOptionalEnum{}, Kind: thriftStruct},
+		{Sample: ter.NoErrorException{}, Kind: thriftStruct},
+		{Sample: ter.NoErrorService_DeleteValue_Args{}, Kind: thriftStruct},
+		{Sample: ter.NoErrorService_DeleteValue_Result{}, Kind: thriftStruct},
+		{Sample: ter.NoErrorService_GetValue_Args{}, Kind: thriftStruct},
+		{
+			Sample:    ter.NoErrorService_GetValue_Result{},
+			Kind:      thriftStruct,
+			Generator: noErrorGetValueResultGenerator(),
+		},
+		{
+			Sample:    ter.NoErrorService_SetValue_Args{},
+			Kind:      thriftStruct,
+			Generator: noErrorSetValueArgsGenerator(),
+		},
+		{Sample: ter.NoErrorService_SetValue_Result{}, Kind: thriftStruct},
+		{Sample: ter.NoErrorService_Size_Args{}, Kind: thriftStruct},
+		{Sample: ter.NoErrorService_Size_Result{}, Kind: thriftStruct},
 		{Sample: tf.Cache_Clear_Args{}, Kind: thriftStruct},
 		{Sample: tf.Cache_ClearAfter_Args{}, Kind: thriftStruct},
 		{Sample: tf.ConflictingNames_SetValue_Args{}, Kind: thriftStruct},
