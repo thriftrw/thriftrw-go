@@ -293,8 +293,16 @@ func enumItemName(enumName string, spec *compile.EnumItem) (string, error) {
 		return "", err
 	}
 	if name == "" {
+		//splits the string on underscore (_) , fullstop (.)
+		nameParts := strings.FieldsFunc(spec.ThriftName(), func(r rune) bool {
+			switch r {
+			case '.', '_':
+				return true
+			}
+			return false
+		})
 		name = pascalCase(false, /* all caps */
-			strings.Split(spec.ThriftName(), "_")...)
+			nameParts...)
 	}
 	return enumName + name, err
 }
