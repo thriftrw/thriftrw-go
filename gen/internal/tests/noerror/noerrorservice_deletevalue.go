@@ -4,12 +4,12 @@
 package noerror
 
 import (
-	"errors"
-	"fmt"
-	"go.uber.org/multierr"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"strings"
+	errors "errors"
+	fmt "fmt"
+	multierr "go.uber.org/multierr"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	strings "strings"
 )
 
 // NoErrorService_DeleteValue_Args represents the arguments for the NoErrorService.deleteValue function.

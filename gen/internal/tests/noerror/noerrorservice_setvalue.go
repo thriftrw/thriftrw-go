@@ -4,10 +4,10 @@
 package noerror
 
 import (
-	"fmt"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"strings"
+	fmt "fmt"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	strings "strings"
 )
 
 // NoErrorService_SetValue_Args represents the arguments for the NoErrorService.setValue function.

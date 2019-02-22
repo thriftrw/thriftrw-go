@@ -29,6 +29,7 @@ package internal
 import __yyfmt__ "fmt"
 
 //line thrift.y:2
+
 import "go.uber.org/thriftrw/ast"
 
 //line thrift.y:7

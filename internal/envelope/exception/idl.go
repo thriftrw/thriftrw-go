@@ -23,7 +23,7 @@
 
 package exception
 
-import "go.uber.org/thriftrw/thriftreflect"
+import thriftreflect "go.uber.org/thriftrw/thriftreflect"
 
 // ThriftModule represents the IDL file used to generate this package.
 var ThriftModule = &thriftreflect.ThriftModule{

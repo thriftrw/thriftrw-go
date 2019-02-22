@@ -4,11 +4,11 @@
 package noerror
 
 import (
-	"errors"
-	"fmt"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"strings"
+	errors "errors"
+	fmt "fmt"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	strings "strings"
 )
 
 // NoErrorService_Size_Args represents the arguments for the NoErrorService.size function.

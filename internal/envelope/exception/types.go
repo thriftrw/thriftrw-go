@@ -24,15 +24,15 @@
 package exception
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"go.uber.org/multierr"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"math"
-	"strconv"
-	"strings"
+	bytes "bytes"
+	json "encoding/json"
+	fmt "fmt"
+	multierr "go.uber.org/multierr"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	math "math"
+	strconv "strconv"
+	strings "strings"
 )
 
 type ExceptionType int32

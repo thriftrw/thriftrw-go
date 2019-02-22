@@ -24,17 +24,17 @@
 package api
 
 import (
-	"bytes"
-	"encoding/base64"
-	"encoding/json"
-	"errors"
-	"fmt"
-	"go.uber.org/multierr"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"math"
-	"strconv"
-	"strings"
+	bytes "bytes"
+	base64 "encoding/base64"
+	json "encoding/json"
+	errors "errors"
+	fmt "fmt"
+	multierr "go.uber.org/multierr"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	math "math"
+	strconv "strconv"
+	strings "strings"
 )
 
 // Argument is a single Argument inside a Function.
