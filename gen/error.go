@@ -28,7 +28,7 @@ type generateError struct {
 }
 
 func (e generateError) Error() string {
-	return fmt.Sprintf("my version. failed to generate code for %q: %v", e.Name, e.Reason)
+	return fmt.Sprintf("failed to generate code for %q: %v", e.Name, e.Reason)
 }
 
 func wrapGenerateError(name string, reason error) error {
