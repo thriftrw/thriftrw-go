@@ -595,7 +595,7 @@ func TestEnumWithPeriods(t *testing.T) {
 	}{
 		{
 			te.EnumNameVariationsItemNameWithPeriods,
-			"item.name.with.period",
+			"item.name.with.periods",
 		},
 		{
 			te.EnumNameVariationsItemNameWithUnderscores,
