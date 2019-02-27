@@ -587,3 +587,27 @@ func TestEnumLabelConflict(t *testing.T) {
 		})
 	}
 }
+
+func TestEnumWithPeriods(t *testing.T) {
+	tests := []struct {
+		give fmt.Stringer
+		want string
+	}{
+		{
+			te.EnumNameVariationsItemNameWithPeriods,
+			"item.name.with.period",
+		},
+		{
+			te.EnumNameVariationsItemNameWithUnderscores,
+			"item_name_with_underscores",
+		},
+		{
+			te.EnumNameVariationsItemNameInCamelCase,
+			"itemNameInCamelCase",
+		},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.want, tt.give.String())
+	}
+}

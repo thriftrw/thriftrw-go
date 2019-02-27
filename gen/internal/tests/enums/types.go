@@ -329,6 +329,190 @@ func (v *EnumDefault) UnmarshalJSON(text []byte) error {
 	}
 }
 
+type EnumNameVariations int32
+
+const (
+	EnumNameVariationsItemNameWithPeriods     EnumNameVariations = 0
+	EnumNameVariationsItemNameWithUnderscores EnumNameVariations = 1
+	EnumNameVariationsItemNameInCamelCase     EnumNameVariations = 2
+)
+
+// EnumNameVariations_Values returns all recognized values of EnumNameVariations.
+func EnumNameVariations_Values() []EnumNameVariations {
+	return []EnumNameVariations{
+		EnumNameVariationsItemNameWithPeriods,
+		EnumNameVariationsItemNameWithUnderscores,
+		EnumNameVariationsItemNameInCamelCase,
+	}
+}
+
+// UnmarshalText tries to decode EnumNameVariations from a byte slice
+// containing its name.
+//
+//   var v EnumNameVariations
+//   err := v.UnmarshalText([]byte("item.name.with.periods"))
+func (v *EnumNameVariations) UnmarshalText(value []byte) error {
+	switch s := string(value); s {
+	case "item.name.with.periods":
+		*v = EnumNameVariationsItemNameWithPeriods
+		return nil
+	case "item_name_with_underscores":
+		*v = EnumNameVariationsItemNameWithUnderscores
+		return nil
+	case "itemNameInCamelCase":
+		*v = EnumNameVariationsItemNameInCamelCase
+		return nil
+	default:
+		val, err := strconv.ParseInt(s, 10, 32)
+		if err != nil {
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "EnumNameVariations", err)
+		}
+		*v = EnumNameVariations(val)
+		return nil
+	}
+}
+
+// MarshalText encodes EnumNameVariations to text.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements the TextMarshaler interface.
+func (v EnumNameVariations) MarshalText() ([]byte, error) {
+	switch int32(v) {
+	case 0:
+		return []byte("item.name.with.periods"), nil
+	case 1:
+		return []byte("item_name_with_underscores"), nil
+	case 2:
+		return []byte("itemNameInCamelCase"), nil
+	}
+	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of EnumNameVariations.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v EnumNameVariations) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 0:
+		enc.AddString("name", "item.name.with.periods")
+	case 1:
+		enc.AddString("name", "item_name_with_underscores")
+	case 2:
+		enc.AddString("name", "itemNameInCamelCase")
+	}
+	return nil
+}
+
+// Ptr returns a pointer to this enum value.
+func (v EnumNameVariations) Ptr() *EnumNameVariations {
+	return &v
+}
+
+// ToWire translates EnumNameVariations into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
+func (v EnumNameVariations) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
+}
+
+// FromWire deserializes EnumNameVariations from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return EnumNameVariations(0), err
+//   }
+//
+//   var v EnumNameVariations
+//   if err := v.FromWire(x); err != nil {
+//     return EnumNameVariations(0), err
+//   }
+//   return v, nil
+func (v *EnumNameVariations) FromWire(w wire.Value) error {
+	*v = (EnumNameVariations)(w.GetI32())
+	return nil
+}
+
+// String returns a readable string representation of EnumNameVariations.
+func (v EnumNameVariations) String() string {
+	w := int32(v)
+	switch w {
+	case 0:
+		return "item.name.with.periods"
+	case 1:
+		return "item_name_with_underscores"
+	case 2:
+		return "itemNameInCamelCase"
+	}
+	return fmt.Sprintf("EnumNameVariations(%d)", w)
+}
+
+// Equals returns true if this EnumNameVariations value matches the provided
+// value.
+func (v EnumNameVariations) Equals(rhs EnumNameVariations) bool {
+	return v == rhs
+}
+
+// MarshalJSON serializes EnumNameVariations into JSON.
+//
+// If the enum value is recognized, its name is returned. Otherwise,
+// its integer value is returned.
+//
+// This implements json.Marshaler.
+func (v EnumNameVariations) MarshalJSON() ([]byte, error) {
+	switch int32(v) {
+	case 0:
+		return ([]byte)("\"item.name.with.periods\""), nil
+	case 1:
+		return ([]byte)("\"item_name_with_underscores\""), nil
+	case 2:
+		return ([]byte)("\"itemNameInCamelCase\""), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// UnmarshalJSON attempts to decode EnumNameVariations from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
+func (v *EnumNameVariations) UnmarshalJSON(text []byte) error {
+	d := json.NewDecoder(bytes.NewReader(text))
+	d.UseNumber()
+	t, err := d.Token()
+	if err != nil {
+		return err
+	}
+
+	switch w := t.(type) {
+	case json.Number:
+		x, err := w.Int64()
+		if err != nil {
+			return err
+		}
+		if x > math.MaxInt32 {
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumNameVariations")
+		}
+		if x < math.MinInt32 {
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumNameVariations")
+		}
+		*v = (EnumNameVariations)(x)
+		return nil
+	case string:
+		return v.UnmarshalText([]byte(w))
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumNameVariations")
+	}
+}
+
 type EnumWithDuplicateName int32
 
 const (

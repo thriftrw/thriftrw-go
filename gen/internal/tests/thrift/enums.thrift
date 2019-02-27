@@ -65,3 +65,10 @@ enum EnumWithLabel {
 
 // collision with RecordType_Values() function.
 enum RecordType_Values { FOO, BAR }
+
+// EnumNameVariations itemName variations.
+enum EnumNameVariations {
+    item.name.with.periods
+    item_name_with_underscores
+    itemNameInCamelCase
+}
