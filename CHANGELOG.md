@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+- No changes yet.
+
 ## [1.17.0] - 2019-03-15
 ### Changed
 - Imports in generated code are now always named imports.
@@ -271,6 +274,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Initial release.
 
+[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.17.0...HEAD
 [1.17.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.16.1...v1.17.0
 [1.16.1]: https://github.com/thriftrw/thriftrw-go/compare/v1.16.0...v1.16.1
 [1.16.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.15.0...v1.16.0
