@@ -1486,7 +1486,7 @@ type _Map_ServiceID_Service_Item_Zapper struct {
 	Value *Service
 }
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
+// MarshalLogObject implements zapcore.ArrayMarshaler, enabling
 // fast logging of _Map_ServiceID_Service_Item_Zapper.
 func (v _Map_ServiceID_Service_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddInt32("key", (int32)(v.Key))
@@ -1510,7 +1510,7 @@ type _Map_ModuleID_Module_Item_Zapper struct {
 	Value *Module
 }
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
+// MarshalLogObject implements zapcore.ArrayMarshaler, enabling
 // fast logging of _Map_ModuleID_Module_Item_Zapper.
 func (v _Map_ModuleID_Module_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddInt32("key", (int32)(v.Key))

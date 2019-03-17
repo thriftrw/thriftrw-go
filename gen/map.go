@@ -34,7 +34,7 @@ func mapItemListName(g Generator, spec *compile.MapSpec) string {
 // and from MapItemLists.
 type mapGenerator struct{}
 
-// MapItemList generates a new MapItemList type alias for the given map.
+// ItemList generates a new MapItemList type alias for the given map.
 //
 // The following is generated:
 //

@@ -423,7 +423,7 @@ type _Map_Edge_Edge_Item_Zapper struct {
 	Value *structs.Edge
 }
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
+// MarshalLogObject implements zapcore.ArrayMarshaler, enabling
 // fast logging of _Map_Edge_Edge_Item_Zapper.
 func (v _Map_Edge_Edge_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	err = multierr.Append(err, enc.AddObject("key", v.Key))
@@ -1138,7 +1138,7 @@ type _Map_Point_Point_Item_Zapper struct {
 	Value *structs.Point
 }
 
-// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
+// MarshalLogObject implements zapcore.ArrayMarshaler, enabling
 // fast logging of _Map_Point_Point_Item_Zapper.
 func (v _Map_Point_Point_Item_Zapper) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	err = multierr.Append(err, enc.AddObject("key", v.Key))
