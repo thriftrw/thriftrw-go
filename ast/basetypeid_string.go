@@ -24,6 +24,20 @@ package ast
 
 import "strconv"
 
+func _() {
+	// An "invalid array index" compiler error signifies that the constant values have changed.
+	// Re-run the stringer command to generate them again.
+	var x [1]struct{}
+	_ = x[BoolTypeID-1]
+	_ = x[I8TypeID-2]
+	_ = x[I16TypeID-3]
+	_ = x[I32TypeID-4]
+	_ = x[I64TypeID-5]
+	_ = x[DoubleTypeID-6]
+	_ = x[StringTypeID-7]
+	_ = x[BinaryTypeID-8]
+}
+
 const _BaseTypeID_name = "BoolTypeIDI8TypeIDI16TypeIDI32TypeIDI64TypeIDDoubleTypeIDStringTypeIDBinaryTypeID"
 
 var _BaseTypeID_index = [...]uint8{0, 10, 18, 27, 36, 45, 57, 69, 81}

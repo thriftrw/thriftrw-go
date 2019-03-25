@@ -24,10 +24,10 @@
 package api
 
 import (
-	"fmt"
-	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
-	"strings"
+	fmt "fmt"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
+	strings "strings"
 )
 
 // Plugin_Goodbye_Args represents the arguments for the Plugin.goodbye function.
