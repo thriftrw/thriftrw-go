@@ -2499,6 +2499,11 @@ func (v *Module) GetThriftFilePath() (o string) {
 // modules in this request.
 type ModuleID int32
 
+// ModuleIDPtr returns a pointer to a ModuleID
+func (v ModuleID) Ptr() *ModuleID {
+	return &v
+}
+
 // ToWire translates ModuleID into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -2970,6 +2975,11 @@ func (v *Service) IsSetAnnotations() bool {
 // ServiceID is an arbitrary unique identifier to reference the different
 // services in this request.
 type ServiceID int32
+
+// ServiceIDPtr returns a pointer to a ServiceID
+func (v ServiceID) Ptr() *ServiceID {
+	return &v
+}
 
 // ToWire translates ServiceID into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized

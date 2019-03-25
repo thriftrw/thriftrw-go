@@ -947,6 +947,11 @@ func _EnumWithValues_Read(w wire.Value) (enums.EnumWithValues, error) {
 
 type MyEnum enums.EnumWithValues
 
+// MyEnumPtr returns a pointer to a MyEnum
+func (v MyEnum) Ptr() *MyEnum {
+	return &v
+}
+
 // ToWire translates MyEnum into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -1217,6 +1222,11 @@ func (v PointMap) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 
 type State string
 
+// StatePtr returns a pointer to a State
+func (v State) Ptr() *State {
+	return &v
+}
+
 // ToWire translates State into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -1376,6 +1386,11 @@ func (v StateMap) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 //
 // Deprecated: Use ISOTime instead.
 type Timestamp int64
+
+// TimestampPtr returns a pointer to a Timestamp
+func (v Timestamp) Ptr() *Timestamp {
+	return &v
+}
 
 // ToWire translates Timestamp into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
