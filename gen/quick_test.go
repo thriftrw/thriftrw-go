@@ -212,6 +212,19 @@ func isThriftNillable(typ reflect.Type) bool {
 	return false
 }
 
+// isThriftPrimitive returns true for Go types that are considered primitive
+// (see gen.isPrimitiveType).
+func isThriftPrimitive(typ reflect.Type) bool {
+	switch typ.Kind() {
+	case reflect.Bool, reflect.Int, reflect.Int8, reflect.Int16,
+		reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8,
+		reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Float32,
+		reflect.Float64, reflect.String:
+		return true
+	}
+	return false
+}
+
 type thriftKind int
 
 const (
@@ -531,6 +544,15 @@ func TestQuickSuite(t *testing.T) {
 				t.Run("Accessors/IsSetOnNil", func(t *testing.T) {
 					suite.testIsSetAccessorsOnNil(t)
 				})
+
+			case thriftTypedef:
+				if isThriftPrimitive(typ) {
+					t.Run("Ptr", func(t *testing.T) {
+						for _, give := range values {
+							suite.testTypedefPrimitivePtr(t, give)
+						}
+					})
+				}
 			}
 
 			if !tt.NoLog {
@@ -778,6 +800,17 @@ func (q *quickSuite) testEnumPtr(t *testing.T, give thriftType) {
 	// TODO(abg): should we generate Ptr and _Values for typedefs of enums?
 	v := reflect.ValueOf(give)
 	ptr := v.MethodByName("Ptr").Call(nil)[0]
+	require.Equal(t, reflect.Ptr, ptr.Kind(), "must be a pointer")
+	assert.Equal(t, give, ptr.Interface(),
+		"pointer must point back to original value")
+}
+
+// Tests that Ptr methods on typedefs exist and return the same value back.
+func (q *quickSuite) testTypedefPrimitivePtr(t *testing.T, give thriftType) {
+	v := reflect.ValueOf(give)
+	method := v.MethodByName("Ptr")
+	require.True(t, method.IsValid(), "expected Ptr method to be present")
+	ptr := method.Call(nil)[0]
 	require.Equal(t, reflect.Ptr, ptr.Kind(), "must be a pointer")
 	assert.Equal(t, give, ptr.Interface(),
 		"pointer must point back to original value")

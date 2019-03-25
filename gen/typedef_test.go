@@ -538,3 +538,7 @@ func TestTypedefAccessors(t *testing.T) {
 		})
 	})
 }
+
+func TestTypedefPtr(t *testing.T) {
+	assert.Equal(t, td.State("foo"), *td.State("foo").Ptr())
+}

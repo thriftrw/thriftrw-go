@@ -64,6 +64,14 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 
 		<$v := newVar "v">
 		<$x := newVar "x">
+
+		<- if isPrimitiveType .>
+		// <typeName .>Ptr returns a pointer to a <$typedefType>
+		func (<$v> <typeName .>) Ptr() *<$typedefType>{
+			return &<$v>
+		}
+		<- end>
+
 		// ToWire translates <typeName .> into a Thrift-level intermediate
 		// representation. This intermediate representation may be serialized
 		// into bytes using a ThriftRW protocol implementation.
