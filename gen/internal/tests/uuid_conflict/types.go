@@ -15,6 +15,11 @@ import (
 
 type UUID string
 
+// UUIDPtr returns a pointer to a UUID
+func UUIDPtr(v UUID) *UUID {
+	return &v
+}
+
 // ToWire translates UUID into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.

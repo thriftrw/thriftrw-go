@@ -340,6 +340,11 @@ func (v *InternalError) Error() string {
 
 type Key string
 
+// KeyPtr returns a pointer to a Key
+func KeyPtr(v Key) *Key {
+	return &v
+}
+
 // ToWire translates Key into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.

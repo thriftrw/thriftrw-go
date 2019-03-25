@@ -446,6 +446,11 @@ func (v *AccessorNoConflict) IsSetGetName() bool {
 
 type LittlePotatoe int64
 
+// LittlePotatoePtr returns a pointer to a LittlePotatoe
+func LittlePotatoePtr(v LittlePotatoe) *LittlePotatoe {
+	return &v
+}
+
 // ToWire translates LittlePotatoe into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -1658,6 +1663,11 @@ func (v *WithDefault) IsSetPouet() bool {
 }
 
 type LittlePotatoe2 float64
+
+// LittlePotatoe2Ptr returns a pointer to a LittlePotatoe2
+func LittlePotatoe2Ptr(v LittlePotatoe2) *LittlePotatoe2 {
+	return &v
+}
 
 // ToWire translates LittlePotatoe2 into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
