@@ -24,6 +24,23 @@ package wire
 
 import "strconv"
 
+func _() {
+	// An "invalid array index" compiler error signifies that the constant values have changed.
+	// Re-run the stringer command to generate them again.
+	var x [1]struct{}
+	_ = x[TBool-2]
+	_ = x[TI8-3]
+	_ = x[TDouble-4]
+	_ = x[TI16-6]
+	_ = x[TI32-8]
+	_ = x[TI64-10]
+	_ = x[TBinary-11]
+	_ = x[TStruct-12]
+	_ = x[TMap-13]
+	_ = x[TSet-14]
+	_ = x[TList-15]
+}
+
 const (
 	_Type_name_0 = "TBoolTI8TDouble"
 	_Type_name_1 = "TI16"
