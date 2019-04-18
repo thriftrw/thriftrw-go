@@ -22,6 +22,7 @@
 
 
 
+
 package internal
 
 import (
@@ -36,6 +37,7 @@ const thrift_first_final int = 19
 const thrift_error int = 0
 
 const thrift_en_main int = 19
+
 
 type lexer struct {
 	line    int
@@ -947,6 +949,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 
 		goto st19
 	tr21:
+
 		lex.lastDocstring = string(lex.data[lex.docstringStart : lex.p+1])
 		lex.linesSinceDocstring = 0
 
@@ -1303,6 +1306,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 
 		goto st19
 	tr30:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -2008,6 +2012,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st10
 	tr13:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -2056,6 +2061,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st13
 	tr18:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -2388,6 +2394,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr72
 	tr74:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -4275,6 +4282,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr133
 	tr135:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -4395,6 +4403,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr138
 	tr140:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -4608,6 +4617,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr145
 	tr147:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -5017,6 +5027,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr160
 	tr162:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -5637,6 +5648,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr180
 	tr182:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -6548,6 +6560,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr209
 	tr211:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -6836,6 +6849,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr220
 	tr222:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -7018,6 +7032,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr227
 	tr229:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -7210,6 +7225,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr238
 	tr240:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -7997,6 +8013,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr264
 	tr266:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -8086,6 +8103,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr268
 	tr270:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -8175,6 +8193,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr272
 	tr274:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -8233,6 +8252,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr275
 	tr277:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -8680,6 +8700,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr292
 	tr294:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -9329,6 +9350,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr311
 	tr313:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -9451,6 +9473,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr317
 	tr319:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -9827,6 +9850,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr331
 	tr333:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -10139,6 +10163,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr341
 	tr343:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -10383,6 +10408,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr350
 	tr352:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -11360,6 +11386,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr383
 	tr385:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -11713,6 +11740,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr398
 	tr400:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -11771,6 +11799,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr401
 	tr403:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -12019,6 +12048,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr410
 	tr412:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -12139,6 +12169,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr415
 	tr417:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -12648,6 +12679,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr432
 	tr434:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -12927,6 +12959,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr442
 	tr444:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -13140,6 +13173,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr450
 	tr452:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -13363,6 +13397,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr461
 	tr463:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -13768,6 +13803,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto tr473
 	tr475:
+
 		lex.line++
 		lex.linesSinceDocstring++
 
@@ -16079,6 +16115,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		{
 		}
 	}
+
 
 	if lex.cs == thrift_error {
 		lex.Error(fmt.Sprintf("unknown token at index %d", lex.p))
