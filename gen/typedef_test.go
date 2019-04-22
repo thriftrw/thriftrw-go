@@ -23,6 +23,7 @@ package gen
 import (
 	"testing"
 
+	tss "go.uber.org/thriftrw/gen/internal/tests/set_to_slice"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/thriftrw/wire"
@@ -265,7 +266,7 @@ func TestUnhashableSetAlias(t *testing.T) {
 	}{
 		{
 			td.FrameGroup{},
-			wire.NewValueSet(
+			wire.NewValueList(
 				wire.ValueListFromSlice(wire.TStruct, []wire.Value{}),
 			),
 		},
@@ -274,7 +275,7 @@ func TestUnhashableSetAlias(t *testing.T) {
 				&ts.Frame{TopLeft: &ts.Point{X: 1, Y: 2}, Size: &ts.Size{Width: 3, Height: 4}},
 				&ts.Frame{TopLeft: &ts.Point{X: 5, Y: 6}, Size: &ts.Size{Width: 7, Height: 8}},
 			},
-			wire.NewValueSet(
+			wire.NewValueList(
 				wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 						{ID: 1, Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -462,7 +463,7 @@ func TestBinarySet(t *testing.T) {
 	}{
 		{
 			td.BinarySet{},
-			wire.NewValueSet(
+			wire.NewValueList(
 				wire.ValueListFromSlice(wire.TBinary, []wire.Value{}),
 			),
 		},
@@ -471,7 +472,7 @@ func TestBinarySet(t *testing.T) {
 				{1, 2, 3},
 				{4, 5, 6},
 			},
-			wire.NewValueSet(
+			wire.NewValueList(
 				wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 					wire.NewValueBinary([]byte{1, 2, 3}),
 					wire.NewValueBinary([]byte{4, 5, 6}),
@@ -541,4 +542,38 @@ func TestTypedefAccessors(t *testing.T) {
 
 func TestTypedefPtr(t *testing.T) {
 	assert.Equal(t, td.State("foo"), *td.State("foo").Ptr())
+}
+
+func TestTypedefAnnotatedSetToSlice(t *testing.T) {
+	a := tss.StringList{"foo"}
+	b := tss.StringList{"foo"}
+	c := tss.MyStringList{"foo"}
+	d := tss.MyStringList{"foo"}
+	e := tss.AnotherStringList{"foo"}
+	f := tss.AnotherStringList{"foo"}
+	g := tss.StringListLsit{{"foo"}}
+	l := wire.NewValueList(
+		wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+			wire.NewValueString("foo"),
+		}),
+	)
+	ll := wire.NewValueList(
+		wire.ValueListFromSlice(wire.TList, []wire.Value{l}),
+	)
+	s := "[foo]"
+
+	assertRoundTrip(t, &a, l, "StringList")
+	assert.True(t, a.Equals(b))
+	assert.Equal(t, s, a.String())
+
+	assertRoundTrip(t, &c, l, "MyStringList")
+	assert.True(t, c.Equals(d))
+	assert.Equal(t, s, c.String())
+
+	assertRoundTrip(t, &e, l, "AnotherStringList")
+	assert.True(t, e.Equals(f))
+	assert.Equal(t, s, e.String())
+
+	assertRoundTrip(t, &g, ll, "StringListList")
+	assert.Equal(t, "[[foo]]", g.String())
 }

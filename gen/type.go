@@ -49,6 +49,13 @@ func isHashable(t compile.TypeSpec) bool {
 	return isPrimitiveType(t)
 }
 
+// setUsesMap returns true if the given set type is not annotated with
+// (go.type = "slice") and the value of the set is considered hashable
+// by thriftrw.
+func setUsesMap(spec *compile.SetSpec) bool {
+	return (spec.Annotations[goTypeKey] != slice) && isHashable(spec.ValueSpec)
+}
+
 // isPrimitiveType returns true if the given type is a primitive type.
 // Primitive types, enums, and typedefs of primitive types are considered
 // primitive.
@@ -165,11 +172,11 @@ func typeName(g Generator, spec compile.TypeSpec) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		if !isHashable(s.ValueSpec) {
-			// unhashable type
-			return fmt.Sprintf("[]%s", v), nil
+		// annotated to be slice or unhashable value type
+		if setUsesMap(s) {
+			return fmt.Sprintf("map[%s]struct{}", v), nil
 		}
-		return fmt.Sprintf("map[%s]struct{}", v), nil
+		return fmt.Sprintf("[]%s", v), nil
 	case *compile.EnumSpec, *compile.StructSpec, *compile.TypedefSpec:
 		return g.LookupTypeName(spec)
 	default:
