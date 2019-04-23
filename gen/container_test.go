@@ -686,7 +686,7 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 4, Value: wire.NewValueList(
+				{ID: 4, Value: wire.NewValueSet(
 					wire.ValueListFromSlice(wire.TSet, []wire.Value{
 						wire.NewValueSet(
 							wire.ValueListFromSlice(wire.TBinary, []wire.Value{
@@ -715,7 +715,7 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 5, Value: wire.NewValueList(
+				{ID: 5, Value: wire.NewValueSet(
 					wire.ValueListFromSlice(wire.TList, []wire.Value{
 						wire.NewValueList(
 							wire.ValueListFromSlice(wire.TBinary, []wire.Value{
@@ -752,7 +752,7 @@ func TestCrazyTown(t *testing.T) {
 				},
 			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{ID: 6, Value: wire.NewValueList(
+				{ID: 6, Value: wire.NewValueSet(
 					wire.ValueListFromSlice(wire.TMap, []wire.Value{
 						wire.NewValueMap(
 							wire.MapItemListFromSlice(wire.TBinary, wire.TBinary, []wire.MapItem{

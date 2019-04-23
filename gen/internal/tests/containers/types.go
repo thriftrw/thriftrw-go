@@ -657,7 +657,7 @@ func (v *ContainersOfContainers) ToWire() (wire.Value, error) {
 		i++
 	}
 	if v.SetOfSets != nil {
-		w, err = wire.NewValueList(_Set_Set_String_ValueList(v.SetOfSets)), error(nil)
+		w, err = wire.NewValueSet(_Set_Set_String_ValueList(v.SetOfSets)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -665,7 +665,7 @@ func (v *ContainersOfContainers) ToWire() (wire.Value, error) {
 		i++
 	}
 	if v.SetOfLists != nil {
-		w, err = wire.NewValueList(_Set_List_String_ValueList(v.SetOfLists)), error(nil)
+		w, err = wire.NewValueSet(_Set_List_String_ValueList(v.SetOfLists)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -673,7 +673,7 @@ func (v *ContainersOfContainers) ToWire() (wire.Value, error) {
 		i++
 	}
 	if v.SetOfMaps != nil {
-		w, err = wire.NewValueList(_Set_Map_String_String_ValueList(v.SetOfMaps)), error(nil)
+		w, err = wire.NewValueSet(_Set_Map_String_String_ValueList(v.SetOfMaps)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -1172,24 +1172,24 @@ func (v *ContainersOfContainers) FromWire(w wire.Value) error {
 
 			}
 		case 4:
-			if field.Value.Type() == wire.TList {
-				v.SetOfSets, err = _Set_Set_String_Read(field.Value.GetList())
+			if field.Value.Type() == wire.TSet {
+				v.SetOfSets, err = _Set_Set_String_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
 
 			}
 		case 5:
-			if field.Value.Type() == wire.TList {
-				v.SetOfLists, err = _Set_List_String_Read(field.Value.GetList())
+			if field.Value.Type() == wire.TSet {
+				v.SetOfLists, err = _Set_List_String_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
 
 			}
 		case 6:
-			if field.Value.Type() == wire.TList {
-				v.SetOfMaps, err = _Set_Map_String_String_Read(field.Value.GetList())
+			if field.Value.Type() == wire.TSet {
+				v.SetOfMaps, err = _Set_Map_String_String_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}

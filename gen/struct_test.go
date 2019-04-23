@@ -387,35 +387,35 @@ func TestStructRoundTripAndString(t *testing.T) {
 				Fields: []wire.Field{
 					{
 						ID: 1,
-						Value: wire.NewValueList(wire.ValueListFromSlice(wire.TI32, []wire.Value{
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TI32, []wire.Value{
 							wire.NewValueI32(1),
 							wire.NewValueI32(2),
 						})),
 					},
 					{
 						ID: 2,
-						Value: wire.NewValueList(wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 							wire.NewValueString("a"),
 							wire.NewValueString("b"),
 						})),
 					},
 					{
 						ID: 3,
-						Value: wire.NewValueList(wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 							wire.NewValueString("a"),
 							wire.NewValueString("b"),
 						})),
 					},
 					{
 						ID: 4,
-						Value: wire.NewValueList(wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 							wire.NewValueString("c"),
 							wire.NewValueString("d"),
 						})),
 					},
 					{
 						ID: 5,
-						Value: wire.NewValueList(wire.ValueListFromSlice(wire.TStruct, []wire.Value{
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 							wire.NewValueStruct(wire.Struct{
 								Fields: []wire.Field{
 									{
@@ -428,7 +428,7 @@ func TestStructRoundTripAndString(t *testing.T) {
 					},
 					{
 						ID: 7,
-						Value: wire.NewValueList(wire.ValueListFromSlice(wire.TStruct, []wire.Value{
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 							wire.NewValueStruct(wire.Struct{
 								Fields: []wire.Field{
 									{
@@ -441,8 +441,8 @@ func TestStructRoundTripAndString(t *testing.T) {
 					},
 					{
 						ID: 9,
-						Value: wire.NewValueList(wire.ValueListFromSlice(wire.TList, []wire.Value{
-							wire.NewValueList(
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TSet, []wire.Value{
+							wire.NewValueSet(
 								wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 									wire.NewValueString("x"),
 									wire.NewValueString("y"),
@@ -451,12 +451,12 @@ func TestStructRoundTripAndString(t *testing.T) {
 					},
 					{
 						ID: 10,
-						Value: wire.NewValueList(wire.ValueListFromSlice(wire.TList, []wire.Value{
-							wire.NewValueList(
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TSet, []wire.Value{
+							wire.NewValueSet(
 								wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 									wire.NewValueString("x"),
 								})),
-							wire.NewValueList(
+							wire.NewValueSet(
 								wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 									wire.NewValueString("y"),
 								})),

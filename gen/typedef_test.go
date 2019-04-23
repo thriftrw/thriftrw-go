@@ -266,7 +266,7 @@ func TestUnhashableSetAlias(t *testing.T) {
 	}{
 		{
 			td.FrameGroup{},
-			wire.NewValueList(
+			wire.NewValueSet(
 				wire.ValueListFromSlice(wire.TStruct, []wire.Value{}),
 			),
 		},
@@ -275,7 +275,7 @@ func TestUnhashableSetAlias(t *testing.T) {
 				&ts.Frame{TopLeft: &ts.Point{X: 1, Y: 2}, Size: &ts.Size{Width: 3, Height: 4}},
 				&ts.Frame{TopLeft: &ts.Point{X: 5, Y: 6}, Size: &ts.Size{Width: 7, Height: 8}},
 			},
-			wire.NewValueList(
+			wire.NewValueSet(
 				wire.ValueListFromSlice(wire.TStruct, []wire.Value{
 					wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 						{ID: 1, Value: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -463,7 +463,7 @@ func TestBinarySet(t *testing.T) {
 	}{
 		{
 			td.BinarySet{},
-			wire.NewValueList(
+			wire.NewValueSet(
 				wire.ValueListFromSlice(wire.TBinary, []wire.Value{}),
 			),
 		},
@@ -472,7 +472,7 @@ func TestBinarySet(t *testing.T) {
 				{1, 2, 3},
 				{4, 5, 6},
 			},
-			wire.NewValueList(
+			wire.NewValueSet(
 				wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 					wire.NewValueBinary([]byte{1, 2, 3}),
 					wire.NewValueBinary([]byte{4, 5, 6}),
@@ -552,13 +552,13 @@ func TestTypedefAnnotatedSetToSlice(t *testing.T) {
 	e := tss.AnotherStringList{"foo"}
 	f := tss.AnotherStringList{"foo"}
 	g := tss.StringListLsit{{"foo"}}
-	l := wire.NewValueList(
+	l := wire.NewValueSet(
 		wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 			wire.NewValueString("foo"),
 		}),
 	)
-	ll := wire.NewValueList(
-		wire.ValueListFromSlice(wire.TList, []wire.Value{l}),
+	ll := wire.NewValueSet(
+		wire.ValueListFromSlice(wire.TSet, []wire.Value{l}),
 	)
 	s := "[foo]"
 

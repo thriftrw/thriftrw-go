@@ -103,7 +103,7 @@ type BinarySet [][]byte
 // into bytes using a ThriftRW protocol implementation.
 func (v BinarySet) ToWire() (wire.Value, error) {
 	x := ([][]byte)(v)
-	return wire.NewValueList(_Set_Binary_ValueList(x)), error(nil)
+	return wire.NewValueSet(_Set_Binary_ValueList(x)), error(nil)
 }
 
 // String returns a readable string representation of BinarySet.
@@ -116,7 +116,7 @@ func (v BinarySet) String() string {
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 func (v *BinarySet) FromWire(w wire.Value) error {
-	x, err := _Set_Binary_Read(w.GetList())
+	x, err := _Set_Binary_Read(w.GetSet())
 	*v = (BinarySet)(x)
 	return err
 }
@@ -911,7 +911,7 @@ type FrameGroup []*structs.Frame
 // into bytes using a ThriftRW protocol implementation.
 func (v FrameGroup) ToWire() (wire.Value, error) {
 	x := ([]*structs.Frame)(v)
-	return wire.NewValueList(_Set_Frame_ValueList(x)), error(nil)
+	return wire.NewValueSet(_Set_Frame_ValueList(x)), error(nil)
 }
 
 // String returns a readable string representation of FrameGroup.
@@ -924,7 +924,7 @@ func (v FrameGroup) String() string {
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 func (v *FrameGroup) FromWire(w wire.Value) error {
-	x, err := _Set_Frame_Read(w.GetList())
+	x, err := _Set_Frame_Read(w.GetSet())
 	*v = (FrameGroup)(x)
 	return err
 }

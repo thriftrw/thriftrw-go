@@ -172,7 +172,7 @@ func typeName(g Generator, spec compile.TypeSpec) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		// annotated to be slice or unhashable value type
+		// not annotated to be slice and hashable value type
 		if setUsesMap(s) {
 			return fmt.Sprintf("map[%s]struct{}", v), nil
 		}

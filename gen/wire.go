@@ -95,20 +95,14 @@ func (w *WireGenerator) ToWire(g Generator, spec compile.TypeSpec, varName strin
 			return "", err
 		}
 
-		method := "NewValueSet"
-		if !setUsesMap(s) {
-			method = "NewValueList"
-		}
-
 		return g.TextTemplate(
-			`<.Wire>.<.Method>(<.ValueList>(<.Name>)), error(nil)`,
+			`<.Wire>.NewValueSet(<.ValueList>(<.Name>)), error(nil)`,
 			struct {
 				Wire      string
-				Method    string
 				Name      string
 				Spec      *compile.SetSpec
 				ValueList string
-			}{Wire: wire, Method: method, Name: varName, Spec: s, ValueList: valueList},
+			}{Wire: wire, Name: varName, Spec: s, ValueList: valueList},
 		)
 	default:
 		// Custom defined type
@@ -167,11 +161,7 @@ func (w *WireGenerator) FromWire(g Generator, spec compile.TypeSpec, value strin
 		if err != nil {
 			return "", err
 		}
-		method := "GetSet"
-		if !setUsesMap(s) {
-			method = "GetList"
-		}
-		return fmt.Sprintf("%s(%s.%s())", reader, value, method), nil
+		return fmt.Sprintf("%s(%s.GetSet())", reader, value), nil
 	case *compile.TypedefSpec:
 		reader, err := w.typedefG.Reader(g, s)
 		if err != nil {
@@ -230,7 +220,7 @@ func TypeCode(g Generator, spec compile.TypeSpec) string {
 	wire := g.Import("go.uber.org/thriftrw/wire")
 	spec = compile.RootTypeSpec(spec)
 
-	switch s := spec.(type) {
+	switch spec.(type) {
 	case *compile.BoolSpec:
 		return fmt.Sprintf("%s.TBool", wire)
 	case *compile.I8Spec:
@@ -250,11 +240,7 @@ func TypeCode(g Generator, spec compile.TypeSpec) string {
 	case *compile.ListSpec:
 		return fmt.Sprintf("%s.TList", wire)
 	case *compile.SetSpec:
-		typ := "TSet"
-		if !setUsesMap(s) {
-			typ = "TList"
-		}
-		return fmt.Sprintf("%s.%s", wire, typ)
+		return fmt.Sprintf("%s.TSet", wire)
 	case *compile.EnumSpec:
 		return fmt.Sprintf("%s.TI32", wire)
 	case *compile.StructSpec:

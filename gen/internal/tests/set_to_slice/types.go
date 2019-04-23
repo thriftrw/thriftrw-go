@@ -165,7 +165,7 @@ func (v _Set_Set_String_ValueList) ForEach(f func(wire.Value) error) error {
 		if x == nil {
 			return fmt.Errorf("invalid set item: value is nil")
 		}
-		w, err := wire.NewValueList(_Set_String_ValueList(x)), error(nil)
+		w, err := wire.NewValueSet(_Set_String_ValueList(x)), error(nil)
 		if err != nil {
 			return err
 		}
@@ -182,7 +182,7 @@ func (v _Set_Set_String_ValueList) Size() int {
 }
 
 func (_Set_Set_String_ValueList) ValueType() wire.Type {
-	return wire.TList
+	return wire.TSet
 }
 
 func (_Set_Set_String_ValueList) Close() {}
@@ -213,14 +213,14 @@ func (v *Bar) ToWire() (wire.Value, error) {
 	if v.RequiredInt32ListField == nil {
 		return w, errors.New("field RequiredInt32ListField of Bar is required")
 	}
-	w, err = wire.NewValueList(_Set_I32_ValueList(v.RequiredInt32ListField)), error(nil)
+	w, err = wire.NewValueSet(_Set_I32_ValueList(v.RequiredInt32ListField)), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
 	if v.OptionalStringListField != nil {
-		w, err = wire.NewValueList(_Set_String_ValueList(v.OptionalStringListField)), error(nil)
+		w, err = wire.NewValueSet(_Set_String_ValueList(v.OptionalStringListField)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -247,14 +247,14 @@ func (v *Bar) ToWire() (wire.Value, error) {
 	if v.RequiredFooListField == nil {
 		return w, errors.New("field RequiredFooListField of Bar is required")
 	}
-	w, err = wire.NewValueList(_Set_Foo_ValueList(v.RequiredFooListField)), error(nil)
+	w, err = wire.NewValueSet(_Set_Foo_ValueList(v.RequiredFooListField)), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 5, Value: w}
 	i++
 	if v.OptionalFooListField != nil {
-		w, err = wire.NewValueList(_Set_Foo_ValueList(v.OptionalFooListField)), error(nil)
+		w, err = wire.NewValueSet(_Set_Foo_ValueList(v.OptionalFooListField)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -281,7 +281,7 @@ func (v *Bar) ToWire() (wire.Value, error) {
 	if v.RequiredStringListListField == nil {
 		return w, errors.New("field RequiredStringListListField of Bar is required")
 	}
-	w, err = wire.NewValueList(_Set_Set_String_ValueList(v.RequiredStringListListField)), error(nil)
+	w, err = wire.NewValueSet(_Set_Set_String_ValueList(v.RequiredStringListListField)), error(nil)
 	if err != nil {
 		return w, err
 	}
@@ -376,13 +376,13 @@ func _FooList_Read(w wire.Value) (FooList, error) {
 }
 
 func _Set_Set_String_Read(s wire.ValueList) ([][]string, error) {
-	if s.ValueType() != wire.TList {
+	if s.ValueType() != wire.TSet {
 		return nil, nil
 	}
 
 	o := make([][]string, 0, s.Size())
 	err := s.ForEach(func(x wire.Value) error {
-		i, err := _Set_String_Read(x.GetList())
+		i, err := _Set_String_Read(x.GetSet())
 		if err != nil {
 			return err
 		}
@@ -434,23 +434,23 @@ func (v *Bar) FromWire(w wire.Value) error {
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
-			if field.Value.Type() == wire.TList {
-				v.RequiredInt32ListField, err = _Set_I32_Read(field.Value.GetList())
+			if field.Value.Type() == wire.TSet {
+				v.RequiredInt32ListField, err = _Set_I32_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
 				requiredInt32ListFieldIsSet = true
 			}
 		case 2:
-			if field.Value.Type() == wire.TList {
-				v.OptionalStringListField, err = _Set_String_Read(field.Value.GetList())
+			if field.Value.Type() == wire.TSet {
+				v.OptionalStringListField, err = _Set_String_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
 
 			}
 		case 3:
-			if field.Value.Type() == wire.TList {
+			if field.Value.Type() == wire.TSet {
 				v.RequiredTypedefStringListField, err = _StringList_Read(field.Value)
 				if err != nil {
 					return err
@@ -458,7 +458,7 @@ func (v *Bar) FromWire(w wire.Value) error {
 				requiredTypedefStringListFieldIsSet = true
 			}
 		case 4:
-			if field.Value.Type() == wire.TList {
+			if field.Value.Type() == wire.TSet {
 				v.OptionalTypedefStringListField, err = _StringList_Read(field.Value)
 				if err != nil {
 					return err
@@ -466,23 +466,23 @@ func (v *Bar) FromWire(w wire.Value) error {
 
 			}
 		case 5:
-			if field.Value.Type() == wire.TList {
-				v.RequiredFooListField, err = _Set_Foo_Read(field.Value.GetList())
+			if field.Value.Type() == wire.TSet {
+				v.RequiredFooListField, err = _Set_Foo_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
 				requiredFooListFieldIsSet = true
 			}
 		case 6:
-			if field.Value.Type() == wire.TList {
-				v.OptionalFooListField, err = _Set_Foo_Read(field.Value.GetList())
+			if field.Value.Type() == wire.TSet {
+				v.OptionalFooListField, err = _Set_Foo_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
 
 			}
 		case 7:
-			if field.Value.Type() == wire.TList {
+			if field.Value.Type() == wire.TSet {
 				v.RequiredTypedefFooListField, err = _FooList_Read(field.Value)
 				if err != nil {
 					return err
@@ -490,7 +490,7 @@ func (v *Bar) FromWire(w wire.Value) error {
 				requiredTypedefFooListFieldIsSet = true
 			}
 		case 8:
-			if field.Value.Type() == wire.TList {
+			if field.Value.Type() == wire.TSet {
 				v.OptionalTypedefFooListField, err = _FooList_Read(field.Value)
 				if err != nil {
 					return err
@@ -498,15 +498,15 @@ func (v *Bar) FromWire(w wire.Value) error {
 
 			}
 		case 9:
-			if field.Value.Type() == wire.TList {
-				v.RequiredStringListListField, err = _Set_Set_String_Read(field.Value.GetList())
+			if field.Value.Type() == wire.TSet {
+				v.RequiredStringListListField, err = _Set_Set_String_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
 				requiredStringListListFieldIsSet = true
 			}
 		case 10:
-			if field.Value.Type() == wire.TList {
+			if field.Value.Type() == wire.TSet {
 				v.RequiredTypedefStringListListField, err = _StringListLsit_Read(field.Value)
 				if err != nil {
 					return err
@@ -1053,7 +1053,7 @@ type FooList []*Foo
 // into bytes using a ThriftRW protocol implementation.
 func (v FooList) ToWire() (wire.Value, error) {
 	x := ([]*Foo)(v)
-	return wire.NewValueList(_Set_Foo_ValueList(x)), error(nil)
+	return wire.NewValueSet(_Set_Foo_ValueList(x)), error(nil)
 }
 
 // String returns a readable string representation of FooList.
@@ -1066,7 +1066,7 @@ func (v FooList) String() string {
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 func (v *FooList) FromWire(w wire.Value) error {
-	x, err := _Set_Foo_Read(w.GetList())
+	x, err := _Set_Foo_Read(w.GetSet())
 	*v = (FooList)(x)
 	return err
 }
@@ -1123,7 +1123,7 @@ type StringList []string
 // into bytes using a ThriftRW protocol implementation.
 func (v StringList) ToWire() (wire.Value, error) {
 	x := ([]string)(v)
-	return wire.NewValueList(_Set_String_ValueList(x)), error(nil)
+	return wire.NewValueSet(_Set_String_ValueList(x)), error(nil)
 }
 
 // String returns a readable string representation of StringList.
@@ -1136,7 +1136,7 @@ func (v StringList) String() string {
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 func (v *StringList) FromWire(w wire.Value) error {
-	x, err := _Set_String_Read(w.GetList())
+	x, err := _Set_String_Read(w.GetSet())
 	*v = (StringList)(x)
 	return err
 }
@@ -1158,7 +1158,7 @@ type StringListLsit [][]string
 // into bytes using a ThriftRW protocol implementation.
 func (v StringListLsit) ToWire() (wire.Value, error) {
 	x := ([][]string)(v)
-	return wire.NewValueList(_Set_Set_String_ValueList(x)), error(nil)
+	return wire.NewValueSet(_Set_Set_String_ValueList(x)), error(nil)
 }
 
 // String returns a readable string representation of StringListLsit.
@@ -1171,7 +1171,7 @@ func (v StringListLsit) String() string {
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 func (v *StringListLsit) FromWire(w wire.Value) error {
-	x, err := _Set_Set_String_Read(w.GetList())
+	x, err := _Set_Set_String_Read(w.GetSet())
 	*v = (StringListLsit)(x)
 	return err
 }
