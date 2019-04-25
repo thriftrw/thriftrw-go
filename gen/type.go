@@ -53,7 +53,7 @@ func isHashable(t compile.TypeSpec) bool {
 // (go.type = "slice") and the value of the set is considered hashable
 // by thriftrw.
 func setUsesMap(spec *compile.SetSpec) bool {
-	return (spec.Annotations[goTypeKey] != slice) && isHashable(spec.ValueSpec)
+	return (spec.Annotations[goTypeKey] != sliceType) && isHashable(spec.ValueSpec)
 }
 
 // isPrimitiveType returns true if the given type is a primitive type.

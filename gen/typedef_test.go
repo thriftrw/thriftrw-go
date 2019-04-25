@@ -551,7 +551,7 @@ func TestTypedefAnnotatedSetToSlice(t *testing.T) {
 	d := tss.MyStringList{"foo"}
 	e := tss.AnotherStringList{"foo"}
 	f := tss.AnotherStringList{"foo"}
-	g := tss.StringListLsit{{"foo"}}
+	g := tss.StringListList{{"foo"}}
 	l := wire.NewValueSet(
 		wire.ValueListFromSlice(wire.TBinary, []wire.Value{
 			wire.NewValueString("foo"),

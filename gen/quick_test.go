@@ -39,6 +39,7 @@ import (
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	tz "go.uber.org/thriftrw/gen/internal/tests/nozap"
 	tf "go.uber.org/thriftrw/gen/internal/tests/services"
+	tss "go.uber.org/thriftrw/gen/internal/tests/set_to_slice"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
@@ -374,6 +375,11 @@ func TestQuickSuite(t *testing.T) {
 			NoLog:  true,
 			Kind:   thriftStruct,
 		},
+		{
+			Sample: tss.Bar{},
+			NoLog:  true,
+			Kind:   thriftStruct,
+		},
 
 		// typedefs
 		{Sample: td.BinarySet{}, Kind: thriftTypedef},
@@ -392,6 +398,11 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: tz.StringMap{}, NoLog: true, Kind: thriftTypedef},
 		{Sample: tz.Primitives{}, NoLog: true, Kind: thriftTypedef},
 		{Sample: tz.StringList{}, NoLog: true, Kind: thriftTypedef},
+		{Sample: tss.StringList{}, NoLog: true, Kind: thriftTypedef},
+		{Sample: tss.FooList{}, NoLog: true, Kind: thriftTypedef},
+		{Sample: tss.MyStringList{}, NoLog: true, Kind: thriftTypedef},
+		{Sample: tss.AnotherStringList{}, NoLog: true, Kind: thriftTypedef},
+		{Sample: tss.StringListList{}, NoLog: true, Kind: thriftTypedef},
 
 		// enums
 		{

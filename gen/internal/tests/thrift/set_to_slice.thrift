@@ -3,7 +3,7 @@ typedef set<Foo> (go.type = "slice") FooList
 typedef StringList MyStringList
 typedef MyStringList AnotherStringList
 
-typedef set<set<string> (go.type = "slice")> (go.type = "slice") StringListLsit
+typedef set<set<string> (go.type = "slice")> (go.type = "slice") StringListList
 
 struct Foo {
     1: required string stringField
@@ -19,7 +19,7 @@ struct Bar {
     7: required FooList requiredTypedefFooListField
     8: optional FooList optionalTypedefFooListField
     9: required set<set<string> (go.type = "slice")> (go.type = "slice") requiredStringListListField
-    10: required StringListLsit requiredTypedefStringListListField
+    10: required StringListList requiredTypedefStringListListField
 }
 
 const set<string> (go.type = "slice") ConstStringList = ["hello"]

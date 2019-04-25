@@ -31,5 +31,5 @@ const (
 	//
 	// Currently, only thrift set to go slice type overriding is supported.
 	goTypeKey = "go.type"
-	slice     = "slice"
+	sliceType = "slice"
 )

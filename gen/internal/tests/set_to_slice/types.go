@@ -74,7 +74,7 @@ type Bar struct {
 	RequiredTypedefFooListField        FooList        `json:"requiredTypedefFooListField,required"`
 	OptionalTypedefFooListField        FooList        `json:"optionalTypedefFooListField,omitempty"`
 	RequiredStringListListField        [][]string     `json:"requiredStringListListField,required"`
-	RequiredTypedefStringListListField StringListLsit `json:"requiredTypedefStringListListField,required"`
+	RequiredTypedefStringListListField StringListList `json:"requiredTypedefStringListListField,required"`
 }
 
 type _Set_I32_ValueList []int32
@@ -394,8 +394,8 @@ func _Set_Set_String_Read(s wire.ValueList) ([][]string, error) {
 	return o, err
 }
 
-func _StringListLsit_Read(w wire.Value) (StringListLsit, error) {
-	var x StringListLsit
+func _StringListList_Read(w wire.Value) (StringListList, error) {
+	var x StringListList
 	err := x.FromWire(w)
 	return x, err
 }
@@ -507,7 +507,7 @@ func (v *Bar) FromWire(w wire.Value) error {
 			}
 		case 10:
 			if field.Value.Type() == wire.TSet {
-				v.RequiredTypedefStringListListField, err = _StringListLsit_Read(field.Value)
+				v.RequiredTypedefStringListListField, err = _StringListList_Read(field.Value)
 				if err != nil {
 					return err
 				}
@@ -904,7 +904,7 @@ func (v *Bar) IsSetRequiredStringListListField() bool {
 
 // GetRequiredTypedefStringListListField returns the value of RequiredTypedefStringListListField if it is set or its
 // zero value if it is unset.
-func (v *Bar) GetRequiredTypedefStringListListField() (o StringListLsit) {
+func (v *Bar) GetRequiredTypedefStringListListField() (o StringListList) {
 	if v != nil {
 		o = v.RequiredTypedefStringListListField
 	}
@@ -1151,37 +1151,37 @@ func (v StringList) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	return ((_Set_String_Zapper)(([]string)(v))).MarshalLogArray(enc)
 }
 
-type StringListLsit [][]string
+type StringListList [][]string
 
-// ToWire translates StringListLsit into a Thrift-level intermediate
+// ToWire translates StringListList into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
-func (v StringListLsit) ToWire() (wire.Value, error) {
+func (v StringListList) ToWire() (wire.Value, error) {
 	x := ([][]string)(v)
 	return wire.NewValueSet(_Set_Set_String_ValueList(x)), error(nil)
 }
 
-// String returns a readable string representation of StringListLsit.
-func (v StringListLsit) String() string {
+// String returns a readable string representation of StringListList.
+func (v StringListList) String() string {
 	x := ([][]string)(v)
 	return fmt.Sprint(x)
 }
 
-// FromWire deserializes StringListLsit from its Thrift-level
+// FromWire deserializes StringListList from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
-func (v *StringListLsit) FromWire(w wire.Value) error {
+func (v *StringListList) FromWire(w wire.Value) error {
 	x, err := _Set_Set_String_Read(w.GetSet())
-	*v = (StringListLsit)(x)
+	*v = (StringListList)(x)
 	return err
 }
 
-// Equals returns true if this StringListLsit is equal to the provided
-// StringListLsit.
-func (lhs StringListLsit) Equals(rhs StringListLsit) bool {
+// Equals returns true if this StringListList is equal to the provided
+// StringListList.
+func (lhs StringListList) Equals(rhs StringListList) bool {
 	return _Set_Set_String_Equals(([][]string)(lhs), ([][]string)(rhs))
 }
 
-func (v StringListLsit) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+func (v StringListList) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 	return ((_Set_Set_String_Zapper)(([][]string)(v))).MarshalLogArray(enc)
 }
