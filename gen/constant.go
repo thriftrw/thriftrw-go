@@ -158,23 +158,26 @@ func constantMap(g Generator, v compile.ConstantMap, t compile.TypeSpec) (string
 }
 
 func constantSet(g Generator, v compile.ConstantSet, t compile.TypeSpec) (string, error) {
-	valueSpec := compile.RootTypeSpec(t).(*compile.SetSpec).ValueSpec
+	rootSpec := compile.RootTypeSpec(t).(*compile.SetSpec)
+	valueSpec := rootSpec.ValueSpec
 	return g.TextTemplate(
 		`
+		<- $rootSpec := .RootSpec ->
 		<- $valueType := .ValueSpec ->
 		<- typeReference .Spec>{
 			<range .Value>
-				<- if isHashable $valueType ->
+				<- if setUsesMap $rootSpec ->
 					<constantValue . $valueType>: struct{}{},
 				<- else ->
 					<constantValue . $valueType>,
 				<- end>
 			<end>
 		}`, struct {
+			RootSpec  *compile.SetSpec
 			Spec      compile.TypeSpec
 			ValueSpec compile.TypeSpec
 			Value     compile.ConstantSet
-		}{Spec: t, ValueSpec: valueSpec, Value: v},
+		}{RootSpec: rootSpec, Spec: t, ValueSpec: valueSpec, Value: v},
 		TemplateFunc("constantValue", ConstantValue))
 }
 

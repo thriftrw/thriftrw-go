@@ -54,7 +54,7 @@ func (s *setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, er
 			<$f := newVar "f">
 			<$w := newVar "w">
 			func (<$v> <.Name>) ForEach(<$f> func(<$wire>.Value) error) error {
-				<- if isHashable .Spec.ValueSpec ->
+				<- if setUsesMap .Spec ->
 					for <$x> := range <$v> {
 				<- else ->
 					for _, <$x> := range <$v> {
@@ -112,7 +112,7 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 					return nil, nil
 				}
 
-				<if isHashable .Spec.ValueSpec>
+				<if setUsesMap .Spec>
 					<$o> := make(<$setType>, <$s>.Size())
 				<else>
 					<$o> := make(<$setType>, 0, <$s>.Size())
@@ -122,7 +122,7 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 					if err != nil {
 						return err
 					}
-					<if isHashable .Spec.ValueSpec>
+					<if setUsesMap .Spec>
 						<$o>[<$i>] = struct{}{}
 					<else>
 						<$o> = append(<$o>, <$i>)
@@ -168,7 +168,7 @@ func (s *setGenerator) Equals(g Generator, spec *compile.SetSpec) (string, error
 				<$x := newVar "x">
 				<$y := newVar "y">
 				<$ok := newVar "ok">
-				<if isHashable .Spec.ValueSpec>
+				<if setUsesMap .Spec>
 					for <$x> := range <$rhs> {
 						if _, <$ok> := <$lhs>[<$x>]; !<$ok> {
 							return false
@@ -219,7 +219,7 @@ func (s *setGenerator) zapMarshaler(
 			// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
 			// fast logging of <.Name>.
 			func (<$s> <.Name>) MarshalLogArray(<$enc> <$zapcore>.ArrayEncoder) (err error) {
-				<- if isHashable .Type.ValueSpec ->
+				<- if setUsesMap .Type ->
 					for <$v> := range <$s> {
 				<else ->
 					for _, <$v> := range <$s> {

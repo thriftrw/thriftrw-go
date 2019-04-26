@@ -23,6 +23,7 @@ package gen
 import (
 	"testing"
 
+	tss "go.uber.org/thriftrw/gen/internal/tests/set_to_slice"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/thriftrw/wire"
@@ -541,4 +542,38 @@ func TestTypedefAccessors(t *testing.T) {
 
 func TestTypedefPtr(t *testing.T) {
 	assert.Equal(t, td.State("foo"), *td.State("foo").Ptr())
+}
+
+func TestTypedefAnnotatedSetToSlice(t *testing.T) {
+	a := tss.StringList{"foo"}
+	b := tss.StringList{"foo"}
+	c := tss.MyStringList{"foo"}
+	d := tss.MyStringList{"foo"}
+	e := tss.AnotherStringList{"foo"}
+	f := tss.AnotherStringList{"foo"}
+	g := tss.StringListList{{"foo"}}
+	l := wire.NewValueSet(
+		wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+			wire.NewValueString("foo"),
+		}),
+	)
+	ll := wire.NewValueSet(
+		wire.ValueListFromSlice(wire.TSet, []wire.Value{l}),
+	)
+	s := "[foo]"
+
+	assertRoundTrip(t, &a, l, "StringList")
+	assert.True(t, a.Equals(b))
+	assert.Equal(t, s, a.String())
+
+	assertRoundTrip(t, &c, l, "MyStringList")
+	assert.True(t, c.Equals(d))
+	assert.Equal(t, s, c.String())
+
+	assertRoundTrip(t, &e, l, "AnotherStringList")
+	assert.True(t, e.Equals(f))
+	assert.Equal(t, s, e.String())
+
+	assertRoundTrip(t, &g, ll, "StringListList")
+	assert.Equal(t, "[[foo]]", g.String())
 }

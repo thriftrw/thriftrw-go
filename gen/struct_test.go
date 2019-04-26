@@ -31,6 +31,7 @@ import (
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	tss "go.uber.org/thriftrw/gen/internal/tests/set_to_slice"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
@@ -361,6 +362,109 @@ func TestStructRoundTripAndString(t *testing.T) {
 			&tx.EmptyException{},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
 			"",
+		},
+		{
+			"BarStruct",
+			&tss.Bar{
+				RequiredInt32ListField:         []int32{1, 2},
+				OptionalStringListField:        []string{"a", "b"},
+				RequiredTypedefStringListField: tss.StringList{"a", "b"},
+				OptionalTypedefStringListField: tss.StringList{"c", "d"},
+				RequiredFooListField: []*tss.Foo{
+					{
+						"a",
+					},
+				},
+				RequiredTypedefFooListField: tss.FooList{
+					{
+						"b",
+					},
+				},
+				RequiredStringListListField:        [][]string{{"x", "y"}},
+				RequiredTypedefStringListListField: [][]string{{"x"}, {"y"}},
+			},
+			wire.NewValueStruct(wire.Struct{
+				Fields: []wire.Field{
+					{
+						ID: 1,
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TI32, []wire.Value{
+							wire.NewValueI32(1),
+							wire.NewValueI32(2),
+						})),
+					},
+					{
+						ID: 2,
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+							wire.NewValueString("a"),
+							wire.NewValueString("b"),
+						})),
+					},
+					{
+						ID: 3,
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+							wire.NewValueString("a"),
+							wire.NewValueString("b"),
+						})),
+					},
+					{
+						ID: 4,
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+							wire.NewValueString("c"),
+							wire.NewValueString("d"),
+						})),
+					},
+					{
+						ID: 5,
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TStruct, []wire.Value{
+							wire.NewValueStruct(wire.Struct{
+								Fields: []wire.Field{
+									{
+										ID:    1,
+										Value: wire.NewValueString("a"),
+									},
+								},
+							}),
+						})),
+					},
+					{
+						ID: 7,
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TStruct, []wire.Value{
+							wire.NewValueStruct(wire.Struct{
+								Fields: []wire.Field{
+									{
+										ID:    1,
+										Value: wire.NewValueString("b"),
+									},
+								},
+							}),
+						})),
+					},
+					{
+						ID: 9,
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TSet, []wire.Value{
+							wire.NewValueSet(
+								wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+									wire.NewValueString("x"),
+									wire.NewValueString("y"),
+								})),
+						})),
+					},
+					{
+						ID: 10,
+						Value: wire.NewValueSet(wire.ValueListFromSlice(wire.TSet, []wire.Value{
+							wire.NewValueSet(
+								wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+									wire.NewValueString("x"),
+								})),
+							wire.NewValueSet(
+								wire.ValueListFromSlice(wire.TBinary, []wire.Value{
+									wire.NewValueString("y"),
+								})),
+						})),
+					},
+				},
+			}),
+			"Bar{RequiredInt32ListField: [1 2], OptionalStringListField: [a b], RequiredTypedefStringListField: [a b], OptionalTypedefStringListField: [c d], RequiredFooListField: [Foo{StringField: a}], RequiredTypedefFooListField: [Foo{StringField: b}], RequiredStringListListField: [[x y]], RequiredTypedefStringListListField: [[x] [y]]}",
 		},
 	}
 
