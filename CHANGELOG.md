@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- Add `(go.type = "slice")` annotation to allow generate thrift `set` type as go `slice` type.
+- Sets now support a `(go.type = "slice")` annotation to be generated as
+  slices rather than maps.
 
 ## [1.18.0] - 2019-03-28
 ### Added
