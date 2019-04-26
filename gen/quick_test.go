@@ -398,11 +398,11 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: tz.StringMap{}, NoLog: true, Kind: thriftTypedef},
 		{Sample: tz.Primitives{}, NoLog: true, Kind: thriftTypedef},
 		{Sample: tz.StringList{}, NoLog: true, Kind: thriftTypedef},
-		{Sample: tss.StringList{}, NoLog: true, Kind: thriftTypedef},
-		{Sample: tss.FooList{}, NoLog: true, Kind: thriftTypedef},
-		{Sample: tss.MyStringList{}, NoLog: true, Kind: thriftTypedef},
-		{Sample: tss.AnotherStringList{}, NoLog: true, Kind: thriftTypedef},
-		{Sample: tss.StringListList{}, NoLog: true, Kind: thriftTypedef},
+		{Sample: tss.StringList{}, Kind: thriftTypedef},
+		{Sample: tss.FooList{}, Kind: thriftTypedef},
+		{Sample: tss.MyStringList{}, Kind: thriftTypedef},
+		{Sample: tss.AnotherStringList{}, Kind: thriftTypedef},
+		{Sample: tss.StringListList{}, Kind: thriftTypedef},
 
 		// enums
 		{
