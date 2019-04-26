@@ -28,6 +28,7 @@ import (
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	tok "go.uber.org/thriftrw/gen/internal/tests/other_constants"
+	tss "go.uber.org/thriftrw/gen/internal/tests/set_to_slice"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
@@ -287,6 +288,16 @@ func TestConstants(t *testing.T) {
 			"myEnum",
 			tk.MyEnum,
 			td.MyEnum(te.EnumWithValuesY),
+		},
+		{
+			"setToSlice",
+			tss.ConstStringList,
+			[]string{"hello"},
+		},
+		{
+			"setToSliceNested",
+			tss.ConstListStringList,
+			[][]string{{"hello"}, {"world"}},
 		},
 	}
 

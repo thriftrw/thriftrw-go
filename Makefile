@@ -90,9 +90,9 @@ verifyversion: build
 	$(eval CHANGELOG_VERSION := $(shell perl -ne '/^## \[(\S+?)\]/ && print "v$$1\n"' CHANGELOG.md | head -n1))
 	$(eval INTHECODE_VERSION := $(shell perl -ne '/^const Version.*"([^"]+)".*$$/ && print "v$$1\n"' version/version.go))
 	@if [ "$(INTHECODE_VERSION)" = "$(CHANGELOG_VERSION)" ]; then \
-		echo "yarpc-go: $(CHANGELOG_VERSION)"; \
+		echo "thriftrw-go: $(CHANGELOG_VERSION)"; \
 	elif [ "$(CHANGELOG_VERSION)" = "vUnreleased" ]; then \
-		echo "yarpc-go (development): $(INTHECODE_VERSION)"; \
+		echo "thriftrw-go (development): $(INTHECODE_VERSION)"; \
 	else \
 		echo "Version number in version/version.go does not match CHANGELOG.md"; \
 		echo "version/version.go: $(INTHECODE_VERSION)"; \

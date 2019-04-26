@@ -31,6 +31,7 @@ import (
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tz "go.uber.org/thriftrw/gen/internal/tests/nozap"
+	tss "go.uber.org/thriftrw/gen/internal/tests/set_to_slice"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	"go.uber.org/zap/zapcore"
@@ -289,6 +290,52 @@ func TestListOfStructsZapLogging(t *testing.T) {
 		require.NoError(t, tt.r.MarshalLogObject(mapEncoder))
 		assert.Equal(t, tt.v, mapEncoder.Fields)
 	}
+}
+
+func TestStructWithFieldTypeAnnotatedSetToSlice(t *testing.T) {
+	// These types are created to ease building map[string]interface{}
+	type o = map[string]interface{}
+	type a = []interface{}
+
+	s := tss.Bar{
+		RequiredInt32ListField:         []int32{1},
+		OptionalStringListField:        []string{"foo"},
+		RequiredTypedefStringListField: tss.StringList{"foo"},
+		OptionalTypedefStringListField: tss.StringList{"foo"},
+		RequiredFooListField: []*tss.Foo{
+			{
+				StringField: "foo",
+			},
+		},
+		RequiredTypedefFooListField: tss.FooList{
+			{
+				StringField: "foo",
+			},
+		},
+		RequiredStringListListField:        [][]string{{"foo"}},
+		RequiredTypedefStringListListField: [][]string{{"foo"}},
+	}
+	v := o{
+		"requiredInt32ListField":         a{int32(1)},
+		"optionalStringListField":        a{"foo"},
+		"requiredTypedefStringListField": a{"foo"},
+		"optionalTypedefStringListField": a{"foo"},
+		"requiredFooListField": a{
+			o{
+				"stringField": "foo",
+			},
+		},
+		"requiredTypedefFooListField": a{
+			o{
+				"stringField": "foo",
+			},
+		},
+		"requiredStringListListField":        a{a{"foo"}},
+		"requiredTypedefStringListListField": a{a{"foo"}},
+	}
+	mapEncoder := zapcore.NewMapObjectEncoder()
+	require.NoError(t, s.MarshalLogObject(mapEncoder))
+	assert.Equal(t, v, mapEncoder.Fields)
 }
 
 func TestCrazyTownZapLogging(t *testing.T) {
@@ -557,6 +604,21 @@ func TestTypedefsZapLogging(t *testing.T) {
 	require.NoError(t, test6.MarshalLogObject(mapEncoder))
 	expected6 := o{"foo": int64(1), "bar": int64(2)}
 	assert.Equal(t, expected6, mapEncoder.Fields)
+
+	// test set annotated with (go.type = "slice")
+	mapEncoder = zapcore.NewMapObjectEncoder()
+	test7 := tss.StringList{"foo"}
+	expected7 := o{"addTypedefSetToSliceTest": a{"foo"}}
+	err := mapEncoder.AddArray("addTypedefSetToSliceTest", test7)
+	require.NoError(t, err)
+	assert.Equal(t, expected7, mapEncoder.Fields)
+
+	mapEncoder = zapcore.NewMapObjectEncoder()
+	test8 := tss.MyStringList{"foo"}
+	expected8 := o{"addTypedefSetToSliceTest": a{"foo"}}
+	err = mapEncoder.AddArray("addTypedefSetToSliceTest", test8)
+	require.NoError(t, err)
+	assert.Equal(t, expected8, mapEncoder.Fields)
 }
 
 func TestEnumWithLabelZapLogging(t *testing.T) {
