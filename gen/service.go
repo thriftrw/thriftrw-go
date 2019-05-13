@@ -58,6 +58,27 @@ func Service(g Generator, s *compile.ServiceSpec) (map[string]*bytes.Buffer, err
 	return files, nil
 }
 
+// Services generates code for all services into a single file and stores the code
+// in the generator to be written.
+//
+// Returns a map from file name to contents for that file. The file names are
+// relative to the package directory for the service.
+func Services(g Generator, services map[string]*compile.ServiceSpec) error {
+	for _, serviceName := range sortStringKeys(services) {
+		s := services[serviceName]
+		for _, functionName := range sortStringKeys(s.Functions) {
+			function := s.Functions[functionName]
+			if err := ServiceFunction(g, s, function); err != nil {
+				return fmt.Errorf(
+					"could not generate types for %s.%s: %v",
+					s.Name, functionName, err)
+			}
+		}
+	}
+
+	return nil
+}
+
 // ServiceFunction generates code for the given function of the given service.
 func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpec) error {
 	argsName := functionNamePrefix(s, f) + "Args"
