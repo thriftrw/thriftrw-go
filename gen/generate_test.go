@@ -91,6 +91,14 @@ func TestGenerate(t *testing.T) {
 			File:   testdata(t, "thrift/foo.thrift"),
 			Target: ts,
 		}
+		ss = &compile.ServiceSpec{
+			Name: "Foo Service",
+			File: testdata(t, "thrift/foo.thrift"),
+		}
+		ss2 = &compile.ServiceSpec{
+			Name: "Bar Service",
+			File: testdata(t, "thrift/common/bar.thrift"),
+		}
 	)
 
 	ts2, err := ts2.Link(compile.EmptyScope("bar"))
@@ -112,13 +120,15 @@ func TestGenerate(t *testing.T) {
 				},
 			},
 		},
-		Types: map[string]compile.TypeSpec{"Timestamp": ts2},
+		Types:    map[string]compile.TypeSpec{"Timestamp": ts2},
+		Services: map[string]*compile.ServiceSpec{"Foo": ss, "Bar": ss2},
 	}
 
 	tests := []struct {
-		desc      string
-		noRecurse bool
-		getPlugin func(*gomock.Controller) plugin.Handle
+		desc       string
+		noRecurse  bool
+		getPlugin  func(*gomock.Controller) plugin.Handle
+		outputFile string
 
 		wantFiles []string
 		wantError string
@@ -126,13 +136,12 @@ func TestGenerate(t *testing.T) {
 		{
 			desc:      "nil plugin; no recurse",
 			noRecurse: true,
-			wantFiles: []string{"foo/types.go"},
+			wantFiles: []string{"foo/foo.go"},
 		},
 		{
 			desc: "nil plugin; recurse",
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
+				"foo/foo.go",
 			},
 		},
 		{
@@ -143,8 +152,7 @@ func TestGenerate(t *testing.T) {
 				return handle
 			},
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
+				"foo/foo.go",
 			},
 		},
 		{
@@ -153,8 +161,17 @@ func TestGenerate(t *testing.T) {
 				return plugin.EmptyHandle
 			},
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
+				"foo/foo.go",
+			},
+		},
+		{
+			desc: "single file output",
+			getPlugin: func(mockCtrl *gomock.Controller) plugin.Handle {
+				return plugin.EmptyHandle
+			},
+			outputFile: "services.go",
+			wantFiles: []string{
+				"foo/services.go",
 			},
 		},
 		{
@@ -174,10 +191,7 @@ func TestGenerate(t *testing.T) {
 				return handle
 			},
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
-				"foo.txt",
-				"bar/baz.go",
+				"foo/foo.go",
 			},
 		},
 		{
@@ -187,7 +201,7 @@ func TestGenerate(t *testing.T) {
 				sgen.EXPECT().Generate(gomock.Any()).
 					Return(&api.GenerateServiceResponse{
 						Files: map[string][]byte{
-							"common/bar/types.go": []byte("hulk smash"),
+							"common/bar/bar.go": []byte("hulk smash"),
 						},
 					}, nil)
 
@@ -195,7 +209,7 @@ func TestGenerate(t *testing.T) {
 				handle.EXPECT().ServiceGenerator().Return(sgen)
 				return handle
 			},
-			wantError: `file generation conflict: multiple sources are trying to write to "common/bar/types.go"`,
+			wantError: `file generation conflict: multiple sources are trying to write to "common/bar/bar.go"`,
 		},
 		{
 			desc: "ServiceGenerator plugin error",
@@ -231,6 +245,7 @@ func TestGenerate(t *testing.T) {
 				ThriftRoot:    testdata(t, "thrift"),
 				Plugin:        p,
 				NoRecurse:     tt.noRecurse,
+				OutputFile:    tt.outputFile,
 			})
 			if tt.wantError != "" {
 				assert.Contains(t, err.Error(), tt.wantError)

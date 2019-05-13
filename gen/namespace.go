@@ -112,7 +112,9 @@ func (n *namespace) Rotate(base string) (string, error) {
 }
 
 func (n *namespace) Reserve(name string) error {
-	if n.isTaken(name) {
+	// A single Go file can have multiple init() functions so we don't need to
+	// reserve it.
+	if n.isTaken(name) && (name != "init") {
 		return namespaceError{name}
 	}
 	n.taken[name] = struct{}{}

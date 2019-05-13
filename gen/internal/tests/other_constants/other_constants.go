@@ -8,6 +8,17 @@ import (
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 )
 
+var ListOfInts []int32 = []int32{
+	1,
+	2,
+	3,
+}
+
+var SomePoint *structs.Point = &structs.Point{
+	X: 1,
+	Y: 2,
+}
+
 // ThriftModule represents the IDL file used to generate this package.
 var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "other_constants",
