@@ -59,6 +59,8 @@ type genOptions struct {
 	NoServiceHelpers  bool `long:"no-service-helpers" description:"Do not generate service helpers."`
 	NoEmbedIDL        bool `long:"no-embed-idl" description:"Do not embed IDLs into the generated code."`
 	NoZap             bool `long:"no-zap" description:"Do not generate code for Zap logging."`
+	SingleFile        string `long:"single-file" value-name:"FILENAME" description:"Generates a single .go file as an output."`
+	// TODO(rhang): change file into a name for the output, call with same name
 
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
@@ -155,6 +157,10 @@ func do() (err error) {
 		}
 	}
 
+	if len(gopts.SingleFile) > 0 && filepath.Ext(gopts.SingleFile) != ".go" {
+		return fmt.Errorf("Name: %v invalid. A {FILENAME}.go name must be provided", gopts.SingleFile)
+	}
+
 	pluginHandle, err := gopts.Plugins.Handle()
 	if err != nil {
 		return fmt.Errorf("Failed to initialize plugins: %+v", err)
@@ -180,6 +186,7 @@ func do() (err error) {
 		NoServiceHelpers: gopts.NoServiceHelpers || gopts.NoTypes,
 		NoEmbedIDL:       gopts.NoEmbedIDL,
 		NoZap:            gopts.NoZap,
+		SingleFile:		  gopts.SingleFile,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {
 		return fmt.Errorf("Failed to generate code: %+v", err)

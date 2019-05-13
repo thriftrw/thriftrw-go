@@ -91,6 +91,14 @@ func TestGenerate(t *testing.T) {
 			File:   testdata(t, "thrift/foo.thrift"),
 			Target: ts,
 		}
+		ss = &compile.ServiceSpec{
+			Name:   "Foo Service",
+			File:   testdata(t, "thrift/foo.thrift"),
+		}
+		ss2 = &compile.ServiceSpec{
+			Name:   "Bar Service",
+			File:   testdata(t, "thrift/common/bar.thrift"),
+		}
 	)
 
 	ts2, err := ts2.Link(compile.EmptyScope("bar"))
@@ -113,13 +121,16 @@ func TestGenerate(t *testing.T) {
 			},
 		},
 		Types: map[string]compile.TypeSpec{"Timestamp": ts2},
+		Services: map[string]*compile.ServiceSpec{"Foo": ss, "Bar": ss2},
 	}
 
 	tests := []struct {
 		desc      string
 		noRecurse bool
 		getPlugin func(*gomock.Controller) plugin.Handle
+		singleFile string
 
+		notWantFiles []string
 		wantFiles []string
 		wantError string
 	}{
@@ -155,6 +166,21 @@ func TestGenerate(t *testing.T) {
 			wantFiles: []string{
 				"foo/types.go",
 				"common/bar/types.go",
+			},
+		},
+		{
+			desc: "single file output",
+			getPlugin: func(mockCtrl *gomock.Controller) plugin.Handle {
+				return plugin.EmptyHandle
+			},
+			singleFile: "services.go",
+			notWantFiles: []string{
+				"foo/types.go",
+				"common/bar/types.go",
+				"common/bar/serivces.go",
+			},
+			wantFiles: []string{
+				"foo/services.go",
 			},
 		},
 		{
@@ -231,6 +257,7 @@ func TestGenerate(t *testing.T) {
 				ThriftRoot:    testdata(t, "thrift"),
 				Plugin:        p,
 				NoRecurse:     tt.noRecurse,
+				SingleFile:    tt.singleFile,
 			})
 			if tt.wantError != "" {
 				assert.Contains(t, err.Error(), tt.wantError)
@@ -241,6 +268,10 @@ func TestGenerate(t *testing.T) {
 				for _, f := range tt.wantFiles {
 					_, err = os.Stat(filepath.Join(outputDir, f))
 					assert.NoError(t, err, tt.desc)
+				}
+				for _, f := range tt.notWantFiles {
+					_, err = os.Stat(filepath.Join(outputDir, f))
+					assert.Error(t, err, tt.desc)
 				}
 			}
 		}()

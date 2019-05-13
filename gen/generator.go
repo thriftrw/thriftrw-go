@@ -130,6 +130,7 @@ type generator struct {
 	e              equalsGenerator
 	z              zapGenerator
 	noZap          bool
+	singleFile     string
 	decls          []ast.Decl
 	thriftImporter ThriftPackageImporter
 	mangler        *mangler
@@ -147,6 +148,7 @@ type GeneratorOptions struct {
 	PackageName string
 
 	NoZap bool
+	SingleFile string
 }
 
 // NewGenerator sets up a new generator for Go code.
@@ -162,6 +164,7 @@ func NewGenerator(o *GeneratorOptions) Generator {
 		thriftImporter: o.Importer,
 		fset:           token.NewFileSet(),
 		noZap:          o.NoZap,
+		singleFile:     o.SingleFile,
 	}
 }
 

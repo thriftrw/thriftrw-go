@@ -23,10 +23,9 @@ package gen
 import (
 	"bytes"
 	"fmt"
+	"go.uber.org/thriftrw/compile"
 	"go/token"
 	"strings"
-
-	"go.uber.org/thriftrw/compile"
 )
 
 // Service generates code for the given service.
@@ -55,6 +54,35 @@ func Service(g Generator, s *compile.ServiceSpec) (map[string]*bytes.Buffer, err
 		files[fileName] = buff
 	}
 
+	return files, nil
+}
+
+// Services generates code for all services into a single file.
+//
+// Returns a map from file name to contents for that file. The file names are
+// relative to the package directory for the service.
+func Services(g Generator, services map[string]*compile.ServiceSpec, name string) (map[string]*bytes.Buffer, error) {
+	fileName := fmt.Sprintf("%s", strings.ToLower(name))
+	files := make(map[string]*bytes.Buffer)
+
+	for _, serviceName := range sortStringKeys(services) {
+		s := services[serviceName]
+		for _, functionName := range sortStringKeys(s.Functions) {
+			function := s.Functions[functionName]
+			if err := ServiceFunction(g, s, function); err != nil {
+				return nil, fmt.Errorf(
+					"could not generate types for %s.%s: %v",
+					s.Name, functionName, err)
+			}
+		}
+	}
+
+	buff := new(bytes.Buffer)
+	if err := g.Write(buff, token.NewFileSet()); err != nil {
+		return nil, fmt.Errorf("could not write %s: %v", "services.go", err)
+	}
+
+	files[fileName] = buff
 	return files, nil
 }
 

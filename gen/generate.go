@@ -76,6 +76,9 @@ type Options struct {
 
 	// Do not generate Zap logging code
 	NoZap bool
+
+	// Generate a single file
+	SingleFile string
 }
 
 // Generate generates code based on the given options.
@@ -238,6 +241,7 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 		ImportPath:  importPath,
 		PackageName: packageName,
 		NoZap:       o.NoZap,
+		SingleFile:  o.SingleFile,
 	}
 	g := NewGenerator(gopts)
 
@@ -248,15 +252,17 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 			}
 		}
 
-		buff := new(bytes.Buffer)
-		if err := g.Write(buff, nil /* fset */); err != nil {
-			return nil, fmt.Errorf(
-				"could not generate constants for %q: %v", m.ThriftPath, err)
-		}
+		if len(o.SingleFile) == 0 {
+			buff := new(bytes.Buffer)
+			if err := g.Write(buff, nil); err != nil {
+				return nil, fmt.Errorf(
+					"could not generate constants for %q: %v", m.ThriftPath, err)
+			}
 
-		// TODO(abg): Verify no file collisions
-		if !o.NoConstants {
-			files["constants.go"] = buff.Bytes()
+			// TODO(abg): Verify no file collisions
+			if !o.NoConstants {
+				files["constants.go"] = buff.Bytes()
+			}
 		}
 	}
 
@@ -267,15 +273,17 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 			}
 		}
 
-		buff := new(bytes.Buffer)
-		if err := g.Write(buff, nil /* fset */); err != nil {
-			return nil, fmt.Errorf(
-				"could not generate types for %q: %v", m.ThriftPath, err)
-		}
+		if len(o.SingleFile) == 0 {
+			buff := new(bytes.Buffer)
+			if err := g.Write(buff, nil); err != nil {
+				return nil, fmt.Errorf(
+					"could not generate types for %q: %v", m.ThriftPath, err)
+			}
 
-		// TODO(abg): Verify no file collisions
-		if !o.NoTypes {
-			files["types.go"] = buff.Bytes()
+			// TODO(abg): Verify no file collisions
+			if !o.NoTypes {
+				files["types.go"] = buff.Bytes()
+			}
 		}
 	}
 
@@ -284,37 +292,25 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 			return nil, err
 		}
 
-		buff := new(bytes.Buffer)
-		if err := g.Write(buff, nil /* fset */); err != nil {
-			return nil, fmt.Errorf(
-				"could not generate idl.go for %q: %v", m.ThriftPath, err)
-		}
+		if len(o.SingleFile) == 0 {
+			buff := new(bytes.Buffer)
+			if err := g.Write(buff, nil); err != nil {
+				return nil, fmt.Errorf(
+					"could not generate idl.go for %q: %v", m.ThriftPath, err)
+			}
 
-		files["idl.go"] = buff.Bytes()
+			files["idl.go"] = buff.Bytes()
+		}
 	}
 
 	// Services must be generated last because names of user-defined types take
 	// precedence over the names we pick for the service types.
 	if len(m.Services) > 0 {
-		for _, serviceName := range sortStringKeys(m.Services) {
-			service := m.Services[serviceName]
-
-			// generateModule gets called only for those modules for which we
-			// need to generate code. With --no-recurse, generateModule is
-			// called only on the root file specified by the user and not its
-			// included modules. Only services defined in these files are
-			// considered root services; plugins will generate code only for
-			// root services, even though they have information about the
-			// whole service tree.
-			if _, err := builder.AddRootService(service); err != nil {
-				return nil, err
-			}
-
-			serviceFiles, err := Service(g, service)
+		if len(o.SingleFile) > 0 {
+			serviceFiles, err := Services(g, m.Services, o.SingleFile)
 			if err != nil {
 				return nil, fmt.Errorf(
-					"could not generate code for service %q: %v",
-					serviceName, err)
+					"could not generate code for all services in the thrift file: %v", err)
 			}
 
 			if !o.NoServiceHelpers {
@@ -322,7 +318,43 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 					files[name] = buff.Bytes()
 				}
 			}
+		} else {
+			for _, serviceName := range sortStringKeys(m.Services) {
+				service := m.Services[serviceName]
+
+				// generateModule gets called only for those modules for which we
+				// need to generate code. With --no-recurse, generateModule is
+				// called only on the root file specified by the user and not its
+
+				// considered root services; plugins will generate code only for
+				// root services, even though they have information about the
+				// whole service tree.
+				if _, err := builder.AddRootService(service); err != nil {
+					return nil, err
+				}
+
+				serviceFiles, err := Service(g, service)
+				if err != nil {
+					return nil, fmt.Errorf(
+						"could not generate code for service %q: %v",
+						serviceName, err)
+				}
+
+				if !o.NoServiceHelpers {
+					for name, buff := range serviceFiles {
+						files[name] = buff.Bytes()
+					}
+				}
+			}
 		}
+	} else {
+		buff := new(bytes.Buffer)
+		if err := g.Write(buff, nil); err != nil {
+			return nil, fmt.Errorf(
+				"could not write non-service code when no services were found", err)
+		}
+
+		files[o.SingleFile] = buff.Bytes()
 	}
 
 	newFiles := make(map[string][]byte, len(files))

@@ -112,7 +112,7 @@ func (n *namespace) Rotate(base string) (string, error) {
 }
 
 func (n *namespace) Reserve(name string) error {
-	if n.isTaken(name) {
+	if n.isTaken(name) && (name != "init") {
 		return namespaceError{name}
 	}
 	n.taken[name] = struct{}{}
