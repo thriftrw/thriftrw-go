@@ -1,0 +1,22 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "constants.go",
+        "idl.go",
+    ],
+    importpath = "",
+    visibility = ["//gen:__subpackages__"],
+    deps = [
+        "@org_uber_go_thriftrw//gen/internal/tests/containers:go_default_library",
+        "@org_uber_go_thriftrw//gen/internal/tests/enums:go_default_library",
+        "@org_uber_go_thriftrw//gen/internal/tests/exceptions:go_default_library",
+        "@org_uber_go_thriftrw//gen/internal/tests/other_constants:go_default_library",
+        "@org_uber_go_thriftrw//gen/internal/tests/structs:go_default_library",
+        "@org_uber_go_thriftrw//gen/internal/tests/typedefs:go_default_library",
+        "@org_uber_go_thriftrw//gen/internal/tests/unions:go_default_library",
+        "@org_uber_go_thriftrw//ptr:go_default_library",
+        "@org_uber_go_thriftrw//thriftreflect:go_default_library",
+    ],
+)

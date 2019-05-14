@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "common.go",
+        "envelope.go",
+        "error.go",
+        "lazy_list.go",
+        "reader.go",
+        "writer.go",
+    ],
+    importpath = "",
+    visibility = ["//visibility:public"],
+    deps = ["@org_uber_go_thriftrw//wire:go_default_library"],
+)

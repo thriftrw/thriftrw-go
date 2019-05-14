@@ -1,0 +1,45 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "doc.go",
+        "gen.go",
+        "plugin.go",
+        "template.go",
+    ],
+    importpath = "",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@org_golang_x_tools//go/ast/astutil:go_default_library",
+        "@org_uber_go_thriftrw//internal/envelope:go_default_library",
+        "@org_uber_go_thriftrw//internal/frame:go_default_library",
+        "@org_uber_go_thriftrw//internal/goast:go_default_library",
+        "@org_uber_go_thriftrw//internal/multiplex:go_default_library",
+        "@org_uber_go_thriftrw//plugin/api:go_default_library",
+        "@org_uber_go_thriftrw//protocol:go_default_library",
+        "@org_uber_go_thriftrw//ptr:go_default_library",
+        "@org_uber_go_thriftrw//version:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "plugin_test.go",
+        "template_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "@com_github_golang_mock//gomock:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@com_github_stretchr_testify//require:go_default_library",
+        "@org_uber_go_thriftrw//internal/envelope:go_default_library",
+        "@org_uber_go_thriftrw//internal/frame:go_default_library",
+        "@org_uber_go_thriftrw//internal/multiplex:go_default_library",
+        "@org_uber_go_thriftrw//plugin/api:go_default_library",
+        "@org_uber_go_thriftrw//plugin/plugintest:go_default_library",
+        "@org_uber_go_thriftrw//ptr:go_default_library",
+        "@org_uber_go_thriftrw//version:go_default_library",
+    ],
+)

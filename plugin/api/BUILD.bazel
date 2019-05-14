@@ -1,0 +1,28 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "constants.go",
+        "idl.go",
+        "plugin.go",
+        "plugin_client.go",
+        "plugin_goodbye.go",
+        "plugin_handler.go",
+        "plugin_handshake.go",
+        "servicegenerator.go",
+        "servicegenerator_client.go",
+        "servicegenerator_generate.go",
+        "servicegenerator_handler.go",
+        "types.go",
+    ],
+    importpath = "",
+    visibility = ["//visibility:public"],
+    deps = [
+        "@org_uber_go_multierr//:go_default_library",
+        "@org_uber_go_thriftrw//internal/envelope:go_default_library",
+        "@org_uber_go_thriftrw//thriftreflect:go_default_library",
+        "@org_uber_go_thriftrw//wire:go_default_library",
+        "@org_uber_go_zap//zapcore:go_default_library",
+    ],
+)

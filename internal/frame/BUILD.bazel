@@ -1,0 +1,37 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "client.go",
+        "doc.go",
+        "reader.go",
+        "server.go",
+        "writer.go",
+    ],
+    importpath = "",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "@org_uber_go_atomic//:go_default_library",
+        "@org_uber_go_multierr//:go_default_library",
+    ],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "client_server_test.go",
+        "client_test.go",
+        "mock_reader_test.go",
+        "mock_writer_test.go",
+        "reader_test.go",
+        "server_test.go",
+        "writer_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "@com_github_golang_mock//gomock:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@org_uber_go_thriftrw//internal/iotest:go_default_library",
+    ],
+)

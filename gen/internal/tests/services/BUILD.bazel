@@ -1,0 +1,29 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "cache_clear.go",
+        "cache_clearafter.go",
+        "conflictingnames_setvalue.go",
+        "idl.go",
+        "keyvalue_deletevalue.go",
+        "keyvalue_getmanyvalues.go",
+        "keyvalue_getvalue.go",
+        "keyvalue_setvalue.go",
+        "keyvalue_setvaluev2.go",
+        "keyvalue_size.go",
+        "non_standard_service_name_non_standard_function_name.go",
+        "types.go",
+    ],
+    importpath = "",
+    visibility = ["//gen:__subpackages__"],
+    deps = [
+        "@org_uber_go_multierr//:go_default_library",
+        "@org_uber_go_thriftrw//gen/internal/tests/exceptions:go_default_library",
+        "@org_uber_go_thriftrw//gen/internal/tests/unions:go_default_library",
+        "@org_uber_go_thriftrw//thriftreflect:go_default_library",
+        "@org_uber_go_thriftrw//wire:go_default_library",
+        "@org_uber_go_zap//zapcore:go_default_library",
+    ],
+)

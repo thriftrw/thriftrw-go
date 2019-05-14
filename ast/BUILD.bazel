@@ -1,0 +1,37 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "go_default_library",
+    srcs = [
+        "annotation.go",
+        "basetypeid_string.go",
+        "constant.go",
+        "definition.go",
+        "doc.go",
+        "header.go",
+        "line_no.go",
+        "node.go",
+        "program.go",
+        "type.go",
+        "visitor.go",
+        "walk.go",
+    ],
+    importpath = "",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "go_default_test",
+    srcs = [
+        "annotation_test.go",
+        "line_no_test.go",
+        "mock_visitor_test.go",
+        "walk_test.go",
+    ],
+    embed = [":go_default_library"],
+    deps = [
+        "@com_github_golang_mock//gomock:go_default_library",
+        "@com_github_stretchr_testify//assert:go_default_library",
+        "@org_uber_go_thriftrw//ast:go_default_library",
+    ],
+)
