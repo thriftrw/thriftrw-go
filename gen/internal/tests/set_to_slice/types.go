@@ -18,11 +18,11 @@ func _MyStringList_Read(w wire.Value) (MyStringList, error) {
 	return x, err
 }
 
-type _Set_String_Zapper []string
+type _Set_String_sliceType_Zapper []string
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _Set_String_Zapper.
-func (s _Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
+// fast logging of _Set_String_sliceType_Zapper.
+func (s _Set_String_sliceType_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range s {
 		enc.AppendString(v)
 	}
@@ -61,7 +61,7 @@ func (lhs AnotherStringList) Equals(rhs AnotherStringList) bool {
 }
 
 func (v AnotherStringList) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	return ((_Set_String_Zapper)(([]string)(v))).MarshalLogArray(enc)
+	return ((_Set_String_sliceType_Zapper)(([]string)(v))).MarshalLogArray(enc)
 }
 
 type Bar struct {
@@ -77,9 +77,9 @@ type Bar struct {
 	RequiredTypedefStringListListField StringListList `json:"requiredTypedefStringListListField,required"`
 }
 
-type _Set_I32_ValueList []int32
+type _Set_I32_sliceType_ValueList []int32
 
-func (v _Set_I32_ValueList) ForEach(f func(wire.Value) error) error {
+func (v _Set_I32_sliceType_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
 		w, err := wire.NewValueI32(x), error(nil)
 		if err != nil {
@@ -93,19 +93,19 @@ func (v _Set_I32_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _Set_I32_ValueList) Size() int {
+func (v _Set_I32_sliceType_ValueList) Size() int {
 	return len(v)
 }
 
-func (_Set_I32_ValueList) ValueType() wire.Type {
+func (_Set_I32_sliceType_ValueList) ValueType() wire.Type {
 	return wire.TI32
 }
 
-func (_Set_I32_ValueList) Close() {}
+func (_Set_I32_sliceType_ValueList) Close() {}
 
-type _Set_String_ValueList []string
+type _Set_String_sliceType_ValueList []string
 
-func (v _Set_String_ValueList) ForEach(f func(wire.Value) error) error {
+func (v _Set_String_sliceType_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
 		w, err := wire.NewValueString(x), error(nil)
 		if err != nil {
@@ -119,19 +119,19 @@ func (v _Set_String_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _Set_String_ValueList) Size() int {
+func (v _Set_String_sliceType_ValueList) Size() int {
 	return len(v)
 }
 
-func (_Set_String_ValueList) ValueType() wire.Type {
+func (_Set_String_sliceType_ValueList) ValueType() wire.Type {
 	return wire.TBinary
 }
 
-func (_Set_String_ValueList) Close() {}
+func (_Set_String_sliceType_ValueList) Close() {}
 
-type _Set_Foo_ValueList []*Foo
+type _Set_Foo_sliceType_ValueList []*Foo
 
-func (v _Set_Foo_ValueList) ForEach(f func(wire.Value) error) error {
+func (v _Set_Foo_sliceType_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid set item: value is nil")
@@ -148,24 +148,24 @@ func (v _Set_Foo_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _Set_Foo_ValueList) Size() int {
+func (v _Set_Foo_sliceType_ValueList) Size() int {
 	return len(v)
 }
 
-func (_Set_Foo_ValueList) ValueType() wire.Type {
+func (_Set_Foo_sliceType_ValueList) ValueType() wire.Type {
 	return wire.TStruct
 }
 
-func (_Set_Foo_ValueList) Close() {}
+func (_Set_Foo_sliceType_ValueList) Close() {}
 
-type _Set_Set_String_ValueList [][]string
+type _Set_Set_String_sliceType_sliceType_ValueList [][]string
 
-func (v _Set_Set_String_ValueList) ForEach(f func(wire.Value) error) error {
+func (v _Set_Set_String_sliceType_sliceType_ValueList) ForEach(f func(wire.Value) error) error {
 	for _, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid set item: value is nil")
 		}
-		w, err := wire.NewValueSet(_Set_String_ValueList(x)), error(nil)
+		w, err := wire.NewValueSet(_Set_String_sliceType_ValueList(x)), error(nil)
 		if err != nil {
 			return err
 		}
@@ -177,15 +177,15 @@ func (v _Set_Set_String_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _Set_Set_String_ValueList) Size() int {
+func (v _Set_Set_String_sliceType_sliceType_ValueList) Size() int {
 	return len(v)
 }
 
-func (_Set_Set_String_ValueList) ValueType() wire.Type {
+func (_Set_Set_String_sliceType_sliceType_ValueList) ValueType() wire.Type {
 	return wire.TSet
 }
 
-func (_Set_Set_String_ValueList) Close() {}
+func (_Set_Set_String_sliceType_sliceType_ValueList) Close() {}
 
 // ToWire translates a Bar struct into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
@@ -213,14 +213,14 @@ func (v *Bar) ToWire() (wire.Value, error) {
 	if v.RequiredInt32ListField == nil {
 		return w, errors.New("field RequiredInt32ListField of Bar is required")
 	}
-	w, err = wire.NewValueSet(_Set_I32_ValueList(v.RequiredInt32ListField)), error(nil)
+	w, err = wire.NewValueSet(_Set_I32_sliceType_ValueList(v.RequiredInt32ListField)), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 1, Value: w}
 	i++
 	if v.OptionalStringListField != nil {
-		w, err = wire.NewValueSet(_Set_String_ValueList(v.OptionalStringListField)), error(nil)
+		w, err = wire.NewValueSet(_Set_String_sliceType_ValueList(v.OptionalStringListField)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -247,14 +247,14 @@ func (v *Bar) ToWire() (wire.Value, error) {
 	if v.RequiredFooListField == nil {
 		return w, errors.New("field RequiredFooListField of Bar is required")
 	}
-	w, err = wire.NewValueSet(_Set_Foo_ValueList(v.RequiredFooListField)), error(nil)
+	w, err = wire.NewValueSet(_Set_Foo_sliceType_ValueList(v.RequiredFooListField)), error(nil)
 	if err != nil {
 		return w, err
 	}
 	fields[i] = wire.Field{ID: 5, Value: w}
 	i++
 	if v.OptionalFooListField != nil {
-		w, err = wire.NewValueSet(_Set_Foo_ValueList(v.OptionalFooListField)), error(nil)
+		w, err = wire.NewValueSet(_Set_Foo_sliceType_ValueList(v.OptionalFooListField)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -281,7 +281,7 @@ func (v *Bar) ToWire() (wire.Value, error) {
 	if v.RequiredStringListListField == nil {
 		return w, errors.New("field RequiredStringListListField of Bar is required")
 	}
-	w, err = wire.NewValueSet(_Set_Set_String_ValueList(v.RequiredStringListListField)), error(nil)
+	w, err = wire.NewValueSet(_Set_Set_String_sliceType_sliceType_ValueList(v.RequiredStringListListField)), error(nil)
 	if err != nil {
 		return w, err
 	}
@@ -300,7 +300,7 @@ func (v *Bar) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _Set_I32_Read(s wire.ValueList) ([]int32, error) {
+func _Set_I32_sliceType_Read(s wire.ValueList) ([]int32, error) {
 	if s.ValueType() != wire.TI32 {
 		return nil, nil
 	}
@@ -319,7 +319,7 @@ func _Set_I32_Read(s wire.ValueList) ([]int32, error) {
 	return o, err
 }
 
-func _Set_String_Read(s wire.ValueList) ([]string, error) {
+func _Set_String_sliceType_Read(s wire.ValueList) ([]string, error) {
 	if s.ValueType() != wire.TBinary {
 		return nil, nil
 	}
@@ -350,7 +350,7 @@ func _Foo_Read(w wire.Value) (*Foo, error) {
 	return &v, err
 }
 
-func _Set_Foo_Read(s wire.ValueList) ([]*Foo, error) {
+func _Set_Foo_sliceType_Read(s wire.ValueList) ([]*Foo, error) {
 	if s.ValueType() != wire.TStruct {
 		return nil, nil
 	}
@@ -375,14 +375,14 @@ func _FooList_Read(w wire.Value) (FooList, error) {
 	return x, err
 }
 
-func _Set_Set_String_Read(s wire.ValueList) ([][]string, error) {
+func _Set_Set_String_sliceType_sliceType_Read(s wire.ValueList) ([][]string, error) {
 	if s.ValueType() != wire.TSet {
 		return nil, nil
 	}
 
 	o := make([][]string, 0, s.Size())
 	err := s.ForEach(func(x wire.Value) error {
-		i, err := _Set_String_Read(x.GetSet())
+		i, err := _Set_String_sliceType_Read(x.GetSet())
 		if err != nil {
 			return err
 		}
@@ -435,7 +435,7 @@ func (v *Bar) FromWire(w wire.Value) error {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TSet {
-				v.RequiredInt32ListField, err = _Set_I32_Read(field.Value.GetSet())
+				v.RequiredInt32ListField, err = _Set_I32_sliceType_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
@@ -443,7 +443,7 @@ func (v *Bar) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TSet {
-				v.OptionalStringListField, err = _Set_String_Read(field.Value.GetSet())
+				v.OptionalStringListField, err = _Set_String_sliceType_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
@@ -467,7 +467,7 @@ func (v *Bar) FromWire(w wire.Value) error {
 			}
 		case 5:
 			if field.Value.Type() == wire.TSet {
-				v.RequiredFooListField, err = _Set_Foo_Read(field.Value.GetSet())
+				v.RequiredFooListField, err = _Set_Foo_sliceType_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
@@ -475,7 +475,7 @@ func (v *Bar) FromWire(w wire.Value) error {
 			}
 		case 6:
 			if field.Value.Type() == wire.TSet {
-				v.OptionalFooListField, err = _Set_Foo_Read(field.Value.GetSet())
+				v.OptionalFooListField, err = _Set_Foo_sliceType_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
@@ -499,7 +499,7 @@ func (v *Bar) FromWire(w wire.Value) error {
 			}
 		case 9:
 			if field.Value.Type() == wire.TSet {
-				v.RequiredStringListListField, err = _Set_Set_String_Read(field.Value.GetSet())
+				v.RequiredStringListListField, err = _Set_Set_String_sliceType_sliceType_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
@@ -584,7 +584,7 @@ func (v *Bar) String() string {
 	return fmt.Sprintf("Bar{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _Set_I32_Equals(lhs, rhs []int32) bool {
+func _Set_I32_sliceType_Equals(lhs, rhs []int32) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -605,7 +605,7 @@ func _Set_I32_Equals(lhs, rhs []int32) bool {
 	return true
 }
 
-func _Set_String_Equals(lhs, rhs []string) bool {
+func _Set_String_sliceType_Equals(lhs, rhs []string) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -626,7 +626,7 @@ func _Set_String_Equals(lhs, rhs []string) bool {
 	return true
 }
 
-func _Set_Foo_Equals(lhs, rhs []*Foo) bool {
+func _Set_Foo_sliceType_Equals(lhs, rhs []*Foo) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -647,7 +647,7 @@ func _Set_Foo_Equals(lhs, rhs []*Foo) bool {
 	return true
 }
 
-func _Set_Set_String_Equals(lhs, rhs [][]string) bool {
+func _Set_Set_String_sliceType_sliceType_Equals(lhs, rhs [][]string) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -655,7 +655,7 @@ func _Set_Set_String_Equals(lhs, rhs [][]string) bool {
 	for _, x := range lhs {
 		ok := false
 		for _, y := range rhs {
-			if _Set_String_Equals(x, y) {
+			if _Set_String_sliceType_Equals(x, y) {
 				ok = true
 				break
 			}
@@ -678,10 +678,10 @@ func (v *Bar) Equals(rhs *Bar) bool {
 	} else if rhs == nil {
 		return false
 	}
-	if !_Set_I32_Equals(v.RequiredInt32ListField, rhs.RequiredInt32ListField) {
+	if !_Set_I32_sliceType_Equals(v.RequiredInt32ListField, rhs.RequiredInt32ListField) {
 		return false
 	}
-	if !((v.OptionalStringListField == nil && rhs.OptionalStringListField == nil) || (v.OptionalStringListField != nil && rhs.OptionalStringListField != nil && _Set_String_Equals(v.OptionalStringListField, rhs.OptionalStringListField))) {
+	if !((v.OptionalStringListField == nil && rhs.OptionalStringListField == nil) || (v.OptionalStringListField != nil && rhs.OptionalStringListField != nil && _Set_String_sliceType_Equals(v.OptionalStringListField, rhs.OptionalStringListField))) {
 		return false
 	}
 	if !v.RequiredTypedefStringListField.Equals(rhs.RequiredTypedefStringListField) {
@@ -690,10 +690,10 @@ func (v *Bar) Equals(rhs *Bar) bool {
 	if !((v.OptionalTypedefStringListField == nil && rhs.OptionalTypedefStringListField == nil) || (v.OptionalTypedefStringListField != nil && rhs.OptionalTypedefStringListField != nil && v.OptionalTypedefStringListField.Equals(rhs.OptionalTypedefStringListField))) {
 		return false
 	}
-	if !_Set_Foo_Equals(v.RequiredFooListField, rhs.RequiredFooListField) {
+	if !_Set_Foo_sliceType_Equals(v.RequiredFooListField, rhs.RequiredFooListField) {
 		return false
 	}
-	if !((v.OptionalFooListField == nil && rhs.OptionalFooListField == nil) || (v.OptionalFooListField != nil && rhs.OptionalFooListField != nil && _Set_Foo_Equals(v.OptionalFooListField, rhs.OptionalFooListField))) {
+	if !((v.OptionalFooListField == nil && rhs.OptionalFooListField == nil) || (v.OptionalFooListField != nil && rhs.OptionalFooListField != nil && _Set_Foo_sliceType_Equals(v.OptionalFooListField, rhs.OptionalFooListField))) {
 		return false
 	}
 	if !v.RequiredTypedefFooListField.Equals(rhs.RequiredTypedefFooListField) {
@@ -702,7 +702,7 @@ func (v *Bar) Equals(rhs *Bar) bool {
 	if !((v.OptionalTypedefFooListField == nil && rhs.OptionalTypedefFooListField == nil) || (v.OptionalTypedefFooListField != nil && rhs.OptionalTypedefFooListField != nil && v.OptionalTypedefFooListField.Equals(rhs.OptionalTypedefFooListField))) {
 		return false
 	}
-	if !_Set_Set_String_Equals(v.RequiredStringListListField, rhs.RequiredStringListListField) {
+	if !_Set_Set_String_sliceType_sliceType_Equals(v.RequiredStringListListField, rhs.RequiredStringListListField) {
 		return false
 	}
 	if !v.RequiredTypedefStringListListField.Equals(rhs.RequiredTypedefStringListListField) {
@@ -712,35 +712,35 @@ func (v *Bar) Equals(rhs *Bar) bool {
 	return true
 }
 
-type _Set_I32_Zapper []int32
+type _Set_I32_sliceType_Zapper []int32
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _Set_I32_Zapper.
-func (s _Set_I32_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
+// fast logging of _Set_I32_sliceType_Zapper.
+func (s _Set_I32_sliceType_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range s {
 		enc.AppendInt32(v)
 	}
 	return err
 }
 
-type _Set_Foo_Zapper []*Foo
+type _Set_Foo_sliceType_Zapper []*Foo
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _Set_Foo_Zapper.
-func (s _Set_Foo_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
+// fast logging of _Set_Foo_sliceType_Zapper.
+func (s _Set_Foo_sliceType_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range s {
 		err = multierr.Append(err, enc.AppendObject(v))
 	}
 	return err
 }
 
-type _Set_Set_String_Zapper [][]string
+type _Set_Set_String_sliceType_sliceType_Zapper [][]string
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _Set_Set_String_Zapper.
-func (s _Set_Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
+// fast logging of _Set_Set_String_sliceType_sliceType_Zapper.
+func (s _Set_Set_String_sliceType_sliceType_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range s {
-		err = multierr.Append(err, enc.AppendArray((_Set_String_Zapper)(v)))
+		err = multierr.Append(err, enc.AppendArray((_Set_String_sliceType_Zapper)(v)))
 	}
 	return err
 }
@@ -751,24 +751,24 @@ func (v *Bar) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v == nil {
 		return nil
 	}
-	err = multierr.Append(err, enc.AddArray("requiredInt32ListField", (_Set_I32_Zapper)(v.RequiredInt32ListField)))
+	err = multierr.Append(err, enc.AddArray("requiredInt32ListField", (_Set_I32_sliceType_Zapper)(v.RequiredInt32ListField)))
 	if v.OptionalStringListField != nil {
-		err = multierr.Append(err, enc.AddArray("optionalStringListField", (_Set_String_Zapper)(v.OptionalStringListField)))
+		err = multierr.Append(err, enc.AddArray("optionalStringListField", (_Set_String_sliceType_Zapper)(v.OptionalStringListField)))
 	}
-	err = multierr.Append(err, enc.AddArray("requiredTypedefStringListField", (_Set_String_Zapper)(([]string)(v.RequiredTypedefStringListField))))
+	err = multierr.Append(err, enc.AddArray("requiredTypedefStringListField", (_Set_String_sliceType_Zapper)(([]string)(v.RequiredTypedefStringListField))))
 	if v.OptionalTypedefStringListField != nil {
-		err = multierr.Append(err, enc.AddArray("optionalTypedefStringListField", (_Set_String_Zapper)(([]string)(v.OptionalTypedefStringListField))))
+		err = multierr.Append(err, enc.AddArray("optionalTypedefStringListField", (_Set_String_sliceType_Zapper)(([]string)(v.OptionalTypedefStringListField))))
 	}
-	err = multierr.Append(err, enc.AddArray("requiredFooListField", (_Set_Foo_Zapper)(v.RequiredFooListField)))
+	err = multierr.Append(err, enc.AddArray("requiredFooListField", (_Set_Foo_sliceType_Zapper)(v.RequiredFooListField)))
 	if v.OptionalFooListField != nil {
-		err = multierr.Append(err, enc.AddArray("optionalFooListField", (_Set_Foo_Zapper)(v.OptionalFooListField)))
+		err = multierr.Append(err, enc.AddArray("optionalFooListField", (_Set_Foo_sliceType_Zapper)(v.OptionalFooListField)))
 	}
-	err = multierr.Append(err, enc.AddArray("requiredTypedefFooListField", (_Set_Foo_Zapper)(([]*Foo)(v.RequiredTypedefFooListField))))
+	err = multierr.Append(err, enc.AddArray("requiredTypedefFooListField", (_Set_Foo_sliceType_Zapper)(([]*Foo)(v.RequiredTypedefFooListField))))
 	if v.OptionalTypedefFooListField != nil {
-		err = multierr.Append(err, enc.AddArray("optionalTypedefFooListField", (_Set_Foo_Zapper)(([]*Foo)(v.OptionalTypedefFooListField))))
+		err = multierr.Append(err, enc.AddArray("optionalTypedefFooListField", (_Set_Foo_sliceType_Zapper)(([]*Foo)(v.OptionalTypedefFooListField))))
 	}
-	err = multierr.Append(err, enc.AddArray("requiredStringListListField", (_Set_Set_String_Zapper)(v.RequiredStringListListField)))
-	err = multierr.Append(err, enc.AddArray("requiredTypedefStringListListField", (_Set_Set_String_Zapper)(([][]string)(v.RequiredTypedefStringListListField))))
+	err = multierr.Append(err, enc.AddArray("requiredStringListListField", (_Set_Set_String_sliceType_sliceType_Zapper)(v.RequiredStringListListField)))
+	err = multierr.Append(err, enc.AddArray("requiredTypedefStringListListField", (_Set_Set_String_sliceType_sliceType_Zapper)(([][]string)(v.RequiredTypedefStringListListField))))
 	return err
 }
 
@@ -1053,7 +1053,7 @@ type FooList []*Foo
 // into bytes using a ThriftRW protocol implementation.
 func (v FooList) ToWire() (wire.Value, error) {
 	x := ([]*Foo)(v)
-	return wire.NewValueSet(_Set_Foo_ValueList(x)), error(nil)
+	return wire.NewValueSet(_Set_Foo_sliceType_ValueList(x)), error(nil)
 }
 
 // String returns a readable string representation of FooList.
@@ -1066,7 +1066,7 @@ func (v FooList) String() string {
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 func (v *FooList) FromWire(w wire.Value) error {
-	x, err := _Set_Foo_Read(w.GetSet())
+	x, err := _Set_Foo_sliceType_Read(w.GetSet())
 	*v = (FooList)(x)
 	return err
 }
@@ -1074,11 +1074,11 @@ func (v *FooList) FromWire(w wire.Value) error {
 // Equals returns true if this FooList is equal to the provided
 // FooList.
 func (lhs FooList) Equals(rhs FooList) bool {
-	return _Set_Foo_Equals(([]*Foo)(lhs), ([]*Foo)(rhs))
+	return _Set_Foo_sliceType_Equals(([]*Foo)(lhs), ([]*Foo)(rhs))
 }
 
 func (v FooList) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	return ((_Set_Foo_Zapper)(([]*Foo)(v))).MarshalLogArray(enc)
+	return ((_Set_Foo_sliceType_Zapper)(([]*Foo)(v))).MarshalLogArray(enc)
 }
 
 type MyStringList StringList
@@ -1113,7 +1113,7 @@ func (lhs MyStringList) Equals(rhs MyStringList) bool {
 }
 
 func (v MyStringList) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	return ((_Set_String_Zapper)(([]string)(v))).MarshalLogArray(enc)
+	return ((_Set_String_sliceType_Zapper)(([]string)(v))).MarshalLogArray(enc)
 }
 
 type StringList []string
@@ -1123,7 +1123,7 @@ type StringList []string
 // into bytes using a ThriftRW protocol implementation.
 func (v StringList) ToWire() (wire.Value, error) {
 	x := ([]string)(v)
-	return wire.NewValueSet(_Set_String_ValueList(x)), error(nil)
+	return wire.NewValueSet(_Set_String_sliceType_ValueList(x)), error(nil)
 }
 
 // String returns a readable string representation of StringList.
@@ -1136,7 +1136,7 @@ func (v StringList) String() string {
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 func (v *StringList) FromWire(w wire.Value) error {
-	x, err := _Set_String_Read(w.GetSet())
+	x, err := _Set_String_sliceType_Read(w.GetSet())
 	*v = (StringList)(x)
 	return err
 }
@@ -1144,11 +1144,11 @@ func (v *StringList) FromWire(w wire.Value) error {
 // Equals returns true if this StringList is equal to the provided
 // StringList.
 func (lhs StringList) Equals(rhs StringList) bool {
-	return _Set_String_Equals(([]string)(lhs), ([]string)(rhs))
+	return _Set_String_sliceType_Equals(([]string)(lhs), ([]string)(rhs))
 }
 
 func (v StringList) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	return ((_Set_String_Zapper)(([]string)(v))).MarshalLogArray(enc)
+	return ((_Set_String_sliceType_Zapper)(([]string)(v))).MarshalLogArray(enc)
 }
 
 type StringListList [][]string
@@ -1158,7 +1158,7 @@ type StringListList [][]string
 // into bytes using a ThriftRW protocol implementation.
 func (v StringListList) ToWire() (wire.Value, error) {
 	x := ([][]string)(v)
-	return wire.NewValueSet(_Set_Set_String_ValueList(x)), error(nil)
+	return wire.NewValueSet(_Set_Set_String_sliceType_sliceType_ValueList(x)), error(nil)
 }
 
 // String returns a readable string representation of StringListList.
@@ -1171,7 +1171,7 @@ func (v StringListList) String() string {
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 func (v *StringListList) FromWire(w wire.Value) error {
-	x, err := _Set_Set_String_Read(w.GetSet())
+	x, err := _Set_Set_String_sliceType_sliceType_Read(w.GetSet())
 	*v = (StringListList)(x)
 	return err
 }
@@ -1179,9 +1179,114 @@ func (v *StringListList) FromWire(w wire.Value) error {
 // Equals returns true if this StringListList is equal to the provided
 // StringListList.
 func (lhs StringListList) Equals(rhs StringListList) bool {
-	return _Set_Set_String_Equals(([][]string)(lhs), ([][]string)(rhs))
+	return _Set_Set_String_sliceType_sliceType_Equals(([][]string)(lhs), ([][]string)(rhs))
 }
 
 func (v StringListList) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	return ((_Set_Set_String_Zapper)(([][]string)(v))).MarshalLogArray(enc)
+	return ((_Set_Set_String_sliceType_sliceType_Zapper)(([][]string)(v))).MarshalLogArray(enc)
+}
+
+type _Set_String_mapType_ValueList map[string]struct{}
+
+func (v _Set_String_mapType_ValueList) ForEach(f func(wire.Value) error) error {
+	for x := range v {
+		w, err := wire.NewValueString(x), error(nil)
+		if err != nil {
+			return err
+		}
+
+		if err := f(w); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (v _Set_String_mapType_ValueList) Size() int {
+	return len(v)
+}
+
+func (_Set_String_mapType_ValueList) ValueType() wire.Type {
+	return wire.TBinary
+}
+
+func (_Set_String_mapType_ValueList) Close() {}
+
+func _Set_String_mapType_Read(s wire.ValueList) (map[string]struct{}, error) {
+	if s.ValueType() != wire.TBinary {
+		return nil, nil
+	}
+
+	o := make(map[string]struct{}, s.Size())
+	err := s.ForEach(func(x wire.Value) error {
+		i, err := x.GetString(), error(nil)
+		if err != nil {
+			return err
+		}
+
+		o[i] = struct{}{}
+		return nil
+	})
+	s.Close()
+	return o, err
+}
+
+func _Set_String_mapType_Equals(lhs, rhs map[string]struct{}) bool {
+	if len(lhs) != len(rhs) {
+		return false
+	}
+
+	for x := range rhs {
+		if _, ok := lhs[x]; !ok {
+			return false
+		}
+	}
+
+	return true
+}
+
+type _Set_String_mapType_Zapper map[string]struct{}
+
+// MarshalLogArray implements zapcore.ArrayMarshaler, enabling
+// fast logging of _Set_String_mapType_Zapper.
+func (s _Set_String_mapType_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
+	for v := range s {
+		enc.AppendString(v)
+	}
+	return err
+}
+
+type StringSet map[string]struct{}
+
+// ToWire translates StringSet into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+func (v StringSet) ToWire() (wire.Value, error) {
+	x := (map[string]struct{})(v)
+	return wire.NewValueSet(_Set_String_mapType_ValueList(x)), error(nil)
+}
+
+// String returns a readable string representation of StringSet.
+func (v StringSet) String() string {
+	x := (map[string]struct{})(v)
+	return fmt.Sprint(x)
+}
+
+// FromWire deserializes StringSet from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+func (v *StringSet) FromWire(w wire.Value) error {
+	x, err := _Set_String_mapType_Read(w.GetSet())
+	*v = (StringSet)(x)
+	return err
+}
+
+// Equals returns true if this StringSet is equal to the provided
+// StringSet.
+func (lhs StringSet) Equals(rhs StringSet) bool {
+	return _Set_String_mapType_Equals((map[string]struct{})(lhs), (map[string]struct{})(rhs))
+}
+
+func (v StringSet) MarshalLogArray(enc zapcore.ArrayEncoder) error {
+	return ((_Set_String_mapType_Zapper)((map[string]struct{})(v))).MarshalLogArray(enc)
 }
