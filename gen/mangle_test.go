@@ -26,7 +26,14 @@ func TestMangleType(t *testing.T) {
 		},
 		{
 			spec: &compile.SetSpec{ValueSpec: &compile.StringSpec{}},
-			want: "Set_String",
+			want: "Set_String_mapType",
+		},
+		{
+			spec: &compile.SetSpec{
+				ValueSpec:   &compile.StringSpec{},
+				Annotations: compile.Annotations{"go.type": "slice"},
+			},
+			want: "Set_String_sliceType",
 		},
 		{
 			spec: &compile.StructSpec{Name: "foo", File: "bar.thrift"},

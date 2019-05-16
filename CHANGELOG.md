@@ -5,8 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
-- No changes yet.
+### Fixed
+- Fixed a bug that caused invalid code to be generated if two slices of the
+  same type with different `go.type` annotations were encountered in the same
+  Thrift file.
 
 ## [1.19.0] - 2019-04-26
 ### Added

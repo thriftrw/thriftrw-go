@@ -722,9 +722,9 @@ func (_List_String_ValueList) ValueType() wire.Type {
 
 func (_List_String_ValueList) Close() {}
 
-type _Set_String_ValueList map[string]struct{}
+type _Set_String_mapType_ValueList map[string]struct{}
 
-func (v _Set_String_ValueList) ForEach(f func(wire.Value) error) error {
+func (v _Set_String_mapType_ValueList) ForEach(f func(wire.Value) error) error {
 	for x := range v {
 		w, err := wire.NewValueString(x), error(nil)
 		if err != nil {
@@ -738,15 +738,15 @@ func (v _Set_String_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _Set_String_ValueList) Size() int {
+func (v _Set_String_mapType_ValueList) Size() int {
 	return len(v)
 }
 
-func (_Set_String_ValueList) ValueType() wire.Type {
+func (_Set_String_mapType_ValueList) ValueType() wire.Type {
 	return wire.TBinary
 }
 
-func (_Set_String_ValueList) Close() {}
+func (_Set_String_mapType_ValueList) Close() {}
 
 type _Map_String_String_MapItemList map[string]string
 
@@ -815,7 +815,7 @@ func (v *PrimitiveContainers) ToWire() (wire.Value, error) {
 		i++
 	}
 	if v.B != nil {
-		w, err = wire.NewValueSet(_Set_String_ValueList(v.B)), error(nil)
+		w, err = wire.NewValueSet(_Set_String_mapType_ValueList(v.B)), error(nil)
 		if err != nil {
 			return w, err
 		}
@@ -852,7 +852,7 @@ func _List_String_Read(l wire.ValueList) ([]string, error) {
 	return o, err
 }
 
-func _Set_String_Read(s wire.ValueList) (map[string]struct{}, error) {
+func _Set_String_mapType_Read(s wire.ValueList) (map[string]struct{}, error) {
 	if s.ValueType() != wire.TBinary {
 		return nil, nil
 	}
@@ -931,7 +931,7 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 			}
 		case 3:
 			if field.Value.Type() == wire.TSet {
-				v.B, err = _Set_String_Read(field.Value.GetSet())
+				v.B, err = _Set_String_mapType_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
@@ -991,7 +991,7 @@ func _List_String_Equals(lhs, rhs []string) bool {
 	return true
 }
 
-func _Set_String_Equals(lhs, rhs map[string]struct{}) bool {
+func _Set_String_mapType_Equals(lhs, rhs map[string]struct{}) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -1035,7 +1035,7 @@ func (v *PrimitiveContainers) Equals(rhs *PrimitiveContainers) bool {
 	if !((v.A == nil && rhs.A == nil) || (v.A != nil && rhs.A != nil && _List_String_Equals(v.A, rhs.A))) {
 		return false
 	}
-	if !((v.B == nil && rhs.B == nil) || (v.B != nil && rhs.B != nil && _Set_String_Equals(v.B, rhs.B))) {
+	if !((v.B == nil && rhs.B == nil) || (v.B != nil && rhs.B != nil && _Set_String_mapType_Equals(v.B, rhs.B))) {
 		return false
 	}
 	if !((v.C == nil && rhs.C == nil) || (v.C != nil && rhs.C != nil && _Map_String_String_Equals(v.C, rhs.C))) {
@@ -1056,11 +1056,11 @@ func (l _List_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err erro
 	return err
 }
 
-type _Set_String_Zapper map[string]struct{}
+type _Set_String_mapType_Zapper map[string]struct{}
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
-// fast logging of _Set_String_Zapper.
-func (s _Set_String_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
+// fast logging of _Set_String_mapType_Zapper.
+func (s _Set_String_mapType_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for v := range s {
 		enc.AppendString(v)
 	}
@@ -1088,7 +1088,7 @@ func (v *PrimitiveContainers) MarshalLogObject(enc zapcore.ObjectEncoder) (err e
 		err = multierr.Append(err, enc.AddArray("ListOrSetOrMap", (_List_String_Zapper)(v.A)))
 	}
 	if v.B != nil {
-		err = multierr.Append(err, enc.AddArray("List_Or_SetOrMap", (_Set_String_Zapper)(v.B)))
+		err = multierr.Append(err, enc.AddArray("List_Or_SetOrMap", (_Set_String_mapType_Zapper)(v.B)))
 	}
 	if v.C != nil {
 		err = multierr.Append(err, enc.AddObject("ListOrSet_Or_Map", (_Map_String_String_Zapper)(v.C)))
