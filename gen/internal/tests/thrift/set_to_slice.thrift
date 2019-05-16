@@ -1,3 +1,4 @@
+typedef set<string> StringSet
 typedef set<string> (go.type = "slice") StringList
 typedef set<Foo> (go.type = "slice") FooList
 typedef StringList MyStringList

@@ -221,9 +221,9 @@ func (_List_String_ValueList) ValueType() wire.Type {
 
 func (_List_String_ValueList) Close() {}
 
-type _Set_I32_ValueList map[int32]struct{}
+type _Set_I32_mapType_ValueList map[int32]struct{}
 
-func (v _Set_I32_ValueList) ForEach(f func(wire.Value) error) error {
+func (v _Set_I32_mapType_ValueList) ForEach(f func(wire.Value) error) error {
 	for x := range v {
 		w, err := wire.NewValueI32(x), error(nil)
 		if err != nil {
@@ -237,15 +237,15 @@ func (v _Set_I32_ValueList) ForEach(f func(wire.Value) error) error {
 	return nil
 }
 
-func (v _Set_I32_ValueList) Size() int {
+func (v _Set_I32_mapType_ValueList) Size() int {
 	return len(v)
 }
 
-func (_Set_I32_ValueList) ValueType() wire.Type {
+func (_Set_I32_mapType_ValueList) ValueType() wire.Type {
 	return wire.TI32
 }
 
-func (_Set_I32_ValueList) Close() {}
+func (_Set_I32_mapType_ValueList) Close() {}
 
 type _Map_I64_Double_MapItemList map[int64]float64
 
@@ -374,7 +374,7 @@ func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
 	if v.SetOfInts == nil {
 		return w, errors.New("field SetOfInts of PrimitiveRequiredStruct is required")
 	}
-	w, err = wire.NewValueSet(_Set_I32_ValueList(v.SetOfInts)), error(nil)
+	w, err = wire.NewValueSet(_Set_I32_mapType_ValueList(v.SetOfInts)), error(nil)
 	if err != nil {
 		return w, err
 	}
@@ -411,7 +411,7 @@ func _List_String_Read(l wire.ValueList) ([]string, error) {
 	return o, err
 }
 
-func _Set_I32_Read(s wire.ValueList) (map[int32]struct{}, error) {
+func _Set_I32_mapType_Read(s wire.ValueList) (map[int32]struct{}, error) {
 	if s.ValueType() != wire.TI32 {
 		return nil, nil
 	}
@@ -566,7 +566,7 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 			}
 		case 10:
 			if field.Value.Type() == wire.TSet {
-				v.SetOfInts, err = _Set_I32_Read(field.Value.GetSet())
+				v.SetOfInts, err = _Set_I32_mapType_Read(field.Value.GetSet())
 				if err != nil {
 					return err
 				}
@@ -680,7 +680,7 @@ func _List_String_Equals(lhs, rhs []string) bool {
 	return true
 }
 
-func _Set_I32_Equals(lhs, rhs map[int32]struct{}) bool {
+func _Set_I32_mapType_Equals(lhs, rhs map[int32]struct{}) bool {
 	if len(lhs) != len(rhs) {
 		return false
 	}
@@ -748,7 +748,7 @@ func (v *PrimitiveRequiredStruct) Equals(rhs *PrimitiveRequiredStruct) bool {
 	if !_List_String_Equals(v.ListOfStrings, rhs.ListOfStrings) {
 		return false
 	}
-	if !_Set_I32_Equals(v.SetOfInts, rhs.SetOfInts) {
+	if !_Set_I32_mapType_Equals(v.SetOfInts, rhs.SetOfInts) {
 		return false
 	}
 	if !_Map_I64_Double_Equals(v.MapOfIntsToDoubles, rhs.MapOfIntsToDoubles) {
