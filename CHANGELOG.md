@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+- No changes yet.
+
 ## [1.19.1] - 2019-05-16
 ### Fixed
 - Fixed a bug that caused invalid code to be generated if two slices of the
@@ -286,6 +289,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Initial release.
 
+[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.19.1...HEAD
 [1.19.1]: https://github.com/thriftrw/thriftrw-go/compare/v1.19.0...v1.19.1
 [1.19.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.17.0...v1.18.0
