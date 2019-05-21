@@ -250,19 +250,6 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 				return nil, err
 			}
 		}
-
-		if len(o.SingleFile) == 0 {
-			buff := new(bytes.Buffer)
-			if err := g.Write(buff, nil); err != nil {
-				return nil, fmt.Errorf(
-					"could not generate constants for %q: %v", m.ThriftPath, err)
-			}
-
-			// TODO(abg): Verify no file collisions
-			if !o.NoConstants {
-				files["constants.go"] = buff.Bytes()
-			}
-		}
 	}
 
 	if len(m.Types) > 0 {
@@ -271,34 +258,11 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 				return nil, err
 			}
 		}
-
-		if len(o.SingleFile) == 0 {
-			buff := new(bytes.Buffer)
-			if err := g.Write(buff, nil); err != nil {
-				return nil, fmt.Errorf(
-					"could not generate types for %q: %v", m.ThriftPath, err)
-			}
-
-			// TODO(abg): Verify no file collisions
-			if !o.NoTypes {
-				files["types.go"] = buff.Bytes()
-			}
-		}
 	}
 
 	if !o.NoEmbedIDL {
 		if err := embedIDL(g, i, m); err != nil {
 			return nil, err
-		}
-
-		if len(o.SingleFile) == 0 {
-			buff := new(bytes.Buffer)
-			if err := g.Write(buff, nil); err != nil {
-				return nil, fmt.Errorf(
-					"could not generate idl.go for %q: %v", m.ThriftPath, err)
-			}
-
-			files["idl.go"] = buff.Bytes()
 		}
 	}
 
@@ -320,41 +284,26 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 			}
 		}
 
-		if len(o.SingleFile) > 0 {
-			err = Services(g, m.Services)
-			if err != nil {
-				return nil, fmt.Errorf(
-					"could not generate code for services %v", err)
-			}
-		} else {
-			for _, serviceName := range sortStringKeys(m.Services) {
-				service := m.Services[serviceName]
-
-				serviceFiles, err := Service(g, service)
-				if err != nil {
-					return nil, fmt.Errorf(
-						"could not generate code for service %q: %v",
-						serviceName, err)
-				}
-
-				if !o.NoServiceHelpers {
-					for name, buff := range serviceFiles {
-						files[name] = buff.Bytes()
-					}
-				}
-			}
-		}
-	}
-
-	if len(o.SingleFile) > 0 {
-		buff := new(bytes.Buffer)
-		if err := g.Write(buff, nil); err != nil {
+		err = Services(g, m.Services)
+		if err != nil {
 			return nil, fmt.Errorf(
-				"could not write code for services into %q: %v", o.SingleFile, err)
+				"could not generate code for services %v", err)
 		}
-
-		files[o.SingleFile] = buff.Bytes()
 	}
+
+	buff := new(bytes.Buffer)
+	if err := g.Write(buff, nil); err != nil {
+		return nil, fmt.Errorf(
+			"could not write code for services into %q: %v", o.SingleFile, err)
+	}
+
+	// The default is the package name
+	name := packageName + ".go"
+	if len(o.SingleFile) > 0 {
+		name = o.SingleFile
+	}
+
+	files[name] = buff.Bytes()
 
 	newFiles := make(map[string][]byte, len(files))
 	for path, contents := range files {

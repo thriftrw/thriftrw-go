@@ -22,6 +22,7 @@ package gen
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -137,13 +138,12 @@ func TestGenerate(t *testing.T) {
 		{
 			desc:      "nil plugin; no recurse",
 			noRecurse: true,
-			wantFiles: []string{"foo/types.go"},
+			wantFiles: []string{"foo/foo.go"},
 		},
 		{
 			desc: "nil plugin; recurse",
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
+				"foo/foo.go",
 			},
 		},
 		{
@@ -154,8 +154,7 @@ func TestGenerate(t *testing.T) {
 				return handle
 			},
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
+				"foo/foo.go",
 			},
 		},
 		{
@@ -164,8 +163,7 @@ func TestGenerate(t *testing.T) {
 				return plugin.EmptyHandle
 			},
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
+				"foo/foo.go",
 			},
 		},
 		{
@@ -200,10 +198,7 @@ func TestGenerate(t *testing.T) {
 				return handle
 			},
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
-				"foo.txt",
-				"bar/baz.go",
+				"foo/foo.go",
 			},
 		},
 		{
@@ -213,7 +208,8 @@ func TestGenerate(t *testing.T) {
 				sgen.EXPECT().Generate(gomock.Any()).
 					Return(&api.GenerateServiceResponse{
 						Files: map[string][]byte{
-							"common/bar/types.go": []byte("hulk smash"),
+							// "common/bar/types.go": []byte("hulk smash"),
+							"common/bar/bar.go": []byte("hulk smash"),
 						},
 					}, nil)
 
@@ -221,7 +217,7 @@ func TestGenerate(t *testing.T) {
 				handle.EXPECT().ServiceGenerator().Return(sgen)
 				return handle
 			},
-			wantError: `file generation conflict: multiple sources are trying to write to "common/bar/types.go"`,
+			wantError: `file generation conflict: multiple sources are trying to write to "common/bar/bar.go"`,
 		},
 		{
 			desc: "ServiceGenerator plugin error",
@@ -238,6 +234,7 @@ func TestGenerate(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		fmt.Println(tt.desc)
 		func() {
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
