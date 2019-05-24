@@ -134,7 +134,7 @@ func TestGenerate(t *testing.T) {
 		wantError string
 	}{
 		{
-			desc:      "nil plugin; no recurse",
+			desc:      "nil plugin; no recurse; output file defaults to package name",
 			noRecurse: true,
 			wantFiles: []string{"foo/foo.go"},
 		},
@@ -165,13 +165,13 @@ func TestGenerate(t *testing.T) {
 			},
 		},
 		{
-			desc: "single file output",
+			desc: "output file specified",
 			getPlugin: func(mockCtrl *gomock.Controller) plugin.Handle {
 				return plugin.EmptyHandle
 			},
-			outputFile: "services.go",
+			outputFile: "thriftrw-gen.go",
 			wantFiles: []string{
-				"foo/services.go",
+				"foo/thriftrw-gen.go",
 			},
 		},
 		{
