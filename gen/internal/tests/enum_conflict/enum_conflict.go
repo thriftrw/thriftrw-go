@@ -9,12 +9,17 @@ import (
 	fmt "fmt"
 	multierr "go.uber.org/multierr"
 	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
 	math "math"
 	strconv "strconv"
 	strings "strings"
 )
+
+const DefaultOtherRecordType enums.RecordType = enums.RecordTypeName
+
+const DefaultRecordType RecordType = RecordTypeName
 
 type RecordType int32
 
@@ -422,3 +427,17 @@ func (v *Records) GetOtherRecordType() (o enums.RecordType) {
 func (v *Records) IsSetOtherRecordType() bool {
 	return v != nil && v.OtherRecordType != nil
 }
+
+// ThriftModule represents the IDL file used to generate this package.
+var ThriftModule = &thriftreflect.ThriftModule{
+	Name:     "enum_conflict",
+	Package:  "go.uber.org/thriftrw/gen/internal/tests/enum_conflict",
+	FilePath: "enum_conflict.thrift",
+	SHA1:     "75e0e6472e2f0c74412512d61531cf1a0da7429c",
+	Includes: []*thriftreflect.ThriftModule{
+		enums.ThriftModule,
+	},
+	Raw: rawIDL,
+}
+
+const rawIDL = "include \"./enums.thrift\"\n\nenum RecordType {\n    Name, Email\n}\n\nconst RecordType defaultRecordType = RecordType.Name\n\nconst enums.RecordType defaultOtherRecordType = enums.RecordType.NAME\n\nstruct Records {\n    1: optional RecordType recordType = defaultRecordType\n    2: optional enums.RecordType otherRecordType = defaultOtherRecordType\n}\n"
