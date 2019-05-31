@@ -282,6 +282,15 @@ func generateModule(
 		}
 	}
 
+	addModules := func(m *compile.Module) error {
+		_, err := builder.AddModule(m.ThriftPath)
+		return err
+	}
+
+	if err := m.Walk(addModules); err != nil {
+		return "", nil, err
+	}
+
 	// Services must be generated last because names of user-defined types take
 	// precedence over the names we pick for the service types.
 	if len(m.Services) > 0 {
