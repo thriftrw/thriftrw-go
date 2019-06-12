@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- No changes yet.
+### Changed
+- ThriftRW now generates non-plugin code into a single file.
+- Module data is now provided to ThriftRW plugins when the Module does not
+  contain a service.
 
 ## [1.19.1] - 2019-05-16
 ### Fixed
