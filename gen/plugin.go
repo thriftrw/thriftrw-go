@@ -85,8 +85,8 @@ func (g *generateServiceBuilder) AddRootService(spec *compile.ServiceSpec) (api.
 	return id, err
 }
 
-// addModule adds the module for the given Thrift file to the request.
-func (g *generateServiceBuilder) addModule(thriftPath string) (api.ModuleID, error) {
+// AddModule adds the module for the given Thrift file to the request.
+func (g *generateServiceBuilder) AddModule(thriftPath string) (api.ModuleID, error) {
 	if id, ok := g.moduleIDs[thriftPath]; ok {
 		return id, nil
 	}
@@ -135,9 +135,10 @@ func (g *generateServiceBuilder) addService(spec *compile.ServiceSpec) (api.Serv
 	g.nextServiceID++
 	g.serviceIDs[spec.ThriftFile()][serviceName(spec.Name)] = serviceID
 
-	moduleID, err := g.addModule(spec.ThriftFile())
-	if err != nil {
-		return 0, err
+	// Modules must already be populated.
+	moduleID, ok := g.moduleIDs[spec.ThriftFile()]
+	if !ok {
+		return 0, fmt.Errorf("unable to lookup module ID for Thrift file: %q", spec.ThriftFile())
 	}
 
 	functions := make([]*api.Function, 0, len(spec.Functions))

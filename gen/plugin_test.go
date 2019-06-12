@@ -169,6 +169,12 @@ func TestAddRootService(t *testing.T) {
 		}
 
 		g := newGenerateServiceBuilder(importer)
+
+		if spec.Parent != nil {
+			g.AddModule(spec.Parent.ThriftFile())
+		}
+		g.AddModule(spec.ThriftFile())
+
 		if _, err := g.AddRootService(spec); assert.NoError(t, err, tt.desc) {
 			assert.Equal(t, tt.want, g.Build(), tt.desc)
 		}

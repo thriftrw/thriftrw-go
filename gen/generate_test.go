@@ -91,6 +91,14 @@ func TestGenerate(t *testing.T) {
 			File:   testdata(t, "thrift/foo.thrift"),
 			Target: ts,
 		}
+		ss = &compile.ServiceSpec{
+			Name: "Foo Service",
+			File: testdata(t, "thrift/foo.thrift"),
+		}
+		ss2 = &compile.ServiceSpec{
+			Name: "Bar Service",
+			File: testdata(t, "thrift/common/bar.thrift"),
+		}
 	)
 
 	ts2, err := ts2.Link(compile.EmptyScope("bar"))
@@ -112,27 +120,28 @@ func TestGenerate(t *testing.T) {
 				},
 			},
 		},
-		Types: map[string]compile.TypeSpec{"Timestamp": ts2},
+		Types:    map[string]compile.TypeSpec{"Timestamp": ts2},
+		Services: map[string]*compile.ServiceSpec{"Foo": ss, "Bar": ss2},
 	}
 
 	tests := []struct {
-		desc      string
-		noRecurse bool
-		getPlugin func(*gomock.Controller) plugin.Handle
+		desc       string
+		noRecurse  bool
+		getPlugin  func(*gomock.Controller) plugin.Handle
+		outputFile string
 
 		wantFiles []string
 		wantError string
 	}{
 		{
-			desc:      "nil plugin; no recurse",
+			desc:      "nil plugin; no recurse; output file defaults to package name",
 			noRecurse: true,
-			wantFiles: []string{"foo/types.go"},
+			wantFiles: []string{"foo/foo.go"},
 		},
 		{
 			desc: "nil plugin; recurse",
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
+				"foo/foo.go",
 			},
 		},
 		{
@@ -143,8 +152,7 @@ func TestGenerate(t *testing.T) {
 				return handle
 			},
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
+				"foo/foo.go",
 			},
 		},
 		{
@@ -153,8 +161,17 @@ func TestGenerate(t *testing.T) {
 				return plugin.EmptyHandle
 			},
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
+				"foo/foo.go",
+			},
+		},
+		{
+			desc: "output file specified",
+			getPlugin: func(mockCtrl *gomock.Controller) plugin.Handle {
+				return plugin.EmptyHandle
+			},
+			outputFile: "thriftrw-gen.go",
+			wantFiles: []string{
+				"foo/thriftrw-gen.go",
 			},
 		},
 		{
@@ -174,10 +191,7 @@ func TestGenerate(t *testing.T) {
 				return handle
 			},
 			wantFiles: []string{
-				"foo/types.go",
-				"common/bar/types.go",
-				"foo.txt",
-				"bar/baz.go",
+				"foo/foo.go",
 			},
 		},
 		{
@@ -187,7 +201,7 @@ func TestGenerate(t *testing.T) {
 				sgen.EXPECT().Generate(gomock.Any()).
 					Return(&api.GenerateServiceResponse{
 						Files: map[string][]byte{
-							"common/bar/types.go": []byte("hulk smash"),
+							"common/bar/bar.go": []byte("hulk smash"),
 						},
 					}, nil)
 
@@ -195,7 +209,7 @@ func TestGenerate(t *testing.T) {
 				handle.EXPECT().ServiceGenerator().Return(sgen)
 				return handle
 			},
-			wantError: `file generation conflict: multiple sources are trying to write to "common/bar/types.go"`,
+			wantError: `file generation conflict: multiple sources are trying to write to "common/bar/bar.go"`,
 		},
 		{
 			desc: "ServiceGenerator plugin error",
@@ -231,6 +245,7 @@ func TestGenerate(t *testing.T) {
 				ThriftRoot:    testdata(t, "thrift"),
 				Plugin:        p,
 				NoRecurse:     tt.noRecurse,
+				OutputFile:    tt.outputFile,
 			})
 			if tt.wantError != "" {
 				assert.Contains(t, err.Error(), tt.wantError)
@@ -245,6 +260,38 @@ func TestGenerate(t *testing.T) {
 			}
 		}()
 	}
+}
+
+func TestGenerateModule(t *testing.T) {
+	t.Run("module data should be added to the GenerateServiceBuilder even if the Thrift module contains no service data", func(t *testing.T) {
+		thriftRoot := testdata(t, "thrift")
+
+		importer := thriftPackageImporter{
+			ImportPrefix: "go.uber.org/thriftrw/gen/internal/tests",
+			ThriftRoot:   thriftRoot,
+		}
+
+		genBuilder := newGenerateServiceBuilder(importer)
+
+		module, err := compile.Compile("internal/tests/thrift/structs.thrift")
+		require.NoError(t, err)
+		assert.Equal(t, len(module.Services), 0)
+
+		opt := &Options{
+			OutputDir:     "test/internal",
+			PackagePrefix: "go.uber.org/thriftrw/gen",
+			ThriftRoot:    thriftRoot,
+		}
+
+		_, _, err = generateModule(module, importer, genBuilder, opt)
+		require.NoError(t, err)
+
+		gen := genBuilder.Build()
+
+		assert.Equal(t, len(gen.RootServices), 0)
+		assert.Equal(t, len(gen.Services), 0)
+		assert.Equal(t, len(gen.Modules), 2)
+	})
 }
 
 func TestThriftPackageImporter(t *testing.T) {
