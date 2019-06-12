@@ -262,6 +262,38 @@ func TestGenerate(t *testing.T) {
 	}
 }
 
+func TestGenerateModule(t *testing.T) {
+	t.Run("module data should be added to the GenerateServiceBuilder even if the Thrift module contains no service data", func(t *testing.T) {
+		thriftRoot := testdata(t, "thrift")
+
+		importer := thriftPackageImporter{
+			ImportPrefix: "go.uber.org/thriftrw/gen/internal/tests",
+			ThriftRoot:   thriftRoot,
+		}
+
+		genBuilder := newGenerateServiceBuilder(importer)
+
+		module, err := compile.Compile("internal/tests/thrift/structs.thrift")
+		require.NoError(t, err)
+		assert.Equal(t, len(module.Services), 0)
+
+		opt := &Options{
+			OutputDir:     "test/internal",
+			PackagePrefix: "go.uber.org/thriftrw/gen",
+			ThriftRoot:    thriftRoot,
+		}
+
+		_, _, err = generateModule(module, importer, genBuilder, opt)
+		require.NoError(t, err)
+
+		gen := genBuilder.Build()
+
+		assert.Equal(t, len(gen.RootServices), 0)
+		assert.Equal(t, len(gen.Services), 0)
+		assert.Equal(t, len(gen.Modules), 2)
+	})
+}
+
 func TestThriftPackageImporter(t *testing.T) {
 	importer := thriftPackageImporter{
 		ImportPrefix: "github.com/myteam/myservice",
