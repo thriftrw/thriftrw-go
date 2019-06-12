@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.20.0] - 2019-06-12
 ### Changed
 - ThriftRW now generates non-plugin code into a single file.
 - Module data is now provided to ThriftRW plugins when the Module does not
@@ -292,7 +292,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.19.1...HEAD
+[1.20.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.19.1...v1.20.0
 [1.19.1]: https://github.com/thriftrw/thriftrw-go/compare/v1.19.0...v1.19.1
 [1.19.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.18.0...v1.19.0
 [1.18.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.17.0...v1.18.0
