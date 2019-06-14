@@ -280,7 +280,9 @@ func generateModule(m *compile.Module, i thriftPackageImporter, builder *generat
 	}
 
 	if !o.NoEmbedIDL {
+		panic("no embed")
 		if err := embedIDL(g, i, m); err != nil {
+			panic("embed called")
 			return nil, err
 		}
 
