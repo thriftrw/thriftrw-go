@@ -432,6 +432,27 @@ func TestLinkServiceFailure(t *testing.T) {
 			},
 		},
 		{
+			"unexpected exception type",
+			`
+				service Foo {
+					void foo()
+						throws (
+							1: i64 a
+						)
+				}
+			`,
+			scope(
+				"SomeException", &StructSpec{
+					Name:   "SomeException",
+					Type:   ast.ExceptionType,
+					Fields: make(FieldGroup, 0),
+				},
+			),
+			[]string{
+				`field "a" with type "" is not an exception`,
+			},
+		},
+		{
 			"unknown return type",
 			"service Foo { Baz bar() }",
 			nil,
