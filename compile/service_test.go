@@ -449,7 +449,7 @@ func TestLinkServiceFailure(t *testing.T) {
 				},
 			),
 			[]string{
-				`field "a" with type "" is not an exception`,
+				`field "a" with type "i64" is not an exception`,
 			},
 		},
 		{
