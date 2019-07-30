@@ -90,6 +90,35 @@ func TestCompileStructSuccess(t *testing.T) {
 			},
 		},
 		{
+			`struct Foo {
+				1: string island
+				2: string isLand
+			}`,
+			nil,
+			defaultToOptional,
+			&StructSpec{
+				Name: "Foo",
+				File: "test.thrift",
+				Type: ast.StructType,
+				Fields: FieldGroup{
+					{
+						ID:       1,
+						Name:     "island",
+						Type:     &StringSpec{},
+						Required: false,
+						Default:  nil,
+					},
+					{
+						ID:       2,
+						Name:     "isLand",
+						Type:     &StringSpec{},
+						Required: false,
+						Default:  nil,
+					},
+				},
+			},
+		},
+		{
 			`exception KeyNotFoundError {
 				1: required string message
 				2: optional Key key

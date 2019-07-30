@@ -316,7 +316,7 @@ func (rs *ResultSpec) Link(scope Scope) (err error) {
 		if !ok || spec.Type != ast.ExceptionType {
 			return notAnExceptionError{
 				FieldName: exception.ThriftName(),
-				TypeName:  spec.ThriftName(),
+				TypeName:  exception.Type.ThriftName(),
 			}
 		}
 	}

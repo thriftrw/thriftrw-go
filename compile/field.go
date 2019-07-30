@@ -175,7 +175,7 @@ type FieldGroup []*FieldSpec
 
 // compileFields compiles a collection of AST fields into a FieldGroup.
 func compileFields(src []*ast.Field, options fieldOptions) (FieldGroup, error) {
-	fieldsNS := newNamespace(caseInsensitive)
+	fieldsNS := newNamespace(caseSensitive)
 	usedIDs := make(map[int16]string)
 
 	fields := make([]*FieldSpec, 0, len(src))
