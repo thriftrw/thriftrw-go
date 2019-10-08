@@ -140,6 +140,7 @@ func (c compiler) load(p string) (*Module, error) {
 	m := &Module{
 		Name:       fileBaseName(p),
 		ThriftPath: p,
+		NormalizedThriftPath: filePathWithUnderscore(p),
 		Includes:   make(map[string]*IncludedModule),
 		Constants:  make(map[string]*Constant),
 		Types:      make(map[string]TypeSpec),

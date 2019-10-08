@@ -231,7 +231,7 @@ func generateModule(
 	// packageRelPath is foo/bar, and packageDir is $outputDir/foo/bar. All
 	// files for bar.thrift will be written to the $outputDir/foo/bar/ tree. The
 	// package will be importable via $importPrefix/foo/bar.
-	packageRelPath, err := i.RelativePackage(m.ThriftPath)
+	packageRelPath, err := i.RelativePackage(m.NormalizedThriftPath)
 	if err != nil {
 		return "", nil, err
 	}

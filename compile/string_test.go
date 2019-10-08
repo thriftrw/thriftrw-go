@@ -42,11 +42,22 @@ func TestFileBaseName(t *testing.T) {
 	tests := []struct{ input, output string }{
 		{"foo.bar", "foo"},
 		{"foo/bar.thrift", "bar"},
-		{"foo/bar-baz.thrift", "bar-baz"},
+		{"foo/bar-baz.thrift", "bar_baz"},
 	}
 
 	for _, tt := range tests {
 		assert.Equal(t, tt.output, fileBaseName(tt.input))
+	}
+}
+
+func TestFilePathBWithUnderscore(t *testing.T) {
+	tests := []struct{ input, output string }{
+		{"/home/abhishek.parwal/xyz.thrift", "/home/abhishek.parwal/xyz.thrift"},
+		{"/home/abhishek.parwal/bar-baz.thrift", "/home/abhishek.parwal/bar_baz.thrift"},
+	}
+
+	for _, tt := range tests {
+		assert.Equal(t, tt.output, filePathWithUnderscore(tt.input))
 	}
 }
 

@@ -1,9 +1,9 @@
-include "./typedefs.thrift"
+include "./type-defs.thrift"
 
 union EmptyUnion {}
 
 union Document {
-    1: typedefs.PDF pdf
+    1: type-defs.PDF pdf
     2: string plainText
 }
 

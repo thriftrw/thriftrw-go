@@ -31,6 +31,7 @@ package compile
 // The module name is usually just the basename of the ThriftPath.
 type Module struct {
 	Name       string
+	NormalizedThriftPath string
 	ThriftPath string
 
 	// Mapping from the /Thrift name/ to the compiled representation of
