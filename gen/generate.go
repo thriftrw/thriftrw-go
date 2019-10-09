@@ -357,7 +357,7 @@ func generateModule(
 }
 
 func replaceHyphenWithUnderscore(str string) string {
-	return strings.ReplaceAll(str, "-", "_")
+	return strings.Replace(str, "-", "_", -1)
 }
 
 func filePathWithUnderscore(p string) string {
