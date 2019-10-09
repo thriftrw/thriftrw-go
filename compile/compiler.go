@@ -22,6 +22,7 @@ package compile
 
 import (
 	"path/filepath"
+	"strings"
 
 	"go.uber.org/thriftrw/ast"
 	"go.uber.org/thriftrw/idl"
@@ -248,6 +249,14 @@ func (c compiler) include(m *Module, include *ast.Include) (*IncludedModule, err
 		return nil, includeError{
 			Include: include,
 			Reason:  includeAsDisabledError{},
+		}
+	}
+
+	includeName := fileBaseName(include.Path)
+	if strings.Contains(includeName, "-") {
+		return nil, includeError{
+			Include: include,
+			Reason:  includingHyphenatedFileNotAllowed{},
 		}
 	}
 

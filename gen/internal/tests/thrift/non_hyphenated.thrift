@@ -1,0 +1,3 @@
+struct First {}
+
+struct Second {}

@@ -64,6 +64,14 @@ func (e includeAsDisabledError) Error() string {
 	return "include-as syntax is currently disabled"
 }
 
+// includingHyphenatedFileNotAllowed is raised when the user attempts to include hyphenated thrift file which is not
+// allowed
+type includingHyphenatedFileNotAllowed struct{}
+
+func (e includingHyphenatedFileNotAllowed) Error() string {
+	return "including hyphenated thrift file is not allowed"
+}
+
 // includeError is raised when there is an error including another Thrift
 // file.
 type includeError struct {
