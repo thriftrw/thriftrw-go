@@ -22,6 +22,7 @@ package compile
 
 import (
 	"path/filepath"
+	"strings"
 
 	"go.uber.org/thriftrw/ast"
 	"go.uber.org/thriftrw/idl"
@@ -140,7 +141,6 @@ func (c compiler) load(p string) (*Module, error) {
 	m := &Module{
 		Name:       fileBaseName(p),
 		ThriftPath: p,
-		NormalizedThriftPath: filePathWithUnderscore(p),
 		Includes:   make(map[string]*IncludedModule),
 		Constants:  make(map[string]*Constant),
 		Types:      make(map[string]TypeSpec),
@@ -241,14 +241,18 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 }
 
 // include loads the file specified by the given include in the given Module.
-//
 // The path to the file is relative to the ThriftPath of the given module.
 func (c compiler) include(m *Module, include *ast.Include) (*IncludedModule, error) {
-	if len(include.Name) > 0 {
-		// TODO(abg): Add support for include-as flag somewhere.
-		return nil, includeError{
-			Include: include,
-			Reason:  includeAsDisabledError{},
+	includeName := include.Name
+	// include.Name has include-as name
+	if len(include.Name) == 0 {
+		includeName = fileBaseName(include.Path)
+		// if hyphenated file, include-as is necessary
+		if strings.Contains(includeName, "-") {
+			return nil, includeError{
+				Include: include,
+				Reason:  includeAsNeededInHyphenatedFile{},
+			}
 		}
 	}
 
@@ -258,5 +262,5 @@ func (c compiler) include(m *Module, include *ast.Include) (*IncludedModule, err
 		return nil, includeError{Include: include, Reason: err}
 	}
 
-	return &IncludedModule{Name: fileBaseName(include.Path), Module: incM}, nil
+	return &IncludedModule{Name: includeName, Module: incM}, nil
 }

@@ -35,7 +35,7 @@ import (
 	"go.uber.org/thriftrw/internal/plugin/builtin/pluginapigen"
 	"go.uber.org/thriftrw/version"
 
-	flags "github.com/jessevdk/go-flags"
+	"github.com/jessevdk/go-flags"
 	"go.uber.org/multierr"
 )
 
@@ -63,7 +63,6 @@ type genOptions struct {
 
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
-
 }
 
 func main() {
@@ -126,6 +125,16 @@ func do() (err error) {
 					"A package prefix is required to use correct import paths in the generated code.\n"+
 					"Use the --pkg-prefix option to provide a package prefix manually.", err)
 		}
+	}
+
+	absFileName, err := filepath.Abs(inputFile)
+	if err != nil {
+		return fmt.Errorf("File %q does not exist: %v", inputFile, err)
+	}
+	normalizedFileName := gen.FilePathWithUnderscore(absFileName)
+	if fileNormalized(absFileName, normalizedFileName) && fileExists(normalizedFileName) {
+		return fmt.Errorf("File after normalization %q is colliding with existing file %q in the path, with error: %v",
+			normalizedFileName, absFileName, err)
 	}
 
 	module, err := compile.Compile(inputFile)
@@ -191,6 +200,20 @@ func do() (err error) {
 		return fmt.Errorf("Failed to generate code: %+v", err)
 	}
 	return nil
+}
+
+func fileNormalized(f1, f2 string) bool {
+	return !(f1 == f2)
+}
+
+// fileExists checks if a file exists and is not a directory before we
+// try using it to prevent further errors.
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
 }
 
 // verifyAncestry verifies that the Thrift file for the given module and the

@@ -56,12 +56,12 @@ func (e fileCompileError) Error() string {
 	return fmt.Sprintf("could not compile file %q: %v", e.Path, e.Reason)
 }
 
-// includeAsDisabledError is raised when the user attempts to use the include-as
-// syntax without explicitly enabling it.
-type includeAsDisabledError struct{}
+// includeAsNeededInHyphenatedFile is raised when the user attempts to use the include-as
+// syntax when file is hyphenated.
+type includeAsNeededInHyphenatedFile struct{}
 
-func (e includeAsDisabledError) Error() string {
-	return "include-as syntax is currently disabled"
+func (e includeAsNeededInHyphenatedFile) Error() string {
+	return "include-as is needed when file is hyphenated"
 }
 
 // includeError is raised when there is an error including another Thrift

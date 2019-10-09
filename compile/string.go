@@ -36,14 +36,6 @@ func capitalize(s string) string {
 	return string(unicode.ToUpper(x)) + string(s[i:])
 }
 
-func replaceHyphenWithUnderscore(str string) string {
-	return strings.ReplaceAll(str, "-", "_")
-}
-
-func filePathWithUnderscore(p string) string {
-	return filepath.Join(filepath.Dir(p), replaceHyphenWithUnderscore(filepath.Base(p)))
-}
-
 // fileBaseName returns the normalized base name of the given file without the extension.
 func fileBaseName(p string) string {
 	return strings.TrimSuffix(filepath.Base(p), filepath.Ext(p))

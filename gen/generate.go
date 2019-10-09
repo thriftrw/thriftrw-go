@@ -226,12 +226,14 @@ func generateModule(
 	builder *generateServiceBuilder,
 	o *Options,
 ) (outputFilepath string, contents []byte, err error) {
+	// converts file from /home/abc/ab-def.thrift to /home/abc/ab_def.thrift for golang compat
+	normalizedThriftPath := FilePathWithUnderscore(m.ThriftPath)
 	// packageRelPath is the path relative to outputDir into which we'll be
 	// writing the package for this Thrift file. For $thriftRoot/foo/bar.thrift,
 	// packageRelPath is foo/bar, and packageDir is $outputDir/foo/bar. All
 	// files for bar.thrift will be written to the $outputDir/foo/bar/ tree. The
 	// package will be importable via $importPrefix/foo/bar.
-	packageRelPath, err := i.RelativePackage(m.NormalizedThriftPath)
+	packageRelPath, err := i.RelativePackage(normalizedThriftPath)
 	if err != nil {
 		return "", nil, err
 	}
@@ -320,4 +322,12 @@ func generateModule(
 	}
 
 	return outputFilepath, buff.Bytes(), nil
+}
+
+func replaceHyphenWithUnderscore(str string) string {
+	return strings.ReplaceAll(str, "-", "_")
+}
+
+func FilePathWithUnderscore(p string) string {
+	return filepath.Join(filepath.Dir(p), replaceHyphenWithUnderscore(filepath.Base(p)))
 }
