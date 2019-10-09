@@ -79,6 +79,51 @@ func TestGenerateWithRelativePaths(t *testing.T) {
 	}
 }
 
+func TestGenerateWithHyphenPaths(t *testing.T) {
+	outputDir, err := ioutil.TempDir("", "thriftrw-generate-test")
+	require.NoError(t, err)
+	defer os.RemoveAll(outputDir)
+
+	thriftRoot, err := os.Getwd()
+	require.NoError(t, err)
+
+	tests := []struct {
+		filepath      string
+		expectedError bool
+	}{
+		{
+			filepath:      "internal/tests/thrift/include_hyphen_files.thrift",
+			expectedError: false,
+		},
+		{
+			filepath:      "internal/tests/thrift/abc-defs.thrift",
+			expectedError: false,
+		},
+		{
+			filepath:      "internal/tests/thrift/nestedfiles_conflict/include_hyphen_files_nest.thrift",
+			expectedError: true,
+		},
+	}
+
+	for _, test := range tests {
+		module, err := compile.Compile(test.filepath)
+		require.NoError(t, err)
+
+		opt := &Options{
+			OutputDir:     outputDir,
+			PackagePrefix: "go.uber.org/thriftrw/gen",
+			ThriftRoot:    thriftRoot,
+		}
+		err = Generate(module, opt)
+		if test.expectedError {
+			assert.Error(t, err, "expected code generation with filepath %v to fail", test.filepath)
+			assert.Contains(t, err.Error(), "is colliding with existing file")
+		} else {
+			assert.NoError(t, err)
+		}
+	}
+}
+
 func TestGenerate(t *testing.T) {
 	var (
 		ts compile.TypeSpec = &compile.TypedefSpec{

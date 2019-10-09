@@ -105,6 +105,10 @@ func Generate(m *compile.Module, o *Options) error {
 	genBuilder := newGenerateServiceBuilder(importer)
 
 	generate := func(m *compile.Module) error {
+		if err := isDuplicateFileAfterNormalization(m.ThriftPath); err != nil {
+			return err
+		}
+
 		path, contents, err := generateModule(m, importer, genBuilder, o)
 		if err != nil {
 			return generateError{Name: m.ThriftPath, Reason: err}
@@ -113,7 +117,6 @@ func Generate(m *compile.Module, o *Options) error {
 		if err := addFile(files, path, contents); err != nil {
 			return generateError{Name: m.ThriftPath, Reason: err}
 		}
-
 		return nil
 	}
 
@@ -165,6 +168,35 @@ func Generate(m *compile.Module, o *Options) error {
 	return nil
 }
 
+func isDuplicateFileAfterNormalization(f string) error {
+	absFileName, err := filepath.Abs(f)
+	if err != nil {
+		return generateError{Name: f, Reason: fmt.Errorf("File %q does not exist: %v", f,
+			err)}
+	}
+	normalizedFileName := filePathWithUnderscore(absFileName)
+	if fileNormalized(absFileName, normalizedFileName) && fileExists(normalizedFileName) {
+		return generateError{Name: f,
+			Reason: fmt.Errorf("File after normalization %q is colliding with existing file %q in the path, with error: %v",
+				normalizedFileName, absFileName, err)}
+	}
+	return nil
+}
+
+func fileNormalized(f1, f2 string) bool {
+	return !(f1 == f2)
+}
+
+// fileExists checks if a file exists and is not a directory before we
+// try using it to prevent further errors.
+func fileExists(filename string) bool {
+	info, err := os.Stat(filename)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
 // ThriftPackageImporter determines import paths from a Thrift root.
 type ThriftPackageImporter interface {
 	// RelativePackage returns the import path for the top-level package of the
@@ -186,7 +218,7 @@ type thriftPackageImporter struct {
 }
 
 func (i thriftPackageImporter) RelativePackage(file string) (string, error) {
-	return filepath.Rel(i.ThriftRoot, strings.TrimSuffix(file, ".thrift"))
+	return filepath.Rel(i.ThriftRoot, strings.TrimSuffix(filePathWithUnderscore(file), ".thrift"))
 }
 
 func (i thriftPackageImporter) RelativeThriftFilePath(file string) (string, error) {
@@ -226,8 +258,8 @@ func generateModule(
 	builder *generateServiceBuilder,
 	o *Options,
 ) (outputFilepath string, contents []byte, err error) {
-	// converts file from /home/abc/ab-def.thrift to /home/abc/ab_def.thrift for golang compat
-	normalizedThriftPath := FilePathWithUnderscore(m.ThriftPath)
+	// converts file from /home/abc/ab-def.thrift to /home/abc/ab_def.thrift for golang code generation
+	normalizedThriftPath := filePathWithUnderscore(m.ThriftPath)
 	// packageRelPath is the path relative to outputDir into which we'll be
 	// writing the package for this Thrift file. For $thriftRoot/foo/bar.thrift,
 	// packageRelPath is foo/bar, and packageDir is $outputDir/foo/bar. All
@@ -250,7 +282,7 @@ func generateModule(
 
 	// importPath is the full import path for the top-level package generated
 	// for this Thrift file.
-	importPath, err := i.Package(m.ThriftPath)
+	importPath, err := i.Package(normalizedThriftPath)
 	if err != nil {
 		return "", nil, err
 	}
@@ -328,6 +360,6 @@ func replaceHyphenWithUnderscore(str string) string {
 	return strings.ReplaceAll(str, "-", "_")
 }
 
-func FilePathWithUnderscore(p string) string {
+func filePathWithUnderscore(p string) string {
 	return filepath.Join(filepath.Dir(p), replaceHyphenWithUnderscore(filepath.Base(p)))
 }

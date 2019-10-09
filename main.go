@@ -127,16 +127,6 @@ func do() (err error) {
 		}
 	}
 
-	absFileName, err := filepath.Abs(inputFile)
-	if err != nil {
-		return fmt.Errorf("File %q does not exist: %v", inputFile, err)
-	}
-	normalizedFileName := gen.FilePathWithUnderscore(absFileName)
-	if fileNormalized(absFileName, normalizedFileName) && fileExists(normalizedFileName) {
-		return fmt.Errorf("File after normalization %q is colliding with existing file %q in the path, with error: %v",
-			normalizedFileName, absFileName, err)
-	}
-
 	module, err := compile.Compile(inputFile)
 	if err != nil {
 		// TODO(abg): For nested compile errors, split causal chain across

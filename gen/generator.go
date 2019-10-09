@@ -183,7 +183,7 @@ func (g *generator) LookupTypeName(t compile.TypeSpec) (string, error) {
 			"LookupTypeName called with native type (%T) %v", t, t)
 	}
 
-	importPath, err := g.thriftImporter.Package(t.ThriftFile())
+	importPath, err := g.thriftImporter.Package(filePathWithUnderscore(t.ThriftFile()))
 	if err != nil {
 		return "", err
 	}
@@ -200,7 +200,7 @@ func (g *generator) LookupTypeName(t compile.TypeSpec) (string, error) {
 }
 
 func (g *generator) LookupConstantName(c *compile.Constant) (string, error) {
-	importPath, err := g.thriftImporter.Package(c.File)
+	importPath, err := g.thriftImporter.Package(filePathWithUnderscore(c.File))
 	if err != nil {
 		return "", err
 	}
