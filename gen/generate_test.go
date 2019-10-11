@@ -94,7 +94,7 @@ func TestGenerateWithHyphenPaths(t *testing.T) {
 		compileError  string
 	}{
 		{
-			name:         "hyphen files inclusion gives include error",
+			name:         "include with hyphens error",
 			filepath:     "internal/tests/thrift/nestedfiles_error/include_hyphen_files.thrift",
 			compileError: "cannot include hyphenated Thrift files",
 		},
@@ -103,12 +103,12 @@ func TestGenerateWithHyphenPaths(t *testing.T) {
 			filepath: "internal/tests/thrift/hyphenated-file.thrift",
 		},
 		{
-			name:          "hyphen file post normalization code gen fails with non hyphen same name file",
+			name:          "normalization collision err",
 			filepath:      "internal/tests/thrift/nestedfiles_error/hyphenated-file-nested.thrift",
 			generateError: "collides with existing file",
 		},
 		{
-			name:     "non hyphen file code gen doesn't collide with same name file post normalization of hyphen file",
+			name:     "normalization success",
 			filepath: "internal/tests/thrift/nestedfiles_error/hyphenated_file_nested.thrift",
 		},
 	}
@@ -121,7 +121,7 @@ func TestGenerateWithHyphenPaths(t *testing.T) {
 				assert.Contains(t, err.Error(), tt.compileError)
 				return
 			}
-			assert.NoError(t, err)
+			require.NoError(t, err)
 			require.NotNil(t, module)
 
 			opt := &Options{

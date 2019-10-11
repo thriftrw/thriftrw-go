@@ -105,10 +105,6 @@ func Generate(m *compile.Module, o *Options) error {
 	genBuilder := newGenerateServiceBuilder(importer)
 
 	generate := func(m *compile.Module) error {
-		if err := duplicateAfterNormalization(m.ThriftPath); err != nil {
-			return err
-		}
-
 		path, contents, err := generateModule(m, importer, genBuilder, o)
 		if err != nil {
 			return generateError{Name: m.ThriftPath, Reason: err}
@@ -172,20 +168,17 @@ func Generate(m *compile.Module, o *Options) error {
 func duplicateAfterNormalization(fileName string) error {
 	absFileName, err := filepath.Abs(fileName)
 	if err != nil {
-		return generateError{Name: fileName, Reason: fmt.Errorf("File %q does not exist: %v", fileName,
-			err)}
-	}
-	normalizedFileName := normalizeFilePath(absFileName)
-	if fileNormalized(absFileName, normalizedFileName) && fileExists(normalizedFileName) {
 		return generateError{
 			Name:   fileName,
-			Reason: fmt.Errorf("normalized file %q collides with existing file %q", normalizedFileName, absFileName)}
+			Reason: fmt.Errorf("File %q does not exist: %v", fileName, err),
+		}
+	}
+	normalizedFileName := normalizeFilePath(absFileName)
+	fileNormalized := absFileName != normalizedFileName
+	if fileNormalized && fileExists(normalizedFileName) {
+		return fmt.Errorf("normalized file %q collides with existing file %q", normalizedFileName, absFileName)
 	}
 	return nil
-}
-
-func fileNormalized(f1, f2 string) bool {
-	return f1 != f2
 }
 
 func fileExists(filename string) bool {
@@ -196,6 +189,7 @@ func fileExists(filename string) bool {
 	return !info.IsDir()
 }
 
+// normalizeFilePath replaces hyphens in the file name with underscores.
 func normalizeFilePath(p string) string {
 	fileName := strings.Replace(filepath.Base(p), "-", "_", -1)
 	return filepath.Join(filepath.Dir(p), fileName)
@@ -262,6 +256,9 @@ func generateModule(
 	builder *generateServiceBuilder,
 	o *Options,
 ) (outputFilepath string, contents []byte, err error) {
+	if err := duplicateAfterNormalization(m.ThriftPath); err != nil {
+		return "", nil, err
+	}
 	// converts file from /home/abc/ab-def.thrift to /home/abc/ab_def.thrift for golang code generation
 	normalizedThriftPath := normalizeFilePath(m.ThriftPath)
 	// packageRelPath is the path relative to outputDir into which we'll be

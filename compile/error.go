@@ -65,7 +65,7 @@ func (e includeAsDisabledError) Error() string {
 }
 
 // includeHyphenatedFileNameError is raised when the user attempts to
-// include hyphenated file names
+// include hyphenated file names.
 type includeHyphenatedFileNameError struct{}
 
 func (e includeHyphenatedFileNameError) Error() string {

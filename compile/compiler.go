@@ -243,8 +243,7 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 // include loads the file specified by the given include in the given Module.
 //
 // The path to the file is relative to the ThriftPath of the given module.
-// Among other errors, one place it will error out if you attempt to include
-// a file whose name starts with hyphen.
+// Including hyphenated file names will error.
 func (c compiler) include(m *Module, include *ast.Include) (*IncludedModule, error) {
 	if len(include.Name) > 0 {
 		// TODO(abg): Add support for include-as flag somewhere.
@@ -254,8 +253,7 @@ func (c compiler) include(m *Module, include *ast.Include) (*IncludedModule, err
 		}
 	}
 
-	includeName := fileBaseName(include.Path)
-	if strings.Contains(includeName, "-") {
+	if strings.Contains(fileBaseName(include.Path), "-") {
 		return nil, includeError{
 			Include: include,
 			Reason:  includeHyphenatedFileNameError{},
