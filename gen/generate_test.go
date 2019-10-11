@@ -105,7 +105,7 @@ func TestGenerateWithHyphenPaths(t *testing.T) {
 		{
 			name:          "hyphen file post normalization code gen fails with non hyphen same name file",
 			filepath:      "internal/tests/thrift/nestedfiles_error/hyphenated-file-nested.thrift",
-			generateError: "is colliding with existing file",
+			generateError: "collides with existing file",
 		},
 		{
 			name:     "non hyphen file code gen doesn't collide with same name file post normalization of hyphen file",
