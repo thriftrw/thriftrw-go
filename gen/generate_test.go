@@ -80,7 +80,7 @@ func TestGenerateWithRelativePaths(t *testing.T) {
 }
 
 func TestGenerateWithHyphenPaths(t *testing.T) {
-	outputDir, err := ioutil.TempDir("", "thriftrw-generate-test")
+	outputDir, err := ioutil.TempDir("", "thriftrw-generate-tt")
 	require.NoError(t, err)
 	defer os.RemoveAll(outputDir)
 
@@ -88,50 +88,55 @@ func TestGenerateWithHyphenPaths(t *testing.T) {
 	require.NoError(t, err)
 
 	tests := []struct {
+		name          string
 		filepath      string
 		generateError string
 		compileError  string
 	}{
 		{
+			name:         "hyphen files inclusion gives include error",
 			filepath:     "internal/tests/thrift/nestedfiles_error/include_hyphen_files.thrift",
-			compileError: "including hyphenated thrift file is not allowed",
+			compileError: "cannot include hyphenated Thrift files",
 		},
 		{
-			filepath: "internal/tests/thrift/abc-defs.thrift",
+			name:     "hyphen files as top level file allowed",
+			filepath: "internal/tests/thrift/hyphenated-file.thrift",
 		},
 		{
-			filepath:      "internal/tests/thrift/nestedfiles_error/abc-defs-nested.thrift",
+			name:          "hyphen file post normalization code gen fails with non hyphen same name file",
+			filepath:      "internal/tests/thrift/nestedfiles_error/hyphenated-file-nested.thrift",
 			generateError: "is colliding with existing file",
 		},
 		{
-			filepath: "internal/tests/thrift/nestedfiles_error/abc_defs_nested.thrift",
+			name:     "non hyphen file code gen doesn't collide with same name file post normalization of hyphen file",
+			filepath: "internal/tests/thrift/nestedfiles_error/hyphenated_file_nested.thrift",
 		},
 	}
 
-	for _, test := range tests {
-		module, err := compile.Compile(test.filepath)
-		if test.compileError != "" {
-			assert.Error(t, err)
-			assert.Contains(t, err.Error(), test.compileError)
-		} else {
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			module, err := compile.Compile(tt.filepath)
+			if tt.compileError != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.compileError)
+				return
+			}
 			assert.NoError(t, err)
-		}
-		if module == nil {
-			continue
-		}
+			require.NotNil(t, module)
 
-		opt := &Options{
-			OutputDir:     outputDir,
-			PackagePrefix: "go.uber.org/thriftrw/gen",
-			ThriftRoot:    thriftRoot,
-		}
-		err = Generate(module, opt)
-		if test.generateError != "" {
-			assert.Error(t, err, "expected code generation with filepath %v to fail", test.filepath)
-			assert.Contains(t, err.Error(), test.generateError)
-		} else {
-			assert.NoError(t, err)
-		}
+			opt := &Options{
+				OutputDir:     outputDir,
+				PackagePrefix: "go.uber.org/thriftrw/gen",
+				ThriftRoot:    thriftRoot,
+			}
+			err = Generate(module, opt)
+			if tt.generateError != "" {
+				require.Error(t, err, "expected code generation with filepath %v to fail", tt.filepath)
+				assert.Contains(t, err.Error(), tt.generateError)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
 

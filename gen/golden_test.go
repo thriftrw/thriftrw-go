@@ -58,7 +58,7 @@ func TestCodeIsUpToDate(t *testing.T) {
 	defer os.RemoveAll(outputDir)
 
 	for _, thriftFile := range thriftFiles {
-		pkgRelPath := strings.TrimSuffix(filePathWithUnderscore(filepath.Base(thriftFile)), ".thrift")
+		pkgRelPath := strings.TrimSuffix(normalizeFilePath(filepath.Base(thriftFile)), ".thrift")
 		currentPackageDir := filepath.Join("internal/tests", pkgRelPath)
 		newPackageDir := filepath.Join(outputDir, pkgRelPath)
 

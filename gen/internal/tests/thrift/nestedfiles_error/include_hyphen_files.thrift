@@ -1,4 +1,4 @@
-include "../abc-defs.thrift"
+include "../hyphenated-file.thrift"
 
 union DocumentUnion {
     1: string value
