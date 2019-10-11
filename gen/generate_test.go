@@ -80,7 +80,7 @@ func TestGenerateWithRelativePaths(t *testing.T) {
 }
 
 func TestGenerateWithHyphenPaths(t *testing.T) {
-	outputDir, err := ioutil.TempDir("", "thriftrw-generate-tt")
+	outputDir, err := ioutil.TempDir("", "thriftrw-generate-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(outputDir)
 
