@@ -165,25 +165,14 @@ func Generate(m *compile.Module, o *Options) error {
 	return nil
 }
 
-func duplicateAfterNormalization(originalFileName, normalizedFileName string) error {
-	fileNormalized := originalFileName != normalizedFileName
-	if fileNormalized && fileExists(normalizedFileName) {
-		return fmt.Errorf("normalized file %q collides with existing file %q", normalizedFileName, originalFileName)
-	}
-	return nil
-}
-
-func fileExists(filename string) bool {
-	if info, err := os.Stat(filename); err == nil {
-		return !info.IsDir()
-	}
-	return false
-}
-
 // normalizeFilePath replaces hyphens in the file name with underscores.
 func normalizeFilePath(p string) string {
-	fileName := strings.Replace(filepath.Base(p), "-", "_", -1)
-	return filepath.Join(filepath.Dir(p), fileName)
+	return filepath.Join(filepath.Dir(p), normalizedName(p))
+}
+
+// normalizedName replaces hyphens in the file name with underscores.
+func normalizedName(f string) string {
+	return strings.Replace(filepath.Base(f), "-", "_", -1)
 }
 
 // ThriftPackageImporter determines import paths from a Thrift root.
@@ -247,30 +236,25 @@ func generateModule(
 	builder *generateServiceBuilder,
 	o *Options,
 ) (outputFilepath string, contents []byte, err error) {
-	// converts file from /home/abc/ab-def.thrift to /home/abc/ab_def.thrift for golang code generation
-	normalizedThriftPath := normalizeFilePath(m.ThriftPath)
-	if err := duplicateAfterNormalization(m.ThriftPath, normalizedThriftPath); err != nil {
-		return "", nil, err
-	}
-	// packageRelPath is the path relative to outputDir into which we'll be
+	// thriftRelPath is the path relative to outputDir into which we'll be
 	// writing the package for this Thrift file. For $thriftRoot/foo/bar.thrift,
 	// packageRelPath is foo/bar, and packageDir is $outputDir/foo/bar. All
 	// files for bar.thrift will be written to the $outputDir/foo/bar/ tree. The
 	// package will be importable via $importPrefix/foo/bar.
-	packageRelPath, err := i.RelativePackage(normalizedThriftPath)
+	thriftRelPath, err := i.RelativeThriftFilePath(m.ThriftPath)
 	if err != nil {
 		return "", nil, err
 	}
-
+	thriftRelPath = strings.TrimSuffix(thriftRelPath, ".thrift")
 	// TODO(abg): Prefer top-level package name from `namespace go` directive.
-	packageName := filepath.Base(packageRelPath)
+	outputFilename := filepath.Base(thriftRelPath)
 
 	// Output file name defaults to the package name.
-	outputFilename := packageName + ".go"
+	outputFilename = outputFilename + ".go"
 	if len(o.OutputFile) > 0 {
 		outputFilename = o.OutputFile
 	}
-	outputFilepath = filepath.Join(packageRelPath, outputFilename)
+	outputFilepath = filepath.Join(thriftRelPath, outputFilename)
 
 	// importPath is the full import path for the top-level package generated
 	// for this Thrift file.
@@ -279,10 +263,16 @@ func generateModule(
 		return "", nil, err
 	}
 
+	// converts package name from ab-def to ab_def for golang code generation
+	packageRelPath, err := i.RelativePackage(m.ThriftPath)
+	if err != nil {
+		return "", nil, err
+	}
+	normalizedPackageName := filepath.Base(packageRelPath)
 	g := NewGenerator(&GeneratorOptions{
 		Importer:    i,
 		ImportPath:  importPath,
-		PackageName: packageName,
+		PackageName: normalizedPackageName,
 		NoZap:       o.NoZap,
 	})
 
