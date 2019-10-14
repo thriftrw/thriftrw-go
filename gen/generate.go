@@ -167,12 +167,8 @@ func Generate(m *compile.Module, o *Options) error {
 
 // normalizeFilePath replaces hyphens in the file name with underscores.
 func normalizeFilePath(p string) string {
-	return filepath.Join(filepath.Dir(p), normalizedName(p))
-}
-
-// normalizedName replaces hyphens in the file name with underscores.
-func normalizedName(f string) string {
-	return strings.Replace(filepath.Base(f), "-", "_", -1)
+	normalizedName := strings.Replace(filepath.Base(p), "-", "_", -1)
+	return filepath.Join(filepath.Dir(p), normalizedName)
 }
 
 // ThriftPackageImporter determines import paths from a Thrift root.
