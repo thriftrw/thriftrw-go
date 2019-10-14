@@ -93,19 +93,19 @@ func TestGenerateWithHyphenPaths(t *testing.T) {
 		generateError string
 		compileError  string
 	}{
-		// {
-		// 	name:         "include with hyphens error",
-		// 	filepath:     "internal/tests/thrift/nestedfiles_error/include_hyphen_files.thrift",
-		// 	compileError: "cannot include hyphenated Thrift files",
-		// },
+		{
+			name:         "include with hyphens error",
+			filepath:     "internal/tests/thrift/nestedfiles_error/include_hyphen_files.thrift",
+			compileError: "cannot include hyphenated Thrift files",
+		},
 		{
 			name:     "normalization - hyphen files as top level file allowed",
 			filepath: "internal/tests/thrift/hyphenated-file.thrift",
 		},
-		// {
-		// 	name:     "normalization - non hyphen file with hyphen in the directory",
-		// 	filepath: "internal/tests/thrift/hyphenated_file.thrift",
-		// },
+		{
+			name:     "normalization - non hyphen file with hyphen in the directory",
+			filepath: "internal/tests/thrift/hyphenated_file.thrift",
+		},
 	}
 
 	for _, tt := range tests {
