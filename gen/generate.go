@@ -165,28 +165,19 @@ func Generate(m *compile.Module, o *Options) error {
 	return nil
 }
 
-func duplicateAfterNormalization(fileName string) error {
-	absFileName, err := filepath.Abs(fileName)
-	if err != nil {
-		return generateError{
-			Name:   fileName,
-			Reason: fmt.Errorf("File %q does not exist: %v", fileName, err),
-		}
-	}
-	normalizedFileName := normalizeFilePath(absFileName)
-	fileNormalized := absFileName != normalizedFileName
+func duplicateAfterNormalization(originalFileName, normalizedFileName string) error {
+	fileNormalized := originalFileName != normalizedFileName
 	if fileNormalized && fileExists(normalizedFileName) {
-		return fmt.Errorf("normalized file %q collides with existing file %q", normalizedFileName, absFileName)
+		return fmt.Errorf("normalized file %q collides with existing file %q", normalizedFileName, originalFileName)
 	}
 	return nil
 }
 
 func fileExists(filename string) bool {
-	info, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
+	if info, err := os.Stat(filename); err == nil {
+		return !info.IsDir()
 	}
-	return !info.IsDir()
+	return false
 }
 
 // normalizeFilePath replaces hyphens in the file name with underscores.
@@ -256,11 +247,11 @@ func generateModule(
 	builder *generateServiceBuilder,
 	o *Options,
 ) (outputFilepath string, contents []byte, err error) {
-	if err := duplicateAfterNormalization(m.ThriftPath); err != nil {
-		return "", nil, err
-	}
 	// converts file from /home/abc/ab-def.thrift to /home/abc/ab_def.thrift for golang code generation
 	normalizedThriftPath := normalizeFilePath(m.ThriftPath)
+	if err := duplicateAfterNormalization(m.ThriftPath, normalizedThriftPath); err != nil {
+		return "", nil, err
+	}
 	// packageRelPath is the path relative to outputDir into which we'll be
 	// writing the package for this Thrift file. For $thriftRoot/foo/bar.thrift,
 	// packageRelPath is foo/bar, and packageDir is $outputDir/foo/bar. All
