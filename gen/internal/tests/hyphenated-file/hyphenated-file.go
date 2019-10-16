@@ -161,7 +161,7 @@ func (v *DocumentStruct) IsSetSecond() bool {
 // ThriftModule represents the IDL file used to generate this package.
 var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "hyphenated-file",
-	Package:  "go.uber.org/thriftrw/gen/internal/tests/hyphenated_file",
+	Package:  "go.uber.org/thriftrw/gen/internal/tests/hyphenated-file",
 	FilePath: "hyphenated-file.thrift",
 	SHA1:     "8513913ac76a3ba1c6b2b3b6fb241462e162c446",
 	Includes: []*thriftreflect.ThriftModule{
