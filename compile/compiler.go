@@ -22,6 +22,7 @@ package compile
 
 import (
 	"path/filepath"
+	"strings"
 
 	"go.uber.org/thriftrw/ast"
 	"go.uber.org/thriftrw/idl"
@@ -242,12 +243,20 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 // include loads the file specified by the given include in the given Module.
 //
 // The path to the file is relative to the ThriftPath of the given module.
+// Including hyphenated file names will error.
 func (c compiler) include(m *Module, include *ast.Include) (*IncludedModule, error) {
 	if len(include.Name) > 0 {
 		// TODO(abg): Add support for include-as flag somewhere.
 		return nil, includeError{
 			Include: include,
 			Reason:  includeAsDisabledError{},
+		}
+	}
+
+	if strings.Contains(fileBaseName(include.Path), "-") {
+		return nil, includeError{
+			Include: include,
+			Reason:  includeHyphenatedFileNameError{},
 		}
 	}
 

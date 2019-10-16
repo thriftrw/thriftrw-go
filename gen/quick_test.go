@@ -32,11 +32,15 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap/zapcore"
+
 	tl "go.uber.org/thriftrw/gen/internal/tests/collision"
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	tle "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	ahf "go.uber.org/thriftrw/gen/internal/tests/hyphenated-file"
+	hf "go.uber.org/thriftrw/gen/internal/tests/hyphenated_file"
 	tz "go.uber.org/thriftrw/gen/internal/tests/nozap"
 	tf "go.uber.org/thriftrw/gen/internal/tests/services"
 	tss "go.uber.org/thriftrw/gen/internal/tests/set_to_slice"
@@ -46,7 +50,6 @@ import (
 	tul "go.uber.org/thriftrw/gen/internal/tests/uuid_conflict"
 	envex "go.uber.org/thriftrw/internal/envelope/exception"
 	"go.uber.org/thriftrw/wire"
-	"go.uber.org/zap/zapcore"
 )
 
 func thriftTypeIsValid(v thriftType) bool {
@@ -284,6 +287,9 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: tf.KeyValue_DeleteValue_Args{}, Kind: thriftStruct},
 		{Sample: tf.KeyValue_DeleteValue_Result{}, Kind: thriftStruct},
 		{Sample: tf.KeyValue_GetManyValues_Args{}, Kind: thriftStruct},
+		{Sample: ahf.DocumentStruct{}, Kind: thriftStruct},
+		{Sample: hf.DocumentStructure{}, Kind: thriftStruct},
+
 		{
 			Sample:    tf.KeyValue_GetManyValues_Result{},
 			Kind:      thriftStruct,

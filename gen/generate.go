@@ -165,6 +165,11 @@ func Generate(m *compile.Module, o *Options) error {
 	return nil
 }
 
+// normalizePackageName replaces hyphens in the file name with underscores.
+func normalizePackageName(p string) string {
+	return strings.Replace(filepath.Base(p), "-", "_", -1)
+}
+
 // ThriftPackageImporter determines import paths from a Thrift root.
 type ThriftPackageImporter interface {
 	// RelativePackage returns the import path for the top-level package of the
@@ -235,12 +240,11 @@ func generateModule(
 	if err != nil {
 		return "", nil, err
 	}
-
 	// TODO(abg): Prefer top-level package name from `namespace go` directive.
-	packageName := filepath.Base(packageRelPath)
+	outputFilename := filepath.Base(packageRelPath)
 
 	// Output file name defaults to the package name.
-	outputFilename := packageName + ".go"
+	outputFilename = outputFilename + ".go"
 	if len(o.OutputFile) > 0 {
 		outputFilename = o.OutputFile
 	}
@@ -253,10 +257,12 @@ func generateModule(
 		return "", nil, err
 	}
 
+	// converts package name from ab-def to ab_def for golang code generation
+	normalizedPackageName := normalizePackageName(filepath.Base(packageRelPath))
 	g := NewGenerator(&GeneratorOptions{
 		Importer:    i,
 		ImportPath:  importPath,
-		PackageName: packageName,
+		PackageName: normalizedPackageName,
 		NoZap:       o.NoZap,
 	})
 
