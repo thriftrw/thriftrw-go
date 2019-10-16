@@ -163,11 +163,11 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "hyphenated_file",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/hyphenated_file",
 	FilePath: "hyphenated_file.thrift",
-	SHA1:     "aa5208b3d76766ff2c0900a849b4ee966f3057dd",
+	SHA1:     "efdcd233efa65e3d451cdf36c518da9e2d0c40b1",
 	Includes: []*thriftreflect.ThriftModule{
 		non_hyphenated.ThriftModule,
 	},
 	Raw: rawIDL,
 }
 
-const rawIDL = "include \"./non_hyphenated.thrift\"\n\nstruct DocumentStructure {\n 1: required non_hyphenated.Second r2\n}"
+const rawIDL = "// This file is named hyphenated_file to possibly conflict with the code\n// generated from hyphenated-file.\n\ninclude \"./non_hyphenated.thrift\"\n\nstruct DocumentStructure {\n 1: required non_hyphenated.Second r2\n}\n"
