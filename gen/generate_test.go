@@ -103,7 +103,7 @@ func TestGenerateWithHyphenPaths(t *testing.T) {
 			filepath: "internal/tests/thrift/hyphenated-file.thrift",
 		},
 		{
-			name:     "normalization - non hyphen file with hyphen in the directory",
+			name:     "normalization/non hyphen file with hyphen in the directory",
 			filepath: "internal/tests/thrift/hyphenated_file.thrift",
 		},
 	}
