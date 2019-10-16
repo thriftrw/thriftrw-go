@@ -99,7 +99,7 @@ func TestGenerateWithHyphenPaths(t *testing.T) {
 			compileError: "cannot include hyphenated Thrift files",
 		},
 		{
-			name:     "normalization - hyphen files as top level file allowed",
+			name:     "normalization/hyphen files as top level file allowed",
 			filepath: "internal/tests/thrift/hyphenated-file.thrift",
 		},
 		{
