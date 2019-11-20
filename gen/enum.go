@@ -277,7 +277,6 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			Spec:        spec,
 			UniqueItems: items,
 		},
-		TemplateFunc("enumItemName", enumItemName),
 		TemplateFunc("enumItemLabelName", entityLabel),
 		TemplateFunc("checkNoZap", checkNoZap),
 	)
