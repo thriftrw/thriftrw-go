@@ -55,6 +55,9 @@ func (l *listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, 
 			<$f := newVar "f">
 			<$w := newVar "w">
 			func (<$v> <.Name>) ForEach(<$f> func(<$wire>.Value) error) error {
+				if <$v> == nil {
+					return nil
+				}
 				<if isPrimitiveType .Spec.ValueSpec ->
 				for _, <$x> := range <$v> {
 				<- else ->

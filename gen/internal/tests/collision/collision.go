@@ -705,6 +705,9 @@ type PrimitiveContainers struct {
 type _List_String_ValueList []string
 
 func (v _List_String_ValueList) ForEach(f func(wire.Value) error) error {
+	if v == nil {
+		return nil
+	}
 	for _, x := range v {
 		w, err := wire.NewValueString(x), error(nil)
 		if err != nil {
