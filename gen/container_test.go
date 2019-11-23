@@ -1374,7 +1374,7 @@ func TestEmptyContainersRoundTrip(t *testing.T) {
 
 	t.Run("required with special treatment of nil slice", func(t *testing.T) {
 		give := tc.ListOfPrimitives{
-			ListOfStrings:      nil,
+			ListOfStrings: nil,
 		}
 
 		b, err := json.Marshal(give)
