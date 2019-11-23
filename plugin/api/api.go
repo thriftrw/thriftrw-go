@@ -437,9 +437,6 @@ type Function struct {
 type _List_Argument_ValueList []*Argument
 
 func (v _List_Argument_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for i, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid [%v]: value is nil", i)
@@ -1017,9 +1014,6 @@ type GenerateServiceRequest struct {
 type _List_ServiceID_ValueList []ServiceID
 
 func (v _List_ServiceID_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := x.ToWire()
 		if err != nil {
@@ -1961,9 +1955,6 @@ type HandshakeResponse struct {
 type _List_Feature_ValueList []Feature
 
 func (v _List_Feature_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := x.ToWire()
 		if err != nil {
@@ -2571,9 +2562,6 @@ type Service struct {
 type _List_Function_ValueList []*Function
 
 func (v _List_Function_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for i, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid [%v]: value is nil", i)

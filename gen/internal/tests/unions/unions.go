@@ -34,9 +34,6 @@ type ArbitraryValue struct {
 type _List_ArbitraryValue_ValueList []*ArbitraryValue
 
 func (v _List_ArbitraryValue_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for i, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid [%v]: value is nil", i)

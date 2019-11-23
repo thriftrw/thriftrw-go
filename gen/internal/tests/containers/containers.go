@@ -43,9 +43,6 @@ type ContainersOfContainers struct {
 type _List_I32_ValueList []int32
 
 func (v _List_I32_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := wire.NewValueI32(x), error(nil)
 		if err != nil {
@@ -72,9 +69,6 @@ func (_List_I32_ValueList) Close() {}
 type _List_List_I32_ValueList [][]int32
 
 func (v _List_List_I32_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for i, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid [%v]: value is nil", i)
@@ -130,9 +124,6 @@ func (_Set_I32_mapType_ValueList) Close() {}
 type _List_Set_I32_mapType_ValueList []map[int32]struct{}
 
 func (v _List_Set_I32_mapType_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for i, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid [%v]: value is nil", i)
@@ -197,9 +188,6 @@ func (_Map_I32_I32_MapItemList) Close() {}
 type _List_Map_I32_I32_ValueList []map[int32]int32
 
 func (v _List_Map_I32_I32_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for i, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid [%v]: value is nil", i)
@@ -284,9 +272,6 @@ func (_Set_Set_String_mapType_sliceType_ValueList) Close() {}
 type _List_String_ValueList []string
 
 func (v _List_String_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := wire.NewValueString(x), error(nil)
 		if err != nil {
@@ -556,9 +541,6 @@ func (_Map_List_I32_Set_I64_mapType_MapItemList) Close() {}
 type _List_Double_ValueList []float64
 
 func (v _List_Double_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := wire.NewValueDouble(x), error(nil)
 		if err != nil {
@@ -2133,9 +2115,6 @@ type EnumContainers struct {
 type _List_EnumDefault_ValueList []enums.EnumDefault
 
 func (v _List_EnumDefault_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := x.ToWire()
 		if err != nil {
@@ -2617,9 +2596,6 @@ type ListOfConflictingEnums struct {
 type _List_RecordType_ValueList []enum_conflict.RecordType
 
 func (v _List_RecordType_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := x.ToWire()
 		if err != nil {
@@ -2646,9 +2622,6 @@ func (_List_RecordType_ValueList) Close() {}
 type _List_RecordType_1_ValueList []enums.RecordType
 
 func (v _List_RecordType_1_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := x.ToWire()
 		if err != nil {
@@ -2951,9 +2924,6 @@ type ListOfConflictingUUIDs struct {
 type _List_UUID_ValueList []*typedefs.UUID
 
 func (v _List_UUID_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for i, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid [%v]: value is nil", i)
@@ -2983,9 +2953,6 @@ func (_List_UUID_ValueList) Close() {}
 type _List_UUID_1_ValueList []uuid_conflict.UUID
 
 func (v _List_UUID_1_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := x.ToWire()
 		if err != nil {
@@ -3847,9 +3814,6 @@ type PrimitiveContainers struct {
 type _List_Binary_ValueList [][]byte
 
 func (v _List_Binary_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for i, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid [%v]: value is nil", i)
@@ -3879,9 +3843,6 @@ func (_List_Binary_ValueList) Close() {}
 type _List_I64_ValueList []int64
 
 func (v _List_I64_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := wire.NewValueI64(x), error(nil)
 		if err != nil {

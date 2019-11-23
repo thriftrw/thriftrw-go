@@ -165,9 +165,6 @@ func _EnumDefault_ptr(v enums.EnumDefault) *enums.EnumDefault {
 type _List_String_ValueList []string
 
 func (v _List_String_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := wire.NewValueString(x), error(nil)
 		if err != nil {
@@ -194,9 +191,6 @@ func (_List_String_ValueList) Close() {}
 type _List_Double_ValueList []float64
 
 func (v _List_Double_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := wire.NewValueDouble(x), error(nil)
 		if err != nil {
@@ -1717,9 +1711,6 @@ type Graph struct {
 type _List_Edge_ValueList []*Edge
 
 func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for i, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid [%v]: value is nil", i)

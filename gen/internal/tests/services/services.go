@@ -1560,9 +1560,6 @@ type KeyValue_GetManyValues_Args struct {
 type _List_Key_ValueList []Key
 
 func (v _List_Key_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for _, x := range v {
 		w, err := x.ToWire()
 		if err != nil {
@@ -1886,9 +1883,6 @@ type KeyValue_GetManyValues_Result struct {
 type _List_ArbitraryValue_ValueList []*unions.ArbitraryValue
 
 func (v _List_ArbitraryValue_ValueList) ForEach(f func(wire.Value) error) error {
-	if v == nil {
-		return nil
-	}
 	for i, x := range v {
 		if x == nil {
 			return fmt.Errorf("invalid [%v]: value is nil", i)
