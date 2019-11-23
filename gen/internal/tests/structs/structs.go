@@ -1769,9 +1769,6 @@ func (v *Graph) ToWire() (wire.Value, error) {
 		err    error
 	)
 
-	if v.Edges == nil {
-		return w, errors.New("field Edges of Graph is required")
-	}
 	w, err = wire.NewValueList(_List_Edge_ValueList(v.Edges)), error(nil)
 	if err != nil {
 		return w, err

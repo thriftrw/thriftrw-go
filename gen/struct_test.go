@@ -1282,12 +1282,6 @@ func TestStructValidation(t *testing.T) {
 			wantError: "field Y of Point is required",
 		},
 		{
-			desc:        "Graph: missing edges",
-			serialize:   &ts.Graph{Edges: nil},
-			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
-			wantError:   "field Edges of Graph is required",
-		},
-		{
 			desc: "Graph: edges: misssing end",
 			serialize: &ts.Graph{
 				Edges: []*ts.Edge{
@@ -1342,45 +1336,6 @@ func TestStructValidation(t *testing.T) {
 			}}),
 			typ:       reflect.TypeOf(ts.User{}),
 			wantError: "field EmailAddress of ContactInfo is required",
-		},
-		{
-			desc: "PrimitiveContainersRequired: missing list",
-			serialize: &tc.PrimitiveContainersRequired{
-				SetOfInts: map[int32]struct{}{
-					1: {},
-					2: {},
-					3: {},
-				},
-				MapOfIntsToDoubles: map[int64]float64{1: 2.3, 4: 5.6},
-			},
-			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{
-					ID: 2,
-					Value: wire.NewValueSet(
-						wire.ValueListFromSlice(wire.TI32, []wire.Value{
-							wire.NewValueI32(1),
-							wire.NewValueI32(2),
-							wire.NewValueI32(3),
-						}),
-					),
-				},
-				{
-					ID: 3,
-					Value: wire.NewValueMap(
-						wire.MapItemListFromSlice(wire.TI64, wire.TDouble, []wire.MapItem{
-							{
-								Key:   wire.NewValueI64(1),
-								Value: wire.NewValueDouble(2.3),
-							},
-							{
-								Key:   wire.NewValueI64(4),
-								Value: wire.NewValueDouble(5.6),
-							},
-						}),
-					),
-				},
-			}}),
-			wantError: "field ListOfStrings of PrimitiveContainersRequired is required",
 		},
 		{
 			desc: "PrimitiveContainersRequired: missing set",

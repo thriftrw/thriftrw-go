@@ -42,6 +42,9 @@ struct MapOfBinaryAndString {
     1: optional map<binary, string> binaryToString;
     2: optional map<string, binary> stringToBinary;
 }
+struct ListOfPrimitives {
+    1: required list<string> listOfStrings
+}
 
 struct ListOfConflictingEnums {
     1: required list<enum_conflict.RecordType> records

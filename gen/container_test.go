@@ -1372,6 +1372,29 @@ func TestEmptyContainersRoundTrip(t *testing.T) {
 		assert.Equal(t, give, got)
 	})
 
+	t.Run("required with special treatment of nil slice", func(t *testing.T) {
+		give := tc.ListOfPrimitives{
+			ListOfStrings:      nil,
+		}
+
+		b, err := json.Marshal(give)
+		require.NoError(t, err, "failed to encode to JSON")
+
+		var decoded tc.ListOfPrimitives
+		require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
+
+		assert.Equal(t, give, decoded)
+
+		v, err := decoded.ToWire()
+		require.NoError(t, err, "failed to convert to wire.Value")
+
+		var got tc.ListOfPrimitives
+		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
+
+		// In _List_String_Read call in FromWire we allocate a string, even if len is 0.
+		assert.Equal(t, []string{}, got.ListOfStrings)
+	})
+
 	t.Run("optional", func(t *testing.T) {
 		give := tc.PrimitiveContainers{
 			ListOfInts:       []int64{},

@@ -91,6 +91,15 @@ func isReferenceType(spec compile.TypeSpec) bool {
 	}
 }
 
+// Used to allow special treatment of slices in ToWire and treat nil as a valid slice.
+func isListType(spec compile.TypeSpec) bool {
+	// Lookup aliases for our type.
+	spec = compile.RootTypeSpec(spec)
+	_, isList := spec.(*compile.ListSpec)
+
+	return isList
+}
+
 func isStructType(spec compile.TypeSpec) bool {
 	spec = compile.RootTypeSpec(spec)
 	_, isStruct := spec.(*compile.StructSpec)

@@ -223,6 +223,7 @@ func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOpt
 		"import":           g.Import,
 		"isHashable":       isHashable,
 		"setUsesMap":       setUsesMap,
+		"isListType":       isListType,
 		"isPrimitiveType":  isPrimitiveType,
 		"isStructType":     isStructType,
 		"newNamespace":     g.Namespace.Child,

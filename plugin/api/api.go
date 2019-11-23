@@ -537,9 +537,7 @@ func (v *Function) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
-	if v.Arguments == nil {
-		return w, errors.New("field Arguments of Function is required")
-	}
+
 	w, err = wire.NewValueList(_List_Argument_ValueList(v.Arguments)), error(nil)
 	if err != nil {
 		return w, err
@@ -1144,9 +1142,6 @@ func (v *GenerateServiceRequest) ToWire() (wire.Value, error) {
 		err    error
 	)
 
-	if v.RootServices == nil {
-		return w, errors.New("field RootServices of GenerateServiceRequest is required")
-	}
 	w, err = wire.NewValueList(_List_ServiceID_ValueList(v.RootServices)), error(nil)
 	if err != nil {
 		return w, err
@@ -2028,9 +2023,7 @@ func (v *HandshakeResponse) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
-	if v.Features == nil {
-		return w, errors.New("field Features of HandshakeResponse is required")
-	}
+
 	w, err = wire.NewValueList(_List_Feature_ValueList(v.Features)), error(nil)
 	if err != nil {
 		return w, err
@@ -2651,9 +2644,7 @@ func (v *Service) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 4, Value: w}
 		i++
 	}
-	if v.Functions == nil {
-		return w, errors.New("field Functions of Service is required")
-	}
+
 	w, err = wire.NewValueList(_List_Function_ValueList(v.Functions)), error(nil)
 	if err != nil {
 		return w, err

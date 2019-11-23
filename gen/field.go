@@ -262,9 +262,11 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 				<- $f := printf "%s.%s" $v $fname ->
 				<- if .Required ->
 					<- if not (isPrimitiveType .Type) ->
-						if <$f> == nil {
-							return <$wVal>, <import "errors">.New("field <$fname> of <$structName> is required")
-						}
+						<- if not (isListType .Type) ->
+							if <$f> == nil {
+								return <$wVal>, <import "errors">.New("field <$fname> of <$structName> is required")
+							}
+						<- end>
 					<- end>
 						<$wVal>, err = <toWire .Type $f>
 						if err != nil {
