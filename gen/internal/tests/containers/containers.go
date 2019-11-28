@@ -3247,11 +3247,11 @@ func (v *ListOfConflictingUUIDs) IsSetOtherUUIDs() bool {
 	return v != nil && v.OtherUUIDs != nil
 }
 
-type ListOfPrimitives struct {
-	ListOfStrings []string `json:"listOfStrings,required"`
+type ListOfOptionalPrimitives struct {
+	ListOfStrings []string `json:"listOfStrings,omitempty"`
 }
 
-// ToWire translates a ListOfPrimitives struct into a Thrift-level intermediate
+// ToWire translates a ListOfOptionalPrimitives struct into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
 //
@@ -3266,7 +3266,143 @@ type ListOfPrimitives struct {
 //   if err := binaryProtocol.Encode(x, writer); err != nil {
 //     return err
 //   }
-func (v *ListOfPrimitives) ToWire() (wire.Value, error) {
+func (v *ListOfOptionalPrimitives) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.ListOfStrings != nil {
+		w, err = wire.NewValueList(_List_String_ValueList(v.ListOfStrings)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+// FromWire deserializes a ListOfOptionalPrimitives struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a ListOfOptionalPrimitives struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v ListOfOptionalPrimitives
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *ListOfOptionalPrimitives) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TList {
+				v.ListOfStrings, err = _List_String_Read(field.Value.GetList())
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a ListOfOptionalPrimitives
+// struct.
+func (v *ListOfOptionalPrimitives) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [1]string
+	i := 0
+	if v.ListOfStrings != nil {
+		fields[i] = fmt.Sprintf("ListOfStrings: %v", v.ListOfStrings)
+		i++
+	}
+
+	return fmt.Sprintf("ListOfOptionalPrimitives{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this ListOfOptionalPrimitives match the
+// provided ListOfOptionalPrimitives.
+//
+// This function performs a deep comparison.
+func (v *ListOfOptionalPrimitives) Equals(rhs *ListOfOptionalPrimitives) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !((v.ListOfStrings == nil && rhs.ListOfStrings == nil) || (v.ListOfStrings != nil && rhs.ListOfStrings != nil && _List_String_Equals(v.ListOfStrings, rhs.ListOfStrings))) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of ListOfOptionalPrimitives.
+func (v *ListOfOptionalPrimitives) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	if v.ListOfStrings != nil {
+		err = multierr.Append(err, enc.AddArray("listOfStrings", (_List_String_Zapper)(v.ListOfStrings)))
+	}
+	return err
+}
+
+// GetListOfStrings returns the value of ListOfStrings if it is set or its
+// zero value if it is unset.
+func (v *ListOfOptionalPrimitives) GetListOfStrings() (o []string) {
+	if v != nil && v.ListOfStrings != nil {
+		return v.ListOfStrings
+	}
+
+	return
+}
+
+// IsSetListOfStrings returns true if ListOfStrings is not nil.
+func (v *ListOfOptionalPrimitives) IsSetListOfStrings() bool {
+	return v != nil && v.ListOfStrings != nil
+}
+
+type ListOfRequiredPrimitives struct {
+	ListOfStrings []string `json:"listOfStrings,required"`
+}
+
+// ToWire translates a ListOfRequiredPrimitives struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *ListOfRequiredPrimitives) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
 		i      int = 0
@@ -3284,11 +3420,11 @@ func (v *ListOfPrimitives) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-// FromWire deserializes a ListOfPrimitives struct from its Thrift-level
+// FromWire deserializes a ListOfRequiredPrimitives struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 //
-// An error is returned if we were unable to build a ListOfPrimitives struct
+// An error is returned if we were unable to build a ListOfRequiredPrimitives struct
 // from the provided intermediate representation.
 //
 //   x, err := binaryProtocol.Decode(reader, wire.TStruct)
@@ -3296,12 +3432,12 @@ func (v *ListOfPrimitives) ToWire() (wire.Value, error) {
 //     return nil, err
 //   }
 //
-//   var v ListOfPrimitives
+//   var v ListOfRequiredPrimitives
 //   if err := v.FromWire(x); err != nil {
 //     return nil, err
 //   }
 //   return &v, nil
-func (v *ListOfPrimitives) FromWire(w wire.Value) error {
+func (v *ListOfRequiredPrimitives) FromWire(w wire.Value) error {
 	var err error
 
 	listOfStringsIsSet := false
@@ -3320,15 +3456,15 @@ func (v *ListOfPrimitives) FromWire(w wire.Value) error {
 	}
 
 	if !listOfStringsIsSet {
-		return errors.New("field ListOfStrings of ListOfPrimitives is required")
+		return errors.New("field ListOfStrings of ListOfRequiredPrimitives is required")
 	}
 
 	return nil
 }
 
-// String returns a readable string representation of a ListOfPrimitives
+// String returns a readable string representation of a ListOfRequiredPrimitives
 // struct.
-func (v *ListOfPrimitives) String() string {
+func (v *ListOfRequiredPrimitives) String() string {
 	if v == nil {
 		return "<nil>"
 	}
@@ -3338,14 +3474,14 @@ func (v *ListOfPrimitives) String() string {
 	fields[i] = fmt.Sprintf("ListOfStrings: %v", v.ListOfStrings)
 	i++
 
-	return fmt.Sprintf("ListOfPrimitives{%v}", strings.Join(fields[:i], ", "))
+	return fmt.Sprintf("ListOfRequiredPrimitives{%v}", strings.Join(fields[:i], ", "))
 }
 
-// Equals returns true if all the fields of this ListOfPrimitives match the
-// provided ListOfPrimitives.
+// Equals returns true if all the fields of this ListOfRequiredPrimitives match the
+// provided ListOfRequiredPrimitives.
 //
 // This function performs a deep comparison.
-func (v *ListOfPrimitives) Equals(rhs *ListOfPrimitives) bool {
+func (v *ListOfRequiredPrimitives) Equals(rhs *ListOfRequiredPrimitives) bool {
 	if v == nil {
 		return rhs == nil
 	} else if rhs == nil {
@@ -3359,8 +3495,8 @@ func (v *ListOfPrimitives) Equals(rhs *ListOfPrimitives) bool {
 }
 
 // MarshalLogObject implements zapcore.ObjectMarshaler, enabling
-// fast logging of ListOfPrimitives.
-func (v *ListOfPrimitives) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+// fast logging of ListOfRequiredPrimitives.
+func (v *ListOfRequiredPrimitives) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v == nil {
 		return nil
 	}
@@ -3370,7 +3506,7 @@ func (v *ListOfPrimitives) MarshalLogObject(enc zapcore.ObjectEncoder) (err erro
 
 // GetListOfStrings returns the value of ListOfStrings if it is set or its
 // zero value if it is unset.
-func (v *ListOfPrimitives) GetListOfStrings() (o []string) {
+func (v *ListOfRequiredPrimitives) GetListOfStrings() (o []string) {
 	if v != nil {
 		o = v.ListOfStrings
 	}
@@ -3378,7 +3514,7 @@ func (v *ListOfPrimitives) GetListOfStrings() (o []string) {
 }
 
 // IsSetListOfStrings returns true if ListOfStrings is not nil.
-func (v *ListOfPrimitives) IsSetListOfStrings() bool {
+func (v *ListOfRequiredPrimitives) IsSetListOfStrings() bool {
 	return v != nil && v.ListOfStrings != nil
 }
 
@@ -4886,7 +5022,7 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "containers",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/containers",
 	FilePath: "containers.thrift",
-	SHA1:     "e432cc38a397045cf4ce9258b4843600bf916c8d",
+	SHA1:     "b4682204a85cf94d3742f09ef77d1a386b6c2ee7",
 	Includes: []*thriftreflect.ThriftModule{
 		enum_conflict.ThriftModule,
 		enums.ThriftModule,
@@ -4896,4 +5032,4 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Raw: rawIDL,
 }
 
-const rawIDL = "include \"./enums.thrift\"\ninclude \"./enum_conflict.thrift\"\ninclude \"./typedefs.thrift\"\ninclude \"./uuid_conflict.thrift\"\n\nstruct PrimitiveContainers {\n    1: optional list<binary> listOfBinary\n    2: optional list<i64> listOfInts\n    3: optional set<string> setOfStrings\n    4: optional set<byte> setOfBytes\n    5: optional map<i32, string> mapOfIntToString\n    6: optional map<string, bool> mapOfStringToBool\n}\n\nstruct PrimitiveContainersRequired {\n    1: required list<string> listOfStrings\n    2: required set<i32> setOfInts\n    3: required map<i64, double> mapOfIntsToDoubles\n}\n\nstruct EnumContainers {\n    1: optional list<enums.EnumDefault> listOfEnums\n    2: optional set<enums.EnumWithValues> setOfEnums\n    3: optional map<enums.EnumWithDuplicateValues, i32> mapOfEnums\n}\n\nstruct ContainersOfContainers {\n    1: optional list<list<i32>> listOfLists;\n    2: optional list<set<i32>> listOfSets;\n    3: optional list<map<i32, i32>> listOfMaps;\n\n    4: optional set<set<string>> setOfSets;\n    5: optional set<list<string>> setOfLists;\n    6: optional set<map<string, string>> setOfMaps;\n\n    7: optional map<map<string, i32>, i64> mapOfMapToInt;\n    8: optional map<list<i32>, set<i64>> mapOfListToSet;\n    9: optional map<set<i32>, list<double>> mapOfSetToListOfDouble;\n}\n\nstruct MapOfBinaryAndString {\n    1: optional map<binary, string> binaryToString;\n    2: optional map<string, binary> stringToBinary;\n}\nstruct ListOfPrimitives {\n    1: required list<string> listOfStrings\n}\n\nstruct ListOfConflictingEnums {\n    1: required list<enum_conflict.RecordType> records\n    2: required list<enums.RecordType> otherRecords\n}\n\nstruct ListOfConflictingUUIDs {\n    1: required list<typedefs.UUID> uuids\n    2: required list<uuid_conflict.UUID> otherUUIDs\n}\n"
+const rawIDL = "include \"./enums.thrift\"\ninclude \"./enum_conflict.thrift\"\ninclude \"./typedefs.thrift\"\ninclude \"./uuid_conflict.thrift\"\n\nstruct PrimitiveContainers {\n    1: optional list<binary> listOfBinary\n    2: optional list<i64> listOfInts\n    3: optional set<string> setOfStrings\n    4: optional set<byte> setOfBytes\n    5: optional map<i32, string> mapOfIntToString\n    6: optional map<string, bool> mapOfStringToBool\n}\n\nstruct PrimitiveContainersRequired {\n    1: required list<string> listOfStrings\n    2: required set<i32> setOfInts\n    3: required map<i64, double> mapOfIntsToDoubles\n}\n\nstruct EnumContainers {\n    1: optional list<enums.EnumDefault> listOfEnums\n    2: optional set<enums.EnumWithValues> setOfEnums\n    3: optional map<enums.EnumWithDuplicateValues, i32> mapOfEnums\n}\n\nstruct ContainersOfContainers {\n    1: optional list<list<i32>> listOfLists;\n    2: optional list<set<i32>> listOfSets;\n    3: optional list<map<i32, i32>> listOfMaps;\n\n    4: optional set<set<string>> setOfSets;\n    5: optional set<list<string>> setOfLists;\n    6: optional set<map<string, string>> setOfMaps;\n\n    7: optional map<map<string, i32>, i64> mapOfMapToInt;\n    8: optional map<list<i32>, set<i64>> mapOfListToSet;\n    9: optional map<set<i32>, list<double>> mapOfSetToListOfDouble;\n}\n\nstruct MapOfBinaryAndString {\n    1: optional map<binary, string> binaryToString;\n    2: optional map<string, binary> stringToBinary;\n}\n\nstruct ListOfRequiredPrimitives {\n    1: required list<string> listOfStrings\n}\n\nstruct ListOfOptionalPrimitives {\n    1: optional list<string> listOfStrings\n}\n\nstruct ListOfConflictingEnums {\n    1: required list<enum_conflict.RecordType> records\n    2: required list<enums.RecordType> otherRecords\n}\n\nstruct ListOfConflictingUUIDs {\n    1: required list<typedefs.UUID> uuids\n    2: required list<uuid_conflict.UUID> otherUUIDs\n}\n"

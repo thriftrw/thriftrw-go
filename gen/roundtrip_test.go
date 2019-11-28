@@ -36,31 +36,10 @@ import (
 // x.FromWire() with the given value results in the original x.
 func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args ...interface{}) bool {
 	message := fmt.Sprintf(msg, args...)
-	if w, err := x.ToWire(); assert.NoError(t, err, "failed to serialize: %v", x) {
-		if !assert.True(
-			t, wire.ValuesAreEqual(v, w), "%v: %v.ToWire() != %v", message, x, v) {
-			return false
-		}
 
-		var buff bytes.Buffer
-		if !assert.NoError(t, protocol.Binary.Encode(w, &buff), "%v: failed to serialize", message) {
-			return false
-		}
-
-		// Flip v to deserialize(serialize(x.ToWire())) to ensure full round
-		// tripping
-
-		newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), v.Type())
-		if !assert.NoError(t, err, "%v: failed to deserialize", message) {
-			return false
-		}
-
-		if !assert.True(
-			t, wire.ValuesAreEqual(newV, v), "%v: deserialize(serialize(%v.ToWire())) != %v", message, x, v) {
-			return false
-		}
-
-		v = newV
+	b, v := assertSerialization(t, x, v, message)
+	if !b {
+		return false
 	}
 
 	xType := reflect.TypeOf(x)
@@ -72,5 +51,36 @@ func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args 
 	if assert.NoError(t, gotX.FromWire(v), "FromWire: %v", message) {
 		return assert.Equal(t, x, gotX, "FromWire: %v", message)
 	}
+
 	return false
+}
+
+// assertSerialization checks if x.ToWire() results in the provided wire.Value.
+func assertSerialization(t *testing.T, x thriftType, v wire.Value, message string) (bool, wire.Value) {
+	if w, err := x.ToWire(); assert.NoError(t, err, "failed to serialize: %v", x) {
+		if !assert.True(
+			t, wire.ValuesAreEqual(v, w), "%v: %v.ToWire() != %v", message, x, v) {
+			return false, v
+		}
+
+		var buff bytes.Buffer
+		if !assert.NoError(t, protocol.Binary.Encode(w, &buff), "%v: failed to serialize", message) {
+			return false, v
+		}
+
+		// Flip v to deserialize(serialize(x.ToWire())) to ensure full round trip.
+		newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), v.Type())
+		if !assert.NoError(t, err, "%v: failed to deserialize", message) {
+			return false, newV
+		}
+
+		if !assert.True(
+			t, wire.ValuesAreEqual(newV, v), "%v: deserialize(serialize(%v.ToWire())) != %v", message, x, v) {
+			return false, newV
+		}
+
+		v = newV
+	}
+
+	return true, v
 }

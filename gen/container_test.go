@@ -1372,15 +1372,15 @@ func TestEmptyContainersRoundTrip(t *testing.T) {
 		assert.Equal(t, give, got)
 	})
 
-	t.Run("required with special treatment of nil slice", func(t *testing.T) {
-		give := tc.ListOfPrimitives{
+	t.Run("required with special treatment of required nil slice", func(t *testing.T) {
+		give := tc.ListOfRequiredPrimitives {
 			ListOfStrings: nil,
 		}
 
 		b, err := json.Marshal(give)
 		require.NoError(t, err, "failed to encode to JSON")
 
-		var decoded tc.ListOfPrimitives
+		var decoded tc.ListOfRequiredPrimitives
 		require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
 
 		assert.Equal(t, give, decoded)
@@ -1388,7 +1388,53 @@ func TestEmptyContainersRoundTrip(t *testing.T) {
 		v, err := decoded.ToWire()
 		require.NoError(t, err, "failed to convert to wire.Value")
 
-		var got tc.ListOfPrimitives
+		var got tc.ListOfRequiredPrimitives
+		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
+
+		// In _List_String_Read call in FromWire we allocate a string, even if len is 0.
+		assert.Equal(t, []string{}, got.ListOfStrings)
+	})
+
+	t.Run("required with special treatment of optional nil slice", func(t *testing.T) {
+		give := tc.ListOfRequiredPrimitives {
+			ListOfStrings: nil,
+		}
+
+		b, err := json.Marshal(give)
+		require.NoError(t, err, "failed to encode to JSON")
+
+		var decoded tc.ListOfRequiredPrimitives
+		require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
+
+		assert.Equal(t, give, decoded)
+
+		v, err := decoded.ToWire()
+		require.NoError(t, err, "failed to convert to wire.Value")
+
+		var got tc.ListOfRequiredPrimitives
+		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
+
+		// In _List_String_Read call in FromWire we allocate a string, even if len is 0.
+		assert.Equal(t, []string{}, got.ListOfStrings)
+	})
+
+	t.Run("required with special treatment of optional empty slice", func(t *testing.T) {
+		give := tc.ListOfRequiredPrimitives {
+			ListOfStrings: []string{},
+		}
+
+		b, err := json.Marshal(give)
+		require.NoError(t, err, "failed to encode to JSON")
+
+		var decoded tc.ListOfRequiredPrimitives
+		require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
+
+		assert.Equal(t, give, decoded)
+
+		v, err := decoded.ToWire()
+		require.NoError(t, err, "failed to convert to wire.Value")
+
+		var got tc.ListOfRequiredPrimitives
 		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
 
 		// In _List_String_Read call in FromWire we allocate a string, even if len is 0.

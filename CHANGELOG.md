@@ -12,6 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   restriction where slices generated for required fields of a struct must be non-nil
   if empty.
 
+### Changed
+- `nil` slices are now treated as empty lists for fields of `list` type. This
+  relaxes the previous requirement of accepting only non-`nil` slices for
+  required `list` fields. Note: this does not affect `map` and `set` types
+  with unhashable keys slices are accepted.
+
 ## [1.20.2] - 2019-10-17
 ### Fixed
 - Added canonical import path directive to avoid checking out ThriftRW at the
