@@ -284,6 +284,11 @@ func (v *InternalError) String() string {
 	return fmt.Sprintf("InternalError{%v}", strings.Join(fields[:i], ", "))
 }
 
+// ErrorName returns a string representation of the type of InternalError.
+func (v *InternalError) ErrorName() string {
+	return "InternalError"
+}
+
 func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 

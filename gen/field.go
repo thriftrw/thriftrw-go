@@ -47,8 +47,9 @@ var reservedIdentifiers = map[string]struct{}{
 type fieldGroupGenerator struct {
 	Namespace
 
-	Name   string
-	Fields compile.FieldGroup
+	Name       string
+	ThriftName string
+	Fields     compile.FieldGroup
 
 	// If this field group represents a union of values, exactly one field
 	// must be set for it to be valid.
@@ -89,6 +90,12 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 
 	if err := f.String(g); err != nil {
 		return err
+	}
+
+	if f.IsException {
+		if err := f.ErrorName(g); err != nil {
+			return err
+		}
 	}
 
 	if err := f.Equals(g); err != nil {
@@ -440,6 +447,17 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			<end>
 
 			return <$fmt>.Sprintf("<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
+		}
+		`, f)
+}
+
+func (f fieldGroupGenerator) ErrorName(g Generator) error {
+	return g.DeclareFromTemplate(
+		`
+		<$v := newVar "v">
+		// ErrorName returns a string representation of the type of <.Name>.
+		func (<$v> *<.Name>) ErrorName() string {
+			return "<.ThriftName>"
 		}
 		`, f)
 }
