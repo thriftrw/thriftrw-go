@@ -60,6 +60,7 @@ func structure(g Generator, spec *compile.StructSpec) error {
 	fg := fieldGroupGenerator{
 		Namespace:   NewNamespace(),
 		Name:        name,
+		ThriftName:  spec.ThriftName(),
 		Doc:         spec.Doc,
 		Fields:      spec.Fields,
 		IsUnion:     spec.Type == ast.UnionType,

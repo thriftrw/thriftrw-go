@@ -8,3 +8,9 @@ exception DoesNotExistException {
     1: required string key
     2: optional string Error (go.name="Error2")
 }
+
+exception Does_Not_Exist_Exception_Collision {
+ /** Key that was missing. */
+    1: required string key
+    2: optional string Error (go.name="Error2")
+} (go.name="DoesNotExistException2")

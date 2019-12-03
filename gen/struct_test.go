@@ -371,14 +371,10 @@ func TestStructRoundTripAndString(t *testing.T) {
 				RequiredTypedefStringListField: tss.StringList{"a", "b"},
 				OptionalTypedefStringListField: tss.StringList{"c", "d"},
 				RequiredFooListField: []*tss.Foo{
-					{
-						"a",
-					},
+					{StringField: "a"},
 				},
 				RequiredTypedefFooListField: tss.FooList{
-					{
-						"b",
-					},
+					{StringField: "b"},
 				},
 				RequiredStringListListField:        [][]string{{"x", "y"}},
 				RequiredTypedefStringListListField: [][]string{{"x"}, {"y"}},
@@ -658,6 +654,30 @@ func TestBasicException(t *testing.T) {
 
 		err := error(&tt.s) // should implement the error interface
 		assert.Equal(t, "DoesNotExistException{Key: foo}", err.Error())
+	}
+}
+
+func TestCollisionException(t *testing.T) {
+	tests := []struct {
+		s tx.DoesNotExistException2
+		v wire.Value
+	}{
+		{
+			tx.DoesNotExistException2{Key: "foo"},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("foo")},
+			}}),
+		},
+	}
+
+	for _, tt := range tests {
+		assertRoundTrip(t, &tt.s, tt.v, "DoesNotExistException2")
+
+		assert.Equal(t, "Does_Not_Exist_Exception_Collision", tt.s.ErrorName(),
+			"Thrift name of exception incorrect")
+
+		err := error(&tt.s) // should implement the error interface
+		assert.Equal(t, "DoesNotExistException2{Key: foo}", err.Error())
 	}
 }
 

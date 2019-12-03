@@ -284,6 +284,12 @@ func (v *InternalError) String() string {
 	return fmt.Sprintf("InternalError{%v}", strings.Join(fields[:i], ", "))
 }
 
+// ErrorName is the name of this type as defined in the Thrift
+// file.
+func (*InternalError) ErrorName() string {
+	return "InternalError"
+}
+
 func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 
