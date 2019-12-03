@@ -447,6 +447,11 @@ func (v *TApplicationException) String() string {
 	return fmt.Sprintf("TApplicationException{%v}", strings.Join(fields[:i], ", "))
 }
 
+// ErrorName returns a string representation of the type of TApplicationException.
+func (v *TApplicationException) ErrorName() string {
+	return "TApplicationException"
+}
+
 func _String_EqualsPtr(lhs, rhs *string) bool {
 	if lhs != nil && rhs != nil {
 

@@ -371,14 +371,10 @@ func TestStructRoundTripAndString(t *testing.T) {
 				RequiredTypedefStringListField: tss.StringList{"a", "b"},
 				OptionalTypedefStringListField: tss.StringList{"c", "d"},
 				RequiredFooListField: []*tss.Foo{
-					{
-						"a",
-					},
+					{StringField: "a"},
 				},
 				RequiredTypedefFooListField: tss.FooList{
-					{
-						"b",
-					},
+					{StringField: "b"},
 				},
 				RequiredStringListListField:        [][]string{{"x", "y"}},
 				RequiredTypedefStringListListField: [][]string{{"x"}, {"y"}},
