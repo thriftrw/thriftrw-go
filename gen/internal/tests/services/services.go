@@ -284,8 +284,9 @@ func (v *InternalError) String() string {
 	return fmt.Sprintf("InternalError{%v}", strings.Join(fields[:i], ", "))
 }
 
-// ErrorName returns a string representation of the type of InternalError.
-func (v *InternalError) ErrorName() string {
+// ErrorName is the name of this type as defined in the Thrift
+// file.
+func (*InternalError) ErrorName() string {
 	return "InternalError"
 }
 

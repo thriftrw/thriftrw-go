@@ -454,9 +454,9 @@ func (f fieldGroupGenerator) String(g Generator) error {
 func (f fieldGroupGenerator) ErrorName(g Generator) error {
 	return g.DeclareFromTemplate(
 		`
-		<$v := newVar "v">
-		// ErrorName returns a string representation of the type of <.Name>.
-		func (<$v> *<.Name>) ErrorName() string {
+		// ErrorName is the name of this type as defined in the Thrift
+		// file.
+		func (*<.Name>) ErrorName() string {
 			return "<.ThriftName>"
 		}
 		`, f)

@@ -447,8 +447,9 @@ func (v *TApplicationException) String() string {
 	return fmt.Sprintf("TApplicationException{%v}", strings.Join(fields[:i], ", "))
 }
 
-// ErrorName returns a string representation of the type of TApplicationException.
-func (v *TApplicationException) ErrorName() string {
+// ErrorName is the name of this type as defined in the Thrift
+// file.
+func (*TApplicationException) ErrorName() string {
 	return "TApplicationException"
 }
 

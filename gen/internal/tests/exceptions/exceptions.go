@@ -131,8 +131,9 @@ func (v *DoesNotExistException) String() string {
 	return fmt.Sprintf("DoesNotExistException{%v}", strings.Join(fields[:i], ", "))
 }
 
-// ErrorName returns a string representation of the type of DoesNotExistException.
-func (v *DoesNotExistException) ErrorName() string {
+// ErrorName is the name of this type as defined in the Thrift
+// file.
+func (*DoesNotExistException) ErrorName() string {
 	return "DoesNotExistException"
 }
 
@@ -325,8 +326,9 @@ func (v *DoesNotExistException2) String() string {
 	return fmt.Sprintf("DoesNotExistException2{%v}", strings.Join(fields[:i], ", "))
 }
 
-// ErrorName returns a string representation of the type of DoesNotExistException2.
-func (v *DoesNotExistException2) ErrorName() string {
+// ErrorName is the name of this type as defined in the Thrift
+// file.
+func (*DoesNotExistException2) ErrorName() string {
 	return "Does_Not_Exist_Exception_Collision"
 }
 
@@ -458,8 +460,9 @@ func (v *EmptyException) String() string {
 	return fmt.Sprintf("EmptyException{%v}", strings.Join(fields[:i], ", "))
 }
 
-// ErrorName returns a string representation of the type of EmptyException.
-func (v *EmptyException) ErrorName() string {
+// ErrorName is the name of this type as defined in the Thrift
+// file.
+func (*EmptyException) ErrorName() string {
 	return "EmptyException"
 }
 
