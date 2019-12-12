@@ -93,12 +93,12 @@ func TestListRequiredToWire(t *testing.T) {
 		assert.True(t, wire.ValuesAreEqual(tt.offTheWire, w))
 
 		// Round trip them all.
-		newV, b := assertBinaryRoundTrip(t, w, tt.desc)
+		freshestV, b := assertBinaryRoundTrip(t, w, tt.desc)
 		assert.True(t, b, "failed round trip")
 		assert.True(t, tt.p.Equals(tt.p))
 		// Allocate a new instance to serialize from Thrift representation.
 		x := new(tc.ListOfRequiredPrimitives)
-		if assert.NoError(t, x.FromWire(newV), tt.desc) { // assure no errors and convert newP.
+		if assert.NoError(t, x.FromWire(freshestV), tt.desc) {
 			assert.Equal(t, tt.expect, x.ListOfStrings)
 		}
 	}
@@ -158,32 +158,32 @@ func TestListRequiredFromWireError(t *testing.T) {
 // TestListOptionalToWire tests optional serialization cases.
 func TestListOptionalToWire(t *testing.T) {
 	tests := []struct {
-		desc string
-		p    thriftType
-		v    wire.Value
+		desc       string
+		offTheWire wire.Value
+		p          *tc.ListOfOptionalPrimitives
 	}{
 		{
 			"optional nil list: no list field",
-			&tc.PrimitiveContainers{
-				ListOfInts: nil,
-			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
+			&tc.ListOfOptionalPrimitives{
+				ListOfStrings: nil,
+			},
 		},
 		{
 			"optional empty list: with list field",
-			&tc.PrimitiveContainers{
-				ListOfInts: []int64{},
-			},
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
-					ID:    2,
-					Value: wire.NewValueList(wire.ValueListFromSlice(wire.TI64, []wire.Value{})),
+					ID:    1,
+					Value: wire.NewValueList(wire.ValueListFromSlice(wire.TBinary, []wire.Value{})),
 				},
 			}}),
+			&tc.ListOfOptionalPrimitives{
+				ListOfStrings: []string{},
+			},
 		},
 	}
 	for _, tt := range tests {
-		assertRoundTrip(t, tt.p, tt.v, tt.desc)
+		assertRoundTrip(t, tt.p, tt.offTheWire, tt.desc)
 	}
 }
 
@@ -191,17 +191,17 @@ func TestListOptionalFromWire(t *testing.T) {
 	tests := []struct {
 		desc       string
 		offTheWire wire.Value
-		expected   []int64
+		expected   []string
 	}{
 		{
 			"empty list field wire representation decodes into an empty slice",
 			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{
-					ID:    2,
-					Value: wire.NewValueList(wire.ValueListFromSlice(wire.TI64, []wire.Value{})),
+					ID:    1,
+					Value: wire.NewValueList(wire.ValueListFromSlice(wire.TBinary, []wire.Value{})),
 				},
 			}}),
-			[]int64{},
+			[]string{},
 		},
 		{
 			"nil list field decodes to nil",
@@ -210,9 +210,9 @@ func TestListOptionalFromWire(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		x := new(tc.PrimitiveContainers)
+		x := new(tc.ListOfOptionalPrimitives)
 		if assert.NoError(t, x.FromWire(tt.offTheWire), tt.desc) {
-			assert.Equal(t, tt.expected, x.ListOfInts)
+			assert.Equal(t, tt.expected, x.ListOfStrings)
 			_, b := assertBinaryRoundTrip(t, tt.offTheWire, tt.desc)
 			assert.True(t, b, "failed round trip")
 		}
