@@ -37,9 +37,17 @@ import (
 func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args ...interface{}) bool {
 	message := fmt.Sprintf(msg, args...)
 
-	b, v := assertSerialization(t, x, v, message)
-	if !b {
-		return false
+	if w, err := x.ToWire(); assert.NoError(t, err, "failed to serialize: %encodedValue", x) {
+		if !assert.True(
+			t, wire.ValuesAreEqual(v, w), "%encodedValue: %encodedValue.ToWire() != %encodedValue", message, x, v) {
+			return false
+		}
+		// Flip encodedValue to deserialize(serialize(x.ToWire())) to ensure full round trip.
+		newV, b := assertBinaryRoundTrip(t, w, message)
+		if !assert.True(t, b, "%encodedValue: failed encode/decode round trip for (%encodedValue.ToWire())) != %encodedValue", x, v) {
+			return false
+		}
+		v = newV // use the "freshest" value.
 	}
 
 	xType := reflect.TypeOf(x)
@@ -48,39 +56,28 @@ func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args 
 	}
 
 	gotX := reflect.New(xType).Interface().(thriftType)
-	if assert.NoError(t, gotX.FromWire(v), "FromWire: %v", message) {
-		return assert.Equal(t, x, gotX, "FromWire: %v", message)
+	if assert.NoError(t, gotX.FromWire(v), "FromWire: %encodedValue", message) {
+		return assert.Equal(t, x, gotX, "FromWire: %encodedValue", message)
 	}
 
 	return false
 }
 
-// assertSerialization checks if x.ToWire() results in the provided wire.Value.
-func assertSerialization(t *testing.T, x thriftType, v wire.Value, message string) (bool, wire.Value) {
-	if w, err := x.ToWire(); assert.NoError(t, err, "failed to serialize: %v", x) {
-		if !assert.True(
-			t, wire.ValuesAreEqual(v, w), "%v: %v.ToWire() != %v", message, x, v) {
-			return false, v
-		}
-
-		var buff bytes.Buffer
-		if !assert.NoError(t, protocol.Binary.Encode(w, &buff), "%v: failed to serialize", message) {
-			return false, v
-		}
-
-		// Flip v to deserialize(serialize(x.ToWire())) to ensure full round trip.
-		newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), v.Type())
-		if !assert.NoError(t, err, "%v: failed to deserialize", message) {
-			return false, newV
-		}
-
-		if !assert.True(
-			t, wire.ValuesAreEqual(newV, v), "%v: deserialize(serialize(%v.ToWire())) != %v", message, x, v) {
-			return false, newV
-		}
-
-		v = newV
+// assertBinaryRoundTrip checks that De/Encode returns the same value.
+func assertBinaryRoundTrip(t *testing.T, w wire.Value, message string) (wire.Value, bool) {
+	var buff bytes.Buffer
+	if !assert.NoError(t, protocol.Binary.Encode(w, &buff), "%encodedValue: failed to serialize", message) {
+		return w, false
 	}
 
-	return true, v
+	newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), w.Type())
+	if !assert.NoError(t, err, "%encodedValue: failed to deserialize", message) {
+		return newV, false
+	}
+
+	if !assert.True(t, wire.ValuesAreEqual(newV, w)) {
+		return newV, false
+	}
+
+	return newV, true
 }
