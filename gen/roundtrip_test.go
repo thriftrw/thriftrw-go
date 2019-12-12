@@ -43,11 +43,11 @@ func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args 
 			return false
 		}
 		// Flip encodedValue to deserialize(serialize(x.ToWire())) to ensure full round trip.
-		newV, b := assertBinaryRoundTrip(t, w, message)
+		freshV, b := assertBinaryRoundTrip(t, w, message)
 		if !assert.True(t, b, "%encodedValue: failed encode/decode round trip for (%encodedValue.ToWire())) != %encodedValue", x, v) {
 			return false
 		}
-		v = newV // use the "freshest" value.
+		v = freshV // use the "freshest" value.
 	}
 
 	xType := reflect.TypeOf(x)
