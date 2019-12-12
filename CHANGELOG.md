@@ -8,9 +8,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Generated exceptions now include an `ErrorName()` method that returns the
   name of the exception as defined in the Thrift file.
-- Allowing nil to represent an empty slice for generated fields. Relaxing previous 
-  restriction where slices generated for required fields of a struct must be non-nil
-  if empty.
 
 ### Changed
 - `nil` slices are now treated as empty lists for fields of `list` type. This
