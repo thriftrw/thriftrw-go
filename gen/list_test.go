@@ -24,6 +24,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	"go.uber.org/thriftrw/wire"
 )
@@ -89,71 +90,46 @@ func TestListRequiredToWire(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			w, err := tt.give.ToWire()
-			assert.NoError(t, err, "failed to serialize: %encodedValue", tt.give)
-			assert.True(t, wire.ValuesAreEqual(tt.want, w))
-
-			// Round trip them all.
-			freshestV, b := assertBinaryRoundTrip(t, w, tt.desc)
-			assert.True(t, b, "failed round trip")
+			require.NoError(t, err, "failed to serialize: %encodedValue", tt.give)
+			require.True(t, wire.ValuesAreEqual(tt.want, w))
 			assert.True(t, tt.give.Equals(tt.give))
+			// Round trip them all.
+			got, b := assertBinaryRoundTrip(t, w, tt.desc)
+			require.True(t, b, "failed round trip")
 			// Allocate a new instance to serialize from Thrift representation.
 			x := new(tc.ListOfRequiredPrimitives)
-			if assert.NoError(t, x.FromWire(freshestV), tt.desc) {
-				assert.Equal(t, tt.wantList, x.ListOfStrings)
-			}
+			require.NoError(t, x.FromWire(got), tt.desc)
+			assert.Equal(t, tt.wantList, x.ListOfStrings)
 		})
 	}
 }
 
 func TestListRequiredFromWire(t *testing.T) {
-	tests := []struct {
-		desc string
-		give wire.Value
-		want *tc.ListOfRequiredPrimitives
-	}{
-		{
-			desc: "empty list field decodes into an empty slice",
-			give: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{
-					ID:    1,
-					Value: wire.NewValueList(wire.ValueListFromSlice(wire.TBinary, []wire.Value{})),
-				},
-			}}),
-			want: &tc.ListOfRequiredPrimitives{
-				ListOfStrings: []string{},
+	t.Run("empty list field decodes into an empty slice", func(t *testing.T) {
+		want := &tc.ListOfRequiredPrimitives{
+			ListOfStrings: []string{},
+		}
+		give := wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+			{
+				ID:    1,
+				Value: wire.NewValueList(wire.ValueListFromSlice(wire.TBinary, []wire.Value{})),
 			},
-		},
-	}
-	for _, tt := range tests {
-		x := new(tc.ListOfRequiredPrimitives)
-		if assert.NoError(t, x.FromWire(tt.give), tt.desc) {
-			assert.Equal(t, tt.want, x)
-			_, b := assertBinaryRoundTrip(t, tt.give, tt.desc)
-			assert.True(t, b, "failed round trip")
-		}
-	}
-}
+		}})
+		got := new(tc.ListOfRequiredPrimitives)
+		require.NoError(t, got.FromWire(give), "failed to decode")
+		require.Equal(t, want, got)
+		_, b := assertBinaryRoundTrip(t, give, "empty list field decodes into an empty slice")
+		assert.True(t, b, "failed round trip")
+	})
 
-// Error if required list is missing in the wire representation.
-func TestListRequiredFromWireError(t *testing.T) {
-	tests := []struct {
-		desc      string
-		give      wire.Value
-		wantError string
-	}{
-		{
-			desc:      "empty list field decodes into empty",
-			give:      wire.NewValueStruct(wire.Struct{}),
-			wantError: "field ListOfStrings of ListOfRequiredPrimitives is required",
-		},
-	}
-	for _, tt := range tests {
+	// Error if required list is missing in the wire representation.
+	t.Run("absent list field results in an error", func(t *testing.T) {
+		give := wire.NewValueStruct(wire.Struct{})
 		x := new(tc.ListOfRequiredPrimitives)
-		err := x.FromWire(tt.give)
-		if assert.Error(t, err, tt.desc) {
-			assert.Equal(t, tt.wantError, err.Error())
-		}
-	}
+		err := x.FromWire(give)
+		require.Error(t, err, "failed to decode")
+		assert.Equal(t, "field ListOfStrings of ListOfRequiredPrimitives is required", err.Error())
+	})
 }
 
 // TestListOptionalToWire tests optional serialization cases.
@@ -216,11 +192,11 @@ func TestListOptionalFromWire(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			x := new(tc.ListOfOptionalPrimitives)
-			if assert.NoError(t, x.FromWire(tt.give), tt.desc) {
-				assert.Equal(t, tt.want, x.ListOfStrings)
-				_, b := assertBinaryRoundTrip(t, tt.give, tt.desc)
-				assert.True(t, b, "failed round trip")
-			}
+			require.NoError(t, x.FromWire(tt.give), tt.desc)
+			assert.Equal(t, tt.want, x.ListOfStrings)
+			_, b := assertBinaryRoundTrip(t, tt.give, tt.desc)
+			assert.True(t, b, "failed round trip")
+
 		})
 	}
 }
