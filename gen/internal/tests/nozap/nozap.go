@@ -363,9 +363,7 @@ func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 8, Value: w}
 	i++
-	if v.ListOfStrings == nil {
-		return w, errors.New("field ListOfStrings of PrimitiveRequiredStruct is required")
-	}
+
 	w, err = wire.NewValueList(_List_String_ValueList(v.ListOfStrings)), error(nil)
 	if err != nil {
 		return w, err

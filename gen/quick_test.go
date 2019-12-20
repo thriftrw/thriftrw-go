@@ -277,6 +277,8 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: tc.ContainersOfContainers{}, NoEquals: true, Kind: thriftStruct},
 		{Sample: tc.EnumContainers{}, Kind: thriftStruct},
 		{Sample: tc.ListOfConflictingEnums{}, Kind: thriftStruct},
+		{Sample: tc.ListOfRequiredPrimitives{}, Kind: thriftStruct},
+		{Sample: tc.ListOfOptionalPrimitives{}, Kind: thriftStruct},
 		{Sample: tc.ListOfConflictingUUIDs{}, Kind: thriftStruct},
 		{Sample: tc.MapOfBinaryAndString{}, NoEquals: true, Kind: thriftStruct},
 		{Sample: tc.PrimitiveContainersRequired{}, Kind: thriftStruct},

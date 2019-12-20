@@ -1252,10 +1252,12 @@ func TestCrazyTownEquals(t *testing.T) {
 
 func TestContainerValidate(t *testing.T) {
 	tests := []struct {
+		desc      string
 		value     thriftType
 		wantError string
 	}{
 		{
+			desc: "nil byte sub-array",
 			value: &tc.PrimitiveContainers{
 				ListOfBinary: [][]byte{
 					{1, 2, 3},
@@ -1267,6 +1269,7 @@ func TestContainerValidate(t *testing.T) {
 			wantError: "invalid [2]: value is nil",
 		},
 		{
+			desc: "nil second element of array",
 			value: &ts.Graph{
 				Edges: []*ts.Edge{
 					{StartPoint: &ts.Point{X: 1, Y: 2}, EndPoint: &ts.Point{X: 3, Y: 4}},
@@ -1277,12 +1280,14 @@ func TestContainerValidate(t *testing.T) {
 			wantError: "invalid [1]: value is nil",
 		},
 		{
+			desc: "nil set item",
 			value: &tc.ContainersOfContainers{
 				SetOfLists: [][]string{{}, nil},
 			},
 			wantError: "invalid set item: value is nil",
 		},
 		{
+			desc: "nil map key",
 			value: &tc.MapOfBinaryAndString{
 				BinaryToString: []struct {
 					Key   []byte
@@ -1295,6 +1300,7 @@ func TestContainerValidate(t *testing.T) {
 			wantError: "invalid map key: value is nil",
 		},
 		{
+			desc: "nil map value",
 			value: &tc.MapOfBinaryAndString{
 				StringToBinary: map[string][]byte{
 					"hello": []byte("world"),
@@ -1306,14 +1312,16 @@ func TestContainerValidate(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		value, err := tt.value.ToWire()
-		if err == nil {
-			err = wire.EvaluateValue(value) // lazy error
-		}
+		t.Run(tt.desc, func(t *testing.T) {
+			value, err := tt.value.ToWire()
+			if err == nil {
+				err = wire.EvaluateValue(value) // lazy error
+			}
 
-		if assert.Error(t, err) {
-			assert.Equal(t, tt.wantError, err.Error())
-		}
+			if assert.Error(t, err) {
+				assert.Equal(t, tt.wantError, err.Error())
+			}
+		})
 	}
 }
 
