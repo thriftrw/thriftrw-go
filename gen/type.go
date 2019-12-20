@@ -96,7 +96,6 @@ func isListType(spec compile.TypeSpec) bool {
 	// Lookup aliases for our type.
 	spec = compile.RootTypeSpec(spec)
 	_, isList := spec.(*compile.ListSpec)
-
 	return isList
 }
 
