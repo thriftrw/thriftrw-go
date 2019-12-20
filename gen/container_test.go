@@ -1314,7 +1314,7 @@ func TestContainerValidate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			value, err := tt.value.ToWire()
-			if err == nil && value.String() != "" {
+			if err == nil {
 				err = wire.EvaluateValue(value) // lazy error
 			}
 

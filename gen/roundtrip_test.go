@@ -37,14 +37,14 @@ import (
 func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args ...interface{}) bool {
 	message := fmt.Sprintf(msg, args...)
 
-	if w, err := x.ToWire(); assert.NoError(t, err, "failed to serialize: %encodedValue", x) {
+	if w, err := x.ToWire(); assert.NoError(t, err, "failed to serialize: %v", x) {
 		if !assert.True(
-			t, wire.ValuesAreEqual(v, w), "%encodedValue: %encodedValue.ToWire() != %encodedValue", message, x, v) {
+			t, wire.ValuesAreEqual(v, w), "%v: %v.ToWire() != %v", message, x, v) {
 			return false
 		}
-		// Flip encodedValue to deserialize(serialize(x.ToWire())) to ensure full round trip.
+		// Flip v to deserialize(serialize(x.ToWire())) to ensure full round trip.
 		freshV, b := assertBinaryRoundTrip(t, w, message)
-		if !assert.True(t, b, "%encodedValue: failed encode/decode round trip for (%encodedValue.ToWire())) != %encodedValue", x, v) {
+		if !assert.True(t, b, "%v: failed encode/decode round trip for (%v.ToWire())) != %v", x, v) {
 			return false
 		}
 		v = freshV // use the "freshest" value.
@@ -56,8 +56,8 @@ func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args 
 	}
 
 	gotX := reflect.New(xType).Interface().(thriftType)
-	if assert.NoError(t, gotX.FromWire(v), "FromWire: %encodedValue", message) {
-		return assert.Equal(t, x, gotX, "FromWire: %encodedValue", message)
+	if assert.NoError(t, gotX.FromWire(v), "FromWire: %v", message) {
+		return assert.Equal(t, x, gotX, "FromWire: %v", message)
 	}
 
 	return false
@@ -66,12 +66,12 @@ func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args 
 // assertBinaryRoundTrip checks that De/Encode returns the same value.
 func assertBinaryRoundTrip(t *testing.T, w wire.Value, message string) (wire.Value, bool) {
 	var buff bytes.Buffer
-	if !assert.NoError(t, protocol.Binary.Encode(w, &buff), "%encodedValue: failed to serialize", message) {
+	if !assert.NoError(t, protocol.Binary.Encode(w, &buff), "%v: failed to serialize", message) {
 		return w, false
 	}
 
 	newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), w.Type())
-	if !assert.NoError(t, err, "%encodedValue: failed to deserialize", message) {
+	if !assert.NoError(t, err, "%v: failed to deserialize", message) {
 		return newV, false
 	}
 

@@ -90,15 +90,15 @@ func TestListRequiredToWire(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			w, err := tt.give.ToWire()
-			require.NoError(t, err, "failed to serialize: %encodedValue", tt.give)
+			require.NoError(t, err, "failed to serialize: %v", tt.give)
 			require.True(t, wire.ValuesAreEqual(tt.want, w))
 			assert.True(t, tt.give.Equals(tt.give))
 			// Round trip them all.
-			got, b := assertBinaryRoundTrip(t, w, tt.desc)
-			require.True(t, b, "failed round trip")
-			// Allocate a new instance to serialize from Thrift representation.
+			got, ok := assertBinaryRoundTrip(t, w, tt.desc)
+			require.True(t, ok, "failed round trip")
+			// Allocate a new instance to deserialize from Thrift representation.
 			x := new(tc.ListOfRequiredPrimitives)
-			require.NoError(t, x.FromWire(got), tt.desc)
+			require.NoError(t, x.FromWire(got))
 			assert.Equal(t, tt.wantList, x.ListOfStrings)
 		})
 	}
@@ -118,8 +118,8 @@ func TestListRequiredFromWire(t *testing.T) {
 		got := new(tc.ListOfRequiredPrimitives)
 		require.NoError(t, got.FromWire(give), "failed to decode")
 		require.Equal(t, want, got)
-		_, b := assertBinaryRoundTrip(t, give, "empty list field decodes into an empty slice")
-		assert.True(t, b, "failed round trip")
+		_, ok := assertBinaryRoundTrip(t, give, t.Name())
+		assert.True(t, ok, "failed round trip")
 	})
 
 	// Error if required list is missing in the wire representation.
@@ -132,8 +132,8 @@ func TestListRequiredFromWire(t *testing.T) {
 	})
 }
 
-// TestListOptionalToWire tests optional serialization cases.
-func TestListOptionalToWire(t *testing.T) {
+// TestRoundtripOptionalListFields tests optional serialization cases.
+func TestRoundtripOptionalListFields(t *testing.T) {
 	tests := []struct {
 		desc string
 		give wire.Value
@@ -194,8 +194,8 @@ func TestListOptionalFromWire(t *testing.T) {
 			x := new(tc.ListOfOptionalPrimitives)
 			require.NoError(t, x.FromWire(tt.give), tt.desc)
 			assert.Equal(t, tt.want, x.ListOfStrings)
-			_, b := assertBinaryRoundTrip(t, tt.give, tt.desc)
-			assert.True(t, b, "failed round trip")
+			_, ok := assertBinaryRoundTrip(t, tt.give, tt.desc)
+			assert.True(t, ok, "failed round trip")
 
 		})
 	}
