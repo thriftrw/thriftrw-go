@@ -43,7 +43,7 @@ func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args 
 			return false
 		}
 		// Flip v to deserialize(serialize(x.ToWire())) to ensure full round trip.
-		freshV, b := assertBinaryRoundTrip(t, w, message)
+		freshV, ok := assertBinaryRoundTrip(t, w, message)
 		if !assert.True(t, b, "%v: failed encode/decode round trip for (%v.ToWire())) != %v", x, v) {
 			return false
 		}
