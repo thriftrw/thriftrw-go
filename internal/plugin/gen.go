@@ -20,4 +20,4 @@
 
 package plugin
 
-//go:generate ./gen.sh
+//go:generate mockgen -package handletest -destination handletest/mock.go go.uber.org/thriftrw/internal/plugin Handle,ServiceGenerator
