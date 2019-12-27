@@ -20,4 +20,4 @@
 
 package thrifttest
 
-//go:mockgen -destination=thrifttest/mock_protocol.go -package=thrifttest go.uber.org/thriftrw/protocol Protocol,EnvelopeAgnosticProtocol,EnvelopeSpecificResponder
+//go:generate mockgen -destination=mock_protocol.go -package=thrifttest go.uber.org/thriftrw/protocol Protocol,EnvelopeAgnosticProtocol,Responder
