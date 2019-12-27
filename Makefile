@@ -6,6 +6,7 @@ export GOBIN = $(BUILD_DIR)/bin
 RAGEL = $(GOBIN)/ragel
 THRIFTRW = $(GOBIN)/thriftrw
 GOLINT = $(GOBIN)/golint
+STATICCHECK = $(GOBIN)/staticcheck
 
 LINT_EXCLUDES = \
 	gen/internal/tests/ \
@@ -70,7 +71,7 @@ generate: tools $(RAGEL) $(THRIFTRW)
 LINT_FILTER := grep -v $(patsubst %,-e %, $(LINT_EXCLUDES))
 
 .PHONY: lint
-lint: $(GOLINT)
+lint: $(GOLINT) $(STATICCHECK)
 	@rm -rf lint.log
 	@echo "Checking gofmt"
 	@gofmt -e -s -l $(GO_FILES) 2>&1 | $(LINT_FILTER) | tee -a lint.log
@@ -79,6 +80,8 @@ lint: $(GOLINT)
 		grep -v '^#' | $(LINT_FILTER) | tee -a lint.log
 	@echo "Checking golint"
 	@$(GOLINT) ./... 2>&1 | $(LINT_FILTER) | tee -a lint.log
+	@echo "Checking staticcheck"
+	@$(STATICCHECK) ./... 2>&1 | $(LINT_FILTER) | tee -a lint.log
 	@[ ! -s lint.log ]
 
 .PHONY: verifyversion

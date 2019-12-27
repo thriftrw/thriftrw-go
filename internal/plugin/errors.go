@@ -22,8 +22,6 @@ package plugin
 
 import (
 	"fmt"
-
-	"go.uber.org/thriftrw/internal/semver"
 )
 
 type errHandshakeFailed struct {
@@ -49,15 +47,4 @@ type errAPIVersionMismatch struct {
 
 func (e errAPIVersionMismatch) Error() string {
 	return fmt.Sprintf("plugin API version mismatch: expected %v but got %v", e.Want, e.Got)
-}
-
-type errVersionMismatch struct {
-	Want semver.Range
-	Got  string
-}
-
-func (e errVersionMismatch) Error() string {
-	return fmt.Sprintf(
-		"plugin compiled with the wrong version of ThriftRW: "+
-			"expected >=%v and <%v but got %v", &e.Want.Begin, &e.Want.End, e.Got)
 }

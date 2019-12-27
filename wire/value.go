@@ -28,7 +28,7 @@ import (
 
 // An empty []byte with zero length and capacity. We'll use this rather than
 // allocating new byte slices for empty []byte.
-var _emptyByteSlice = make([]byte, 0, 0)
+var _emptyByteSlice = make([]byte, 0)
 
 // Value holds the over-the-wire representation of a Thrift value.
 //

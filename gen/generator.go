@@ -134,8 +134,7 @@ type generator struct {
 	thriftImporter ThriftPackageImporter
 	mangler        *mangler
 
-	counter int
-	fset    *token.FileSet
+	fset *token.FileSet
 
 	// TODO use something to group related decls together
 }
