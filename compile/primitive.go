@@ -28,48 +28,56 @@ import (
 )
 
 type (
+	// BoolSpec is the TypeSpec for bool types in a Thrift file.
 	BoolSpec struct {
 		nativeThriftType
 
 		Annotations Annotations
 	}
 
+	// I8Spec is the TypeSpec for i8/byte types in a Thrift file.
 	I8Spec struct {
 		nativeThriftType
 
 		Annotations Annotations
 	}
 
+	// I16Spec is the TypeSpec for i16 types in a Thrift file.
 	I16Spec struct {
 		nativeThriftType
 
 		Annotations Annotations
 	}
 
+	// I32Spec is the TypeSpec for i32 types in a Thrift file.
 	I32Spec struct {
 		nativeThriftType
 
 		Annotations Annotations
 	}
 
+	// I64Spec is the TypeSpec for i64 types in a Thrift file.
 	I64Spec struct {
 		nativeThriftType
 
 		Annotations Annotations
 	}
 
+	// DoubleSpec is the TypeSpec for double types in a Thrift file.
 	DoubleSpec struct {
 		nativeThriftType
 
 		Annotations Annotations
 	}
 
+	// StringSpec is the TypeSpec for string types in a Thrift file.
 	StringSpec struct {
 		nativeThriftType
 
 		Annotations Annotations
 	}
 
+	// BinarySpec is the TypeSpec for binary types in a Thrift file.
 	BinarySpec struct {
 		nativeThriftType
 
@@ -77,49 +85,133 @@ type (
 	}
 )
 
-func (*BoolSpec) TypeCode() wire.Type   { return wire.TBool }
-func (*I8Spec) TypeCode() wire.Type     { return wire.TI8 }
-func (*I16Spec) TypeCode() wire.Type    { return wire.TI16 }
-func (*I32Spec) TypeCode() wire.Type    { return wire.TI32 }
-func (*I64Spec) TypeCode() wire.Type    { return wire.TI64 }
+// TypeCode returns TBool.
+func (*BoolSpec) TypeCode() wire.Type { return wire.TBool }
+
+// TypeCode returns TI8.
+func (*I8Spec) TypeCode() wire.Type { return wire.TI8 }
+
+// TypeCode returns TI16.
+func (*I16Spec) TypeCode() wire.Type { return wire.TI16 }
+
+// TypeCode returns TI32.
+func (*I32Spec) TypeCode() wire.Type { return wire.TI32 }
+
+// TypeCode returns TI64.
+func (*I64Spec) TypeCode() wire.Type { return wire.TI64 }
+
+// TypeCode returns TDouble.
 func (*DoubleSpec) TypeCode() wire.Type { return wire.TDouble }
+
+// TypeCode returns TBinary since Thrift strings are sent as binary over the
+// wire.
 func (*StringSpec) TypeCode() wire.Type { return wire.TBinary }
+
+// TypeCode returns TBinary.
 func (*BinarySpec) TypeCode() wire.Type { return wire.TBinary }
 
-func (*BoolSpec) ThriftName() string   { return "bool" }
-func (*I8Spec) ThriftName() string     { return "byte" }
-func (*I16Spec) ThriftName() string    { return "i16" }
-func (*I32Spec) ThriftName() string    { return "i32" }
-func (*I64Spec) ThriftName() string    { return "i64" }
+// ThriftName returns "bool".
+func (*BoolSpec) ThriftName() string { return "bool" }
+
+// ThriftName returns "byte".
+func (*I8Spec) ThriftName() string { return "byte" }
+
+// ThriftName returns "i16".
+func (*I16Spec) ThriftName() string { return "i16" }
+
+// ThriftName returns "i32".
+func (*I32Spec) ThriftName() string { return "i32" }
+
+// ThriftName returns "i64".
+func (*I64Spec) ThriftName() string { return "i64" }
+
+// ThriftName returns "double".
 func (*DoubleSpec) ThriftName() string { return "double" }
+
+// ThriftName returns "string".
 func (*StringSpec) ThriftName() string { return "string" }
+
+// ThriftName returns "binary".
 func (*BinarySpec) ThriftName() string { return "binary" }
 
-func (t *BoolSpec) Link(Scope) (TypeSpec, error)   { return t, nil }
-func (t *I8Spec) Link(Scope) (TypeSpec, error)     { return t, nil }
-func (t *I16Spec) Link(Scope) (TypeSpec, error)    { return t, nil }
-func (t *I32Spec) Link(Scope) (TypeSpec, error)    { return t, nil }
-func (t *I64Spec) Link(Scope) (TypeSpec, error)    { return t, nil }
+// Link is a no-op for primitives.
+func (t *BoolSpec) Link(Scope) (TypeSpec, error) { return t, nil }
+
+// Link is a no-op for primitives.
+func (t *I8Spec) Link(Scope) (TypeSpec, error) { return t, nil }
+
+// Link is a no-op for primitives.
+func (t *I16Spec) Link(Scope) (TypeSpec, error) { return t, nil }
+
+// Link is a no-op for primitives.
+func (t *I32Spec) Link(Scope) (TypeSpec, error) { return t, nil }
+
+// Link is a no-op for primitives.
+func (t *I64Spec) Link(Scope) (TypeSpec, error) { return t, nil }
+
+// Link is a no-op for primitives.
 func (t *DoubleSpec) Link(Scope) (TypeSpec, error) { return t, nil }
+
+// Link is a no-op for primitives.
 func (t *StringSpec) Link(Scope) (TypeSpec, error) { return t, nil }
+
+// Link is a no-op for primitives.
 func (t *BinarySpec) Link(Scope) (TypeSpec, error) { return t, nil }
 
-func (*BoolSpec) ForEachTypeReference(func(TypeSpec) error) error   { return nil }
-func (*I8Spec) ForEachTypeReference(func(TypeSpec) error) error     { return nil }
-func (*I16Spec) ForEachTypeReference(func(TypeSpec) error) error    { return nil }
-func (*I32Spec) ForEachTypeReference(func(TypeSpec) error) error    { return nil }
-func (*I64Spec) ForEachTypeReference(func(TypeSpec) error) error    { return nil }
+// ForEachTypeReference is a no-op for primitives.
+func (*BoolSpec) ForEachTypeReference(func(TypeSpec) error) error { return nil }
+
+// ForEachTypeReference is a no-op for primitives.
+func (*I8Spec) ForEachTypeReference(func(TypeSpec) error) error { return nil }
+
+// ForEachTypeReference is a no-op for primitives.
+func (*I16Spec) ForEachTypeReference(func(TypeSpec) error) error { return nil }
+
+// ForEachTypeReference is a no-op for primitives.
+func (*I32Spec) ForEachTypeReference(func(TypeSpec) error) error { return nil }
+
+// ForEachTypeReference is a no-op for primitives.
+func (*I64Spec) ForEachTypeReference(func(TypeSpec) error) error { return nil }
+
+// ForEachTypeReference is a no-op for primitives.
 func (*DoubleSpec) ForEachTypeReference(func(TypeSpec) error) error { return nil }
+
+// ForEachTypeReference is a no-op for primitives.
 func (*StringSpec) ForEachTypeReference(func(TypeSpec) error) error { return nil }
+
+// ForEachTypeReference is a no-op for primitives.
 func (*BinarySpec) ForEachTypeReference(func(TypeSpec) error) error { return nil }
 
-func (t *BoolSpec) ThriftAnnotations() Annotations   { return t.Annotations }
-func (t *I8Spec) ThriftAnnotations() Annotations     { return t.Annotations }
-func (t *I16Spec) ThriftAnnotations() Annotations    { return t.Annotations }
-func (t *I32Spec) ThriftAnnotations() Annotations    { return t.Annotations }
-func (t *I64Spec) ThriftAnnotations() Annotations    { return t.Annotations }
+// ThriftAnnotations returns the Thrift annotations specified with the
+// reference to this type.
+func (t *BoolSpec) ThriftAnnotations() Annotations { return t.Annotations }
+
+// ThriftAnnotations returns the Thrift annotations specified with the
+// reference to this type.
+func (t *I8Spec) ThriftAnnotations() Annotations { return t.Annotations }
+
+// ThriftAnnotations returns the Thrift annotations specified with the
+// reference to this type.
+func (t *I16Spec) ThriftAnnotations() Annotations { return t.Annotations }
+
+// ThriftAnnotations returns the Thrift annotations specified with the
+// reference to this type.
+func (t *I32Spec) ThriftAnnotations() Annotations { return t.Annotations }
+
+// ThriftAnnotations returns the Thrift annotations specified with the
+// reference to this type.
+func (t *I64Spec) ThriftAnnotations() Annotations { return t.Annotations }
+
+// ThriftAnnotations returns the Thrift annotations specified with the
+// reference to this type.
 func (t *DoubleSpec) ThriftAnnotations() Annotations { return t.Annotations }
+
+// ThriftAnnotations returns the Thrift annotations specified with the
+// reference to this type.
 func (t *StringSpec) ThriftAnnotations() Annotations { return t.Annotations }
+
+// ThriftAnnotations returns the Thrift annotations specified with the
+// reference to this type.
 func (t *BinarySpec) ThriftAnnotations() Annotations { return t.Annotations }
 
 // compileBaseType compiles a base type reference in the AST to a primitive
