@@ -21,4 +21,3 @@
 package plugin
 
 //go:generate ./gen.sh
-//go:generate ../../scripts/updateLicenses.sh
