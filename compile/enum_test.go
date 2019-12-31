@@ -31,10 +31,6 @@ import (
 	"go.uber.org/thriftrw/wire"
 )
 
-func i(x int) *int {
-	return &x
-}
-
 func parseEnum(s string) *ast.Enum {
 	prog, err := idl.Parse([]byte(s))
 	if err != nil {
@@ -121,7 +117,7 @@ func TestCompileEnumSuccess(t *testing.T) {
 			assert.Equal(t, tt.spec, spec)
 
 			// compiling twice should not error
-			spec, err = spec.Link(defaultScope)
+			_, err = spec.Link(defaultScope)
 			assert.NoError(t, err)
 		}
 	}

@@ -321,16 +321,6 @@ func (e constantStructFieldCastError) Error() string {
 	return fmt.Sprintf("failed to cast field %q: %v", e.FieldName, e.Reason)
 }
 
-// Failure to cast a value referenced by a named constant.
-type constantCastError struct {
-	Name   string
-	Reason error
-}
-
-func (e constantCastError) Error() string {
-	return fmt.Sprintf("failed to cast constant %q: %v", e.Name, e.Reason)
-}
-
 type annotationConflictError struct {
 	Reason error
 }

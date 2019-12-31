@@ -33,77 +33,79 @@ import (
 )
 
 func TestDeterminePackagePrefix(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "thriftrw-main-test")
+	gopath, err := ioutil.TempDir("", "thriftrw-main-test")
 	require.NoError(t, err)
-	defer os.RemoveAll(tmpDir)
+	defer os.RemoveAll(gopath)
 
-	genDir, err := filepath.Abs("gen")
+	gopath2, err := ioutil.TempDir("", "thriftrw-main-test")
 	require.NoError(t, err)
+	defer os.RemoveAll(gopath2)
+
+	genDir := filepath.Join(gopath, "src/go.uber.org/thriftrw/gen")
 
 	tests := []struct {
-		overrideGoPath func(curGoPath string) string
-
-		dir    string
-		result string
-		errMsg string
+		desc   string
+		gopath string // GOPATH to use
+		dir    string // directory we're checking
+		result string // expected package prefix
+		errMsg string // error message, if any
 	}{
 		{
-			overrideGoPath: func(gopath string) string { return "" },
-			dir:            genDir,
-			errMsg:         "$GOPATH is not set",
+			desc:   "no GOPATH",
+			dir:    filepath.Join(gopath, "src/go.uber.org/thriftrw"),
+			errMsg: "$GOPATH is not set",
 		},
 		{
-			dir:    tmpDir,
+			desc:   "not inside GOPATH",
+			gopath: gopath,
+			dir:    filepath.Join(gopath2, "src/go.uber.org/yarpc"),
 			errMsg: "not inside $GOPATH",
 		},
 		{
+			desc:   "GOPATH is set",
+			gopath: gopath,
 			dir:    genDir,
 			result: "go.uber.org/thriftrw/gen",
 		},
 		{
-			overrideGoPath: func(gopath string) string {
-				return tmpDir + ":" + gopath
-			},
-			dir:    filepath.Join(tmpDir, "src/go.uber.org/thriftrw"),
-			result: "go.uber.org/thriftrw",
-		},
-		{
-			overrideGoPath: func(gopath string) string {
-				return tmpDir + ":" + gopath
-			},
+			desc:   "multiple GOPATH entries/first",
+			gopath: gopath + ":" + gopath2,
 			dir:    genDir,
 			result: "go.uber.org/thriftrw/gen",
+		},
+		{
+			desc:   "multiple GOPATH entries/second",
+			gopath: gopath + ":" + gopath2,
+			dir:    filepath.Join(gopath2, "src/go.uber.org/yarpc"),
+			result: "go.uber.org/yarpc",
 		},
 	}
 
-	realGoPath := os.Getenv("GOPATH")
-	defer os.Setenv("GOPATH", realGoPath)
-
 	for _, tt := range tests {
-		require.NoError(t, os.Setenv("GOPATH", realGoPath))
+		t.Run(tt.desc, func(t *testing.T) {
 
-		if tt.overrideGoPath != nil {
-			fakeGoPath := tt.overrideGoPath(realGoPath)
-			if fakeGoPath == "" {
+			oldGopath := os.Getenv("GOPATH")
+			if len(tt.gopath) == 0 {
 				require.NoError(t, os.Unsetenv("GOPATH"))
 			} else {
-				require.NoError(t, os.Setenv("GOPATH", fakeGoPath))
+				require.NoError(t, os.Setenv("GOPATH", tt.gopath))
 			}
-		}
+			defer os.Setenv("GOPATH", oldGopath)
 
-		result, err := determinePackagePrefix(tt.dir)
+			result, err := determinePackagePrefix(tt.dir)
 
-		if tt.result != "" {
-			if assert.NoError(t, err) {
-				assert.Equal(t, tt.result, result)
+			if tt.result != "" {
+				if assert.NoError(t, err) {
+					assert.Equal(t, tt.result, result)
+				}
 			}
-		}
 
-		if tt.errMsg != "" {
-			if assert.Error(t, err, "determinePackagePrefix(%q) should fail", tt.dir) {
-				assert.Contains(t, err.Error(), tt.errMsg)
+			if tt.errMsg != "" {
+				if assert.Error(t, err, "determinePackagePrefix(%q) should fail", tt.dir) {
+					assert.Contains(t, err.Error(), tt.errMsg)
+				}
 			}
-		}
+		})
 	}
 }
 

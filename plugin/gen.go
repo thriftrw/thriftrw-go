@@ -20,6 +20,5 @@
 
 package plugin
 
-//go:generate thriftrw --generate-plugin-api api.thrift
+//go:generate thriftrw --pkg-prefix=go.uber.org/thriftrw/plugin --generate-plugin-api api.thrift
 //go:generate mockgen -destination plugintest/api.go -package plugintest go.uber.org/thriftrw/plugin/api Plugin,ServiceGenerator
-//go:generate ../scripts/updateLicenses.sh

@@ -34,8 +34,6 @@ import (
 	"go.uber.org/thriftrw/version"
 )
 
-const _fastPathFrameSize = 10 * 1024 * 1024 // 10 MB
-
 var _proto = protocol.Binary
 
 // Plugin defines a ThriftRW plugin.

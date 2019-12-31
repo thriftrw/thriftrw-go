@@ -1,6 +1,7 @@
 node_modules
 /build
 /thriftrw
+/lint.log
 /cover
 cover.out
 cover.full.out

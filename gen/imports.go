@@ -85,7 +85,7 @@ func (i importer) Import(path string) string {
 // importDecl builds an import declation from the given list of imports.
 func (i importer) importDecl() ast.Decl {
 	imports := i.imports
-	if imports == nil || len(imports) == 0 {
+	if len(imports) == 0 {
 		return nil
 	}
 

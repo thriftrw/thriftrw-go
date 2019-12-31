@@ -20,4 +20,4 @@
 
 package envelope
 
-//go:generate thriftrw exception.thrift
+//go:generate thriftrw --pkg-prefix=go.uber.org/thriftrw/internal/envelope exception.thrift

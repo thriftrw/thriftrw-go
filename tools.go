@@ -18,28 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+// +build tools
 
-import "go.uber.org/thriftrw/ast"
+package main
 
-func init() {
-	yyErrorVerbose = true
-}
-
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, error) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
-	}
-	return nil, lex.err
-}
-
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
-
-//go:generate goyacc -l thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
+import (
+	// Tools we use during development.
+	_ "github.com/golang/mock/mockgen"
+	_ "golang.org/x/lint/golint"
+	_ "golang.org/x/tools/cmd/goimports"
+	_ "golang.org/x/tools/cmd/goyacc"
+	_ "golang.org/x/tools/cmd/stringer"
+	_ "honnef.co/go/tools/cmd/staticcheck"
+)
