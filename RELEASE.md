@@ -1,46 +1,128 @@
 Release process
 ===============
 
-This document outlines how to create a release of thriftrw-go
+Prerequisites
+-------------
 
-1.  `git checkout master`
+Make sure you have `hub` installed.
 
-2.  `git pull`
+```
+brew install hub
+```
 
-3.  `git merge <branch>` where `<branch>` is the branch we want to cut the
-    release on (most likely `dev`)
+Releasing
+---------
 
-4.  Alter CHANGELOG.md from `[Unreleased]` to `[X.Y.Z] - YYY-MM-DD` and add
-    a reference at the bottom of the document in the form of:
-    `[X.Y.Z]: https://github.com/thriftrw/thriftrw-go/compare/vU.V.W...vX.Y.Z`,
-    where X.Y.Z is the version to release and U.V.W is the prior.
+To release new versions of ThriftRW Go, follow these instructions.
 
-5.  Alter `version/version.go` to have the same version as `version_to_release`
+1.  Set up some environment variables for use later.
 
-6.  Run `make verifyversion`
+        # The version being released.
+        VERSION=1.2.3
 
-7.  Create a commit with the title `Prepare for release <version_to_release>`
+        # This is the branch from which $VERSION will be released.
+        # This is almost always dev.
+        BRANCH=dev
 
-8.  Create a git tag for the version using
-    `git tag -a v<version_to_release> -m v<version_to_release` (e.g.,
-    `git tag -a v1.0.0 -m v1.0.0`)
+2.  Set up a release branch. We will propose the release from this branch.
 
-9.  Push the tag to origin `git push --tags origin v<version_to_release>`
+        git fetch origin master
+        git checkout -b $(whoami)/release origin/master
 
-10. `git push origin master`
+3.  Merge changes to be released into this branch.
 
-11. Go to https://github.com/thriftrw/thriftrw-go/tags and edit the release notes of
-    the new tag (copy the changelog into the release notes and make the release
-    name the version number)
+        git merge $BRANCH
 
-12. `git checkout dev`
+4.  Verify that there are no changes to the generated code.
 
-13. `git merge master`
+        make generate
+        git diff
 
-14. Update `CHANGELOG.md` and `version/version.go` to have a new
-    `[Unreleased]` (`- No changes yet`) block, run `make generate`, and put into a commit
-    with title `Back to development`
+    If the diff is non-empty, abort the release and figure out why the
+    generated code has changed.
 
-15. Run `make verifyversion`
+5.  Alter the Unreleased entry in CHANGELOG.md to point to `$VERSION` and
+    update the link at the bottom of the file. Use the format `YYYY-MM-DD` for
+    the year.
 
-16. `git push origin dev`
+    ```diff
+    -## [Unreleased]
+    +## [1.2.3] - 2020-01-03
+    ```
+
+    ```diff
+    -[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.2.2...HEAD
+    +[1.2.3]: https://github.com/thriftrw/thriftrw-go/compare/v1.2.2...v1.2.3
+    ```
+
+6.  Update the version number in version/version.go and verify that it matches
+    what is in the changelog.
+
+        sed -i '' -e "s/^const Version =.*/const Version = \"$VERSION\"/" version/version.go
+        make verifyversion
+
+7.  Create a commit for the release.
+
+        git add version/version.go CHANGELOG.md
+        git commit -m "Preparing release v$VERSION"
+
+8.  Make a pull request with these changes against `master`.
+
+        hub pull-request -b master --push
+
+9.  Land the pull request after approval as a **merge commit**. To do this,
+    select **Create a merge commit** from the pull-down next to the merge
+    button and click **Merge pull request**. Make sure you delete that branch
+    after it has been merged with **Delete Branch**.
+
+10. Once the change has been landed, pull it locally.
+
+        git checkout master
+        git pull
+
+11. Tag a release.
+
+        hub release create -o -m v$VERSION -t master v$VERSION
+
+12. Copy the changelog entries for this release into the release description
+    in the newly opened browser window.
+
+13. Switch back to development.
+
+        git checkout $BRANCH
+        git merge master
+
+14. Add a placeholder for the next version to CHANGELOG.md and a new link at
+    the bottom.
+
+    ```diff
+    +## [Unreleased]
+    +- No changes yet.
+    +
+     ## [1.2.3] - 2020-01-03
+    ```
+
+    ```diff
+    +[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.2.3...HEAD
+     [1.2.3]: https://github.com/thriftrw/thriftrw-go/compare/v1.2.2...v1.2.3
+    ```
+
+15. Update the version number in version/version.go to the next minor version.
+
+    ```diff
+    -const Version = "1.2.3"
+    +const Version = "1.3.0"
+    ```
+
+16. Verify the version number matches.
+
+        make verifyversion
+
+17. Update the generated code.
+
+        make generate
+
+18. Commit and push your changes.
+
+        git commit -a -m 'Back to development'
+        git push origin $BRANCH
