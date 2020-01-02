@@ -47,7 +47,7 @@ build: $(THRIFTRW)
 .PHONY: ragel
 ragel: $(RAGEL)
 
-$(THRIFTRW):
+$(THRIFTRW): $(GO_FILES)
 	go install .
 
 $(RAGEL_TAR):
