@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ import (
 
 // An empty []byte with zero length and capacity. We'll use this rather than
 // allocating new byte slices for empty []byte.
-var _emptyByteSlice = make([]byte, 0, 0)
+var _emptyByteSlice = make([]byte, 0)
 
 // Value holds the over-the-wire representation of a Thrift value.
 //

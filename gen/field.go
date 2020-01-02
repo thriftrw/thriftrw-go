@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -47,8 +47,9 @@ var reservedIdentifiers = map[string]struct{}{
 type fieldGroupGenerator struct {
 	Namespace
 
-	Name   string
-	Fields compile.FieldGroup
+	Name       string
+	ThriftName string
+	Fields     compile.FieldGroup
 
 	// If this field group represents a union of values, exactly one field
 	// must be set for it to be valid.
@@ -89,6 +90,12 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 
 	if err := f.String(g); err != nil {
 		return err
+	}
+
+	if f.IsException {
+		if err := f.ErrorName(g); err != nil {
+			return err
+		}
 	}
 
 	if err := f.Equals(g); err != nil {
@@ -254,7 +261,7 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 				<- $fname := goName . ->
 				<- $f := printf "%s.%s" $v $fname ->
 				<- if .Required ->
-					<- if not (isPrimitiveType .Type) ->
+					<- if and (not (isPrimitiveType .Type)) (not (isListType .Type)) ->
 						if <$f> == nil {
 							return <$wVal>, <import "errors">.New("field <$fname> of <$structName> is required")
 						}
@@ -440,6 +447,17 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			<end>
 
 			return <$fmt>.Sprintf("<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
+		}
+		`, f)
+}
+
+func (f fieldGroupGenerator) ErrorName(g Generator) error {
+	return g.DeclareFromTemplate(
+		`
+		// ErrorName is the name of this type as defined in the Thrift
+		// file.
+		func (*<.Name>) ErrorName() string {
+			return "<.ThriftName>"
 		}
 		`, f)
 }

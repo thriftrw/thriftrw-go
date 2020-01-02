@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.21.0] - 2020-01-02
+### Added
+- Generated exceptions now include an `ErrorName()` method that returns the
+  name of the exception as defined in the Thrift file.
+- gen: Templates now have access to `enumItemName` to determine the Go-level
+  name of the enum item.
+
+### Changed
+- `nil` slices are now treated as empty lists for fields of `list` type. This
+  relaxes the previous requirement of accepting only non-`nil` slices for
+  required `list` fields. Note: this does not affect `map` and `set` types
+  with unhashable keys slices are accepted.
+- Migrated to Go modules.
+
 ## [1.20.2] - 2019-10-17
 ### Fixed
 - Added canonical import path directive to avoid checking out ThriftRW at the
@@ -303,6 +317,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Initial release.
 
+[1.21.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.20.2...v1.21.0
 [1.20.2]: https://github.com/thriftrw/thriftrw-go/compare/v1.20.1...v1.20.2
 [1.20.1]: https://github.com/thriftrw/thriftrw-go/compare/v1.20.0...v1.20.1
 [1.20.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.19.1...v1.20.0

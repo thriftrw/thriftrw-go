@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -33,8 +33,6 @@ import (
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/version"
 )
-
-const _fastPathFrameSize = 10 * 1024 * 1024 // 10 MB
 
 var _proto = protocol.Binary
 

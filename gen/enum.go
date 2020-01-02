@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -277,7 +277,6 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			Spec:        spec,
 			UniqueItems: items,
 		},
-		TemplateFunc("enumItemName", enumItemName),
 		TemplateFunc("enumItemLabelName", entityLabel),
 		TemplateFunc("checkNoZap", checkNoZap),
 	)

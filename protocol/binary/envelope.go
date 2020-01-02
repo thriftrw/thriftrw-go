@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -108,7 +108,7 @@ func (bw *Reader) ReadEnveloped() (wire.Envelope, error) {
 		return e, err
 	}
 
-	e.Value, off, err = bw.ReadValue(wire.TStruct, off)
+	e.Value, _, err = bw.ReadValue(wire.TStruct, off)
 	if err != nil {
 		return wire.Envelope{}, err
 	}

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,6 +20,5 @@
 
 package plugin
 
-//go:generate thriftrw --generate-plugin-api api.thrift
+//go:generate thriftrw --pkg-prefix=go.uber.org/thriftrw/plugin --generate-plugin-api api.thrift
 //go:generate mockgen -destination plugintest/api.go -package plugintest go.uber.org/thriftrw/plugin/api Plugin,ServiceGenerator
-//go:generate ../scripts/updateLicenses.sh

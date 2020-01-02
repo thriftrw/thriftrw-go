@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -39,8 +39,7 @@ func Parse(s []byte) (*ast.Program, error) {
 //go:generate ragel -Z -G2 -o lex.go lex.rl
 //go:generate goimports -w ./lex.go
 
-// Install from golang.org/x/tools/cmd/goyacc
-//go:generate goyacc thrift.y
+//go:generate goyacc -l thrift.y
 //go:generate goimports -w ./y.go
 
 //go:generate ./generated.sh

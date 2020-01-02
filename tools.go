@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Uber Technologies, Inc.
+// Copyright (c) 2019 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,9 +18,16 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package compile provides specifications for the types and services defined
-// in a Thrift file.
-//
-// Files are parsed using the Compile method, which will return a Module that
-// contains the types and services defined in the Thrift file.
-package compile
+// +build tools
+
+package main
+
+import (
+	// Tools we use during development.
+	_ "github.com/golang/mock/mockgen"
+	_ "golang.org/x/lint/golint"
+	_ "golang.org/x/tools/cmd/goimports"
+	_ "golang.org/x/tools/cmd/goyacc"
+	_ "golang.org/x/tools/cmd/stringer"
+	_ "honnef.co/go/tools/cmd/staticcheck"
+)

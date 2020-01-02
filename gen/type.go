@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -89,6 +89,14 @@ func isReferenceType(spec compile.TypeSpec) bool {
 	default:
 		return false
 	}
+}
+
+// Used to allow special treatment of slices in ToWire and treat nil as a valid slice.
+func isListType(spec compile.TypeSpec) bool {
+	// Lookup aliases for our type.
+	spec = compile.RootTypeSpec(spec)
+	_, isList := spec.(*compile.ListSpec)
+	return isList
 }
 
 func isStructType(spec compile.TypeSpec) bool {

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,4 +20,4 @@
 
 package thrifttest
 
-//go:mockgen -destination=thrifttest/mock_protocol.go -package=thrifttest go.uber.org/thriftrw/protocol Protocol,EnvelopeAgnosticProtocol,EnvelopeSpecificResponder
+//go:generate mockgen -destination=mock_protocol.go -package=thrifttest go.uber.org/thriftrw/protocol Protocol,EnvelopeAgnosticProtocol,Responder

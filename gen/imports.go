@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -85,7 +85,7 @@ func (i importer) Import(path string) string {
 // importDecl builds an import declation from the given list of imports.
 func (i importer) importDecl() ast.Decl {
 	imports := i.imports
-	if imports == nil || len(imports) == 0 {
+	if len(imports) == 0 {
 		return nil
 	}
 

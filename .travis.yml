@@ -1,20 +1,26 @@
 sudo: false
-
 language: go
-
 go_import_path: go.uber.org/thriftrw
+
+env:
+  global:
+    - GO111MODULE=on
 
 matrix:
   include:
-    - go: '1.10'
-    - go: '1.11'
-      env: LINT=1 COVER=1
+  - go: 1.12.x
+  - go: 1.13.x
+    env: LINT=1
 
+# Download modules and install tools.
 install:
-    - make install_ci
+  - go mod download
+  - make tools
 
 script:
-    - if [[ "$LINT" -eq 1 ]]; then make lint_ci; fi
-    - make test_ci
-    - if [[ "$COVER" -eq 1 ]]; then travis_retry goveralls -coverprofile=cover.out -service=travis-ci; fi
-    - rm -rf vendor/*
+  - test -z "$LINT" || make lint
+  - make test
+
+after_success:
+  - make cover
+  - bash <(curl -s https://codecov.io/bash)

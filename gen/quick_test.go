@@ -216,6 +216,14 @@ func isThriftNillable(typ reflect.Type) bool {
 	return false
 }
 
+var _errorType = reflect.TypeOf((*error)(nil)).Elem()
+
+// Returns true for Go types which implement the error interface.
+func isErrorStruct(typ reflect.Type) bool {
+	// Error() is implemented on the pointer to the struct.
+	return reflect.PtrTo(typ).Implements(_errorType)
+}
+
 // isThriftPrimitive returns true for Go types that are considered primitive
 // (see gen.isPrimitiveType).
 func isThriftPrimitive(typ reflect.Type) bool {
@@ -269,6 +277,8 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: tc.ContainersOfContainers{}, NoEquals: true, Kind: thriftStruct},
 		{Sample: tc.EnumContainers{}, Kind: thriftStruct},
 		{Sample: tc.ListOfConflictingEnums{}, Kind: thriftStruct},
+		{Sample: tc.ListOfRequiredPrimitives{}, Kind: thriftStruct},
+		{Sample: tc.ListOfOptionalPrimitives{}, Kind: thriftStruct},
 		{Sample: tc.ListOfConflictingUUIDs{}, Kind: thriftStruct},
 		{Sample: tc.MapOfBinaryAndString{}, NoEquals: true, Kind: thriftStruct},
 		{Sample: tc.PrimitiveContainersRequired{}, Kind: thriftStruct},
@@ -375,6 +385,7 @@ func TestQuickSuite(t *testing.T) {
 		},
 		{Sample: tul.UUIDConflict{}, Kind: thriftStruct},
 		{Sample: tx.DoesNotExistException{}, Kind: thriftStruct},
+		{Sample: tx.DoesNotExistException2{}, Kind: thriftStruct},
 		{Sample: tx.EmptyException{}, Kind: thriftStruct},
 		{
 			Sample: tz.PrimitiveRequiredStruct{},
@@ -561,6 +572,16 @@ func TestQuickSuite(t *testing.T) {
 				t.Run("Accessors/IsSetOnNil", func(t *testing.T) {
 					suite.testIsSetAccessorsOnNil(t)
 				})
+
+				if isErrorStruct(typ) {
+					t.Run("Error", func(t *testing.T) {
+						for _, give := range values {
+							suite.testError(t, give)
+						}
+					})
+
+					t.Run("ErrorName", suite.testErrorName)
+				}
 
 			case thriftTypedef:
 				if isThriftPrimitive(typ) {
@@ -902,4 +923,23 @@ func (q *quickSuite) testIsSetAccessorsOnNil(t *testing.T) {
 		require.Falsef(t, give.MethodByName("IsSet" + field.Name).Call(nil)[0].Bool(),
 			"field %q must be unset", field.Name)
 	}
+}
+
+func (q *quickSuite) testError(t *testing.T, give thriftType) {
+	err, ok := give.(error)
+	require.Truef(t, ok, "%v must implement Error()", q.Type)
+
+	assert.NotPanics(t, func() { _ = err.Error() })
+}
+
+func (q *quickSuite) testErrorName(t *testing.T) {
+	type errorNamer interface {
+		ErrorName() string
+	}
+
+	give := q.newNil(t)
+	v, ok := give.Interface().(errorNamer)
+	require.Truef(t, ok, "%v must implement ErrorName()", q.Type)
+
+	assert.NotPanics(t, func() { _ = v.ErrorName() })
 }

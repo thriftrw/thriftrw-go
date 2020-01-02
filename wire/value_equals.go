@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -28,7 +28,7 @@ import (
 
 // errNotEquals is a sentinel error used while iterating through ValueLists to
 // indicate that two values did not match.
-var errNotEquals = errors.New("Values are not equal")
+var errNotEquals = errors.New("values are not equal")
 
 // ValuesAreEqual checks if two values are equal.
 func ValuesAreEqual(left, right Value) bool {

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -206,8 +206,7 @@ func constantStruct(g Generator, v *compile.ConstantStruct, t compile.TypeSpec) 
 }
 
 func enumItemReference(g Generator, v compile.EnumItemReference, t compile.TypeSpec) (_ string, err error) {
-	s, err := g.TextTemplate(`<enumItemName (typeName .Enum) .Item>`,
-		v, TemplateFunc("enumItemName", enumItemName))
+	s, err := g.TextTemplate(`<enumItemName (typeName .Enum) .Item>`, v)
 	if err != nil {
 		return "", err
 	}

@@ -371,14 +371,10 @@ func TestStructRoundTripAndString(t *testing.T) {
 				RequiredTypedefStringListField: tss.StringList{"a", "b"},
 				OptionalTypedefStringListField: tss.StringList{"c", "d"},
 				RequiredFooListField: []*tss.Foo{
-					{
-						"a",
-					},
+					{StringField: "a"},
 				},
 				RequiredTypedefFooListField: tss.FooList{
-					{
-						"b",
-					},
+					{StringField: "b"},
 				},
 				RequiredStringListListField:        [][]string{{"x", "y"}},
 				RequiredTypedefStringListListField: [][]string{{"x"}, {"y"}},
@@ -658,6 +654,30 @@ func TestBasicException(t *testing.T) {
 
 		err := error(&tt.s) // should implement the error interface
 		assert.Equal(t, "DoesNotExistException{Key: foo}", err.Error())
+	}
+}
+
+func TestCollisionException(t *testing.T) {
+	tests := []struct {
+		s tx.DoesNotExistException2
+		v wire.Value
+	}{
+		{
+			tx.DoesNotExistException2{Key: "foo"},
+			wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 1, Value: wire.NewValueString("foo")},
+			}}),
+		},
+	}
+
+	for _, tt := range tests {
+		assertRoundTrip(t, &tt.s, tt.v, "DoesNotExistException2")
+
+		assert.Equal(t, "Does_Not_Exist_Exception_Collision", tt.s.ErrorName(),
+			"Thrift name of exception incorrect")
+
+		err := error(&tt.s) // should implement the error interface
+		assert.Equal(t, "DoesNotExistException2{Key: foo}", err.Error())
 	}
 }
 
@@ -1262,12 +1282,6 @@ func TestStructValidation(t *testing.T) {
 			wantError: "field Y of Point is required",
 		},
 		{
-			desc:        "Graph: missing edges",
-			serialize:   &ts.Graph{Edges: nil},
-			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{}}),
-			wantError:   "field Edges of Graph is required",
-		},
-		{
 			desc: "Graph: edges: misssing end",
 			serialize: &ts.Graph{
 				Edges: []*ts.Edge{
@@ -1322,45 +1336,6 @@ func TestStructValidation(t *testing.T) {
 			}}),
 			typ:       reflect.TypeOf(ts.User{}),
 			wantError: "field EmailAddress of ContactInfo is required",
-		},
-		{
-			desc: "PrimitiveContainersRequired: missing list",
-			serialize: &tc.PrimitiveContainersRequired{
-				SetOfInts: map[int32]struct{}{
-					1: {},
-					2: {},
-					3: {},
-				},
-				MapOfIntsToDoubles: map[int64]float64{1: 2.3, 4: 5.6},
-			},
-			deserialize: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
-				{
-					ID: 2,
-					Value: wire.NewValueSet(
-						wire.ValueListFromSlice(wire.TI32, []wire.Value{
-							wire.NewValueI32(1),
-							wire.NewValueI32(2),
-							wire.NewValueI32(3),
-						}),
-					),
-				},
-				{
-					ID: 3,
-					Value: wire.NewValueMap(
-						wire.MapItemListFromSlice(wire.TI64, wire.TDouble, []wire.MapItem{
-							{
-								Key:   wire.NewValueI64(1),
-								Value: wire.NewValueDouble(2.3),
-							},
-							{
-								Key:   wire.NewValueI64(4),
-								Value: wire.NewValueDouble(5.6),
-							},
-						}),
-					),
-				},
-			}}),
-			wantError: "field ListOfStrings of PrimitiveContainersRequired is required",
 		},
 		{
 			desc: "PrimitiveContainersRequired: missing set",

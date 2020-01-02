@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2020 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,5 +20,4 @@
 
 package plugin
 
-//go:generate ./gen.sh
-//go:generate ../../scripts/updateLicenses.sh
+//go:generate mockgen -package handletest -destination handletest/mock.go go.uber.org/thriftrw/internal/plugin Handle,ServiceGenerator
