@@ -210,8 +210,9 @@ func (g *generateServiceBuilder) buildFieldGroup(fs compile.FieldGroup) ([]*api.
 			return nil, err
 		}
 		args = append(args, &api.Argument{
-			Name: name,
-			Type: t,
+			Name:        name,
+			Type:        t,
+			Annotations: f.Annotations,
 		})
 	}
 	return args, nil

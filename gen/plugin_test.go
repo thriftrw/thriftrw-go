@@ -216,6 +216,9 @@ func TestBuildFunction(t *testing.T) {
 									},
 								},
 							},
+							Annotations: map[string]string{
+								"foo": "bar",
+							},
 						},
 					},
 				},
@@ -240,6 +243,9 @@ func TestBuildFunction(t *testing.T) {
 									ImportPath: "go.uber.org/thriftrw/gen/internal/tests/keyvalue",
 								},
 							},
+						},
+						Annotations: map[string]string{
+							"foo": "bar",
 						},
 					},
 				},

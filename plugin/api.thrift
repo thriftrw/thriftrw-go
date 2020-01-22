@@ -130,6 +130,24 @@ struct Argument {
      * Argument type.
      */
     2: required Type type
+    /**
+     * Annotations defined on this argument.
+     *
+     * Given,
+     *
+     *   void setValue(
+     *     1: SetValueRequest req
+     *   ) throws (
+     *     1: BadRequestError badRequestError (cache = "false")
+     *   )
+     *
+     * The annotations for the Argument representing badRequestError will be,
+     *
+     *  {
+     *    "cache": "false",
+     *  }
+     */
+    3: optional map<string, string> annotations;
 }
 
 /**

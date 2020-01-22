@@ -4,9 +4,7 @@ package internal
 
 import (
     "fmt"
-    "io"
     "strconv"
-    "strings"
 
     "go.uber.org/thriftrw/ast"
 )
