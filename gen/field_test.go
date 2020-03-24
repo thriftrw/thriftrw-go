@@ -76,3 +76,59 @@ func TestFieldLabelConflict(t *testing.T) {
 		})
 	}
 }
+
+func TestCompileJSONTag_ForOptionalFields_OmitemptyIsAdded(t *testing.T) {
+	required := false
+	fieldSpec := &compile.FieldSpec{
+		ID:   0,
+		Name: "numbers",
+		Type: &compile.ListSpec{
+			ValueSpec: &compile.I64Spec{},
+		},
+		Required:    required,
+		Doc:         "",
+		Default:     nil,
+		Annotations: compile.Annotations{goTagKey: `json:"numbers"`},
+	}
+	name := "numbers"
+	options := make([]string, 0)
+	result := compileJSONTag(fieldSpec, name, options...)
+	require.True(t, result.HasOption(omitempty))
+}
+
+func TestCompileJSONTag_ForRequiredFields_OmitemptyIsNotAdded(t *testing.T) {
+	required := true
+	fieldSpec := &compile.FieldSpec{
+		ID:   0,
+		Name: "numbers",
+		Type: &compile.ListSpec{
+			ValueSpec: &compile.I64Spec{},
+		},
+		Required:    required,
+		Doc:         "",
+		Default:     nil,
+		Annotations: compile.Annotations{goTagKey: `json:"numbers"`},
+	}
+	name := "numbers"
+	options := make([]string, 0)
+	result := compileJSONTag(fieldSpec, name, options...)
+	require.False(t, result.HasOption(omitempty))
+}
+
+func TestCompileJSONTag_WhenNotOmitemptyIsPresent_OmitemptyIsNotAdded(t *testing.T) {
+	fieldSpec := &compile.FieldSpec{
+		ID:   0,
+		Name: "numbers",
+		Type: &compile.ListSpec{
+			ValueSpec: &compile.I64Spec{},
+		},
+		Required:    false,
+		Doc:         "",
+		Default:     nil,
+		Annotations: compile.Annotations{goTagKey: `json:"numbers,!omitempty"`},
+	}
+	name := "numbers"
+	options := []string{notOmitempty}
+	result := compileJSONTag(fieldSpec, name, options...)
+	require.False(t, result.HasOption(omitempty))
+}

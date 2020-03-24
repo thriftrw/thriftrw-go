@@ -34,6 +34,9 @@ const (
 
 	// key for tag set on all generated go structs used by encoding/json
 	jsonTagKey = "json"
+
+	omitempty    = "omitempty"
+	notOmitempty = "!omitempty"
 )
 
 var reservedIdentifiers = map[string]struct{}{
@@ -179,9 +182,16 @@ func compileJSONTag(f *compile.FieldSpec, name string, opts ...string) *structta
 	// should be omitted from the encoding if the field has an empty value,
 	// defined as false, 0, a nil pointer, a nil interface value, and any empty
 	// array, slice, map, or string.
+	//
+	// If the field is marked with "!omitempty", then "omitempty" will not be added
+	// For example:
+	//
+	// struct MyStruct {
+	//   1: optional list<Option> options  (go.tag='json:"options,!omitempty"')
+	// }
 	if (isReferenceType(f.Type) || isStructType(f.Type) || isPrimitiveType(f.Type)) &&
-		!f.Required && !t.HasOption("omitempty") {
-		t.Options = append(t.Options, "omitempty")
+		!f.Required && !t.HasOption(notOmitempty) && !t.HasOption(omitempty) {
+		t.Options = append(t.Options, omitempty)
 	}
 
 	if f.Required && !t.HasOption("required") {
