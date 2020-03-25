@@ -1194,9 +1194,9 @@ func TestStructGoTags(t *testing.T) {
 }
 
 func TestNotOmitEmptyStructTags(t *testing.T) {
-	tests := []struct{
+	tests := []struct {
 		field string
-		tag string
+		tag   string
 	}{
 		{"NotOmitEmptyString", `json:"notOmitEmptyString,!omitempty"`},
 		{"NotOmitEmptyInt", `json:"notOmitEmptyInt,!omitempty"`},
