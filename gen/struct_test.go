@@ -1193,7 +1193,7 @@ func TestStructGoTags(t *testing.T) {
 	assert.Equal(t, `json:"foobarWithRequired,required"`, string(foobarWithRequired.Tag))
 }
 
-func TestNotOmitEmpty_GoTagBehavior(t *testing.T) {
+func TestNotOmitEmptyStructTags(t *testing.T) {
 	notOmitemptyStruct := &ts.NotOmitEmpty{
 		NotOmitEmptyString: nil,
 		NotOmitEmptyInt:    nil,
