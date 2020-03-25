@@ -1194,25 +1194,25 @@ func TestStructGoTags(t *testing.T) {
 }
 
 func TestNotOmitEmptyStructTags(t *testing.T) {
-	notOmitemptyStruct := &ts.NotOmitEmpty{
-		NotOmitEmptyString: nil,
-		NotOmitEmptyInt:    nil,
-		NotOmitEmptyBool:   nil,
-		NotOmitEmptyList:   nil,
-		NotOmitEmptyMap:    nil,
+	tests := []struct{
+		field string
+		tag string
+	}{
+		{"NotOmitEmptyString", `json:"notOmitEmptyString,!omitempty"`},
+		{"NotOmitEmptyInt", `json:"notOmitEmptyInt,!omitempty"`},
+		{"NotOmitEmptyBool", `json:"notOmitEmptyBool,!omitempty"`},
+		{"NotOmitEmptyList", `json:"notOmitEmptyList,!omitempty"`},
+		{"NotOmitEmptyMap", `json:"notOmitEmptyMap,!omitempty"`},
 	}
 
-	// assert that when the !omitempty tag is present in thrift, omitempty is not added to the go tags
-	notOmitEmptyString, _ := reflect.TypeOf(notOmitemptyStruct).Elem().FieldByName("NotOmitEmptyString")
-	assert.Equal(t, `json:"notOmitEmptyString,!omitempty"`, string(notOmitEmptyString.Tag))
-	notOmitEmptyInt, _ := reflect.TypeOf(notOmitemptyStruct).Elem().FieldByName("NotOmitEmptyInt")
-	assert.Equal(t, `json:"notOmitEmptyInt,!omitempty"`, string(notOmitEmptyInt.Tag))
-	notOmitEmptyBool, _ := reflect.TypeOf(notOmitemptyStruct).Elem().FieldByName("NotOmitEmptyBool")
-	assert.Equal(t, `json:"notOmitEmptyBool,!omitempty"`, string(notOmitEmptyBool.Tag))
-	notOmitEmptyList, _ := reflect.TypeOf(notOmitemptyStruct).Elem().FieldByName("NotOmitEmptyList")
-	assert.Equal(t, `json:"notOmitEmptyList,!omitempty"`, string(notOmitEmptyList.Tag))
-	notOmitEmptyMap, _ := reflect.TypeOf(notOmitemptyStruct).Elem().FieldByName("NotOmitEmptyMap")
-	assert.Equal(t, `json:"notOmitEmptyMap,!omitempty"`, string(notOmitEmptyMap.Tag))
+	typ := reflect.TypeOf(ts.NotOmitEmpty{})
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			f, ok := typ.FieldByName(tt.field)
+			require.True(t, ok)
+			assert.Equal(t, tt.tag, string(f.Tag))
+		})
+	}
 }
 
 func TestOmitEmptyMarshal(t *testing.T) {
