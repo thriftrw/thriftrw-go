@@ -1193,6 +1193,56 @@ func TestStructGoTags(t *testing.T) {
 	assert.Equal(t, `json:"foobarWithRequired,required"`, string(foobarWithRequired.Tag))
 }
 
+func TestNotOmitEmpty_GoTagBehavior(t *testing.T) {
+	notOmitemptyStruct := &ts.NotOmitEmpty{
+		NotOmitEmptyString: nil,
+		NotOmitEmptyInt:    nil,
+		NotOmitEmptyBool:   nil,
+		NotOmitEmptyList:   nil,
+		NotOmitEmptyMap:    nil,
+	}
+
+	// assert that when the !omitempty tag is present in thrift, omitempty is not added to the go tags
+	notOmitEmptyString, _ := reflect.TypeOf(notOmitemptyStruct).Elem().FieldByName("NotOmitEmptyString")
+	assert.Equal(t, `json:"notOmitEmptyString,!omitempty"`, string(notOmitEmptyString.Tag))
+	notOmitEmptyInt, _ := reflect.TypeOf(notOmitemptyStruct).Elem().FieldByName("NotOmitEmptyInt")
+	assert.Equal(t, `json:"notOmitEmptyInt,!omitempty"`, string(notOmitEmptyInt.Tag))
+	notOmitEmptyBool, _ := reflect.TypeOf(notOmitemptyStruct).Elem().FieldByName("NotOmitEmptyBool")
+	assert.Equal(t, `json:"notOmitEmptyBool,!omitempty"`, string(notOmitEmptyBool.Tag))
+	notOmitEmptyList, _ := reflect.TypeOf(notOmitemptyStruct).Elem().FieldByName("NotOmitEmptyList")
+	assert.Equal(t, `json:"notOmitEmptyList,!omitempty"`, string(notOmitEmptyList.Tag))
+	notOmitEmptyMap, _ := reflect.TypeOf(notOmitemptyStruct).Elem().FieldByName("NotOmitEmptyMap")
+	assert.Equal(t, `json:"notOmitEmptyMap,!omitempty"`, string(notOmitEmptyMap.Tag))
+}
+
+func TestNotOmitEmpty_MarshallingBehavior(t *testing.T) {
+	// assert that when !omitempty tag is NOT present, empty fields are omitted in the marshalled response
+	defaultStruct := &ts.PrimitiveOptionalStruct{
+		BoolField:   nil,
+		ByteField:   nil,
+		Int16Field:  nil,
+		Int32Field:  nil,
+		Int64Field:  nil,
+		DoubleField: nil,
+		StringField: nil,
+		BinaryField: nil,
+	}
+	defaultStructResult, _ := json.Marshal(defaultStruct)
+	assert.Equal(t, "{}", string(defaultStructResult))
+
+	// assert that when !omitempty tag is present, empty fields are not omitted in the marshalled response
+	notOmitemptyStruct := &ts.NotOmitEmpty{
+		NotOmitEmptyString: nil,
+		NotOmitEmptyInt:    nil,
+		NotOmitEmptyBool:   nil,
+		NotOmitEmptyList:   nil,
+		NotOmitEmptyMap:    nil,
+	}
+	expected := `{"notOmitEmptyString":null,"notOmitEmptyInt":null,"notOmitEmptyBool":null,"notOmitEmptyList":null,"notOmitEmptyMap":null}`
+	result, _ := json.Marshal(notOmitemptyStruct)
+	assert.Equal(t, expected, string(result))
+}
+
 func TestStructValidation(t *testing.T) {
 	tests := []struct {
 		desc        string

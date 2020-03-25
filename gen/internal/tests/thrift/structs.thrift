@@ -137,6 +137,14 @@ struct GoTags {
         6: required string FooBarWithRequired (go.tag = 'json:"foobarWithRequired,required"')
 }
 
+struct NotOmitEmpty {
+    1: optional string NotOmitEmptyString (go.tag = 'json:"notOmitEmptyString,!omitempty"')
+    2: optional string NotOmitEmptyInt (go.tag = 'json:"notOmitEmptyInt,!omitempty"')
+    3: optional string NotOmitEmptyBool (go.tag = 'json:"notOmitEmptyBool,!omitempty"')
+    4: optional list<string> NotOmitEmptyList (go.tag = 'json:"notOmitEmptyList,!omitempty"')
+    5: optional map<string, string> NotOmitEmptyMap (go.tag = 'json:"notOmitEmptyMap,!omitempty"')
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // Default values
 
