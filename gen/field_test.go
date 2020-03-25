@@ -90,11 +90,13 @@ func TestCompileJSONTag(t *testing.T) {
 			desc:          "optional fields",
 			required:      false,
 			wantOmitempty: true,
-		}, {
+		},
+		{
 			desc:          "required fields",
 			required:      true,
 			wantOmitempty: false,
-		}, {
+		},
+		{
 			desc:          "optional with !omitempty",
 			required:      false,
 			options:       []string{notOmitempty},
