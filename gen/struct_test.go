@@ -1215,7 +1215,7 @@ func TestNotOmitEmptyStructTags(t *testing.T) {
 	assert.Equal(t, `json:"notOmitEmptyMap,!omitempty"`, string(notOmitEmptyMap.Tag))
 }
 
-func TestNotOmitEmpty_MarshallingBehavior(t *testing.T) {
+func TestOmitEmptyMarshal(t *testing.T) {
 	// assert that when !omitempty tag is NOT present, empty fields are omitted in the marshalled response
 	defaultStruct := &ts.PrimitiveOptionalStruct{
 		BoolField:   nil,
