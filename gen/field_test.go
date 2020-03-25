@@ -21,6 +21,8 @@
 package gen
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"go.uber.org/thriftrw/compile"
@@ -77,58 +79,53 @@ func TestFieldLabelConflict(t *testing.T) {
 	}
 }
 
-func TestCompileJSONTag_ForOptionalFields_OmitemptyIsAdded(t *testing.T) {
-	required := false
-	fieldSpec := &compile.FieldSpec{
-		ID:   0,
-		Name: "numbers",
-		Type: &compile.ListSpec{
-			ValueSpec: &compile.I64Spec{},
+func TestCompileJSONTag(t *testing.T) {
+	tests := []struct {
+		desc             string
+		required         bool
+		options          []string
+		isOmitemptyAdded bool
+	}{
+		{
+			desc:             "for optional fields",
+			required:         false,
+			options:          make([]string, 0),
+			isOmitemptyAdded: true,
+		}, {
+			desc:             "for required fields",
+			required:         true,
+			options:          make([]string, 0),
+			isOmitemptyAdded: false,
+		}, {
+			desc:             "when !omitempty tag is present",
+			required:         false,
+			options:          []string{notOmitempty},
+			isOmitemptyAdded: false,
 		},
-		Required:    required,
-		Doc:         "",
-		Default:     nil,
-		Annotations: compile.Annotations{goTagKey: `json:"numbers"`},
 	}
-	name := "numbers"
-	options := make([]string, 0)
-	result := compileJSONTag(fieldSpec, name, options...)
-	require.True(t, result.HasOption(omitempty))
-}
 
-func TestCompileJSONTag_ForRequiredFields_OmitemptyIsNotAdded(t *testing.T) {
-	required := true
-	fieldSpec := &compile.FieldSpec{
-		ID:   0,
-		Name: "numbers",
-		Type: &compile.ListSpec{
-			ValueSpec: &compile.I64Spec{},
-		},
-		Required:    required,
-		Doc:         "",
-		Default:     nil,
-		Annotations: compile.Annotations{goTagKey: `json:"numbers"`},
-	}
-	name := "numbers"
-	options := make([]string, 0)
-	result := compileJSONTag(fieldSpec, name, options...)
-	require.False(t, result.HasOption(omitempty))
-}
+	fieldName := "numbers"
 
-func TestCompileJSONTag_WhenNotOmitemptyIsPresent_OmitemptyIsNotAdded(t *testing.T) {
-	fieldSpec := &compile.FieldSpec{
-		ID:   0,
-		Name: "numbers",
-		Type: &compile.ListSpec{
-			ValueSpec: &compile.I64Spec{},
-		},
-		Required:    false,
-		Doc:         "",
-		Default:     nil,
-		Annotations: compile.Annotations{goTagKey: `json:"numbers,!omitempty"`},
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			fieldSpec := &compile.FieldSpec{
+				ID:   0,
+				Name: fieldName,
+				Type: &compile.ListSpec{
+					ValueSpec: &compile.I64Spec{},
+				},
+				Required: tt.required,
+				Annotations: compile.Annotations{
+					goTagKey: fmt.Sprintf(
+						"json:%s,%s",
+						fieldName,
+						strings.Join(tt.options, ","),
+					),
+				},
+			}
+
+			result := compileJSONTag(fieldSpec, fieldName, tt.options...)
+			require.Equal(t, tt.isOmitemptyAdded, result.HasOption(omitempty))
+		})
 	}
-	name := "numbers"
-	options := []string{notOmitempty}
-	result := compileJSONTag(fieldSpec, name, options...)
-	require.False(t, result.HasOption(omitempty))
 }
