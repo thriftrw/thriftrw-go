@@ -1207,7 +1207,7 @@ func TestNotOmitEmptyStructTags(t *testing.T) {
 
 	typ := reflect.TypeOf(ts.NotOmitEmpty{})
 	for _, tt := range tests {
-		t.Run(tt.desc, func(t *testing.T) {
+		t.Run(tt.field, func(t *testing.T) {
 			f, ok := typ.FieldByName(tt.field)
 			require.True(t, ok)
 			assert.Equal(t, tt.tag, string(f.Tag))
