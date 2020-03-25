@@ -1217,30 +1217,19 @@ func TestNotOmitEmptyStructTags(t *testing.T) {
 
 func TestOmitEmptyMarshal(t *testing.T) {
 	// assert that when !omitempty tag is NOT present, empty fields are omitted in the marshalled response
-	defaultStruct := &ts.PrimitiveOptionalStruct{
-		BoolField:   nil,
-		ByteField:   nil,
-		Int16Field:  nil,
-		Int32Field:  nil,
-		Int64Field:  nil,
-		DoubleField: nil,
-		StringField: nil,
-		BinaryField: nil,
-	}
-	defaultStructResult, _ := json.Marshal(defaultStruct)
-	assert.Equal(t, "{}", string(defaultStructResult))
+	t.Run("omitempty", func(t *testing.T) {
+		out, err := json.Marshal(ts.PrimitiveOptionalStruct{})
+		require.NoError(t, err)
+		assert.Equal(t, "{}", string(out))
+	})
 
 	// assert that when !omitempty tag is present, empty fields are not omitted in the marshalled response
-	notOmitemptyStruct := &ts.NotOmitEmpty{
-		NotOmitEmptyString: nil,
-		NotOmitEmptyInt:    nil,
-		NotOmitEmptyBool:   nil,
-		NotOmitEmptyList:   nil,
-		NotOmitEmptyMap:    nil,
-	}
-	expected := `{"notOmitEmptyString":null,"notOmitEmptyInt":null,"notOmitEmptyBool":null,"notOmitEmptyList":null,"notOmitEmptyMap":null}`
-	result, _ := json.Marshal(notOmitemptyStruct)
-	assert.Equal(t, expected, string(result))
+	t.Run("!omitempty", func(t *testing.T) {
+		expected := `{"notOmitEmptyString":null,"notOmitEmptyInt":null,"notOmitEmptyBool":null,"notOmitEmptyList":null,"notOmitEmptyMap":null}`
+		result, err := json.Marshal(ts.NotOmitEmpty{})
+		require.NoError(t, err)
+		assert.JSONEq(t, expected, string(result))
+	})
 }
 
 func TestStructValidation(t *testing.T) {
