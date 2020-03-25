@@ -102,6 +102,12 @@ func TestCompileJSONTag(t *testing.T) {
 			options:       []string{notOmitempty},
 			wantOmitempty: false,
 		},
+		{
+			desc: "required with !omitempty",
+			required: true,
+			options: []string{notOmitEmpty},
+			wantOmitEmpty: false,
+		},
 	}
 
 	fieldName := "numbers"
