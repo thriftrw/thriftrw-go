@@ -81,26 +81,24 @@ func TestFieldLabelConflict(t *testing.T) {
 
 func TestCompileJSONTag(t *testing.T) {
 	tests := []struct {
-		desc             string
-		required         bool
-		options          []string
-		isOmitemptyAdded bool
+		desc          string
+		required      bool
+		options       []string
+		wantOmitempty bool
 	}{
 		{
-			desc:             "for optional fields",
-			required:         false,
-			options:          make([]string, 0),
-			isOmitemptyAdded: true,
+			desc:          "optional fields",
+			required:      false,
+			wantOmitempty: true,
 		}, {
-			desc:             "for required fields",
-			required:         true,
-			options:          make([]string, 0),
-			isOmitemptyAdded: false,
+			desc:          "required fields",
+			required:      true,
+			wantOmitempty: false,
 		}, {
-			desc:             "when !omitempty tag is present",
-			required:         false,
-			options:          []string{notOmitempty},
-			isOmitemptyAdded: false,
+			desc:          "optional with !omitempty",
+			required:      false,
+			options:       []string{notOmitempty},
+			wantOmitempty: false,
 		},
 	}
 
@@ -108,6 +106,12 @@ func TestCompileJSONTag(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
+			goTag := fmt.Sprintf(
+				`json:"%s,%s"`,
+				fieldName,
+				strings.Join(tt.options, ","),
+			)
+
 			fieldSpec := &compile.FieldSpec{
 				ID:   0,
 				Name: fieldName,
@@ -116,16 +120,12 @@ func TestCompileJSONTag(t *testing.T) {
 				},
 				Required: tt.required,
 				Annotations: compile.Annotations{
-					goTagKey: fmt.Sprintf(
-						"json:%s,%s",
-						fieldName,
-						strings.Join(tt.options, ","),
-					),
+					goTagKey: goTag,
 				},
 			}
 
 			result := compileJSONTag(fieldSpec, fieldName, tt.options...)
-			require.Equal(t, tt.isOmitemptyAdded, result.HasOption(omitempty))
+			require.Equal(t, tt.wantOmitempty, result.HasOption(omitempty))
 		})
 	}
 }
