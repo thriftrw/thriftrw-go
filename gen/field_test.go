@@ -106,7 +106,7 @@ func TestCompileJSONTag(t *testing.T) {
 			desc: "required with !omitempty",
 			required: true,
 			options: []string{notOmitempty},
-			wantOmitEmpty: false,
+			wantOmitempty: false,
 		},
 	}
 
