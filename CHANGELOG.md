@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- No changes yet.
+### Changed
+- Drop library dependency in tools.go. This includes: `github.com/golang/mock/mockgen`,
+  `golang.org/x/lint`, `golang.org/x/tools`, `honnef.co/go/tools/cmd/staticcheck`.
 
 ## [1.22.0] - 2020-01-22
 ### Added
