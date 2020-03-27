@@ -1203,6 +1203,8 @@ func TestNotOmitEmptyStructTags(t *testing.T) {
 		{"NotOmitEmptyBool", `json:"notOmitEmptyBool,!omitempty"`},
 		{"NotOmitEmptyList", `json:"notOmitEmptyList,!omitempty"`},
 		{"NotOmitEmptyMap", `json:"notOmitEmptyMap,!omitempty"`},
+		{"NotOmitEmptyListMixedWithOmitEmpty", `json:"notOmitEmptyListMixedWithOmitEmpty,!omitempty"`},
+		{"NotOmitEmptyListMixedWithOmitEmptyV2", `json:"notOmitEmptyListMixedWithOmitEmptyV2,!omitempty"`},
 	}
 
 	typ := reflect.TypeOf(ts.NotOmitEmpty{})
@@ -1225,7 +1227,7 @@ func TestOmitEmptyMarshal(t *testing.T) {
 
 	// assert that when !omitempty tag is present, empty fields are not omitted in the marshalled response
 	t.Run("!omitempty", func(t *testing.T) {
-		expected := `{"notOmitEmptyString":null,"notOmitEmptyInt":null,"notOmitEmptyBool":null,"notOmitEmptyList":null,"notOmitEmptyMap":null}`
+		expected := `{"notOmitEmptyString":null,"notOmitEmptyInt":null,"notOmitEmptyBool":null,"notOmitEmptyList":null,"notOmitEmptyMap":null,"notOmitEmptyListMixedWithOmitEmpty":null,"notOmitEmptyListMixedWithOmitEmptyV2":null}`
 		result, err := json.Marshal(ts.NotOmitEmpty{})
 		require.NoError(t, err)
 		assert.JSONEq(t, expected, string(result))

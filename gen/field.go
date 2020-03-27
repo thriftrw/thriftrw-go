@@ -183,15 +183,23 @@ func compileJSONTag(f *compile.FieldSpec, name string, opts ...string) *structta
 	// defined as false, 0, a nil pointer, a nil interface value, and any empty
 	// array, slice, map, or string.
 	//
-	// If the field is marked with "!omitempty", then "omitempty" will not be added
-	// For example:
-	//
-	// struct MyStruct {
-	//   1: optional list<Option> options  (go.tag='json:"options,!omitempty"')
-	// }
+	// If the field is marked with "!omitempty", then "omitempty" will not be added.
+	// If both "!omitempty" and "omitempty" are present, then "omitempty" is removed.
+	hasNotOmitempty := t.HasOption(notOmitempty)
+	hasOmitempty := t.HasOption(omitempty)
 	if (isReferenceType(f.Type) || isStructType(f.Type) || isPrimitiveType(f.Type)) &&
-		!f.Required && !t.HasOption(notOmitempty) && !t.HasOption(omitempty) {
+		!f.Required && !hasNotOmitempty && !hasOmitempty {
 		t.Options = append(t.Options, omitempty)
+	} else if hasNotOmitempty && hasOmitempty {
+		newOptions := make([]string, 0)
+		for _, option := range t.Options {
+			if option == omitempty {
+				continue
+			}
+			newOptions = append(newOptions, option)
+		}
+
+		t.Options = newOptions
 	}
 
 	if f.Required && !t.HasOption("required") {

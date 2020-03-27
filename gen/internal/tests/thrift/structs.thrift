@@ -143,6 +143,8 @@ struct NotOmitEmpty {
     3: optional string NotOmitEmptyBool (go.tag = 'json:"notOmitEmptyBool,!omitempty"')
     4: optional list<string> NotOmitEmptyList (go.tag = 'json:"notOmitEmptyList,!omitempty"')
     5: optional map<string, string> NotOmitEmptyMap (go.tag = 'json:"notOmitEmptyMap,!omitempty"')
+    6: optional list<string> NotOmitEmptyListMixedWithOmitEmpty (go.tag = 'json:"notOmitEmptyListMixedWithOmitEmpty,!omitempty,omitempty"')
+    7: optional list<string> NotOmitEmptyListMixedWithOmitEmptyV2 (go.tag = 'json:"notOmitEmptyListMixedWithOmitEmptyV2,omitempty,!omitempty"')
 }
 
 //////////////////////////////////////////////////////////////////////////////
