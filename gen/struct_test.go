@@ -1205,6 +1205,7 @@ func TestNotOmitEmptyStructTags(t *testing.T) {
 		{"NotOmitEmptyMap", `json:"notOmitEmptyMap,!omitempty"`},
 		{"NotOmitEmptyListMixedWithOmitEmpty", `json:"notOmitEmptyListMixedWithOmitEmpty,!omitempty"`},
 		{"NotOmitEmptyListMixedWithOmitEmptyV2", `json:"notOmitEmptyListMixedWithOmitEmptyV2,!omitempty"`},
+		{"OmitEmptyString", `json:"omitEmptyString,omitempty"`},
 	}
 
 	typ := reflect.TypeOf(ts.NotOmitEmpty{})

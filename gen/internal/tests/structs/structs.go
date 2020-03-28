@@ -2133,6 +2133,7 @@ type NotOmitEmpty struct {
 	NotOmitEmptyMap                      map[string]string `json:"notOmitEmptyMap,!omitempty"`
 	NotOmitEmptyListMixedWithOmitEmpty   []string          `json:"notOmitEmptyListMixedWithOmitEmpty,!omitempty"`
 	NotOmitEmptyListMixedWithOmitEmptyV2 []string          `json:"notOmitEmptyListMixedWithOmitEmptyV2,!omitempty"`
+	OmitEmptyString                      *string           `json:"omitEmptyString,omitempty"`
 }
 
 type _Map_String_String_MapItemList map[string]string
@@ -2187,7 +2188,7 @@ func (_Map_String_String_MapItemList) Close() {}
 //   }
 func (v *NotOmitEmpty) ToWire() (wire.Value, error) {
 	var (
-		fields [7]wire.Field
+		fields [8]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -2247,6 +2248,14 @@ func (v *NotOmitEmpty) ToWire() (wire.Value, error) {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
+		i++
+	}
+	if v.OmitEmptyString != nil {
+		w, err = wire.NewValueString(*(v.OmitEmptyString)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 8, Value: w}
 		i++
 	}
 
@@ -2365,6 +2374,16 @@ func (v *NotOmitEmpty) FromWire(w wire.Value) error {
 				}
 
 			}
+		case 8:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.OmitEmptyString = &x
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -2378,7 +2397,7 @@ func (v *NotOmitEmpty) String() string {
 		return "<nil>"
 	}
 
-	var fields [7]string
+	var fields [8]string
 	i := 0
 	if v.NotOmitEmptyString != nil {
 		fields[i] = fmt.Sprintf("NotOmitEmptyString: %v", *(v.NotOmitEmptyString))
@@ -2406,6 +2425,10 @@ func (v *NotOmitEmpty) String() string {
 	}
 	if v.NotOmitEmptyListMixedWithOmitEmptyV2 != nil {
 		fields[i] = fmt.Sprintf("NotOmitEmptyListMixedWithOmitEmptyV2: %v", v.NotOmitEmptyListMixedWithOmitEmptyV2)
+		i++
+	}
+	if v.OmitEmptyString != nil {
+		fields[i] = fmt.Sprintf("OmitEmptyString: %v", *(v.OmitEmptyString))
 		i++
 	}
 
@@ -2460,6 +2483,9 @@ func (v *NotOmitEmpty) Equals(rhs *NotOmitEmpty) bool {
 	if !((v.NotOmitEmptyListMixedWithOmitEmptyV2 == nil && rhs.NotOmitEmptyListMixedWithOmitEmptyV2 == nil) || (v.NotOmitEmptyListMixedWithOmitEmptyV2 != nil && rhs.NotOmitEmptyListMixedWithOmitEmptyV2 != nil && _List_String_Equals(v.NotOmitEmptyListMixedWithOmitEmptyV2, rhs.NotOmitEmptyListMixedWithOmitEmptyV2))) {
 		return false
 	}
+	if !_String_EqualsPtr(v.OmitEmptyString, rhs.OmitEmptyString) {
+		return false
+	}
 
 	return true
 }
@@ -2501,6 +2527,9 @@ func (v *NotOmitEmpty) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	}
 	if v.NotOmitEmptyListMixedWithOmitEmptyV2 != nil {
 		err = multierr.Append(err, enc.AddArray("NotOmitEmptyListMixedWithOmitEmptyV2", (_List_String_Zapper)(v.NotOmitEmptyListMixedWithOmitEmptyV2)))
+	}
+	if v.OmitEmptyString != nil {
+		enc.AddString("OmitEmptyString", *v.OmitEmptyString)
 	}
 	return err
 }
@@ -2608,6 +2637,21 @@ func (v *NotOmitEmpty) GetNotOmitEmptyListMixedWithOmitEmptyV2() (o []string) {
 // IsSetNotOmitEmptyListMixedWithOmitEmptyV2 returns true if NotOmitEmptyListMixedWithOmitEmptyV2 is not nil.
 func (v *NotOmitEmpty) IsSetNotOmitEmptyListMixedWithOmitEmptyV2() bool {
 	return v != nil && v.NotOmitEmptyListMixedWithOmitEmptyV2 != nil
+}
+
+// GetOmitEmptyString returns the value of OmitEmptyString if it is set or its
+// zero value if it is unset.
+func (v *NotOmitEmpty) GetOmitEmptyString() (o string) {
+	if v != nil && v.OmitEmptyString != nil {
+		return *v.OmitEmptyString
+	}
+
+	return
+}
+
+// IsSetOmitEmptyString returns true if OmitEmptyString is not nil.
+func (v *NotOmitEmpty) IsSetOmitEmptyString() bool {
+	return v != nil && v.OmitEmptyString != nil
 }
 
 type Omit struct {
@@ -5107,11 +5151,11 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "structs",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/structs",
 	FilePath: "structs.thrift",
-	SHA1:     "28983d45f529715c3505b015e07d413ec560b277",
+	SHA1:     "5f0b5839ee412bcb992781ccea5ed7e9d4e34725",
 	Includes: []*thriftreflect.ThriftModule{
 		enums.ThriftModule,
 	},
 	Raw: rawIDL,
 }
 
-const rawIDL = "include \"./enums.thrift\"\n\nstruct EmptyStruct {}\n\n//////////////////////////////////////////////////////////////////////////////\n// Structs with primitives\n\n/**\n * A struct that contains primitive fields exclusively.\n *\n * All fields are required.\n */\nstruct PrimitiveRequiredStruct {\n    1: required bool boolField\n    2: required byte byteField\n    3: required i16 int16Field\n    4: required i32 int32Field\n    5: required i64 int64Field\n    6: required double doubleField\n    7: required string stringField\n    8: required binary binaryField\n}\n\n/**\n * A struct that contains primitive fields exclusively.\n *\n * All fields are optional.\n */\nstruct PrimitiveOptionalStruct {\n    1: optional bool boolField\n    2: optional byte byteField\n    3: optional i16 int16Field\n    4: optional i32 int32Field\n    5: optional i64 int64Field\n    6: optional double doubleField\n    7: optional string stringField\n    8: optional binary binaryField\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Nested structs (Required)\n\n/**\n * A point in 2D space.\n */\nstruct Point {\n    1: required double x\n    2: required double y\n}\n\n/**\n * Size of something.\n */\nstruct Size {\n    /**\n     * Width in pixels.\n     */\n    1: required double width\n    /** Height in pixels. */\n    2: required double height\n}\n\nstruct Frame {\n    1: required Point topLeft\n    2: required Size size\n}\n\nstruct Edge {\n    1: required Point startPoint\n    2: required Point endPoint\n}\n\n/**\n * A graph is comprised of zero or more edges.\n */\nstruct Graph {\n    /**\n     * List of edges in the graph.\n     *\n     * May be empty.\n     */\n    1: required list<Edge> edges\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Nested structs (Optional)\n\nstruct ContactInfo {\n    1: required string emailAddress\n}\n\nstruct PersonalInfo {\n    1: optional i32 age\n}\n\nstruct User {\n    1: required string name\n    2: optional ContactInfo contact\n    3: optional PersonalInfo personal\n}\n\ntypedef map<string, User> UserMap\n\n//////////////////////////////////////////////////////////////////////////////\n// self-referential struct\n\ntypedef Node List\n\n/**\n * Node is linked list of values.\n * All values are 32-bit integers.\n */\nstruct Node {\n    1: required i32 value\n    2: optional List tail\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// JSON tagged structs\n\nstruct Rename {\n    1: required string Default (go.tag = 'json:\"default\"')\n    2: required string camelCase (go.tag = 'json:\"snake_case\"')\n}\n\nstruct Omit {\n    1: required string serialized\n    2: required string hidden (go.tag = 'json:\"-\"')\n}\n\nstruct GoTags {\n        1: required string Foo (go.tag = 'json:\"-\" foo:\"bar\"')\n        2: optional string Bar (go.tag = 'bar:\"foo\"')\n        3: required string FooBar (go.tag = 'json:\"foobar,option1,option2\" bar:\"foo,option1\" foo:\"foobar\"')\n        4: required string FooBarWithSpace (go.tag = 'json:\"foobarWithSpace\" foo:\"foo bar foobar barfoo\"')\n        5: optional string FooBarWithOmitEmpty (go.tag = 'json:\"foobarWithOmitEmpty,omitempty\"')\n        6: required string FooBarWithRequired (go.tag = 'json:\"foobarWithRequired,required\"')\n}\n\nstruct NotOmitEmpty {\n    1: optional string NotOmitEmptyString (go.tag = 'json:\"notOmitEmptyString,!omitempty\"')\n    2: optional string NotOmitEmptyInt (go.tag = 'json:\"notOmitEmptyInt,!omitempty\"')\n    3: optional string NotOmitEmptyBool (go.tag = 'json:\"notOmitEmptyBool,!omitempty\"')\n    4: optional list<string> NotOmitEmptyList (go.tag = 'json:\"notOmitEmptyList,!omitempty\"')\n    5: optional map<string, string> NotOmitEmptyMap (go.tag = 'json:\"notOmitEmptyMap,!omitempty\"')\n    6: optional list<string> NotOmitEmptyListMixedWithOmitEmpty (go.tag = 'json:\"notOmitEmptyListMixedWithOmitEmpty,!omitempty,omitempty\"')\n    7: optional list<string> NotOmitEmptyListMixedWithOmitEmptyV2 (go.tag = 'json:\"notOmitEmptyListMixedWithOmitEmptyV2,omitempty,!omitempty\"')\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Default values\n\nstruct DefaultsStruct {\n    1: required i32 requiredPrimitive = 100\n    2: optional i32 optionalPrimitive = 200\n\n    3: required enums.EnumDefault requiredEnum = enums.EnumDefault.Bar\n    4: optional enums.EnumDefault optionalEnum = 2\n\n    5: required list<string> requiredList = [\"hello\", \"world\"]\n    6: optional list<double> optionalList = [1, 2.0, 3]\n\n    7: required Frame requiredStruct = {\n        \"topLeft\": {\"x\": 1, \"y\": 2},\n        \"size\": {\"width\": 100, \"height\": 200},\n    }\n    8: optional Edge optionalStruct = {\n        \"startPoint\": {\"x\": 1, \"y\": 2},\n        \"endPoint\":   {\"x\": 3, \"y\": 4},\n    }\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Opt-out of Zap\n\nstruct ZapOptOutStruct {\n    1: required string name\n    2: required string optout (go.nolog)\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Field jabels\n\nstruct StructLabels {\n    // reserved keyword as label\n    1: optional bool isRequired (go.label = \"required\")\n\n    // go.tag's JSON tag takes precedence over go.label\n    2: optional string foo (go.label = \"bar\", go.tag = 'json:\"not_bar\"')\n\n    // Empty label\n    3: optional string qux (go.label = \"\")\n\n    // All-caps label\n    4: optional string quux (go.label = \"QUUX\")\n}\n"
+const rawIDL = "include \"./enums.thrift\"\n\nstruct EmptyStruct {}\n\n//////////////////////////////////////////////////////////////////////////////\n// Structs with primitives\n\n/**\n * A struct that contains primitive fields exclusively.\n *\n * All fields are required.\n */\nstruct PrimitiveRequiredStruct {\n    1: required bool boolField\n    2: required byte byteField\n    3: required i16 int16Field\n    4: required i32 int32Field\n    5: required i64 int64Field\n    6: required double doubleField\n    7: required string stringField\n    8: required binary binaryField\n}\n\n/**\n * A struct that contains primitive fields exclusively.\n *\n * All fields are optional.\n */\nstruct PrimitiveOptionalStruct {\n    1: optional bool boolField\n    2: optional byte byteField\n    3: optional i16 int16Field\n    4: optional i32 int32Field\n    5: optional i64 int64Field\n    6: optional double doubleField\n    7: optional string stringField\n    8: optional binary binaryField\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Nested structs (Required)\n\n/**\n * A point in 2D space.\n */\nstruct Point {\n    1: required double x\n    2: required double y\n}\n\n/**\n * Size of something.\n */\nstruct Size {\n    /**\n     * Width in pixels.\n     */\n    1: required double width\n    /** Height in pixels. */\n    2: required double height\n}\n\nstruct Frame {\n    1: required Point topLeft\n    2: required Size size\n}\n\nstruct Edge {\n    1: required Point startPoint\n    2: required Point endPoint\n}\n\n/**\n * A graph is comprised of zero or more edges.\n */\nstruct Graph {\n    /**\n     * List of edges in the graph.\n     *\n     * May be empty.\n     */\n    1: required list<Edge> edges\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Nested structs (Optional)\n\nstruct ContactInfo {\n    1: required string emailAddress\n}\n\nstruct PersonalInfo {\n    1: optional i32 age\n}\n\nstruct User {\n    1: required string name\n    2: optional ContactInfo contact\n    3: optional PersonalInfo personal\n}\n\ntypedef map<string, User> UserMap\n\n//////////////////////////////////////////////////////////////////////////////\n// self-referential struct\n\ntypedef Node List\n\n/**\n * Node is linked list of values.\n * All values are 32-bit integers.\n */\nstruct Node {\n    1: required i32 value\n    2: optional List tail\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// JSON tagged structs\n\nstruct Rename {\n    1: required string Default (go.tag = 'json:\"default\"')\n    2: required string camelCase (go.tag = 'json:\"snake_case\"')\n}\n\nstruct Omit {\n    1: required string serialized\n    2: required string hidden (go.tag = 'json:\"-\"')\n}\n\nstruct GoTags {\n        1: required string Foo (go.tag = 'json:\"-\" foo:\"bar\"')\n        2: optional string Bar (go.tag = 'bar:\"foo\"')\n        3: required string FooBar (go.tag = 'json:\"foobar,option1,option2\" bar:\"foo,option1\" foo:\"foobar\"')\n        4: required string FooBarWithSpace (go.tag = 'json:\"foobarWithSpace\" foo:\"foo bar foobar barfoo\"')\n        5: optional string FooBarWithOmitEmpty (go.tag = 'json:\"foobarWithOmitEmpty,omitempty\"')\n        6: required string FooBarWithRequired (go.tag = 'json:\"foobarWithRequired,required\"')\n}\n\nstruct NotOmitEmpty {\n    1: optional string NotOmitEmptyString (go.tag = 'json:\"notOmitEmptyString,!omitempty\"')\n    2: optional string NotOmitEmptyInt (go.tag = 'json:\"notOmitEmptyInt,!omitempty\"')\n    3: optional string NotOmitEmptyBool (go.tag = 'json:\"notOmitEmptyBool,!omitempty\"')\n    4: optional list<string> NotOmitEmptyList (go.tag = 'json:\"notOmitEmptyList,!omitempty\"')\n    5: optional map<string, string> NotOmitEmptyMap (go.tag = 'json:\"notOmitEmptyMap,!omitempty\"')\n    6: optional list<string> NotOmitEmptyListMixedWithOmitEmpty (go.tag = 'json:\"notOmitEmptyListMixedWithOmitEmpty,!omitempty,omitempty\"')\n    7: optional list<string> NotOmitEmptyListMixedWithOmitEmptyV2 (go.tag = 'json:\"notOmitEmptyListMixedWithOmitEmptyV2,omitempty,!omitempty\"')\n    8: optional string OmitEmptyString (go.tag = 'json:\"omitEmptyString,omitempty\"') // to test that there can be a mix of fields that do and don't have !omitempty\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Default values\n\nstruct DefaultsStruct {\n    1: required i32 requiredPrimitive = 100\n    2: optional i32 optionalPrimitive = 200\n\n    3: required enums.EnumDefault requiredEnum = enums.EnumDefault.Bar\n    4: optional enums.EnumDefault optionalEnum = 2\n\n    5: required list<string> requiredList = [\"hello\", \"world\"]\n    6: optional list<double> optionalList = [1, 2.0, 3]\n\n    7: required Frame requiredStruct = {\n        \"topLeft\": {\"x\": 1, \"y\": 2},\n        \"size\": {\"width\": 100, \"height\": 200},\n    }\n    8: optional Edge optionalStruct = {\n        \"startPoint\": {\"x\": 1, \"y\": 2},\n        \"endPoint\":   {\"x\": 3, \"y\": 4},\n    }\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Opt-out of Zap\n\nstruct ZapOptOutStruct {\n    1: required string name\n    2: required string optout (go.nolog)\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Field jabels\n\nstruct StructLabels {\n    // reserved keyword as label\n    1: optional bool isRequired (go.label = \"required\")\n\n    // go.tag's JSON tag takes precedence over go.label\n    2: optional string foo (go.label = \"bar\", go.tag = 'json:\"not_bar\"')\n\n    // Empty label\n    3: optional string qux (go.label = \"\")\n\n    // All-caps label\n    4: optional string quux (go.label = \"QUUX\")\n}\n"
