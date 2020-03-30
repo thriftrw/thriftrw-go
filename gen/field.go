@@ -185,9 +185,9 @@ func compileJSONTag(f *compile.FieldSpec, name string, opts ...string) *structta
 	//
 	// If the field is marked with "!omitempty", then "omitempty" will not be added.
 	// If both "!omitempty" and "omitempty" are present, then "omitempty" is removed.
-	hasNotOmitempty := t.HasOption(notOmitempty)
-	hasOmitempty := t.HasOption(omitempty)
 	if (isReferenceType(f.Type) || isStructType(f.Type) || isPrimitiveType(f.Type)) && !f.Required {
+		hasNotOmitempty := t.HasOption(notOmitempty)
+		hasOmitempty := t.HasOption(omitempty)
 		if !hasNotOmitempty && !hasOmitempty {
 			// Add omitempty if it's not there and the user
 			// has not opted out with !omitempty.
