@@ -189,9 +189,13 @@ func compileJSONTag(f *compile.FieldSpec, name string, opts ...string) *structta
 	hasOmitempty := t.HasOption(omitempty)
 	if (isReferenceType(f.Type) || isStructType(f.Type) || isPrimitiveType(f.Type)) && !f.Required {
 		if !hasNotOmitempty && !hasOmitempty {
+			// Add omitempty if it's not there and the user
+			// has not opted out with !omitempty.
 			t.Options = append(t.Options, omitempty)
 		} else if hasNotOmitempty && hasOmitempty {
-			newOptions := make([]string, 0)
+			// !omitempty takes precedence so remove omitempty
+			// if present.
+			newOptions := make([]string, 0, len(t.Options))
 			for _, option := range t.Options {
 				if option == omitempty {
 					continue
