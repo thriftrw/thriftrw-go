@@ -21,6 +21,8 @@
 package gen
 
 import (
+	"fmt"
+	"strings"
 	"testing"
 
 	"go.uber.org/thriftrw/compile"
@@ -73,6 +75,65 @@ func TestFieldLabelConflict(t *testing.T) {
 			err := fg.Generate(nil /* generator */)
 			require.Error(t, err)
 			assert.Contains(t, err.Error(), tt.wantErr)
+		})
+	}
+}
+
+func TestCompileJSONTag(t *testing.T) {
+	tests := []struct {
+		desc          string
+		required      bool
+		options       []string
+		wantOmitempty bool
+	}{
+		{
+			desc:          "optional fields",
+			required:      false,
+			wantOmitempty: true,
+		},
+		{
+			desc:          "required fields",
+			required:      true,
+			wantOmitempty: false,
+		},
+		{
+			desc:          "optional with !omitempty",
+			required:      false,
+			options:       []string{notOmitempty},
+			wantOmitempty: false,
+		},
+		{
+			desc:          "required with !omitempty",
+			required:      true,
+			options:       []string{notOmitempty},
+			wantOmitempty: false,
+		},
+	}
+
+	fieldName := "numbers"
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			goTag := fmt.Sprintf(
+				`json:"%s,%s"`,
+				fieldName,
+				strings.Join(tt.options, ","),
+			)
+
+			fieldSpec := &compile.FieldSpec{
+				ID:   0,
+				Name: fieldName,
+				Type: &compile.ListSpec{
+					ValueSpec: &compile.I64Spec{},
+				},
+				Required: tt.required,
+				Annotations: compile.Annotations{
+					goTagKey: goTag,
+				},
+			}
+
+			result := compileJSONTag(fieldSpec, fieldName, tt.options...)
+			require.Equal(t, tt.wantOmitempty, result.HasOption(omitempty))
 		})
 	}
 }

@@ -137,6 +137,17 @@ struct GoTags {
         6: required string FooBarWithRequired (go.tag = 'json:"foobarWithRequired,required"')
 }
 
+struct NotOmitEmpty {
+    1: optional string NotOmitEmptyString (go.tag = 'json:"notOmitEmptyString,!omitempty"')
+    2: optional string NotOmitEmptyInt (go.tag = 'json:"notOmitEmptyInt,!omitempty"')
+    3: optional string NotOmitEmptyBool (go.tag = 'json:"notOmitEmptyBool,!omitempty"')
+    4: optional list<string> NotOmitEmptyList (go.tag = 'json:"notOmitEmptyList,!omitempty"')
+    5: optional map<string, string> NotOmitEmptyMap (go.tag = 'json:"notOmitEmptyMap,!omitempty"')
+    6: optional list<string> NotOmitEmptyListMixedWithOmitEmpty (go.tag = 'json:"notOmitEmptyListMixedWithOmitEmpty,!omitempty,omitempty"')
+    7: optional list<string> NotOmitEmptyListMixedWithOmitEmptyV2 (go.tag = 'json:"notOmitEmptyListMixedWithOmitEmptyV2,omitempty,!omitempty"')
+    8: optional string OmitEmptyString (go.tag = 'json:"omitEmptyString,omitempty"') // to test that there can be a mix of fields that do and don't have !omitempty
+}
+
 //////////////////////////////////////////////////////////////////////////////
 // Default values
 

@@ -356,6 +356,7 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: ts.EmptyStruct{}, Kind: thriftStruct},
 		{Sample: ts.Frame{}, Kind: thriftStruct},
 		{Sample: ts.GoTags{}, Kind: thriftStruct},
+		{Sample: ts.NotOmitEmpty{}, Kind: thriftStruct},
 		{Sample: ts.Graph{}, Kind: thriftStruct},
 		{Sample: ts.Node{}, Kind: thriftStruct},
 		{Sample: ts.Omit{}, Kind: thriftStruct},
