@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- Support opting out of the `omitempty` JSON option by adding `!omitempty` to the
+  JSON struct tag.
+
 ### Changed
 - Drop library dependency in tools.go. This includes: `github.com/golang/mock/mockgen`,
   `golang.org/x/lint`, `golang.org/x/tools`, `honnef.co/go/tools/cmd/staticcheck`.
