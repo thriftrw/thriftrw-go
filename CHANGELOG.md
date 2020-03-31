@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.23.0] - 2020-03-31
+### Added
+- Support opting out of the `omitempty` JSON option by adding `!omitempty` to the
+  JSON struct tag.
+
+### Changed
+- Drop library dependency in tools.go. This includes: `github.com/golang/mock/mockgen`,
+  `golang.org/x/lint`, `golang.org/x/tools`, `honnef.co/go/tools/cmd/staticcheck`.
+
 ## [1.22.0] - 2020-01-22
 ### Added
 - Arguments now include Annotations as defined in the Thrift file.
@@ -321,6 +330,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Initial release.
 
+[1.23.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.22.0...v1.23.0
 [1.22.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.21.0...v1.22.0
 [1.21.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.20.2...v1.21.0
 [1.20.2]: https://github.com/thriftrw/thriftrw-go/compare/v1.20.1...v1.20.2
