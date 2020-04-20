@@ -290,9 +290,12 @@ func TestGenerate(t *testing.T) {
 			require.NoError(t, err)
 			defer os.RemoveAll(outputDir)
 
-			var p plugin.Handle
+			var p CodeGenerator
 			if tt.getPlugin != nil {
-				p = tt.getPlugin(mockCtrl)
+				handle := tt.getPlugin(mockCtrl)
+				p = CodeGenerator{
+					ServiceGenerator: handle.ServiceGenerator(),
+				}
 			}
 
 			err = Generate(module, &Options{
