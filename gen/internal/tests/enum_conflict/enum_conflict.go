@@ -205,6 +205,15 @@ func _RecordType_1_ptr(v enums.RecordType) *enums.RecordType {
 	return &v
 }
 
+// Default_Records constructs a new Records struct,
+// pre-populating any fields with defined default values.
+func Default_Records() *Records {
+	var v Records
+	v.RecordType = _RecordType_ptr(DefaultRecordType)
+	v.OtherRecordType = _RecordType_1_ptr(DefaultOtherRecordType)
+	return &v
+}
+
 // ToWire translates a Records struct into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.

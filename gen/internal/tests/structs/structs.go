@@ -162,6 +162,46 @@ func _EnumDefault_ptr(v enums.EnumDefault) *enums.EnumDefault {
 	return &v
 }
 
+// Default_DefaultsStruct constructs a new DefaultsStruct struct,
+// pre-populating any fields with defined default values.
+func Default_DefaultsStruct() *DefaultsStruct {
+	var v DefaultsStruct
+	v.RequiredPrimitive = ptr.Int32(100)
+	v.OptionalPrimitive = ptr.Int32(200)
+	v.RequiredEnum = _EnumDefault_ptr(enums.EnumDefaultBar)
+	v.OptionalEnum = _EnumDefault_ptr(enums.EnumDefaultBaz)
+	v.RequiredList = []string{
+		"hello",
+		"world",
+	}
+	v.OptionalList = []float64{
+		1,
+		2,
+		3,
+	}
+	v.RequiredStruct = &Frame{
+		Size: &Size{
+			Height: 200,
+			Width:  100,
+		},
+		TopLeft: &Point{
+			X: 1,
+			Y: 2,
+		},
+	}
+	v.OptionalStruct = &Edge{
+		EndPoint: &Point{
+			X: 3,
+			Y: 4,
+		},
+		StartPoint: &Point{
+			X: 1,
+			Y: 2,
+		},
+	}
+	return &v
+}
+
 type _List_String_ValueList []string
 
 func (v _List_String_ValueList) ForEach(f func(wire.Value) error) error {

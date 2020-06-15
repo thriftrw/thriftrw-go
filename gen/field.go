@@ -83,6 +83,10 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 		return err
 	}
 
+	if err := f.DefineDefaultConstructor(g); err != nil {
+		return err
+	}
+
 	if err := f.ToWire(g); err != nil {
 		return err
 	}
@@ -242,6 +246,35 @@ func (f *fieldGroupGenerator) declFieldName(fs *compile.FieldSpec) (string, erro
 		return "", fmt.Errorf("could not declare field %q%s: %v", name, note, err)
 	}
 	return name, nil
+}
+
+func (f fieldGroupGenerator) DefineDefaultConstructor(g Generator) error {
+	var hasDefaults bool
+	for _, f := range f.Fields {
+		if f.Default != nil {
+			hasDefaults = true
+			break
+		}
+	}
+	if !hasDefaults {
+		return nil
+	}
+	return g.DeclareFromTemplate(
+		`
+		// Default_<.Name> constructs a new <.Name> struct,
+		// pre-populating any fields with defined default values. 
+		func Default_<.Name>() *<.Name> {
+			<- $v := newVar "v" ->
+			var v <.Name>
+			<- range .Fields ->
+				<- $fname := goName . ->
+				<- if .Default>
+					<$v>.<$fname> = <constantValuePtr .Default .Type>
+				<- end ->
+			<end>
+			return &v
+		}
+		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))
 }
 
 func (f fieldGroupGenerator) ToWire(g Generator) error {
