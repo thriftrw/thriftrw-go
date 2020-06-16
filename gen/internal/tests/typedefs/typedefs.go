@@ -140,6 +140,14 @@ func _State_ptr(v State) *State {
 	return &v
 }
 
+// Default_DefaultPrimitiveTypedef constructs a new DefaultPrimitiveTypedef struct,
+// pre-populating any fields with defined default values.
+func Default_DefaultPrimitiveTypedef() *DefaultPrimitiveTypedef {
+	var v DefaultPrimitiveTypedef
+	v.State = _State_ptr("hello")
+	return &v
+}
+
 // ToWire translates a DefaultPrimitiveTypedef struct into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.

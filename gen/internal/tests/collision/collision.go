@@ -1514,6 +1514,17 @@ type WithDefault struct {
 	Pouet *StructCollision2 `json:"pouet,omitempty"`
 }
 
+// Default_WithDefault constructs a new WithDefault struct,
+// pre-populating any fields with defined default values.
+func Default_WithDefault() *WithDefault {
+	var v WithDefault
+	v.Pouet = &StructCollision2{
+		CollisionField:  false,
+		CollisionField2: "false indeed",
+	}
+	return &v
+}
+
 // ToWire translates a WithDefault struct into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
