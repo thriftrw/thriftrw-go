@@ -171,11 +171,12 @@ func (v *DefaultPrimitiveTypedef) ToWire() (wire.Value, error) {
 		err    error
 	)
 
-	if v.State == nil {
-		v.State = _State_ptr("hello")
+	vState := v.State
+	if vState == nil {
+		vState = _State_ptr("hello")
 	}
 	{
-		w, err = v.State.ToWire()
+		w, err = vState.ToWire()
 		if err != nil {
 			return w, err
 		}
