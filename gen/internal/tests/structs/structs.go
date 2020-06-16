@@ -277,81 +277,88 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 		err    error
 	)
 
-	if v.RequiredPrimitive == nil {
-		v.RequiredPrimitive = ptr.Int32(100)
+	vRequiredPrimitive := v.RequiredPrimitive
+	if vRequiredPrimitive == nil {
+		vRequiredPrimitive = ptr.Int32(100)
 	}
 	{
-		w, err = wire.NewValueI32(*(v.RequiredPrimitive)), error(nil)
+		w, err = wire.NewValueI32(*(vRequiredPrimitive)), error(nil)
 		if err != nil {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
-	if v.OptionalPrimitive == nil {
-		v.OptionalPrimitive = ptr.Int32(200)
+	vOptionalPrimitive := v.OptionalPrimitive
+	if vOptionalPrimitive == nil {
+		vOptionalPrimitive = ptr.Int32(200)
 	}
 	{
-		w, err = wire.NewValueI32(*(v.OptionalPrimitive)), error(nil)
+		w, err = wire.NewValueI32(*(vOptionalPrimitive)), error(nil)
 		if err != nil {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 2, Value: w}
 		i++
 	}
-	if v.RequiredEnum == nil {
-		v.RequiredEnum = _EnumDefault_ptr(enums.EnumDefaultBar)
+	vRequiredEnum := v.RequiredEnum
+	if vRequiredEnum == nil {
+		vRequiredEnum = _EnumDefault_ptr(enums.EnumDefaultBar)
 	}
 	{
-		w, err = v.RequiredEnum.ToWire()
+		w, err = vRequiredEnum.ToWire()
 		if err != nil {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 3, Value: w}
 		i++
 	}
-	if v.OptionalEnum == nil {
-		v.OptionalEnum = _EnumDefault_ptr(enums.EnumDefaultBaz)
+	vOptionalEnum := v.OptionalEnum
+	if vOptionalEnum == nil {
+		vOptionalEnum = _EnumDefault_ptr(enums.EnumDefaultBaz)
 	}
 	{
-		w, err = v.OptionalEnum.ToWire()
+		w, err = vOptionalEnum.ToWire()
 		if err != nil {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 4, Value: w}
 		i++
 	}
-	if v.RequiredList == nil {
-		v.RequiredList = []string{
+	vRequiredList := v.RequiredList
+	if vRequiredList == nil {
+		vRequiredList = []string{
 			"hello",
 			"world",
 		}
 	}
 	{
-		w, err = wire.NewValueList(_List_String_ValueList(v.RequiredList)), error(nil)
+		w, err = wire.NewValueList(_List_String_ValueList(vRequiredList)), error(nil)
 		if err != nil {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 5, Value: w}
 		i++
 	}
-	if v.OptionalList == nil {
-		v.OptionalList = []float64{
+	vOptionalList := v.OptionalList
+	if vOptionalList == nil {
+		vOptionalList = []float64{
 			1,
 			2,
 			3,
 		}
 	}
 	{
-		w, err = wire.NewValueList(_List_Double_ValueList(v.OptionalList)), error(nil)
+		w, err = wire.NewValueList(_List_Double_ValueList(vOptionalList)), error(nil)
 		if err != nil {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 6, Value: w}
 		i++
 	}
-	if v.RequiredStruct == nil {
-		v.RequiredStruct = &Frame{
+	vRequiredStruct := v.RequiredStruct
+	if vRequiredStruct == nil {
+		vRequiredStruct = &Frame{
 			Size: &Size{
 				Height: 200,
 				Width:  100,
@@ -363,15 +370,16 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 		}
 	}
 	{
-		w, err = v.RequiredStruct.ToWire()
+		w, err = vRequiredStruct.ToWire()
 		if err != nil {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 7, Value: w}
 		i++
 	}
-	if v.OptionalStruct == nil {
-		v.OptionalStruct = &Edge{
+	vOptionalStruct := v.OptionalStruct
+	if vOptionalStruct == nil {
+		vOptionalStruct = &Edge{
 			EndPoint: &Point{
 				X: 3,
 				Y: 4,
@@ -383,7 +391,7 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 		}
 	}
 	{
-		w, err = v.OptionalStruct.ToWire()
+		w, err = vOptionalStruct.ToWire()
 		if err != nil {
 			return w, err
 		}

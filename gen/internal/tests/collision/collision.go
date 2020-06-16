@@ -1548,14 +1548,15 @@ func (v *WithDefault) ToWire() (wire.Value, error) {
 		err    error
 	)
 
-	if v.Pouet == nil {
-		v.Pouet = &StructCollision2{
+	vPouet := v.Pouet
+	if vPouet == nil {
+		vPouet = &StructCollision2{
 			CollisionField:  false,
 			CollisionField2: "false indeed",
 		}
 	}
 	{
-		w, err = v.Pouet.ToWire()
+		w, err = vPouet.ToWire()
 		if err != nil {
 			return w, err
 		}

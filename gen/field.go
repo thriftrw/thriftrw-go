@@ -330,14 +330,17 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 						<$i>++
 				<- else ->
 					<- if .Default ->
-						if <$f> == nil {
-							<$f> = <constantValuePtr .Default .Type>
+						<- $fval := printf "%s%s" $v $fname ->
+						<$fval> := <$f>
+						if <$fval> == nil {
+							<$fval> = <constantValuePtr .Default .Type>
 						}
 						{
+							<$wVal>, err = <toWirePtr .Type $fval>
 					<- else ->
 						if <$f> != nil {
-					<- end>
 							<$wVal>, err = <toWirePtr .Type $f>
+					<- end>
 							if err != nil {
 								return <$wVal>, err
 							}
