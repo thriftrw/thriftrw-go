@@ -9,8 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Generate `Default_*` methods that construct Thrift structs with defined 
   default values pre-populated.  
 
-### Changed
+### Changed  
 - gen: Redefine Options.Plugin as a struct usable outside go.uber.org/thriftrw.
+
+### Fixed
+- Serializing generated Thrift objects no longer mutates them with default
+  values for unspecified fields.
 
 ## [1.23.0] - 2020-03-31
 ### Added

@@ -58,7 +58,7 @@ func thriftTypeIsValid(v thriftType) bool {
 	// Validate method on generated types.
 
 	// We validate while serializing.
-	w, err := deepCopy(v).ToWire() // todo(syrie) remove deepCopy when mutation is fixed
+	w, err := v.ToWire()
 	if err != nil {
 		return false
 	}
@@ -148,12 +148,12 @@ func enumValueGenerator(valuesFunc interface{}) func(*testing.T, *rand.Rand) thr
 	}
 }
 
-// copyWithDefaults copies the given thrift object to a new object
+// populateDefaults copies the given thrift object to a new object
 // override nil values from the `give` parameter with defaults when
 // available.
-func copyWithDefaults(give, defaults thriftType) thriftType {
+func populateDefaults(give, defaults thriftType) thriftType {
 	if defaults == nil {
-		return deepCopy(give)
+		return give
 	}
 	d := reflect.ValueOf(defaults).Elem()
 	g := reflect.ValueOf(give).Elem()
@@ -390,7 +390,7 @@ func TestQuickSuite(t *testing.T) {
 			DefaultThriftType: tl.Default_WithDefault(),
 			Kind:              thriftStruct,
 		},
-		{Sample: tle.Records{}, Kind: thriftStruct},
+		{Sample: tle.Records{}, Kind: thriftStruct, DefaultThriftType: tle.Default_Records()},
 		{Sample: ts.ContactInfo{}, Kind: thriftStruct},
 		{
 			Sample:            ts.DefaultsStruct{},
@@ -564,7 +564,7 @@ func TestQuickSuite(t *testing.T) {
 
 			t.Run("Thrift", func(t *testing.T) {
 				for _, give := range values {
-					suite.testThriftRoundTrip(t, copyWithDefaults(give, tt.DefaultThriftType))
+					suite.testThriftRoundTrip(t, give, tt.DefaultThriftType)
 				}
 			})
 
@@ -601,7 +601,7 @@ func TestQuickSuite(t *testing.T) {
 			case thriftStruct:
 				t.Run("Accessors/Get", func(t *testing.T) {
 					for _, give := range values {
-						suite.testGetAccessors(t, give, copyWithDefaults(give, tt.DefaultThriftType))
+						suite.testGetAccessors(t, give, populateDefaults(give, tt.DefaultThriftType))
 					}
 				})
 
@@ -720,14 +720,21 @@ func (q *quickSuite) newNil(t *testing.T) (v reflect.Value) {
 }
 
 // Tests that the provided value round-trips successfully with wire.Value.
-func (q *quickSuite) testThriftRoundTrip(t *testing.T, give thriftType) {
+func (q *quickSuite) testThriftRoundTrip(t *testing.T, give, defaults thriftType) {
+	want := populateDefaults(give, defaults)
+	shouldCheckForMutation := defaults != nil && !assert.ObjectsAreEqual(want, give)
+
 	w, err := give.ToWire()
 	require.NoError(t, err, "failed to Thrift encode %v", give)
 
 	got := q.newEmptyPtr().Interface().(thriftType)
 	require.NoError(t, got.FromWire(w), "failed to Thrift decode from %v", w)
 
-	assert.Equal(t, got, give)
+	assert.Equal(t, want, got)
+	if shouldCheckForMutation {
+		// assert that give has not been mutated to the want object during the ToWire call
+		assert.NotEqual(t, want, give)
+	}
 }
 
 // Tests that String() works on any valid value of this type.
@@ -990,22 +997,4 @@ func (q *quickSuite) testErrorName(t *testing.T) {
 	require.Truef(t, ok, "%v must implement ErrorName()", q.Type)
 
 	assert.NotPanics(t, func() { _ = v.ErrorName() })
-}
-
-// deepCopy copies the thriftType interface as a work-around until
-// mutation in the ToWire methods are removed.
-func deepCopy(v thriftType) thriftType {
-	val := reflect.ValueOf(v).Elem()
-	c := reflect.New(val.Type())
-	nVal := c.Elem()
-	if val.Kind() != reflect.Struct {
-		return v
-	}
-
-	for i := 0; i < val.NumField(); i++ {
-		nvField := nVal.Field(i)
-		nvField.Set(val.Field(i))
-	}
-
-	return c.Interface().(thriftType)
 }

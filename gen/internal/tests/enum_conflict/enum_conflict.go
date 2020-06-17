@@ -237,22 +237,24 @@ func (v *Records) ToWire() (wire.Value, error) {
 		err    error
 	)
 
-	if v.RecordType == nil {
-		v.RecordType = _RecordType_ptr(DefaultRecordType)
+	vRecordType := v.RecordType
+	if vRecordType == nil {
+		vRecordType = _RecordType_ptr(DefaultRecordType)
 	}
 	{
-		w, err = v.RecordType.ToWire()
+		w, err = vRecordType.ToWire()
 		if err != nil {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 1, Value: w}
 		i++
 	}
-	if v.OtherRecordType == nil {
-		v.OtherRecordType = _RecordType_1_ptr(DefaultOtherRecordType)
+	vOtherRecordType := v.OtherRecordType
+	if vOtherRecordType == nil {
+		vOtherRecordType = _RecordType_1_ptr(DefaultOtherRecordType)
 	}
 	{
-		w, err = v.OtherRecordType.ToWire()
+		w, err = vOtherRecordType.ToWire()
 		if err != nil {
 			return w, err
 		}
