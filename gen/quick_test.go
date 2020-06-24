@@ -148,6 +148,34 @@ func enumValueGenerator(valuesFunc interface{}) func(*testing.T, *rand.Rand) thr
 	}
 }
 
+// populateDefaults copies the given thrift object to a new object
+// override nil values from the `give` parameter with defaults when
+// available.
+func populateDefaults(give, defaults thriftType) thriftType {
+	if defaults == nil {
+		return give
+	}
+	d := reflect.ValueOf(defaults).Elem()
+	g := reflect.ValueOf(give).Elem()
+
+	// copy values into a new "out" struct, selecting default values from
+	// d when g values are nil
+	o := reflect.New(g.Type()).Elem()
+	for i := 0; i < g.NumField(); i++ {
+		outField := o.Field(i)
+		outField.Set(g.Field(i))
+
+		switch outField.Kind() {
+		case reflect.Map, reflect.Ptr, reflect.Interface, reflect.Slice:
+			if outField.IsNil() {
+				outField.Set(d.Field(i))
+			}
+		}
+	}
+
+	return o.Addr().Interface().(thriftType)
+}
+
 func keyValueSetValueArgsGenerator() func(*testing.T, *rand.Rand) thriftType {
 	keyGenerator := defaultValueGenerator(reflect.TypeOf(tf.Key("")))
 	valueGenerator := unionValueGenerator(tu.ArbitraryValue{})
@@ -269,6 +297,11 @@ func TestQuickSuite(t *testing.T) {
 		// Kind of Thrift type we're testing. Some tests only run on certain
 		// Thrift kinds.
 		Kind thriftKind
+
+		// DefaultThriftType allows the user to provide default values for
+		// a thriftStruct. The provided thriftType should be of the same
+		// concrete type given in Sample.
+		DefaultThriftType thriftType
 	}
 
 	tests := []testCase{
@@ -283,7 +316,11 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: tc.MapOfBinaryAndString{}, NoEquals: true, Kind: thriftStruct},
 		{Sample: tc.PrimitiveContainersRequired{}, Kind: thriftStruct},
 		{Sample: tc.PrimitiveContainers{}, Kind: thriftStruct},
-		{Sample: td.DefaultPrimitiveTypedef{}, Kind: thriftStruct},
+		{
+			Sample:            td.DefaultPrimitiveTypedef{},
+			DefaultThriftType: td.Default_DefaultPrimitiveTypedef(),
+			Kind:              thriftStruct,
+		},
 		{Sample: td.Event{}, Kind: thriftStruct},
 		{Sample: td.I128{}, Kind: thriftStruct},
 		{Sample: td.Transition{}, Kind: thriftStruct},
@@ -348,10 +385,18 @@ func TestQuickSuite(t *testing.T) {
 			Generator: unionValueGenerator(tl.UnionCollision{}),
 			Kind:      thriftStruct,
 		},
-		{Sample: tl.WithDefault{}, Kind: thriftStruct},
-		{Sample: tle.Records{}, Kind: thriftStruct},
+		{
+			Sample:            tl.WithDefault{},
+			DefaultThriftType: tl.Default_WithDefault(),
+			Kind:              thriftStruct,
+		},
+		{Sample: tle.Records{}, Kind: thriftStruct, DefaultThriftType: tle.Default_Records()},
 		{Sample: ts.ContactInfo{}, Kind: thriftStruct},
-		{Sample: ts.DefaultsStruct{}, Kind: thriftStruct},
+		{
+			Sample:            ts.DefaultsStruct{},
+			DefaultThriftType: ts.Default_DefaultsStruct(),
+			Kind:              thriftStruct,
+		},
 		{Sample: ts.Edge{}, Kind: thriftStruct},
 		{Sample: ts.EmptyStruct{}, Kind: thriftStruct},
 		{Sample: ts.Frame{}, Kind: thriftStruct},
@@ -519,7 +564,7 @@ func TestQuickSuite(t *testing.T) {
 
 			t.Run("Thrift", func(t *testing.T) {
 				for _, give := range values {
-					suite.testThriftRoundTrip(t, give)
+					suite.testThriftRoundTrip(t, give, tt.DefaultThriftType)
 				}
 			})
 
@@ -556,7 +601,7 @@ func TestQuickSuite(t *testing.T) {
 			case thriftStruct:
 				t.Run("Accessors/Get", func(t *testing.T) {
 					for _, give := range values {
-						suite.testGetAccessors(t, give)
+						suite.testGetAccessors(t, give, populateDefaults(give, tt.DefaultThriftType))
 					}
 				})
 
@@ -675,14 +720,21 @@ func (q *quickSuite) newNil(t *testing.T) (v reflect.Value) {
 }
 
 // Tests that the provided value round-trips successfully with wire.Value.
-func (q *quickSuite) testThriftRoundTrip(t *testing.T, give thriftType) {
+func (q *quickSuite) testThriftRoundTrip(t *testing.T, give, defaults thriftType) {
+	want := populateDefaults(give, defaults)
+	shouldCheckForMutation := defaults != nil && !assert.ObjectsAreEqual(want, give)
+
 	w, err := give.ToWire()
 	require.NoError(t, err, "failed to Thrift encode %v", give)
 
 	got := q.newEmptyPtr().Interface().(thriftType)
 	require.NoError(t, got.FromWire(w), "failed to Thrift decode from %v", w)
 
-	assert.Equal(t, got, give)
+	assert.Equal(t, want, got)
+	if shouldCheckForMutation {
+		// assert that give has not been mutated to the want object during the ToWire call
+		assert.NotEqual(t, want, give)
+	}
 }
 
 // Tests that String() works on any valid value of this type.
@@ -856,13 +908,15 @@ func (q *quickSuite) testTypedefPrimitivePtr(t *testing.T, give thriftType) {
 }
 
 // Tests that each field of a struct has an accessor that returns the same
-// value as the field.
-func (q *quickSuite) testGetAccessors(t *testing.T, giveVal thriftType) {
+// value as the field. The wantVal should pre-set any defaults we expect to
+// be returned by the accessors.
+func (q *quickSuite) testGetAccessors(t *testing.T, giveVal, wantVal thriftType) {
 	// TODO(abg): should we generate accessors for typedefs of structs?
+	want := reflect.ValueOf(wantVal)
 	give := reflect.ValueOf(giveVal)
 	for i := 0; i < q.Type.NumField(); i++ {
 		field := q.Type.Field(i)
-		fieldValue := give.Elem().FieldByIndex(field.Index)
+		fieldValue := want.Elem().FieldByIndex(field.Index)
 		accessorValue := give.MethodByName("Get" + field.Name).Call(nil)[0]
 
 		// For optional primitive fields, we use pointers but the accessors

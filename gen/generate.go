@@ -30,9 +30,15 @@ import (
 
 	"go.uber.org/thriftrw/compile"
 	"go.uber.org/thriftrw/internal/plugin"
+	"go.uber.org/thriftrw/plugin/api"
 
 	"go.uber.org/multierr"
 )
+
+// CodeGenerator lists possible code generators for a plugin.
+type CodeGenerator struct {
+	ServiceGenerator api.ServiceGenerator
+}
 
 // Options controls how code gets generated.
 type Options struct {
@@ -60,7 +66,7 @@ type Options struct {
 	NoVersionCheck bool
 
 	// Code generation plugin
-	Plugin plugin.Handle
+	Plugin CodeGenerator
 
 	// Do not generate types.go
 	NoTypes bool
@@ -133,20 +139,18 @@ func Generate(m *compile.Module, o *Options) error {
 		}
 	}
 
-	plug := o.Plugin
+	plug := o.Plugin.ServiceGenerator
 	if plug == nil {
-		plug = plugin.EmptyHandle
+		plug = plugin.EmptyServiceGenerator
 	}
 
-	if sgen := plug.ServiceGenerator(); sgen != nil {
-		res, err := sgen.Generate(genBuilder.Build())
-		if err != nil {
-			return err
-		}
+	res, err := plug.Generate(genBuilder.Build())
+	if err != nil {
+		return err
+	}
 
-		if err := mergeFiles(files, res.Files); err != nil {
-			return err
-		}
+	if err := mergeFiles(files, res.Files); err != nil {
+		return err
 	}
 
 	for relPath, contents := range files {

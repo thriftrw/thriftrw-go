@@ -173,13 +173,16 @@ func do() (err error) {
 		err = multierr.Append(err, pluginHandle.Close())
 	}()
 
+	codeGenerator := gen.CodeGenerator{
+		ServiceGenerator: pluginHandle.ServiceGenerator(),
+	}
 	generatorOptions := gen.Options{
 		OutputDir:        gopts.OutputDirectory,
 		PackagePrefix:    gopts.PackagePrefix,
 		ThriftRoot:       gopts.ThriftRoot,
 		NoRecurse:        gopts.NoRecurse,
 		NoVersionCheck:   gopts.NoVersionCheck,
-		Plugin:           pluginHandle,
+		Plugin:           codeGenerator,
 		NoTypes:          gopts.NoTypes,
 		NoConstants:      gopts.NoConstants,
 		NoServiceHelpers: gopts.NoServiceHelpers || gopts.NoTypes,

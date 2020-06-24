@@ -97,7 +97,7 @@ func TestStruct(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		roundTrip(t, tt.x, tt.desc)
+		roundTrip(t, tt.x, tt.x, tt.desc)
 	}
 }
 
@@ -433,15 +433,16 @@ func TestConstant(t *testing.T) {
 }
 
 func TestWithDefault(t *testing.T) {
-	a := &tc.WithDefault{
+	withDefault := &tc.WithDefault{
 		Pouet: &tc.StructCollision2{
 			CollisionField2: "false indeed",
 		},
 	}
-	b := &tc.WithDefault{}
+	noDefault := &tc.WithDefault{}
 
-	a = roundTrip(t, a, "WithDefault{filled in}").(*tc.WithDefault)
-	b = roundTrip(t, b, "WithDefault{}").(*tc.WithDefault)
+	// expect FromWire values to have defaults and be equivalent
+	a := roundTrip(t, withDefault, withDefault, "WithDefault{filled in}").(*tc.WithDefault)
+	b := roundTrip(t, noDefault, withDefault, "WithDefault{}").(*tc.WithDefault)
 	if a != nil && b != nil {
 		require.Equal(t, a, b)
 	}
@@ -531,9 +532,9 @@ func TestMyEnum2Equals(t *testing.T) {
 	}
 }
 
-func roundTrip(t *testing.T, x thriftType, msg string) thriftType {
-	v, err := x.ToWire()
-	if !assert.NoError(t, err, "failed to serialize: %v", x) {
+func roundTrip(t *testing.T, give thriftType, want thriftType, msg string) thriftType {
+	v, err := give.ToWire()
+	if !assert.NoError(t, err, "failed to serialize: %v", give) {
 		return nil
 	}
 
@@ -548,11 +549,11 @@ func roundTrip(t *testing.T, x thriftType, msg string) thriftType {
 	}
 
 	if !assert.True(
-		t, wire.ValuesAreEqual(newV, v), "%v: deserialize(serialize(%v.ToWire())) != %v", msg, x, v) {
+		t, wire.ValuesAreEqual(newV, v), "%v: deserialize(serialize(%v.ToWire())) != %v", msg, give, v) {
 		return nil
 	}
 
-	xType := reflect.TypeOf(x)
+	xType := reflect.TypeOf(give)
 	if xType.Kind() == reflect.Ptr {
 		xType = xType.Elem()
 	}
@@ -562,7 +563,7 @@ func roundTrip(t *testing.T, x thriftType, msg string) thriftType {
 		return nil
 	}
 
-	assert.Equal(t, x, gotX, "FromWire: %v", msg)
+	assert.Equal(t, want, gotX, "FromWire: %v", msg)
 	return gotX
 }
 
