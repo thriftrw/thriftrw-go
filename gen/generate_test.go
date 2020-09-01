@@ -21,10 +21,13 @@
 package gen
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
 	"testing"
 
 	"go.uber.org/thriftrw/compile"
@@ -251,6 +254,28 @@ func TestGenerate(t *testing.T) {
 			},
 		},
 		{
+			desc: "ServiceGenerator request contains RootModules info",
+			getPlugin: func(mockCtrl *gomock.Controller) plugin.Handle {
+				sgen := handletest.NewMockServiceGenerator(mockCtrl)
+				sgen.EXPECT().Generate(
+					newRootModulesMatcher(
+						[]api.ModuleID{1},
+					)).Return(&api.GenerateServiceResponse{
+					Files: map[string][]byte{
+						"foo.txt":    []byte("hello world\n"),
+						"bar/baz.go": []byte("package bar\n"),
+					},
+				}, nil)
+
+				handle := handletest.NewMockHandle(mockCtrl)
+				handle.EXPECT().ServiceGenerator().Return(sgen)
+				return handle
+			},
+			wantFiles: []string{
+				"foo/foo.go",
+			},
+		},
+		{
 			desc: "ServiceGenerator plugin conflict",
 			getPlugin: func(mockCtrl *gomock.Controller) plugin.Handle {
 				sgen := handletest.NewMockServiceGenerator(mockCtrl)
@@ -394,4 +419,57 @@ func TestThriftPackageImporter(t *testing.T) {
 			}
 		}
 	}
+}
+
+type rootModulesMatcher []api.ModuleID
+
+var _ gomock.Matcher = rootModulesMatcher{}
+
+func newRootModulesMatcher(ids []api.ModuleID) gomock.Matcher {
+	return rootModulesMatcher(ids)
+}
+
+func (r rootModulesMatcher) Matches(x interface{}) bool {
+	req, ok := x.(*api.GenerateServiceRequest)
+	if !ok {
+		return false
+	}
+
+	var intsA []int
+	for _, mID := range r {
+		intsA = append(intsA, int(mID))
+	}
+
+	var intsB []int
+	for _, mID := range req.RootModules {
+		intsB = append(intsB, int(mID))
+	}
+
+	if len(intsA) != len(intsB) {
+		return false
+	}
+
+	sort.Ints(intsA)
+	sort.Ints(intsB)
+
+	for i := range intsA {
+		if intsA[i] != intsB[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (r rootModulesMatcher) String() string {
+	buff := bytes.NewBufferString("RootModules: [")
+	for i, v := range r {
+		space := " "
+		if i == len(r)-1 {
+			space = ""
+		}
+		fmt.Fprintf(buff, "%v%v", v, space)
+	}
+	buff.WriteString("]")
+	return buff.String()
 }
