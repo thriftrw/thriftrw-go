@@ -123,6 +123,13 @@ func Generate(m *compile.Module, o *Options) error {
 		return nil
 	}
 
+	// Root Modules correspond to the Thrift files that ThriftRW is
+	// called with. Currently, ThriftRW can only be called with one
+	// Thrift file at a time.
+	if _, err := genBuilder.AddRootModule(m.ThriftPath); err != nil {
+		return err
+	}
+
 	// Note that we call generate directly on only those modules that we need
 	// to generate code for. If the user used --no-recurse, we're not going to
 	// generate code for included modules.
