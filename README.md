@@ -65,4 +65,4 @@ can be exercised for code coverage
 *Note*: Code coverage is measured across packages, rather than per package.  This is because `go test` is run with the `-coverpkg=./...` flag,
 which tells the code coverage tool to measure coverage for this package and all packages in the subdirectories.
 
-
+Testing permissions
