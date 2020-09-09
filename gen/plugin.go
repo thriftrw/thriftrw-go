@@ -45,12 +45,16 @@ type generateServiceBuilder struct {
 	serviceIDs map[string]map[serviceName]api.ServiceID
 
 	// To ensure there are no duplicates
+	rootModules map[api.ModuleID]struct{}
+
+	// To ensure there are no duplicates
 	rootServices map[api.ServiceID]struct{}
 }
 
 func newGenerateServiceBuilder(i thriftPackageImporter) *generateServiceBuilder {
 	return &generateServiceBuilder{
 		GenerateServiceRequest: api.GenerateServiceRequest{
+			RootModules:   make([]api.ModuleID, 0, 1),
 			RootServices:  make([]api.ServiceID, 0, 10),
 			Services:      make(map[api.ServiceID]*api.Service),
 			Modules:       make(map[api.ModuleID]*api.Module),
@@ -62,6 +66,7 @@ func newGenerateServiceBuilder(i thriftPackageImporter) *generateServiceBuilder 
 		nextServiceID: 1,
 		moduleIDs:     make(map[string]api.ModuleID),
 		serviceIDs:    make(map[string]map[serviceName]api.ServiceID),
+		rootModules:   make(map[api.ModuleID]struct{}),
 		rootServices:  make(map[api.ServiceID]struct{}),
 	}
 }
@@ -83,6 +88,21 @@ func (g *generateServiceBuilder) AddRootService(spec *compile.ServiceSpec) (api.
 	}
 
 	return id, err
+}
+
+// AddRootModule adds a root module to this request.
+func (g *generateServiceBuilder) AddRootModule(thriftPath string) (api.ModuleID, error) {
+	id, err := g.AddModule(thriftPath)
+	if err != nil {
+		return 0, err
+	}
+
+	if _, alreadyAdded := g.rootModules[id]; !alreadyAdded {
+		g.RootModules = append(g.RootModules, id)
+		g.rootModules[id] = struct{}{}
+	}
+
+	return id, nil
 }
 
 // AddModule adds the module for the given Thrift file to the request.
