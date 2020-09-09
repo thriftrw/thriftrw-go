@@ -9,6 +9,7 @@ import (
 	"go.uber.org/thriftrw/ptr"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 const (
@@ -16,7 +17,35 @@ const (
 	_testThriftRoot    = "idl"
 )
 
-func TestAddRootService(t *testing.T) {
+func TestAddRootModule(t *testing.T) {
+	spec := &compile.ServiceSpec{
+		Name: "EmptyService",
+		File: "idl/empty.thrift",
+	}
+
+	importer := thriftPackageImporter{
+		ImportPrefix: "go.uber.org/thriftrw/gen/internal/tests",
+		ThriftRoot:   "idl",
+	}
+
+	t.Run("add root module to service builder", func(t *testing.T) {
+		g := newGenerateServiceBuilder(importer)
+
+		_, err := g.AddRootModule(spec.ThriftFile())
+		require.NoError(t, err)
+
+		assert.Len(t, g.rootModules, 1)
+	})
+
+	t.Run("error adding bad module", func(t *testing.T) {
+		g := newGenerateServiceBuilder(importer)
+
+		_, err := g.AddRootModule("/something/wrong")
+		assert.Error(t, err)
+	})
+}
+
+func TestAddRootModulesAndService(t *testing.T) {
 	tests := []struct {
 		desc string
 		spec *compile.ServiceSpec
@@ -29,6 +58,7 @@ func TestAddRootService(t *testing.T) {
 				File: "idl/empty.thrift",
 			},
 			want: &api.GenerateServiceRequest{
+				RootModules:  []api.ModuleID{1},
 				RootServices: []api.ServiceID{1},
 				Services: map[api.ServiceID]*api.Service{
 					1: {
@@ -56,6 +86,7 @@ func TestAddRootService(t *testing.T) {
 				File: "idl/service.thrift",
 			},
 			want: &api.GenerateServiceRequest{
+				RootModules:  []api.ModuleID{1},
 				RootServices: []api.ServiceID{1},
 				Services: map[api.ServiceID]*api.Service{
 					1: {
@@ -87,32 +118,33 @@ func TestAddRootService(t *testing.T) {
 				},
 			},
 			want: &api.GenerateServiceRequest{
+				RootModules:  []api.ModuleID{1},
 				RootServices: []api.ServiceID{2},
 				Services: map[api.ServiceID]*api.Service{
 					1: {
 						Name:       "AbstractService",
 						ThriftName: "AbstractService",
 						Functions:  []*api.Function{}, // must be non-nil
-						ModuleID:   1,
+						ModuleID:   2,
 					},
 					2: {
 						Name:       "KeyValue",
 						ThriftName: "KeyValue",
 						ParentID:   (*api.ServiceID)(ptr.Int32(1)),
 						Functions:  []*api.Function{}, // must be non-nil
-						ModuleID:   2,
+						ModuleID:   1,
 					},
 				},
 				Modules: map[api.ModuleID]*api.Module{
 					1: {
-						ImportPath:     "go.uber.org/thriftrw/gen/internal/tests/common/abstract",
-						Directory:      "common/abstract",
-						ThriftFilePath: "idl/common/abstract.thrift",
-					},
-					2: {
 						ImportPath:     "go.uber.org/thriftrw/gen/internal/tests/kv",
 						Directory:      "kv",
 						ThriftFilePath: "idl/kv.thrift",
+					},
+					2: {
+						ImportPath:     "go.uber.org/thriftrw/gen/internal/tests/common/abstract",
+						Directory:      "common/abstract",
+						ThriftFilePath: "idl/common/abstract.thrift",
 					},
 				},
 				PackagePrefix: _testPackagePrefix,
@@ -130,6 +162,7 @@ func TestAddRootService(t *testing.T) {
 				},
 			},
 			want: &api.GenerateServiceRequest{
+				RootModules:  []api.ModuleID{1},
 				RootServices: []api.ServiceID{1},
 				Services: map[api.ServiceID]*api.Service{
 					1: {
@@ -157,27 +190,34 @@ func TestAddRootService(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		spec := tt.spec
-		err := spec.Link(compile.EmptyScope("foo"))
-		if !assert.NoError(t, err, "%v: invalid test: scope must link", tt.desc) {
-			continue
-		}
+		t.Run(tt.desc, func(t *testing.T) {
+			spec := tt.spec
+			err := spec.Link(compile.EmptyScope("foo"))
+			if !assert.NoError(t, err, "%v: invalid test: scope must link", tt.desc) {
+				t.Skip()
+			}
 
-		importer := thriftPackageImporter{
-			ImportPrefix: "go.uber.org/thriftrw/gen/internal/tests",
-			ThriftRoot:   "idl",
-		}
+			importer := thriftPackageImporter{
+				ImportPrefix: "go.uber.org/thriftrw/gen/internal/tests",
+				ThriftRoot:   "idl",
+			}
 
-		g := newGenerateServiceBuilder(importer)
+			g := newGenerateServiceBuilder(importer)
 
-		if spec.Parent != nil {
-			g.AddModule(spec.Parent.ThriftFile())
-		}
-		g.AddModule(spec.ThriftFile())
+			_, err = g.AddRootModule(spec.ThriftFile())
+			require.NoError(t, err)
 
-		if _, err := g.AddRootService(spec); assert.NoError(t, err, tt.desc) {
-			assert.Equal(t, tt.want, g.Build(), tt.desc)
-		}
+			if spec.Parent != nil {
+				_, err = g.AddModule(spec.Parent.ThriftFile())
+				require.NoError(t, err)
+			}
+			_, err = g.AddModule(spec.ThriftFile())
+			require.NoError(t, err)
+
+			if _, err := g.AddRootService(spec); assert.NoError(t, err, tt.desc) {
+				assert.Equal(t, tt.want, g.Build(), tt.desc)
+			}
+		})
 	}
 }
 

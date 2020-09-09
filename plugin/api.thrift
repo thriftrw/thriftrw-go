@@ -375,6 +375,14 @@ struct GenerateServiceRequest {
      * new Generator for more custom plugin generation.
      */
     5: required string thriftRoot
+    /**
+     *  IDs of Modules for which code should be generated.
+     *
+     *  Note that the modules map contains information about both, the
+     *  modules being generated and their transitive dependencies. Code should
+     *  only be generated for module IDs listed here.
+     */
+    6: optional list<ModuleID> rootModules
 }
 
 /**
