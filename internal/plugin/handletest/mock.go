@@ -31,30 +31,30 @@ import (
 	reflect "reflect"
 )
 
-// MockHandle is a mock of Handle interface
+// MockHandle is a mock of Handle interface.
 type MockHandle struct {
 	ctrl     *gomock.Controller
 	recorder *MockHandleMockRecorder
 }
 
-// MockHandleMockRecorder is the mock recorder for MockHandle
+// MockHandleMockRecorder is the mock recorder for MockHandle.
 type MockHandleMockRecorder struct {
 	mock *MockHandle
 }
 
-// NewMockHandle creates a new mock instance
+// NewMockHandle creates a new mock instance.
 func NewMockHandle(ctrl *gomock.Controller) *MockHandle {
 	mock := &MockHandle{ctrl: ctrl}
 	mock.recorder = &MockHandleMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockHandle) EXPECT() *MockHandleMockRecorder {
 	return m.recorder
 }
 
-// Close mocks base method
+// Close mocks base method.
 func (m *MockHandle) Close() error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Close")
@@ -62,13 +62,13 @@ func (m *MockHandle) Close() error {
 	return ret0
 }
 
-// Close indicates an expected call of Close
+// Close indicates an expected call of Close.
 func (mr *MockHandleMockRecorder) Close() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Close", reflect.TypeOf((*MockHandle)(nil).Close))
 }
 
-// Name mocks base method
+// Name mocks base method.
 func (m *MockHandle) Name() string {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Name")
@@ -76,13 +76,13 @@ func (m *MockHandle) Name() string {
 	return ret0
 }
 
-// Name indicates an expected call of Name
+// Name indicates an expected call of Name.
 func (mr *MockHandleMockRecorder) Name() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Name", reflect.TypeOf((*MockHandle)(nil).Name))
 }
 
-// ServiceGenerator mocks base method
+// ServiceGenerator mocks base method.
 func (m *MockHandle) ServiceGenerator() plugin.ServiceGenerator {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ServiceGenerator")
@@ -90,36 +90,36 @@ func (m *MockHandle) ServiceGenerator() plugin.ServiceGenerator {
 	return ret0
 }
 
-// ServiceGenerator indicates an expected call of ServiceGenerator
+// ServiceGenerator indicates an expected call of ServiceGenerator.
 func (mr *MockHandleMockRecorder) ServiceGenerator() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ServiceGenerator", reflect.TypeOf((*MockHandle)(nil).ServiceGenerator))
 }
 
-// MockServiceGenerator is a mock of ServiceGenerator interface
+// MockServiceGenerator is a mock of ServiceGenerator interface.
 type MockServiceGenerator struct {
 	ctrl     *gomock.Controller
 	recorder *MockServiceGeneratorMockRecorder
 }
 
-// MockServiceGeneratorMockRecorder is the mock recorder for MockServiceGenerator
+// MockServiceGeneratorMockRecorder is the mock recorder for MockServiceGenerator.
 type MockServiceGeneratorMockRecorder struct {
 	mock *MockServiceGenerator
 }
 
-// NewMockServiceGenerator creates a new mock instance
+// NewMockServiceGenerator creates a new mock instance.
 func NewMockServiceGenerator(ctrl *gomock.Controller) *MockServiceGenerator {
 	mock := &MockServiceGenerator{ctrl: ctrl}
 	mock.recorder = &MockServiceGeneratorMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockServiceGenerator) EXPECT() *MockServiceGeneratorMockRecorder {
 	return m.recorder
 }
 
-// Generate mocks base method
+// Generate mocks base method.
 func (m *MockServiceGenerator) Generate(arg0 *api.GenerateServiceRequest) (*api.GenerateServiceResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Generate", arg0)
@@ -128,13 +128,13 @@ func (m *MockServiceGenerator) Generate(arg0 *api.GenerateServiceRequest) (*api.
 	return ret0, ret1
 }
 
-// Generate indicates an expected call of Generate
+// Generate indicates an expected call of Generate.
 func (mr *MockServiceGeneratorMockRecorder) Generate(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Generate", reflect.TypeOf((*MockServiceGenerator)(nil).Generate), arg0)
 }
 
-// Handle mocks base method
+// Handle mocks base method.
 func (m *MockServiceGenerator) Handle() plugin.Handle {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Handle")
@@ -142,7 +142,7 @@ func (m *MockServiceGenerator) Handle() plugin.Handle {
 	return ret0
 }
 
-// Handle indicates an expected call of Handle
+// Handle indicates an expected call of Handle.
 func (mr *MockServiceGeneratorMockRecorder) Handle() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handle", reflect.TypeOf((*MockServiceGenerator)(nil).Handle))

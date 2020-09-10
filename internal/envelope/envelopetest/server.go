@@ -30,30 +30,30 @@ import (
 	reflect "reflect"
 )
 
-// MockHandler is a mock of Handler interface
+// MockHandler is a mock of Handler interface.
 type MockHandler struct {
 	ctrl     *gomock.Controller
 	recorder *MockHandlerMockRecorder
 }
 
-// MockHandlerMockRecorder is the mock recorder for MockHandler
+// MockHandlerMockRecorder is the mock recorder for MockHandler.
 type MockHandlerMockRecorder struct {
 	mock *MockHandler
 }
 
-// NewMockHandler creates a new mock instance
+// NewMockHandler creates a new mock instance.
 func NewMockHandler(ctrl *gomock.Controller) *MockHandler {
 	mock := &MockHandler{ctrl: ctrl}
 	mock.recorder = &MockHandlerMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockHandler) EXPECT() *MockHandlerMockRecorder {
 	return m.recorder
 }
 
-// Handle mocks base method
+// Handle mocks base method.
 func (m *MockHandler) Handle(name string, body wire.Value) (wire.Value, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Handle", name, body)
@@ -62,7 +62,7 @@ func (m *MockHandler) Handle(name string, body wire.Value) (wire.Value, error) {
 	return ret0, ret1
 }
 
-// Handle indicates an expected call of Handle
+// Handle indicates an expected call of Handle.
 func (mr *MockHandlerMockRecorder) Handle(name, body interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handle", reflect.TypeOf((*MockHandler)(nil).Handle), name, body)
