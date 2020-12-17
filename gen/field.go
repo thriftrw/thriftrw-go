@@ -268,7 +268,7 @@ func (f fieldGroupGenerator) DefineDefaultConstructor(g Generator) error {
 			var v <.Name>
 			<- range .Fields ->
 				<- $fname := goName . ->
-				<- if .Default>
+				<- if isNotNil .Default>
 					<$v>.<$fname> = <constantValuePtr .Default .Type>
 				<- end ->
 			<end>
@@ -329,7 +329,7 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 						<$fields>[<$i>] = <$wire>.Field{ID: <.ID>, Value: <$wVal>}
 						<$i>++
 				<- else ->
-					<- if .Default ->
+					<- if isNotNil .Default ->
 						<- $fval := printf "%s%s" $v $fname ->
 						<$fval> := <$f>
 						if <$fval> == nil {
@@ -430,7 +430,7 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 			<range .Fields>
 				<$fname := goName .>
 				<$f := printf "%s.%s" $v $fname>
-				<if .Default>
+				<if isNotNil .Default>
 					if <$f> == nil {
 						<$f> = <constantValuePtr .Default .Type>
 					}
@@ -609,7 +609,7 @@ func (f fieldGroupGenerator) Accessors(g Generator) error {
 
 			<reserveFieldOrMethod (printf "Get%v" $fname)>
 			// Get<$fname> returns the value of <$fname> if it is set or its
-			// <if .Default>default<else>zero<end> value if it is unset.
+			// <if isNotNil .Default>default<else>zero<end> value if it is unset.
 			func (<$v> *<$name>) Get<$fname>() (<$o> <typeReference .Type>) {
 				<- if .Required ->
 				  if <$v> != nil {
@@ -624,7 +624,7 @@ func (f fieldGroupGenerator) Accessors(g Generator) error {
 					  return <$v>.<$fname>
 					<- end ->
 				  }
-				  <if .Default><$o> = <constantValue .Default .Type><end>
+				  <if isNotNil .Default><$o> = <constantValue .Default .Type><end>
 				  return
 				<- end ->
 			}

@@ -169,6 +169,12 @@ struct DefaultsStruct {
         "startPoint": {"x": 1, "y": 2},
         "endPoint":   {"x": 3, "y": 4},
     }
+
+    9:  required bool requiredBoolDefaultTrue = true
+    10: optional bool optionalBoolDefaultTrue = true
+
+    11: required bool requiredBoolDefaultFalse = false
+    12: optional bool optionalBoolDefaultFalse = false
 }
 
 //////////////////////////////////////////////////////////////////////////////
