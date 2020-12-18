@@ -242,6 +242,9 @@ func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOpt
 		"zapEncoder":       curryGenerator(g.z.zapEncoder, g),
 		"zapMarshaler":     curryGenerator(g.z.zapMarshaler, g),
 		"zapMarshalerPtr":  curryGenerator(g.z.zapMarshalerPtr, g),
+		"isNotNil": func(val interface{}) bool {
+			return val != nil
+		},
 	}
 
 	tmpl := template.New("thriftrw").Delims("<", ">").Funcs(templateFuncs)

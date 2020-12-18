@@ -868,6 +868,10 @@ func TestStructWithDefaults(t *testing.T) {
 						},
 					}}),
 				},
+				{ID: 9, Value: wire.NewValueBool(true)},
+				{ID: 10, Value: wire.NewValueBool(true)},
+				{ID: 11, Value: wire.NewValueBool(false)},
+				{ID: 12, Value: wire.NewValueBool(false)},
 			}}),
 			wantFromWire: &ts.DefaultsStruct{
 				RequiredPrimitive: int32p(100),
@@ -884,13 +888,19 @@ func TestStructWithDefaults(t *testing.T) {
 					StartPoint: &ts.Point{X: 1.0, Y: 2.0},
 					EndPoint:   &ts.Point{X: 3.0, Y: 4.0},
 				},
+				RequiredBoolDefaultTrue:  ptr.Bool(true),
+				OptionalBoolDefaultTrue:  ptr.Bool(true),
+				RequiredBoolDefaultFalse: ptr.Bool(false),
+				OptionalBoolDefaultFalse: ptr.Bool(false),
 			},
 		},
 		{
 			give: &ts.DefaultsStruct{
-				RequiredPrimitive: int32p(0),
-				OptionalEnum:      &enumDefaultFoo,
-				RequiredList:      []string{},
+				RequiredPrimitive:        int32p(0),
+				OptionalEnum:             &enumDefaultFoo,
+				RequiredList:             []string{},
+				RequiredBoolDefaultTrue:  ptr.Bool(false),
+				OptionalBoolDefaultFalse: ptr.Bool(true),
 			},
 			giveWire: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 1, Value: wire.NewValueI32(0)},
@@ -901,6 +911,8 @@ func TestStructWithDefaults(t *testing.T) {
 						wire.ValueListFromSlice(wire.TBinary, []wire.Value{}),
 					),
 				},
+				{ID: 9, Value: wire.NewValueBool(false)},
+				{ID: 12, Value: wire.NewValueBool(true)},
 			}}),
 
 			wantToWire: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
@@ -962,6 +974,11 @@ func TestStructWithDefaults(t *testing.T) {
 						},
 					}}),
 				},
+
+				{ID: 9, Value: wire.NewValueBool(false)},
+				{ID: 10, Value: wire.NewValueBool(true)},
+				{ID: 11, Value: wire.NewValueBool(false)},
+				{ID: 12, Value: wire.NewValueBool(true)},
 			}}),
 			wantFromWire: &ts.DefaultsStruct{
 				RequiredPrimitive: int32p(0),
@@ -978,6 +995,10 @@ func TestStructWithDefaults(t *testing.T) {
 					StartPoint: &ts.Point{X: 1.0, Y: 2.0},
 					EndPoint:   &ts.Point{X: 3.0, Y: 4.0},
 				},
+				RequiredBoolDefaultTrue:  ptr.Bool(false),
+				OptionalBoolDefaultTrue:  ptr.Bool(true),
+				RequiredBoolDefaultFalse: ptr.Bool(false),
+				OptionalBoolDefaultFalse: ptr.Bool(true),
 			},
 		},
 	}
@@ -1888,6 +1909,58 @@ func TestStructAccessors(t *testing.T) {
 					},
 					s.GetOptionalStruct(),
 				)
+			})
+		})
+
+		t.Run("RequiredBoolDefaultTrue", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				s := ts.DefaultsStruct{RequiredBoolDefaultTrue: ptr.Bool(false)}
+				assert.True(t, s.IsSetRequiredBoolDefaultTrue())
+				assert.Equal(t, false, s.GetRequiredBoolDefaultTrue())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetRequiredBoolDefaultTrue())
+				assert.Equal(t, true, s.GetRequiredBoolDefaultTrue())
+			})
+		})
+
+		t.Run("OptionalBoolDefaultTrue", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				s := ts.DefaultsStruct{OptionalBoolDefaultTrue: ptr.Bool(false)}
+				assert.True(t, s.IsSetOptionalBoolDefaultTrue())
+				assert.Equal(t, false, s.GetOptionalBoolDefaultTrue())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetOptionalBoolDefaultTrue())
+				assert.Equal(t, true, s.GetOptionalBoolDefaultTrue())
+			})
+		})
+
+		t.Run("RequiredBoolDefaultFalse", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				s := ts.DefaultsStruct{RequiredBoolDefaultFalse: ptr.Bool(true)}
+				assert.True(t, s.IsSetRequiredBoolDefaultFalse())
+				assert.Equal(t, true, s.GetRequiredBoolDefaultFalse())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetRequiredBoolDefaultFalse())
+				assert.Equal(t, false, s.GetRequiredBoolDefaultFalse())
+			})
+		})
+
+		t.Run("OptionalBoolDefaultFalse", func(t *testing.T) {
+			t.Run("set", func(t *testing.T) {
+				s := ts.DefaultsStruct{OptionalBoolDefaultFalse: ptr.Bool(true)}
+				assert.True(t, s.IsSetOptionalBoolDefaultFalse())
+				assert.Equal(t, true, s.GetOptionalBoolDefaultFalse())
+			})
+			t.Run("unset", func(t *testing.T) {
+				var s ts.DefaultsStruct
+				assert.False(t, s.IsSetOptionalBoolDefaultFalse())
+				assert.Equal(t, false, s.GetOptionalBoolDefaultFalse())
 			})
 		})
 	})
