@@ -11,30 +11,30 @@ import (
 	time "time"
 )
 
-// MockObjectEncoder is a mock of ObjectEncoder interface.
+// MockObjectEncoder is a mock of ObjectEncoder interface
 type MockObjectEncoder struct {
 	ctrl     *gomock.Controller
 	recorder *MockObjectEncoderMockRecorder
 }
 
-// MockObjectEncoderMockRecorder is the mock recorder for MockObjectEncoder.
+// MockObjectEncoderMockRecorder is the mock recorder for MockObjectEncoder
 type MockObjectEncoderMockRecorder struct {
 	mock *MockObjectEncoder
 }
 
-// NewMockObjectEncoder creates a new mock instance.
+// NewMockObjectEncoder creates a new mock instance
 func NewMockObjectEncoder(ctrl *gomock.Controller) *MockObjectEncoder {
 	mock := &MockObjectEncoder{ctrl: ctrl}
 	mock.recorder = &MockObjectEncoderMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockObjectEncoder) EXPECT() *MockObjectEncoderMockRecorder {
 	return m.recorder
 }
 
-// AddArray mocks base method.
+// AddArray mocks base method
 func (m *MockObjectEncoder) AddArray(arg0 string, arg1 zapcore.ArrayMarshaler) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddArray", arg0, arg1)
@@ -42,169 +42,169 @@ func (m *MockObjectEncoder) AddArray(arg0 string, arg1 zapcore.ArrayMarshaler) e
 	return ret0
 }
 
-// AddArray indicates an expected call of AddArray.
+// AddArray indicates an expected call of AddArray
 func (mr *MockObjectEncoderMockRecorder) AddArray(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddArray", reflect.TypeOf((*MockObjectEncoder)(nil).AddArray), arg0, arg1)
 }
 
-// AddBinary mocks base method.
+// AddBinary mocks base method
 func (m *MockObjectEncoder) AddBinary(arg0 string, arg1 []byte) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddBinary", arg0, arg1)
 }
 
-// AddBinary indicates an expected call of AddBinary.
+// AddBinary indicates an expected call of AddBinary
 func (mr *MockObjectEncoderMockRecorder) AddBinary(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddBinary", reflect.TypeOf((*MockObjectEncoder)(nil).AddBinary), arg0, arg1)
 }
 
-// AddBool mocks base method.
+// AddBool mocks base method
 func (m *MockObjectEncoder) AddBool(arg0 string, arg1 bool) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddBool", arg0, arg1)
 }
 
-// AddBool indicates an expected call of AddBool.
+// AddBool indicates an expected call of AddBool
 func (mr *MockObjectEncoderMockRecorder) AddBool(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddBool", reflect.TypeOf((*MockObjectEncoder)(nil).AddBool), arg0, arg1)
 }
 
-// AddByteString mocks base method.
+// AddByteString mocks base method
 func (m *MockObjectEncoder) AddByteString(arg0 string, arg1 []byte) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddByteString", arg0, arg1)
 }
 
-// AddByteString indicates an expected call of AddByteString.
+// AddByteString indicates an expected call of AddByteString
 func (mr *MockObjectEncoderMockRecorder) AddByteString(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddByteString", reflect.TypeOf((*MockObjectEncoder)(nil).AddByteString), arg0, arg1)
 }
 
-// AddComplex128 mocks base method.
+// AddComplex128 mocks base method
 func (m *MockObjectEncoder) AddComplex128(arg0 string, arg1 complex128) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddComplex128", arg0, arg1)
 }
 
-// AddComplex128 indicates an expected call of AddComplex128.
+// AddComplex128 indicates an expected call of AddComplex128
 func (mr *MockObjectEncoderMockRecorder) AddComplex128(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddComplex128", reflect.TypeOf((*MockObjectEncoder)(nil).AddComplex128), arg0, arg1)
 }
 
-// AddComplex64 mocks base method.
+// AddComplex64 mocks base method
 func (m *MockObjectEncoder) AddComplex64(arg0 string, arg1 complex64) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddComplex64", arg0, arg1)
 }
 
-// AddComplex64 indicates an expected call of AddComplex64.
+// AddComplex64 indicates an expected call of AddComplex64
 func (mr *MockObjectEncoderMockRecorder) AddComplex64(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddComplex64", reflect.TypeOf((*MockObjectEncoder)(nil).AddComplex64), arg0, arg1)
 }
 
-// AddDuration mocks base method.
+// AddDuration mocks base method
 func (m *MockObjectEncoder) AddDuration(arg0 string, arg1 time.Duration) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddDuration", arg0, arg1)
 }
 
-// AddDuration indicates an expected call of AddDuration.
+// AddDuration indicates an expected call of AddDuration
 func (mr *MockObjectEncoderMockRecorder) AddDuration(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddDuration", reflect.TypeOf((*MockObjectEncoder)(nil).AddDuration), arg0, arg1)
 }
 
-// AddFloat32 mocks base method.
+// AddFloat32 mocks base method
 func (m *MockObjectEncoder) AddFloat32(arg0 string, arg1 float32) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddFloat32", arg0, arg1)
 }
 
-// AddFloat32 indicates an expected call of AddFloat32.
+// AddFloat32 indicates an expected call of AddFloat32
 func (mr *MockObjectEncoderMockRecorder) AddFloat32(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddFloat32", reflect.TypeOf((*MockObjectEncoder)(nil).AddFloat32), arg0, arg1)
 }
 
-// AddFloat64 mocks base method.
+// AddFloat64 mocks base method
 func (m *MockObjectEncoder) AddFloat64(arg0 string, arg1 float64) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddFloat64", arg0, arg1)
 }
 
-// AddFloat64 indicates an expected call of AddFloat64.
+// AddFloat64 indicates an expected call of AddFloat64
 func (mr *MockObjectEncoderMockRecorder) AddFloat64(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddFloat64", reflect.TypeOf((*MockObjectEncoder)(nil).AddFloat64), arg0, arg1)
 }
 
-// AddInt mocks base method.
+// AddInt mocks base method
 func (m *MockObjectEncoder) AddInt(arg0 string, arg1 int) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddInt", arg0, arg1)
 }
 
-// AddInt indicates an expected call of AddInt.
+// AddInt indicates an expected call of AddInt
 func (mr *MockObjectEncoderMockRecorder) AddInt(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddInt", reflect.TypeOf((*MockObjectEncoder)(nil).AddInt), arg0, arg1)
 }
 
-// AddInt16 mocks base method.
+// AddInt16 mocks base method
 func (m *MockObjectEncoder) AddInt16(arg0 string, arg1 int16) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddInt16", arg0, arg1)
 }
 
-// AddInt16 indicates an expected call of AddInt16.
+// AddInt16 indicates an expected call of AddInt16
 func (mr *MockObjectEncoderMockRecorder) AddInt16(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddInt16", reflect.TypeOf((*MockObjectEncoder)(nil).AddInt16), arg0, arg1)
 }
 
-// AddInt32 mocks base method.
+// AddInt32 mocks base method
 func (m *MockObjectEncoder) AddInt32(arg0 string, arg1 int32) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddInt32", arg0, arg1)
 }
 
-// AddInt32 indicates an expected call of AddInt32.
+// AddInt32 indicates an expected call of AddInt32
 func (mr *MockObjectEncoderMockRecorder) AddInt32(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddInt32", reflect.TypeOf((*MockObjectEncoder)(nil).AddInt32), arg0, arg1)
 }
 
-// AddInt64 mocks base method.
+// AddInt64 mocks base method
 func (m *MockObjectEncoder) AddInt64(arg0 string, arg1 int64) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddInt64", arg0, arg1)
 }
 
-// AddInt64 indicates an expected call of AddInt64.
+// AddInt64 indicates an expected call of AddInt64
 func (mr *MockObjectEncoderMockRecorder) AddInt64(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddInt64", reflect.TypeOf((*MockObjectEncoder)(nil).AddInt64), arg0, arg1)
 }
 
-// AddInt8 mocks base method.
+// AddInt8 mocks base method
 func (m *MockObjectEncoder) AddInt8(arg0 string, arg1 int8) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddInt8", arg0, arg1)
 }
 
-// AddInt8 indicates an expected call of AddInt8.
+// AddInt8 indicates an expected call of AddInt8
 func (mr *MockObjectEncoderMockRecorder) AddInt8(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddInt8", reflect.TypeOf((*MockObjectEncoder)(nil).AddInt8), arg0, arg1)
 }
 
-// AddObject mocks base method.
+// AddObject mocks base method
 func (m *MockObjectEncoder) AddObject(arg0 string, arg1 zapcore.ObjectMarshaler) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddObject", arg0, arg1)
@@ -212,13 +212,13 @@ func (m *MockObjectEncoder) AddObject(arg0 string, arg1 zapcore.ObjectMarshaler)
 	return ret0
 }
 
-// AddObject indicates an expected call of AddObject.
+// AddObject indicates an expected call of AddObject
 func (mr *MockObjectEncoderMockRecorder) AddObject(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddObject", reflect.TypeOf((*MockObjectEncoder)(nil).AddObject), arg0, arg1)
 }
 
-// AddReflected mocks base method.
+// AddReflected mocks base method
 func (m *MockObjectEncoder) AddReflected(arg0 string, arg1 interface{}) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddReflected", arg0, arg1)
@@ -226,144 +226,144 @@ func (m *MockObjectEncoder) AddReflected(arg0 string, arg1 interface{}) error {
 	return ret0
 }
 
-// AddReflected indicates an expected call of AddReflected.
+// AddReflected indicates an expected call of AddReflected
 func (mr *MockObjectEncoderMockRecorder) AddReflected(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddReflected", reflect.TypeOf((*MockObjectEncoder)(nil).AddReflected), arg0, arg1)
 }
 
-// AddString mocks base method.
+// AddString mocks base method
 func (m *MockObjectEncoder) AddString(arg0, arg1 string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddString", arg0, arg1)
 }
 
-// AddString indicates an expected call of AddString.
+// AddString indicates an expected call of AddString
 func (mr *MockObjectEncoderMockRecorder) AddString(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddString", reflect.TypeOf((*MockObjectEncoder)(nil).AddString), arg0, arg1)
 }
 
-// AddTime mocks base method.
+// AddTime mocks base method
 func (m *MockObjectEncoder) AddTime(arg0 string, arg1 time.Time) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddTime", arg0, arg1)
 }
 
-// AddTime indicates an expected call of AddTime.
+// AddTime indicates an expected call of AddTime
 func (mr *MockObjectEncoderMockRecorder) AddTime(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddTime", reflect.TypeOf((*MockObjectEncoder)(nil).AddTime), arg0, arg1)
 }
 
-// AddUint mocks base method.
+// AddUint mocks base method
 func (m *MockObjectEncoder) AddUint(arg0 string, arg1 uint) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddUint", arg0, arg1)
 }
 
-// AddUint indicates an expected call of AddUint.
+// AddUint indicates an expected call of AddUint
 func (mr *MockObjectEncoderMockRecorder) AddUint(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUint", reflect.TypeOf((*MockObjectEncoder)(nil).AddUint), arg0, arg1)
 }
 
-// AddUint16 mocks base method.
+// AddUint16 mocks base method
 func (m *MockObjectEncoder) AddUint16(arg0 string, arg1 uint16) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddUint16", arg0, arg1)
 }
 
-// AddUint16 indicates an expected call of AddUint16.
+// AddUint16 indicates an expected call of AddUint16
 func (mr *MockObjectEncoderMockRecorder) AddUint16(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUint16", reflect.TypeOf((*MockObjectEncoder)(nil).AddUint16), arg0, arg1)
 }
 
-// AddUint32 mocks base method.
+// AddUint32 mocks base method
 func (m *MockObjectEncoder) AddUint32(arg0 string, arg1 uint32) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddUint32", arg0, arg1)
 }
 
-// AddUint32 indicates an expected call of AddUint32.
+// AddUint32 indicates an expected call of AddUint32
 func (mr *MockObjectEncoderMockRecorder) AddUint32(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUint32", reflect.TypeOf((*MockObjectEncoder)(nil).AddUint32), arg0, arg1)
 }
 
-// AddUint64 mocks base method.
+// AddUint64 mocks base method
 func (m *MockObjectEncoder) AddUint64(arg0 string, arg1 uint64) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddUint64", arg0, arg1)
 }
 
-// AddUint64 indicates an expected call of AddUint64.
+// AddUint64 indicates an expected call of AddUint64
 func (mr *MockObjectEncoderMockRecorder) AddUint64(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUint64", reflect.TypeOf((*MockObjectEncoder)(nil).AddUint64), arg0, arg1)
 }
 
-// AddUint8 mocks base method.
+// AddUint8 mocks base method
 func (m *MockObjectEncoder) AddUint8(arg0 string, arg1 byte) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddUint8", arg0, arg1)
 }
 
-// AddUint8 indicates an expected call of AddUint8.
+// AddUint8 indicates an expected call of AddUint8
 func (mr *MockObjectEncoderMockRecorder) AddUint8(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUint8", reflect.TypeOf((*MockObjectEncoder)(nil).AddUint8), arg0, arg1)
 }
 
-// AddUintptr mocks base method.
+// AddUintptr mocks base method
 func (m *MockObjectEncoder) AddUintptr(arg0 string, arg1 uintptr) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AddUintptr", arg0, arg1)
 }
 
-// AddUintptr indicates an expected call of AddUintptr.
+// AddUintptr indicates an expected call of AddUintptr
 func (mr *MockObjectEncoderMockRecorder) AddUintptr(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUintptr", reflect.TypeOf((*MockObjectEncoder)(nil).AddUintptr), arg0, arg1)
 }
 
-// OpenNamespace mocks base method.
+// OpenNamespace mocks base method
 func (m *MockObjectEncoder) OpenNamespace(arg0 string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "OpenNamespace", arg0)
 }
 
-// OpenNamespace indicates an expected call of OpenNamespace.
+// OpenNamespace indicates an expected call of OpenNamespace
 func (mr *MockObjectEncoderMockRecorder) OpenNamespace(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OpenNamespace", reflect.TypeOf((*MockObjectEncoder)(nil).OpenNamespace), arg0)
 }
 
-// MockArrayEncoder is a mock of ArrayEncoder interface.
+// MockArrayEncoder is a mock of ArrayEncoder interface
 type MockArrayEncoder struct {
 	ctrl     *gomock.Controller
 	recorder *MockArrayEncoderMockRecorder
 }
 
-// MockArrayEncoderMockRecorder is the mock recorder for MockArrayEncoder.
+// MockArrayEncoderMockRecorder is the mock recorder for MockArrayEncoder
 type MockArrayEncoderMockRecorder struct {
 	mock *MockArrayEncoder
 }
 
-// NewMockArrayEncoder creates a new mock instance.
+// NewMockArrayEncoder creates a new mock instance
 func NewMockArrayEncoder(ctrl *gomock.Controller) *MockArrayEncoder {
 	mock := &MockArrayEncoder{ctrl: ctrl}
 	mock.recorder = &MockArrayEncoderMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockArrayEncoder) EXPECT() *MockArrayEncoderMockRecorder {
 	return m.recorder
 }
 
-// AppendArray mocks base method.
+// AppendArray mocks base method
 func (m *MockArrayEncoder) AppendArray(arg0 zapcore.ArrayMarshaler) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AppendArray", arg0)
@@ -371,157 +371,157 @@ func (m *MockArrayEncoder) AppendArray(arg0 zapcore.ArrayMarshaler) error {
 	return ret0
 }
 
-// AppendArray indicates an expected call of AppendArray.
+// AppendArray indicates an expected call of AppendArray
 func (mr *MockArrayEncoderMockRecorder) AppendArray(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendArray", reflect.TypeOf((*MockArrayEncoder)(nil).AppendArray), arg0)
 }
 
-// AppendBool mocks base method.
+// AppendBool mocks base method
 func (m *MockArrayEncoder) AppendBool(arg0 bool) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendBool", arg0)
 }
 
-// AppendBool indicates an expected call of AppendBool.
+// AppendBool indicates an expected call of AppendBool
 func (mr *MockArrayEncoderMockRecorder) AppendBool(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendBool", reflect.TypeOf((*MockArrayEncoder)(nil).AppendBool), arg0)
 }
 
-// AppendByteString mocks base method.
+// AppendByteString mocks base method
 func (m *MockArrayEncoder) AppendByteString(arg0 []byte) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendByteString", arg0)
 }
 
-// AppendByteString indicates an expected call of AppendByteString.
+// AppendByteString indicates an expected call of AppendByteString
 func (mr *MockArrayEncoderMockRecorder) AppendByteString(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendByteString", reflect.TypeOf((*MockArrayEncoder)(nil).AppendByteString), arg0)
 }
 
-// AppendComplex128 mocks base method.
+// AppendComplex128 mocks base method
 func (m *MockArrayEncoder) AppendComplex128(arg0 complex128) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendComplex128", arg0)
 }
 
-// AppendComplex128 indicates an expected call of AppendComplex128.
+// AppendComplex128 indicates an expected call of AppendComplex128
 func (mr *MockArrayEncoderMockRecorder) AppendComplex128(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendComplex128", reflect.TypeOf((*MockArrayEncoder)(nil).AppendComplex128), arg0)
 }
 
-// AppendComplex64 mocks base method.
+// AppendComplex64 mocks base method
 func (m *MockArrayEncoder) AppendComplex64(arg0 complex64) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendComplex64", arg0)
 }
 
-// AppendComplex64 indicates an expected call of AppendComplex64.
+// AppendComplex64 indicates an expected call of AppendComplex64
 func (mr *MockArrayEncoderMockRecorder) AppendComplex64(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendComplex64", reflect.TypeOf((*MockArrayEncoder)(nil).AppendComplex64), arg0)
 }
 
-// AppendDuration mocks base method.
+// AppendDuration mocks base method
 func (m *MockArrayEncoder) AppendDuration(arg0 time.Duration) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendDuration", arg0)
 }
 
-// AppendDuration indicates an expected call of AppendDuration.
+// AppendDuration indicates an expected call of AppendDuration
 func (mr *MockArrayEncoderMockRecorder) AppendDuration(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendDuration", reflect.TypeOf((*MockArrayEncoder)(nil).AppendDuration), arg0)
 }
 
-// AppendFloat32 mocks base method.
+// AppendFloat32 mocks base method
 func (m *MockArrayEncoder) AppendFloat32(arg0 float32) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendFloat32", arg0)
 }
 
-// AppendFloat32 indicates an expected call of AppendFloat32.
+// AppendFloat32 indicates an expected call of AppendFloat32
 func (mr *MockArrayEncoderMockRecorder) AppendFloat32(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendFloat32", reflect.TypeOf((*MockArrayEncoder)(nil).AppendFloat32), arg0)
 }
 
-// AppendFloat64 mocks base method.
+// AppendFloat64 mocks base method
 func (m *MockArrayEncoder) AppendFloat64(arg0 float64) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendFloat64", arg0)
 }
 
-// AppendFloat64 indicates an expected call of AppendFloat64.
+// AppendFloat64 indicates an expected call of AppendFloat64
 func (mr *MockArrayEncoderMockRecorder) AppendFloat64(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendFloat64", reflect.TypeOf((*MockArrayEncoder)(nil).AppendFloat64), arg0)
 }
 
-// AppendInt mocks base method.
+// AppendInt mocks base method
 func (m *MockArrayEncoder) AppendInt(arg0 int) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendInt", arg0)
 }
 
-// AppendInt indicates an expected call of AppendInt.
+// AppendInt indicates an expected call of AppendInt
 func (mr *MockArrayEncoderMockRecorder) AppendInt(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendInt", reflect.TypeOf((*MockArrayEncoder)(nil).AppendInt), arg0)
 }
 
-// AppendInt16 mocks base method.
+// AppendInt16 mocks base method
 func (m *MockArrayEncoder) AppendInt16(arg0 int16) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendInt16", arg0)
 }
 
-// AppendInt16 indicates an expected call of AppendInt16.
+// AppendInt16 indicates an expected call of AppendInt16
 func (mr *MockArrayEncoderMockRecorder) AppendInt16(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendInt16", reflect.TypeOf((*MockArrayEncoder)(nil).AppendInt16), arg0)
 }
 
-// AppendInt32 mocks base method.
+// AppendInt32 mocks base method
 func (m *MockArrayEncoder) AppendInt32(arg0 int32) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendInt32", arg0)
 }
 
-// AppendInt32 indicates an expected call of AppendInt32.
+// AppendInt32 indicates an expected call of AppendInt32
 func (mr *MockArrayEncoderMockRecorder) AppendInt32(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendInt32", reflect.TypeOf((*MockArrayEncoder)(nil).AppendInt32), arg0)
 }
 
-// AppendInt64 mocks base method.
+// AppendInt64 mocks base method
 func (m *MockArrayEncoder) AppendInt64(arg0 int64) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendInt64", arg0)
 }
 
-// AppendInt64 indicates an expected call of AppendInt64.
+// AppendInt64 indicates an expected call of AppendInt64
 func (mr *MockArrayEncoderMockRecorder) AppendInt64(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendInt64", reflect.TypeOf((*MockArrayEncoder)(nil).AppendInt64), arg0)
 }
 
-// AppendInt8 mocks base method.
+// AppendInt8 mocks base method
 func (m *MockArrayEncoder) AppendInt8(arg0 int8) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendInt8", arg0)
 }
 
-// AppendInt8 indicates an expected call of AppendInt8.
+// AppendInt8 indicates an expected call of AppendInt8
 func (mr *MockArrayEncoderMockRecorder) AppendInt8(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendInt8", reflect.TypeOf((*MockArrayEncoder)(nil).AppendInt8), arg0)
 }
 
-// AppendObject mocks base method.
+// AppendObject mocks base method
 func (m *MockArrayEncoder) AppendObject(arg0 zapcore.ObjectMarshaler) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AppendObject", arg0)
@@ -529,13 +529,13 @@ func (m *MockArrayEncoder) AppendObject(arg0 zapcore.ObjectMarshaler) error {
 	return ret0
 }
 
-// AppendObject indicates an expected call of AppendObject.
+// AppendObject indicates an expected call of AppendObject
 func (mr *MockArrayEncoderMockRecorder) AppendObject(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendObject", reflect.TypeOf((*MockArrayEncoder)(nil).AppendObject), arg0)
 }
 
-// AppendReflected mocks base method.
+// AppendReflected mocks base method
 func (m *MockArrayEncoder) AppendReflected(arg0 interface{}) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AppendReflected", arg0)
@@ -543,103 +543,103 @@ func (m *MockArrayEncoder) AppendReflected(arg0 interface{}) error {
 	return ret0
 }
 
-// AppendReflected indicates an expected call of AppendReflected.
+// AppendReflected indicates an expected call of AppendReflected
 func (mr *MockArrayEncoderMockRecorder) AppendReflected(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendReflected", reflect.TypeOf((*MockArrayEncoder)(nil).AppendReflected), arg0)
 }
 
-// AppendString mocks base method.
+// AppendString mocks base method
 func (m *MockArrayEncoder) AppendString(arg0 string) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendString", arg0)
 }
 
-// AppendString indicates an expected call of AppendString.
+// AppendString indicates an expected call of AppendString
 func (mr *MockArrayEncoderMockRecorder) AppendString(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendString", reflect.TypeOf((*MockArrayEncoder)(nil).AppendString), arg0)
 }
 
-// AppendTime mocks base method.
+// AppendTime mocks base method
 func (m *MockArrayEncoder) AppendTime(arg0 time.Time) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendTime", arg0)
 }
 
-// AppendTime indicates an expected call of AppendTime.
+// AppendTime indicates an expected call of AppendTime
 func (mr *MockArrayEncoderMockRecorder) AppendTime(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendTime", reflect.TypeOf((*MockArrayEncoder)(nil).AppendTime), arg0)
 }
 
-// AppendUint mocks base method.
+// AppendUint mocks base method
 func (m *MockArrayEncoder) AppendUint(arg0 uint) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendUint", arg0)
 }
 
-// AppendUint indicates an expected call of AppendUint.
+// AppendUint indicates an expected call of AppendUint
 func (mr *MockArrayEncoderMockRecorder) AppendUint(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendUint", reflect.TypeOf((*MockArrayEncoder)(nil).AppendUint), arg0)
 }
 
-// AppendUint16 mocks base method.
+// AppendUint16 mocks base method
 func (m *MockArrayEncoder) AppendUint16(arg0 uint16) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendUint16", arg0)
 }
 
-// AppendUint16 indicates an expected call of AppendUint16.
+// AppendUint16 indicates an expected call of AppendUint16
 func (mr *MockArrayEncoderMockRecorder) AppendUint16(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendUint16", reflect.TypeOf((*MockArrayEncoder)(nil).AppendUint16), arg0)
 }
 
-// AppendUint32 mocks base method.
+// AppendUint32 mocks base method
 func (m *MockArrayEncoder) AppendUint32(arg0 uint32) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendUint32", arg0)
 }
 
-// AppendUint32 indicates an expected call of AppendUint32.
+// AppendUint32 indicates an expected call of AppendUint32
 func (mr *MockArrayEncoderMockRecorder) AppendUint32(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendUint32", reflect.TypeOf((*MockArrayEncoder)(nil).AppendUint32), arg0)
 }
 
-// AppendUint64 mocks base method.
+// AppendUint64 mocks base method
 func (m *MockArrayEncoder) AppendUint64(arg0 uint64) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendUint64", arg0)
 }
 
-// AppendUint64 indicates an expected call of AppendUint64.
+// AppendUint64 indicates an expected call of AppendUint64
 func (mr *MockArrayEncoderMockRecorder) AppendUint64(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendUint64", reflect.TypeOf((*MockArrayEncoder)(nil).AppendUint64), arg0)
 }
 
-// AppendUint8 mocks base method.
+// AppendUint8 mocks base method
 func (m *MockArrayEncoder) AppendUint8(arg0 byte) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendUint8", arg0)
 }
 
-// AppendUint8 indicates an expected call of AppendUint8.
+// AppendUint8 indicates an expected call of AppendUint8
 func (mr *MockArrayEncoderMockRecorder) AppendUint8(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendUint8", reflect.TypeOf((*MockArrayEncoder)(nil).AppendUint8), arg0)
 }
 
-// AppendUintptr mocks base method.
+// AppendUintptr mocks base method
 func (m *MockArrayEncoder) AppendUintptr(arg0 uintptr) {
 	m.ctrl.T.Helper()
 	m.ctrl.Call(m, "AppendUintptr", arg0)
 }
 
-// AppendUintptr indicates an expected call of AppendUintptr.
+// AppendUintptr indicates an expected call of AppendUintptr
 func (mr *MockArrayEncoderMockRecorder) AppendUintptr(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AppendUintptr", reflect.TypeOf((*MockArrayEncoder)(nil).AppendUintptr), arg0)
