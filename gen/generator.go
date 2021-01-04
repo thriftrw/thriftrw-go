@@ -1,4 +1,4 @@
-// Copyright (c) 2020 Uber Technologies, Inc.
+// Copyright (c) 2021 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -242,6 +242,9 @@ func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOpt
 		"zapEncoder":       curryGenerator(g.z.zapEncoder, g),
 		"zapMarshaler":     curryGenerator(g.z.zapMarshaler, g),
 		"zapMarshalerPtr":  curryGenerator(g.z.zapMarshalerPtr, g),
+		"isNotNil": func(val interface{}) bool {
+			return val != nil
+		},
 	}
 
 	tmpl := template.New("thriftrw").Delims("<", ">").Funcs(templateFuncs)
