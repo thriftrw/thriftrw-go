@@ -91,6 +91,7 @@ To release new versions of ThriftRW Go, follow these instructions.
 
         git checkout $BRANCH
         git merge master
+        git checkout -b back-to-dev
 
 14. Add a placeholder for the next version to CHANGELOG.md and a new link at
     the bottom.
@@ -122,7 +123,7 @@ To release new versions of ThriftRW Go, follow these instructions.
 
         make generate
 
-18. Commit and push your changes.
+18. Open a PR with your changes against `dev` to back to development.
 
-        git commit -a -m 'Back to development'
-        git push origin $BRANCH
+        git commit -am "Back to development"
+        hub pull-request -b dev --push
