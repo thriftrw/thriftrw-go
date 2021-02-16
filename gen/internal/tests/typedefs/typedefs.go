@@ -995,6 +995,39 @@ func (v MyEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	return ((enums.EnumWithValues)(v)).MarshalLogObject(enc)
 }
 
+type MyUUID UUID
+
+// ToWire translates MyUUID into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+func (v *MyUUID) ToWire() (wire.Value, error) {
+	x := (*UUID)(v)
+	return x.ToWire()
+}
+
+// String returns a readable string representation of MyUUID.
+func (v *MyUUID) String() string {
+	x := (*UUID)(v)
+	return fmt.Sprint(x)
+}
+
+// FromWire deserializes MyUUID from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+func (v *MyUUID) FromWire(w wire.Value) error {
+	return (*UUID)(v).FromWire(w)
+}
+
+// Equals returns true if this MyUUID is equal to the provided
+// MyUUID.
+func (lhs *MyUUID) Equals(rhs *MyUUID) bool {
+	return (*UUID)(lhs).Equals((*UUID)(rhs))
+}
+
+func (v *MyUUID) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	return ((*I128)(v)).MarshalLogObject(enc)
+}
+
 type PDF []byte
 
 // ToWire translates PDF into a Thrift-level intermediate
@@ -1645,6 +1678,150 @@ func (v *Transition) IsSetEvents() bool {
 	return v != nil && v.Events != nil
 }
 
+type TransitiveTypedefField struct {
+	DefUUID *MyUUID `json:"defUUID,required"`
+}
+
+// ToWire translates a TransitiveTypedefField struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//   x, err := v.ToWire()
+//   if err != nil {
+//     return err
+//   }
+//
+//   if err := binaryProtocol.Encode(x, writer); err != nil {
+//     return err
+//   }
+func (v *TransitiveTypedefField) ToWire() (wire.Value, error) {
+	var (
+		fields [1]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.DefUUID == nil {
+		return w, errors.New("field DefUUID of TransitiveTypedefField is required")
+	}
+	w, err = v.DefUUID.ToWire()
+	if err != nil {
+		return w, err
+	}
+	fields[i] = wire.Field{ID: 1, Value: w}
+	i++
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _MyUUID_Read(w wire.Value) (*MyUUID, error) {
+	var x MyUUID
+	err := x.FromWire(w)
+	return &x, err
+}
+
+// FromWire deserializes a TransitiveTypedefField struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a TransitiveTypedefField struct
+// from the provided intermediate representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//   if err != nil {
+//     return nil, err
+//   }
+//
+//   var v TransitiveTypedefField
+//   if err := v.FromWire(x); err != nil {
+//     return nil, err
+//   }
+//   return &v, nil
+func (v *TransitiveTypedefField) FromWire(w wire.Value) error {
+	var err error
+
+	defUUIDIsSet := false
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TStruct {
+				v.DefUUID, err = _MyUUID_Read(field.Value)
+				if err != nil {
+					return err
+				}
+				defUUIDIsSet = true
+			}
+		}
+	}
+
+	if !defUUIDIsSet {
+		return errors.New("field DefUUID of TransitiveTypedefField is required")
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a TransitiveTypedefField
+// struct.
+func (v *TransitiveTypedefField) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [1]string
+	i := 0
+	fields[i] = fmt.Sprintf("DefUUID: %v", v.DefUUID)
+	i++
+
+	return fmt.Sprintf("TransitiveTypedefField{%v}", strings.Join(fields[:i], ", "))
+}
+
+// Equals returns true if all the fields of this TransitiveTypedefField match the
+// provided TransitiveTypedefField.
+//
+// This function performs a deep comparison.
+func (v *TransitiveTypedefField) Equals(rhs *TransitiveTypedefField) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !v.DefUUID.Equals(rhs.DefUUID) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of TransitiveTypedefField.
+func (v *TransitiveTypedefField) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	err = multierr.Append(err, enc.AddObject("defUUID", (*I128)(v.DefUUID)))
+	return err
+}
+
+// GetDefUUID returns the value of DefUUID if it is set or its
+// zero value if it is unset.
+func (v *TransitiveTypedefField) GetDefUUID() (o *MyUUID) {
+	if v != nil {
+		o = v.DefUUID
+	}
+	return
+}
+
+// IsSetDefUUID returns true if DefUUID is not nil.
+func (v *TransitiveTypedefField) IsSetDefUUID() bool {
+	return v != nil && v.DefUUID != nil
+}
+
 type UUID I128
 
 // ToWire translates UUID into a Thrift-level intermediate
@@ -1849,7 +2026,7 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "typedefs",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/typedefs",
 	FilePath: "typedefs.thrift",
-	SHA1:     "c44a85a79e17ab1c29e271bdef1909abe37fbb97",
+	SHA1:     "333cb75491c993220f7695108fa91a4a8a299a48",
 	Includes: []*thriftreflect.ThriftModule{
 		enums.ThriftModule,
 		structs.ThriftModule,
@@ -1857,4 +2034,4 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Raw: rawIDL,
 }
 
-const rawIDL = "include \"./structs.thrift\"\ninclude \"./enums.thrift\"\n\n/**\n * Number of seconds since epoch.\n *\n * Deprecated: Use ISOTime instead.\n */\ntypedef i64 Timestamp  // alias of primitive\ntypedef string State\n\ntypedef i128 UUID  // alias of struct\n\ntypedef list<Event> EventGroup  // alias fo collection\n\nstruct i128 {\n    1: required i64 high\n    2: required i64 low\n}\n\nstruct Event {\n    1: required UUID uuid  // required typedef\n    2: optional Timestamp time  // optional typedef\n}\n\nstruct DefaultPrimitiveTypedef {\n    1: optional State state = \"hello\"\n}\n\nstruct Transition {\n    1: required State fromState\n    2: required State toState\n    3: optional EventGroup events\n}\n\ntypedef binary PDF  // alias of []byte\n\ntypedef set<structs.Frame> FrameGroup\n\ntypedef map<structs.Point, structs.Point> PointMap\n\ntypedef set<binary> BinarySet\n\ntypedef map<structs.Edge, structs.Edge> EdgeMap\n\ntypedef map<State, i64> StateMap\n\ntypedef enums.EnumWithValues MyEnum\n"
+const rawIDL = "include \"./structs.thrift\"\ninclude \"./enums.thrift\"\n\n/**\n * Number of seconds since epoch.\n *\n * Deprecated: Use ISOTime instead.\n */\ntypedef i64 Timestamp  // alias of primitive\ntypedef string State\n\ntypedef i128 UUID  // alias of struct\n\ntypedef UUID MyUUID // alias of alias\n\ntypedef list<Event> EventGroup  // alias fo collection\n\nstruct i128 {\n    1: required i64 high\n    2: required i64 low\n}\n\nstruct Event {\n    1: required UUID uuid  // required typedef\n    2: optional Timestamp time  // optional typedef\n}\n\nstruct TransitiveTypedefField {\n    1: required MyUUID defUUID  // required typedef of alias\n}\n\nstruct DefaultPrimitiveTypedef {\n    1: optional State state = \"hello\"\n}\n\nstruct Transition {\n    1: required State fromState\n    2: required State toState\n    3: optional EventGroup events\n}\n\ntypedef binary PDF  // alias of []byte\n\ntypedef set<structs.Frame> FrameGroup\n\ntypedef map<structs.Point, structs.Point> PointMap\n\ntypedef set<binary> BinarySet\n\ntypedef map<structs.Edge, structs.Edge> EdgeMap\n\ntypedef map<State, i64> StateMap\n\ntypedef enums.EnumWithValues MyEnum\n"
