@@ -678,7 +678,7 @@ func (v *Event) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v == nil {
 		return nil
 	}
-	err = multierr.Append(err, enc.AddObject("uuid", (*I128)(v.UUID)))
+	err = multierr.Append(err, enc.AddObject("uuid", v.UUID))
 	if v.Time != nil {
 		enc.AddInt64("time", (int64)(*v.Time))
 	}
@@ -1025,7 +1025,7 @@ func (lhs *MyUUID) Equals(rhs *MyUUID) bool {
 }
 
 func (v *MyUUID) MarshalLogObject(enc zapcore.ObjectEncoder) error {
-	return ((*I128)(v)).MarshalLogObject(enc)
+	return ((*UUID)(v)).MarshalLogObject(enc)
 }
 
 type PDF []byte
@@ -1640,7 +1640,7 @@ func (v *Transition) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	enc.AddString("fromState", (string)(v.FromState))
 	enc.AddString("toState", (string)(v.ToState))
 	if v.Events != nil {
-		err = multierr.Append(err, enc.AddArray("events", (_List_Event_Zapper)(([]*Event)(v.Events))))
+		err = multierr.Append(err, enc.AddArray("events", (_List_Event_Zapper)(v.Events)))
 	}
 	return err
 }
@@ -1804,7 +1804,7 @@ func (v *TransitiveTypedefField) MarshalLogObject(enc zapcore.ObjectEncoder) (er
 	if v == nil {
 		return nil
 	}
-	err = multierr.Append(err, enc.AddObject("defUUID", (*I128)(v.DefUUID)))
+	err = multierr.Append(err, enc.AddObject("defUUID", v.DefUUID))
 	return err
 }
 

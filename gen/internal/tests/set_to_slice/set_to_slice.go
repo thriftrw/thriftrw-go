@@ -75,7 +75,7 @@ func (lhs AnotherStringList) Equals(rhs AnotherStringList) bool {
 }
 
 func (v AnotherStringList) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	return ((_Set_String_sliceType_Zapper)(([]string)(v))).MarshalLogArray(enc)
+	return ((_Set_String_sliceType_Zapper)((MyStringList)(v))).MarshalLogArray(enc)
 }
 
 type Bar struct {
@@ -769,20 +769,20 @@ func (v *Bar) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.OptionalStringListField != nil {
 		err = multierr.Append(err, enc.AddArray("optionalStringListField", (_Set_String_sliceType_Zapper)(v.OptionalStringListField)))
 	}
-	err = multierr.Append(err, enc.AddArray("requiredTypedefStringListField", (_Set_String_sliceType_Zapper)(([]string)(v.RequiredTypedefStringListField))))
+	err = multierr.Append(err, enc.AddArray("requiredTypedefStringListField", (_Set_String_sliceType_Zapper)(v.RequiredTypedefStringListField)))
 	if v.OptionalTypedefStringListField != nil {
-		err = multierr.Append(err, enc.AddArray("optionalTypedefStringListField", (_Set_String_sliceType_Zapper)(([]string)(v.OptionalTypedefStringListField))))
+		err = multierr.Append(err, enc.AddArray("optionalTypedefStringListField", (_Set_String_sliceType_Zapper)(v.OptionalTypedefStringListField)))
 	}
 	err = multierr.Append(err, enc.AddArray("requiredFooListField", (_Set_Foo_sliceType_Zapper)(v.RequiredFooListField)))
 	if v.OptionalFooListField != nil {
 		err = multierr.Append(err, enc.AddArray("optionalFooListField", (_Set_Foo_sliceType_Zapper)(v.OptionalFooListField)))
 	}
-	err = multierr.Append(err, enc.AddArray("requiredTypedefFooListField", (_Set_Foo_sliceType_Zapper)(([]*Foo)(v.RequiredTypedefFooListField))))
+	err = multierr.Append(err, enc.AddArray("requiredTypedefFooListField", (_Set_Foo_sliceType_Zapper)(v.RequiredTypedefFooListField)))
 	if v.OptionalTypedefFooListField != nil {
-		err = multierr.Append(err, enc.AddArray("optionalTypedefFooListField", (_Set_Foo_sliceType_Zapper)(([]*Foo)(v.OptionalTypedefFooListField))))
+		err = multierr.Append(err, enc.AddArray("optionalTypedefFooListField", (_Set_Foo_sliceType_Zapper)(v.OptionalTypedefFooListField)))
 	}
 	err = multierr.Append(err, enc.AddArray("requiredStringListListField", (_Set_Set_String_sliceType_sliceType_Zapper)(v.RequiredStringListListField)))
-	err = multierr.Append(err, enc.AddArray("requiredTypedefStringListListField", (_Set_Set_String_sliceType_sliceType_Zapper)(([][]string)(v.RequiredTypedefStringListListField))))
+	err = multierr.Append(err, enc.AddArray("requiredTypedefStringListListField", (_Set_Set_String_sliceType_sliceType_Zapper)(v.RequiredTypedefStringListListField)))
 	return err
 }
 
@@ -1127,7 +1127,7 @@ func (lhs MyStringList) Equals(rhs MyStringList) bool {
 }
 
 func (v MyStringList) MarshalLogArray(enc zapcore.ArrayEncoder) error {
-	return ((_Set_String_sliceType_Zapper)(([]string)(v))).MarshalLogArray(enc)
+	return ((_Set_String_sliceType_Zapper)((StringList)(v))).MarshalLogArray(enc)
 }
 
 type StringList []string
