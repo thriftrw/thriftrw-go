@@ -2366,7 +2366,7 @@ func (v *Node) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	}
 	enc.AddInt32("value", v.Value)
 	if v.Tail != nil {
-		err = multierr.Append(err, enc.AddObject("tail", (*Node)(v.Tail)))
+		err = multierr.Append(err, enc.AddObject("tail", v.Tail))
 	}
 	return err
 }

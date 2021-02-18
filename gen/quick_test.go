@@ -455,6 +455,8 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: td.StateMap{}, Kind: thriftTypedef},
 		{Sample: td.Timestamp(0), NoLog: true, Kind: thriftTypedef},
 		{Sample: td.UUID{}, Kind: thriftTypedef},
+		{Sample: td.MyUUID{}, Kind: thriftTypedef},
+		{Sample: td.TransitiveTypedefField{}, Kind: thriftStruct},
 		{Sample: tl.LittlePotatoe(0), NoLog: true, Kind: thriftTypedef},
 		{Sample: tl.LittlePotatoe2(0.0), NoLog: true, Kind: thriftTypedef},
 		{Sample: tul.UUID(""), NoLog: true, Kind: thriftTypedef},

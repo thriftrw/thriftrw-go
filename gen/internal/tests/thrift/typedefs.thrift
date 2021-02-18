@@ -11,6 +11,8 @@ typedef string State
 
 typedef i128 UUID  // alias of struct
 
+typedef UUID MyUUID // alias of alias
+
 typedef list<Event> EventGroup  // alias fo collection
 
 struct i128 {
@@ -21,6 +23,10 @@ struct i128 {
 struct Event {
     1: required UUID uuid  // required typedef
     2: optional Timestamp time  // optional typedef
+}
+
+struct TransitiveTypedefField {
+    1: required MyUUID defUUID  // required typedef of alias
 }
 
 struct DefaultPrimitiveTypedef {

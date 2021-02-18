@@ -3192,7 +3192,7 @@ type _List_UUID_Zapper []*typedefs.UUID
 // fast logging of _List_UUID_Zapper.
 func (l _List_UUID_Zapper) MarshalLogArray(enc zapcore.ArrayEncoder) (err error) {
 	for _, v := range l {
-		err = multierr.Append(err, enc.AppendObject((*typedefs.I128)(v)))
+		err = multierr.Append(err, enc.AppendObject(v))
 	}
 	return err
 }
