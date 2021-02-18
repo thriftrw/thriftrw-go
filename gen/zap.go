@@ -86,6 +86,28 @@ func (z *zapGenerator) zapEncoder(g Generator, spec compile.TypeSpec) string {
 	panic(root)
 }
 
+// zapTypedefHasGeneratedMarshaler defines if a typedef will have generated code
+// zapcore.ObjectMarshaler or zapcore.ArrayMarshaler.
+func (z *zapGenerator) zapTypedefHasGeneratedMarshaler(g Generator, spec compile.TypeSpec) bool {
+	switch z.zapEncoder(g, spec) {
+	case "Array", "Object":
+		return true
+	default:
+		return false
+	}
+}
+
+// zapTypedefGenerateMarshaler is similar to zapMarshaler but always converts a typedef
+// to the next value. This should be used when generating the code for the Zap
+// marshal implementation of the typedef.
+func (z *zapGenerator) zapTypedefGenerateMarshaler(g Generator, spec *compile.TypedefSpec, fieldValue string) (string, error) {
+	targetName, err := typeReference(g, spec.Target)
+	if err != nil {
+		return "", err
+	}
+	return z.zapMarshalerGenerator(g, spec, fmt.Sprintf("(%v)(%v)", targetName, fieldValue))
+}
+
 // zapMarshaler takes a TypeSpec, evaluates whether there are underlying elements
 // that require more Zap implementation to log everything, and returns a string
 // that properly casts the fieldValue, if needed, for logging.
@@ -96,21 +118,25 @@ func (z *zapGenerator) zapEncoder(g Generator, spec compile.TypeSpec) string {
 //   enc.Add<zapEncoder .Type>("foo", <zapMarshaler .Type "v">)
 //
 func (z *zapGenerator) zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
-	root := compile.RootTypeSpec(spec)
-
-	if _, ok := spec.(*compile.TypedefSpec); ok {
-		// For typedefs, cast to the root type and rely on that functionality.
-		rootName, err := typeReference(g, root)
+	// For typedefs, cast to the root type and rely on that functionality if the
+	// typedef doesn't have generated Zap marshal methods.
+	if _, ok := spec.(*compile.TypedefSpec); ok && !z.zapTypedefHasGeneratedMarshaler(g, spec) {
+		rootName, err := typeReference(g, compile.RootTypeSpec(spec))
 		if err != nil {
 			return "", err
 		}
 		fieldValue = fmt.Sprintf("(%v)(%v)", rootName, fieldValue)
 	}
 
+	return z.zapMarshalerGenerator(g, spec, fieldValue)
+}
+
+func (z *zapGenerator) zapMarshalerGenerator(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
 	if isPrimitiveType(spec) {
 		return fieldValue, nil
 	}
 
+	root := compile.RootTypeSpec(spec)
 	switch t := root.(type) {
 	case *compile.BinarySpec:
 		// There is no AppendBinary for ArrayEncoder, so we opt for encoding it ourselves and
