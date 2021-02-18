@@ -101,11 +101,11 @@ func (z *zapGenerator) zapTypedefHasGeneratedMarshaler(g Generator, spec compile
 // to the next value. This should be used when generating the code for the Zap
 // marshal implementation of the typedef.
 func (z *zapGenerator) zapTypedefGenerateMarshaler(g Generator, spec *compile.TypedefSpec, fieldValue string) (string, error) {
-	rootName, err := typeReference(g, spec.Target)
+	targetName, err := typeReference(g, spec.Target)
 	if err != nil {
 		return "", err
 	}
-	return z.zapMarshalerGenerator(g, spec, fmt.Sprintf("(%v)(%v)", rootName, fieldValue))
+	return z.zapMarshalerGenerator(g, spec, fmt.Sprintf("(%v)(%v)", targetName, fieldValue))
 }
 
 // zapMarshaler takes a TypeSpec, evaluates whether there are underlying elements
