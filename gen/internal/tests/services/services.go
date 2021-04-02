@@ -82,12 +82,12 @@ func (v *ConflictingNamesSetValueArgs) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *ConflictingNamesSetValueArgs) FromWire(w wire.Value) error {
-	var err error
 
 	keyIsSet := false
 	valueIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -106,7 +106,12 @@ func (v *ConflictingNamesSetValueArgs) FromWire(w wire.Value) error {
 				valueIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !keyIsSet {
 		return errors.New("field Key of ConflictingNamesSetValueArgs is required")
@@ -247,9 +252,9 @@ func (v *InternalError) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *InternalError) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -262,7 +267,12 @@ func (v *InternalError) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -448,10 +458,16 @@ func (v *Cache_Clear_Args) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *Cache_Clear_Args) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -583,9 +599,9 @@ func (v *Cache_ClearAfter_Args) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *Cache_ClearAfter_Args) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TI64 {
@@ -598,7 +614,12 @@ func (v *Cache_ClearAfter_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -777,9 +798,9 @@ func _ConflictingNamesSetValueArgs_Read(w wire.Value) (*ConflictingNamesSetValue
 //   }
 //   return &v, nil
 func (v *ConflictingNames_SetValue_Args) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -790,7 +811,12 @@ func (v *ConflictingNames_SetValue_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -995,10 +1021,16 @@ func (v *ConflictingNames_SetValue_Result) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *ConflictingNames_SetValue_Result) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -1120,9 +1152,9 @@ func _Key_Read(w wire.Value) (Key, error) {
 //   }
 //   return &v, nil
 func (v *KeyValue_DeleteValue_Args) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -1135,7 +1167,12 @@ func (v *KeyValue_DeleteValue_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -1412,9 +1449,9 @@ func _InternalError_Read(w wire.Value) (*InternalError, error) {
 //   }
 //   return &v, nil
 func (v *KeyValue_DeleteValue_Result) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -1433,7 +1470,12 @@ func (v *KeyValue_DeleteValue_Result) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	count := 0
 	if v.DoesNotExist != nil {
@@ -1654,9 +1696,9 @@ func _List_Key_Read(l wire.ValueList) ([]Key, error) {
 //   }
 //   return &v, nil
 func (v *KeyValue_GetManyValues_Args) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -1667,7 +1709,12 @@ func (v *KeyValue_GetManyValues_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -1998,9 +2045,9 @@ func _List_ArbitraryValue_Read(l wire.ValueList) ([]*unions.ArbitraryValue, erro
 //   }
 //   return &v, nil
 func (v *KeyValue_GetManyValues_Result) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 0:
 			if field.Value.Type() == wire.TList {
@@ -2019,7 +2066,12 @@ func (v *KeyValue_GetManyValues_Result) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	count := 0
 	if v.Success != nil {
@@ -2222,9 +2274,9 @@ func (v *KeyValue_GetValue_Args) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *KeyValue_GetValue_Args) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -2237,7 +2289,12 @@ func (v *KeyValue_GetValue_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -2489,9 +2546,9 @@ func (v *KeyValue_GetValue_Result) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *KeyValue_GetValue_Result) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 0:
 			if field.Value.Type() == wire.TStruct {
@@ -2510,7 +2567,12 @@ func (v *KeyValue_GetValue_Result) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	count := 0
 	if v.Success != nil {
@@ -2696,9 +2758,9 @@ func (v *KeyValue_SetValue_Args) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *KeyValue_SetValue_Args) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -2719,7 +2781,12 @@ func (v *KeyValue_SetValue_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -2952,10 +3019,16 @@ func (v *KeyValue_SetValue_Result) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *KeyValue_SetValue_Result) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -3083,12 +3156,12 @@ func (v *KeyValue_SetValueV2_Args) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *KeyValue_SetValueV2_Args) FromWire(w wire.Value) error {
-	var err error
 
 	keyIsSet := false
 	valueIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -3107,7 +3180,12 @@ func (v *KeyValue_SetValueV2_Args) FromWire(w wire.Value) error {
 				valueIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !keyIsSet {
 		return errors.New("field Key of KeyValue_SetValueV2_Args is required")
@@ -3333,10 +3411,16 @@ func (v *KeyValue_SetValueV2_Result) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *KeyValue_SetValueV2_Result) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -3441,10 +3525,16 @@ func (v *KeyValue_Size_Args) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *KeyValue_Size_Args) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -3642,9 +3732,9 @@ func (v *KeyValue_Size_Result) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *KeyValue_Size_Result) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 0:
 			if field.Value.Type() == wire.TI64 {
@@ -3657,7 +3747,12 @@ func (v *KeyValue_Size_Result) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	count := 0
 	if v.Success != nil {
@@ -3795,10 +3890,16 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) ToWire() (wire.Val
 //   return &v, nil
 func (v *NonStandardServiceName_NonStandardFunctionName_Args) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -3972,10 +4073,16 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) ToWire() (wire.V
 //   return &v, nil
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }

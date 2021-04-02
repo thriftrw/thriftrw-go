@@ -57,10 +57,16 @@ func (v *First) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *First) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -147,10 +153,16 @@ func (v *Second) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *Second) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }

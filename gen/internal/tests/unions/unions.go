@@ -239,9 +239,9 @@ func _Map_String_ArbitraryValue_Read(m wire.MapItemList) (map[string]*ArbitraryV
 //   }
 //   return &v, nil
 func (v *ArbitraryValue) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
@@ -290,7 +290,12 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	count := 0
 	if v.BoolValue != nil {
@@ -636,9 +641,9 @@ func _PDF_Read(w wire.Value) (typedefs.PDF, error) {
 //   }
 //   return &v, nil
 func (v *Document) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -659,7 +664,12 @@ func (v *Document) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	count := 0
 	if v.Pdf != nil {
@@ -807,10 +817,16 @@ func (v *EmptyUnion) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *EmptyUnion) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }

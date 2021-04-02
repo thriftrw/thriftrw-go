@@ -78,11 +78,11 @@ func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *DoesNotExistException) FromWire(w wire.Value) error {
-	var err error
 
 	keyIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -103,7 +103,12 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !keyIsSet {
 		return errors.New("field Key of DoesNotExistException is required")
@@ -273,11 +278,11 @@ func (v *DoesNotExistException2) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *DoesNotExistException2) FromWire(w wire.Value) error {
-	var err error
 
 	keyIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -298,7 +303,12 @@ func (v *DoesNotExistException2) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !keyIsSet {
 		return errors.New("field Key of DoesNotExistException2 is required")
@@ -439,10 +449,16 @@ func (v *EmptyException) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *EmptyException) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }

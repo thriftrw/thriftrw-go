@@ -1144,9 +1144,9 @@ func _Map_Set_I32_mapType_List_Double_Read(m wire.MapItemList) ([]struct {
 //   }
 //   return &v, nil
 func (v *ContainersOfContainers) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -1221,7 +1221,12 @@ func (v *ContainersOfContainers) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -2351,9 +2356,9 @@ func _Map_EnumWithDuplicateValues_I32_Read(m wire.MapItemList) (map[enums.EnumWi
 //   }
 //   return &v, nil
 func (v *EnumContainers) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -2380,7 +2385,12 @@ func (v *EnumContainers) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -2751,12 +2761,12 @@ func _List_RecordType_1_Read(l wire.ValueList) ([]enums.RecordType, error) {
 //   }
 //   return &v, nil
 func (v *ListOfConflictingEnums) FromWire(w wire.Value) error {
-	var err error
 
 	recordsIsSet := false
 	otherRecordsIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -2775,7 +2785,12 @@ func (v *ListOfConflictingEnums) FromWire(w wire.Value) error {
 				otherRecordsIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !recordsIsSet {
 		return errors.New("field Records of ListOfConflictingEnums is required")
@@ -3082,12 +3097,12 @@ func _List_UUID_1_Read(l wire.ValueList) ([]uuid_conflict.UUID, error) {
 //   }
 //   return &v, nil
 func (v *ListOfConflictingUUIDs) FromWire(w wire.Value) error {
-	var err error
 
 	uuidsIsSet := false
 	otherUUIDsIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -3106,7 +3121,12 @@ func (v *ListOfConflictingUUIDs) FromWire(w wire.Value) error {
 				otherUUIDsIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !uuidsIsSet {
 		return errors.New("field Uuids of ListOfConflictingUUIDs is required")
@@ -3304,9 +3324,9 @@ func (v *ListOfOptionalPrimitives) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *ListOfOptionalPrimitives) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -3317,7 +3337,12 @@ func (v *ListOfOptionalPrimitives) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -3438,11 +3463,11 @@ func (v *ListOfRequiredPrimitives) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *ListOfRequiredPrimitives) FromWire(w wire.Value) error {
-	var err error
 
 	listOfStringsIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -3453,7 +3478,12 @@ func (v *ListOfRequiredPrimitives) FromWire(w wire.Value) error {
 				listOfStringsIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !listOfStringsIsSet {
 		return errors.New("field ListOfStrings of ListOfRequiredPrimitives is required")
@@ -3733,9 +3763,9 @@ func _Map_String_Binary_Read(m wire.MapItemList) (map[string][]byte, error) {
 //   }
 //   return &v, nil
 func (v *MapOfBinaryAndString) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TMap {
@@ -3754,7 +3784,12 @@ func (v *MapOfBinaryAndString) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -4302,9 +4337,9 @@ func _Map_String_Bool_Read(m wire.MapItemList) (map[string]bool, error) {
 //   }
 //   return &v, nil
 func (v *PrimitiveContainers) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -4355,7 +4390,12 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -4830,13 +4870,13 @@ func _Map_I64_Double_Read(m wire.MapItemList) (map[int64]float64, error) {
 //   }
 //   return &v, nil
 func (v *PrimitiveContainersRequired) FromWire(w wire.Value) error {
-	var err error
 
 	listOfStringsIsSet := false
 	setOfIntsIsSet := false
 	mapOfIntsToDoublesIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -4863,7 +4903,12 @@ func (v *PrimitiveContainersRequired) FromWire(w wire.Value) error {
 				mapOfIntsToDoublesIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !listOfStringsIsSet {
 		return errors.New("field ListOfStrings of PrimitiveContainersRequired is required")

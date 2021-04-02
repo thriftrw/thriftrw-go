@@ -393,7 +393,6 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 		//   }
 		//   return &<$v>, nil
 		func (<$v> *<.Name>) FromWire(<$w> <$wire>.Value) error {
-			<if len .Fields> var err error <end>
 			<$f := newVar "field">
 
 			<$isSet := newNamespace>
@@ -403,7 +402,8 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				<- end>
 			<end>
 
-			for _, <$f> := range <$w>.GetStruct().Fields {
+			fields := <$w>.GetFieldList()
+			err := fields.ForEach(func(<$f> <$wire>.Field) (err error) {
 				switch <$f>.ID {
 				<range .Fields ->
 				case <.ID>:
@@ -424,7 +424,12 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 					}
 				<end ->
 				}
+				return nil
+			})
+			if err != nil {
+				return err
 			}
+			fields.Close()
 
 			<$structName := .Name>
 			<range .Fields>

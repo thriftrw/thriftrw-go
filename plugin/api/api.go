@@ -214,12 +214,12 @@ func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 //   }
 //   return &v, nil
 func (v *Argument) FromWire(w wire.Value) error {
-	var err error
 
 	nameIsSet := false
 	typeIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -246,7 +246,12 @@ func (v *Argument) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !nameIsSet {
 		return errors.New("field Name of Argument is required")
@@ -732,13 +737,13 @@ func _List_Argument_Read(l wire.ValueList) ([]*Argument, error) {
 //   }
 //   return &v, nil
 func (v *Function) FromWire(w wire.Value) error {
-	var err error
 
 	nameIsSet := false
 	thriftNameIsSet := false
 	argumentsIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -799,7 +804,12 @@ func (v *Function) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !nameIsSet {
 		return errors.New("field Name of Function is required")
@@ -1409,7 +1419,6 @@ func _List_ModuleID_Read(l wire.ValueList) ([]ModuleID, error) {
 //   }
 //   return &v, nil
 func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
-	var err error
 
 	rootServicesIsSet := false
 	servicesIsSet := false
@@ -1417,7 +1426,8 @@ func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
 	packagePrefixIsSet := false
 	thriftRootIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -1468,7 +1478,12 @@ func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !rootServicesIsSet {
 		return errors.New("field RootServices of GenerateServiceRequest is required")
@@ -1909,9 +1924,9 @@ func _Map_String_Binary_Read(m wire.MapItemList) (map[string][]byte, error) {
 //   }
 //   return &v, nil
 func (v *GenerateServiceResponse) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TMap {
@@ -1922,7 +1937,12 @@ func (v *GenerateServiceResponse) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -2064,10 +2084,16 @@ func (v *HandshakeRequest) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *HandshakeRequest) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -2249,13 +2275,13 @@ func _List_Feature_Read(l wire.ValueList) ([]Feature, error) {
 //   }
 //   return &v, nil
 func (v *HandshakeResponse) FromWire(w wire.Value) error {
-	var err error
 
 	nameIsSet := false
 	apiVersionIsSet := false
 	featuresIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -2292,7 +2318,12 @@ func (v *HandshakeResponse) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !nameIsSet {
 		return errors.New("field Name of HandshakeResponse is required")
@@ -2537,13 +2568,13 @@ func (v *Module) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *Module) FromWire(w wire.Value) error {
-	var err error
 
 	importPathIsSet := false
 	directoryIsSet := false
 	thriftFilePathIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -2570,7 +2601,12 @@ func (v *Module) FromWire(w wire.Value) error {
 				thriftFilePathIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !importPathIsSet {
 		return errors.New("field ImportPath of Module is required")
@@ -2874,7 +2910,6 @@ func _List_Function_Read(l wire.ValueList) ([]*Function, error) {
 //   }
 //   return &v, nil
 func (v *Service) FromWire(w wire.Value) error {
-	var err error
 
 	nameIsSet := false
 	thriftNameIsSet := false
@@ -2882,7 +2917,8 @@ func (v *Service) FromWire(w wire.Value) error {
 	functionsIsSet := false
 	moduleIDIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 7:
 			if field.Value.Type() == wire.TBinary {
@@ -2935,7 +2971,12 @@ func (v *Service) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !nameIsSet {
 		return errors.New("field Name of Service is required")
@@ -3580,9 +3621,9 @@ func _TypeReference_Read(w wire.Value) (*TypeReference, error) {
 //   }
 //   return &v, nil
 func (v *Type) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TI32 {
@@ -3635,7 +3676,12 @@ func (v *Type) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	count := 0
 	if v.SimpleType != nil {
@@ -3928,12 +3974,12 @@ func (v *TypePair) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *TypePair) FromWire(w wire.Value) error {
-	var err error
 
 	leftIsSet := false
 	rightIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -3952,7 +3998,12 @@ func (v *TypePair) FromWire(w wire.Value) error {
 				rightIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !leftIsSet {
 		return errors.New("field Left of TypePair is required")
@@ -4133,12 +4184,12 @@ func (v *TypeReference) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *TypeReference) FromWire(w wire.Value) error {
-	var err error
 
 	nameIsSet := false
 	importPathIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -4165,7 +4216,12 @@ func (v *TypeReference) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !nameIsSet {
 		return errors.New("field Name of TypeReference is required")
@@ -4329,10 +4385,16 @@ func (v *Plugin_Goodbye_Args) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *Plugin_Goodbye_Args) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -4506,10 +4568,16 @@ func (v *Plugin_Goodbye_Result) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *Plugin_Goodbye_Result) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -4631,9 +4699,9 @@ func _HandshakeRequest_Read(w wire.Value) (*HandshakeRequest, error) {
 //   }
 //   return &v, nil
 func (v *Plugin_Handshake_Args) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -4644,7 +4712,12 @@ func (v *Plugin_Handshake_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -4879,9 +4952,9 @@ func _HandshakeResponse_Read(w wire.Value) (*HandshakeResponse, error) {
 //   }
 //   return &v, nil
 func (v *Plugin_Handshake_Result) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 0:
 			if field.Value.Type() == wire.TStruct {
@@ -4892,7 +4965,12 @@ func (v *Plugin_Handshake_Result) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	count := 0
 	if v.Success != nil {
@@ -5047,9 +5125,9 @@ func _GenerateServiceRequest_Read(w wire.Value) (*GenerateServiceRequest, error)
 //   }
 //   return &v, nil
 func (v *ServiceGenerator_Generate_Args) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -5060,7 +5138,12 @@ func (v *ServiceGenerator_Generate_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -5295,9 +5378,9 @@ func _GenerateServiceResponse_Read(w wire.Value) (*GenerateServiceResponse, erro
 //   }
 //   return &v, nil
 func (v *ServiceGenerator_Generate_Result) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 0:
 			if field.Value.Type() == wire.TStruct {
@@ -5308,7 +5391,12 @@ func (v *ServiceGenerator_Generate_Result) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	count := 0
 	if v.Success != nil {

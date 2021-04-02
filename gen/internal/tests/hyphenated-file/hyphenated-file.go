@@ -78,11 +78,11 @@ func _Second_Read(w wire.Value) (*non_hyphenated.Second, error) {
 //   }
 //   return &v, nil
 func (v *DocumentStruct) FromWire(w wire.Value) error {
-	var err error
 
 	secondIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -93,7 +93,12 @@ func (v *DocumentStruct) FromWire(w wire.Value) error {
 				secondIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !secondIsSet {
 		return errors.New("field Second of DocumentStruct is required")

@@ -475,7 +475,6 @@ func _Map_I64_Double_Read(m wire.MapItemList) (map[int64]float64, error) {
 //   }
 //   return &v, nil
 func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
-	var err error
 
 	boolFieldIsSet := false
 	byteFieldIsSet := false
@@ -489,7 +488,8 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	setOfIntsIsSet := false
 	mapOfIntsToDoublesIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
@@ -580,7 +580,12 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 				mapOfIntsToDoublesIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !boolFieldIsSet {
 		return errors.New("field BoolField of PrimitiveRequiredStruct is required")

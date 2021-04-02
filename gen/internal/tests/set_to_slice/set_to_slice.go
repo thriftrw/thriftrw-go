@@ -432,7 +432,6 @@ func _StringListList_Read(w wire.Value) (StringListList, error) {
 //   }
 //   return &v, nil
 func (v *Bar) FromWire(w wire.Value) error {
-	var err error
 
 	requiredInt32ListFieldIsSet := false
 
@@ -445,7 +444,8 @@ func (v *Bar) FromWire(w wire.Value) error {
 	requiredStringListListFieldIsSet := false
 	requiredTypedefStringListListFieldIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TSet {
@@ -528,7 +528,12 @@ func (v *Bar) FromWire(w wire.Value) error {
 				requiredTypedefStringListListFieldIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !requiredInt32ListFieldIsSet {
 		return errors.New("field RequiredInt32ListField of Bar is required")
@@ -985,11 +990,11 @@ func (v *Foo) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *Foo) FromWire(w wire.Value) error {
-	var err error
 
 	stringFieldIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -1000,7 +1005,12 @@ func (v *Foo) FromWire(w wire.Value) error {
 				stringFieldIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !stringFieldIsSet {
 		return errors.New("field StringField of Foo is required")

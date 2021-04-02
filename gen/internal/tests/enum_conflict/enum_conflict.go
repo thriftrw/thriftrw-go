@@ -295,9 +295,9 @@ func _RecordType_1_Read(w wire.Value) (enums.RecordType, error) {
 //   }
 //   return &v, nil
 func (v *Records) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TI32 {
@@ -320,7 +320,12 @@ func (v *Records) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if v.RecordType == nil {
 		v.RecordType = _RecordType_ptr(DefaultRecordType)

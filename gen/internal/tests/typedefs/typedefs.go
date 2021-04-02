@@ -211,9 +211,9 @@ func _State_Read(w wire.Value) (State, error) {
 //   }
 //   return &v, nil
 func (v *DefaultPrimitiveTypedef) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -226,7 +226,12 @@ func (v *DefaultPrimitiveTypedef) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if v.State == nil {
 		v.State = _State_ptr("hello")
@@ -589,11 +594,11 @@ func _Timestamp_Read(w wire.Value) (Timestamp, error) {
 //   }
 //   return &v, nil
 func (v *Event) FromWire(w wire.Value) error {
-	var err error
 
 	uuidIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -614,7 +619,12 @@ func (v *Event) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !uuidIsSet {
 		return errors.New("field UUID of Event is required")
@@ -1542,12 +1552,12 @@ func _EventGroup_Read(w wire.Value) (EventGroup, error) {
 //   }
 //   return &v, nil
 func (v *Transition) FromWire(w wire.Value) error {
-	var err error
 
 	fromStateIsSet := false
 	toStateIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -1574,7 +1584,12 @@ func (v *Transition) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !fromStateIsSet {
 		return errors.New("field FromState of Transition is required")
@@ -1742,11 +1757,11 @@ func _MyUUID_Read(w wire.Value) (*MyUUID, error) {
 //   }
 //   return &v, nil
 func (v *TransitiveTypedefField) FromWire(w wire.Value) error {
-	var err error
 
 	defUUIDIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -1757,7 +1772,12 @@ func (v *TransitiveTypedefField) FromWire(w wire.Value) error {
 				defUUIDIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !defUUIDIsSet {
 		return errors.New("field DefUUID of TransitiveTypedefField is required")
@@ -1918,12 +1938,12 @@ func (v *I128) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *I128) FromWire(w wire.Value) error {
-	var err error
 
 	highIsSet := false
 	lowIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TI64 {
@@ -1942,7 +1962,12 @@ func (v *I128) FromWire(w wire.Value) error {
 				lowIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !highIsSet {
 		return errors.New("field High of I128 is required")

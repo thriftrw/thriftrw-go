@@ -72,11 +72,11 @@ func (v *ContactInfo) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *ContactInfo) FromWire(w wire.Value) error {
-	var err error
 
 	emailAddressIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -87,7 +87,12 @@ func (v *ContactInfo) FromWire(w wire.Value) error {
 				emailAddressIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !emailAddressIsSet {
 		return errors.New("field EmailAddress of ContactInfo is required")
@@ -530,9 +535,9 @@ func _Edge_Read(w wire.Value) (*Edge, error) {
 //   }
 //   return &v, nil
 func (v *DefaultsStruct) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TI32 {
@@ -647,7 +652,12 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if v.RequiredPrimitive == nil {
 		v.RequiredPrimitive = ptr.Int32(100)
@@ -1242,12 +1252,12 @@ func _Point_Read(w wire.Value) (*Point, error) {
 //   }
 //   return &v, nil
 func (v *Edge) FromWire(w wire.Value) error {
-	var err error
 
 	startPointIsSet := false
 	endPointIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -1266,7 +1276,12 @@ func (v *Edge) FromWire(w wire.Value) error {
 				endPointIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !startPointIsSet {
 		return errors.New("field StartPoint of Edge is required")
@@ -1401,10 +1416,16 @@ func (v *EmptyStruct) ToWire() (wire.Value, error) {
 //   return &v, nil
 func (v *EmptyStruct) FromWire(w wire.Value) error {
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -1519,12 +1540,12 @@ func _Size_Read(w wire.Value) (*Size, error) {
 //   }
 //   return &v, nil
 func (v *Frame) FromWire(w wire.Value) error {
-	var err error
 
 	topLeftIsSet := false
 	sizeIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -1543,7 +1564,12 @@ func (v *Frame) FromWire(w wire.Value) error {
 				sizeIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !topLeftIsSet {
 		return errors.New("field TopLeft of Frame is required")
@@ -1729,7 +1755,6 @@ func (v *GoTags) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *GoTags) FromWire(w wire.Value) error {
-	var err error
 
 	FooIsSet := false
 
@@ -1738,7 +1763,8 @@ func (v *GoTags) FromWire(w wire.Value) error {
 
 	FooBarWithRequiredIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -1793,7 +1819,12 @@ func (v *GoTags) FromWire(w wire.Value) error {
 				FooBarWithRequiredIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !FooIsSet {
 		return errors.New("field Foo of GoTags is required")
@@ -2076,11 +2107,11 @@ func _List_Edge_Read(l wire.ValueList) ([]*Edge, error) {
 //   }
 //   return &v, nil
 func (v *Graph) FromWire(w wire.Value) error {
-	var err error
 
 	edgesIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -2091,7 +2122,12 @@ func (v *Graph) FromWire(w wire.Value) error {
 				edgesIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !edgesIsSet {
 		return errors.New("field Edges of Graph is required")
@@ -2287,11 +2323,11 @@ func _List_Read(w wire.Value) (*List, error) {
 //   }
 //   return &v, nil
 func (v *Node) FromWire(w wire.Value) error {
-	var err error
 
 	valueIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TI32 {
@@ -2310,7 +2346,12 @@ func (v *Node) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !valueIsSet {
 		return errors.New("field Value of Node is required")
@@ -2578,9 +2619,9 @@ func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 //   }
 //   return &v, nil
 func (v *NotOmitEmpty) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -2655,7 +2696,12 @@ func (v *NotOmitEmpty) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -2987,12 +3033,12 @@ func (v *Omit) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *Omit) FromWire(w wire.Value) error {
-	var err error
 
 	serializedIsSet := false
 	hiddenIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -3011,7 +3057,12 @@ func (v *Omit) FromWire(w wire.Value) error {
 				hiddenIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !serializedIsSet {
 		return errors.New("field Serialized of Omit is required")
@@ -3147,9 +3198,9 @@ func (v *PersonalInfo) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *PersonalInfo) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TI32 {
@@ -3162,7 +3213,12 @@ func (v *PersonalInfo) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -3292,12 +3348,12 @@ func (v *Point) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *Point) FromWire(w wire.Value) error {
-	var err error
 
 	xIsSet := false
 	yIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TDouble {
@@ -3316,7 +3372,12 @@ func (v *Point) FromWire(w wire.Value) error {
 				yIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !xIsSet {
 		return errors.New("field X of Point is required")
@@ -3518,9 +3579,9 @@ func (v *PrimitiveOptionalStruct) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
@@ -3601,7 +3662,12 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -3998,7 +4064,6 @@ func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
-	var err error
 
 	boolFieldIsSet := false
 	byteFieldIsSet := false
@@ -4009,7 +4074,8 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	stringFieldIsSet := false
 	binaryFieldIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
@@ -4076,7 +4142,12 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 				binaryFieldIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !boolFieldIsSet {
 		return errors.New("field BoolField of PrimitiveRequiredStruct is required")
@@ -4337,12 +4408,12 @@ func (v *Rename) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *Rename) FromWire(w wire.Value) error {
-	var err error
 
 	DefaultIsSet := false
 	camelCaseIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -4361,7 +4432,12 @@ func (v *Rename) FromWire(w wire.Value) error {
 				camelCaseIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !DefaultIsSet {
 		return errors.New("field Default of Rename is required")
@@ -4506,12 +4582,12 @@ func (v *Size) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *Size) FromWire(w wire.Value) error {
-	var err error
 
 	widthIsSet := false
 	heightIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TDouble {
@@ -4530,7 +4606,12 @@ func (v *Size) FromWire(w wire.Value) error {
 				heightIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !widthIsSet {
 		return errors.New("field Width of Size is required")
@@ -4693,9 +4774,9 @@ func (v *StructLabels) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *StructLabels) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
@@ -4738,7 +4819,12 @@ func (v *StructLabels) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -4964,11 +5050,11 @@ func _PersonalInfo_Read(w wire.Value) (*PersonalInfo, error) {
 //   }
 //   return &v, nil
 func (v *User) FromWire(w wire.Value) error {
-	var err error
 
 	nameIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -4995,7 +5081,12 @@ func (v *User) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !nameIsSet {
 		return errors.New("field Name of User is required")
@@ -5303,12 +5394,12 @@ func (v *ZapOptOutStruct) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *ZapOptOutStruct) FromWire(w wire.Value) error {
-	var err error
 
 	nameIsSet := false
 	optoutIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -5327,7 +5418,12 @@ func (v *ZapOptOutStruct) FromWire(w wire.Value) error {
 				optoutIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !nameIsSet {
 		return errors.New("field Name of ZapOptOutStruct is required")

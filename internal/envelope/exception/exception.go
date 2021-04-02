@@ -396,9 +396,9 @@ func _ExceptionType_Read(w wire.Value) (ExceptionType, error) {
 //   }
 //   return &v, nil
 func (v *TApplicationException) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -421,7 +421,12 @@ func (v *TApplicationException) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }

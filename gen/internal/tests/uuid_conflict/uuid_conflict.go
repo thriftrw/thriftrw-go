@@ -127,12 +127,12 @@ func _UUID_1_Read(w wire.Value) (*typedefs.UUID, error) {
 //   }
 //   return &v, nil
 func (v *UUIDConflict) FromWire(w wire.Value) error {
-	var err error
 
 	localUUIDIsSet := false
 	importedUUIDIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -151,7 +151,12 @@ func (v *UUIDConflict) FromWire(w wire.Value) error {
 				importedUUIDIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !localUUIDIsSet {
 		return errors.New("field LocalUUID of UUIDConflict is required")

@@ -97,9 +97,9 @@ func (v *AccessorConflict) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *AccessorConflict) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -132,7 +132,12 @@ func (v *AccessorConflict) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -334,9 +339,9 @@ func (v *AccessorNoConflict) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *AccessorNoConflict) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
@@ -359,7 +364,12 @@ func (v *AccessorNoConflict) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -923,9 +933,9 @@ func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 //   }
 //   return &v, nil
 func (v *PrimitiveContainers) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TList {
@@ -952,7 +962,12 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	return nil
 }
@@ -1210,12 +1225,12 @@ func (v *StructCollision) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *StructCollision) FromWire(w wire.Value) error {
-	var err error
 
 	collisionFieldIsSet := false
 	collision_fieldIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
@@ -1234,7 +1249,12 @@ func (v *StructCollision) FromWire(w wire.Value) error {
 				collision_fieldIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !collisionFieldIsSet {
 		return errors.New("field CollisionField of StructCollision is required")
@@ -1383,9 +1403,9 @@ func (v *UnionCollision) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *UnionCollision) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
@@ -1408,7 +1428,12 @@ func (v *UnionCollision) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	count := 0
 	if v.CollisionField != nil {
@@ -1591,9 +1616,9 @@ func _StructCollision_Read(w wire.Value) (*StructCollision2, error) {
 //   }
 //   return &v, nil
 func (v *WithDefault) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
@@ -1604,7 +1629,12 @@ func (v *WithDefault) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if v.Pouet == nil {
 		v.Pouet = &StructCollision2{
@@ -1963,12 +1993,12 @@ func (v *StructCollision2) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *StructCollision2) FromWire(w wire.Value) error {
-	var err error
 
 	collisionFieldIsSet := false
 	collision_fieldIsSet := false
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
@@ -1987,7 +2017,12 @@ func (v *StructCollision2) FromWire(w wire.Value) error {
 				collision_fieldIsSet = true
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	if !collisionFieldIsSet {
 		return errors.New("field CollisionField of StructCollision2 is required")
@@ -2136,9 +2171,9 @@ func (v *UnionCollision2) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *UnionCollision2) FromWire(w wire.Value) error {
-	var err error
 
-	for _, field := range w.GetStruct().Fields {
+	fields := w.GetFieldList()
+	err := fields.ForEach(func(field wire.Field) (err error) {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
@@ -2161,7 +2196,12 @@ func (v *UnionCollision2) FromWire(w wire.Value) error {
 
 			}
 		}
+		return nil
+	})
+	if err != nil {
+		return err
 	}
+	fields.Close()
 
 	count := 0
 	if v.CollisionField != nil {
