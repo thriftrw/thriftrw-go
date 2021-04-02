@@ -33,6 +33,7 @@ var writerPool = sync.Pool{New: func() interface{} {
 	writer := &Writer{}
 	writer.writeValue = writer.WriteValue
 	writer.writeMapItem = writer.realWriteMapItem
+	writer.writeField = writer.realWriteField
 	return writer
 }}
 
@@ -51,6 +52,7 @@ type Writer struct {
 	// reuse the closure. So we create that bound reference in advance when
 	// the writer is created.
 	writeValue   func(wire.Value) error
+	writeField   func(wire.Field) error
 	writeMapItem func(wire.MapItem) error
 }
 
@@ -108,7 +110,7 @@ func (bw *Writer) writeString(s string) error {
 	return err
 }
 
-func (bw *Writer) writeField(f wire.Field) error {
+func (bw *Writer) realWriteField(f wire.Field) error {
 	// type:1
 	if err := bw.writeByte(byte(f.Value.Type())); err != nil {
 		return err
@@ -132,12 +134,14 @@ func (bw *Writer) writeField(f wire.Field) error {
 	return nil
 }
 
-func (bw *Writer) writeStruct(s wire.Struct) error {
-	for _, f := range s.Fields {
-		if err := bw.writeField(f); err != nil {
-			return err
-		}
+func (bw *Writer) writeFieldList(fs wire.FieldList) error {
+	if err := fs.ForEach(bw.writeField); err != nil {
+		return err
 	}
+	// TODO(abg): It looks like write* functions for lazy collections do
+	// not call Close. This has not been an issue during serialization
+	// because the struct-based wrapper implementations don't have any
+	// resources to free up, but we should still call close.
 	return bw.writeByte(0) // end struct
 }
 
@@ -229,7 +233,7 @@ func (bw *Writer) WriteValue(v wire.Value) error {
 		return bw.write(b)
 
 	case wire.TStruct:
-		return bw.writeStruct(v.GetStruct())
+		return bw.writeFieldList(v.GetFieldList())
 
 	case wire.TMap:
 		return bw.writeMap(v.GetMap())
