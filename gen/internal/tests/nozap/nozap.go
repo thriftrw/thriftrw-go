@@ -299,98 +299,128 @@ func (_Map_I64_Double_MapItemList) Close() {}
 //     return err
 //   }
 func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_PrimitiveRequiredStruct)(v)), nil
+}
+
+type _fieldList_PrimitiveRequiredStruct PrimitiveRequiredStruct
+
+func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [11]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*PrimitiveRequiredStruct)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueBool(v.BoolField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueI8(v.ByteField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueI16(v.Int16Field), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 3, Value: w}
+	if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueI32(v.Int32Field), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 4, Value: w}
+	if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueI64(v.Int64Field), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 5, Value: w}
+	if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueDouble(v.DoubleField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 6, Value: w}
+	if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueString(v.StringField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 7, Value: w}
+	if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.BinaryField == nil {
-		return w, errors.New("field BinaryField of PrimitiveRequiredStruct is required")
+		return errors.New("field BinaryField of PrimitiveRequiredStruct is required")
 	}
 	w, err = wire.NewValueBinary(v.BinaryField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 8, Value: w}
+	if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueList(_List_String_ValueList(v.ListOfStrings)), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 9, Value: w}
+	if err := writeField(wire.Field{ID: 9, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.SetOfInts == nil {
-		return w, errors.New("field SetOfInts of PrimitiveRequiredStruct is required")
+		return errors.New("field SetOfInts of PrimitiveRequiredStruct is required")
 	}
 	w, err = wire.NewValueSet(_Set_I32_mapType_ValueList(v.SetOfInts)), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 10, Value: w}
+	if err := writeField(wire.Field{ID: 10, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.MapOfIntsToDoubles == nil {
-		return w, errors.New("field MapOfIntsToDoubles of PrimitiveRequiredStruct is required")
+		return errors.New("field MapOfIntsToDoubles of PrimitiveRequiredStruct is required")
 	}
 	w, err = wire.NewValueMap(_Map_I64_Double_MapItemList(v.MapOfIntsToDoubles)), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 11, Value: w}
+	if err := writeField(wire.Field{ID: 11, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_PrimitiveRequiredStruct) Close() {}
 
 func _List_String_Read(l wire.ValueList) ([]string, error) {
 	if l.ValueType() != wire.TBinary {

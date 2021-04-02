@@ -35,30 +35,42 @@ type DoesNotExistException struct {
 //     return err
 //   }
 func (v *DoesNotExistException) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_DoesNotExistException)(v)), nil
+}
+
+type _fieldList_DoesNotExistException DoesNotExistException
+
+func (fl *_fieldList_DoesNotExistException) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*DoesNotExistException)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueString(v.Key), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.Error2 != nil {
 		w, err = wire.NewValueString(*(v.Error2)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_DoesNotExistException) Close() {}
 
 // FromWire deserializes a DoesNotExistException struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -235,30 +247,42 @@ type DoesNotExistException2 struct {
 //     return err
 //   }
 func (v *DoesNotExistException2) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_DoesNotExistException2)(v)), nil
+}
+
+type _fieldList_DoesNotExistException2 DoesNotExistException2
+
+func (fl *_fieldList_DoesNotExistException2) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*DoesNotExistException2)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueString(v.Key), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.Error2 != nil {
 		w, err = wire.NewValueString(*(v.Error2)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_DoesNotExistException2) Close() {}
 
 // FromWire deserializes a DoesNotExistException2 struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -422,13 +446,17 @@ type EmptyException struct {
 //     return err
 //   }
 func (v *EmptyException) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_EmptyException)(v)), nil
 }
+
+type _fieldList_EmptyException EmptyException
+
+func (fl *_fieldList_EmptyException) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_EmptyException) Close() {}
 
 // FromWire deserializes a EmptyException struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained

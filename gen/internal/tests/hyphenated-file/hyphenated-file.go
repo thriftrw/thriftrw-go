@@ -34,25 +34,35 @@ type DocumentStruct struct {
 //     return err
 //   }
 func (v *DocumentStruct) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_DocumentStruct)(v)), nil
+}
+
+type _fieldList_DocumentStruct DocumentStruct
+
+func (fl *_fieldList_DocumentStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*DocumentStruct)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Second == nil {
-		return w, errors.New("field Second of DocumentStruct is required")
+		return errors.New("field Second of DocumentStruct is required")
 	}
 	w, err = v.Second.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_DocumentStruct) Close() {}
 
 func _Second_Read(w wire.Value) (*non_hyphenated.Second, error) {
 	var v non_hyphenated.Second

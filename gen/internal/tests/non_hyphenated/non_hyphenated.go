@@ -30,13 +30,17 @@ type First struct {
 //     return err
 //   }
 func (v *First) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_First)(v)), nil
 }
+
+type _fieldList_First First
+
+func (fl *_fieldList_First) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_First) Close() {}
 
 // FromWire deserializes a First struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -126,13 +130,17 @@ type Second struct {
 //     return err
 //   }
 func (v *Second) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_Second)(v)), nil
 }
+
+type _fieldList_Second Second
+
+func (fl *_fieldList_Second) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_Second) Close() {}
 
 // FromWire deserializes a Second struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained

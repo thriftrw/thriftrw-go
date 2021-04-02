@@ -299,19 +299,24 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 		//     return err
 		//   }
 		func (<$v> *<.Name>) ToWire() (<$wire>.Value, error) {
-    		<$fields := newVar "fields" ->
-    		<- $i := newVar "i" ->
+			return <$wire>.NewValueFieldList((*_fieldList_<.Name>)(<$v>)), nil
+		}
+
+		type _fieldList_<.Name> <.Name>
+
+		<$fl := newVar "fl">
+		func (<$fl> *_fieldList_<.Name>) ForEach(writeField func(<$wire>.Field) error) error {
+			<- $i := newVar "i" ->
 			<- $wVal := newVar "w" ->
 
-			var (
-				<$fields> [<len .Fields>]<$wire>.Field
-				<$i> int = 0
-				<if len .Fields ->
+			<if len .Fields ->
+				var (
+					<$i> int = 0
+					<$v> = (*<.Name>)(<$fl>)
 					<$wVal> <$wire>.Value
 					err error
-				<- end>
-			)
-
+				)
+			<- end>
 			<$structName := .Name>
 			<range .Fields>
 				<- $fname := goName . ->
@@ -319,14 +324,16 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 				<- if .Required ->
 					<- if and (not (isPrimitiveType .Type)) (not (isListType .Type)) ->
 						if <$f> == nil {
-							return <$wVal>, <import "errors">.New("field <$fname> of <$structName> is required")
+							return <import "errors">.New("field <$fname> of <$structName> is required")
 						}
 					<- end>
 						<$wVal>, err = <toWire .Type $f>
 						if err != nil {
-							return <$wVal>, err
+							return err
 						}
-						<$fields>[<$i>] = <$wire>.Field{ID: <.ID>, Value: <$wVal>}
+						if err := writeField(<$wire>.Field{ID: <.ID>, Value: <$wVal>}); err != nil {
+							return err
+						}
 						<$i>++
 				<- else ->
 					<- if isNotNil .Default ->
@@ -342,9 +349,11 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 							<$wVal>, err = <toWirePtr .Type $f>
 					<- end>
 							if err != nil {
-								return <$wVal>, err
+								return err
 							}
-							<$fields>[<$i>] = <$wire>.Field{ID: <.ID>, Value: <$wVal>}
+							if err := writeField(<$wire>.Field{ID: <.ID>, Value: <$wVal>}); err != nil {
+								return err
+							}
 							<$i>++
 						}
 				<- end>
@@ -354,17 +363,19 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 				<$fmt := import "fmt">
 				<if .AllowEmptyUnion>
 					if <$i> > 1 {
-						return <$wire>.Value{}, <$fmt>.Errorf("<.Name> should have at most one field: got %v fields", <$i>)
+						return <$fmt>.Errorf("<.Name> should have at most one field: got %v fields", <$i>)
 					}
 				<else>
 					if <$i> != 1 {
-						return <$wire>.Value{}, <$fmt>.Errorf("<.Name> should have exactly one field: got %v fields", <$i>)
+						return <$fmt>.Errorf("<.Name> should have exactly one field: got %v fields", <$i>)
 					}
 				<end>
 			<end>
 
-			return <$wire>.NewValueStruct(<$wire>.Struct{Fields: <$fields>[:<$i>]}), nil
+			return nil
 		}
+
+		func (<$fl> *_fieldList_<.Name>) Close() {}
 		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))
 }
 

@@ -345,32 +345,44 @@ type TApplicationException struct {
 //     return err
 //   }
 func (v *TApplicationException) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_TApplicationException)(v)), nil
+}
+
+type _fieldList_TApplicationException TApplicationException
+
+func (fl *_fieldList_TApplicationException) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*TApplicationException)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Message != nil {
 		w, err = wire.NewValueString(*(v.Message)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.Type != nil {
 		w, err = v.Type.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_TApplicationException) Close() {}
 
 func _ExceptionType_Read(w wire.Value) (ExceptionType, error) {
 	var v ExceptionType

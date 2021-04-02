@@ -1558,24 +1558,34 @@ type StructWithOptionalEnum struct {
 //     return err
 //   }
 func (v *StructWithOptionalEnum) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_StructWithOptionalEnum)(v)), nil
+}
+
+type _fieldList_StructWithOptionalEnum StructWithOptionalEnum
+
+func (fl *_fieldList_StructWithOptionalEnum) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*StructWithOptionalEnum)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.E != nil {
 		w, err = v.E.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_StructWithOptionalEnum) Close() {}
 
 func _EnumDefault_Read(w wire.Value) (EnumDefault, error) {
 	var v EnumDefault

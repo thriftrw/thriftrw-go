@@ -38,31 +38,43 @@ type ConflictingNamesSetValueArgs struct {
 //     return err
 //   }
 func (v *ConflictingNamesSetValueArgs) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_ConflictingNamesSetValueArgs)(v)), nil
+}
+
+type _fieldList_ConflictingNamesSetValueArgs ConflictingNamesSetValueArgs
+
+func (fl *_fieldList_ConflictingNamesSetValueArgs) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*ConflictingNamesSetValueArgs)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueString(v.Key), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.Value == nil {
-		return w, errors.New("field Value of ConflictingNamesSetValueArgs is required")
+		return errors.New("field Value of ConflictingNamesSetValueArgs is required")
 	}
 	w, err = wire.NewValueBinary(v.Value), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_ConflictingNamesSetValueArgs) Close() {}
 
 // FromWire deserializes a ConflictingNamesSetValueArgs struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -215,24 +227,34 @@ type InternalError struct {
 //     return err
 //   }
 func (v *InternalError) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_InternalError)(v)), nil
+}
+
+type _fieldList_InternalError InternalError
+
+func (fl *_fieldList_InternalError) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*InternalError)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Message != nil {
 		w, err = wire.NewValueString(*(v.Message)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_InternalError) Close() {}
 
 // FromWire deserializes a InternalError struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -431,13 +453,17 @@ type Cache_Clear_Args struct {
 //     return err
 //   }
 func (v *Cache_Clear_Args) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_Cache_Clear_Args)(v)), nil
 }
+
+type _fieldList_Cache_Clear_Args Cache_Clear_Args
+
+func (fl *_fieldList_Cache_Clear_Args) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_Cache_Clear_Args) Close() {}
 
 // FromWire deserializes a Cache_Clear_Args struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -562,24 +588,34 @@ type Cache_ClearAfter_Args struct {
 //     return err
 //   }
 func (v *Cache_ClearAfter_Args) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Cache_ClearAfter_Args)(v)), nil
+}
+
+type _fieldList_Cache_ClearAfter_Args Cache_ClearAfter_Args
+
+func (fl *_fieldList_Cache_ClearAfter_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Cache_ClearAfter_Args)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.DurationMS != nil {
 		w, err = wire.NewValueI64(*(v.DurationMS)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Cache_ClearAfter_Args) Close() {}
 
 // FromWire deserializes a Cache_ClearAfter_Args struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -755,24 +791,34 @@ type ConflictingNames_SetValue_Args struct {
 //     return err
 //   }
 func (v *ConflictingNames_SetValue_Args) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_ConflictingNames_SetValue_Args)(v)), nil
+}
+
+type _fieldList_ConflictingNames_SetValue_Args ConflictingNames_SetValue_Args
+
+func (fl *_fieldList_ConflictingNames_SetValue_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*ConflictingNames_SetValue_Args)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Request != nil {
 		w, err = v.Request.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_ConflictingNames_SetValue_Args) Close() {}
 
 func _ConflictingNamesSetValueArgs_Read(w wire.Value) (*ConflictingNamesSetValueArgs, error) {
 	var v ConflictingNamesSetValueArgs
@@ -994,13 +1040,17 @@ type ConflictingNames_SetValue_Result struct {
 //     return err
 //   }
 func (v *ConflictingNames_SetValue_Result) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_ConflictingNames_SetValue_Result)(v)), nil
 }
+
+type _fieldList_ConflictingNames_SetValue_Result ConflictingNames_SetValue_Result
+
+func (fl *_fieldList_ConflictingNames_SetValue_Result) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_ConflictingNames_SetValue_Result) Close() {}
 
 // FromWire deserializes a ConflictingNames_SetValue_Result struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -1109,24 +1159,34 @@ type KeyValue_DeleteValue_Args struct {
 //     return err
 //   }
 func (v *KeyValue_DeleteValue_Args) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_KeyValue_DeleteValue_Args)(v)), nil
+}
+
+type _fieldList_KeyValue_DeleteValue_Args KeyValue_DeleteValue_Args
+
+func (fl *_fieldList_KeyValue_DeleteValue_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*KeyValue_DeleteValue_Args)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Key != nil {
 		w, err = v.Key.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_KeyValue_DeleteValue_Args) Close() {}
 
 func _Key_Read(w wire.Value) (Key, error) {
 	var x Key
@@ -1388,36 +1448,48 @@ type KeyValue_DeleteValue_Result struct {
 //     return err
 //   }
 func (v *KeyValue_DeleteValue_Result) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_KeyValue_DeleteValue_Result)(v)), nil
+}
+
+type _fieldList_KeyValue_DeleteValue_Result KeyValue_DeleteValue_Result
+
+func (fl *_fieldList_KeyValue_DeleteValue_Result) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*KeyValue_DeleteValue_Result)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.DoesNotExist != nil {
 		w, err = v.DoesNotExist.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.InternalError != nil {
 		w, err = v.InternalError.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
 	if i > 1 {
-		return wire.Value{}, fmt.Errorf("KeyValue_DeleteValue_Result should have at most one field: got %v fields", i)
+		return fmt.Errorf("KeyValue_DeleteValue_Result should have at most one field: got %v fields", i)
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_KeyValue_DeleteValue_Result) Close() {}
 
 func _DoesNotExistException_Read(w wire.Value) (*exceptions.DoesNotExistException, error) {
 	var v exceptions.DoesNotExistException
@@ -1641,24 +1713,34 @@ func (_List_Key_ValueList) Close() {}
 //     return err
 //   }
 func (v *KeyValue_GetManyValues_Args) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_KeyValue_GetManyValues_Args)(v)), nil
+}
+
+type _fieldList_KeyValue_GetManyValues_Args KeyValue_GetManyValues_Args
+
+func (fl *_fieldList_KeyValue_GetManyValues_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*KeyValue_GetManyValues_Args)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Range != nil {
 		w, err = wire.NewValueList(_List_Key_ValueList(v.Range)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_KeyValue_GetManyValues_Args) Close() {}
 
 func _List_Key_Read(l wire.ValueList) ([]Key, error) {
 	if l.ValueType() != wire.TBinary {
@@ -1972,36 +2054,48 @@ func (_List_ArbitraryValue_ValueList) Close() {}
 //     return err
 //   }
 func (v *KeyValue_GetManyValues_Result) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_KeyValue_GetManyValues_Result)(v)), nil
+}
+
+type _fieldList_KeyValue_GetManyValues_Result KeyValue_GetManyValues_Result
+
+func (fl *_fieldList_KeyValue_GetManyValues_Result) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*KeyValue_GetManyValues_Result)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Success != nil {
 		w, err = wire.NewValueList(_List_ArbitraryValue_ValueList(v.Success)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 0, Value: w}
+		if err := writeField(wire.Field{ID: 0, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.DoesNotExist != nil {
 		w, err = v.DoesNotExist.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
 	if i != 1 {
-		return wire.Value{}, fmt.Errorf("KeyValue_GetManyValues_Result should have exactly one field: got %v fields", i)
+		return fmt.Errorf("KeyValue_GetManyValues_Result should have exactly one field: got %v fields", i)
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_KeyValue_GetManyValues_Result) Close() {}
 
 func _ArbitraryValue_Read(w wire.Value) (*unions.ArbitraryValue, error) {
 	var v unions.ArbitraryValue
@@ -2237,24 +2331,34 @@ type KeyValue_GetValue_Args struct {
 //     return err
 //   }
 func (v *KeyValue_GetValue_Args) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_KeyValue_GetValue_Args)(v)), nil
+}
+
+type _fieldList_KeyValue_GetValue_Args KeyValue_GetValue_Args
+
+func (fl *_fieldList_KeyValue_GetValue_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*KeyValue_GetValue_Args)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Key != nil {
 		w, err = v.Key.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_KeyValue_GetValue_Args) Close() {}
 
 // FromWire deserializes a KeyValue_GetValue_Args struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -2497,36 +2601,48 @@ type KeyValue_GetValue_Result struct {
 //     return err
 //   }
 func (v *KeyValue_GetValue_Result) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_KeyValue_GetValue_Result)(v)), nil
+}
+
+type _fieldList_KeyValue_GetValue_Result KeyValue_GetValue_Result
+
+func (fl *_fieldList_KeyValue_GetValue_Result) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*KeyValue_GetValue_Result)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Success != nil {
 		w, err = v.Success.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 0, Value: w}
+		if err := writeField(wire.Field{ID: 0, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.DoesNotExist != nil {
 		w, err = v.DoesNotExist.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
 	if i != 1 {
-		return wire.Value{}, fmt.Errorf("KeyValue_GetValue_Result should have exactly one field: got %v fields", i)
+		return fmt.Errorf("KeyValue_GetValue_Result should have exactly one field: got %v fields", i)
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_KeyValue_GetValue_Result) Close() {}
 
 // FromWire deserializes a KeyValue_GetValue_Result struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -2713,32 +2829,44 @@ type KeyValue_SetValue_Args struct {
 //     return err
 //   }
 func (v *KeyValue_SetValue_Args) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_KeyValue_SetValue_Args)(v)), nil
+}
+
+type _fieldList_KeyValue_SetValue_Args KeyValue_SetValue_Args
+
+func (fl *_fieldList_KeyValue_SetValue_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*KeyValue_SetValue_Args)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Key != nil {
 		w, err = v.Key.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.Value != nil {
 		w, err = v.Value.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_KeyValue_SetValue_Args) Close() {}
 
 // FromWire deserializes a KeyValue_SetValue_Args struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -2992,13 +3120,17 @@ type KeyValue_SetValue_Result struct {
 //     return err
 //   }
 func (v *KeyValue_SetValue_Result) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_KeyValue_SetValue_Result)(v)), nil
 }
+
+type _fieldList_KeyValue_SetValue_Result KeyValue_SetValue_Result
+
+func (fl *_fieldList_KeyValue_SetValue_Result) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_KeyValue_SetValue_Result) Close() {}
 
 // FromWire deserializes a KeyValue_SetValue_Result struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -3112,31 +3244,43 @@ type KeyValue_SetValueV2_Args struct {
 //     return err
 //   }
 func (v *KeyValue_SetValueV2_Args) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_KeyValue_SetValueV2_Args)(v)), nil
+}
+
+type _fieldList_KeyValue_SetValueV2_Args KeyValue_SetValueV2_Args
+
+func (fl *_fieldList_KeyValue_SetValueV2_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*KeyValue_SetValueV2_Args)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = v.Key.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.Value == nil {
-		return w, errors.New("field Value of KeyValue_SetValueV2_Args is required")
+		return errors.New("field Value of KeyValue_SetValueV2_Args is required")
 	}
 	w, err = v.Value.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_KeyValue_SetValueV2_Args) Close() {}
 
 // FromWire deserializes a KeyValue_SetValueV2_Args struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -3384,13 +3528,17 @@ type KeyValue_SetValueV2_Result struct {
 //     return err
 //   }
 func (v *KeyValue_SetValueV2_Result) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_KeyValue_SetValueV2_Result)(v)), nil
 }
+
+type _fieldList_KeyValue_SetValueV2_Result KeyValue_SetValueV2_Result
+
+func (fl *_fieldList_KeyValue_SetValueV2_Result) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_KeyValue_SetValueV2_Result) Close() {}
 
 // FromWire deserializes a KeyValue_SetValueV2_Result struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -3498,13 +3646,17 @@ type KeyValue_Size_Args struct {
 //     return err
 //   }
 func (v *KeyValue_Size_Args) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_KeyValue_Size_Args)(v)), nil
 }
+
+type _fieldList_KeyValue_Size_Args KeyValue_Size_Args
+
+func (fl *_fieldList_KeyValue_Size_Args) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_KeyValue_Size_Args) Close() {}
 
 // FromWire deserializes a KeyValue_Size_Args struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -3691,28 +3843,38 @@ type KeyValue_Size_Result struct {
 //     return err
 //   }
 func (v *KeyValue_Size_Result) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_KeyValue_Size_Result)(v)), nil
+}
+
+type _fieldList_KeyValue_Size_Result KeyValue_Size_Result
+
+func (fl *_fieldList_KeyValue_Size_Result) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*KeyValue_Size_Result)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Success != nil {
 		w, err = wire.NewValueI64(*(v.Success)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 0, Value: w}
+		if err := writeField(wire.Field{ID: 0, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
 	if i != 1 {
-		return wire.Value{}, fmt.Errorf("KeyValue_Size_Result should have exactly one field: got %v fields", i)
+		return fmt.Errorf("KeyValue_Size_Result should have exactly one field: got %v fields", i)
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_KeyValue_Size_Result) Close() {}
 
 // FromWire deserializes a KeyValue_Size_Result struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -3863,13 +4025,17 @@ type NonStandardServiceName_NonStandardFunctionName_Args struct {
 //     return err
 //   }
 func (v *NonStandardServiceName_NonStandardFunctionName_Args) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_NonStandardServiceName_NonStandardFunctionName_Args)(v)), nil
 }
+
+type _fieldList_NonStandardServiceName_NonStandardFunctionName_Args NonStandardServiceName_NonStandardFunctionName_Args
+
+func (fl *_fieldList_NonStandardServiceName_NonStandardFunctionName_Args) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_NonStandardServiceName_NonStandardFunctionName_Args) Close() {}
 
 // FromWire deserializes a NonStandardServiceName_NonStandardFunctionName_Args struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -4046,13 +4212,17 @@ type NonStandardServiceName_NonStandardFunctionName_Result struct {
 //     return err
 //   }
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_NonStandardServiceName_NonStandardFunctionName_Result)(v)), nil
 }
+
+type _fieldList_NonStandardServiceName_NonStandardFunctionName_Result NonStandardServiceName_NonStandardFunctionName_Result
+
+func (fl *_fieldList_NonStandardServiceName_NonStandardFunctionName_Result) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_NonStandardServiceName_NonStandardFunctionName_Result) Close() {}
 
 // FromWire deserializes a NonStandardServiceName_NonStandardFunctionName_Result struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained

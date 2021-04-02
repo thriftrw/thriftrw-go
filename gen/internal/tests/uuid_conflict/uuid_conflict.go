@@ -71,31 +71,43 @@ type UUIDConflict struct {
 //     return err
 //   }
 func (v *UUIDConflict) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_UUIDConflict)(v)), nil
+}
+
+type _fieldList_UUIDConflict UUIDConflict
+
+func (fl *_fieldList_UUIDConflict) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*UUIDConflict)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = v.LocalUUID.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.ImportedUUID == nil {
-		return w, errors.New("field ImportedUUID of UUIDConflict is required")
+		return errors.New("field ImportedUUID of UUIDConflict is required")
 	}
 	w, err = v.ImportedUUID.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_UUIDConflict) Close() {}
 
 func _UUID_Read(w wire.Value) (UUID, error) {
 	var x UUID

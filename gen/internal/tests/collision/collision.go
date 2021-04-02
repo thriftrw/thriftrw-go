@@ -44,40 +44,54 @@ type AccessorConflict struct {
 //     return err
 //   }
 func (v *AccessorConflict) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_AccessorConflict)(v)), nil
+}
+
+type _fieldList_AccessorConflict AccessorConflict
+
+func (fl *_fieldList_AccessorConflict) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [3]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*AccessorConflict)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Name != nil {
 		w, err = wire.NewValueString(*(v.Name)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.GetName2 != nil {
 		w, err = wire.NewValueString(*(v.GetName2)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.IsSetName2 != nil {
 		w, err = wire.NewValueBool(*(v.IsSetName2)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 3, Value: w}
+		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_AccessorConflict) Close() {}
 
 // FromWire deserializes a AccessorConflict struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -294,32 +308,44 @@ type AccessorNoConflict struct {
 //     return err
 //   }
 func (v *AccessorNoConflict) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_AccessorNoConflict)(v)), nil
+}
+
+type _fieldList_AccessorNoConflict AccessorNoConflict
+
+func (fl *_fieldList_AccessorNoConflict) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*AccessorNoConflict)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Getname != nil {
 		w, err = wire.NewValueString(*(v.Getname)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.GetName != nil {
 		w, err = wire.NewValueString(*(v.GetName)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_AccessorNoConflict) Close() {}
 
 // FromWire deserializes a AccessorNoConflict struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -815,40 +841,54 @@ func (_Map_String_String_MapItemList) Close() {}
 //     return err
 //   }
 func (v *PrimitiveContainers) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_PrimitiveContainers)(v)), nil
+}
+
+type _fieldList_PrimitiveContainers PrimitiveContainers
+
+func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [3]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*PrimitiveContainers)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.A != nil {
 		w, err = wire.NewValueList(_List_String_ValueList(v.A)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.B != nil {
 		w, err = wire.NewValueSet(_Set_String_mapType_ValueList(v.B)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 3, Value: w}
+		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.C != nil {
 		w, err = wire.NewValueMap(_Map_String_String_MapItemList(v.C)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 5, Value: w}
+		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_PrimitiveContainers) Close() {}
 
 func _List_String_Read(l wire.ValueList) ([]string, error) {
 	if l.ValueType() != wire.TBinary {
@@ -1183,29 +1223,41 @@ type StructCollision struct {
 //     return err
 //   }
 func (v *StructCollision) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_StructCollision)(v)), nil
+}
+
+type _fieldList_StructCollision StructCollision
+
+func (fl *_fieldList_StructCollision) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*StructCollision)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueBool(v.CollisionField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueString(v.CollisionField2), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_StructCollision) Close() {}
 
 // FromWire deserializes a StructCollision struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -1354,36 +1406,48 @@ type UnionCollision struct {
 //     return err
 //   }
 func (v *UnionCollision) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_UnionCollision)(v)), nil
+}
+
+type _fieldList_UnionCollision UnionCollision
+
+func (fl *_fieldList_UnionCollision) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*UnionCollision)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.CollisionField != nil {
 		w, err = wire.NewValueBool(*(v.CollisionField)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.CollisionField2 != nil {
 		w, err = wire.NewValueString(*(v.CollisionField2)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
 	if i != 1 {
-		return wire.Value{}, fmt.Errorf("UnionCollision should have exactly one field: got %v fields", i)
+		return fmt.Errorf("UnionCollision should have exactly one field: got %v fields", i)
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_UnionCollision) Close() {}
 
 // FromWire deserializes a UnionCollision struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -1566,11 +1630,17 @@ func Default_WithDefault() *WithDefault {
 //     return err
 //   }
 func (v *WithDefault) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_WithDefault)(v)), nil
+}
+
+type _fieldList_WithDefault WithDefault
+
+func (fl *_fieldList_WithDefault) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*WithDefault)(fl)
+		w   wire.Value
+		err error
 	)
 
 	vPouet := v.Pouet
@@ -1583,14 +1653,18 @@ func (v *WithDefault) ToWire() (wire.Value, error) {
 	{
 		w, err = vPouet.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_WithDefault) Close() {}
 
 func _StructCollision_Read(w wire.Value) (*StructCollision2, error) {
 	var v StructCollision2
@@ -1951,29 +2025,41 @@ type StructCollision2 struct {
 //     return err
 //   }
 func (v *StructCollision2) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_StructCollision2)(v)), nil
+}
+
+type _fieldList_StructCollision2 StructCollision2
+
+func (fl *_fieldList_StructCollision2) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*StructCollision2)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueBool(v.CollisionField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueString(v.CollisionField2), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_StructCollision2) Close() {}
 
 // FromWire deserializes a StructCollision2 struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -2122,36 +2208,48 @@ type UnionCollision2 struct {
 //     return err
 //   }
 func (v *UnionCollision2) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_UnionCollision2)(v)), nil
+}
+
+type _fieldList_UnionCollision2 UnionCollision2
+
+func (fl *_fieldList_UnionCollision2) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*UnionCollision2)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.CollisionField != nil {
 		w, err = wire.NewValueBool(*(v.CollisionField)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.CollisionField2 != nil {
 		w, err = wire.NewValueString(*(v.CollisionField2)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
 	if i != 1 {
-		return wire.Value{}, fmt.Errorf("UnionCollision2 should have exactly one field: got %v fields", i)
+		return fmt.Errorf("UnionCollision2 should have exactly one field: got %v fields", i)
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_UnionCollision2) Close() {}
 
 // FromWire deserializes a UnionCollision2 struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained

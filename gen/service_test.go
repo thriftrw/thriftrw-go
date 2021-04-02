@@ -31,6 +31,7 @@ import (
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	tv "go.uber.org/thriftrw/gen/internal/tests/services"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
+	"go.uber.org/thriftrw/internal/envelope/envelopetest"
 	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
@@ -550,7 +551,7 @@ func TestServiceTypesEnveloper(t *testing.T) {
 		expected.SeqID = 1234
 		expected.Value, err = tt.s.ToWire()
 		if assert.NoError(t, err, "Error serializing %v", tt.s) {
-			assert.Equal(t, expected, envelope, "Envelope mismatch for %v", tt)
+			envelopetest.AssertEqual(t, expected, envelope, "envelope mismatch for %v", tt)
 		}
 	}
 }

@@ -114,60 +114,78 @@ func (_Map_String_ArbitraryValue_MapItemList) Close() {}
 //     return err
 //   }
 func (v *ArbitraryValue) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_ArbitraryValue)(v)), nil
+}
+
+type _fieldList_ArbitraryValue ArbitraryValue
+
+func (fl *_fieldList_ArbitraryValue) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [5]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*ArbitraryValue)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.BoolValue != nil {
 		w, err = wire.NewValueBool(*(v.BoolValue)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.Int64Value != nil {
 		w, err = wire.NewValueI64(*(v.Int64Value)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.StringValue != nil {
 		w, err = wire.NewValueString(*(v.StringValue)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 3, Value: w}
+		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.ListValue != nil {
 		w, err = wire.NewValueList(_List_ArbitraryValue_ValueList(v.ListValue)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 4, Value: w}
+		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.MapValue != nil {
 		w, err = wire.NewValueMap(_Map_String_ArbitraryValue_MapItemList(v.MapValue)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 5, Value: w}
+		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
 	if i != 1 {
-		return wire.Value{}, fmt.Errorf("ArbitraryValue should have exactly one field: got %v fields", i)
+		return fmt.Errorf("ArbitraryValue should have exactly one field: got %v fields", i)
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_ArbitraryValue) Close() {}
 
 func _ArbitraryValue_Read(w wire.Value) (*ArbitraryValue, error) {
 	var v ArbitraryValue
@@ -586,36 +604,48 @@ type Document struct {
 //     return err
 //   }
 func (v *Document) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Document)(v)), nil
+}
+
+type _fieldList_Document Document
+
+func (fl *_fieldList_Document) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Document)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Pdf != nil {
 		w, err = v.Pdf.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.PlainText != nil {
 		w, err = wire.NewValueString(*(v.PlainText)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
 	if i != 1 {
-		return wire.Value{}, fmt.Errorf("Document should have exactly one field: got %v fields", i)
+		return fmt.Errorf("Document should have exactly one field: got %v fields", i)
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Document) Close() {}
 
 func _PDF_Read(w wire.Value) (typedefs.PDF, error) {
 	var x typedefs.PDF
@@ -790,13 +820,17 @@ type EmptyUnion struct {
 //     return err
 //   }
 func (v *EmptyUnion) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_EmptyUnion)(v)), nil
 }
+
+type _fieldList_EmptyUnion EmptyUnion
+
+func (fl *_fieldList_EmptyUnion) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_EmptyUnion) Close() {}
 
 // FromWire deserializes a EmptyUnion struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained

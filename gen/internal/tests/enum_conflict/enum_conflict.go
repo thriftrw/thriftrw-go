@@ -230,11 +230,17 @@ func Default_Records() *Records {
 //     return err
 //   }
 func (v *Records) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Records)(v)), nil
+}
+
+type _fieldList_Records Records
+
+func (fl *_fieldList_Records) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Records)(fl)
+		w   wire.Value
+		err error
 	)
 
 	vRecordType := v.RecordType
@@ -244,9 +250,11 @@ func (v *Records) ToWire() (wire.Value, error) {
 	{
 		w, err = vRecordType.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vOtherRecordType := v.OtherRecordType
@@ -256,14 +264,18 @@ func (v *Records) ToWire() (wire.Value, error) {
 	{
 		w, err = vOtherRecordType.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Records) Close() {}
 
 func _RecordType_Read(w wire.Value) (RecordType, error) {
 	var v RecordType

@@ -2,6 +2,7 @@ package envelope
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"testing"
 
@@ -112,7 +113,7 @@ func TestServer(t *testing.T) {
 		}
 
 		if tt.wantEnvelope != nil {
-			proto.EXPECT().EncodeEnveloped(*tt.wantEnvelope, gomock.Any()).
+			proto.EXPECT().EncodeEnveloped(matchesEnvelope(*tt.wantEnvelope), gomock.Any()).
 				Do(func(_ wire.Envelope, w io.Writer) {
 					_, err := w.Write([]byte{1, 2, 3})
 					assert.NoError(t, err, tt.desc)
@@ -131,4 +132,24 @@ type handlerFunc func(string, wire.Value) (wire.Value, error)
 
 func (f handlerFunc) Handle(name string, body wire.Value) (wire.Value, error) {
 	return f(name, body)
+}
+
+type matchesEnvelope wire.Envelope
+
+func (m matchesEnvelope) Matches(x interface{}) bool {
+	got, ok := x.(wire.Envelope)
+	if !ok {
+		return false
+	}
+
+	want := wire.Envelope(m)
+	return want.Name == got.Name &&
+		want.SeqID == got.SeqID &&
+		want.Type == got.Type &&
+		wire.ValuesAreEqual(want.Value, got.Value)
+}
+
+// String describes what the matcher matches.
+func (m matchesEnvelope) String() string {
+	return fmt.Sprintf("matches %v", wire.Envelope(m))
 }

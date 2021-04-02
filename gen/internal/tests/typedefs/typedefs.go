@@ -164,11 +164,17 @@ func Default_DefaultPrimitiveTypedef() *DefaultPrimitiveTypedef {
 //     return err
 //   }
 func (v *DefaultPrimitiveTypedef) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_DefaultPrimitiveTypedef)(v)), nil
+}
+
+type _fieldList_DefaultPrimitiveTypedef DefaultPrimitiveTypedef
+
+func (fl *_fieldList_DefaultPrimitiveTypedef) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*DefaultPrimitiveTypedef)(fl)
+		w   wire.Value
+		err error
 	)
 
 	vState := v.State
@@ -178,14 +184,18 @@ func (v *DefaultPrimitiveTypedef) ToWire() (wire.Value, error) {
 	{
 		w, err = vState.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_DefaultPrimitiveTypedef) Close() {}
 
 func _State_Read(w wire.Value) (State, error) {
 	var x State
@@ -536,33 +546,45 @@ type Event struct {
 //     return err
 //   }
 func (v *Event) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Event)(v)), nil
+}
+
+type _fieldList_Event Event
+
+func (fl *_fieldList_Event) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Event)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.UUID == nil {
-		return w, errors.New("field UUID of Event is required")
+		return errors.New("field UUID of Event is required")
 	}
 	w, err = v.UUID.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.Time != nil {
 		w, err = v.Time.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Event) Close() {}
 
 func _UUID_Read(w wire.Value) (*UUID, error) {
 	var x UUID
@@ -1496,37 +1518,51 @@ type Transition struct {
 //     return err
 //   }
 func (v *Transition) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Transition)(v)), nil
+}
+
+type _fieldList_Transition Transition
+
+func (fl *_fieldList_Transition) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [3]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Transition)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = v.FromState.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = v.ToState.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.Events != nil {
 		w, err = v.Events.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 3, Value: w}
+		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Transition) Close() {}
 
 func _EventGroup_Read(w wire.Value) (EventGroup, error) {
 	var x EventGroup
@@ -1713,25 +1749,35 @@ type TransitiveTypedefField struct {
 //     return err
 //   }
 func (v *TransitiveTypedefField) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_TransitiveTypedefField)(v)), nil
+}
+
+type _fieldList_TransitiveTypedefField TransitiveTypedefField
+
+func (fl *_fieldList_TransitiveTypedefField) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*TransitiveTypedefField)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.DefUUID == nil {
-		return w, errors.New("field DefUUID of TransitiveTypedefField is required")
+		return errors.New("field DefUUID of TransitiveTypedefField is required")
 	}
 	w, err = v.DefUUID.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_TransitiveTypedefField) Close() {}
 
 func _MyUUID_Read(w wire.Value) (*MyUUID, error) {
 	var x MyUUID
@@ -1896,29 +1942,41 @@ type I128 struct {
 //     return err
 //   }
 func (v *I128) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_I128)(v)), nil
+}
+
+type _fieldList_I128 I128
+
+func (fl *_fieldList_I128) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*I128)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueI64(v.High), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueI64(v.Low), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_I128) Close() {}
 
 // FromWire deserializes a I128 struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained

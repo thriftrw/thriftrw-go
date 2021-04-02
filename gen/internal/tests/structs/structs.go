@@ -37,22 +37,32 @@ type ContactInfo struct {
 //     return err
 //   }
 func (v *ContactInfo) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_ContactInfo)(v)), nil
+}
+
+type _fieldList_ContactInfo ContactInfo
+
+func (fl *_fieldList_ContactInfo) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*ContactInfo)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueString(v.EmailAddress), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_ContactInfo) Close() {}
 
 // FromWire deserializes a ContactInfo struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -283,11 +293,17 @@ func (_List_Double_ValueList) Close() {}
 //     return err
 //   }
 func (v *DefaultsStruct) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_DefaultsStruct)(v)), nil
+}
+
+type _fieldList_DefaultsStruct DefaultsStruct
+
+func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [12]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*DefaultsStruct)(fl)
+		w   wire.Value
+		err error
 	)
 
 	vRequiredPrimitive := v.RequiredPrimitive
@@ -297,9 +313,11 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = wire.NewValueI32(*(vRequiredPrimitive)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vOptionalPrimitive := v.OptionalPrimitive
@@ -309,9 +327,11 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = wire.NewValueI32(*(vOptionalPrimitive)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vRequiredEnum := v.RequiredEnum
@@ -321,9 +341,11 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = vRequiredEnum.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 3, Value: w}
+		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vOptionalEnum := v.OptionalEnum
@@ -333,9 +355,11 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = vOptionalEnum.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 4, Value: w}
+		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vRequiredList := v.RequiredList
@@ -348,9 +372,11 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = wire.NewValueList(_List_String_ValueList(vRequiredList)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 5, Value: w}
+		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vOptionalList := v.OptionalList
@@ -364,9 +390,11 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = wire.NewValueList(_List_Double_ValueList(vOptionalList)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 6, Value: w}
+		if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vRequiredStruct := v.RequiredStruct
@@ -385,9 +413,11 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = vRequiredStruct.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 7, Value: w}
+		if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vOptionalStruct := v.OptionalStruct
@@ -406,9 +436,11 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = vOptionalStruct.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 8, Value: w}
+		if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vRequiredBoolDefaultTrue := v.RequiredBoolDefaultTrue
@@ -418,9 +450,11 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = wire.NewValueBool(*(vRequiredBoolDefaultTrue)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 9, Value: w}
+		if err := writeField(wire.Field{ID: 9, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vOptionalBoolDefaultTrue := v.OptionalBoolDefaultTrue
@@ -430,9 +464,11 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = wire.NewValueBool(*(vOptionalBoolDefaultTrue)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 10, Value: w}
+		if err := writeField(wire.Field{ID: 10, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vRequiredBoolDefaultFalse := v.RequiredBoolDefaultFalse
@@ -442,9 +478,11 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = wire.NewValueBool(*(vRequiredBoolDefaultFalse)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 11, Value: w}
+		if err := writeField(wire.Field{ID: 11, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	vOptionalBoolDefaultFalse := v.OptionalBoolDefaultFalse
@@ -454,14 +492,18 @@ func (v *DefaultsStruct) ToWire() (wire.Value, error) {
 	{
 		w, err = wire.NewValueBool(*(vOptionalBoolDefaultFalse)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 12, Value: w}
+		if err := writeField(wire.Field{ID: 12, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_DefaultsStruct) Close() {}
 
 func _EnumDefault_Read(w wire.Value) (enums.EnumDefault, error) {
 	var v enums.EnumDefault
@@ -1199,34 +1241,46 @@ type Edge struct {
 //     return err
 //   }
 func (v *Edge) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Edge)(v)), nil
+}
+
+type _fieldList_Edge Edge
+
+func (fl *_fieldList_Edge) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Edge)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.StartPoint == nil {
-		return w, errors.New("field StartPoint of Edge is required")
+		return errors.New("field StartPoint of Edge is required")
 	}
 	w, err = v.StartPoint.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.EndPoint == nil {
-		return w, errors.New("field EndPoint of Edge is required")
+		return errors.New("field EndPoint of Edge is required")
 	}
 	w, err = v.EndPoint.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Edge) Close() {}
 
 func _Point_Read(w wire.Value) (*Point, error) {
 	var v Point
@@ -1389,13 +1443,17 @@ type EmptyStruct struct {
 //     return err
 //   }
 func (v *EmptyStruct) ToWire() (wire.Value, error) {
-	var (
-		fields [0]wire.Field
-		i      int = 0
-	)
-
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return wire.NewValueFieldList((*_fieldList_EmptyStruct)(v)), nil
 }
+
+type _fieldList_EmptyStruct EmptyStruct
+
+func (fl *_fieldList_EmptyStruct) ForEach(writeField func(wire.Field) error) error {
+
+	return nil
+}
+
+func (fl *_fieldList_EmptyStruct) Close() {}
 
 // FromWire deserializes a EmptyStruct struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -1487,34 +1545,46 @@ type Frame struct {
 //     return err
 //   }
 func (v *Frame) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Frame)(v)), nil
+}
+
+type _fieldList_Frame Frame
+
+func (fl *_fieldList_Frame) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Frame)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.TopLeft == nil {
-		return w, errors.New("field TopLeft of Frame is required")
+		return errors.New("field TopLeft of Frame is required")
 	}
 	w, err = v.TopLeft.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.Size == nil {
-		return w, errors.New("field Size of Frame is required")
+		return errors.New("field Size of Frame is required")
 	}
 	w, err = v.Size.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Frame) Close() {}
 
 func _Size_Read(w wire.Value) (*Size, error) {
 	var v Size
@@ -1683,59 +1753,79 @@ type GoTags struct {
 //     return err
 //   }
 func (v *GoTags) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_GoTags)(v)), nil
+}
+
+type _fieldList_GoTags GoTags
+
+func (fl *_fieldList_GoTags) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [6]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*GoTags)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueString(v.Foo), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.Bar != nil {
 		w, err = wire.NewValueString(*(v.Bar)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
 	w, err = wire.NewValueString(v.FooBar), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 3, Value: w}
+	if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueString(v.FooBarWithSpace), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 4, Value: w}
+	if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.FooBarWithOmitEmpty != nil {
 		w, err = wire.NewValueString(*(v.FooBarWithOmitEmpty)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 5, Value: w}
+		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
 	w, err = wire.NewValueString(v.FooBarWithRequired), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 6, Value: w}
+	if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_GoTags) Close() {}
 
 // FromWire deserializes a GoTags struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -2054,22 +2144,32 @@ func (_List_Edge_ValueList) Close() {}
 //     return err
 //   }
 func (v *Graph) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Graph)(v)), nil
+}
+
+type _fieldList_Graph Graph
+
+func (fl *_fieldList_Graph) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Graph)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueList(_List_Edge_ValueList(v.Edges)), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Graph) Close() {}
 
 func _List_Edge_Read(l wire.ValueList) ([]*Edge, error) {
 	if l.ValueType() != wire.TStruct {
@@ -2274,30 +2374,42 @@ type Node struct {
 //     return err
 //   }
 func (v *Node) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Node)(v)), nil
+}
+
+type _fieldList_Node Node
+
+func (fl *_fieldList_Node) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Node)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueI32(v.Value), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.Tail != nil {
 		w, err = v.Tail.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Node) Close() {}
 
 func _List_Read(w wire.Value) (*List, error) {
 	var x List
@@ -2498,80 +2610,104 @@ func (_Map_String_String_MapItemList) Close() {}
 //     return err
 //   }
 func (v *NotOmitEmpty) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_NotOmitEmpty)(v)), nil
+}
+
+type _fieldList_NotOmitEmpty NotOmitEmpty
+
+func (fl *_fieldList_NotOmitEmpty) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [8]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*NotOmitEmpty)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.NotOmitEmptyString != nil {
 		w, err = wire.NewValueString(*(v.NotOmitEmptyString)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.NotOmitEmptyInt != nil {
 		w, err = wire.NewValueString(*(v.NotOmitEmptyInt)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.NotOmitEmptyBool != nil {
 		w, err = wire.NewValueString(*(v.NotOmitEmptyBool)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 3, Value: w}
+		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.NotOmitEmptyList != nil {
 		w, err = wire.NewValueList(_List_String_ValueList(v.NotOmitEmptyList)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 4, Value: w}
+		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.NotOmitEmptyMap != nil {
 		w, err = wire.NewValueMap(_Map_String_String_MapItemList(v.NotOmitEmptyMap)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 5, Value: w}
+		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.NotOmitEmptyListMixedWithOmitEmpty != nil {
 		w, err = wire.NewValueList(_List_String_ValueList(v.NotOmitEmptyListMixedWithOmitEmpty)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 6, Value: w}
+		if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.NotOmitEmptyListMixedWithOmitEmptyV2 != nil {
 		w, err = wire.NewValueList(_List_String_ValueList(v.NotOmitEmptyListMixedWithOmitEmptyV2)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 7, Value: w}
+		if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.OmitEmptyString != nil {
 		w, err = wire.NewValueString(*(v.OmitEmptyString)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 8, Value: w}
+		if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_NotOmitEmpty) Close() {}
 
 func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 	if m.KeyType() != wire.TBinary {
@@ -2991,29 +3127,41 @@ type Omit struct {
 //     return err
 //   }
 func (v *Omit) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Omit)(v)), nil
+}
+
+type _fieldList_Omit Omit
+
+func (fl *_fieldList_Omit) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Omit)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueString(v.Serialized), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueString(v.Hidden), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Omit) Close() {}
 
 // FromWire deserializes a Omit struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -3161,24 +3309,34 @@ type PersonalInfo struct {
 //     return err
 //   }
 func (v *PersonalInfo) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_PersonalInfo)(v)), nil
+}
+
+type _fieldList_PersonalInfo PersonalInfo
+
+func (fl *_fieldList_PersonalInfo) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*PersonalInfo)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.Age != nil {
 		w, err = wire.NewValueI32(*(v.Age)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_PersonalInfo) Close() {}
 
 // FromWire deserializes a PersonalInfo struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -3306,29 +3464,41 @@ type Point struct {
 //     return err
 //   }
 func (v *Point) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Point)(v)), nil
+}
+
+type _fieldList_Point Point
+
+func (fl *_fieldList_Point) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Point)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueDouble(v.X), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueDouble(v.Y), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Point) Close() {}
 
 // FromWire deserializes a Point struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -3486,80 +3656,104 @@ type PrimitiveOptionalStruct struct {
 //     return err
 //   }
 func (v *PrimitiveOptionalStruct) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_PrimitiveOptionalStruct)(v)), nil
+}
+
+type _fieldList_PrimitiveOptionalStruct PrimitiveOptionalStruct
+
+func (fl *_fieldList_PrimitiveOptionalStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [8]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*PrimitiveOptionalStruct)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.BoolField != nil {
 		w, err = wire.NewValueBool(*(v.BoolField)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.ByteField != nil {
 		w, err = wire.NewValueI8(*(v.ByteField)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.Int16Field != nil {
 		w, err = wire.NewValueI16(*(v.Int16Field)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 3, Value: w}
+		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.Int32Field != nil {
 		w, err = wire.NewValueI32(*(v.Int32Field)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 4, Value: w}
+		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.Int64Field != nil {
 		w, err = wire.NewValueI64(*(v.Int64Field)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 5, Value: w}
+		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.DoubleField != nil {
 		w, err = wire.NewValueDouble(*(v.DoubleField)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 6, Value: w}
+		if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.StringField != nil {
 		w, err = wire.NewValueString(*(v.StringField)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 7, Value: w}
+		if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.BinaryField != nil {
 		w, err = wire.NewValueBinary(v.BinaryField), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 8, Value: w}
+		if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_PrimitiveOptionalStruct) Close() {}
 
 // FromWire deserializes a PrimitiveOptionalStruct struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -3978,73 +4172,97 @@ type PrimitiveRequiredStruct struct {
 //     return err
 //   }
 func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_PrimitiveRequiredStruct)(v)), nil
+}
+
+type _fieldList_PrimitiveRequiredStruct PrimitiveRequiredStruct
+
+func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [8]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*PrimitiveRequiredStruct)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueBool(v.BoolField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueI8(v.ByteField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueI16(v.Int16Field), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 3, Value: w}
+	if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueI32(v.Int32Field), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 4, Value: w}
+	if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueI64(v.Int64Field), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 5, Value: w}
+	if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueDouble(v.DoubleField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 6, Value: w}
+	if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueString(v.StringField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 7, Value: w}
+	if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.BinaryField == nil {
-		return w, errors.New("field BinaryField of PrimitiveRequiredStruct is required")
+		return errors.New("field BinaryField of PrimitiveRequiredStruct is required")
 	}
 	w, err = wire.NewValueBinary(v.BinaryField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 8, Value: w}
+	if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_PrimitiveRequiredStruct) Close() {}
 
 // FromWire deserializes a PrimitiveRequiredStruct struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -4366,29 +4584,41 @@ type Rename struct {
 //     return err
 //   }
 func (v *Rename) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Rename)(v)), nil
+}
+
+type _fieldList_Rename Rename
+
+func (fl *_fieldList_Rename) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Rename)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueString(v.Default), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueString(v.CamelCase), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Rename) Close() {}
 
 // FromWire deserializes a Rename struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -4540,29 +4770,41 @@ type Size struct {
 //     return err
 //   }
 func (v *Size) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Size)(v)), nil
+}
+
+type _fieldList_Size Size
+
+func (fl *_fieldList_Size) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Size)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueDouble(v.Width), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueDouble(v.Height), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Size) Close() {}
 
 // FromWire deserializes a Size struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -4713,48 +4955,64 @@ type StructLabels struct {
 //     return err
 //   }
 func (v *StructLabels) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_StructLabels)(v)), nil
+}
+
+type _fieldList_StructLabels StructLabels
+
+func (fl *_fieldList_StructLabels) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [4]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*StructLabels)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.IsRequired != nil {
 		w, err = wire.NewValueBool(*(v.IsRequired)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 1, Value: w}
+		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.Foo != nil {
 		w, err = wire.NewValueString(*(v.Foo)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.Qux != nil {
 		w, err = wire.NewValueString(*(v.Qux)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 3, Value: w}
+		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.Quux != nil {
 		w, err = wire.NewValueString(*(v.Quux)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 4, Value: w}
+		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_StructLabels) Close() {}
 
 // FromWire deserializes a StructLabels struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
@@ -4987,38 +5245,52 @@ type User struct {
 //     return err
 //   }
 func (v *User) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_User)(v)), nil
+}
+
+type _fieldList_User User
+
+func (fl *_fieldList_User) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [3]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*User)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueString(v.Name), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.Contact != nil {
 		w, err = v.Contact.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.Personal != nil {
 		w, err = v.Personal.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 3, Value: w}
+		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_User) Close() {}
 
 func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
 	var v ContactInfo
@@ -5352,29 +5624,41 @@ type ZapOptOutStruct struct {
 //     return err
 //   }
 func (v *ZapOptOutStruct) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_ZapOptOutStruct)(v)), nil
+}
+
+type _fieldList_ZapOptOutStruct ZapOptOutStruct
+
+func (fl *_fieldList_ZapOptOutStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [2]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*ZapOptOutStruct)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueString(v.Name), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
 	w, err = wire.NewValueString(v.Optout), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 2, Value: w}
+	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_ZapOptOutStruct) Close() {}
 
 // FromWire deserializes a ZapOptOutStruct struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained

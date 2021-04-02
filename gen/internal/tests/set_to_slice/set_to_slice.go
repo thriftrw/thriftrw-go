@@ -217,102 +217,130 @@ func (_Set_Set_String_sliceType_sliceType_ValueList) Close() {}
 //     return err
 //   }
 func (v *Bar) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Bar)(v)), nil
+}
+
+type _fieldList_Bar Bar
+
+func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [10]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Bar)(fl)
+		w   wire.Value
+		err error
 	)
 
 	if v.RequiredInt32ListField == nil {
-		return w, errors.New("field RequiredInt32ListField of Bar is required")
+		return errors.New("field RequiredInt32ListField of Bar is required")
 	}
 	w, err = wire.NewValueSet(_Set_I32_sliceType_ValueList(v.RequiredInt32ListField)), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.OptionalStringListField != nil {
 		w, err = wire.NewValueSet(_Set_String_sliceType_ValueList(v.OptionalStringListField)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 2, Value: w}
+		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.RequiredTypedefStringListField == nil {
-		return w, errors.New("field RequiredTypedefStringListField of Bar is required")
+		return errors.New("field RequiredTypedefStringListField of Bar is required")
 	}
 	w, err = v.RequiredTypedefStringListField.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 3, Value: w}
+	if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.OptionalTypedefStringListField != nil {
 		w, err = v.OptionalTypedefStringListField.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 4, Value: w}
+		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.RequiredFooListField == nil {
-		return w, errors.New("field RequiredFooListField of Bar is required")
+		return errors.New("field RequiredFooListField of Bar is required")
 	}
 	w, err = wire.NewValueSet(_Set_Foo_sliceType_ValueList(v.RequiredFooListField)), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 5, Value: w}
+	if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.OptionalFooListField != nil {
 		w, err = wire.NewValueSet(_Set_Foo_sliceType_ValueList(v.OptionalFooListField)), error(nil)
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 6, Value: w}
+		if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.RequiredTypedefFooListField == nil {
-		return w, errors.New("field RequiredTypedefFooListField of Bar is required")
+		return errors.New("field RequiredTypedefFooListField of Bar is required")
 	}
 	w, err = v.RequiredTypedefFooListField.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 7, Value: w}
+	if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.OptionalTypedefFooListField != nil {
 		w, err = v.OptionalTypedefFooListField.ToWire()
 		if err != nil {
-			return w, err
+			return err
 		}
-		fields[i] = wire.Field{ID: 8, Value: w}
+		if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
+			return err
+		}
 		i++
 	}
 	if v.RequiredStringListListField == nil {
-		return w, errors.New("field RequiredStringListListField of Bar is required")
+		return errors.New("field RequiredStringListListField of Bar is required")
 	}
 	w, err = wire.NewValueSet(_Set_Set_String_sliceType_sliceType_ValueList(v.RequiredStringListListField)), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 9, Value: w}
+	if err := writeField(wire.Field{ID: 9, Value: w}); err != nil {
+		return err
+	}
 	i++
 	if v.RequiredTypedefStringListListField == nil {
-		return w, errors.New("field RequiredTypedefStringListListField of Bar is required")
+		return errors.New("field RequiredTypedefStringListListField of Bar is required")
 	}
 	w, err = v.RequiredTypedefStringListListField.ToWire()
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 10, Value: w}
+	if err := writeField(wire.Field{ID: 10, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Bar) Close() {}
 
 func _Set_I32_sliceType_Read(s wire.ValueList) ([]int32, error) {
 	if s.ValueType() != wire.TI32 {
@@ -955,22 +983,32 @@ type Foo struct {
 //     return err
 //   }
 func (v *Foo) ToWire() (wire.Value, error) {
+	return wire.NewValueFieldList((*_fieldList_Foo)(v)), nil
+}
+
+type _fieldList_Foo Foo
+
+func (fl *_fieldList_Foo) ForEach(writeField func(wire.Field) error) error {
 	var (
-		fields [1]wire.Field
-		i      int = 0
-		w      wire.Value
-		err    error
+		i   int = 0
+		v       = (*Foo)(fl)
+		w   wire.Value
+		err error
 	)
 
 	w, err = wire.NewValueString(v.StringField), error(nil)
 	if err != nil {
-		return w, err
+		return err
 	}
-	fields[i] = wire.Field{ID: 1, Value: w}
+	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
+		return err
+	}
 	i++
 
-	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+	return nil
 }
+
+func (fl *_fieldList_Foo) Close() {}
 
 // FromWire deserializes a Foo struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
