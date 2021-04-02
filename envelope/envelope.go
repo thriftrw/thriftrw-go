@@ -71,5 +71,7 @@ func ReadReply(p protocol.Protocol, r io.ReaderAt) (_ wire.Value, seqID int32, _
 		return envelope.Value, envelope.SeqID, fmt.Errorf("failed to decode exception: %v", err)
 	}
 
-	return envelope.Value, envelope.SeqID, ex
+	// Once FromWire is called, envelope.Value is no longer usable.
+	value, _ := ex.ToWire()
+	return value, envelope.SeqID, ex
 }

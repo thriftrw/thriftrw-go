@@ -28,6 +28,7 @@ import (
 	"reflect"
 	"testing"
 
+	"go.uber.org/thriftrw/internal/envelope/envelopetest"
 	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/wire"
 
@@ -787,7 +788,7 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 			continue
 		}
 
-		if !assert.Equal(t, tt.want, e, "%v: decoded envelope mismatch") {
+		if !envelopetest.AssertEqual(t, tt.want, e, "%v: decoded envelope mismatch", tt) {
 			continue
 		}
 
@@ -799,7 +800,7 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 			continue
 		}
 
-		if !assert.Equal(t, tt.want.Value, r, "%v: decoded request mismatch", tt.msg) {
+		if !assert.True(t, wire.ValuesAreEqual(tt.want.Value, r), "%v: decoded request mismatch", tt.msg) {
 			continue
 		}
 

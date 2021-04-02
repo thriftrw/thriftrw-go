@@ -103,16 +103,20 @@ func TestWrite(t *testing.T) {
 
 func TestReadReply(t *testing.T) {
 	tests := []struct {
-		desc      string
-		bs        []byte
-		want      wire.Value
+		desc string
+		bs   []byte
+
+		wantValue   wire.Value
+		wantNoValue bool //
+
 		wantSeqID int32
 		wantErr   string
 	}{
 		{
-			desc:    "Invalid envelope",
-			bs:      []byte{0},
-			wantErr: "unexpected EOF",
+			desc:        "Invalid envelope",
+			bs:          []byte{0},
+			wantNoValue: true,
+			wantErr:     "unexpected EOF",
 		},
 		{
 			desc: "Unexpected envelope type",
@@ -125,7 +129,7 @@ func TestReadReply(t *testing.T) {
 				// <struct>
 				0x00, // stop
 			},
-			want:      wire.NewValueStruct(wire.Struct{}),
+			wantValue: wire.NewValueStruct(wire.Struct{}),
 			wantSeqID: 1234,
 			wantErr:   "unknown envelope",
 		},
@@ -140,7 +144,7 @@ func TestReadReply(t *testing.T) {
 				// <struct>
 				0x00, // stop
 			},
-			want:      wire.NewValueStruct(wire.Struct{}),
+			wantValue: wire.NewValueStruct(wire.Struct{}),
 			wantSeqID: 1234,
 		},
 		{
@@ -157,12 +161,8 @@ func TestReadReply(t *testing.T) {
 				0x00, 0x00, 0x00, 0x01, // value = 1
 				0x00, // stop
 			},
-			want: wire.NewValueStruct(wire.Struct{
-				Fields: []wire.Field{
-					{ID: 1, Value: wire.NewValueI32(1)},
-				},
-			}),
-			wantSeqID: 1234,
+			wantSeqID:   1234,
+			wantNoValue: true,
 			// TODO: This should probably fail to decode. Right now, it's being ignored.
 			// wantErr:   "failed to decode exception",
 			wantErr: "TApplicationException{}",
@@ -185,7 +185,7 @@ func TestReadReply(t *testing.T) {
 				0x00, 0x00, 0x00, 0x01, // value = 1 (unknown method)
 				0x00, // stop
 			},
-			want: wire.NewValueStruct(wire.Struct{
+			wantValue: wire.NewValueStruct(wire.Struct{
 				Fields: []wire.Field{
 					{ID: 1, Value: wire.NewValueString("errMsg")},
 					{ID: 2, Value: wire.NewValueI32(1)},
@@ -197,15 +197,19 @@ func TestReadReply(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		result, seqID, err := ReadReply(protocol.Binary, bytes.NewReader(tt.bs))
-		if tt.wantErr != "" {
-			if assert.Error(t, err, tt.desc) {
-				assert.Contains(t, err.Error(), tt.wantErr, "%v: error mismatch", tt.desc)
+		t.Run(tt.desc, func(t *testing.T) {
+			result, seqID, err := ReadReply(protocol.Binary, bytes.NewReader(tt.bs))
+			if tt.wantErr != "" {
+				if assert.Error(t, err, tt.desc) {
+					assert.Contains(t, err.Error(), tt.wantErr, "%v: error mismatch", tt.desc)
+				}
+			} else {
+				assert.NoError(t, err, tt.desc)
 			}
-		} else {
-			assert.NoError(t, err, tt.desc)
-		}
-		assert.Equal(t, tt.want, result, "%v: result mismatch", tt.desc)
-		assert.Equal(t, tt.wantSeqID, seqID, "%v: seqID mismatch", tt.desc)
+			if !tt.wantNoValue {
+				assert.True(t, wire.ValuesAreEqual(tt.wantValue, result), "%v: result mismatch", tt.desc)
+			}
+			assert.Equal(t, tt.wantSeqID, seqID, "%v: seqID mismatch", tt.desc)
+		})
 	}
 }

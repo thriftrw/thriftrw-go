@@ -278,37 +278,12 @@ func (br *Reader) readString(off int64) (string, int64, error) {
 	return string(v), off, err
 }
 
-func (br *Reader) readStruct(off int64) (wire.Struct, int64, error) {
-	var fields []wire.Field
-	// TODO(abg) add a lazy FieldList type instead of []Field.
-
-	typ, off, err := br.readByte(off)
-	if err != nil {
-		return wire.Struct{}, off, err
-	}
-
-	for typ != 0 {
-		var fid int16
-		var val wire.Value
-
-		fid, off, err = br.readInt16(off)
-		if err != nil {
-			return wire.Struct{}, off, err
-		}
-
-		val, off, err = br.ReadValue(wire.Type(typ), off)
-		if err != nil {
-			return wire.Struct{}, off, err
-		}
-
-		fields = append(fields, wire.Field{ID: fid, Value: val})
-
-		typ, off, err = br.readByte(off)
-		if err != nil {
-			return wire.Struct{}, off, err
-		}
-	}
-	return wire.Struct{Fields: fields}, off, err
+func (br *Reader) readFieldList(off int64) (wire.FieldList, int64, error) {
+	fieldList := borrowLazyFieldList(br)
+	fieldList.reader = br
+	fieldList.offset = off
+	off, err := br.skipStruct(off)
+	return fieldList, off, err
 }
 
 func (br *Reader) readMap(off int64) (wire.MapItemList, int64, error) {
@@ -464,8 +439,8 @@ func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 		return wire.NewValueBinary(v), off, err
 
 	case wire.TStruct:
-		s, off, err := br.readStruct(off)
-		return wire.NewValueStruct(s), off, err
+		fl, off, err := br.readFieldList(off)
+		return wire.NewValueFieldList(fl), off, err
 
 	case wire.TMap:
 		m, off, err := br.readMap(off)
