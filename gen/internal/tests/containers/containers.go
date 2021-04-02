@@ -633,8 +633,7 @@ type _fieldList_ContainersOfContainers ContainersOfContainers
 
 func (fl *_fieldList_ContainersOfContainers) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*ContainersOfContainers)(fl)
+		v   = (*ContainersOfContainers)(fl)
 		w   wire.Value
 		err error
 	)
@@ -647,7 +646,6 @@ func (fl *_fieldList_ContainersOfContainers) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.ListOfSets != nil {
 		w, err = wire.NewValueList(_List_Set_I32_mapType_ValueList(v.ListOfSets)), error(nil)
@@ -657,7 +655,6 @@ func (fl *_fieldList_ContainersOfContainers) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.ListOfMaps != nil {
 		w, err = wire.NewValueList(_List_Map_I32_I32_ValueList(v.ListOfMaps)), error(nil)
@@ -667,7 +664,6 @@ func (fl *_fieldList_ContainersOfContainers) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.SetOfSets != nil {
 		w, err = wire.NewValueSet(_Set_Set_String_mapType_sliceType_ValueList(v.SetOfSets)), error(nil)
@@ -677,7 +673,6 @@ func (fl *_fieldList_ContainersOfContainers) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.SetOfLists != nil {
 		w, err = wire.NewValueSet(_Set_List_String_sliceType_ValueList(v.SetOfLists)), error(nil)
@@ -687,7 +682,6 @@ func (fl *_fieldList_ContainersOfContainers) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.SetOfMaps != nil {
 		w, err = wire.NewValueSet(_Set_Map_String_String_sliceType_ValueList(v.SetOfMaps)), error(nil)
@@ -697,7 +691,6 @@ func (fl *_fieldList_ContainersOfContainers) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.MapOfMapToInt != nil {
 		w, err = wire.NewValueMap(_Map_Map_String_I32_I64_MapItemList(v.MapOfMapToInt)), error(nil)
@@ -707,7 +700,6 @@ func (fl *_fieldList_ContainersOfContainers) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.MapOfListToSet != nil {
 		w, err = wire.NewValueMap(_Map_List_I32_Set_I64_mapType_MapItemList(v.MapOfListToSet)), error(nil)
@@ -717,7 +709,6 @@ func (fl *_fieldList_ContainersOfContainers) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.MapOfSetToListOfDouble != nil {
 		w, err = wire.NewValueMap(_Map_Set_I32_mapType_List_Double_MapItemList(v.MapOfSetToListOfDouble)), error(nil)
@@ -727,7 +718,6 @@ func (fl *_fieldList_ContainersOfContainers) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 9, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -2253,8 +2243,7 @@ type _fieldList_EnumContainers EnumContainers
 
 func (fl *_fieldList_EnumContainers) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*EnumContainers)(fl)
+		v   = (*EnumContainers)(fl)
 		w   wire.Value
 		err error
 	)
@@ -2267,7 +2256,6 @@ func (fl *_fieldList_EnumContainers) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.SetOfEnums != nil {
 		w, err = wire.NewValueSet(_Set_EnumWithValues_mapType_ValueList(v.SetOfEnums)), error(nil)
@@ -2277,7 +2265,6 @@ func (fl *_fieldList_EnumContainers) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.MapOfEnums != nil {
 		w, err = wire.NewValueMap(_Map_EnumWithDuplicateValues_I32_MapItemList(v.MapOfEnums)), error(nil)
@@ -2287,7 +2274,6 @@ func (fl *_fieldList_EnumContainers) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -2718,8 +2704,7 @@ type _fieldList_ListOfConflictingEnums ListOfConflictingEnums
 
 func (fl *_fieldList_ListOfConflictingEnums) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*ListOfConflictingEnums)(fl)
+		v   = (*ListOfConflictingEnums)(fl)
 		w   wire.Value
 		err error
 	)
@@ -2731,7 +2716,6 @@ func (fl *_fieldList_ListOfConflictingEnums) ForEach(writeField func(wire.Field)
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueList(_List_RecordType_1_ValueList(v.OtherRecords)), error(nil)
 	if err != nil {
@@ -2740,7 +2724,6 @@ func (fl *_fieldList_ListOfConflictingEnums) ForEach(writeField func(wire.Field)
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -3066,8 +3049,7 @@ type _fieldList_ListOfConflictingUUIDs ListOfConflictingUUIDs
 
 func (fl *_fieldList_ListOfConflictingUUIDs) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*ListOfConflictingUUIDs)(fl)
+		v   = (*ListOfConflictingUUIDs)(fl)
 		w   wire.Value
 		err error
 	)
@@ -3079,7 +3061,6 @@ func (fl *_fieldList_ListOfConflictingUUIDs) ForEach(writeField func(wire.Field)
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueList(_List_UUID_1_ValueList(v.OtherUUIDs)), error(nil)
 	if err != nil {
@@ -3088,7 +3069,6 @@ func (fl *_fieldList_ListOfConflictingUUIDs) ForEach(writeField func(wire.Field)
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -3358,8 +3338,7 @@ type _fieldList_ListOfOptionalPrimitives ListOfOptionalPrimitives
 
 func (fl *_fieldList_ListOfOptionalPrimitives) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*ListOfOptionalPrimitives)(fl)
+		v   = (*ListOfOptionalPrimitives)(fl)
 		w   wire.Value
 		err error
 	)
@@ -3372,7 +3351,6 @@ func (fl *_fieldList_ListOfOptionalPrimitives) ForEach(writeField func(wire.Fiel
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -3509,8 +3487,7 @@ type _fieldList_ListOfRequiredPrimitives ListOfRequiredPrimitives
 
 func (fl *_fieldList_ListOfRequiredPrimitives) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*ListOfRequiredPrimitives)(fl)
+		v   = (*ListOfRequiredPrimitives)(fl)
 		w   wire.Value
 		err error
 	)
@@ -3522,7 +3499,6 @@ func (fl *_fieldList_ListOfRequiredPrimitives) ForEach(writeField func(wire.Fiel
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -3744,8 +3720,7 @@ type _fieldList_MapOfBinaryAndString MapOfBinaryAndString
 
 func (fl *_fieldList_MapOfBinaryAndString) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*MapOfBinaryAndString)(fl)
+		v   = (*MapOfBinaryAndString)(fl)
 		w   wire.Value
 		err error
 	)
@@ -3758,7 +3733,6 @@ func (fl *_fieldList_MapOfBinaryAndString) ForEach(writeField func(wire.Field) e
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.StringToBinary != nil {
 		w, err = wire.NewValueMap(_Map_String_Binary_MapItemList(v.StringToBinary)), error(nil)
@@ -3768,7 +3742,6 @@ func (fl *_fieldList_MapOfBinaryAndString) ForEach(writeField func(wire.Field) e
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -4252,8 +4225,7 @@ type _fieldList_PrimitiveContainers PrimitiveContainers
 
 func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*PrimitiveContainers)(fl)
+		v   = (*PrimitiveContainers)(fl)
 		w   wire.Value
 		err error
 	)
@@ -4266,7 +4238,6 @@ func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) er
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.ListOfInts != nil {
 		w, err = wire.NewValueList(_List_I64_ValueList(v.ListOfInts)), error(nil)
@@ -4276,7 +4247,6 @@ func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) er
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.SetOfStrings != nil {
 		w, err = wire.NewValueSet(_Set_String_mapType_ValueList(v.SetOfStrings)), error(nil)
@@ -4286,7 +4256,6 @@ func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) er
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.SetOfBytes != nil {
 		w, err = wire.NewValueSet(_Set_Byte_mapType_ValueList(v.SetOfBytes)), error(nil)
@@ -4296,7 +4265,6 @@ func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) er
 		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.MapOfIntToString != nil {
 		w, err = wire.NewValueMap(_Map_I32_String_MapItemList(v.MapOfIntToString)), error(nil)
@@ -4306,7 +4274,6 @@ func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) er
 		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.MapOfStringToBool != nil {
 		w, err = wire.NewValueMap(_Map_String_Bool_MapItemList(v.MapOfStringToBool)), error(nil)
@@ -4316,7 +4283,6 @@ func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) er
 		if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -4912,8 +4878,7 @@ type _fieldList_PrimitiveContainersRequired PrimitiveContainersRequired
 
 func (fl *_fieldList_PrimitiveContainersRequired) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*PrimitiveContainersRequired)(fl)
+		v   = (*PrimitiveContainersRequired)(fl)
 		w   wire.Value
 		err error
 	)
@@ -4925,7 +4890,6 @@ func (fl *_fieldList_PrimitiveContainersRequired) ForEach(writeField func(wire.F
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.SetOfInts == nil {
 		return errors.New("field SetOfInts of PrimitiveContainersRequired is required")
 	}
@@ -4936,7 +4900,6 @@ func (fl *_fieldList_PrimitiveContainersRequired) ForEach(writeField func(wire.F
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.MapOfIntsToDoubles == nil {
 		return errors.New("field MapOfIntsToDoubles of PrimitiveContainersRequired is required")
 	}
@@ -4947,7 +4910,6 @@ func (fl *_fieldList_PrimitiveContainersRequired) ForEach(writeField func(wire.F
 	if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }

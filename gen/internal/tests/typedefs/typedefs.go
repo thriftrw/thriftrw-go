@@ -171,8 +171,7 @@ type _fieldList_DefaultPrimitiveTypedef DefaultPrimitiveTypedef
 
 func (fl *_fieldList_DefaultPrimitiveTypedef) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*DefaultPrimitiveTypedef)(fl)
+		v   = (*DefaultPrimitiveTypedef)(fl)
 		w   wire.Value
 		err error
 	)
@@ -189,7 +188,6 @@ func (fl *_fieldList_DefaultPrimitiveTypedef) ForEach(writeField func(wire.Field
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -553,8 +551,7 @@ type _fieldList_Event Event
 
 func (fl *_fieldList_Event) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Event)(fl)
+		v   = (*Event)(fl)
 		w   wire.Value
 		err error
 	)
@@ -569,7 +566,6 @@ func (fl *_fieldList_Event) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.Time != nil {
 		w, err = v.Time.ToWire()
 		if err != nil {
@@ -578,7 +574,6 @@ func (fl *_fieldList_Event) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -1525,8 +1520,7 @@ type _fieldList_Transition Transition
 
 func (fl *_fieldList_Transition) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Transition)(fl)
+		v   = (*Transition)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1538,7 +1532,6 @@ func (fl *_fieldList_Transition) ForEach(writeField func(wire.Field) error) erro
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = v.ToState.ToWire()
 	if err != nil {
@@ -1547,7 +1540,6 @@ func (fl *_fieldList_Transition) ForEach(writeField func(wire.Field) error) erro
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.Events != nil {
 		w, err = v.Events.ToWire()
 		if err != nil {
@@ -1556,7 +1548,6 @@ func (fl *_fieldList_Transition) ForEach(writeField func(wire.Field) error) erro
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -1756,8 +1747,7 @@ type _fieldList_TransitiveTypedefField TransitiveTypedefField
 
 func (fl *_fieldList_TransitiveTypedefField) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*TransitiveTypedefField)(fl)
+		v   = (*TransitiveTypedefField)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1772,7 +1762,6 @@ func (fl *_fieldList_TransitiveTypedefField) ForEach(writeField func(wire.Field)
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -1949,8 +1938,7 @@ type _fieldList_I128 I128
 
 func (fl *_fieldList_I128) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*I128)(fl)
+		v   = (*I128)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1962,7 +1950,6 @@ func (fl *_fieldList_I128) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueI64(v.Low), error(nil)
 	if err != nil {
@@ -1971,7 +1958,6 @@ func (fl *_fieldList_I128) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }

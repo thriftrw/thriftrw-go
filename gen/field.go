@@ -299,6 +299,28 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 		//     return err
 		//   }
 		func (<$v> *<.Name>) ToWire() (<$wire>.Value, error) {
+			<if and .IsUnion (len .Fields) ->
+				<- $i := newVar "i" ->
+				var <$i> int
+				<range .Fields ->
+					<- if not .Required ->
+						if <$v>.<goName .> != nil {
+							<$i>++
+						}
+					<end ->
+				<end>
+
+				<$fmt := import "fmt">
+				<if .AllowEmptyUnion>
+					if <$i> > 1 {
+						return <$wire>.Value{}, <$fmt>.Errorf("<.Name> should have at most one field: got %v fields", <$i>)
+					}
+				<else>
+					if <$i> != 1 {
+						return <$wire>.Value{}, <$fmt>.Errorf("<.Name> should have exactly one field: got %v fields", <$i>)
+					}
+				<end>
+			<end ->
 			return <$wire>.NewValueFieldList((*_fieldList_<.Name>)(<$v>)), nil
 		}
 
@@ -306,12 +328,10 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 
 		<$fl := newVar "fl">
 		func (<$fl> *_fieldList_<.Name>) ForEach(writeField func(<$wire>.Field) error) error {
-			<- $i := newVar "i" ->
 			<- $wVal := newVar "w" ->
 
 			<if len .Fields ->
 				var (
-					<$i> int = 0
 					<$v> = (*<.Name>)(<$fl>)
 					<$wVal> <$wire>.Value
 					err error
@@ -334,7 +354,6 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 						if err := writeField(<$wire>.Field{ID: <.ID>, Value: <$wVal>}); err != nil {
 							return err
 						}
-						<$i>++
 				<- else ->
 					<- if isNotNil .Default ->
 						<- $fval := printf "%s%s" $v $fname ->
@@ -354,29 +373,16 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 							if err := writeField(<$wire>.Field{ID: <.ID>, Value: <$wVal>}); err != nil {
 								return err
 							}
-							<$i>++
 						}
 				<- end>
 			<end>
-
-			<if and .IsUnion (len .Fields)>
-				<$fmt := import "fmt">
-				<if .AllowEmptyUnion>
-					if <$i> > 1 {
-						return <$fmt>.Errorf("<.Name> should have at most one field: got %v fields", <$i>)
-					}
-				<else>
-					if <$i> != 1 {
-						return <$fmt>.Errorf("<.Name> should have exactly one field: got %v fields", <$i>)
-					}
-				<end>
-			<end>
-
 			return nil
 		}
 
 		func (<$fl> *_fieldList_<.Name>) Close() {}
-		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))
+		`, f,
+		TemplateFunc("constantValuePtr", ConstantValuePtr),
+	)
 }
 
 func (f fieldGroupGenerator) FromWire(g Generator) error {

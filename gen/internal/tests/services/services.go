@@ -45,8 +45,7 @@ type _fieldList_ConflictingNamesSetValueArgs ConflictingNamesSetValueArgs
 
 func (fl *_fieldList_ConflictingNamesSetValueArgs) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*ConflictingNamesSetValueArgs)(fl)
+		v   = (*ConflictingNamesSetValueArgs)(fl)
 		w   wire.Value
 		err error
 	)
@@ -58,7 +57,6 @@ func (fl *_fieldList_ConflictingNamesSetValueArgs) ForEach(writeField func(wire.
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.Value == nil {
 		return errors.New("field Value of ConflictingNamesSetValueArgs is required")
 	}
@@ -69,7 +67,6 @@ func (fl *_fieldList_ConflictingNamesSetValueArgs) ForEach(writeField func(wire.
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -234,8 +231,7 @@ type _fieldList_InternalError InternalError
 
 func (fl *_fieldList_InternalError) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*InternalError)(fl)
+		v   = (*InternalError)(fl)
 		w   wire.Value
 		err error
 	)
@@ -248,7 +244,6 @@ func (fl *_fieldList_InternalError) ForEach(writeField func(wire.Field) error) e
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -595,8 +590,7 @@ type _fieldList_Cache_ClearAfter_Args Cache_ClearAfter_Args
 
 func (fl *_fieldList_Cache_ClearAfter_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Cache_ClearAfter_Args)(fl)
+		v   = (*Cache_ClearAfter_Args)(fl)
 		w   wire.Value
 		err error
 	)
@@ -609,7 +603,6 @@ func (fl *_fieldList_Cache_ClearAfter_Args) ForEach(writeField func(wire.Field) 
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -798,8 +791,7 @@ type _fieldList_ConflictingNames_SetValue_Args ConflictingNames_SetValue_Args
 
 func (fl *_fieldList_ConflictingNames_SetValue_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*ConflictingNames_SetValue_Args)(fl)
+		v   = (*ConflictingNames_SetValue_Args)(fl)
 		w   wire.Value
 		err error
 	)
@@ -812,7 +804,6 @@ func (fl *_fieldList_ConflictingNames_SetValue_Args) ForEach(writeField func(wir
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -1166,8 +1157,7 @@ type _fieldList_KeyValue_DeleteValue_Args KeyValue_DeleteValue_Args
 
 func (fl *_fieldList_KeyValue_DeleteValue_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*KeyValue_DeleteValue_Args)(fl)
+		v   = (*KeyValue_DeleteValue_Args)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1180,7 +1170,6 @@ func (fl *_fieldList_KeyValue_DeleteValue_Args) ForEach(writeField func(wire.Fie
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -1448,6 +1437,18 @@ type KeyValue_DeleteValue_Result struct {
 //     return err
 //   }
 func (v *KeyValue_DeleteValue_Result) ToWire() (wire.Value, error) {
+	var i int
+	if v.DoesNotExist != nil {
+		i++
+	}
+	if v.InternalError != nil {
+		i++
+	}
+
+	if i > 1 {
+		return wire.Value{}, fmt.Errorf("KeyValue_DeleteValue_Result should have at most one field: got %v fields", i)
+	}
+
 	return wire.NewValueFieldList((*_fieldList_KeyValue_DeleteValue_Result)(v)), nil
 }
 
@@ -1455,8 +1456,7 @@ type _fieldList_KeyValue_DeleteValue_Result KeyValue_DeleteValue_Result
 
 func (fl *_fieldList_KeyValue_DeleteValue_Result) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*KeyValue_DeleteValue_Result)(fl)
+		v   = (*KeyValue_DeleteValue_Result)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1469,7 +1469,6 @@ func (fl *_fieldList_KeyValue_DeleteValue_Result) ForEach(writeField func(wire.F
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.InternalError != nil {
 		w, err = v.InternalError.ToWire()
@@ -1479,11 +1478,6 @@ func (fl *_fieldList_KeyValue_DeleteValue_Result) ForEach(writeField func(wire.F
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
-	}
-
-	if i > 1 {
-		return fmt.Errorf("KeyValue_DeleteValue_Result should have at most one field: got %v fields", i)
 	}
 
 	return nil
@@ -1720,8 +1714,7 @@ type _fieldList_KeyValue_GetManyValues_Args KeyValue_GetManyValues_Args
 
 func (fl *_fieldList_KeyValue_GetManyValues_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*KeyValue_GetManyValues_Args)(fl)
+		v   = (*KeyValue_GetManyValues_Args)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1734,7 +1727,6 @@ func (fl *_fieldList_KeyValue_GetManyValues_Args) ForEach(writeField func(wire.F
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -2054,6 +2046,18 @@ func (_List_ArbitraryValue_ValueList) Close() {}
 //     return err
 //   }
 func (v *KeyValue_GetManyValues_Result) ToWire() (wire.Value, error) {
+	var i int
+	if v.Success != nil {
+		i++
+	}
+	if v.DoesNotExist != nil {
+		i++
+	}
+
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("KeyValue_GetManyValues_Result should have exactly one field: got %v fields", i)
+	}
+
 	return wire.NewValueFieldList((*_fieldList_KeyValue_GetManyValues_Result)(v)), nil
 }
 
@@ -2061,8 +2065,7 @@ type _fieldList_KeyValue_GetManyValues_Result KeyValue_GetManyValues_Result
 
 func (fl *_fieldList_KeyValue_GetManyValues_Result) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*KeyValue_GetManyValues_Result)(fl)
+		v   = (*KeyValue_GetManyValues_Result)(fl)
 		w   wire.Value
 		err error
 	)
@@ -2075,7 +2078,6 @@ func (fl *_fieldList_KeyValue_GetManyValues_Result) ForEach(writeField func(wire
 		if err := writeField(wire.Field{ID: 0, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.DoesNotExist != nil {
 		w, err = v.DoesNotExist.ToWire()
@@ -2085,11 +2087,6 @@ func (fl *_fieldList_KeyValue_GetManyValues_Result) ForEach(writeField func(wire
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
-	}
-
-	if i != 1 {
-		return fmt.Errorf("KeyValue_GetManyValues_Result should have exactly one field: got %v fields", i)
 	}
 
 	return nil
@@ -2338,8 +2335,7 @@ type _fieldList_KeyValue_GetValue_Args KeyValue_GetValue_Args
 
 func (fl *_fieldList_KeyValue_GetValue_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*KeyValue_GetValue_Args)(fl)
+		v   = (*KeyValue_GetValue_Args)(fl)
 		w   wire.Value
 		err error
 	)
@@ -2352,7 +2348,6 @@ func (fl *_fieldList_KeyValue_GetValue_Args) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -2601,6 +2596,18 @@ type KeyValue_GetValue_Result struct {
 //     return err
 //   }
 func (v *KeyValue_GetValue_Result) ToWire() (wire.Value, error) {
+	var i int
+	if v.Success != nil {
+		i++
+	}
+	if v.DoesNotExist != nil {
+		i++
+	}
+
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("KeyValue_GetValue_Result should have exactly one field: got %v fields", i)
+	}
+
 	return wire.NewValueFieldList((*_fieldList_KeyValue_GetValue_Result)(v)), nil
 }
 
@@ -2608,8 +2615,7 @@ type _fieldList_KeyValue_GetValue_Result KeyValue_GetValue_Result
 
 func (fl *_fieldList_KeyValue_GetValue_Result) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*KeyValue_GetValue_Result)(fl)
+		v   = (*KeyValue_GetValue_Result)(fl)
 		w   wire.Value
 		err error
 	)
@@ -2622,7 +2628,6 @@ func (fl *_fieldList_KeyValue_GetValue_Result) ForEach(writeField func(wire.Fiel
 		if err := writeField(wire.Field{ID: 0, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.DoesNotExist != nil {
 		w, err = v.DoesNotExist.ToWire()
@@ -2632,11 +2637,6 @@ func (fl *_fieldList_KeyValue_GetValue_Result) ForEach(writeField func(wire.Fiel
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
-	}
-
-	if i != 1 {
-		return fmt.Errorf("KeyValue_GetValue_Result should have exactly one field: got %v fields", i)
 	}
 
 	return nil
@@ -2836,8 +2836,7 @@ type _fieldList_KeyValue_SetValue_Args KeyValue_SetValue_Args
 
 func (fl *_fieldList_KeyValue_SetValue_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*KeyValue_SetValue_Args)(fl)
+		v   = (*KeyValue_SetValue_Args)(fl)
 		w   wire.Value
 		err error
 	)
@@ -2850,7 +2849,6 @@ func (fl *_fieldList_KeyValue_SetValue_Args) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.Value != nil {
 		w, err = v.Value.ToWire()
@@ -2860,7 +2858,6 @@ func (fl *_fieldList_KeyValue_SetValue_Args) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -3251,8 +3248,7 @@ type _fieldList_KeyValue_SetValueV2_Args KeyValue_SetValueV2_Args
 
 func (fl *_fieldList_KeyValue_SetValueV2_Args) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*KeyValue_SetValueV2_Args)(fl)
+		v   = (*KeyValue_SetValueV2_Args)(fl)
 		w   wire.Value
 		err error
 	)
@@ -3264,7 +3260,6 @@ func (fl *_fieldList_KeyValue_SetValueV2_Args) ForEach(writeField func(wire.Fiel
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.Value == nil {
 		return errors.New("field Value of KeyValue_SetValueV2_Args is required")
 	}
@@ -3275,7 +3270,6 @@ func (fl *_fieldList_KeyValue_SetValueV2_Args) ForEach(writeField func(wire.Fiel
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -3843,6 +3837,15 @@ type KeyValue_Size_Result struct {
 //     return err
 //   }
 func (v *KeyValue_Size_Result) ToWire() (wire.Value, error) {
+	var i int
+	if v.Success != nil {
+		i++
+	}
+
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("KeyValue_Size_Result should have exactly one field: got %v fields", i)
+	}
+
 	return wire.NewValueFieldList((*_fieldList_KeyValue_Size_Result)(v)), nil
 }
 
@@ -3850,8 +3853,7 @@ type _fieldList_KeyValue_Size_Result KeyValue_Size_Result
 
 func (fl *_fieldList_KeyValue_Size_Result) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*KeyValue_Size_Result)(fl)
+		v   = (*KeyValue_Size_Result)(fl)
 		w   wire.Value
 		err error
 	)
@@ -3864,11 +3866,6 @@ func (fl *_fieldList_KeyValue_Size_Result) ForEach(writeField func(wire.Field) e
 		if err := writeField(wire.Field{ID: 0, Value: w}); err != nil {
 			return err
 		}
-		i++
-	}
-
-	if i != 1 {
-		return fmt.Errorf("KeyValue_Size_Result should have exactly one field: got %v fields", i)
 	}
 
 	return nil

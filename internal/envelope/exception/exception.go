@@ -352,8 +352,7 @@ type _fieldList_TApplicationException TApplicationException
 
 func (fl *_fieldList_TApplicationException) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*TApplicationException)(fl)
+		v   = (*TApplicationException)(fl)
 		w   wire.Value
 		err error
 	)
@@ -366,7 +365,6 @@ func (fl *_fieldList_TApplicationException) ForEach(writeField func(wire.Field) 
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.Type != nil {
 		w, err = v.Type.ToWire()
@@ -376,7 +374,6 @@ func (fl *_fieldList_TApplicationException) ForEach(writeField func(wire.Field) 
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil

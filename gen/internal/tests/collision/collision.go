@@ -51,8 +51,7 @@ type _fieldList_AccessorConflict AccessorConflict
 
 func (fl *_fieldList_AccessorConflict) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*AccessorConflict)(fl)
+		v   = (*AccessorConflict)(fl)
 		w   wire.Value
 		err error
 	)
@@ -65,7 +64,6 @@ func (fl *_fieldList_AccessorConflict) ForEach(writeField func(wire.Field) error
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.GetName2 != nil {
 		w, err = wire.NewValueString(*(v.GetName2)), error(nil)
@@ -75,7 +73,6 @@ func (fl *_fieldList_AccessorConflict) ForEach(writeField func(wire.Field) error
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.IsSetName2 != nil {
 		w, err = wire.NewValueBool(*(v.IsSetName2)), error(nil)
@@ -85,7 +82,6 @@ func (fl *_fieldList_AccessorConflict) ForEach(writeField func(wire.Field) error
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -315,8 +311,7 @@ type _fieldList_AccessorNoConflict AccessorNoConflict
 
 func (fl *_fieldList_AccessorNoConflict) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*AccessorNoConflict)(fl)
+		v   = (*AccessorNoConflict)(fl)
 		w   wire.Value
 		err error
 	)
@@ -329,7 +324,6 @@ func (fl *_fieldList_AccessorNoConflict) ForEach(writeField func(wire.Field) err
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.GetName != nil {
 		w, err = wire.NewValueString(*(v.GetName)), error(nil)
@@ -339,7 +333,6 @@ func (fl *_fieldList_AccessorNoConflict) ForEach(writeField func(wire.Field) err
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -848,8 +841,7 @@ type _fieldList_PrimitiveContainers PrimitiveContainers
 
 func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*PrimitiveContainers)(fl)
+		v   = (*PrimitiveContainers)(fl)
 		w   wire.Value
 		err error
 	)
@@ -862,7 +854,6 @@ func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) er
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.B != nil {
 		w, err = wire.NewValueSet(_Set_String_mapType_ValueList(v.B)), error(nil)
@@ -872,7 +863,6 @@ func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) er
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.C != nil {
 		w, err = wire.NewValueMap(_Map_String_String_MapItemList(v.C)), error(nil)
@@ -882,7 +872,6 @@ func (fl *_fieldList_PrimitiveContainers) ForEach(writeField func(wire.Field) er
 		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -1230,8 +1219,7 @@ type _fieldList_StructCollision StructCollision
 
 func (fl *_fieldList_StructCollision) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*StructCollision)(fl)
+		v   = (*StructCollision)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1243,7 +1231,6 @@ func (fl *_fieldList_StructCollision) ForEach(writeField func(wire.Field) error)
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueString(v.CollisionField2), error(nil)
 	if err != nil {
@@ -1252,7 +1239,6 @@ func (fl *_fieldList_StructCollision) ForEach(writeField func(wire.Field) error)
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -1406,6 +1392,18 @@ type UnionCollision struct {
 //     return err
 //   }
 func (v *UnionCollision) ToWire() (wire.Value, error) {
+	var i int
+	if v.CollisionField != nil {
+		i++
+	}
+	if v.CollisionField2 != nil {
+		i++
+	}
+
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("UnionCollision should have exactly one field: got %v fields", i)
+	}
+
 	return wire.NewValueFieldList((*_fieldList_UnionCollision)(v)), nil
 }
 
@@ -1413,8 +1411,7 @@ type _fieldList_UnionCollision UnionCollision
 
 func (fl *_fieldList_UnionCollision) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*UnionCollision)(fl)
+		v   = (*UnionCollision)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1427,7 +1424,6 @@ func (fl *_fieldList_UnionCollision) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.CollisionField2 != nil {
 		w, err = wire.NewValueString(*(v.CollisionField2)), error(nil)
@@ -1437,11 +1433,6 @@ func (fl *_fieldList_UnionCollision) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
-	}
-
-	if i != 1 {
-		return fmt.Errorf("UnionCollision should have exactly one field: got %v fields", i)
 	}
 
 	return nil
@@ -1637,8 +1628,7 @@ type _fieldList_WithDefault WithDefault
 
 func (fl *_fieldList_WithDefault) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*WithDefault)(fl)
+		v   = (*WithDefault)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1658,7 +1648,6 @@ func (fl *_fieldList_WithDefault) ForEach(writeField func(wire.Field) error) err
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -2032,8 +2021,7 @@ type _fieldList_StructCollision2 StructCollision2
 
 func (fl *_fieldList_StructCollision2) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*StructCollision2)(fl)
+		v   = (*StructCollision2)(fl)
 		w   wire.Value
 		err error
 	)
@@ -2045,7 +2033,6 @@ func (fl *_fieldList_StructCollision2) ForEach(writeField func(wire.Field) error
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueString(v.CollisionField2), error(nil)
 	if err != nil {
@@ -2054,7 +2041,6 @@ func (fl *_fieldList_StructCollision2) ForEach(writeField func(wire.Field) error
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -2208,6 +2194,18 @@ type UnionCollision2 struct {
 //     return err
 //   }
 func (v *UnionCollision2) ToWire() (wire.Value, error) {
+	var i int
+	if v.CollisionField != nil {
+		i++
+	}
+	if v.CollisionField2 != nil {
+		i++
+	}
+
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("UnionCollision2 should have exactly one field: got %v fields", i)
+	}
+
 	return wire.NewValueFieldList((*_fieldList_UnionCollision2)(v)), nil
 }
 
@@ -2215,8 +2213,7 @@ type _fieldList_UnionCollision2 UnionCollision2
 
 func (fl *_fieldList_UnionCollision2) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*UnionCollision2)(fl)
+		v   = (*UnionCollision2)(fl)
 		w   wire.Value
 		err error
 	)
@@ -2229,7 +2226,6 @@ func (fl *_fieldList_UnionCollision2) ForEach(writeField func(wire.Field) error)
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.CollisionField2 != nil {
 		w, err = wire.NewValueString(*(v.CollisionField2)), error(nil)
@@ -2239,11 +2235,6 @@ func (fl *_fieldList_UnionCollision2) ForEach(writeField func(wire.Field) error)
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
-	}
-
-	if i != 1 {
-		return fmt.Errorf("UnionCollision2 should have exactly one field: got %v fields", i)
 	}
 
 	return nil

@@ -114,6 +114,27 @@ func (_Map_String_ArbitraryValue_MapItemList) Close() {}
 //     return err
 //   }
 func (v *ArbitraryValue) ToWire() (wire.Value, error) {
+	var i int
+	if v.BoolValue != nil {
+		i++
+	}
+	if v.Int64Value != nil {
+		i++
+	}
+	if v.StringValue != nil {
+		i++
+	}
+	if v.ListValue != nil {
+		i++
+	}
+	if v.MapValue != nil {
+		i++
+	}
+
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("ArbitraryValue should have exactly one field: got %v fields", i)
+	}
+
 	return wire.NewValueFieldList((*_fieldList_ArbitraryValue)(v)), nil
 }
 
@@ -121,8 +142,7 @@ type _fieldList_ArbitraryValue ArbitraryValue
 
 func (fl *_fieldList_ArbitraryValue) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*ArbitraryValue)(fl)
+		v   = (*ArbitraryValue)(fl)
 		w   wire.Value
 		err error
 	)
@@ -135,7 +155,6 @@ func (fl *_fieldList_ArbitraryValue) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.Int64Value != nil {
 		w, err = wire.NewValueI64(*(v.Int64Value)), error(nil)
@@ -145,7 +164,6 @@ func (fl *_fieldList_ArbitraryValue) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.StringValue != nil {
 		w, err = wire.NewValueString(*(v.StringValue)), error(nil)
@@ -155,7 +173,6 @@ func (fl *_fieldList_ArbitraryValue) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.ListValue != nil {
 		w, err = wire.NewValueList(_List_ArbitraryValue_ValueList(v.ListValue)), error(nil)
@@ -165,7 +182,6 @@ func (fl *_fieldList_ArbitraryValue) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.MapValue != nil {
 		w, err = wire.NewValueMap(_Map_String_ArbitraryValue_MapItemList(v.MapValue)), error(nil)
@@ -175,11 +191,6 @@ func (fl *_fieldList_ArbitraryValue) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
 			return err
 		}
-		i++
-	}
-
-	if i != 1 {
-		return fmt.Errorf("ArbitraryValue should have exactly one field: got %v fields", i)
 	}
 
 	return nil
@@ -604,6 +615,18 @@ type Document struct {
 //     return err
 //   }
 func (v *Document) ToWire() (wire.Value, error) {
+	var i int
+	if v.Pdf != nil {
+		i++
+	}
+	if v.PlainText != nil {
+		i++
+	}
+
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("Document should have exactly one field: got %v fields", i)
+	}
+
 	return wire.NewValueFieldList((*_fieldList_Document)(v)), nil
 }
 
@@ -611,8 +634,7 @@ type _fieldList_Document Document
 
 func (fl *_fieldList_Document) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Document)(fl)
+		v   = (*Document)(fl)
 		w   wire.Value
 		err error
 	)
@@ -625,7 +647,6 @@ func (fl *_fieldList_Document) ForEach(writeField func(wire.Field) error) error 
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.PlainText != nil {
 		w, err = wire.NewValueString(*(v.PlainText)), error(nil)
@@ -635,11 +656,6 @@ func (fl *_fieldList_Document) ForEach(writeField func(wire.Field) error) error 
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
-	}
-
-	if i != 1 {
-		return fmt.Errorf("Document should have exactly one field: got %v fields", i)
 	}
 
 	return nil

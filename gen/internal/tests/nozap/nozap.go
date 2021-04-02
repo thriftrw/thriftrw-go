@@ -306,8 +306,7 @@ type _fieldList_PrimitiveRequiredStruct PrimitiveRequiredStruct
 
 func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*PrimitiveRequiredStruct)(fl)
+		v   = (*PrimitiveRequiredStruct)(fl)
 		w   wire.Value
 		err error
 	)
@@ -319,7 +318,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueI8(v.ByteField), error(nil)
 	if err != nil {
@@ -328,7 +326,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueI16(v.Int16Field), error(nil)
 	if err != nil {
@@ -337,7 +334,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueI32(v.Int32Field), error(nil)
 	if err != nil {
@@ -346,7 +342,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueI64(v.Int64Field), error(nil)
 	if err != nil {
@@ -355,7 +350,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueDouble(v.DoubleField), error(nil)
 	if err != nil {
@@ -364,7 +358,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueString(v.StringField), error(nil)
 	if err != nil {
@@ -373,7 +366,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.BinaryField == nil {
 		return errors.New("field BinaryField of PrimitiveRequiredStruct is required")
 	}
@@ -384,7 +376,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueList(_List_String_ValueList(v.ListOfStrings)), error(nil)
 	if err != nil {
@@ -393,7 +384,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 9, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.SetOfInts == nil {
 		return errors.New("field SetOfInts of PrimitiveRequiredStruct is required")
 	}
@@ -404,7 +394,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 10, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.MapOfIntsToDoubles == nil {
 		return errors.New("field MapOfIntsToDoubles of PrimitiveRequiredStruct is required")
 	}
@@ -415,7 +404,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 11, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }

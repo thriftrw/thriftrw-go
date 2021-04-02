@@ -44,8 +44,7 @@ type _fieldList_ContactInfo ContactInfo
 
 func (fl *_fieldList_ContactInfo) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*ContactInfo)(fl)
+		v   = (*ContactInfo)(fl)
 		w   wire.Value
 		err error
 	)
@@ -57,7 +56,6 @@ func (fl *_fieldList_ContactInfo) ForEach(writeField func(wire.Field) error) err
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -300,8 +298,7 @@ type _fieldList_DefaultsStruct DefaultsStruct
 
 func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*DefaultsStruct)(fl)
+		v   = (*DefaultsStruct)(fl)
 		w   wire.Value
 		err error
 	)
@@ -318,7 +315,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vOptionalPrimitive := v.OptionalPrimitive
 	if vOptionalPrimitive == nil {
@@ -332,7 +328,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vRequiredEnum := v.RequiredEnum
 	if vRequiredEnum == nil {
@@ -346,7 +341,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vOptionalEnum := v.OptionalEnum
 	if vOptionalEnum == nil {
@@ -360,7 +354,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vRequiredList := v.RequiredList
 	if vRequiredList == nil {
@@ -377,7 +370,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vOptionalList := v.OptionalList
 	if vOptionalList == nil {
@@ -395,7 +387,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vRequiredStruct := v.RequiredStruct
 	if vRequiredStruct == nil {
@@ -418,7 +409,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vOptionalStruct := v.OptionalStruct
 	if vOptionalStruct == nil {
@@ -441,7 +431,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vRequiredBoolDefaultTrue := v.RequiredBoolDefaultTrue
 	if vRequiredBoolDefaultTrue == nil {
@@ -455,7 +444,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 9, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vOptionalBoolDefaultTrue := v.OptionalBoolDefaultTrue
 	if vOptionalBoolDefaultTrue == nil {
@@ -469,7 +457,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 10, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vRequiredBoolDefaultFalse := v.RequiredBoolDefaultFalse
 	if vRequiredBoolDefaultFalse == nil {
@@ -483,7 +470,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 11, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vOptionalBoolDefaultFalse := v.OptionalBoolDefaultFalse
 	if vOptionalBoolDefaultFalse == nil {
@@ -497,7 +483,6 @@ func (fl *_fieldList_DefaultsStruct) ForEach(writeField func(wire.Field) error) 
 		if err := writeField(wire.Field{ID: 12, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -1248,8 +1233,7 @@ type _fieldList_Edge Edge
 
 func (fl *_fieldList_Edge) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Edge)(fl)
+		v   = (*Edge)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1264,7 +1248,6 @@ func (fl *_fieldList_Edge) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.EndPoint == nil {
 		return errors.New("field EndPoint of Edge is required")
 	}
@@ -1275,7 +1258,6 @@ func (fl *_fieldList_Edge) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -1552,8 +1534,7 @@ type _fieldList_Frame Frame
 
 func (fl *_fieldList_Frame) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Frame)(fl)
+		v   = (*Frame)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1568,7 +1549,6 @@ func (fl *_fieldList_Frame) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.Size == nil {
 		return errors.New("field Size of Frame is required")
 	}
@@ -1579,7 +1559,6 @@ func (fl *_fieldList_Frame) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -1760,8 +1739,7 @@ type _fieldList_GoTags GoTags
 
 func (fl *_fieldList_GoTags) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*GoTags)(fl)
+		v   = (*GoTags)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1773,7 +1751,6 @@ func (fl *_fieldList_GoTags) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.Bar != nil {
 		w, err = wire.NewValueString(*(v.Bar)), error(nil)
 		if err != nil {
@@ -1782,7 +1759,6 @@ func (fl *_fieldList_GoTags) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	w, err = wire.NewValueString(v.FooBar), error(nil)
@@ -1792,7 +1768,6 @@ func (fl *_fieldList_GoTags) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueString(v.FooBarWithSpace), error(nil)
 	if err != nil {
@@ -1801,7 +1776,6 @@ func (fl *_fieldList_GoTags) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.FooBarWithOmitEmpty != nil {
 		w, err = wire.NewValueString(*(v.FooBarWithOmitEmpty)), error(nil)
 		if err != nil {
@@ -1810,7 +1784,6 @@ func (fl *_fieldList_GoTags) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	w, err = wire.NewValueString(v.FooBarWithRequired), error(nil)
@@ -1820,7 +1793,6 @@ func (fl *_fieldList_GoTags) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -2151,8 +2123,7 @@ type _fieldList_Graph Graph
 
 func (fl *_fieldList_Graph) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Graph)(fl)
+		v   = (*Graph)(fl)
 		w   wire.Value
 		err error
 	)
@@ -2164,7 +2135,6 @@ func (fl *_fieldList_Graph) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -2381,8 +2351,7 @@ type _fieldList_Node Node
 
 func (fl *_fieldList_Node) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Node)(fl)
+		v   = (*Node)(fl)
 		w   wire.Value
 		err error
 	)
@@ -2394,7 +2363,6 @@ func (fl *_fieldList_Node) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.Tail != nil {
 		w, err = v.Tail.ToWire()
 		if err != nil {
@@ -2403,7 +2371,6 @@ func (fl *_fieldList_Node) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -2617,8 +2584,7 @@ type _fieldList_NotOmitEmpty NotOmitEmpty
 
 func (fl *_fieldList_NotOmitEmpty) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*NotOmitEmpty)(fl)
+		v   = (*NotOmitEmpty)(fl)
 		w   wire.Value
 		err error
 	)
@@ -2631,7 +2597,6 @@ func (fl *_fieldList_NotOmitEmpty) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.NotOmitEmptyInt != nil {
 		w, err = wire.NewValueString(*(v.NotOmitEmptyInt)), error(nil)
@@ -2641,7 +2606,6 @@ func (fl *_fieldList_NotOmitEmpty) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.NotOmitEmptyBool != nil {
 		w, err = wire.NewValueString(*(v.NotOmitEmptyBool)), error(nil)
@@ -2651,7 +2615,6 @@ func (fl *_fieldList_NotOmitEmpty) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.NotOmitEmptyList != nil {
 		w, err = wire.NewValueList(_List_String_ValueList(v.NotOmitEmptyList)), error(nil)
@@ -2661,7 +2624,6 @@ func (fl *_fieldList_NotOmitEmpty) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.NotOmitEmptyMap != nil {
 		w, err = wire.NewValueMap(_Map_String_String_MapItemList(v.NotOmitEmptyMap)), error(nil)
@@ -2671,7 +2633,6 @@ func (fl *_fieldList_NotOmitEmpty) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.NotOmitEmptyListMixedWithOmitEmpty != nil {
 		w, err = wire.NewValueList(_List_String_ValueList(v.NotOmitEmptyListMixedWithOmitEmpty)), error(nil)
@@ -2681,7 +2642,6 @@ func (fl *_fieldList_NotOmitEmpty) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.NotOmitEmptyListMixedWithOmitEmptyV2 != nil {
 		w, err = wire.NewValueList(_List_String_ValueList(v.NotOmitEmptyListMixedWithOmitEmptyV2)), error(nil)
@@ -2691,7 +2651,6 @@ func (fl *_fieldList_NotOmitEmpty) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.OmitEmptyString != nil {
 		w, err = wire.NewValueString(*(v.OmitEmptyString)), error(nil)
@@ -2701,7 +2660,6 @@ func (fl *_fieldList_NotOmitEmpty) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -3134,8 +3092,7 @@ type _fieldList_Omit Omit
 
 func (fl *_fieldList_Omit) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Omit)(fl)
+		v   = (*Omit)(fl)
 		w   wire.Value
 		err error
 	)
@@ -3147,7 +3104,6 @@ func (fl *_fieldList_Omit) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueString(v.Hidden), error(nil)
 	if err != nil {
@@ -3156,7 +3112,6 @@ func (fl *_fieldList_Omit) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -3316,8 +3271,7 @@ type _fieldList_PersonalInfo PersonalInfo
 
 func (fl *_fieldList_PersonalInfo) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*PersonalInfo)(fl)
+		v   = (*PersonalInfo)(fl)
 		w   wire.Value
 		err error
 	)
@@ -3330,7 +3284,6 @@ func (fl *_fieldList_PersonalInfo) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -3471,8 +3424,7 @@ type _fieldList_Point Point
 
 func (fl *_fieldList_Point) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Point)(fl)
+		v   = (*Point)(fl)
 		w   wire.Value
 		err error
 	)
@@ -3484,7 +3436,6 @@ func (fl *_fieldList_Point) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueDouble(v.Y), error(nil)
 	if err != nil {
@@ -3493,7 +3444,6 @@ func (fl *_fieldList_Point) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -3663,8 +3613,7 @@ type _fieldList_PrimitiveOptionalStruct PrimitiveOptionalStruct
 
 func (fl *_fieldList_PrimitiveOptionalStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*PrimitiveOptionalStruct)(fl)
+		v   = (*PrimitiveOptionalStruct)(fl)
 		w   wire.Value
 		err error
 	)
@@ -3677,7 +3626,6 @@ func (fl *_fieldList_PrimitiveOptionalStruct) ForEach(writeField func(wire.Field
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.ByteField != nil {
 		w, err = wire.NewValueI8(*(v.ByteField)), error(nil)
@@ -3687,7 +3635,6 @@ func (fl *_fieldList_PrimitiveOptionalStruct) ForEach(writeField func(wire.Field
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.Int16Field != nil {
 		w, err = wire.NewValueI16(*(v.Int16Field)), error(nil)
@@ -3697,7 +3644,6 @@ func (fl *_fieldList_PrimitiveOptionalStruct) ForEach(writeField func(wire.Field
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.Int32Field != nil {
 		w, err = wire.NewValueI32(*(v.Int32Field)), error(nil)
@@ -3707,7 +3653,6 @@ func (fl *_fieldList_PrimitiveOptionalStruct) ForEach(writeField func(wire.Field
 		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.Int64Field != nil {
 		w, err = wire.NewValueI64(*(v.Int64Field)), error(nil)
@@ -3717,7 +3662,6 @@ func (fl *_fieldList_PrimitiveOptionalStruct) ForEach(writeField func(wire.Field
 		if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.DoubleField != nil {
 		w, err = wire.NewValueDouble(*(v.DoubleField)), error(nil)
@@ -3727,7 +3671,6 @@ func (fl *_fieldList_PrimitiveOptionalStruct) ForEach(writeField func(wire.Field
 		if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.StringField != nil {
 		w, err = wire.NewValueString(*(v.StringField)), error(nil)
@@ -3737,7 +3680,6 @@ func (fl *_fieldList_PrimitiveOptionalStruct) ForEach(writeField func(wire.Field
 		if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.BinaryField != nil {
 		w, err = wire.NewValueBinary(v.BinaryField), error(nil)
@@ -3747,7 +3689,6 @@ func (fl *_fieldList_PrimitiveOptionalStruct) ForEach(writeField func(wire.Field
 		if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -4179,8 +4120,7 @@ type _fieldList_PrimitiveRequiredStruct PrimitiveRequiredStruct
 
 func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*PrimitiveRequiredStruct)(fl)
+		v   = (*PrimitiveRequiredStruct)(fl)
 		w   wire.Value
 		err error
 	)
@@ -4192,7 +4132,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueI8(v.ByteField), error(nil)
 	if err != nil {
@@ -4201,7 +4140,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueI16(v.Int16Field), error(nil)
 	if err != nil {
@@ -4210,7 +4148,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueI32(v.Int32Field), error(nil)
 	if err != nil {
@@ -4219,7 +4156,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueI64(v.Int64Field), error(nil)
 	if err != nil {
@@ -4228,7 +4164,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueDouble(v.DoubleField), error(nil)
 	if err != nil {
@@ -4237,7 +4172,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueString(v.StringField), error(nil)
 	if err != nil {
@@ -4246,7 +4180,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.BinaryField == nil {
 		return errors.New("field BinaryField of PrimitiveRequiredStruct is required")
 	}
@@ -4257,7 +4190,6 @@ func (fl *_fieldList_PrimitiveRequiredStruct) ForEach(writeField func(wire.Field
 	if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -4591,8 +4523,7 @@ type _fieldList_Rename Rename
 
 func (fl *_fieldList_Rename) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Rename)(fl)
+		v   = (*Rename)(fl)
 		w   wire.Value
 		err error
 	)
@@ -4604,7 +4535,6 @@ func (fl *_fieldList_Rename) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueString(v.CamelCase), error(nil)
 	if err != nil {
@@ -4613,7 +4543,6 @@ func (fl *_fieldList_Rename) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -4777,8 +4706,7 @@ type _fieldList_Size Size
 
 func (fl *_fieldList_Size) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Size)(fl)
+		v   = (*Size)(fl)
 		w   wire.Value
 		err error
 	)
@@ -4790,7 +4718,6 @@ func (fl *_fieldList_Size) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueDouble(v.Height), error(nil)
 	if err != nil {
@@ -4799,7 +4726,6 @@ func (fl *_fieldList_Size) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -4962,8 +4888,7 @@ type _fieldList_StructLabels StructLabels
 
 func (fl *_fieldList_StructLabels) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*StructLabels)(fl)
+		v   = (*StructLabels)(fl)
 		w   wire.Value
 		err error
 	)
@@ -4976,7 +4901,6 @@ func (fl *_fieldList_StructLabels) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.Foo != nil {
 		w, err = wire.NewValueString(*(v.Foo)), error(nil)
@@ -4986,7 +4910,6 @@ func (fl *_fieldList_StructLabels) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.Qux != nil {
 		w, err = wire.NewValueString(*(v.Qux)), error(nil)
@@ -4996,7 +4919,6 @@ func (fl *_fieldList_StructLabels) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.Quux != nil {
 		w, err = wire.NewValueString(*(v.Quux)), error(nil)
@@ -5006,7 +4928,6 @@ func (fl *_fieldList_StructLabels) ForEach(writeField func(wire.Field) error) er
 		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -5252,8 +5173,7 @@ type _fieldList_User User
 
 func (fl *_fieldList_User) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*User)(fl)
+		v   = (*User)(fl)
 		w   wire.Value
 		err error
 	)
@@ -5265,7 +5185,6 @@ func (fl *_fieldList_User) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.Contact != nil {
 		w, err = v.Contact.ToWire()
 		if err != nil {
@@ -5274,7 +5193,6 @@ func (fl *_fieldList_User) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.Personal != nil {
 		w, err = v.Personal.ToWire()
@@ -5284,7 +5202,6 @@ func (fl *_fieldList_User) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -5631,8 +5548,7 @@ type _fieldList_ZapOptOutStruct ZapOptOutStruct
 
 func (fl *_fieldList_ZapOptOutStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*ZapOptOutStruct)(fl)
+		v   = (*ZapOptOutStruct)(fl)
 		w   wire.Value
 		err error
 	)
@@ -5644,7 +5560,6 @@ func (fl *_fieldList_ZapOptOutStruct) ForEach(writeField func(wire.Field) error)
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	w, err = wire.NewValueString(v.Optout), error(nil)
 	if err != nil {
@@ -5653,7 +5568,6 @@ func (fl *_fieldList_ZapOptOutStruct) ForEach(writeField func(wire.Field) error)
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }

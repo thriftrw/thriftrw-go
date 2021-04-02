@@ -237,8 +237,7 @@ type _fieldList_Records Records
 
 func (fl *_fieldList_Records) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Records)(fl)
+		v   = (*Records)(fl)
 		w   wire.Value
 		err error
 	)
@@ -255,7 +254,6 @@ func (fl *_fieldList_Records) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	vOtherRecordType := v.OtherRecordType
 	if vOtherRecordType == nil {
@@ -269,7 +267,6 @@ func (fl *_fieldList_Records) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil

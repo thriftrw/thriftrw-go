@@ -78,8 +78,7 @@ type _fieldList_UUIDConflict UUIDConflict
 
 func (fl *_fieldList_UUIDConflict) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*UUIDConflict)(fl)
+		v   = (*UUIDConflict)(fl)
 		w   wire.Value
 		err error
 	)
@@ -91,7 +90,6 @@ func (fl *_fieldList_UUIDConflict) ForEach(writeField func(wire.Field) error) er
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.ImportedUUID == nil {
 		return errors.New("field ImportedUUID of UUIDConflict is required")
 	}
@@ -102,7 +100,6 @@ func (fl *_fieldList_UUIDConflict) ForEach(writeField func(wire.Field) error) er
 	if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }

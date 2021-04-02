@@ -42,8 +42,7 @@ type _fieldList_DoesNotExistException DoesNotExistException
 
 func (fl *_fieldList_DoesNotExistException) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*DoesNotExistException)(fl)
+		v   = (*DoesNotExistException)(fl)
 		w   wire.Value
 		err error
 	)
@@ -55,7 +54,6 @@ func (fl *_fieldList_DoesNotExistException) ForEach(writeField func(wire.Field) 
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.Error2 != nil {
 		w, err = wire.NewValueString(*(v.Error2)), error(nil)
 		if err != nil {
@@ -64,7 +62,6 @@ func (fl *_fieldList_DoesNotExistException) ForEach(writeField func(wire.Field) 
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil
@@ -254,8 +251,7 @@ type _fieldList_DoesNotExistException2 DoesNotExistException2
 
 func (fl *_fieldList_DoesNotExistException2) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*DoesNotExistException2)(fl)
+		v   = (*DoesNotExistException2)(fl)
 		w   wire.Value
 		err error
 	)
@@ -267,7 +263,6 @@ func (fl *_fieldList_DoesNotExistException2) ForEach(writeField func(wire.Field)
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.Error2 != nil {
 		w, err = wire.NewValueString(*(v.Error2)), error(nil)
 		if err != nil {
@@ -276,7 +271,6 @@ func (fl *_fieldList_DoesNotExistException2) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil

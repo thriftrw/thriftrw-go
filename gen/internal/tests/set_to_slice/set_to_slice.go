@@ -224,8 +224,7 @@ type _fieldList_Bar Bar
 
 func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Bar)(fl)
+		v   = (*Bar)(fl)
 		w   wire.Value
 		err error
 	)
@@ -240,7 +239,6 @@ func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.OptionalStringListField != nil {
 		w, err = wire.NewValueSet(_Set_String_sliceType_ValueList(v.OptionalStringListField)), error(nil)
 		if err != nil {
@@ -249,7 +247,6 @@ func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 2, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.RequiredTypedefStringListField == nil {
 		return errors.New("field RequiredTypedefStringListField of Bar is required")
@@ -261,7 +258,6 @@ func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 3, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.OptionalTypedefStringListField != nil {
 		w, err = v.OptionalTypedefStringListField.ToWire()
 		if err != nil {
@@ -270,7 +266,6 @@ func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 4, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.RequiredFooListField == nil {
 		return errors.New("field RequiredFooListField of Bar is required")
@@ -282,7 +277,6 @@ func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 5, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.OptionalFooListField != nil {
 		w, err = wire.NewValueSet(_Set_Foo_sliceType_ValueList(v.OptionalFooListField)), error(nil)
 		if err != nil {
@@ -291,7 +285,6 @@ func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 6, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.RequiredTypedefFooListField == nil {
 		return errors.New("field RequiredTypedefFooListField of Bar is required")
@@ -303,7 +296,6 @@ func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 7, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.OptionalTypedefFooListField != nil {
 		w, err = v.OptionalTypedefFooListField.ToWire()
 		if err != nil {
@@ -312,7 +304,6 @@ func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 		if err := writeField(wire.Field{ID: 8, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 	if v.RequiredStringListListField == nil {
 		return errors.New("field RequiredStringListListField of Bar is required")
@@ -324,7 +315,6 @@ func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 9, Value: w}); err != nil {
 		return err
 	}
-	i++
 	if v.RequiredTypedefStringListListField == nil {
 		return errors.New("field RequiredTypedefStringListListField of Bar is required")
 	}
@@ -335,7 +325,6 @@ func (fl *_fieldList_Bar) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 10, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
@@ -990,8 +979,7 @@ type _fieldList_Foo Foo
 
 func (fl *_fieldList_Foo) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*Foo)(fl)
+		v   = (*Foo)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1003,7 +991,6 @@ func (fl *_fieldList_Foo) ForEach(writeField func(wire.Field) error) error {
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }

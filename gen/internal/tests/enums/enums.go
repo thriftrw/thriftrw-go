@@ -1565,8 +1565,7 @@ type _fieldList_StructWithOptionalEnum StructWithOptionalEnum
 
 func (fl *_fieldList_StructWithOptionalEnum) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*StructWithOptionalEnum)(fl)
+		v   = (*StructWithOptionalEnum)(fl)
 		w   wire.Value
 		err error
 	)
@@ -1579,7 +1578,6 @@ func (fl *_fieldList_StructWithOptionalEnum) ForEach(writeField func(wire.Field)
 		if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 			return err
 		}
-		i++
 	}
 
 	return nil

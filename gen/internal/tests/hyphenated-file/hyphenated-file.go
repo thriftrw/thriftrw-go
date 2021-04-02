@@ -41,8 +41,7 @@ type _fieldList_DocumentStruct DocumentStruct
 
 func (fl *_fieldList_DocumentStruct) ForEach(writeField func(wire.Field) error) error {
 	var (
-		i   int = 0
-		v       = (*DocumentStruct)(fl)
+		v   = (*DocumentStruct)(fl)
 		w   wire.Value
 		err error
 	)
@@ -57,7 +56,6 @@ func (fl *_fieldList_DocumentStruct) ForEach(writeField func(wire.Field) error) 
 	if err := writeField(wire.Field{ID: 1, Value: w}); err != nil {
 		return err
 	}
-	i++
 
 	return nil
 }
