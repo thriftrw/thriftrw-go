@@ -39,7 +39,7 @@ type Value struct {
 	tnumber uint64
 	tbinary []byte
 	tstruct Struct
-	tcoll   interface{} // set/map/list
+	tiface  interface{} // set/map/list
 }
 
 // Type retrieves the type of value inside a Value.
@@ -202,40 +202,40 @@ func (v *Value) GetStruct() Struct {
 // NewValueMap constructs a new Value that contains a map.
 func NewValueMap(v MapItemList) Value {
 	return Value{
-		typ:   TMap,
-		tcoll: v,
+		typ:    TMap,
+		tiface: v,
 	}
 }
 
 // GetMap gets the Map value from a Value.
 func (v *Value) GetMap() MapItemList {
-	return v.tcoll.(MapItemList)
+	return v.tiface.(MapItemList)
 }
 
 // NewValueSet constructs a new Value that contains a set.
 func NewValueSet(v ValueList) Value {
 	return Value{
-		typ:   TSet,
-		tcoll: v,
+		typ:    TSet,
+		tiface: v,
 	}
 }
 
 // GetSet gets the Set value from a Value.
 func (v *Value) GetSet() ValueList {
-	return v.tcoll.(ValueList)
+	return v.tiface.(ValueList)
 }
 
 // NewValueList constructs a new Value that contains a list.
 func NewValueList(v ValueList) Value {
 	return Value{
-		typ:   TList,
-		tcoll: v,
+		typ:    TList,
+		tiface: v,
 	}
 }
 
 // GetList gets the List value from a Value.
 func (v *Value) GetList() ValueList {
-	return v.tcoll.(ValueList)
+	return v.tiface.(ValueList)
 }
 
 func (v Value) String() string {
@@ -257,11 +257,11 @@ func (v Value) String() string {
 	case TStruct:
 		return fmt.Sprintf("TStruct(%v)", v.tstruct)
 	case TMap:
-		return fmt.Sprintf("TMap(%v)", v.tcoll)
+		return fmt.Sprintf("TMap(%v)", v.tiface)
 	case TSet:
-		return fmt.Sprintf("TSet(%v)", v.tcoll)
+		return fmt.Sprintf("TSet(%v)", v.tiface)
 	case TList:
-		return fmt.Sprintf("TList(%v)", v.tcoll)
+		return fmt.Sprintf("TList(%v)", v.tiface)
 	default:
 		panic(fmt.Sprintf("Unknown value type %v", v.typ))
 	}
