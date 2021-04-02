@@ -38,8 +38,7 @@ type Value struct {
 
 	tnumber uint64
 	tbinary []byte
-	tstruct Struct
-	tiface  interface{} // set/map/list
+	tiface  interface{} // set/map/list/fieldlist
 }
 
 // Type retrieves the type of value inside a Value.
@@ -189,14 +188,25 @@ func (v *Value) GetString() string {
 // NewValueStruct constructs a new Value that contains a struct.
 func NewValueStruct(v Struct) Value {
 	return Value{
-		typ:     TStruct,
-		tstruct: v,
+		typ:    TStruct,
+		tiface: FieldListFromSlice(v.Fields),
 	}
 }
 
 // GetStruct gets the Struct value from a Value.
 func (v *Value) GetStruct() Struct {
-	return v.tstruct
+	return Struct{Fields: FieldListToSlice(v.tiface.(FieldList))}
+}
+
+// NewValueFieldList constructs a new Value that contains a struct represented
+// as a lazy list of fields.
+func NewValueFieldList(v FieldList) Value {
+	return Value{typ: TStruct, tiface: v}
+}
+
+// GetFieldList retrieves the struct from a Value as a lazy list of fields.
+func (v *Value) GetFieldList() FieldList {
+	return v.tiface.(FieldList)
 }
 
 // NewValueMap constructs a new Value that contains a map.
@@ -255,7 +265,7 @@ func (v Value) String() string {
 	case TBinary:
 		return fmt.Sprintf("TBinary(%v)", v.tbinary)
 	case TStruct:
-		return fmt.Sprintf("TStruct(%v)", v.tstruct)
+		return fmt.Sprintf("TStruct(%v)", v.GetStruct())
 	case TMap:
 		return fmt.Sprintf("TMap(%v)", v.tiface)
 	case TSet:
@@ -272,14 +282,6 @@ func (v Value) String() string {
 // At this level, structs don't have names or named fields.
 type Struct struct {
 	Fields []Field
-}
-
-func (s Struct) fieldMap() map[int16]Value {
-	m := make(map[int16]Value, len(s.Fields))
-	for _, f := range s.Fields {
-		m[f.ID] = f.Value
-	}
-	return m
 }
 
 func (s Struct) String() string {

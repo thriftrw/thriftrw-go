@@ -23,18 +23,17 @@ package wire
 import "fmt"
 
 // EvaluateValue ensures that the given Value is fully evaluated. Lazy lists
-// are spinned and any errors raised by them are returned.
+// are spun and any errors raised by them are returned.
 func EvaluateValue(v Value) error {
 	switch v.Type() {
 	case TBool, TI8, TDouble, TI16, TI32, TI64, TBinary:
 		return nil
 	case TStruct:
-		for _, f := range v.GetStruct().Fields {
-			if err := EvaluateValue(f.Value); err != nil {
-				return err
-			}
-		}
-		return nil
+		fs := v.GetFieldList()
+		defer fs.Close()
+		return fs.ForEach(func(f Field) error {
+			return EvaluateValue(f.Value)
+		})
 	case TMap:
 		m := v.GetMap()
 		defer m.Close()

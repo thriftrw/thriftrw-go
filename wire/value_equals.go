@@ -52,7 +52,7 @@ func ValuesAreEqual(left, right Value) bool {
 	case TBinary:
 		return bytes.Equal(left.tbinary, right.tbinary)
 	case TStruct:
-		return StructsAreEqual(left.tstruct, right.tstruct)
+		return StructsAreEqual(left.GetFieldList(), right.GetFieldList())
 	case TMap:
 		return MapsAreEqual(left.tiface.(MapItemList), right.tiface.(MapItemList))
 	case TSet:
@@ -65,16 +65,25 @@ func ValuesAreEqual(left, right Value) bool {
 }
 
 // StructsAreEqual checks if two structs are equal.
-func StructsAreEqual(left, right Struct) bool {
-	if len(left.Fields) != len(right.Fields) {
-		return false
-	}
-
+func StructsAreEqual(left, right FieldList) bool {
 	// Fields are unordered so we need to build a map to actually compare
 	// them.
 
-	leftFields := left.fieldMap()
-	rightFields := right.fieldMap()
+	leftFields := make(map[int16]Value)
+	left.ForEach(func(f Field) error {
+		leftFields[f.ID] = f.Value
+		return nil
+	})
+
+	rightFields := make(map[int16]Value)
+	right.ForEach(func(f Field) error {
+		rightFields[f.ID] = f.Value
+		return nil
+	})
+
+	if len(leftFields) != len(rightFields) {
+		return false
+	}
 
 	for i, lvalue := range leftFields {
 		if rvalue, ok := rightFields[i]; !ok {
