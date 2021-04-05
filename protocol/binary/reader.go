@@ -279,7 +279,8 @@ func (br *Reader) readString(off int64) (string, int64, error) {
 }
 
 func (br *Reader) readStruct(off int64) (wire.Struct, int64, error) {
-	var fields []wire.Field
+	// Pre-allocate slice to prevent frequesnt resizing at shorter slice lengths.
+	fields := make([]wire.Field, 0, 128)
 	// TODO(abg) add a lazy FieldList type instead of []Field.
 
 	typ, off, err := br.readByte(off)
