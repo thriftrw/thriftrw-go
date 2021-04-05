@@ -261,6 +261,8 @@ func (br *Reader) readBytes(off int64) ([]byte, int64, error) {
 	// bytesAllocThreshold. We don't want bad requests to lock the system up.
 	if length > bytesAllocThreshold {
 		var buff bytes.Buffer
+		buff.Grow(int(length))
+
 		off, err = br.copyN(&buff, off, int64(length))
 		if err != nil {
 			return nil, off, err
