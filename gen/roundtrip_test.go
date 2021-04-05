@@ -35,6 +35,8 @@ import (
 // assertRoundTrip checks if x.ToWire() results in the given Value and whether
 // x.FromWire() with the given value results in the original x.
 func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args ...interface{}) bool {
+	t.Helper()
+
 	message := fmt.Sprintf(msg, args...)
 
 	if w, err := x.ToWire(); assert.NoError(t, err, "failed to serialize: %v", x) {
@@ -65,6 +67,8 @@ func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args 
 
 // assertBinaryRoundTrip checks that De/Encode returns the same value.
 func assertBinaryRoundTrip(t *testing.T, w wire.Value, message string) (wire.Value, bool) {
+	t.Helper()
+
 	var buff bytes.Buffer
 	if !assert.NoError(t, protocol.Binary.Encode(w, &buff), "%v: failed to serialize", message) {
 		return w, false
