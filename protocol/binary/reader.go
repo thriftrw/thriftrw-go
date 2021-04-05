@@ -309,6 +309,11 @@ func (br *Reader) readStruct(off int64) (wire.Struct, int64, error) {
 			return wire.Struct{}, off, err
 		}
 	}
+
+	if len(fields) == 0 {
+		// Don't let unused slice escape.
+		return wire.Struct{}, off, err
+	}
 	return wire.Struct{Fields: fields}, off, err
 }
 
