@@ -9,22 +9,19 @@ import (
 )
 
 func Benchmark_readStruct(b *testing.B) {
-	for _, bench := range []struct {
+	benchmarks := []struct {
 		name      string
 		numFields int
 	}{
-		{
-			name:      "small struct with 64 fields",
-			numFields: 64,
-		},
-		{
-			name:      "large struct with 512 fields",
-			numFields: 512,
-		},
-	} {
-		reader := NewReader(constructThriftStruct(bench.numFields))
+		{name: "small struct with 64 fields", numFields: 64},
+		{name: "large struct with 512 fields", numFields: 512},
+	}
 
-		b.Run(bench.name, func(b *testing.B) {
+	for _, bb := range benchmarks {
+		b.Run(bb.name, func(b *testing.B) {
+			reader := NewReader(constructThriftStruct(bb.numFields))
+			b.ResetTimer()
+
 			for i := 0; i < b.N; i++ {
 				reader.readStruct(0)
 			}
@@ -35,14 +32,19 @@ func Benchmark_readStruct(b *testing.B) {
 // constructThriftStruct constructs a message containing a struct with n bool fields.
 func constructThriftStruct(n int) io.ReaderAt {
 	var buf bytes.Buffer
-	buf.Grow(n*4 + 1)
-	boolField := []byte{byte(wire.TBool), 0, 0, 0}
+	w := BorrowWriter(&buf)
 
+	fields := make([]wire.Field, 0, n)
+	boolVal := wire.NewValueBool(false)
 	for i := 0; i < n; i++ {
-		buf.Write(boolField)
+		// Add a bool field
+		fields = append(fields, wire.Field{
+			ID:    int16(i),
+			Value: boolVal,
+		})
 	}
-	// A zero byte to terminate the message
-	buf.WriteByte(0)
+	structVal := wire.NewValueStruct(wire.Struct{Fields: fields})
 
+	w.WriteValue(structVal)
 	return bytes.NewReader(buf.Bytes())
 }
