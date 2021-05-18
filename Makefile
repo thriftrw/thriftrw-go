@@ -84,6 +84,12 @@ lint: $(GOLINT) $(STATICCHECK)
 	@$(STATICCHECK) ./... 2>&1 | $(LINT_FILTER) | tee -a lint.log
 	@[ ! -s lint.log ]
 
+$(GOLINT): go.mod
+	go install golang.org/x/lint/golint
+
+$(STATICCHECK): go.mod
+	go install honnef.co/go/tools/cmd/staticcheck
+
 .PHONY: verifyversion
 verifyversion:
 	$(eval CHANGELOG_VERSION := $(shell perl -ne '/^## \[(\S+?)\]/ && print "v$$1\n"' CHANGELOG.md | head -n1))
