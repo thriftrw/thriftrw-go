@@ -239,15 +239,21 @@ func _Map_String_ArbitraryValue_Read(m wire.MapItemList) (map[string]*ArbitraryV
 //   }
 //   return &v, nil
 func (v *ArbitraryValue) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		BoolValue   bool
+		Int64Value  int64
+		StringValue string
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
-				var x bool
-				x, err = field.Value.GetBool(), error(nil)
-				v.BoolValue = &x
+				ptrFields.BoolValue, err = field.Value.GetBool(), error(nil)
+				v.BoolValue = &ptrFields.BoolValue
 				if err != nil {
 					return err
 				}
@@ -255,9 +261,8 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TI64 {
-				var x int64
-				x, err = field.Value.GetI64(), error(nil)
-				v.Int64Value = &x
+				ptrFields.Int64Value, err = field.Value.GetI64(), error(nil)
+				v.Int64Value = &ptrFields.Int64Value
 				if err != nil {
 					return err
 				}
@@ -265,9 +270,8 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 			}
 		case 3:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.StringValue = &x
+				ptrFields.StringValue, err = field.Value.GetString(), error(nil)
+				v.StringValue = &ptrFields.StringValue
 				if err != nil {
 					return err
 				}
@@ -636,6 +640,11 @@ func _PDF_Read(w wire.Value) (typedefs.PDF, error) {
 //   }
 //   return &v, nil
 func (v *Document) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		PlainText string
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
@@ -650,9 +659,8 @@ func (v *Document) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.PlainText = &x
+				ptrFields.PlainText, err = field.Value.GetString(), error(nil)
+				v.PlainText = &ptrFields.PlainText
 				if err != nil {
 					return err
 				}
@@ -806,6 +814,9 @@ func (v *EmptyUnion) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *EmptyUnion) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {

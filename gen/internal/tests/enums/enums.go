@@ -1601,15 +1601,19 @@ func _EnumDefault_Read(w wire.Value) (EnumDefault, error) {
 //   }
 //   return &v, nil
 func (v *StructWithOptionalEnum) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		E EnumDefault
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TI32 {
-				var x EnumDefault
-				x, err = _EnumDefault_Read(field.Value)
-				v.E = &x
+				ptrFields.E, err = _EnumDefault_Read(field.Value)
+				v.E = &ptrFields.E
 				if err != nil {
 					return err
 				}

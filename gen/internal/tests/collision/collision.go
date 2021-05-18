@@ -97,15 +97,21 @@ func (v *AccessorConflict) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *AccessorConflict) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Name       string
+		GetName2   string
+		IsSetName2 bool
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.Name = &x
+				ptrFields.Name, err = field.Value.GetString(), error(nil)
+				v.Name = &ptrFields.Name
 				if err != nil {
 					return err
 				}
@@ -113,9 +119,8 @@ func (v *AccessorConflict) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.GetName2 = &x
+				ptrFields.GetName2, err = field.Value.GetString(), error(nil)
+				v.GetName2 = &ptrFields.GetName2
 				if err != nil {
 					return err
 				}
@@ -123,9 +128,8 @@ func (v *AccessorConflict) FromWire(w wire.Value) error {
 			}
 		case 3:
 			if field.Value.Type() == wire.TBool {
-				var x bool
-				x, err = field.Value.GetBool(), error(nil)
-				v.IsSetName2 = &x
+				ptrFields.IsSetName2, err = field.Value.GetBool(), error(nil)
+				v.IsSetName2 = &ptrFields.IsSetName2
 				if err != nil {
 					return err
 				}
@@ -334,15 +338,20 @@ func (v *AccessorNoConflict) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *AccessorNoConflict) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Getname string
+		GetName string
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.Getname = &x
+				ptrFields.Getname, err = field.Value.GetString(), error(nil)
+				v.Getname = &ptrFields.Getname
 				if err != nil {
 					return err
 				}
@@ -350,9 +359,8 @@ func (v *AccessorNoConflict) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.GetName = &x
+				ptrFields.GetName, err = field.Value.GetString(), error(nil)
+				v.GetName = &ptrFields.GetName
 				if err != nil {
 					return err
 				}
@@ -923,6 +931,10 @@ func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 //   }
 //   return &v, nil
 func (v *PrimitiveContainers) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
@@ -1210,6 +1222,10 @@ func (v *StructCollision) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *StructCollision) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	collisionFieldIsSet := false
@@ -1383,15 +1399,20 @@ func (v *UnionCollision) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *UnionCollision) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		CollisionField  bool
+		CollisionField2 string
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
-				var x bool
-				x, err = field.Value.GetBool(), error(nil)
-				v.CollisionField = &x
+				ptrFields.CollisionField, err = field.Value.GetBool(), error(nil)
+				v.CollisionField = &ptrFields.CollisionField
 				if err != nil {
 					return err
 				}
@@ -1399,9 +1420,8 @@ func (v *UnionCollision) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.CollisionField2 = &x
+				ptrFields.CollisionField2, err = field.Value.GetString(), error(nil)
+				v.CollisionField2 = &ptrFields.CollisionField2
 				if err != nil {
 					return err
 				}
@@ -1567,12 +1587,6 @@ func (v *WithDefault) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _StructCollision_Read(w wire.Value) (*StructCollision2, error) {
-	var v StructCollision2
-	err := v.FromWire(w)
-	return &v, err
-}
-
 // FromWire deserializes a WithDefault struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -1591,13 +1605,19 @@ func _StructCollision_Read(w wire.Value) (*StructCollision2, error) {
 //   }
 //   return &v, nil
 func (v *WithDefault) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Pouet StructCollision2
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.Pouet, err = _StructCollision_Read(field.Value)
+				err = ptrFields.Pouet.FromWire(field.Value)
+				v.Pouet = &ptrFields.Pouet
 				if err != nil {
 					return err
 				}
@@ -1963,6 +1983,10 @@ func (v *StructCollision2) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *StructCollision2) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	collisionFieldIsSet := false
@@ -2136,15 +2160,20 @@ func (v *UnionCollision2) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *UnionCollision2) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		CollisionField  bool
+		CollisionField2 string
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
-				var x bool
-				x, err = field.Value.GetBool(), error(nil)
-				v.CollisionField = &x
+				ptrFields.CollisionField, err = field.Value.GetBool(), error(nil)
+				v.CollisionField = &ptrFields.CollisionField
 				if err != nil {
 					return err
 				}
@@ -2152,9 +2181,8 @@ func (v *UnionCollision2) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.CollisionField2 = &x
+				ptrFields.CollisionField2, err = field.Value.GetString(), error(nil)
+				v.CollisionField2 = &ptrFields.CollisionField2
 				if err != nil {
 					return err
 				}

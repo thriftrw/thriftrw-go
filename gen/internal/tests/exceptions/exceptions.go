@@ -78,6 +78,11 @@ func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *DoesNotExistException) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Error2 string
+	}
+	_ = ptrFields
+
 	var err error
 
 	keyIsSet := false
@@ -94,9 +99,8 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.Error2 = &x
+				ptrFields.Error2, err = field.Value.GetString(), error(nil)
+				v.Error2 = &ptrFields.Error2
 				if err != nil {
 					return err
 				}
@@ -273,6 +277,11 @@ func (v *DoesNotExistException2) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *DoesNotExistException2) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Error2 string
+	}
+	_ = ptrFields
+
 	var err error
 
 	keyIsSet := false
@@ -289,9 +298,8 @@ func (v *DoesNotExistException2) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.Error2 = &x
+				ptrFields.Error2, err = field.Value.GetString(), error(nil)
+				v.Error2 = &ptrFields.Error2
 				if err != nil {
 					return err
 				}
@@ -438,6 +446,9 @@ func (v *EmptyException) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *EmptyException) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {

@@ -211,15 +211,19 @@ func _State_Read(w wire.Value) (State, error) {
 //   }
 //   return &v, nil
 func (v *DefaultPrimitiveTypedef) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		State State
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
-				var x State
-				x, err = _State_Read(field.Value)
-				v.State = &x
+				ptrFields.State, err = _State_Read(field.Value)
+				v.State = &ptrFields.State
 				if err != nil {
 					return err
 				}
@@ -559,12 +563,6 @@ func (v *Event) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _UUID_Read(w wire.Value) (*UUID, error) {
-	var x UUID
-	err := x.FromWire(w)
-	return &x, err
-}
-
 func _Timestamp_Read(w wire.Value) (Timestamp, error) {
 	var x Timestamp
 	err := x.FromWire(w)
@@ -589,6 +587,12 @@ func _Timestamp_Read(w wire.Value) (Timestamp, error) {
 //   }
 //   return &v, nil
 func (v *Event) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		UUID UUID
+		Time Timestamp
+	}
+	_ = ptrFields
+
 	var err error
 
 	uuidIsSet := false
@@ -597,7 +601,8 @@ func (v *Event) FromWire(w wire.Value) error {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.UUID, err = _UUID_Read(field.Value)
+				err = ptrFields.UUID.FromWire(field.Value)
+				v.UUID = &ptrFields.UUID
 				if err != nil {
 					return err
 				}
@@ -605,9 +610,8 @@ func (v *Event) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TI64 {
-				var x Timestamp
-				x, err = _Timestamp_Read(field.Value)
-				v.Time = &x
+				ptrFields.Time, err = _Timestamp_Read(field.Value)
+				v.Time = &ptrFields.Time
 				if err != nil {
 					return err
 				}
@@ -1542,6 +1546,10 @@ func _EventGroup_Read(w wire.Value) (EventGroup, error) {
 //   }
 //   return &v, nil
 func (v *Transition) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	fromStateIsSet := false
@@ -1718,12 +1726,6 @@ func (v *TransitiveTypedefField) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _MyUUID_Read(w wire.Value) (*MyUUID, error) {
-	var x MyUUID
-	err := x.FromWire(w)
-	return &x, err
-}
-
 // FromWire deserializes a TransitiveTypedefField struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -1742,6 +1744,11 @@ func _MyUUID_Read(w wire.Value) (*MyUUID, error) {
 //   }
 //   return &v, nil
 func (v *TransitiveTypedefField) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		DefUUID MyUUID
+	}
+	_ = ptrFields
+
 	var err error
 
 	defUUIDIsSet := false
@@ -1750,7 +1757,8 @@ func (v *TransitiveTypedefField) FromWire(w wire.Value) error {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.DefUUID, err = _MyUUID_Read(field.Value)
+				err = ptrFields.DefUUID.FromWire(field.Value)
+				v.DefUUID = &ptrFields.DefUUID
 				if err != nil {
 					return err
 				}
@@ -1918,6 +1926,10 @@ func (v *I128) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *I128) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	highIsSet := false

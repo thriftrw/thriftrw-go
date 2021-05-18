@@ -54,12 +54,6 @@ func (v *DocumentStructure) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _Second_Read(w wire.Value) (*non_hyphenated.Second, error) {
-	var v non_hyphenated.Second
-	err := v.FromWire(w)
-	return &v, err
-}
-
 // FromWire deserializes a DocumentStructure struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -78,6 +72,11 @@ func _Second_Read(w wire.Value) (*non_hyphenated.Second, error) {
 //   }
 //   return &v, nil
 func (v *DocumentStructure) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		R2 non_hyphenated.Second
+	}
+	_ = ptrFields
+
 	var err error
 
 	r2IsSet := false
@@ -86,7 +85,8 @@ func (v *DocumentStructure) FromWire(w wire.Value) error {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.R2, err = _Second_Read(field.Value)
+				err = ptrFields.R2.FromWire(field.Value)
+				v.R2 = &ptrFields.R2
 				if err != nil {
 					return err
 				}

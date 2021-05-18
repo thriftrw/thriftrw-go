@@ -103,12 +103,6 @@ func _UUID_Read(w wire.Value) (UUID, error) {
 	return x, err
 }
 
-func _UUID_1_Read(w wire.Value) (*typedefs.UUID, error) {
-	var x typedefs.UUID
-	err := x.FromWire(w)
-	return &x, err
-}
-
 // FromWire deserializes a UUIDConflict struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -127,6 +121,11 @@ func _UUID_1_Read(w wire.Value) (*typedefs.UUID, error) {
 //   }
 //   return &v, nil
 func (v *UUIDConflict) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		ImportedUUID typedefs.UUID
+	}
+	_ = ptrFields
+
 	var err error
 
 	localUUIDIsSet := false
@@ -144,7 +143,8 @@ func (v *UUIDConflict) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
-				v.ImportedUUID, err = _UUID_1_Read(field.Value)
+				err = ptrFields.ImportedUUID.FromWire(field.Value)
+				v.ImportedUUID = &ptrFields.ImportedUUID
 				if err != nil {
 					return err
 				}

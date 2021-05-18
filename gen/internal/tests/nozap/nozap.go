@@ -475,6 +475,10 @@ func _Map_I64_Double_Read(m wire.MapItemList) (map[int64]float64, error) {
 //   }
 //   return &v, nil
 func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	boolFieldIsSet := false

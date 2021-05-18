@@ -1144,6 +1144,10 @@ func _Map_Set_I32_mapType_List_Double_Read(m wire.MapItemList) ([]struct {
 //   }
 //   return &v, nil
 func (v *ContainersOfContainers) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
@@ -2351,6 +2355,10 @@ func _Map_EnumWithDuplicateValues_I32_Read(m wire.MapItemList) (map[enums.EnumWi
 //   }
 //   return &v, nil
 func (v *EnumContainers) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
@@ -2751,6 +2759,10 @@ func _List_RecordType_1_Read(l wire.ValueList) ([]enums.RecordType, error) {
 //   }
 //   return &v, nil
 func (v *ListOfConflictingEnums) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	recordsIsSet := false
@@ -3082,6 +3094,10 @@ func _List_UUID_1_Read(l wire.ValueList) ([]uuid_conflict.UUID, error) {
 //   }
 //   return &v, nil
 func (v *ListOfConflictingUUIDs) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	uuidsIsSet := false
@@ -3304,6 +3320,10 @@ func (v *ListOfOptionalPrimitives) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *ListOfOptionalPrimitives) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
@@ -3438,6 +3458,10 @@ func (v *ListOfRequiredPrimitives) ToWire() (wire.Value, error) {
 //   }
 //   return &v, nil
 func (v *ListOfRequiredPrimitives) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	listOfStringsIsSet := false
@@ -3733,6 +3757,10 @@ func _Map_String_Binary_Read(m wire.MapItemList) (map[string][]byte, error) {
 //   }
 //   return &v, nil
 func (v *MapOfBinaryAndString) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
@@ -4302,6 +4330,10 @@ func _Map_String_Bool_Read(m wire.MapItemList) (map[string]bool, error) {
 //   }
 //   return &v, nil
 func (v *PrimitiveContainers) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
@@ -4830,6 +4862,10 @@ func _Map_I64_Double_Read(m wire.MapItemList) (map[int64]float64, error) {
 //   }
 //   return &v, nil
 func (v *PrimitiveContainersRequired) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	listOfStringsIsSet := false

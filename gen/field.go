@@ -393,6 +393,15 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 		//   }
 		//   return &<$v>, nil
 		func (<$v> *<.Name>) FromWire(<$w> <$wire>.Value) error {
+			var ptrFields struct {
+				<range .Fields>
+					<- if or (isStructType .Type) (and (not .Required) (isPrimitiveType .Type)) ->
+						<goName .> <typeName .Type>
+					<- end>
+				<end>
+			}
+			_ = ptrFields
+
 			<if len .Fields> var err error <end>
 			<$f := newVar "field">
 
@@ -410,8 +419,14 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 					if <$f>.Value.Type() == <typeCode .Type> {
 						<- $lhs := printf "%s.%s" $v (goName .) ->
 						<- $value := printf "%s.Value" $f ->
-						<- if .Required ->
+						<- if isStructType .Type ->
+							err = ptrFields.<goName .>.FromWire(<$value>)
+							<$lhs> = &ptrFields.<goName .>
+						<- else if .Required ->
 							<$lhs>, err = <fromWire .Type $value>
+						<- else if isPrimitiveType .Type ->
+							ptrFields.<goName .>, err = <fromWire .Type $value>
+							<$lhs> = &ptrFields.<goName .>
 						<- else ->
 							<fromWirePtr .Type $lhs $value>
 						<- end>
