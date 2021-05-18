@@ -174,6 +174,14 @@ func TestParseHeaders(t *testing.T) {
 		},
 		{
 			`
+				cpp_include "<unordered_map>"
+			`,
+			&Program{Headers: []Header{
+				&CppInclude{Path: "<unordered_map>", Line: 2},
+			}},
+		},
+		{
+			`
 				namespace py bar
 				namespace * foo
 			`,

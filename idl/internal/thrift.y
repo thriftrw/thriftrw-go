@@ -54,7 +54,7 @@ import "go.uber.org/thriftrw/ast"
 %token <dub> DUBCONSTANT
 
 // Reserved keywords
-%token NAMESPACE INCLUDE
+%token NAMESPACE INCLUDE CPP_INCLUDE
 %token VOID BOOL BYTE I8 I16 I32 I64 DOUBLE STRING BINARY MAP LIST SET
 %token ONEWAY TYPEDEF STRUCT UNION EXCEPTION EXTENDS THROWS SERVICE ENUM CONST
 %token REQUIRED OPTIONAL TRUE FALSE
@@ -121,6 +121,13 @@ header
             $$ = &ast.Include{
                 Name: $3,
                 Path: $4,
+                Line: $1,
+            }
+        }
+    | lineno CPP_INCLUDE LITERAL
+        {
+            $$ = &ast.CppInclude{
+                Path: $3,
                 Line: $1,
             }
         }
