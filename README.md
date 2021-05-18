@@ -24,9 +24,9 @@ release.
 
 [doc-img]: https://godoc.org/go.uber.org/thriftrw?status.svg
 [doc]: https://godoc.org/go.uber.org/thriftrw
-[ci-img]: https://travis-ci.com/thriftrw/thriftrw-go.svg?branch=master
+[ci-img]: https://github.com/thriftrw/thriftrw-go/actions/workflows/go.yml/badge.svg
 [cov-img]: https://codecov.io/gh/thriftrw/thriftrw-go/branch/dev/graph/badge.svg
-[ci]: https://travis-ci.com/thriftrw/thriftrw-go
+[ci]: https://github.com/thriftrw/thriftrw-go/actions/workflows/go.yml
 [cov]: https://codecov.io/gh/thriftrw/thriftrw-go
 
 ## Development

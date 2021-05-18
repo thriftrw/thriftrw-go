@@ -121,7 +121,7 @@ space +=
 
 .PHONY: cover
 cover:
-	go test -v -covermode=atomic -coverprofile cover.full.out -coverpkg=./... ./...
+	go test -v -covermode=atomic -race -coverprofile cover.full.out -coverpkg=./... ./...
 	grep -v "$(subst $(space),\|,$(COVER_IGNORE_FILES))" cover.full.out > cover.out
 	go tool cover -html=cover.out -o cover.html
 
