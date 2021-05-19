@@ -950,62 +950,6 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 		goto st19
 	tr7:
-		(lex.p) = (lex.te) - 1
-		{
-			str := string(lex.data[lex.ts:lex.te])
-			if dub, err := strconv.ParseFloat(str, 64); err != nil {
-				lex.Error(err.Error())
-			} else {
-				out.dub = dub
-				tok = DUBCONSTANT
-			}
-			{
-				(lex.p)++
-				lex.cs = 19
-				goto _out
-			}
-		}
-		goto st19
-	tr16:
-		lex.te = (lex.p) + 1
-
-		goto st19
-	tr21:
-
-		lex.lastDocstring = string(lex.data[lex.docstringStart : lex.p+1])
-		lex.linesSinceDocstring = 0
-
-		lex.te = (lex.p) + 1
-
-		goto st19
-	tr22:
-		(lex.p) = (lex.te) - 1
-
-		goto st19
-	tr25:
-		(lex.p) = (lex.te) - 1
-		{
-			str := string(lex.data[lex.ts:lex.te])
-			base := 10
-			if len(str) > 2 && str[0:2] == "0x" {
-				// Hex constant
-				base = 16
-			}
-
-			if i64, err := strconv.ParseInt(str, base, 64); err != nil {
-				lex.Error(err.Error())
-			} else {
-				out.i64 = i64
-				tok = INTCONSTANT
-			}
-			{
-				(lex.p)++
-				lex.cs = 19
-				goto _out
-			}
-		}
-		goto st19
-	tr27:
 		switch lex.act {
 		case 1:
 			{
@@ -1307,6 +1251,46 @@ func (lex *lexer) Lex(out *yySymType) int {
 					goto _out
 				}
 			}
+		case 37:
+			{
+				(lex.p) = (lex.te) - 1
+
+				str := string(lex.data[lex.ts:lex.te])
+				base := 10
+				if len(str) > 2 && str[0:2] == "0x" {
+					// Hex constant
+					base = 16
+				}
+
+				if i64, err := strconv.ParseInt(str, base, 64); err != nil {
+					lex.Error(err.Error())
+				} else {
+					out.i64 = i64
+					tok = INTCONSTANT
+				}
+				{
+					(lex.p)++
+					lex.cs = 19
+					goto _out
+				}
+			}
+		case 38:
+			{
+				(lex.p) = (lex.te) - 1
+
+				str := string(lex.data[lex.ts:lex.te])
+				if dub, err := strconv.ParseFloat(str, 64); err != nil {
+					lex.Error(err.Error())
+				} else {
+					out.dub = dub
+					tok = DUBCONSTANT
+				}
+				{
+					(lex.p)++
+					lex.cs = 19
+					goto _out
+				}
+			}
 		case 40:
 			{
 				(lex.p) = (lex.te) - 1
@@ -1333,11 +1317,50 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 
 		goto st19
-	tr29:
+	tr16:
 		lex.te = (lex.p) + 1
 
 		goto st19
-	tr30:
+	tr21:
+
+		lex.lastDocstring = string(lex.data[lex.docstringStart : lex.p+1])
+		lex.linesSinceDocstring = 0
+
+		lex.te = (lex.p) + 1
+
+		goto st19
+	tr22:
+		(lex.p) = (lex.te) - 1
+
+		goto st19
+	tr25:
+		(lex.p) = (lex.te) - 1
+		{
+			str := string(lex.data[lex.ts:lex.te])
+			base := 10
+			if len(str) > 2 && str[0:2] == "0x" {
+				// Hex constant
+				base = 16
+			}
+
+			if i64, err := strconv.ParseInt(str, base, 64); err != nil {
+				lex.Error(err.Error())
+			} else {
+				out.i64 = i64
+				tok = INTCONSTANT
+			}
+			{
+				(lex.p)++
+				lex.cs = 19
+				goto _out
+			}
+		}
+		goto st19
+	tr28:
+		lex.te = (lex.p) + 1
+
+		goto st19
+	tr29:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -1345,7 +1368,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		lex.te = (lex.p) + 1
 
 		goto st19
-	tr31:
+	tr30:
 		lex.te = (lex.p) + 1
 		{
 			tok = int(lex.data[lex.ts])
@@ -1356,12 +1379,12 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr59:
+	tr58:
 		lex.te = (lex.p)
 		(lex.p)--
 
 		goto st19
-	tr60:
+	tr59:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1403,12 +1426,12 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr64:
+	tr63:
 		lex.te = (lex.p)
 		(lex.p)--
 
 		goto st19
-	tr66:
+	tr65:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1421,7 +1444,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr72:
+	tr71:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1433,7 +1456,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr133:
+	tr132:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1445,7 +1468,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr138:
+	tr137:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1457,7 +1480,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr145:
+	tr144:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1469,7 +1492,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr161:
+	tr160:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1481,7 +1504,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr175:
+	tr174:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1493,7 +1516,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr193:
+	tr192:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1505,7 +1528,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr222:
+	tr221:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1517,7 +1540,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr233:
+	tr232:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1529,7 +1552,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr240:
+	tr239:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1541,7 +1564,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr251:
+	tr250:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1553,7 +1576,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr277:
+	tr276:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1565,7 +1588,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr281:
+	tr280:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1577,7 +1600,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr285:
+	tr284:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1589,7 +1612,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr288:
+	tr287:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1601,7 +1624,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr305:
+	tr304:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1613,7 +1636,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr324:
+	tr323:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1625,7 +1648,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr330:
+	tr329:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1637,7 +1660,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr344:
+	tr343:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1649,7 +1672,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr354:
+	tr353:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1661,7 +1684,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr363:
+	tr362:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1673,7 +1696,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr396:
+	tr395:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1685,7 +1708,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr411:
+	tr410:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1697,7 +1720,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr414:
+	tr413:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1709,7 +1732,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr423:
+	tr422:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1721,7 +1744,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr428:
+	tr427:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1733,7 +1756,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr445:
+	tr444:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1745,7 +1768,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr455:
+	tr454:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1757,7 +1780,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr463:
+	tr462:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1769,7 +1792,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr474:
+	tr473:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1781,7 +1804,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 		}
 		goto st19
-	tr486:
+	tr485:
 		lex.te = (lex.p)
 		(lex.p)--
 		{
@@ -1804,13 +1827,13 @@ func (lex *lexer) Lex(out *yySymType) int {
 
 		switch lex.data[(lex.p)] {
 		case 9:
-			goto tr29
+			goto tr28
 		case 10:
-			goto tr30
+			goto tr29
 		case 13:
-			goto tr29
+			goto tr28
 		case 32:
-			goto tr29
+			goto tr28
 		case 34:
 			goto st1
 		case 35:
@@ -1824,85 +1847,85 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 47:
 			goto st8
 		case 48:
-			goto tr34
+			goto tr33
 		case 66:
-			goto tr35
+			goto tr34
 		case 69:
-			goto tr36
+			goto tr35
 		case 91:
-			goto tr31
+			goto tr30
 		case 93:
-			goto tr31
+			goto tr30
 		case 95:
-			goto tr37
+			goto tr36
 		case 97:
-			goto tr38
+			goto tr37
 		case 98:
-			goto tr39
+			goto tr38
 		case 99:
-			goto tr40
+			goto tr39
 		case 100:
-			goto tr41
+			goto tr40
 		case 101:
-			goto tr42
+			goto tr41
 		case 102:
-			goto tr43
+			goto tr42
 		case 103:
-			goto tr44
+			goto tr43
 		case 105:
-			goto tr45
+			goto tr44
 		case 108:
-			goto tr46
+			goto tr45
 		case 109:
-			goto tr47
+			goto tr46
 		case 110:
-			goto tr48
+			goto tr47
 		case 111:
-			goto tr49
+			goto tr48
 		case 112:
-			goto tr50
+			goto tr49
 		case 114:
-			goto tr51
+			goto tr50
 		case 115:
-			goto tr52
+			goto tr51
 		case 116:
-			goto tr53
+			goto tr52
 		case 117:
-			goto tr54
+			goto tr53
 		case 118:
-			goto tr55
+			goto tr54
 		case 119:
-			goto tr56
+			goto tr55
 		case 120:
-			goto tr57
+			goto tr56
 		case 121:
-			goto tr58
+			goto tr57
 		case 123:
-			goto tr31
+			goto tr30
 		case 125:
-			goto tr31
+			goto tr30
 		}
 		switch {
 		case lex.data[(lex.p)] < 58:
 			switch {
 			case lex.data[(lex.p)] > 44:
 				if 49 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-					goto st21
+					goto tr6
 				}
 			case lex.data[(lex.p)] >= 40:
-				goto tr31
+				goto tr30
 			}
 		case lex.data[(lex.p)] > 62:
 			switch {
 			case lex.data[(lex.p)] > 90:
 				if 104 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-					goto tr28
+					goto tr27
 				}
 			case lex.data[(lex.p)] >= 65:
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr31
+			goto tr30
 		}
 		goto st0
 	st_case_0:
@@ -1935,7 +1958,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 	st_case_20:
 		if lex.data[(lex.p)] == 10 {
-			goto tr59
+			goto tr58
 		}
 		goto st20
 	st3:
@@ -1964,24 +1987,35 @@ func (lex *lexer) Lex(out *yySymType) int {
 		}
 	st_case_5:
 		if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-			goto st21
+			goto tr6
 		}
 		goto st0
+	tr6:
+		lex.te = (lex.p) + 1
+
+		lex.act = 37
+		goto st21
 	st21:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof21
 		}
 	st_case_21:
-		if lex.data[(lex.p)] == 46 {
-			goto tr61
+		switch lex.data[(lex.p)] {
+		case 46:
+			goto tr60
+		case 69:
+			goto st6
+		case 101:
+			goto st6
 		}
 		if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-			goto st21
+			goto tr6
 		}
-		goto tr60
-	tr61:
+		goto tr59
+	tr60:
 		lex.te = (lex.p) + 1
 
+		lex.act = 38
 		goto st22
 	st22:
 		if (lex.p)++; (lex.p) == (lex.pe) {
@@ -1995,7 +2029,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto st6
 		}
 		if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-			goto tr61
+			goto tr60
 		}
 		goto tr62
 	st6:
@@ -2170,9 +2204,10 @@ func (lex *lexer) Lex(out *yySymType) int {
 			goto tr21
 		}
 		goto st15
-	tr34:
+	tr33:
 		lex.te = (lex.p) + 1
 
+		lex.act = 37
 		goto st25
 	st25:
 		if (lex.p)++; (lex.p) == (lex.pe) {
@@ -2181,14 +2216,18 @@ func (lex *lexer) Lex(out *yySymType) int {
 	st_case_25:
 		switch lex.data[(lex.p)] {
 		case 46:
-			goto tr61
+			goto tr60
+		case 69:
+			goto st6
+		case 101:
+			goto st6
 		case 120:
 			goto st17
 		}
 		if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-			goto st21
+			goto tr6
 		}
-		goto tr60
+		goto tr59
 	st17:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof17
@@ -2224,8 +2263,8 @@ func (lex *lexer) Lex(out *yySymType) int {
 		default:
 			goto st26
 		}
-		goto tr60
-	tr28:
+		goto tr59
+	tr27:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2239,43 +2278,43 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
+		goto tr65
 	st18:
 		if (lex.p)++; (lex.p) == (lex.pe) {
 			goto _test_eof18
 		}
 	st_case_18:
 		if lex.data[(lex.p)] == 95 {
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr27
-	tr35:
+		goto tr7
+	tr34:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2289,24 +2328,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 69:
-			goto tr68
+			goto tr67
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr68:
+		goto tr65
+	tr67:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2320,24 +2359,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 71:
-			goto tr69
+			goto tr68
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr69:
+		goto tr65
+	tr68:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2351,24 +2390,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 73:
-			goto tr70
+			goto tr69
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr70:
+		goto tr65
+	tr69:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2382,24 +2421,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 78:
-			goto tr71
+			goto tr70
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr71:
+		goto tr65
+	tr70:
 		lex.te = (lex.p) + 1
 
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
@@ -2414,7 +2453,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
@@ -2422,22 +2461,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr72
-	tr74:
+		goto tr71
+	tr73:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -2452,14 +2491,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
 			goto st33
 		}
-		goto tr72
-	tr36:
+		goto tr71
+	tr35:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2473,24 +2512,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 78:
-			goto tr75
+			goto tr74
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr75:
+		goto tr65
+	tr74:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2504,24 +2543,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 68:
-			goto tr71
+			goto tr70
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr37:
+		goto tr65
+	tr36:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2535,22 +2574,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr76
+			goto tr75
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr76:
+		goto tr65
+	tr75:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2564,34 +2603,34 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 67:
-			goto tr77
+			goto tr76
 		case 68:
-			goto tr78
+			goto tr77
 		case 70:
-			goto tr79
+			goto tr78
 		case 76:
-			goto tr80
+			goto tr79
 		case 77:
-			goto tr81
+			goto tr80
 		case 78:
-			goto tr82
+			goto tr81
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr77:
+		goto tr65
+	tr76:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2605,24 +2644,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 76:
-			goto tr83
+			goto tr82
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr83:
+		goto tr65
+	tr82:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2636,24 +2675,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 65:
-			goto tr84
+			goto tr83
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 66:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr84:
+		goto tr65
+	tr83:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2667,24 +2706,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 83:
-			goto tr85
+			goto tr84
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr85:
+		goto tr65
+	tr84:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2698,24 +2737,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 83:
-			goto tr86
+			goto tr85
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr86:
+		goto tr65
+	tr85:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2729,22 +2768,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr87
+			goto tr86
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr87:
+		goto tr65
+	tr86:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2758,22 +2797,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr78:
+		goto tr65
+	tr77:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2787,24 +2826,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 73:
-			goto tr88
+			goto tr87
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr88:
+		goto tr65
+	tr87:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2818,24 +2857,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 82:
-			goto tr86
+			goto tr85
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr79:
+		goto tr65
+	tr78:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2849,26 +2888,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 73:
-			goto tr89
+			goto tr88
 		case 85:
-			goto tr90
+			goto tr89
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr89:
+		goto tr65
+	tr88:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2882,24 +2921,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 76:
-			goto tr91
+			goto tr90
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr91:
+		goto tr65
+	tr90:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2913,24 +2952,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 69:
-			goto tr86
+			goto tr85
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr90:
+		goto tr65
+	tr89:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2944,24 +2983,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 78:
-			goto tr92
+			goto tr91
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr92:
+		goto tr65
+	tr91:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -2975,24 +3014,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 67:
-			goto tr93
+			goto tr92
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr93:
+		goto tr65
+	tr92:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3006,24 +3045,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 84:
-			goto tr94
+			goto tr93
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr94:
+		goto tr65
+	tr93:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3037,24 +3076,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 73:
-			goto tr95
+			goto tr94
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr95:
+		goto tr65
+	tr94:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3068,24 +3107,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 79:
-			goto tr96
+			goto tr95
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr96:
+		goto tr65
+	tr95:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3099,24 +3138,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 78:
-			goto tr86
+			goto tr85
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr80:
+		goto tr65
+	tr79:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3130,24 +3169,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 73:
-			goto tr97
+			goto tr96
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr97:
+		goto tr65
+	tr96:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3161,24 +3200,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 78:
-			goto tr91
+			goto tr90
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr81:
+		goto tr65
+	tr80:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3192,24 +3231,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 69:
-			goto tr98
+			goto tr97
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr98:
+		goto tr65
+	tr97:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3223,24 +3262,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 84:
-			goto tr99
+			goto tr98
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr99:
+		goto tr65
+	tr98:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3254,24 +3293,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 72:
-			goto tr100
+			goto tr99
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr100:
+		goto tr65
+	tr99:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3285,24 +3324,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 79:
-			goto tr101
+			goto tr100
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr101:
+		goto tr65
+	tr100:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3316,24 +3355,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 68:
-			goto tr86
+			goto tr85
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr82:
+		goto tr65
+	tr81:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3347,24 +3386,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 65:
-			goto tr102
+			goto tr101
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 66:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr102:
+		goto tr65
+	tr101:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3378,24 +3417,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 77:
-			goto tr103
+			goto tr102
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr103:
+		goto tr65
+	tr102:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3409,24 +3448,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 69:
-			goto tr104
+			goto tr103
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr104:
+		goto tr65
+	tr103:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3440,24 +3479,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 83:
-			goto tr105
+			goto tr104
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr105:
+		goto tr65
+	tr104:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3471,24 +3510,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 80:
-			goto tr106
+			goto tr105
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr106:
+		goto tr65
+	tr105:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3502,24 +3541,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 65:
-			goto tr107
+			goto tr106
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 66:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr107:
+		goto tr65
+	tr106:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3533,24 +3572,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 67:
-			goto tr91
+			goto tr90
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr38:
+		goto tr65
+	tr37:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3564,32 +3603,32 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 98:
-			goto tr108
+			goto tr107
 		case 108:
-			goto tr109
+			goto tr108
 		case 110:
-			goto tr110
+			goto tr109
 		case 114:
-			goto tr111
+			goto tr110
 		case 115:
-			goto tr112
+			goto tr111
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr108:
+		goto tr65
+	tr107:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3603,24 +3642,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr113
+			goto tr112
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr113:
+		goto tr65
+	tr112:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3634,24 +3673,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr114
+			goto tr113
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr114:
+		goto tr65
+	tr113:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3665,24 +3704,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr115
+			goto tr114
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr115:
+		goto tr65
+	tr114:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3696,24 +3735,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr116
+			goto tr115
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr116:
+		goto tr65
+	tr115:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3727,24 +3766,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr117
+			goto tr116
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr117:
+		goto tr65
+	tr116:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3758,24 +3797,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr109:
+		goto tr65
+	tr108:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3789,24 +3828,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr118
+			goto tr117
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr118:
+		goto tr65
+	tr117:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3820,24 +3859,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr119
+			goto tr118
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr119:
+		goto tr65
+	tr118:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3851,24 +3890,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr110:
+		goto tr65
+	tr109:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3882,24 +3921,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr111:
+		goto tr65
+	tr110:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3913,24 +3952,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 103:
-			goto tr119
+			goto tr118
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr112:
+		goto tr65
+	tr111:
 		lex.te = (lex.p) + 1
 
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
@@ -3945,7 +3984,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
@@ -3953,24 +3992,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr120
+			goto tr119
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr72
-	tr120:
+		goto tr71
+	tr119:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -3984,24 +4023,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr121
+			goto tr120
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr121:
+		goto tr65
+	tr120:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4015,24 +4054,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr117
+			goto tr116
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr39:
+		goto tr65
+	tr38:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4046,32 +4085,32 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr122
+			goto tr121
 		case 105:
-			goto tr123
+			goto tr122
 		case 111:
-			goto tr124
+			goto tr123
 		case 114:
-			goto tr125
+			goto tr124
 		case 121:
-			goto tr126
+			goto tr125
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr122:
+		goto tr65
+	tr121:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4085,24 +4124,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 103:
-			goto tr127
+			goto tr126
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr127:
+		goto tr65
+	tr126:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4116,24 +4155,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr128
+			goto tr127
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr128:
+		goto tr65
+	tr127:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4147,24 +4186,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr123:
+		goto tr65
+	tr122:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4178,24 +4217,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr129
+			goto tr128
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr129:
+		goto tr65
+	tr128:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4209,24 +4248,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr130
+			goto tr129
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr130:
+		goto tr65
+	tr129:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4240,24 +4279,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr131
+			goto tr130
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr131:
+		goto tr65
+	tr130:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4271,24 +4310,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 121:
-			goto tr132
+			goto tr131
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr132:
+		goto tr65
+	tr131:
 		lex.te = (lex.p) + 1
 
 		lex.act = 13
@@ -4302,7 +4341,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st93
 		case 10:
-			goto tr135
+			goto tr134
 		case 13:
 			goto st93
 		case 32:
@@ -4310,22 +4349,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr133
-	tr135:
+		goto tr132
+	tr134:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -4340,14 +4379,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st93
 		case 10:
-			goto tr135
+			goto tr134
 		case 13:
 			goto st93
 		case 32:
 			goto st93
 		}
-		goto tr133
-	tr124:
+		goto tr132
+	tr123:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4361,24 +4400,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr136
+			goto tr135
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr136:
+		goto tr65
+	tr135:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4392,24 +4431,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr137
+			goto tr136
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr137:
+		goto tr65
+	tr136:
 		lex.te = (lex.p) + 1
 
 		lex.act = 5
@@ -4423,7 +4462,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st97
 		case 10:
-			goto tr140
+			goto tr139
 		case 13:
 			goto st97
 		case 32:
@@ -4431,22 +4470,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr138
-	tr140:
+		goto tr137
+	tr139:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -4461,14 +4500,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st97
 		case 10:
-			goto tr140
+			goto tr139
 		case 13:
 			goto st97
 		case 32:
 			goto st97
 		}
-		goto tr138
-	tr125:
+		goto tr137
+	tr124:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4482,24 +4521,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr141
+			goto tr140
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr141:
+		goto tr65
+	tr140:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4513,24 +4552,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr142
+			goto tr141
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr142:
+		goto tr65
+	tr141:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4544,24 +4583,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 107:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr126:
+		goto tr65
+	tr125:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4575,24 +4614,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr143
+			goto tr142
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr143:
+		goto tr65
+	tr142:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4606,24 +4645,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr144
+			goto tr143
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr144:
+		goto tr65
+	tr143:
 		lex.te = (lex.p) + 1
 
 		lex.act = 6
@@ -4637,7 +4676,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st104
 		case 10:
-			goto tr147
+			goto tr146
 		case 13:
 			goto st104
 		case 32:
@@ -4645,22 +4684,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr145
-	tr147:
+		goto tr144
+	tr146:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -4675,14 +4714,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st104
 		case 10:
-			goto tr147
+			goto tr146
 		case 13:
 			goto st104
 		case 32:
 			goto st104
 		}
-		goto tr145
-	tr40:
+		goto tr144
+	tr39:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4696,30 +4735,30 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr148
+			goto tr147
 		case 108:
-			goto tr149
+			goto tr148
 		case 111:
-			goto tr150
+			goto tr149
 		case 112:
-			goto tr151
+			goto tr150
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr148:
+		goto tr65
+	tr147:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4733,26 +4772,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr152
+			goto tr151
 		case 116:
-			goto tr153
+			goto tr152
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr152:
+		goto tr65
+	tr151:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4766,24 +4805,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr153:
+		goto tr65
+	tr152:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4797,24 +4836,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr154
+			goto tr153
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr154:
+		goto tr65
+	tr153:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4828,24 +4867,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 104:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr149:
+		goto tr65
+	tr148:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4859,26 +4898,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr155
+			goto tr154
 		case 111:
-			goto tr156
+			goto tr155
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr155:
+		goto tr65
+	tr154:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4892,24 +4931,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr119
+			goto tr118
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr156:
+		goto tr65
+	tr155:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4923,24 +4962,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr152
+			goto tr151
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr150:
+		goto tr65
+	tr149:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4954,24 +4993,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr157
+			goto tr156
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr157:
+		goto tr65
+	tr156:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -4985,26 +5024,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr158
+			goto tr157
 		case 116:
-			goto tr159
+			goto tr158
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr158:
+		goto tr65
+	tr157:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5018,24 +5057,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr160
+			goto tr159
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr160:
+		goto tr65
+	tr159:
 		lex.te = (lex.p) + 1
 
 		lex.act = 26
@@ -5049,7 +5088,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st117
 		case 10:
-			goto tr163
+			goto tr162
 		case 13:
 			goto st117
 		case 32:
@@ -5057,22 +5096,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr161
-	tr163:
+		goto tr160
+	tr162:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -5087,14 +5126,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st117
 		case 10:
-			goto tr163
+			goto tr162
 		case 13:
 			goto st117
 		case 32:
 			goto st117
 		}
-		goto tr161
-	tr159:
+		goto tr160
+	tr158:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5108,24 +5147,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr164
+			goto tr163
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr164:
+		goto tr65
+	tr163:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5139,24 +5178,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr165
+			goto tr164
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr165:
+		goto tr65
+	tr164:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5170,24 +5209,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 117:
-			goto tr152
+			goto tr151
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr151:
+		goto tr65
+	tr150:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5201,24 +5240,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 112:
-			goto tr166
+			goto tr165
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr166:
+		goto tr65
+	tr165:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5232,22 +5271,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr167
+			goto tr166
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr167:
+		goto tr65
+	tr166:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5261,24 +5300,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr168
+			goto tr167
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr168:
+		goto tr65
+	tr167:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5292,24 +5331,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr169
+			goto tr168
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr169:
+		goto tr65
+	tr168:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5323,24 +5362,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr170
+			goto tr169
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr170:
+		goto tr65
+	tr169:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5354,24 +5393,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr171
+			goto tr170
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr171:
+		goto tr65
+	tr170:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5385,24 +5424,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 117:
-			goto tr172
+			goto tr171
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr172:
+		goto tr65
+	tr171:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5416,24 +5455,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr173
+			goto tr172
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr173:
+		goto tr65
+	tr172:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5447,24 +5486,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr174
+			goto tr173
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr174:
+		goto tr65
+	tr173:
 		lex.te = (lex.p) + 1
 
 		lex.act = 2
@@ -5478,7 +5517,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st131
 		case 10:
-			goto tr177
+			goto tr176
 		case 13:
 			goto st131
 		case 32:
@@ -5486,22 +5525,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr175
-	tr177:
+		goto tr174
+	tr176:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -5516,14 +5555,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st131
 		case 10:
-			goto tr177
+			goto tr176
 		case 13:
 			goto st131
 		case 32:
 			goto st131
 		}
-		goto tr175
-	tr41:
+		goto tr174
+	tr40:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5537,28 +5576,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr178
+			goto tr177
 		case 111:
-			goto tr179
+			goto tr178
 		case 121:
-			goto tr180
+			goto tr179
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr178:
+		goto tr65
+	tr177:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5572,28 +5611,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr181
+			goto tr180
 		case 102:
-			goto tr182
+			goto tr181
 		case 108:
-			goto tr183
+			goto tr182
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr181:
+		goto tr65
+	tr180:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5607,24 +5646,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr184
+			goto tr183
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr184:
+		goto tr65
+	tr183:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5638,24 +5677,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr185
+			goto tr184
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr185:
+		goto tr65
+	tr184:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5669,24 +5708,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr152
+			goto tr151
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr182:
+		goto tr65
+	tr181:
 		lex.te = (lex.p) + 1
 
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
@@ -5701,7 +5740,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
@@ -5709,24 +5748,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr186
+			goto tr185
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr72
-	tr186:
+		goto tr71
+	tr185:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5740,24 +5779,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 117:
-			goto tr187
+			goto tr186
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr187:
+		goto tr65
+	tr186:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5771,24 +5810,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr117
+			goto tr116
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr183:
+		goto tr65
+	tr182:
 		lex.te = (lex.p) + 1
 
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
@@ -5803,7 +5842,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
@@ -5811,24 +5850,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr188
+			goto tr187
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr72
-	tr188:
+		goto tr71
+	tr187:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5842,24 +5881,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr152
+			goto tr151
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr179:
+		goto tr65
+	tr178:
 		lex.te = (lex.p) + 1
 
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
@@ -5874,7 +5913,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
@@ -5882,24 +5921,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 117:
-			goto tr189
+			goto tr188
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr72
-	tr189:
+		goto tr71
+	tr188:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5913,24 +5952,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 98:
-			goto tr190
+			goto tr189
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr190:
+		goto tr65
+	tr189:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5944,24 +5983,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr191
+			goto tr190
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr191:
+		goto tr65
+	tr190:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -5975,24 +6014,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr192
+			goto tr191
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr192:
+		goto tr65
+	tr191:
 		lex.te = (lex.p) + 1
 
 		lex.act = 11
@@ -6006,7 +6045,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st147
 		case 10:
-			goto tr195
+			goto tr194
 		case 13:
 			goto st147
 		case 32:
@@ -6014,22 +6053,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr193
-	tr195:
+		goto tr192
+	tr194:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -6044,14 +6083,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st147
 		case 10:
-			goto tr195
+			goto tr194
 		case 13:
 			goto st147
 		case 32:
 			goto st147
 		}
-		goto tr193
-	tr180:
+		goto tr192
+	tr179:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6065,24 +6104,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr196
+			goto tr195
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr196:
+		goto tr65
+	tr195:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6096,24 +6135,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr197
+			goto tr196
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr197:
+		goto tr65
+	tr196:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6127,24 +6166,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 109:
-			goto tr198
+			goto tr197
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr198:
+		goto tr65
+	tr197:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6158,24 +6197,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr199
+			goto tr198
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr199:
+		goto tr65
+	tr198:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6189,24 +6228,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr42:
+		goto tr65
+	tr41:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6220,28 +6259,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr200
+			goto tr199
 		case 110:
-			goto tr201
+			goto tr200
 		case 120:
-			goto tr202
+			goto tr201
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr200:
+		goto tr65
+	tr199:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6255,26 +6294,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr203
+			goto tr202
 		case 115:
-			goto tr204
+			goto tr203
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr203:
+		goto tr65
+	tr202:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6288,24 +6327,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 102:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr204:
+		goto tr65
+	tr203:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6319,26 +6358,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr205
+			goto tr204
 		case 105:
-			goto tr203
+			goto tr202
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr205:
+		goto tr65
+	tr204:
 		lex.te = (lex.p) + 1
 
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
@@ -6353,7 +6392,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
@@ -6361,24 +6400,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr203
+			goto tr202
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr72
-	tr201:
+		goto tr71
+	tr200:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6392,28 +6431,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr206
+			goto tr205
 		case 115:
-			goto tr207
+			goto tr206
 		case 117:
-			goto tr208
+			goto tr207
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr206:
+		goto tr65
+	tr205:
 		lex.te = (lex.p) + 1
 
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
@@ -6428,7 +6467,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
@@ -6436,32 +6475,32 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr209
+			goto tr208
 		case 102:
-			goto tr210
+			goto tr209
 		case 105:
-			goto tr203
+			goto tr202
 		case 115:
-			goto tr211
+			goto tr210
 		case 119:
-			goto tr212
+			goto tr211
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr72
-	tr209:
+		goto tr71
+	tr208:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6475,24 +6514,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr213
+			goto tr212
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr213:
+		goto tr65
+	tr212:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6506,24 +6545,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr181
+			goto tr180
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr210:
+		goto tr65
+	tr209:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6537,24 +6576,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr214
+			goto tr213
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr214:
+		goto tr65
+	tr213:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6568,24 +6607,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr215
+			goto tr214
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr215:
+		goto tr65
+	tr214:
 		lex.te = (lex.p) + 1
 
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
@@ -6600,7 +6639,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
@@ -6608,24 +6647,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr216
+			goto tr215
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr72
-	tr216:
+		goto tr71
+	tr215:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6639,24 +6678,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr153
+			goto tr152
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr211:
+		goto tr65
+	tr210:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6670,24 +6709,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 119:
-			goto tr217
+			goto tr216
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr217:
+		goto tr65
+	tr216:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6701,24 +6740,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr218
+			goto tr217
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr218:
+		goto tr65
+	tr217:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6732,24 +6771,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr153
+			goto tr152
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr212:
+		goto tr65
+	tr211:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6763,24 +6802,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 104:
-			goto tr219
+			goto tr218
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr219:
+		goto tr65
+	tr218:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6794,24 +6833,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr220
+			goto tr219
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr220:
+		goto tr65
+	tr219:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6825,24 +6864,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr152
+			goto tr151
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr207:
+		goto tr65
+	tr206:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6856,24 +6895,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 117:
-			goto tr185
+			goto tr184
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr208:
+		goto tr65
+	tr207:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6887,24 +6926,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 109:
-			goto tr221
+			goto tr220
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr221:
+		goto tr65
+	tr220:
 		lex.te = (lex.p) + 1
 
 		lex.act = 25
@@ -6918,7 +6957,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st175
 		case 10:
-			goto tr224
+			goto tr223
 		case 13:
 			goto st175
 		case 32:
@@ -6926,22 +6965,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr222
-	tr224:
+		goto tr221
+	tr223:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -6956,14 +6995,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st175
 		case 10:
-			goto tr224
+			goto tr223
 		case 13:
 			goto st175
 		case 32:
 			goto st175
 		}
-		goto tr222
-	tr202:
+		goto tr221
+	tr201:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -6977,28 +7016,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr225
+			goto tr224
 		case 101:
-			goto tr199
+			goto tr198
 		case 116:
-			goto tr226
+			goto tr225
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr225:
+		goto tr65
+	tr224:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7012,24 +7051,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr227
+			goto tr226
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr227:
+		goto tr65
+	tr226:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7043,24 +7082,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 112:
-			goto tr228
+			goto tr227
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr228:
+		goto tr65
+	tr227:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7074,24 +7113,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr229
+			goto tr228
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr229:
+		goto tr65
+	tr228:
 		lex.te = (lex.p) + 1
 
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
@@ -7106,7 +7145,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
@@ -7114,24 +7153,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr230
+			goto tr229
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr72
-	tr230:
+		goto tr71
+	tr229:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7145,24 +7184,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr231
+			goto tr230
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr231:
+		goto tr65
+	tr230:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7176,24 +7215,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr232
+			goto tr231
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr232:
+		goto tr65
+	tr231:
 		lex.te = (lex.p) + 1
 
 		lex.act = 21
@@ -7207,7 +7246,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st184
 		case 10:
-			goto tr235
+			goto tr234
 		case 13:
 			goto st184
 		case 32:
@@ -7215,22 +7254,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr233
-	tr235:
+		goto tr232
+	tr234:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -7245,14 +7284,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st184
 		case 10:
-			goto tr235
+			goto tr234
 		case 13:
 			goto st184
 		case 32:
 			goto st184
 		}
-		goto tr233
-	tr226:
+		goto tr232
+	tr225:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7266,24 +7305,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr236
+			goto tr235
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr236:
+		goto tr65
+	tr235:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7297,24 +7336,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr237
+			goto tr236
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr237:
+		goto tr65
+	tr236:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7328,24 +7367,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr238
+			goto tr237
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr238:
+		goto tr65
+	tr237:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7359,24 +7398,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr239
+			goto tr238
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr239:
+		goto tr65
+	tr238:
 		lex.te = (lex.p) + 1
 
 		lex.act = 22
@@ -7390,7 +7429,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st190
 		case 10:
-			goto tr242
+			goto tr241
 		case 13:
 			goto st190
 		case 32:
@@ -7398,22 +7437,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr240
-	tr242:
+		goto tr239
+	tr241:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -7428,14 +7467,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st190
 		case 10:
-			goto tr242
+			goto tr241
 		case 13:
 			goto st190
 		case 32:
 			goto st190
 		}
-		goto tr240
-	tr43:
+		goto tr239
+	tr42:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7449,34 +7488,34 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr243
+			goto tr242
 		case 105:
-			goto tr244
+			goto tr243
 		case 108:
-			goto tr245
+			goto tr244
 		case 111:
-			goto tr214
+			goto tr213
 		case 114:
-			goto tr246
+			goto tr245
 		case 117:
-			goto tr247
+			goto tr246
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr243:
+		goto tr65
+	tr242:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7490,24 +7529,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr248
+			goto tr247
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr248:
+		goto tr65
+	tr247:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7521,24 +7560,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr249
+			goto tr248
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr249:
+		goto tr65
+	tr248:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7552,24 +7591,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr250
+			goto tr249
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr250:
+		goto tr65
+	tr249:
 		lex.te = (lex.p) + 1
 
 		lex.act = 30
@@ -7583,7 +7622,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st196
 		case 10:
-			goto tr253
+			goto tr252
 		case 13:
 			goto st196
 		case 32:
@@ -7591,22 +7630,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr251
-	tr253:
+		goto tr250
+	tr252:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -7621,14 +7660,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st196
 		case 10:
-			goto tr253
+			goto tr252
 		case 13:
 			goto st196
 		case 32:
 			goto st196
 		}
-		goto tr251
-	tr244:
+		goto tr250
+	tr243:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7642,24 +7681,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr254
+			goto tr253
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr254:
+		goto tr65
+	tr253:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7673,24 +7712,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr255
+			goto tr254
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr255:
+		goto tr65
+	tr254:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7704,24 +7743,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr256
+			goto tr255
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr256:
+		goto tr65
+	tr255:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7735,24 +7774,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr257
+			goto tr256
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr257:
+		goto tr65
+	tr256:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7766,24 +7805,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 121:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr245:
+		goto tr65
+	tr244:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7797,24 +7836,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr258
+			goto tr257
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr258:
+		goto tr65
+	tr257:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7828,24 +7867,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr117
+			goto tr116
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr246:
+		goto tr65
+	tr245:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7859,24 +7898,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr259
+			goto tr258
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr259:
+		goto tr65
+	tr258:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7890,24 +7929,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 109:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr247:
+		goto tr65
+	tr246:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7921,24 +7960,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr260
+			goto tr259
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr260:
+		goto tr65
+	tr259:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7952,24 +7991,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr261
+			goto tr260
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr261:
+		goto tr65
+	tr260:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -7983,24 +8022,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr262
+			goto tr261
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr262:
+		goto tr65
+	tr261:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8014,24 +8053,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr263
+			goto tr262
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr263:
+		goto tr65
+	tr262:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8045,24 +8084,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr128
+			goto tr127
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr44:
+		goto tr65
+	tr43:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8076,26 +8115,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr264
+			goto tr263
 		case 111:
-			goto tr265
+			goto tr264
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr264:
+		goto tr65
+	tr263:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8109,24 +8148,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr266
+			goto tr265
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr266:
+		goto tr65
+	tr265:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8140,24 +8179,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 98:
-			goto tr267
+			goto tr266
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr267:
+		goto tr65
+	tr266:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8171,24 +8210,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr268
+			goto tr267
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr268:
+		goto tr65
+	tr267:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8202,24 +8241,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr265:
+		goto tr65
+	tr264:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8233,24 +8272,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr269
+			goto tr268
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr269:
+		goto tr65
+	tr268:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8264,24 +8303,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr45:
+		goto tr65
+	tr44:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8295,38 +8334,38 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 49:
-			goto tr270
+			goto tr269
 		case 51:
-			goto tr271
+			goto tr270
 		case 54:
-			goto tr272
+			goto tr271
 		case 56:
-			goto tr273
+			goto tr272
 		case 95:
-			goto tr28
+			goto tr27
 		case 102:
-			goto tr71
+			goto tr70
 		case 109:
-			goto tr274
+			goto tr273
 		case 110:
-			goto tr275
+			goto tr274
 		case 115:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr270:
+		goto tr65
+	tr269:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8340,24 +8379,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 54:
-			goto tr276
+			goto tr275
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr276:
+		goto tr65
+	tr275:
 		lex.te = (lex.p) + 1
 
 		lex.act = 8
@@ -8371,7 +8410,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st221
 		case 10:
-			goto tr279
+			goto tr278
 		case 13:
 			goto st221
 		case 32:
@@ -8379,22 +8418,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr277
-	tr279:
+		goto tr276
+	tr278:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -8409,14 +8448,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st221
 		case 10:
-			goto tr279
+			goto tr278
 		case 13:
 			goto st221
 		case 32:
 			goto st221
 		}
-		goto tr277
-	tr271:
+		goto tr276
+	tr270:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8430,24 +8469,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 50:
-			goto tr280
+			goto tr279
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr280:
+		goto tr65
+	tr279:
 		lex.te = (lex.p) + 1
 
 		lex.act = 9
@@ -8461,7 +8500,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st224
 		case 10:
-			goto tr283
+			goto tr282
 		case 13:
 			goto st224
 		case 32:
@@ -8469,22 +8508,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr281
-	tr283:
+		goto tr280
+	tr282:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -8499,14 +8538,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st224
 		case 10:
-			goto tr283
+			goto tr282
 		case 13:
 			goto st224
 		case 32:
 			goto st224
 		}
-		goto tr281
-	tr272:
+		goto tr280
+	tr271:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8520,24 +8559,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 52:
-			goto tr284
+			goto tr283
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr284:
+		goto tr65
+	tr283:
 		lex.te = (lex.p) + 1
 
 		lex.act = 10
@@ -8551,7 +8590,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st227
 		case 10:
-			goto tr287
+			goto tr286
 		case 13:
 			goto st227
 		case 32:
@@ -8559,22 +8598,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr285
-	tr287:
+		goto tr284
+	tr286:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -8589,14 +8628,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st227
 		case 10:
-			goto tr287
+			goto tr286
 		case 13:
 			goto st227
 		case 32:
 			goto st227
 		}
-		goto tr285
-	tr273:
+		goto tr284
+	tr272:
 		lex.te = (lex.p) + 1
 
 		lex.act = 7
@@ -8610,7 +8649,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st229
 		case 10:
-			goto tr290
+			goto tr289
 		case 13:
 			goto st229
 		case 32:
@@ -8618,22 +8657,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr288
-	tr290:
+		goto tr287
+	tr289:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -8648,14 +8687,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st229
 		case 10:
-			goto tr290
+			goto tr289
 		case 13:
 			goto st229
 		case 32:
 			goto st229
 		}
-		goto tr288
-	tr274:
+		goto tr287
+	tr273:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8669,24 +8708,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 112:
-			goto tr291
+			goto tr290
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr291:
+		goto tr65
+	tr290:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8700,26 +8739,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr292
+			goto tr291
 		case 111:
-			goto tr121
+			goto tr120
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr292:
+		goto tr65
+	tr291:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8733,24 +8772,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr293
+			goto tr292
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr293:
+		goto tr65
+	tr292:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8764,24 +8803,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 109:
-			goto tr294
+			goto tr293
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr294:
+		goto tr65
+	tr293:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8795,24 +8834,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr295
+			goto tr294
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr295:
+		goto tr65
+	tr294:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8826,24 +8865,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr296
+			goto tr295
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr296:
+		goto tr65
+	tr295:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8857,24 +8896,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr119
+			goto tr118
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr275:
+		goto tr65
+	tr274:
 		lex.te = (lex.p) + 1
 
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
@@ -8889,7 +8928,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
@@ -8897,30 +8936,30 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr297
+			goto tr296
 		case 108:
-			goto tr298
+			goto tr297
 		case 115:
-			goto tr299
+			goto tr298
 		case 116:
-			goto tr300
+			goto tr299
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr72
-	tr297:
+		goto tr71
+	tr296:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8934,24 +8973,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr301
+			goto tr300
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr301:
+		goto tr65
+	tr300:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8965,24 +9004,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 117:
-			goto tr302
+			goto tr301
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr302:
+		goto tr65
+	tr301:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -8996,24 +9035,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr303
+			goto tr302
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr303:
+		goto tr65
+	tr302:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9027,24 +9066,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr304
+			goto tr303
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr304:
+		goto tr65
+	tr303:
 		lex.te = (lex.p) + 1
 
 		lex.act = 1
@@ -9058,7 +9097,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st243
 		case 10:
-			goto tr307
+			goto tr306
 		case 13:
 			goto st243
 		case 32:
@@ -9066,22 +9105,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr305
-	tr307:
+		goto tr304
+	tr306:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -9096,14 +9135,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st243
 		case 10:
-			goto tr307
+			goto tr306
 		case 13:
 			goto st243
 		case 32:
 			goto st243
 		}
-		goto tr305
-	tr298:
+		goto tr304
+	tr297:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9117,24 +9156,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr156
+			goto tr155
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr299:
+		goto tr65
+	tr298:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9148,24 +9187,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr308
+			goto tr307
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr308:
+		goto tr65
+	tr307:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9179,24 +9218,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr309
+			goto tr308
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr309:
+		goto tr65
+	tr308:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9210,24 +9249,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr310
+			goto tr309
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr310:
+		goto tr65
+	tr309:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9241,24 +9280,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr311
+			goto tr310
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr311:
+		goto tr65
+	tr310:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9272,24 +9311,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr312
+			goto tr311
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr312:
+		goto tr65
+	tr311:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9303,24 +9342,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr203
+			goto tr202
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr300:
+		goto tr65
+	tr299:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9334,24 +9373,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr313
+			goto tr312
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr313:
+		goto tr65
+	tr312:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9365,24 +9404,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr314
+			goto tr313
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr314:
+		goto tr65
+	tr313:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9396,24 +9435,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 102:
-			goto tr315
+			goto tr314
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr315:
+		goto tr65
+	tr314:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9427,24 +9466,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr316
+			goto tr315
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr316:
+		goto tr65
+	tr315:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9458,24 +9497,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr152
+			goto tr151
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr46:
+		goto tr65
+	tr45:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9489,26 +9528,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr317
+			goto tr316
 		case 105:
-			goto tr318
+			goto tr317
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr317:
+		goto tr65
+	tr316:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9522,24 +9561,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 109:
-			goto tr319
+			goto tr318
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr319:
+		goto tr65
+	tr318:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9553,24 +9592,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 98:
-			goto tr320
+			goto tr319
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr320:
+		goto tr65
+	tr319:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9584,24 +9623,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr321
+			goto tr320
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr321:
+		goto tr65
+	tr320:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9615,24 +9654,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr318:
+		goto tr65
+	tr317:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9646,24 +9685,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr322
+			goto tr321
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr322:
+		goto tr65
+	tr321:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9677,24 +9716,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr323
+			goto tr322
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr323:
+		goto tr65
+	tr322:
 		lex.te = (lex.p) + 1
 
 		lex.act = 15
@@ -9708,7 +9747,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st264
 		case 10:
-			goto tr326
+			goto tr325
 		case 13:
 			goto st264
 		case 32:
@@ -9716,22 +9755,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr324
-	tr326:
+		goto tr323
+	tr325:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -9746,14 +9785,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st264
 		case 10:
-			goto tr326
+			goto tr325
 		case 13:
 			goto st264
 		case 32:
 			goto st264
 		}
-		goto tr324
-	tr47:
+		goto tr323
+	tr46:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9767,26 +9806,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr327
+			goto tr326
 		case 111:
-			goto tr328
+			goto tr327
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr327:
+		goto tr65
+	tr326:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9800,24 +9839,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 112:
-			goto tr329
+			goto tr328
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr329:
+		goto tr65
+	tr328:
 		lex.te = (lex.p) + 1
 
 		lex.act = 14
@@ -9831,7 +9870,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st268
 		case 10:
-			goto tr332
+			goto tr331
 		case 13:
 			goto st268
 		case 32:
@@ -9839,22 +9878,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr330
-	tr332:
+		goto tr329
+	tr331:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -9869,14 +9908,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st268
 		case 10:
-			goto tr332
+			goto tr331
 		case 13:
 			goto st268
 		case 32:
 			goto st268
 		}
-		goto tr330
-	tr328:
+		goto tr329
+	tr327:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9890,24 +9929,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr333
+			goto tr332
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr333:
+		goto tr65
+	tr332:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9921,24 +9960,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 117:
-			goto tr220
+			goto tr219
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr48:
+		goto tr65
+	tr47:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9952,30 +9991,30 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr334
+			goto tr333
 		case 101:
-			goto tr335
+			goto tr334
 		case 105:
-			goto tr268
+			goto tr267
 		case 111:
-			goto tr117
+			goto tr116
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr334:
+		goto tr65
+	tr333:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -9989,26 +10028,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 109:
-			goto tr336
+			goto tr335
 		case 116:
-			goto tr337
+			goto tr336
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr336:
+		goto tr65
+	tr335:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10022,24 +10061,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr338
+			goto tr337
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr338:
+		goto tr65
+	tr337:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10053,24 +10092,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr339
+			goto tr338
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr339:
+		goto tr65
+	tr338:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10084,24 +10123,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 112:
-			goto tr340
+			goto tr339
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr340:
+		goto tr65
+	tr339:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10115,24 +10154,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr341
+			goto tr340
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr341:
+		goto tr65
+	tr340:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10146,24 +10185,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr342
+			goto tr341
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr342:
+		goto tr65
+	tr341:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10177,24 +10216,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr343
+			goto tr342
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr343:
+		goto tr65
+	tr342:
 		lex.te = (lex.p) + 1
 
 		lex.act = 3
@@ -10208,7 +10247,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st280
 		case 10:
-			goto tr346
+			goto tr345
 		case 13:
 			goto st280
 		case 32:
@@ -10216,22 +10255,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr344
-	tr346:
+		goto tr343
+	tr345:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -10246,14 +10285,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st280
 		case 10:
-			goto tr346
+			goto tr345
 		case 13:
 			goto st280
 		case 32:
 			goto st280
 		}
-		goto tr344
-	tr337:
+		goto tr343
+	tr336:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10267,24 +10306,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr347
+			goto tr346
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr347:
+		goto tr65
+	tr346:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10298,24 +10337,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 118:
-			goto tr152
+			goto tr151
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr335:
+		goto tr65
+	tr334:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10329,26 +10368,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 119:
-			goto tr71
+			goto tr70
 		case 120:
-			goto tr117
+			goto tr116
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr49:
+		goto tr65
+	tr48:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10362,28 +10401,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr348
+			goto tr347
 		case 112:
-			goto tr349
+			goto tr348
 		case 114:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr348:
+		goto tr65
+	tr347:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10397,24 +10436,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr350
+			goto tr349
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr350:
+		goto tr65
+	tr349:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10428,24 +10467,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 119:
-			goto tr351
+			goto tr350
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr351:
+		goto tr65
+	tr350:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10459,24 +10498,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr352
+			goto tr351
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr352:
+		goto tr65
+	tr351:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10490,24 +10529,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 121:
-			goto tr353
+			goto tr352
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr353:
+		goto tr65
+	tr352:
 		lex.te = (lex.p) + 1
 
 		lex.act = 17
@@ -10521,7 +10560,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st290
 		case 10:
-			goto tr356
+			goto tr355
 		case 13:
 			goto st290
 		case 32:
@@ -10529,22 +10568,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr354
-	tr356:
+		goto tr353
+	tr355:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -10559,14 +10598,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st290
 		case 10:
-			goto tr356
+			goto tr355
 		case 13:
 			goto st290
 		case 32:
 			goto st290
 		}
-		goto tr354
-	tr349:
+		goto tr353
+	tr348:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10580,24 +10619,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr357
+			goto tr356
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr357:
+		goto tr65
+	tr356:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10611,24 +10650,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr358
+			goto tr357
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr358:
+		goto tr65
+	tr357:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10642,24 +10681,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr359
+			goto tr358
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr359:
+		goto tr65
+	tr358:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10673,24 +10712,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr360
+			goto tr359
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr360:
+		goto tr65
+	tr359:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10704,24 +10743,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr361
+			goto tr360
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr361:
+		goto tr65
+	tr360:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10735,24 +10774,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr362
+			goto tr361
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr362:
+		goto tr65
+	tr361:
 		lex.te = (lex.p) + 1
 
 		lex.act = 28
@@ -10766,7 +10805,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st298
 		case 10:
-			goto tr365
+			goto tr364
 		case 13:
 			goto st298
 		case 32:
@@ -10774,22 +10813,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr363
-	tr365:
+		goto tr362
+	tr364:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -10804,14 +10843,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st298
 		case 10:
-			goto tr365
+			goto tr364
 		case 13:
 			goto st298
 		case 32:
 			goto st298
 		}
-		goto tr363
-	tr50:
+		goto tr362
+	tr49:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10825,28 +10864,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr366
+			goto tr365
 		case 114:
-			goto tr367
+			goto tr366
 		case 117:
-			goto tr368
+			goto tr367
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr366:
+		goto tr65
+	tr365:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10860,26 +10899,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr369
+			goto tr368
 		case 115:
-			goto tr119
+			goto tr118
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr369:
+		goto tr65
+	tr368:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10893,24 +10932,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 107:
-			goto tr370
+			goto tr369
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr370:
+		goto tr65
+	tr369:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10924,24 +10963,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr371
+			goto tr370
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr371:
+		goto tr65
+	tr370:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10955,24 +10994,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 103:
-			goto tr152
+			goto tr151
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr367:
+		goto tr65
+	tr366:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -10986,26 +11025,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr372
+			goto tr371
 		case 111:
-			goto tr373
+			goto tr372
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr372:
+		goto tr65
+	tr371:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11019,26 +11058,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr117
+			goto tr116
 		case 118:
-			goto tr374
+			goto tr373
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr374:
+		goto tr65
+	tr373:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11052,24 +11091,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr188
+			goto tr187
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr373:
+		goto tr65
+	tr372:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11083,24 +11122,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr375
+			goto tr374
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr375:
+		goto tr65
+	tr374:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11114,24 +11153,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr376
+			goto tr375
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr376:
+		goto tr65
+	tr375:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11145,24 +11184,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr377
+			goto tr376
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr377:
+		goto tr65
+	tr376:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11176,24 +11215,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr378
+			goto tr377
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr378:
+		goto tr65
+	tr377:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11207,24 +11246,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr110
+			goto tr109
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr368:
+		goto tr65
+	tr367:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11238,24 +11277,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 98:
-			goto tr379
+			goto tr378
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr379:
+		goto tr65
+	tr378:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11269,24 +11308,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr198
+			goto tr197
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr51:
+		goto tr65
+	tr50:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11300,26 +11339,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr380
+			goto tr379
 		case 101:
-			goto tr381
+			goto tr380
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr380:
+		goto tr65
+	tr379:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11333,24 +11372,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr382
+			goto tr381
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr382:
+		goto tr65
+	tr381:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11364,24 +11403,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr152
+			goto tr151
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr381:
+		goto tr65
+	tr380:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11395,32 +11434,32 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr269
+			goto tr268
 		case 103:
-			goto tr383
+			goto tr382
 		case 113:
-			goto tr384
+			goto tr383
 		case 115:
-			goto tr385
+			goto tr384
 		case 116:
-			goto tr386
+			goto tr385
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr383:
+		goto tr65
+	tr382:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11434,24 +11473,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr387
+			goto tr386
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr387:
+		goto tr65
+	tr386:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11465,24 +11504,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr388
+			goto tr387
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr388:
+		goto tr65
+	tr387:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11496,24 +11535,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr389
+			goto tr388
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr389:
+		goto tr65
+	tr388:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11527,24 +11566,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr390
+			goto tr389
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr390:
+		goto tr65
+	tr389:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11558,24 +11597,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr384:
+		goto tr65
+	tr383:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11589,24 +11628,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 117:
-			goto tr391
+			goto tr390
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr391:
+		goto tr65
+	tr390:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11620,24 +11659,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr392
+			goto tr391
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr392:
+		goto tr65
+	tr391:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11651,24 +11690,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr393
+			goto tr392
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr393:
+		goto tr65
+	tr392:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11682,24 +11721,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr394
+			goto tr393
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr394:
+		goto tr65
+	tr393:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11713,24 +11752,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr395
+			goto tr394
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr395:
+		goto tr65
+	tr394:
 		lex.te = (lex.p) + 1
 
 		lex.act = 27
@@ -11744,7 +11783,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st329
 		case 10:
-			goto tr398
+			goto tr397
 		case 13:
 			goto st329
 		case 32:
@@ -11752,22 +11791,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr396
-	tr398:
+		goto tr395
+	tr397:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -11782,14 +11821,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st329
 		case 10:
-			goto tr398
+			goto tr397
 		case 13:
 			goto st329
 		case 32:
 			goto st329
 		}
-		goto tr396
-	tr385:
+		goto tr395
+	tr384:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11803,24 +11842,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr165
+			goto tr164
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr386:
+		goto tr65
+	tr385:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11834,26 +11873,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr257
+			goto tr256
 		case 117:
-			goto tr399
+			goto tr398
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr399:
+		goto tr65
+	tr398:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11867,24 +11906,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr128
+			goto tr127
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr52:
+		goto tr65
+	tr51:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11898,34 +11937,34 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr400
+			goto tr399
 		case 105:
-			goto tr401
+			goto tr400
 		case 116:
-			goto tr402
+			goto tr401
 		case 117:
-			goto tr403
+			goto tr402
 		case 119:
-			goto tr217
+			goto tr216
 		case 121:
-			goto tr404
+			goto tr403
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr400:
+		goto tr65
+	tr399:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11939,28 +11978,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr203
+			goto tr202
 		case 114:
-			goto tr405
+			goto tr404
 		case 116:
-			goto tr406
+			goto tr405
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr405:
+		goto tr65
+	tr404:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -11974,24 +12013,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 118:
-			goto tr407
+			goto tr406
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr407:
+		goto tr65
+	tr406:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12005,24 +12044,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr408
+			goto tr407
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr408:
+		goto tr65
+	tr407:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12036,24 +12075,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr409
+			goto tr408
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr409:
+		goto tr65
+	tr408:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12067,24 +12106,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr410
+			goto tr409
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr410:
+		goto tr65
+	tr409:
 		lex.te = (lex.p) + 1
 
 		lex.act = 24
@@ -12098,7 +12137,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st340
 		case 10:
-			goto tr413
+			goto tr412
 		case 13:
 			goto st340
 		case 32:
@@ -12106,22 +12145,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr411
-	tr413:
+		goto tr410
+	tr412:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -12136,14 +12175,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st340
 		case 10:
-			goto tr413
+			goto tr412
 		case 13:
 			goto st340
 		case 32:
 			goto st340
 		}
-		goto tr411
-	tr406:
+		goto tr410
+	tr405:
 		lex.te = (lex.p) + 1
 
 		lex.act = 16
@@ -12157,7 +12196,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st342
 		case 10:
-			goto tr416
+			goto tr415
 		case 13:
 			goto st342
 		case 32:
@@ -12165,22 +12204,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr414
-	tr416:
+		goto tr413
+	tr415:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -12195,14 +12234,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st342
 		case 10:
-			goto tr416
+			goto tr415
 		case 13:
 			goto st342
 		case 32:
 			goto st342
 		}
-		goto tr414
-	tr401:
+		goto tr413
+	tr400:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12216,24 +12255,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 122:
-			goto tr311
+			goto tr310
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 121 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr402:
+		goto tr65
+	tr401:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12247,26 +12286,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr417
+			goto tr416
 		case 114:
-			goto tr418
+			goto tr417
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr417:
+		goto tr65
+	tr416:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12280,24 +12319,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr198
+			goto tr197
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr418:
+		goto tr65
+	tr417:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12311,26 +12350,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr419
+			goto tr418
 		case 117:
-			goto tr420
+			goto tr419
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr419:
+		goto tr65
+	tr418:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12344,24 +12383,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr421
+			goto tr420
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr421:
+		goto tr65
+	tr420:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12375,24 +12414,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 103:
-			goto tr422
+			goto tr421
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr422:
+		goto tr65
+	tr421:
 		lex.te = (lex.p) + 1
 
 		lex.act = 12
@@ -12406,7 +12445,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st350
 		case 10:
-			goto tr425
+			goto tr424
 		case 13:
 			goto st350
 		case 32:
@@ -12414,22 +12453,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr423
-	tr425:
+		goto tr422
+	tr424:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -12444,14 +12483,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st350
 		case 10:
-			goto tr425
+			goto tr424
 		case 13:
 			goto st350
 		case 32:
 			goto st350
 		}
-		goto tr423
-	tr420:
+		goto tr422
+	tr419:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12465,24 +12504,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr426
+			goto tr425
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr426:
+		goto tr65
+	tr425:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12496,24 +12535,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr427
+			goto tr426
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr427:
+		goto tr65
+	tr426:
 		lex.te = (lex.p) + 1
 
 		lex.act = 19
@@ -12527,7 +12566,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st354
 		case 10:
-			goto tr430
+			goto tr429
 		case 13:
 			goto st354
 		case 32:
@@ -12535,22 +12574,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr428
-	tr430:
+		goto tr427
+	tr429:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -12565,14 +12604,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st354
 		case 10:
-			goto tr430
+			goto tr429
 		case 13:
 			goto st354
 		case 32:
 			goto st354
 		}
-		goto tr428
-	tr403:
+		goto tr427
+	tr402:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12586,24 +12625,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 112:
-			goto tr389
+			goto tr388
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr404:
+		goto tr65
+	tr403:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12617,24 +12656,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr431
+			goto tr430
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr431:
+		goto tr65
+	tr430:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12648,24 +12687,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 99:
-			goto tr432
+			goto tr431
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr432:
+		goto tr65
+	tr431:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12679,24 +12718,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 104:
-			goto tr433
+			goto tr432
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr433:
+		goto tr65
+	tr432:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12710,24 +12749,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr434
+			goto tr433
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr434:
+		goto tr65
+	tr433:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12741,24 +12780,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr435
+			goto tr434
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr435:
+		goto tr65
+	tr434:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12772,24 +12811,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr436
+			goto tr435
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr436:
+		goto tr65
+	tr435:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12803,24 +12842,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr437
+			goto tr436
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr437:
+		goto tr65
+	tr436:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12834,24 +12873,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 122:
-			goto tr378
+			goto tr377
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 121 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr53:
+		goto tr65
+	tr52:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12865,28 +12904,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 104:
-			goto tr438
+			goto tr437
 		case 114:
-			goto tr439
+			goto tr438
 		case 121:
-			goto tr440
+			goto tr439
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr438:
+		goto tr65
+	tr437:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12900,28 +12939,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr128
+			goto tr127
 		case 105:
-			goto tr119
+			goto tr118
 		case 114:
-			goto tr441
+			goto tr440
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr441:
+		goto tr65
+	tr440:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12935,24 +12974,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr442
+			goto tr441
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr442:
+		goto tr65
+	tr441:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -12966,24 +13005,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 119:
-			goto tr443
+			goto tr442
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr443:
+		goto tr65
+	tr442:
 		lex.te = (lex.p) + 1
 
 		reservedKeyword = string(lex.data[lex.ts:lex.te])
@@ -12998,7 +13037,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st33
 		case 10:
-			goto tr74
+			goto tr73
 		case 13:
 			goto st33
 		case 32:
@@ -13006,24 +13045,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr444
+			goto tr443
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr72
-	tr444:
+		goto tr71
+	tr443:
 		lex.te = (lex.p) + 1
 
 		lex.act = 23
@@ -13037,7 +13076,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st370
 		case 10:
-			goto tr447
+			goto tr446
 		case 13:
 			goto st370
 		case 32:
@@ -13045,22 +13084,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr445
-	tr447:
+		goto tr444
+	tr446:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -13075,14 +13114,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st370
 		case 10:
-			goto tr447
+			goto tr446
 		case 13:
 			goto st370
 		case 32:
 			goto st370
 		}
-		goto tr445
-	tr439:
+		goto tr444
+	tr438:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13096,28 +13135,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr448
+			goto tr447
 		case 117:
-			goto tr449
+			goto tr448
 		case 121:
-			goto tr71
+			goto tr70
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr448:
+		goto tr65
+	tr447:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13131,24 +13170,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr450
+			goto tr449
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr450:
+		goto tr65
+	tr449:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13162,24 +13201,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 115:
-			goto tr451
+			goto tr450
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr451:
+		goto tr65
+	tr450:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13193,24 +13232,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr452
+			goto tr451
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr452:
+		goto tr65
+	tr451:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13224,24 +13263,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr453
+			goto tr452
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr453:
+		goto tr65
+	tr452:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13255,24 +13294,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr117
+			goto tr116
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr449:
+		goto tr65
+	tr448:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13286,24 +13325,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr454
+			goto tr453
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr454:
+		goto tr65
+	tr453:
 		lex.te = (lex.p) + 1
 
 		lex.act = 29
@@ -13317,7 +13356,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st379
 		case 10:
-			goto tr457
+			goto tr456
 		case 13:
 			goto st379
 		case 32:
@@ -13325,22 +13364,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr455
-	tr457:
+		goto tr454
+	tr456:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -13355,14 +13394,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st379
 		case 10:
-			goto tr457
+			goto tr456
 		case 13:
 			goto st379
 		case 32:
 			goto st379
 		}
-		goto tr455
-	tr440:
+		goto tr454
+	tr439:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13376,24 +13415,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 112:
-			goto tr458
+			goto tr457
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr458:
+		goto tr65
+	tr457:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13407,24 +13446,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr459
+			goto tr458
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr459:
+		goto tr65
+	tr458:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13438,24 +13477,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr460
+			goto tr459
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr460:
+		goto tr65
+	tr459:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13469,24 +13508,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr461
+			goto tr460
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr461:
+		goto tr65
+	tr460:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13500,24 +13539,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 102:
-			goto tr462
+			goto tr461
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr462:
+		goto tr65
+	tr461:
 		lex.te = (lex.p) + 1
 
 		lex.act = 18
@@ -13531,7 +13570,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st386
 		case 10:
-			goto tr465
+			goto tr464
 		case 13:
 			goto st386
 		case 32:
@@ -13539,22 +13578,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr463
-	tr465:
+		goto tr462
+	tr464:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -13569,14 +13608,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st386
 		case 10:
-			goto tr465
+			goto tr464
 		case 13:
 			goto st386
 		case 32:
 			goto st386
 		}
-		goto tr463
-	tr54:
+		goto tr462
+	tr53:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13590,26 +13629,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr466
+			goto tr465
 		case 115:
-			goto tr152
+			goto tr151
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr466:
+		goto tr65
+	tr465:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13623,32 +13662,32 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr467
+			goto tr466
 		case 105:
-			goto tr468
+			goto tr467
 		case 108:
-			goto tr469
+			goto tr468
 		case 115:
-			goto tr470
+			goto tr469
 		case 116:
-			goto tr471
+			goto tr470
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr467:
+		goto tr65
+	tr466:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13662,24 +13701,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr203
+			goto tr202
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr468:
+		goto tr65
+	tr467:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13693,24 +13732,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr472
+			goto tr471
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr472:
+		goto tr65
+	tr471:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13724,24 +13763,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr473
+			goto tr472
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr473:
+		goto tr65
+	tr472:
 		lex.te = (lex.p) + 1
 
 		lex.act = 20
@@ -13755,7 +13794,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st393
 		case 10:
-			goto tr476
+			goto tr475
 		case 13:
 			goto st393
 		case 32:
@@ -13763,22 +13802,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr474
-	tr476:
+		goto tr473
+	tr475:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -13793,14 +13832,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st393
 		case 10:
-			goto tr476
+			goto tr475
 		case 13:
 			goto st393
 		case 32:
 			goto st393
 		}
-		goto tr474
-	tr469:
+		goto tr473
+	tr468:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13814,24 +13853,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr155
+			goto tr154
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr470:
+		goto tr65
+	tr469:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13845,24 +13884,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr477
+			goto tr476
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr477:
+		goto tr65
+	tr476:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13876,24 +13915,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 103:
-			goto tr478
+			goto tr477
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr478:
+		goto tr65
+	tr477:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13907,24 +13946,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 110:
-			goto tr378
+			goto tr377
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr471:
+		goto tr65
+	tr470:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13938,24 +13977,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr268
+			goto tr267
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr55:
+		goto tr65
+	tr54:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -13969,28 +14008,28 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr390
+			goto tr389
 		case 105:
-			goto tr479
+			goto tr478
 		case 111:
-			goto tr480
+			goto tr479
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr479:
+		goto tr65
+	tr478:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14004,24 +14043,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 114:
-			goto tr481
+			goto tr480
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr481:
+		goto tr65
+	tr480:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14035,24 +14074,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr482
+			goto tr481
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr482:
+		goto tr65
+	tr481:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14066,24 +14105,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 117:
-			goto tr267
+			goto tr266
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr480:
+		goto tr65
+	tr479:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14097,26 +14136,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr483
+			goto tr482
 		case 108:
-			goto tr484
+			goto tr483
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr483:
+		goto tr65
+	tr482:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14130,24 +14169,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 100:
-			goto tr485
+			goto tr484
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr485:
+		goto tr65
+	tr484:
 		lex.te = (lex.p) + 1
 
 		lex.act = 4
@@ -14161,7 +14200,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st406
 		case 10:
-			goto tr488
+			goto tr487
 		case 13:
 			goto st406
 		case 32:
@@ -14169,22 +14208,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr486
-	tr488:
+		goto tr485
+	tr487:
 
 		lex.line++
 		lex.linesSinceDocstring++
@@ -14199,14 +14238,14 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 9:
 			goto st406
 		case 10:
-			goto tr488
+			goto tr487
 		case 13:
 			goto st406
 		case 32:
 			goto st406
 		}
-		goto tr486
-	tr484:
+		goto tr485
+	tr483:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14220,24 +14259,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 97:
-			goto tr489
+			goto tr488
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 98 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr489:
+		goto tr65
+	tr488:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14251,24 +14290,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr219
+			goto tr218
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr56:
+		goto tr65
+	tr55:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14282,26 +14321,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 104:
-			goto tr490
+			goto tr489
 		case 105:
-			goto tr491
+			goto tr490
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr490:
+		goto tr65
+	tr489:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14315,26 +14354,26 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr128
+			goto tr127
 		case 105:
-			goto tr220
+			goto tr219
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr491:
+		goto tr65
+	tr490:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14348,24 +14387,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 116:
-			goto tr154
+			goto tr153
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr57:
+		goto tr65
+	tr56:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14379,24 +14418,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 111:
-			goto tr390
+			goto tr389
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr58:
+		goto tr65
+	tr57:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14410,24 +14449,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 105:
-			goto tr492
+			goto tr491
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr492:
+		goto tr65
+	tr491:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14441,24 +14480,24 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 101:
-			goto tr493
+			goto tr492
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
-	tr493:
+		goto tr65
+	tr492:
 		lex.te = (lex.p) + 1
 
 		lex.act = 41
@@ -14472,23 +14511,23 @@ func (lex *lexer) Lex(out *yySymType) int {
 		case 46:
 			goto st18
 		case 95:
-			goto tr28
+			goto tr27
 		case 108:
-			goto tr110
+			goto tr109
 		}
 		switch {
 		case lex.data[(lex.p)] < 65:
 			if 48 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 57 {
-				goto tr28
+				goto tr27
 			}
 		case lex.data[(lex.p)] > 90:
 			if 97 <= lex.data[(lex.p)] && lex.data[(lex.p)] <= 122 {
-				goto tr28
+				goto tr27
 			}
 		default:
-			goto tr28
+			goto tr27
 		}
-		goto tr66
+		goto tr65
 	st_out:
 	_test_eof19:
 		lex.cs = 19
@@ -15742,9 +15781,9 @@ func (lex *lexer) Lex(out *yySymType) int {
 		if (lex.p) == eof {
 			switch lex.cs {
 			case 20:
-				goto tr59
+				goto tr58
 			case 21:
-				goto tr60
+				goto tr59
 			case 22:
 				goto tr62
 			case 6:
@@ -15754,797 +15793,797 @@ func (lex *lexer) Lex(out *yySymType) int {
 			case 23:
 				goto tr62
 			case 24:
-				goto tr64
+				goto tr63
 			case 15:
 				goto tr22
 			case 16:
 				goto tr22
 			case 25:
-				goto tr60
+				goto tr59
 			case 17:
 				goto tr25
 			case 26:
-				goto tr60
+				goto tr59
 			case 27:
-				goto tr66
+				goto tr65
 			case 18:
-				goto tr27
+				goto tr7
 			case 28:
-				goto tr66
+				goto tr65
 			case 29:
-				goto tr66
+				goto tr65
 			case 30:
-				goto tr66
+				goto tr65
 			case 31:
-				goto tr66
+				goto tr65
 			case 32:
-				goto tr72
+				goto tr71
 			case 33:
-				goto tr72
+				goto tr71
 			case 34:
-				goto tr66
+				goto tr65
 			case 35:
-				goto tr66
+				goto tr65
 			case 36:
-				goto tr66
+				goto tr65
 			case 37:
-				goto tr66
+				goto tr65
 			case 38:
-				goto tr66
+				goto tr65
 			case 39:
-				goto tr66
+				goto tr65
 			case 40:
-				goto tr66
+				goto tr65
 			case 41:
-				goto tr66
+				goto tr65
 			case 42:
-				goto tr66
+				goto tr65
 			case 43:
-				goto tr66
+				goto tr65
 			case 44:
-				goto tr66
+				goto tr65
 			case 45:
-				goto tr66
+				goto tr65
 			case 46:
-				goto tr66
+				goto tr65
 			case 47:
-				goto tr66
+				goto tr65
 			case 48:
-				goto tr66
+				goto tr65
 			case 49:
-				goto tr66
+				goto tr65
 			case 50:
-				goto tr66
+				goto tr65
 			case 51:
-				goto tr66
+				goto tr65
 			case 52:
-				goto tr66
+				goto tr65
 			case 53:
-				goto tr66
+				goto tr65
 			case 54:
-				goto tr66
+				goto tr65
 			case 55:
-				goto tr66
+				goto tr65
 			case 56:
-				goto tr66
+				goto tr65
 			case 57:
-				goto tr66
+				goto tr65
 			case 58:
-				goto tr66
+				goto tr65
 			case 59:
-				goto tr66
+				goto tr65
 			case 60:
-				goto tr66
+				goto tr65
 			case 61:
-				goto tr66
+				goto tr65
 			case 62:
-				goto tr66
+				goto tr65
 			case 63:
-				goto tr66
+				goto tr65
 			case 64:
-				goto tr66
+				goto tr65
 			case 65:
-				goto tr66
+				goto tr65
 			case 66:
-				goto tr66
+				goto tr65
 			case 67:
-				goto tr66
+				goto tr65
 			case 68:
-				goto tr66
+				goto tr65
 			case 69:
-				goto tr66
+				goto tr65
 			case 70:
-				goto tr66
+				goto tr65
 			case 71:
-				goto tr66
+				goto tr65
 			case 72:
-				goto tr66
+				goto tr65
 			case 73:
-				goto tr66
+				goto tr65
 			case 74:
-				goto tr66
+				goto tr65
 			case 75:
-				goto tr66
+				goto tr65
 			case 76:
-				goto tr66
+				goto tr65
 			case 77:
-				goto tr66
+				goto tr65
 			case 78:
-				goto tr66
+				goto tr65
 			case 79:
-				goto tr66
+				goto tr65
 			case 80:
-				goto tr66
+				goto tr65
 			case 81:
-				goto tr72
+				goto tr71
 			case 82:
-				goto tr66
+				goto tr65
 			case 83:
-				goto tr66
+				goto tr65
 			case 84:
-				goto tr66
+				goto tr65
 			case 85:
-				goto tr66
+				goto tr65
 			case 86:
-				goto tr66
+				goto tr65
 			case 87:
-				goto tr66
+				goto tr65
 			case 88:
-				goto tr66
+				goto tr65
 			case 89:
-				goto tr66
+				goto tr65
 			case 90:
-				goto tr66
+				goto tr65
 			case 91:
-				goto tr66
+				goto tr65
 			case 92:
-				goto tr133
+				goto tr132
 			case 93:
-				goto tr133
+				goto tr132
 			case 94:
-				goto tr66
+				goto tr65
 			case 95:
-				goto tr66
+				goto tr65
 			case 96:
-				goto tr138
+				goto tr137
 			case 97:
-				goto tr138
+				goto tr137
 			case 98:
-				goto tr66
+				goto tr65
 			case 99:
-				goto tr66
+				goto tr65
 			case 100:
-				goto tr66
+				goto tr65
 			case 101:
-				goto tr66
+				goto tr65
 			case 102:
-				goto tr66
+				goto tr65
 			case 103:
-				goto tr145
+				goto tr144
 			case 104:
-				goto tr145
+				goto tr144
 			case 105:
-				goto tr66
+				goto tr65
 			case 106:
-				goto tr66
+				goto tr65
 			case 107:
-				goto tr66
+				goto tr65
 			case 108:
-				goto tr66
+				goto tr65
 			case 109:
-				goto tr66
+				goto tr65
 			case 110:
-				goto tr66
+				goto tr65
 			case 111:
-				goto tr66
+				goto tr65
 			case 112:
-				goto tr66
+				goto tr65
 			case 113:
-				goto tr66
+				goto tr65
 			case 114:
-				goto tr66
+				goto tr65
 			case 115:
-				goto tr66
+				goto tr65
 			case 116:
-				goto tr161
+				goto tr160
 			case 117:
-				goto tr161
+				goto tr160
 			case 118:
-				goto tr66
+				goto tr65
 			case 119:
-				goto tr66
+				goto tr65
 			case 120:
-				goto tr66
+				goto tr65
 			case 121:
-				goto tr66
+				goto tr65
 			case 122:
-				goto tr66
+				goto tr65
 			case 123:
-				goto tr66
+				goto tr65
 			case 124:
-				goto tr66
+				goto tr65
 			case 125:
-				goto tr66
+				goto tr65
 			case 126:
-				goto tr66
+				goto tr65
 			case 127:
-				goto tr66
+				goto tr65
 			case 128:
-				goto tr66
+				goto tr65
 			case 129:
-				goto tr66
+				goto tr65
 			case 130:
-				goto tr175
+				goto tr174
 			case 131:
-				goto tr175
+				goto tr174
 			case 132:
-				goto tr66
+				goto tr65
 			case 133:
-				goto tr66
+				goto tr65
 			case 134:
-				goto tr66
+				goto tr65
 			case 135:
-				goto tr66
+				goto tr65
 			case 136:
-				goto tr66
+				goto tr65
 			case 137:
-				goto tr72
+				goto tr71
 			case 138:
-				goto tr66
+				goto tr65
 			case 139:
-				goto tr66
+				goto tr65
 			case 140:
-				goto tr72
+				goto tr71
 			case 141:
-				goto tr66
+				goto tr65
 			case 142:
-				goto tr72
+				goto tr71
 			case 143:
-				goto tr66
+				goto tr65
 			case 144:
-				goto tr66
+				goto tr65
 			case 145:
-				goto tr66
+				goto tr65
 			case 146:
-				goto tr193
+				goto tr192
 			case 147:
-				goto tr193
+				goto tr192
 			case 148:
-				goto tr66
+				goto tr65
 			case 149:
-				goto tr66
+				goto tr65
 			case 150:
-				goto tr66
+				goto tr65
 			case 151:
-				goto tr66
+				goto tr65
 			case 152:
-				goto tr66
+				goto tr65
 			case 153:
-				goto tr66
+				goto tr65
 			case 154:
-				goto tr66
+				goto tr65
 			case 155:
-				goto tr66
+				goto tr65
 			case 156:
-				goto tr66
+				goto tr65
 			case 157:
-				goto tr72
+				goto tr71
 			case 158:
-				goto tr66
+				goto tr65
 			case 159:
-				goto tr72
+				goto tr71
 			case 160:
-				goto tr66
+				goto tr65
 			case 161:
-				goto tr66
+				goto tr65
 			case 162:
-				goto tr66
+				goto tr65
 			case 163:
-				goto tr66
+				goto tr65
 			case 164:
-				goto tr72
+				goto tr71
 			case 165:
-				goto tr66
+				goto tr65
 			case 166:
-				goto tr66
+				goto tr65
 			case 167:
-				goto tr66
+				goto tr65
 			case 168:
-				goto tr66
+				goto tr65
 			case 169:
-				goto tr66
+				goto tr65
 			case 170:
-				goto tr66
+				goto tr65
 			case 171:
-				goto tr66
+				goto tr65
 			case 172:
-				goto tr66
+				goto tr65
 			case 173:
-				goto tr66
+				goto tr65
 			case 174:
-				goto tr222
+				goto tr221
 			case 175:
-				goto tr222
+				goto tr221
 			case 176:
-				goto tr66
+				goto tr65
 			case 177:
-				goto tr66
+				goto tr65
 			case 178:
-				goto tr66
+				goto tr65
 			case 179:
-				goto tr66
+				goto tr65
 			case 180:
-				goto tr72
+				goto tr71
 			case 181:
-				goto tr66
+				goto tr65
 			case 182:
-				goto tr66
+				goto tr65
 			case 183:
-				goto tr233
+				goto tr232
 			case 184:
-				goto tr233
+				goto tr232
 			case 185:
-				goto tr66
+				goto tr65
 			case 186:
-				goto tr66
+				goto tr65
 			case 187:
-				goto tr66
+				goto tr65
 			case 188:
-				goto tr66
+				goto tr65
 			case 189:
-				goto tr240
+				goto tr239
 			case 190:
-				goto tr240
+				goto tr239
 			case 191:
-				goto tr66
+				goto tr65
 			case 192:
-				goto tr66
+				goto tr65
 			case 193:
-				goto tr66
+				goto tr65
 			case 194:
-				goto tr66
+				goto tr65
 			case 195:
-				goto tr251
+				goto tr250
 			case 196:
-				goto tr251
+				goto tr250
 			case 197:
-				goto tr66
+				goto tr65
 			case 198:
-				goto tr66
+				goto tr65
 			case 199:
-				goto tr66
+				goto tr65
 			case 200:
-				goto tr66
+				goto tr65
 			case 201:
-				goto tr66
+				goto tr65
 			case 202:
-				goto tr66
+				goto tr65
 			case 203:
-				goto tr66
+				goto tr65
 			case 204:
-				goto tr66
+				goto tr65
 			case 205:
-				goto tr66
+				goto tr65
 			case 206:
-				goto tr66
+				goto tr65
 			case 207:
-				goto tr66
+				goto tr65
 			case 208:
-				goto tr66
+				goto tr65
 			case 209:
-				goto tr66
+				goto tr65
 			case 210:
-				goto tr66
+				goto tr65
 			case 211:
-				goto tr66
+				goto tr65
 			case 212:
-				goto tr66
+				goto tr65
 			case 213:
-				goto tr66
+				goto tr65
 			case 214:
-				goto tr66
+				goto tr65
 			case 215:
-				goto tr66
+				goto tr65
 			case 216:
-				goto tr66
+				goto tr65
 			case 217:
-				goto tr66
+				goto tr65
 			case 218:
-				goto tr66
+				goto tr65
 			case 219:
-				goto tr66
+				goto tr65
 			case 220:
-				goto tr277
+				goto tr276
 			case 221:
-				goto tr277
+				goto tr276
 			case 222:
-				goto tr66
+				goto tr65
 			case 223:
-				goto tr281
+				goto tr280
 			case 224:
-				goto tr281
+				goto tr280
 			case 225:
-				goto tr66
+				goto tr65
 			case 226:
-				goto tr285
+				goto tr284
 			case 227:
-				goto tr285
+				goto tr284
 			case 228:
-				goto tr288
+				goto tr287
 			case 229:
-				goto tr288
+				goto tr287
 			case 230:
-				goto tr66
+				goto tr65
 			case 231:
-				goto tr66
+				goto tr65
 			case 232:
-				goto tr66
+				goto tr65
 			case 233:
-				goto tr66
+				goto tr65
 			case 234:
-				goto tr66
+				goto tr65
 			case 235:
-				goto tr66
+				goto tr65
 			case 236:
-				goto tr66
+				goto tr65
 			case 237:
-				goto tr72
+				goto tr71
 			case 238:
-				goto tr66
+				goto tr65
 			case 239:
-				goto tr66
+				goto tr65
 			case 240:
-				goto tr66
+				goto tr65
 			case 241:
-				goto tr66
+				goto tr65
 			case 242:
-				goto tr305
+				goto tr304
 			case 243:
-				goto tr305
+				goto tr304
 			case 244:
-				goto tr66
+				goto tr65
 			case 245:
-				goto tr66
+				goto tr65
 			case 246:
-				goto tr66
+				goto tr65
 			case 247:
-				goto tr66
+				goto tr65
 			case 248:
-				goto tr66
+				goto tr65
 			case 249:
-				goto tr66
+				goto tr65
 			case 250:
-				goto tr66
+				goto tr65
 			case 251:
-				goto tr66
+				goto tr65
 			case 252:
-				goto tr66
+				goto tr65
 			case 253:
-				goto tr66
+				goto tr65
 			case 254:
-				goto tr66
+				goto tr65
 			case 255:
-				goto tr66
+				goto tr65
 			case 256:
-				goto tr66
+				goto tr65
 			case 257:
-				goto tr66
+				goto tr65
 			case 258:
-				goto tr66
+				goto tr65
 			case 259:
-				goto tr66
+				goto tr65
 			case 260:
-				goto tr66
+				goto tr65
 			case 261:
-				goto tr66
+				goto tr65
 			case 262:
-				goto tr66
+				goto tr65
 			case 263:
-				goto tr324
+				goto tr323
 			case 264:
-				goto tr324
+				goto tr323
 			case 265:
-				goto tr66
+				goto tr65
 			case 266:
-				goto tr66
+				goto tr65
 			case 267:
-				goto tr330
+				goto tr329
 			case 268:
-				goto tr330
+				goto tr329
 			case 269:
-				goto tr66
+				goto tr65
 			case 270:
-				goto tr66
+				goto tr65
 			case 271:
-				goto tr66
+				goto tr65
 			case 272:
-				goto tr66
+				goto tr65
 			case 273:
-				goto tr66
+				goto tr65
 			case 274:
-				goto tr66
+				goto tr65
 			case 275:
-				goto tr66
+				goto tr65
 			case 276:
-				goto tr66
+				goto tr65
 			case 277:
-				goto tr66
+				goto tr65
 			case 278:
-				goto tr66
+				goto tr65
 			case 279:
-				goto tr344
+				goto tr343
 			case 280:
-				goto tr344
+				goto tr343
 			case 281:
-				goto tr66
+				goto tr65
 			case 282:
-				goto tr66
+				goto tr65
 			case 283:
-				goto tr66
+				goto tr65
 			case 284:
-				goto tr66
+				goto tr65
 			case 285:
-				goto tr66
+				goto tr65
 			case 286:
-				goto tr66
+				goto tr65
 			case 287:
-				goto tr66
+				goto tr65
 			case 288:
-				goto tr66
+				goto tr65
 			case 289:
-				goto tr354
+				goto tr353
 			case 290:
-				goto tr354
+				goto tr353
 			case 291:
-				goto tr66
+				goto tr65
 			case 292:
-				goto tr66
+				goto tr65
 			case 293:
-				goto tr66
+				goto tr65
 			case 294:
-				goto tr66
+				goto tr65
 			case 295:
-				goto tr66
+				goto tr65
 			case 296:
-				goto tr66
+				goto tr65
 			case 297:
-				goto tr363
+				goto tr362
 			case 298:
-				goto tr363
+				goto tr362
 			case 299:
-				goto tr66
+				goto tr65
 			case 300:
-				goto tr66
+				goto tr65
 			case 301:
-				goto tr66
+				goto tr65
 			case 302:
-				goto tr66
+				goto tr65
 			case 303:
-				goto tr66
+				goto tr65
 			case 304:
-				goto tr66
+				goto tr65
 			case 305:
-				goto tr66
+				goto tr65
 			case 306:
-				goto tr66
+				goto tr65
 			case 307:
-				goto tr66
+				goto tr65
 			case 308:
-				goto tr66
+				goto tr65
 			case 309:
-				goto tr66
+				goto tr65
 			case 310:
-				goto tr66
+				goto tr65
 			case 311:
-				goto tr66
+				goto tr65
 			case 312:
-				goto tr66
+				goto tr65
 			case 313:
-				goto tr66
+				goto tr65
 			case 314:
-				goto tr66
+				goto tr65
 			case 315:
-				goto tr66
+				goto tr65
 			case 316:
-				goto tr66
+				goto tr65
 			case 317:
-				goto tr66
+				goto tr65
 			case 318:
-				goto tr66
+				goto tr65
 			case 319:
-				goto tr66
+				goto tr65
 			case 320:
-				goto tr66
+				goto tr65
 			case 321:
-				goto tr66
+				goto tr65
 			case 322:
-				goto tr66
+				goto tr65
 			case 323:
-				goto tr66
+				goto tr65
 			case 324:
-				goto tr66
+				goto tr65
 			case 325:
-				goto tr66
+				goto tr65
 			case 326:
-				goto tr66
+				goto tr65
 			case 327:
-				goto tr66
+				goto tr65
 			case 328:
-				goto tr396
+				goto tr395
 			case 329:
-				goto tr396
+				goto tr395
 			case 330:
-				goto tr66
+				goto tr65
 			case 331:
-				goto tr66
+				goto tr65
 			case 332:
-				goto tr66
+				goto tr65
 			case 333:
-				goto tr66
+				goto tr65
 			case 334:
-				goto tr66
+				goto tr65
 			case 335:
-				goto tr66
+				goto tr65
 			case 336:
-				goto tr66
+				goto tr65
 			case 337:
-				goto tr66
+				goto tr65
 			case 338:
-				goto tr66
+				goto tr65
 			case 339:
-				goto tr411
+				goto tr410
 			case 340:
-				goto tr411
+				goto tr410
 			case 341:
-				goto tr414
+				goto tr413
 			case 342:
-				goto tr414
+				goto tr413
 			case 343:
-				goto tr66
+				goto tr65
 			case 344:
-				goto tr66
+				goto tr65
 			case 345:
-				goto tr66
+				goto tr65
 			case 346:
-				goto tr66
+				goto tr65
 			case 347:
-				goto tr66
+				goto tr65
 			case 348:
-				goto tr66
+				goto tr65
 			case 349:
-				goto tr423
+				goto tr422
 			case 350:
-				goto tr423
+				goto tr422
 			case 351:
-				goto tr66
+				goto tr65
 			case 352:
-				goto tr66
+				goto tr65
 			case 353:
-				goto tr428
+				goto tr427
 			case 354:
-				goto tr428
+				goto tr427
 			case 355:
-				goto tr66
+				goto tr65
 			case 356:
-				goto tr66
+				goto tr65
 			case 357:
-				goto tr66
+				goto tr65
 			case 358:
-				goto tr66
+				goto tr65
 			case 359:
-				goto tr66
+				goto tr65
 			case 360:
-				goto tr66
+				goto tr65
 			case 361:
-				goto tr66
+				goto tr65
 			case 362:
-				goto tr66
+				goto tr65
 			case 363:
-				goto tr66
+				goto tr65
 			case 364:
-				goto tr66
+				goto tr65
 			case 365:
-				goto tr66
+				goto tr65
 			case 366:
-				goto tr66
+				goto tr65
 			case 367:
-				goto tr66
+				goto tr65
 			case 368:
-				goto tr72
+				goto tr71
 			case 369:
-				goto tr445
+				goto tr444
 			case 370:
-				goto tr445
+				goto tr444
 			case 371:
-				goto tr66
+				goto tr65
 			case 372:
-				goto tr66
+				goto tr65
 			case 373:
-				goto tr66
+				goto tr65
 			case 374:
-				goto tr66
+				goto tr65
 			case 375:
-				goto tr66
+				goto tr65
 			case 376:
-				goto tr66
+				goto tr65
 			case 377:
-				goto tr66
+				goto tr65
 			case 378:
-				goto tr455
+				goto tr454
 			case 379:
-				goto tr455
+				goto tr454
 			case 380:
-				goto tr66
+				goto tr65
 			case 381:
-				goto tr66
+				goto tr65
 			case 382:
-				goto tr66
+				goto tr65
 			case 383:
-				goto tr66
+				goto tr65
 			case 384:
-				goto tr66
+				goto tr65
 			case 385:
-				goto tr463
+				goto tr462
 			case 386:
-				goto tr463
+				goto tr462
 			case 387:
-				goto tr66
+				goto tr65
 			case 388:
-				goto tr66
+				goto tr65
 			case 389:
-				goto tr66
+				goto tr65
 			case 390:
-				goto tr66
+				goto tr65
 			case 391:
-				goto tr66
+				goto tr65
 			case 392:
-				goto tr474
+				goto tr473
 			case 393:
-				goto tr474
+				goto tr473
 			case 394:
-				goto tr66
+				goto tr65
 			case 395:
-				goto tr66
+				goto tr65
 			case 396:
-				goto tr66
+				goto tr65
 			case 397:
-				goto tr66
+				goto tr65
 			case 398:
-				goto tr66
+				goto tr65
 			case 399:
-				goto tr66
+				goto tr65
 			case 400:
-				goto tr66
+				goto tr65
 			case 401:
-				goto tr66
+				goto tr65
 			case 402:
-				goto tr66
+				goto tr65
 			case 403:
-				goto tr66
+				goto tr65
 			case 404:
-				goto tr66
+				goto tr65
 			case 405:
-				goto tr486
+				goto tr485
 			case 406:
-				goto tr486
+				goto tr485
 			case 407:
-				goto tr66
+				goto tr65
 			case 408:
-				goto tr66
+				goto tr65
 			case 409:
-				goto tr66
+				goto tr65
 			case 410:
-				goto tr66
+				goto tr65
 			case 411:
-				goto tr66
+				goto tr65
 			case 412:
-				goto tr66
+				goto tr65
 			case 413:
-				goto tr66
+				goto tr65
 			case 414:
-				goto tr66
+				goto tr65
 			case 415:
-				goto tr66
+				goto tr65
 			}
 		}
 

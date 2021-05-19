@@ -227,6 +227,7 @@ func TestParseConstants(t *testing.T) {
 				const string baz = "hello world";
 
 				const double qux = 3.141592
+				const double exp = 1e-5
 
 				// def is reserved but def_ is not
 				const double def_ = 1.23
@@ -260,10 +261,16 @@ func TestParseConstants(t *testing.T) {
 					Line:  7,
 				},
 				&Constant{
+					Name:  "exp",
+					Type:  BaseType{ID: DoubleTypeID, Line: 8},
+					Value: ConstantDouble(1e-05),
+					Line:  8,
+				},
+				&Constant{
 					Name:  "def_",
-					Type:  BaseType{ID: DoubleTypeID, Line: 10},
+					Type:  BaseType{ID: DoubleTypeID, Line: 11},
 					Value: ConstantDouble(1.23),
-					Line:  10,
+					Line:  11,
 				},
 			}},
 		},
