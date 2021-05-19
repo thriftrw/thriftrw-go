@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 - `double` constants with exponents but without decimal components are now supported.
+- Fix handling of escaped quotes inside string literals.
 
 ## [1.26.0] - 2021-02-18
 ### Changed
