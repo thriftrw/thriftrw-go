@@ -20,14 +20,17 @@
 
 package internal
 
-import "strconv"
+import (
+	"bytes"
+	"strconv"
+)
 
 // UnquoteSingleQuoted unquotes a slice of bytes representing a single quoted
 // string.
 //
 // 	UnquoteSingleQuoted([]byte("'foo'")) == "foo"
 func UnquoteSingleQuoted(in []byte) (string, error) {
-	out := string(swapQuotes(in))
+	out := string(swapQuotes(unescapeQuotes(in, '"')))
 	str, err := strconv.Unquote(out)
 	if err != nil {
 		return str, err
@@ -36,6 +39,22 @@ func UnquoteSingleQuoted(in []byte) (string, error) {
 	// s/'/"/g, s/"/'/g
 	out = string(swapQuotes([]byte(str)))
 	return out, nil
+}
+
+// UnquoteDoubleQuoted unquotes a slice of bytes representing a double quoted
+// string.
+//
+// 	UnquoteDoubleQuoted([]byte("\"foo\"")) == "foo"
+func UnquoteDoubleQuoted(in []byte) (string, error) {
+	return strconv.Unquote(string(unescapeQuotes(in, '\'')))
+}
+
+// unescapeQuotes unescapes all occurences of a quote character in a string.
+//
+//  unescapeQuotes([]byte{'\\', '"'}, '"') == []byte{'"'}
+//  unescapeQuotes([]byte{'\\', '\''}, '\'') == []byte{'\''}
+func unescapeQuotes(in []byte, quote byte) []byte {
+	return bytes.ReplaceAll(in, []byte{'\\', quote}, []byte{quote})
 }
 
 // swapQuotes replaces all single quotes with double quotes and all double
