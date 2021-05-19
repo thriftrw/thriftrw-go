@@ -95,7 +95,11 @@ func (lex *lexer) Lex(out *yySymType) int {
         integer = ('+' | '-')? digit+;
         hex_integer = '0x' xdigit+;
 
-        double = integer '.' digit* ([Ee] integer)?;
+        # Doubles can optionally have decimals and/or exponents, which means
+        # this pattern can also reduce to just `integer`. Fortunately, this
+        # token has a lower precendence, so we don't need to use multiple
+        # patterns here to avoid ambiguities.
+        double = integer ('.' digit*)? ([Ee] integer)?;
 
         # The following keywords are reserved in different languages and are
         # disallowed as identifiers in the IDL.
