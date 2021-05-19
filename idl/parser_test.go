@@ -275,6 +275,45 @@ func TestParseConstants(t *testing.T) {
 			}},
 		},
 		{
+			`const string s1 = ""
+			 const string s2 = ''
+			 const string s3 = "\"foo\" \'bar\'"
+			 const string s4 = '\"foo\" \'bar\''
+			 const string s5 = 'foo\tbar\nbaz\\qux'`,
+			&Program{Definitions: []Definition{
+				&Constant{
+					Name:  "s1",
+					Type:  BaseType{ID: StringTypeID, Line: 1},
+					Value: ConstantString(""),
+					Line:  1,
+				},
+				&Constant{
+					Name:  "s2",
+					Type:  BaseType{ID: StringTypeID, Line: 2},
+					Value: ConstantString(""),
+					Line:  2,
+				},
+				&Constant{
+					Name:  "s3",
+					Type:  BaseType{ID: StringTypeID, Line: 3},
+					Value: ConstantString(`"foo" 'bar'`),
+					Line:  3,
+				},
+				&Constant{
+					Name:  "s4",
+					Type:  BaseType{ID: StringTypeID, Line: 4},
+					Value: ConstantString(`"foo" 'bar'`),
+					Line:  4,
+				},
+				&Constant{
+					Name:  "s5",
+					Type:  BaseType{ID: StringTypeID, Line: 5},
+					Value: ConstantString("foo\tbar\nbaz\\qux"),
+					Line:  5,
+				},
+			}},
+		},
+		{
 			`const bool (foo = "a\nb") baz = true
 			 const bool include_something = false`,
 			&Program{Definitions: []Definition{

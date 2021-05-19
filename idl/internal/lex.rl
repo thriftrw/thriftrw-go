@@ -308,7 +308,7 @@ func (lex *lexer) Lex(out *yySymType) int {
                 if len(bs) > 0 && bs[0] == '\'' {
                     str, err = UnquoteSingleQuoted(bs)
                 } else {
-                    str, err = strconv.Unquote(string(bs))
+                    str, err = UnquoteDoubleQuoted(bs)
                 }
 
                 if err != nil {
