@@ -517,6 +517,13 @@ func TestWalk(t *testing.T) {
 				{node: &ast.Include{Path: "foo.thrift"}},
 			},
 		},
+		{
+			desc: "cpp_include",
+			node: &ast.CppInclude{Path: "<unordered_map>"},
+			visits: []visit{
+				{node: &ast.CppInclude{Path: "<unordered_map>"}},
+			},
+		},
 		func() (tt test) {
 			tt.desc = "list type"
 

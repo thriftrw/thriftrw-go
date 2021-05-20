@@ -174,6 +174,14 @@ func TestParseHeaders(t *testing.T) {
 		},
 		{
 			`
+				cpp_include "<unordered_map>"
+			`,
+			&Program{Headers: []Header{
+				&CppInclude{Path: "<unordered_map>", Line: 2},
+			}},
+		},
+		{
+			`
 				namespace py bar
 				namespace * foo
 			`,
@@ -219,6 +227,7 @@ func TestParseConstants(t *testing.T) {
 				const string baz = "hello world";
 
 				const double qux = 3.141592
+				const double exp = 1e-5
 
 				// def is reserved but def_ is not
 				const double def_ = 1.23
@@ -252,10 +261,55 @@ func TestParseConstants(t *testing.T) {
 					Line:  7,
 				},
 				&Constant{
+					Name:  "exp",
+					Type:  BaseType{ID: DoubleTypeID, Line: 8},
+					Value: ConstantDouble(1e-05),
+					Line:  8,
+				},
+				&Constant{
 					Name:  "def_",
-					Type:  BaseType{ID: DoubleTypeID, Line: 10},
+					Type:  BaseType{ID: DoubleTypeID, Line: 11},
 					Value: ConstantDouble(1.23),
-					Line:  10,
+					Line:  11,
+				},
+			}},
+		},
+		{
+			`const string s1 = ""
+			 const string s2 = ''
+			 const string s3 = "\"foo\" \'bar\'"
+			 const string s4 = '\"foo\" \'bar\''
+			 const string s5 = 'foo\tbar\nbaz\\qux'`,
+			&Program{Definitions: []Definition{
+				&Constant{
+					Name:  "s1",
+					Type:  BaseType{ID: StringTypeID, Line: 1},
+					Value: ConstantString(""),
+					Line:  1,
+				},
+				&Constant{
+					Name:  "s2",
+					Type:  BaseType{ID: StringTypeID, Line: 2},
+					Value: ConstantString(""),
+					Line:  2,
+				},
+				&Constant{
+					Name:  "s3",
+					Type:  BaseType{ID: StringTypeID, Line: 3},
+					Value: ConstantString(`"foo" 'bar'`),
+					Line:  3,
+				},
+				&Constant{
+					Name:  "s4",
+					Type:  BaseType{ID: StringTypeID, Line: 4},
+					Value: ConstantString(`"foo" 'bar'`),
+					Line:  4,
+				},
+				&Constant{
+					Name:  "s5",
+					Type:  BaseType{ID: StringTypeID, Line: 5},
+					Value: ConstantString("foo\tbar\nbaz\\qux"),
+					Line:  5,
 				},
 			}},
 		},

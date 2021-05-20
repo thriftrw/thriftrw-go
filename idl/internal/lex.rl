@@ -95,7 +95,11 @@ func (lex *lexer) Lex(out *yySymType) int {
         integer = ('+' | '-')? digit+;
         hex_integer = '0x' xdigit+;
 
-        double = integer '.' digit* ([Ee] integer)?;
+        # Doubles can optionally have decimals and/or exponents, which means
+        # this pattern can also reduce to just `integer`. Fortunately, this
+        # token has a lower precendence, so we don't need to use multiple
+        # patterns here to avoid ambiguities.
+        double = integer ('.' digit*)? ([Ee] integer)?;
 
         # The following keywords are reserved in different languages and are
         # disallowed as identifiers in the IDL.
@@ -225,35 +229,36 @@ func (lex *lexer) Lex(out *yySymType) int {
             # object.
 
             # Keywords
-            'include'   __ => { tok =   INCLUDE; fbreak; };
-            'namespace' __ => { tok = NAMESPACE; fbreak; };
-            'void'      __ => { tok =      VOID; fbreak; };
-            'bool'      __ => { tok =      BOOL; fbreak; };
-            'byte'      __ => { tok =      BYTE; fbreak; };
-            'i8'        __ => { tok =        I8; fbreak; };
-            'i16'       __ => { tok =       I16; fbreak; };
-            'i32'       __ => { tok =       I32; fbreak; };
-            'i64'       __ => { tok =       I64; fbreak; };
-            'double'    __ => { tok =    DOUBLE; fbreak; };
-            'string'    __ => { tok =    STRING; fbreak; };
-            'binary'    __ => { tok =    BINARY; fbreak; };
-            'map'       __ => { tok =       MAP; fbreak; };
-            'list'      __ => { tok =      LIST; fbreak; };
-            'set'       __ => { tok =       SET; fbreak; };
-            'oneway'    __ => { tok =    ONEWAY; fbreak; };
-            'typedef'   __ => { tok =   TYPEDEF; fbreak; };
-            'struct'    __ => { tok =    STRUCT; fbreak; };
-            'union'     __ => { tok =     UNION; fbreak; };
-            'exception' __ => { tok = EXCEPTION; fbreak; };
-            'extends'   __ => { tok =   EXTENDS; fbreak; };
-            'throws'    __ => { tok =    THROWS; fbreak; };
-            'service'   __ => { tok =   SERVICE; fbreak; };
-            'enum'      __ => { tok =      ENUM; fbreak; };
-            'const'     __ => { tok =     CONST; fbreak; };
-            'required'  __ => { tok =  REQUIRED; fbreak; };
-            'optional'  __ => { tok =  OPTIONAL; fbreak; };
-            'true'      __ => { tok =      TRUE; fbreak; };
-            'false'     __ => { tok =     FALSE; fbreak; };
+            'include'     __ => { tok =       INCLUDE; fbreak; };
+            'cpp_include' __ => { tok =   CPP_INCLUDE; fbreak; };
+            'namespace'   __ => { tok =     NAMESPACE; fbreak; };
+            'void'        __ => { tok =          VOID; fbreak; };
+            'bool'        __ => { tok =          BOOL; fbreak; };
+            'byte'        __ => { tok =          BYTE; fbreak; };
+            'i8'          __ => { tok =            I8; fbreak; };
+            'i16'         __ => { tok =           I16; fbreak; };
+            'i32'         __ => { tok =           I32; fbreak; };
+            'i64'         __ => { tok =           I64; fbreak; };
+            'double'      __ => { tok =        DOUBLE; fbreak; };
+            'string'      __ => { tok =        STRING; fbreak; };
+            'binary'      __ => { tok =        BINARY; fbreak; };
+            'map'         __ => { tok =           MAP; fbreak; };
+            'list'        __ => { tok =          LIST; fbreak; };
+            'set'         __ => { tok =           SET; fbreak; };
+            'oneway'      __ => { tok =        ONEWAY; fbreak; };
+            'typedef'     __ => { tok =       TYPEDEF; fbreak; };
+            'struct'      __ => { tok =        STRUCT; fbreak; };
+            'union'       __ => { tok =         UNION; fbreak; };
+            'exception'   __ => { tok =     EXCEPTION; fbreak; };
+            'extends'     __ => { tok =       EXTENDS; fbreak; };
+            'throws'      __ => { tok =        THROWS; fbreak; };
+            'service'     __ => { tok =       SERVICE; fbreak; };
+            'enum'        __ => { tok =          ENUM; fbreak; };
+            'const'       __ => { tok =         CONST; fbreak; };
+            'required'    __ => { tok =      REQUIRED; fbreak; };
+            'optional'    __ => { tok =      OPTIONAL; fbreak; };
+            'true'        __ => { tok =          TRUE; fbreak; };
+            'false'       __ => { tok =         FALSE; fbreak; };
 
             symbol => {
                 tok = int(lex.data[lex.ts])
@@ -303,7 +308,7 @@ func (lex *lexer) Lex(out *yySymType) int {
                 if len(bs) > 0 && bs[0] == '\'' {
                     str, err = UnquoteSingleQuoted(bs)
                 } else {
-                    str, err = strconv.Unquote(string(bs))
+                    str, err = UnquoteDoubleQuoted(bs)
                 }
 
                 if err != nil {

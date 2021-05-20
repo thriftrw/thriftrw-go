@@ -84,6 +84,12 @@ lint: $(GOLINT) $(STATICCHECK)
 	@$(STATICCHECK) ./... 2>&1 | $(LINT_FILTER) | tee -a lint.log
 	@[ ! -s lint.log ]
 
+$(GOLINT): go.mod
+	go install golang.org/x/lint/golint
+
+$(STATICCHECK): go.mod
+	go install honnef.co/go/tools/cmd/staticcheck
+
 .PHONY: verifyversion
 verifyversion:
 	$(eval CHANGELOG_VERSION := $(shell perl -ne '/^## \[(\S+?)\]/ && print "v$$1\n"' CHANGELOG.md | head -n1))
@@ -121,7 +127,7 @@ space +=
 
 .PHONY: cover
 cover:
-	go test -v -covermode=atomic -coverprofile cover.full.out -coverpkg=./... ./...
+	go test -v -race -covermode=atomic -coverprofile cover.full.out -coverpkg=./... ./...
 	grep -v "$(subst $(space),\|,$(COVER_IGNORE_FILES))" cover.full.out > cover.out
 	go tool cover -html=cover.out -o cover.html
 

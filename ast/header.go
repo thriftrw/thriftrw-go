@@ -59,6 +59,26 @@ func (i *Include) Info() HeaderInfo {
 	return HeaderInfo{Line: i.Line}
 }
 
+// CppInclude is a request to include a C++-specific header file.
+//
+//  cpp_include "<unordered_map>"
+type CppInclude struct {
+	Path string
+	Line int
+}
+
+func (*CppInclude) node()   {}
+func (*CppInclude) header() {}
+
+func (i *CppInclude) lineNumber() int { return i.Line }
+
+func (*CppInclude) visitChildren(nodeStack, visitor) {}
+
+// Info for CppInclude.
+func (i *CppInclude) Info() HeaderInfo {
+	return HeaderInfo{Line: i.Line}
+}
+
 // Namespace statements allow users to choose the package name used by the
 // generated code in certain languages.
 //
