@@ -906,6 +906,61 @@ func TestParseStruct(t *testing.T) {
 				},
 			}},
 		},
+		{
+			`
+				struct LegacyStruct {
+					optional string a
+					optional string b
+					-4: optional string c
+					optional string d
+					1: optional string e
+				}
+			`,
+			&Program{Definitions: []Definition{
+				&Struct{
+					Name: "LegacyStruct",
+					Line: 2,
+					Type: StructType,
+					Fields: []*Field{
+						{
+							ID:           -1,
+							Name:         "a",
+							Requiredness: Optional,
+							Type:         BaseType{ID: StringTypeID, Line: 3},
+							Line:         3,
+						},
+						{
+							ID:           -2,
+							Name:         "b",
+							Requiredness: Optional,
+							Type:         BaseType{ID: StringTypeID, Line: 4},
+							Line:         4,
+						},
+						{
+							ID:           -4,
+							Name:         "c",
+							Requiredness: Optional,
+							Type:         BaseType{ID: StringTypeID, Line: 5},
+							Line:         5,
+						},
+						{
+							ID:           -5,
+							Name:         "d",
+							Requiredness: Optional,
+							Type:         BaseType{ID: StringTypeID, Line: 6},
+							Line:         6,
+						},
+						{
+							ID:           1,
+							Name:         "e",
+							Requiredness: Optional,
+							Type:         BaseType{ID: StringTypeID, Line: 7},
+							Line:         7,
+						},
+					},
+				},
+			}},
+		},
 	}
 
 	assertParseCases(t, tests)
@@ -1080,6 +1135,86 @@ func TestParseServices(t *testing.T) {
 									Type: TypeReference{Name: "TimedOutException", Line: 23},
 									Line: 23,
 									Doc:  "The request timed out.",
+								},
+							},
+						},
+					},
+				},
+			}},
+		},
+		{
+			`
+				service LegacyService {
+					string functionA(string a, string b)
+					string functionB(string a, 1: string b, string c)
+					string functionC(1: string a, 2: string b)
+				}
+			`,
+			&Program{Definitions: []Definition{
+				&Service{
+					Name: "LegacyService",
+					Line: 2,
+					Functions: []*Function{
+						{
+							Name:       "functionA",
+							Line:       3,
+							ReturnType: BaseType{ID: StringTypeID, Line: 3},
+							Parameters: []*Field{
+								{
+									ID:   -1,
+									Name: "a",
+									Type: BaseType{ID: StringTypeID, Line: 3},
+									Line: 3,
+								},
+								{
+									ID:   -2,
+									Name: "b",
+									Type: BaseType{ID: StringTypeID, Line: 3},
+									Line: 3,
+								},
+							},
+						},
+						{
+							Name:       "functionB",
+							Line:       4,
+							ReturnType: BaseType{ID: StringTypeID, Line: 4},
+							Parameters: []*Field{
+								{
+									ID:   -1,
+									Name: "a",
+									Type: BaseType{ID: StringTypeID, Line: 4},
+									Line: 4,
+								},
+								{
+									ID:   1,
+									Name: "b",
+									Type: BaseType{ID: StringTypeID, Line: 4},
+									Line: 4,
+								},
+								{
+									ID:   -2,
+									Name: "c",
+									Type: BaseType{ID: StringTypeID, Line: 4},
+									Line: 4,
+								},
+							},
+						},
+						{
+							Name:       "functionC",
+							Line:       5,
+							ReturnType: BaseType{ID: StringTypeID, Line: 5},
+							Parameters: []*Field{
+								{
+									ID:   1,
+									Name: "a",
+									Type: BaseType{ID: StringTypeID, Line: 5},
+									Line: 5,
+								},
+								{
+									ID:   2,
+									Name: "b",
+									Type: BaseType{ID: StringTypeID, Line: 5},
+									Line: 5,
 								},
 							},
 						},

@@ -47,6 +47,11 @@ type lexer struct {
 	lastDocstring       string
 	linesSinceDocstring int
 
+	// Used to automatically number fields when a value isn't explicitly
+	// given. Assigned values start at -1 and get increasingly negative.
+	// This is legacy behavior and is only here for backwards compatibility.
+	autoFieldIndex int
+
 	err         parseError
 	parseFailed bool
 
@@ -57,12 +62,13 @@ type lexer struct {
 
 func newLexer(data []byte) *lexer {
 	lex := &lexer{
-		line:        1,
-		err:         newParseError(),
-		parseFailed: false,
-		data:        data,
-		p:           0,
-		pe:          len(data),
+		line:           1,
+		autoFieldIndex: -1,
+		err:            newParseError(),
+		parseFailed:    false,
+		data:           data,
+		p:              0,
+		pe:             len(data),
 	}
 
 	{

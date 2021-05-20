@@ -24,6 +24,7 @@ import "go.uber.org/thriftrw/ast"
     fieldType ast.Type
     structType ast.StructureType
     baseTypeID ast.BaseTypeID
+    fieldIdentifier int
     fieldRequired ast.Requiredness
 
     field *ast.Field
@@ -64,6 +65,7 @@ import "go.uber.org/thriftrw/ast"
 %type <prog> program
 %type <fieldType> type
 %type <baseTypeID> base_type_name
+%type <fieldIdentifier> field_identifier
 %type <fieldRequired> field_required
 %type <structType> struct_type
 
@@ -268,37 +270,57 @@ enum_item
     ;
 
 fields
-    : /* nothing */ { $$ = nil }
+    : /* nothing */
+        {
+            $$ = nil
+            yylex.(*lexer).autoFieldIndex = -1
+        }
     | fields field optional_sep { $$ = append($1, $2) }
     ;
 
-
 field
-    : lineno docstring INTCONSTANT ':' field_required type IDENTIFIER type_annotations
+    : lineno docstring field_identifier field_required type IDENTIFIER type_annotations
         {
             $$ = &ast.Field{
-                ID: int($3),
-                Name: $7,
-                Type: $6,
-                Requiredness: $5,
-                Annotations: $8,
+                ID: $3,
+                Name: $6,
+                Type: $5,
+                Requiredness: $4,
+                Annotations: $7,
                 Line: $1,
                 Doc: ParseDocstring($2),
             }
         }
-    | lineno docstring INTCONSTANT ':' field_required type IDENTIFIER '=' const_value
+    | lineno docstring field_identifier field_required type IDENTIFIER '=' const_value
       type_annotations
         {
             $$ = &ast.Field{
-                ID: int($3),
-                Name: $7,
-                Type: $6,
-                Requiredness: $5,
-                Default: $9,
-                Annotations: $10,
+                ID: $3,
+                Name: $6,
+                Type: $5,
+                Requiredness: $4,
+                Default: $8,
+                Annotations: $9,
                 Line: $1,
                 Doc: ParseDocstring($2),
             }
+        }
+    ;
+
+field_identifier
+    : INTCONSTANT ':'
+        {
+            $$ = int($1)
+
+            // Use a negative value as the new basis for auto-assigned fields.
+            if ($$ < 0) {
+                yylex.(*lexer).autoFieldIndex = $$ - 1
+            }
+        }
+    | /* autoindex */
+        {
+            $$ = yylex.(*lexer).autoFieldIndex
+            yylex.(*lexer).autoFieldIndex -= 1
         }
     ;
 
