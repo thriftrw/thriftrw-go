@@ -85,9 +85,13 @@ func (r fieldRequiredness) isRequired(src *ast.Field) (bool, error) {
 //
 // disallowDefaultValue specifies whether the field is allowed to have a default
 // value.
+//
+// allowNegativeIDs controls whether negative field identifiers are allowed.
+// This also enables auto-assigning (negative) values for unset field IDs.
 type fieldOptions struct {
 	requiredness         fieldRequiredness
 	disallowDefaultValue bool
+	allowNegativeIDs     bool
 }
 
 // FieldSpec represents a single field of a struct or parameter list.
@@ -103,7 +107,7 @@ type FieldSpec struct {
 
 // compileField compiles the given Field source into a FieldSpec.
 func compileField(src *ast.Field, options fieldOptions) (*FieldSpec, error) {
-	if src.ID < 1 || src.ID > math.MaxInt16 {
+	if (src.ID < 1 && !options.allowNegativeIDs) || src.ID > math.MaxInt16 {
 		return nil, fieldIDOutOfBoundsError{ID: src.ID, Name: src.Name}
 	}
 
@@ -177,6 +181,7 @@ type FieldGroup []*FieldSpec
 func compileFields(src []*ast.Field, options fieldOptions) (FieldGroup, error) {
 	fieldsNS := newNamespace(caseSensitive)
 	usedIDs := make(map[int16]string)
+	nextNegativeID := -1
 
 	fields := make([]*FieldSpec, 0, len(src))
 	for _, astField := range src {
@@ -185,6 +190,15 @@ func compileFields(src []*ast.Field, options fieldOptions) (FieldGroup, error) {
 				Target: astField.Name,
 				Line:   astField.Line,
 				Reason: err,
+			}
+		}
+
+		if options.allowNegativeIDs {
+			if astField.ID < 1 {
+				nextNegativeID = astField.ID - 1
+			} else if astField.IDUnset {
+				astField.ID = nextNegativeID
+				nextNegativeID--
 			}
 		}
 

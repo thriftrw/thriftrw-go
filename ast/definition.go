@@ -298,6 +298,7 @@ const (
 //
 type Field struct {
 	ID           int
+	IDUnset      bool
 	Name         string
 	Type         Type
 	Requiredness Requiredness

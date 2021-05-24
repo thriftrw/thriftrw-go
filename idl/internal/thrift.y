@@ -270,11 +270,7 @@ enum_item
     ;
 
 fields
-    : /* nothing */
-        {
-            $$ = nil
-            yylex.(*lexer).autoFieldIndex = -1
-        }
+    : /* nothing */             { $$ = nil }
     | fields field optional_sep { $$ = append($1, $2) }
     ;
 
@@ -291,8 +287,19 @@ field
                 Doc: ParseDocstring($2),
             }
         }
-    | lineno docstring field_identifier field_required type IDENTIFIER '=' const_value
-      type_annotations
+    | lineno docstring field_required type IDENTIFIER type_annotations
+        {
+            $$ = &ast.Field{
+                IDUnset: true,
+                Name: $5,
+                Type: $4,
+                Requiredness: $3,
+                Annotations: $6,
+                Line: $1,
+                Doc: ParseDocstring($2),
+            }
+        }
+    | lineno docstring field_identifier field_required type IDENTIFIER '=' const_value type_annotations
         {
             $$ = &ast.Field{
                 ID: $3,
@@ -305,23 +312,23 @@ field
                 Doc: ParseDocstring($2),
             }
         }
+    | lineno docstring field_required type IDENTIFIER '=' const_value type_annotations
+        {
+            $$ = &ast.Field{
+                IDUnset: true,
+                Name: $5,
+                Type: $4,
+                Requiredness: $3,
+                Default: $7,
+                Annotations: $8,
+                Line: $1,
+                Doc: ParseDocstring($2),
+            }
+        }
     ;
 
 field_identifier
-    : INTCONSTANT ':'
-        {
-            $$ = int($1)
-
-            // Use a negative value as the new basis for auto-assigned fields.
-            if ($$ < 0) {
-                yylex.(*lexer).autoFieldIndex = $$ - 1
-            }
-        }
-    | /* autoindex */
-        {
-            $$ = yylex.(*lexer).autoFieldIndex
-            yylex.(*lexer).autoFieldIndex -= 1
-        }
+    : INTCONSTANT ':' { $$ = int($1) }
     ;
 
 field_required
