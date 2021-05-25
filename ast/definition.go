@@ -297,7 +297,8 @@ const (
 // 	3: i64 baz (go.name = "qux")
 //
 type Field struct {
-	ID           int
+	ID int
+	// IDUnset indicates that a field identifier wasn't provided.
 	IDUnset      bool
 	Name         string
 	Type         Type
