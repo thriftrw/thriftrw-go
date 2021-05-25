@@ -24,7 +24,7 @@ import "go.uber.org/thriftrw/ast"
     fieldType ast.Type
     structType ast.StructureType
     baseTypeID ast.BaseTypeID
-    fieldIdentifier int
+    fieldIdentifier fieldIdentifier
     fieldRequired ast.Requiredness
 
     field *ast.Field
@@ -278,7 +278,8 @@ field
     : lineno docstring field_identifier field_required type IDENTIFIER type_annotations
         {
             $$ = &ast.Field{
-                ID: $3,
+                ID: $3.ID,
+                IDUnset: $3.Unset,
                 Name: $6,
                 Type: $5,
                 Requiredness: $4,
@@ -287,22 +288,11 @@ field
                 Doc: ParseDocstring($2),
             }
         }
-    | lineno docstring field_required type IDENTIFIER type_annotations
-        {
-            $$ = &ast.Field{
-                IDUnset: true,
-                Name: $5,
-                Type: $4,
-                Requiredness: $3,
-                Annotations: $6,
-                Line: $1,
-                Doc: ParseDocstring($2),
-            }
-        }
     | lineno docstring field_identifier field_required type IDENTIFIER '=' const_value type_annotations
         {
             $$ = &ast.Field{
-                ID: $3,
+                ID: $3.ID,
+                IDUnset: $3.Unset,
                 Name: $6,
                 Type: $5,
                 Requiredness: $4,
@@ -312,23 +302,11 @@ field
                 Doc: ParseDocstring($2),
             }
         }
-    | lineno docstring field_required type IDENTIFIER '=' const_value type_annotations
-        {
-            $$ = &ast.Field{
-                IDUnset: true,
-                Name: $5,
-                Type: $4,
-                Requiredness: $3,
-                Default: $7,
-                Annotations: $8,
-                Line: $1,
-                Doc: ParseDocstring($2),
-            }
-        }
     ;
 
 field_identifier
-    : INTCONSTANT ':' { $$ = int($1) }
+    : INTCONSTANT ':' { $$ = fieldIdentifier{ID: int($1)} }
+    | /* na */        { $$ = fieldIdentifier{Unset: true} }
     ;
 
 field_required
