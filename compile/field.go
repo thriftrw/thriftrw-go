@@ -194,7 +194,7 @@ func compileFields(src []*ast.Field, options fieldOptions) (FieldGroup, error) {
 		}
 
 		if options.allowNegativeIDs {
-			if astField.ID < 1 {
+			if astField.ID < 0 {
 				nextNegativeID = astField.ID - 1
 			} else if astField.IDUnset {
 				astField.ID = nextNegativeID

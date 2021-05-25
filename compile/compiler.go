@@ -220,10 +220,12 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 			m.Types[enum.ThriftName()] = enum
 		case *ast.Struct:
 			requiredness := explicitRequiredness
+			allowNegativeIDs := false
 			if c.nonStrict {
 				requiredness = defaultToOptional
+				allowNegativeIDs = true
 			}
-			s, err := compileStruct(m.ThriftPath, definition, requiredness)
+			s, err := compileStruct(m.ThriftPath, definition, requiredness, allowNegativeIDs)
 			if err != nil {
 				return definitionError{Definition: d, Reason: err}
 			}
