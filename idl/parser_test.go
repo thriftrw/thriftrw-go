@@ -906,6 +906,38 @@ func TestParseStruct(t *testing.T) {
 				},
 			}},
 		},
+		{
+			`
+				struct LegacyStruct {
+					optional string a
+					optional string b = "string"
+				}
+			`,
+			&Program{Definitions: []Definition{
+				&Struct{
+					Name: "LegacyStruct",
+					Line: 2,
+					Type: StructType,
+					Fields: []*Field{
+						{
+							IDUnset:      true,
+							Name:         "a",
+							Requiredness: Optional,
+							Type:         BaseType{ID: StringTypeID, Line: 3},
+							Line:         3,
+						},
+						{
+							IDUnset:      true,
+							Name:         "b",
+							Requiredness: Optional,
+							Default:      ConstantString("string"),
+							Type:         BaseType{ID: StringTypeID, Line: 4},
+							Line:         4,
+						},
+					},
+				},
+			}},
+		},
 	}
 
 	assertParseCases(t, tests)
@@ -1080,6 +1112,40 @@ func TestParseServices(t *testing.T) {
 									Type: TypeReference{Name: "TimedOutException", Line: 23},
 									Line: 23,
 									Doc:  "The request timed out.",
+								},
+							},
+						},
+					},
+				},
+			}},
+		},
+		{
+			`
+				service LegacyService {
+					string legacyFunc(string a, string b)
+				}
+			`,
+			&Program{Definitions: []Definition{
+				&Service{
+					Name: "LegacyService",
+					Line: 2,
+					Functions: []*Function{
+						{
+							Name:       "legacyFunc",
+							Line:       3,
+							ReturnType: BaseType{ID: StringTypeID, Line: 3},
+							Parameters: []*Field{
+								{
+									IDUnset: true,
+									Name:    "a",
+									Type:    BaseType{ID: StringTypeID, Line: 3},
+									Line:    3,
+								},
+								{
+									IDUnset: true,
+									Name:    "b",
+									Type:    BaseType{ID: StringTypeID, Line: 3},
+									Line:    3,
 								},
 							},
 						},

@@ -49,12 +49,14 @@ func TestCompileStructSuccess(t *testing.T) {
 		src          string
 		scope        Scope
 		requiredness fieldRequiredness
+		negativeIDs  bool
 		spec         *StructSpec
 	}{
 		{
 			"struct Health { 1: optional bool healthy = true }",
 			nil,
 			explicitRequiredness,
+			false,
 			&StructSpec{
 				Name: "Health",
 				File: "test.thrift",
@@ -74,6 +76,7 @@ func TestCompileStructSuccess(t *testing.T) {
 			"struct Health { 1: bool healthy = true }",
 			nil,
 			defaultToOptional,
+			false,
 			&StructSpec{
 				Name: "Health",
 				File: "test.thrift",
@@ -96,6 +99,7 @@ func TestCompileStructSuccess(t *testing.T) {
 			}`,
 			nil,
 			defaultToOptional,
+			false,
 			&StructSpec{
 				Name: "Foo",
 				File: "test.thrift",
@@ -125,6 +129,7 @@ func TestCompileStructSuccess(t *testing.T) {
 			}`,
 			scope("Key", &TypedefSpec{Name: "Key", Target: &StringSpec{}}),
 			explicitRequiredness,
+			false,
 			&StructSpec{
 				Name: "KeyNotFoundError",
 				File: "test.thrift",
@@ -152,6 +157,7 @@ func TestCompileStructSuccess(t *testing.T) {
 			}`,
 			nil,
 			explicitRequiredness,
+			false,
 			&StructSpec{
 				Name: "Body",
 				File: "test.thrift",
@@ -172,13 +178,59 @@ func TestCompileStructSuccess(t *testing.T) {
 				},
 			},
 		},
+		{
+			`struct AutoAssignedIDs {
+				optional bool a
+				1: optional bool b
+				-3: optional bool c
+				optional bool d
+			}`,
+			nil,
+			explicitRequiredness,
+			true,
+			&StructSpec{
+				Name: "AutoAssignedIDs",
+				File: "test.thrift",
+				Type: ast.StructType,
+				Fields: FieldGroup{
+					{
+						ID:       -1,
+						Name:     "a",
+						Type:     &BoolSpec{},
+						Required: false,
+						Default:  nil,
+					},
+					{
+						ID:       1,
+						Name:     "b",
+						Type:     &BoolSpec{},
+						Required: false,
+						Default:  nil,
+					},
+					{
+						ID:       -3,
+						Name:     "c",
+						Type:     &BoolSpec{},
+						Required: false,
+						Default:  nil,
+					},
+					{
+						ID:       -4,
+						Name:     "d",
+						Type:     &BoolSpec{},
+						Required: false,
+						Default:  nil,
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		expected := mustLink(t, tt.spec, defaultScope)
 
 		src := parseStruct(tt.src)
-		structSpec, err := compileStruct("test.thrift", src, tt.requiredness)
+		structSpec, err := compileStruct("test.thrift", src, tt.requiredness, tt.negativeIDs)
 		scope := scopeOrDefault(tt.scope)
 		if assert.NoError(t, err) {
 			spec, err := structSpec.Link(scope)
@@ -268,7 +320,7 @@ func TestCompileStructFailure(t *testing.T) {
 
 	for _, tt := range tests {
 		src := parseStruct(tt.src)
-		_, err := compileStruct("test.thrift", src, explicitRequiredness)
+		_, err := compileStruct("test.thrift", src, explicitRequiredness, false)
 
 		if assert.Error(t, err, tt.desc) {
 			for _, msg := range tt.messages {
@@ -309,7 +361,7 @@ func TestLinkStructFailure(t *testing.T) {
 		src := parseStruct(tt.src)
 		scope := scopeOrDefault(tt.scope)
 
-		spec, err := compileStruct("test.thrift", src, explicitRequiredness)
+		spec, err := compileStruct("test.thrift", src, explicitRequiredness, false)
 		if assert.NoError(t, err, tt.desc) {
 			_, err := spec.Link(scope)
 			if assert.Error(t, err, tt.desc) {

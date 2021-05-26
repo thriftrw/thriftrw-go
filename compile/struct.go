@@ -38,8 +38,11 @@ type StructSpec struct {
 }
 
 // compileStruct compiles a struct AST into a StructSpec.
-func compileStruct(file string, src *ast.Struct, requiredness fieldRequiredness) (*StructSpec, error) {
-	opts := fieldOptions{requiredness: requiredness}
+func compileStruct(file string, src *ast.Struct, requiredness fieldRequiredness, allowNegativeIDs bool) (*StructSpec, error) {
+	opts := fieldOptions{
+		requiredness:     requiredness,
+		allowNegativeIDs: allowNegativeIDs,
+	}
 
 	if src.Type == ast.UnionType {
 		opts.requiredness = noRequiredFields
