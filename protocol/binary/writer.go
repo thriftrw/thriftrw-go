@@ -23,26 +23,24 @@ package binary
 import (
 	"fmt"
 	"io"
-	"math"
 	"sync"
 
+	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
 )
 
-var writerPool = sync.Pool{New: func() interface{} {
-	writer := &Writer{}
-	writer.writeValue = writer.WriteValue
-	writer.writeMapItem = writer.realWriteMapItem
-	return writer
-}}
+var writerPool = sync.Pool{
+	New: func() interface{} {
+		writer := &Writer{}
+		writer.writeValue = writer.WriteValue
+		writer.writeMapItem = writer.realWriteMapItem
+		return writer
+	}}
 
 // Writer implements basic logic for writing the Thrift Binary Protocol to an
 // io.Writer.
 type Writer struct {
-	writer io.Writer
-
-	// This buffer is re-used every time we need a slice of up to 8 bytes.
-	buffer [8]byte
+	sw *StreamWriter
 
 	// NOTE:
 	// This is a hack to avoid memory allocation in closures. Passing the
@@ -59,63 +57,26 @@ type Writer struct {
 //
 // This Writer must be returned back using ReturnWriter.
 func BorrowWriter(w io.Writer) *Writer {
+	streamWriter := BorrowStreamWriter(w)
 	writer := writerPool.Get().(*Writer)
-	writer.writer = w
+	writer.sw = streamWriter
 	return writer
 }
 
 // ReturnWriter returns a previously borrowed Writer back to the system.
 func ReturnWriter(w *Writer) {
-	w.writer = nil
+	sw := w.sw
+	w.sw = nil
+	ReturnStreamWriter(sw)
 	writerPool.Put(w)
 }
 
-func (bw *Writer) write(bs []byte) error {
-	_, err := bw.writer.Write(bs)
-	return err
-}
-
-func (bw *Writer) writeByte(b byte) error {
-	bs := bw.buffer[0:1]
-	bs[0] = b
-	return bw.write(bs)
-}
-
-func (bw *Writer) writeInt16(n int16) error {
-	bs := bw.buffer[0:2]
-	bigEndian.PutUint16(bs, uint16(n))
-	return bw.write(bs)
-}
-
-func (bw *Writer) writeInt32(n int32) error {
-	bs := bw.buffer[0:4]
-	bigEndian.PutUint32(bs, uint32(n))
-	return bw.write(bs)
-}
-
-func (bw *Writer) writeInt64(n int64) error {
-	bs := bw.buffer[0:8]
-	bigEndian.PutUint64(bs, uint64(n))
-	return bw.write(bs)
-}
-
-func (bw *Writer) writeString(s string) error {
-	if err := bw.writeInt32(int32(len(s))); err != nil {
-		return err
-	}
-
-	_, err := io.WriteString(bw.writer, s)
-	return err
-}
-
 func (bw *Writer) writeField(f wire.Field) error {
-	// type:1
-	if err := bw.writeByte(byte(f.Value.Type())); err != nil {
-		return err
+	fh := stream.FieldHeader{
+		ID:   f.ID,
+		Type: f.Value.Type(),
 	}
-
-	// id:2
-	if err := bw.writeInt16(f.ID); err != nil {
+	if err := bw.sw.WriteFieldBegin(fh); err != nil {
 		return err
 	}
 
@@ -129,16 +90,20 @@ func (bw *Writer) writeField(f wire.Field) error {
 		)
 	}
 
-	return nil
+	return bw.sw.WriteFieldEnd()
 }
 
 func (bw *Writer) writeStruct(s wire.Struct) error {
+	if err := bw.sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
 	for _, f := range s.Fields {
 		if err := bw.writeField(f); err != nil {
 			return err
 		}
 	}
-	return bw.writeByte(0) // end struct
+	return bw.sw.WriteStructEnd()
 }
 
 func (bw *Writer) realWriteMapItem(item wire.MapItem) error {
@@ -149,50 +114,52 @@ func (bw *Writer) realWriteMapItem(item wire.MapItem) error {
 }
 
 func (bw *Writer) writeMap(m wire.MapItemList) error {
-	// ktype:1
-	if err := bw.writeByte(byte(m.KeyType())); err != nil {
+	mh := stream.MapHeader{
+		KeyType:   m.KeyType(),
+		ValueType: m.ValueType(),
+		Length:    m.Size(),
+	}
+	if err := bw.sw.WriteMapBegin(mh); err != nil {
 		return err
 	}
 
-	// vtype:1
-	if err := bw.writeByte(byte(m.ValueType())); err != nil {
+	if err := m.ForEach(bw.writeMapItem); err != nil {
 		return err
 	}
 
-	// length:4
-	if err := bw.writeInt32(int32(m.Size())); err != nil {
-		return err
-	}
-
-	return m.ForEach(bw.writeMapItem)
+	return bw.sw.WriteMapEnd()
 }
 
 func (bw *Writer) writeSet(s wire.ValueList) error {
-	// vtype:1
-	if err := bw.writeByte(byte(s.ValueType())); err != nil {
+	sh := stream.SetHeader{
+		Type:   s.ValueType(),
+		Length: s.Size(),
+	}
+	if err := bw.sw.WriteSetBegin(sh); err != nil {
 		return err
 	}
 
-	// length:4
-	if err := bw.writeInt32(int32(s.Size())); err != nil {
+	if err := s.ForEach(bw.writeValue); err != nil {
 		return err
 	}
 
-	return s.ForEach(bw.writeValue)
+	return bw.sw.WriteSetEnd()
 }
 
 func (bw *Writer) writeList(l wire.ValueList) error {
-	// vtype:1
-	if err := bw.writeByte(byte(l.ValueType())); err != nil {
+	lh := stream.ListHeader{
+		Type:   l.ValueType(),
+		Length: l.Size(),
+	}
+	if err := bw.sw.WriteListBegin(lh); err != nil {
 		return err
 	}
 
-	// length:4
-	if err := bw.writeInt32(int32(l.Size())); err != nil {
+	if err := l.ForEach(bw.writeValue); err != nil {
 		return err
 	}
 
-	return l.ForEach(bw.writeValue)
+	return bw.sw.WriteListEnd()
 }
 
 // WriteValue writes the given Thrift value to the underlying stream using the
@@ -200,33 +167,25 @@ func (bw *Writer) writeList(l wire.ValueList) error {
 func (bw *Writer) WriteValue(v wire.Value) error {
 	switch v.Type() {
 	case wire.TBool:
-		if v.GetBool() {
-			return bw.writeByte(1)
-		}
-		return bw.writeByte(0)
+		return bw.sw.WriteBool(v.GetBool())
 
 	case wire.TI8:
-		return bw.writeByte(byte(v.GetI8()))
+		return bw.sw.WriteInt8(v.GetI8())
 
 	case wire.TDouble:
-		value := math.Float64bits(v.GetDouble())
-		return bw.writeInt64(int64(value))
+		return bw.sw.WriteDouble(v.GetDouble())
 
 	case wire.TI16:
-		return bw.writeInt16(v.GetI16())
+		return bw.sw.WriteInt16(v.GetI16())
 
 	case wire.TI32:
-		return bw.writeInt32(v.GetI32())
+		return bw.sw.WriteInt32(v.GetI32())
 
 	case wire.TI64:
-		return bw.writeInt64(v.GetI64())
+		return bw.sw.WriteInt64(v.GetI64())
 
 	case wire.TBinary:
-		b := v.GetBinary()
-		if err := bw.writeInt32(int32(len(b))); err != nil {
-			return err
-		}
-		return bw.write(b)
+		return bw.sw.WriteBinary(v.GetBinary())
 
 	case wire.TStruct:
 		return bw.writeStruct(v.GetStruct())
