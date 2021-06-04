@@ -28,23 +28,22 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 type encodeDecodeTest struct {
-	desc    string
+	msg     string
 	value   wire.Value
 	encoded []byte
 }
 
 func checkEncodeDecode(t *testing.T, typ wire.Type, tests []encodeDecodeTest) {
 	for _, tt := range tests {
-		t.Run(tt.desc, func(t *testing.T) {
+		t.Run(tt.msg, func(t *testing.T) {
 			buffer := bytes.Buffer{}
 
 			// encode and match bytes
@@ -72,11 +71,20 @@ func checkEncodeDecode(t *testing.T, typ wire.Type, tests []encodeDecodeTest) {
 	}
 }
 
-type failureTest []byte
+func getStreamReader(t *testing.T, encoded []byte) stream.Reader {
+	t.Helper()
+
+	return BinaryStreamer.Reader(bytes.NewReader(encoded))
+}
+
+type failureTest struct {
+	msg     string
+	encoded []byte
+}
 
 func checkDecodeFailure(t *testing.T, typ wire.Type, tests []failureTest) {
 	for _, tt := range tests {
-		value, err := Binary.Decode(bytes.NewReader(tt), typ)
+		value, err := Binary.Decode(bytes.NewReader(tt.encoded), typ)
 		if err == nil {
 			// lazy collections need to be fully evaluated for the failure to
 			// propagate
@@ -96,7 +104,7 @@ func checkDecodeFailure(t *testing.T, typ wire.Type, tests []failureTest) {
 
 func checkEOFError(t *testing.T, typ wire.Type, tests []failureTest) {
 	for _, tt := range tests {
-		value, err := Binary.Decode(bytes.NewReader(tt), typ)
+		value, err := Binary.Decode(bytes.NewReader(tt.encoded), typ)
 		if err == nil {
 			// lazy collections need to be fully evaluated for the failure to
 			// propagate
@@ -118,22 +126,49 @@ func TestBool(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TBool, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			want := tt.value.GetBool()
+			val, err := reader.ReadBool()
+			require.NoError(t, err)
+			assert.Equal(t, want, val)
+		})
+	}
 }
 
 func TestBoolDecodeFailure(t *testing.T) {
 	tests := []failureTest{
-		{0x02}, // values outside 0 and 1
+		{"invalid", []byte{0x02}}, // values outside 0 and 1
 	}
 
 	checkDecodeFailure(t, wire.TBool, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadBool()
+			require.Error(t, err)
+		})
+	}
 }
 
 func TestBoolEOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{}, // empty
+		{"empty", []byte{}}, // empty
 	}
 
 	checkEOFError(t, wire.TBool, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadBool()
+			require.Error(t, err)
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
 }
 
 func TestI8(t *testing.T) {
@@ -146,14 +181,33 @@ func TestI8(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TI8, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			want := tt.value.GetI8()
+			val, err := reader.ReadInt8()
+			require.NoError(t, err)
+			assert.Equal(t, want, val)
+		})
+	}
 }
 
 func TestI8EOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{}, // empty
+		{"empty", []byte{}}, // empty
 	}
 
 	checkEOFError(t, wire.TI8, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadInt8()
+			require.Error(t, err)
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
 }
 
 func TestI16(t *testing.T) {
@@ -171,15 +225,34 @@ func TestI16(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TI16, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			want := tt.value.GetI16()
+			val, err := reader.ReadInt16()
+			require.NoError(t, err)
+			assert.Equal(t, want, val)
+		})
+	}
 }
 
 func TestI16EOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{},     // empty
-		{0x00}, // one byte too short
+		{"empty", []byte{}},     // empty
+		{"short", []byte{0x00}}, // one byte too short
 	}
 
 	checkEOFError(t, wire.TI16, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadInt16()
+			require.Error(t, err)
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
 }
 
 func TestI32(t *testing.T) {
@@ -197,15 +270,34 @@ func TestI32(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TI32, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			want := tt.value.GetI32()
+			val, err := reader.ReadInt32()
+			require.NoError(t, err)
+			assert.Equal(t, want, val)
+		})
+	}
 }
 
 func TestI32EOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{},                 // empty
-		{0x01, 0x02, 0x03}, // one byte too short
+		{"empty", []byte{}},                 // empty
+		{"short", []byte{0x01, 0x02, 0x03}}, // one byte too short
 	}
 
 	checkEOFError(t, wire.TI32, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadInt32()
+			require.Error(t, err)
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
 }
 
 func TestI64(t *testing.T) {
@@ -225,15 +317,34 @@ func TestI64(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TI64, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			want := tt.value.GetI64()
+			val, err := reader.ReadInt64()
+			require.NoError(t, err)
+			assert.Equal(t, want, val)
+		})
+	}
 }
 
 func TestI64EOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{}, // empty
-		{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}, // one byte too short
+		{"empty", []byte{}}, // empty
+		{"short", []byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}}, // one byte too short
 	}
 
 	checkEOFError(t, wire.TI64, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadInt64()
+			require.Error(t, err)
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
 }
 
 func TestDouble(t *testing.T) {
@@ -250,15 +361,34 @@ func TestDouble(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TDouble, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			want := tt.value.GetDouble()
+			val, err := reader.ReadDouble()
+			require.NoError(t, err)
+			assert.Equal(t, want, val)
+		})
+	}
 }
 
 func TestDoubleEOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{}, // empty
-		{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}, // one byte too short
+		{"empty", []byte{}}, // empty
+		{"short", []byte{0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07}}, // one byte too short
 	}
 
 	checkEOFError(t, wire.TDouble, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadDouble()
+			require.Error(t, err)
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
 }
 
 func TestDoubleNaN(t *testing.T) {
@@ -276,6 +406,11 @@ func TestDoubleNaN(t *testing.T) {
 		assert.Equal(t, wire.TDouble, v.Type())
 		assert.True(t, math.IsNaN(v.GetDouble()))
 	}
+
+	reader := getStreamReader(t, encoded)
+	val, err := reader.ReadDouble()
+	require.NoError(t, err)
+	assert.True(t, math.IsNaN(val))
 }
 
 func TestBinary(t *testing.T) {
@@ -288,6 +423,16 @@ func TestBinary(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TBinary, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			want := tt.value.GetBinary()
+			val, err := reader.ReadString()
+			require.NoError(t, err)
+			assert.Equal(t, string(want), val)
+		})
+	}
 }
 
 func TestBinaryLargeLength(t *testing.T) {
@@ -300,25 +445,47 @@ func TestBinaryLargeLength(t *testing.T) {
 
 	want := wire.NewValueBinary(data[4:])
 	assert.True(t, wire.ValuesAreEqual(want, value), "values did not match")
+
+	reader := getStreamReader(t, data)
+	val, err := reader.ReadBinary()
+	require.NoError(t, err, "failed to parse binary data")
+	assert.Equal(t, data[4:], val)
 }
 
 func TestBinaryDecodeFailure(t *testing.T) {
 	tests := []failureTest{
-		{0xff, 0x30, 0x30, 0x30}, // negative length
+		{"negative length", []byte{0xff, 0x30, 0x30, 0x30}}, // negative length
 	}
 
 	checkDecodeFailure(t, wire.TBinary, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadBinary()
+			require.Error(t, err)
+		})
+	}
 }
 
 func TestBinaryEOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{},
-		{0x00},                   // incomplete length
-		{0x00, 0x00, 0x00, 0x01}, // length mismatch
-		{0x22, 0x6e, 0x6f, 0x74}, // really long length
+		{"empty", []byte{}},
+		{"incomplete length", []byte{0x00}},                 // incomplete length
+		{"length mismatch", []byte{0x00, 0x00, 0x00, 0x01}}, // length mismatch
+		{"long length", []byte{0x22, 0x6e, 0x6f, 0x74}},     // really long length
 	}
 
 	checkEOFError(t, wire.TBinary, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadBinary()
+			require.Error(t, err)
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
 }
 
 func TestStruct(t *testing.T) {
@@ -379,6 +546,38 @@ func TestStruct(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TStruct, tests)
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			fields := tt.value.GetStruct().Fields
+			reader := getStreamReader(t, tt.encoded)
+
+			for i := 0; /* add 1 for the stop field */ i < len(fields)+1; i++ {
+				err := reader.ReadStructBegin()
+				require.NoError(t, err)
+
+				fh, ok, err := reader.ReadFieldBegin()
+				require.NoError(t, err)
+
+				if !ok {
+					assert.Equal(t, len(fields), i, "expected to have read all fields before stop-field")
+					return
+				}
+
+				assert.Equal(t, fields[i].ID, fh.ID)
+				assert.Equal(t, fields[i].Value.Type(), fh.Type)
+
+				err = reader.Skip(fields[i].Value.Type())
+				require.NoError(t, err)
+
+				err = reader.ReadFieldEnd()
+				require.NoError(t, err)
+
+				err = reader.ReadStructEnd()
+				require.NoError(t, err)
+			}
+		})
+	}
 }
 
 func TestStructBeginAndEndEncode(t *testing.T) {
@@ -396,12 +595,77 @@ func TestStructBeginAndEndEncode(t *testing.T) {
 
 func TestStructEOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{},
-		{0x0B, 0x00},       // invalid field ID
-		{0x02, 0x00, 0x01}, // no value
+		{"empty", []byte{}},
+		{"invalid field ID", []byte{0x0B, 0x00}}, // invalid field ID
+		{"no value", []byte{0x02, 0x00, 0x01}},   // no value
 	}
 
 	checkEOFError(t, wire.TStruct, tests)
+}
+
+func TestStructStreamingBegin(t *testing.T) {
+	reader := getStreamReader(t, []byte{})
+	assert.NoError(t, reader.ReadStructBegin())
+}
+
+func TestStructStreamingEnd(t *testing.T) {
+	reader := getStreamReader(t, []byte{})
+	assert.NoError(t, reader.ReadStructEnd())
+}
+
+func TestFieldStreamingBegin(t *testing.T) {
+	tests := []struct {
+		msg     string
+		want    stream.FieldHeader
+		encoded []byte
+	}{
+		{
+			msg: "int32, ID:14834",
+			want: stream.FieldHeader{
+				Type: wire.TI32,
+				ID:   int16(14834),
+			},
+			encoded: []byte{0x08, 0x39, 0xF2},
+		},
+		{
+			msg: "double, ID:30091",
+			want: stream.FieldHeader{
+				Type: wire.TDouble,
+				ID:   int16(30091),
+			},
+			encoded: []byte{0x04, 0x75, 0x8B},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			fh, _, err := reader.ReadFieldBegin()
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, fh)
+		})
+	}
+}
+
+func TestFieldStreamingBeginFailure(t *testing.T) {
+	tests := []failureTest{
+		{"empty", []byte{}},
+		{"short ID", []byte{0x02, 0x04}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, _, err := reader.ReadFieldBegin()
+			require.Error(t, err)
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
+}
+
+func TestFieldStreamingEnd(t *testing.T) {
+	reader := getStreamReader(t, []byte{})
+	assert.NoError(t, reader.ReadFieldEnd())
 }
 
 func TestMap(t *testing.T) {
@@ -471,9 +735,11 @@ func TestMapBeginEncode(t *testing.T) {
 
 func TestMapDecodeFailure(t *testing.T) {
 	tests := []failureTest{
-		{
-			0x08, 0x0B, // key: i32, value: binary
-			0xff, 0x00, 0x00, 0x30, // negative length
+		{"negative length",
+			[]byte{
+				0x08, 0x0B, // key: i32, value: binary
+				0xff, 0x00, 0x00, 0x30, // negative length
+			},
 		},
 	}
 
@@ -482,11 +748,81 @@ func TestMapDecodeFailure(t *testing.T) {
 
 func TestMapEOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{},                                   // empty
-		{0x08, 0x0B, 0x00, 0x00, 0x00, 0x01}, // no values
+		{"empty", []byte{}}, // empty
+		{"no values", []byte{0x08, 0x0B, 0x00, 0x00, 0x00, 0x01}}, // no values
 	}
 
 	checkEOFError(t, wire.TMap, tests)
+}
+
+func TestMapStreamingBegin(t *testing.T) {
+	tests := []struct {
+		msg     string
+		want    stream.MapHeader
+		encoded []byte
+	}{
+		{
+			msg: "int64:binary, 0-length",
+			want: stream.MapHeader{
+				KeyType:   wire.TI64,
+				ValueType: wire.TBinary,
+			},
+			encoded: []byte{0x0A, 0x0B, 0x00, 0x00, 0x00, 0x00},
+		},
+		{
+			msg: "binary:list, 2 length",
+			want: stream.MapHeader{
+				KeyType:   wire.TBinary,
+				ValueType: wire.TList,
+				Length:    2,
+			},
+			encoded: []byte{
+				0x0B,                   // ktype = binary
+				0x0F,                   // vtype = list
+				0x00, 0x00, 0x00, 0x02, // count:4 = 2
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			mh, err := reader.ReadMapBegin()
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, mh)
+		})
+	}
+}
+
+func TestMapStreamingBeginReadFailure(t *testing.T) {
+	negativeLength := []byte{0x0A, 0x0B, 0x80, 0x00, 0x00, 0x22}
+
+	reader := getStreamReader(t, negativeLength)
+	_, err := reader.ReadMapBegin()
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "got negative length")
+}
+
+func TestMapStreamingBeginReadEOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{"empty", []byte{}},
+		{"short value", []byte{0x0A}},
+		{"short size", []byte{0x0A, 0x0B, 0x00, 0x01}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadMapBegin()
+			require.Error(t, err)
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
+}
+
+func TestMapStreamingEnd(t *testing.T) {
+	reader := getStreamReader(t, []byte{})
+	assert.NoError(t, reader.ReadMapEnd())
 }
 
 func TestSet(t *testing.T) {
@@ -522,9 +858,11 @@ func TestSetBeginEncode(t *testing.T) {
 
 func TestSetDecodeFailure(t *testing.T) {
 	tests := []failureTest{
-		{
-			0x08,                   // type: i32
-			0xff, 0x00, 0x30, 0x30, // negative length
+		{"negative length",
+			[]byte{
+				0x08,                   // type: i32
+				0xff, 0x00, 0x30, 0x30, // negative length
+			},
 		},
 	}
 
@@ -533,11 +871,75 @@ func TestSetDecodeFailure(t *testing.T) {
 
 func TestSetEOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{},                             // empty
-		{0x08, 0x00, 0x00, 0x00, 0x01}, // no values
+		{"empty", []byte{}}, // empty
+		{"no values", []byte{0x08, 0x00, 0x00, 0x00, 0x01}}, // no values
 	}
 
 	checkEOFError(t, wire.TSet, tests)
+}
+
+func TestSetStreamingBegin(t *testing.T) {
+	tests := []struct {
+		msg     string
+		want    stream.SetHeader
+		encoded []byte
+	}{
+		{
+			msg: "bool, 0-length",
+			want: stream.SetHeader{
+				Type:   wire.TBool,
+				Length: 0,
+			},
+			encoded: []byte{0x02, 0x00, 0x00, 0x00, 0x00},
+		},
+		{
+			msg: "int64, 10-length",
+			want: stream.SetHeader{
+				Type:   wire.TI64,
+				Length: 10,
+			},
+			encoded: []byte{0x0A, 0x00, 0x00, 0x00, 0x0A},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			sh, err := reader.ReadSetBegin()
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, sh)
+		})
+	}
+}
+
+func TestSetStreamingBeginReadFailure(t *testing.T) {
+	negativeLength := []byte{0x0A, 0x80, 0x00, 0x00, 0x22}
+
+	reader := getStreamReader(t, negativeLength)
+	_, err := reader.ReadSetBegin()
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "got negative length")
+}
+
+func TestSetStreamingBeginReadEOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{"empty", []byte{}},
+		{"short", []byte{0x0A, 0x0B, 0x00, 0x01}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadSetBegin()
+			require.Error(t, err)
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
+}
+
+func TestSetStreamingEnd(t *testing.T) {
+	reader := getStreamReader(t, []byte{})
+	assert.NoError(t, reader.ReadSetEnd())
 }
 
 func TestList(t *testing.T) {
@@ -611,14 +1013,18 @@ func TestListBeginEncode(t *testing.T) {
 
 func TestListDecodeFailure(t *testing.T) {
 	tests := []failureTest{
-		{
-			0x0B,                   // type: i32
-			0xff, 0x00, 0x30, 0x00, // negative length
+		{"negative length",
+			[]byte{
+				0x0B,                   // type: i32
+				0xff, 0x00, 0x30, 0x00, // negative length
+			},
 		},
-		{
-			0x02, // type: bool
-			0x00, 0x00, 0x00, 0x01,
-			0x10, // invalid bool
+		{"invalid bool",
+			[]byte{
+				0x02, // type: bool
+				0x00, 0x00, 0x00, 0x01,
+				0x10, // invalid bool
+			},
 		},
 	}
 
@@ -627,11 +1033,75 @@ func TestListDecodeFailure(t *testing.T) {
 
 func TestListEOFFailure(t *testing.T) {
 	tests := []failureTest{
-		{},                             // empty
-		{0x08, 0x00, 0x00, 0x00, 0x01}, // no values
+		{"empty", []byte{}}, // empty
+		{"no values", []byte{0x08, 0x00, 0x00, 0x00, 0x01}}, // no values
 	}
 
 	checkEOFError(t, wire.TList, tests)
+}
+
+func TestListStreamingBegin(t *testing.T) {
+	tests := []struct {
+		msg     string
+		want    stream.ListHeader
+		encoded []byte
+	}{
+		{
+			msg: "struct, 0-length",
+			want: stream.ListHeader{
+				Type:   wire.TStruct,
+				Length: 0,
+			},
+			encoded: []byte{0x0C, 0x00, 0x00, 0x00, 0x00},
+		},
+		{
+			msg: "map, 14-length",
+			want: stream.ListHeader{
+				Type:   wire.TMap,
+				Length: 14,
+			},
+			encoded: []byte{0x0D, 0x00, 0x00, 0x00, 0x0E},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			lh, err := reader.ReadListBegin()
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, lh)
+		})
+	}
+}
+
+func TestListStreamingBeginReadFailure(t *testing.T) {
+	negativeLength := []byte{0x0B, 0xFF, 0x00, 0x30, 0x00}
+
+	reader := getStreamReader(t, negativeLength)
+	_, err := reader.ReadListBegin()
+	require.Error(t, err)
+	assert.Contains(t, err.Error(), "got negative length")
+}
+
+func TestListStreamingBeginReadEOFFailure(t *testing.T) {
+	tests := []failureTest{
+		{"empty", []byte{}},
+		{"short", []byte{0x0A, 0x0B, 0x00, 0x01}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			_, err := reader.ReadListBegin()
+			require.Error(t, err)
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
+}
+
+func TestListStreamingEnd(t *testing.T) {
+	reader := getStreamReader(t, []byte{})
+	assert.NoError(t, reader.ReadListEnd())
 }
 
 func TestStructOfContainers(t *testing.T) {
@@ -657,6 +1127,11 @@ func TestStructOfContainers(t *testing.T) {
 						wire.TI32, wire.TSet,
 						vitem(vi32(4), vset(wire.TBinary, vbinary("g"))),
 					),
+					vmap(
+						wire.TI8, wire.TI16,
+						vitem(vi8(2), vi16(4)),
+						vitem(vi8(16), vi16(256)),
+					),
 				)),
 				vfield(2, vlist(wire.TI16, vi16(1), vi16(2), vi16(3))),
 			),
@@ -665,7 +1140,7 @@ func TestStructOfContainers(t *testing.T) {
 				0x00, 0x01, // field ID 1
 
 				0x0d,                   // type: map
-				0x00, 0x00, 0x00, 0x02, // length: 2
+				0x00, 0x00, 0x00, 0x03, // length: 3
 
 				// <map-1>
 				0x08, 0x0e, // ktype: i32, vtype: set
@@ -706,6 +1181,12 @@ func TestStructOfContainers(t *testing.T) {
 
 				// </map-2>
 
+				// <map-3>
+				0x03, 0x06, // ktype: i8, vtype: i16
+				0x00, 0x00, 0x00, 0x02, // length: 2
+				0x02, 0x00, 0x04, // 2: 4
+				0x10, 0x01, 0x00, // 16: 256
+
 				0x0f,       // type: list
 				0x00, 0x02, // field ID 2
 
@@ -719,6 +1200,109 @@ func TestStructOfContainers(t *testing.T) {
 	}
 
 	checkEncodeDecode(t, wire.TStruct, tests)
+	for _, tt := range tests {
+		t.Run("streaming skip structs", func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			err := reader.Skip(wire.TStruct)
+			assert.NoError(t, err)
+
+			_, err = reader.ReadInt8()
+			require.Error(t, err, "error expected after reading all encoded data")
+			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
+}
+
+func TestSkipStreamingErrors(t *testing.T) {
+	tests := []struct {
+		msg      string
+		skipType wire.Type
+		encoded  []byte
+	}{
+		{
+			msg:      "unknown type",
+			skipType: wire.Type(1),
+			encoded:  []byte{},
+		},
+		{
+			msg:      "binary, empty",
+			skipType: wire.TBinary,
+			encoded:  []byte{},
+		},
+		{
+			msg:      "binary, negative length",
+			skipType: wire.TBinary,
+			encoded:  []byte{0xFF, 0x00, 0x00, 0x01},
+		},
+		{
+			msg:      "struct, empty",
+			skipType: wire.TStruct,
+			encoded:  []byte{},
+		},
+		{
+			msg:      "struct, short ID",
+			skipType: wire.TStruct,
+			encoded:  []byte{0x0A, 0x00},
+		},
+		{
+			msg:      "struct, short value",
+			skipType: wire.TStruct,
+			encoded:  []byte{0x08, 0x00, 0x02, 0x00, 0x00},
+		},
+		{
+			msg:      "struct, no stop field",
+			skipType: wire.TStruct,
+			encoded:  []byte{0x03, 0x00, 0x08, 0x04},
+		},
+		{
+			msg:      "map, empty",
+			skipType: wire.TMap,
+			encoded:  []byte{},
+		},
+		{
+			msg:      "map, short value",
+			skipType: wire.TMap,
+			encoded:  []byte{0x04},
+		},
+		{
+			msg:      "map, short size",
+			skipType: wire.TMap,
+			encoded:  []byte{0x04, 0x06},
+		},
+		{
+			msg:      "map, negativesize",
+			skipType: wire.TMap,
+			encoded:  []byte{0x04, 0x06, 0xF0, 0xFF, 0x00, 0x00},
+		},
+		{
+			msg:      "map, unknown key type",
+			skipType: wire.TMap,
+			encoded:  []byte{0x05, 0x06, 0x00, 0xFF, 0x00, 0x00},
+		},
+		{
+			msg:      "map, unknown value type",
+			skipType: wire.TMap,
+			encoded:  []byte{0x06, 0x07, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x01},
+		},
+		{
+			msg:      "list, empty",
+			skipType: wire.TList,
+			encoded:  []byte{},
+		},
+		{
+			msg:      "list, unknown type",
+			skipType: wire.TList,
+			encoded:  []byte{0x07, 0x00, 0x00, 0x00, 0xFF},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			reader := getStreamReader(t, tt.encoded)
+			err := reader.Skip(tt.skipType)
+			require.Error(t, err)
+		})
+	}
 }
 
 func TestBinaryEnvelopeErrors(t *testing.T) {
