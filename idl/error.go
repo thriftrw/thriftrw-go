@@ -18,28 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package idl
 
-import "go.uber.org/thriftrw/ast"
+import (
+	"bytes"
+	"fmt"
 
-func init() {
-	yyErrorVerbose = true
+	"go.uber.org/thriftrw/idl/internal"
+)
+
+// ParseError is an error type listing parse errors and the positions
+// that caused them.
+type ParseError struct{ Lines []LineError }
+
+// LineError holds an error and the line number that caused it.
+type LineError struct {
+	Line int
+	Err  error
 }
 
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, []LineError) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
+func newParseError(errors []internal.LineError) error {
+	if len(errors) == 0 {
+		return nil
 	}
-	return nil, lex.errors
+	lines := make([]LineError, len(errors))
+	for i, err := range errors {
+		lines[i] = LineError{Line: err.Line, Err: err.Err}
+	}
+	return &ParseError{Lines: lines}
 }
 
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
-
-//go:generate goyacc -l thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
+func (pe *ParseError) Error() string {
+	var buffer bytes.Buffer
+	buffer.WriteString("parse error\n")
+	for _, line := range pe.Lines {
+		buffer.WriteString(fmt.Sprintf("  line %d: %s\n", line.Line, line.Err))
+	}
+	return buffer.String()
+}

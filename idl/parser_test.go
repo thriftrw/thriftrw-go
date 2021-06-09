@@ -153,6 +153,7 @@ func TestParseErrors(t *testing.T) {
 	for _, tt := range tests {
 		_, err := Parse([]byte(tt.give))
 		if assert.Error(t, err, "expected error while parsing:\n%s", tt.give) {
+			assert.IsType(t, &ParseError{}, err)
 			for _, msg := range tt.wantErrors {
 				assert.Contains(t, err.Error(), msg, "error for %q must contain %q", tt.give, err.Error(), msg)
 			}
