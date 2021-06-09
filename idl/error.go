@@ -37,7 +37,10 @@ type LineError struct {
 	Err  error
 }
 
-func newParseError(errors []internal.LineError) *ParseError {
+func newParseError(errors []internal.LineError) error {
+	if len(errors) == 0 {
+		return nil
+	}
 	lines := make([]LineError, len(errors))
 	for i, err := range errors {
 		lines[i] = LineError{Line: err.Line, Err: err.Err}
