@@ -133,6 +133,24 @@ func (v *RecordType) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode reads off the encoded RecordType directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v RecordType
+//   if err := v.Decode(sReader); err != nil {
+//     return RecordType(0), err
+//   }
+//   return v, nil
+func (v *RecordType) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (RecordType)(i)
+	return nil
+}
+
 // String returns a readable string representation of RecordType.
 func (v RecordType) String() string {
 	w := int32(v)

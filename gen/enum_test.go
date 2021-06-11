@@ -499,6 +499,8 @@ func TestEnumLabelValid(t *testing.T) {
 			t.Run("wire", func(t *testing.T) {
 				assertRoundTrip(t, &tt.item, wire.NewValueI32(int32(tt.item)),
 					"%v", tt.item)
+				testRoundTripCombos(t, &tt.item, wire.NewValueI32(int32(tt.item)),
+					tt.item.String())
 			})
 		})
 	}

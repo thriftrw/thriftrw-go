@@ -132,5 +132,4 @@ func testRoundTripCombos(t *testing.T, x thriftType, v wire.Value, msg string) {
 			}
 		})
 	}
-
 }

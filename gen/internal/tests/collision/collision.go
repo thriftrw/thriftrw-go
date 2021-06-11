@@ -714,6 +714,24 @@ func (v *MyEnum) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode reads off the encoded MyEnum directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v MyEnum
+//   if err := v.Decode(sReader); err != nil {
+//     return MyEnum(0), err
+//   }
+//   return v, nil
+func (v *MyEnum) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (MyEnum)(i)
+	return nil
+}
+
 // String returns a readable string representation of MyEnum.
 func (v MyEnum) String() string {
 	w := int32(v)
@@ -2158,6 +2176,24 @@ func (v MyEnum2) ToWire() (wire.Value, error) {
 //   return v, nil
 func (v *MyEnum2) FromWire(w wire.Value) error {
 	*v = (MyEnum2)(w.GetI32())
+	return nil
+}
+
+// Decode reads off the encoded MyEnum2 directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v MyEnum2
+//   if err := v.Decode(sReader); err != nil {
+//     return MyEnum2(0), err
+//   }
+//   return v, nil
+func (v *MyEnum2) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (MyEnum2)(i)
 	return nil
 }
 
