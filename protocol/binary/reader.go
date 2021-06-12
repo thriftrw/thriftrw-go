@@ -21,24 +21,220 @@
 package binary
 
 import (
-	"bytes"
 	"io"
-	"math"
 
 	"go.uber.org/thriftrw/wire"
 )
 
-// Requests for byte slices longer than this will use a dynamically resizing
-// buffer.
-const bytesAllocThreshold = 1048576 // 1 MB
+// offsetReader provides a type that satisfies an io.Reader with only an
+// io.ReaderAt.
+type offsetReader struct {
+	offset int64
+	reader io.ReaderAt
+}
+
+// Read reads len(p) bytes into p.
+func (or *offsetReader) Read(p []byte) (int, error) {
+	n, err := or.reader.ReadAt(p, or.offset)
+	or.offset += int64(n)
+
+	return n, err
+}
+
+// reader functions as the actual reader behind the exported `Reader` type.
+// This is necessary to avoid new calls to a `Reader.ReadValue` from changing
+// the offset in already running 'ReadValue' calls.
+type reader struct {
+	or *offsetReader
+	sr StreamReader
+}
+
+func newReader(r io.ReaderAt) reader {
+	or := offsetReader{reader: r}
+
+	return reader{
+		or: &or,
+		sr: NewStreamReader(&or),
+	}
+}
+
+func (r *reader) readStructStream() (wire.Struct, error) {
+	var fields []wire.Field
+
+	if err := r.sr.ReadStructBegin(); err != nil {
+		return wire.Struct{}, err
+	}
+
+	fh, ok, err := r.sr.ReadFieldBegin()
+	if err != nil {
+		return wire.Struct{}, err
+	}
+
+	for ok {
+		val, _, err := r.ReadValue(fh.Type, r.or.offset)
+		if err != nil {
+			return wire.Struct{}, err
+		}
+
+		fields = append(fields, wire.Field{ID: fh.ID, Value: val})
+		if err := r.sr.ReadFieldEnd(); err != nil {
+			return wire.Struct{}, err
+		}
+
+		if fh, ok, err = r.sr.ReadFieldBegin(); err != nil {
+			return wire.Struct{}, err
+		}
+	}
+
+	if err := r.sr.ReadStructEnd(); err != nil {
+		return wire.Struct{}, err
+	}
+
+	return wire.Struct{Fields: fields}, nil
+}
+
+func (r *reader) readMapStream() (wire.MapItemList, error) {
+	mh, err := r.sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	start := r.or.offset
+	for i := 0; i < mh.Length; i++ {
+		if err := r.sr.Skip(mh.KeyType); err != nil {
+			return nil, err
+		}
+
+		if err := r.sr.Skip(mh.ValueType); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := r.sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+
+	items := borrowLazyMapItemList()
+	items.ktype = mh.KeyType
+	items.vtype = mh.ValueType
+	items.count = int32(mh.Length)
+	items.reader = r
+	items.startOffset = start
+
+	return items, nil
+}
+
+func (r *reader) readListStream() (wire.ValueList, error) {
+	lh, err := r.sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	start := r.or.offset
+	for i := 0; i < lh.Length; i++ {
+		if err := r.sr.Skip(lh.Type); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := r.sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+
+	items := borrowLazyValueList()
+	items.count = int32(lh.Length)
+	items.typ = lh.Type
+	items.reader = r
+	items.startOffset = start
+
+	return items, nil
+}
+
+func (r *reader) readSetStream() (wire.ValueList, error) {
+	sh, err := r.sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	start := r.or.offset
+	for i := 0; i < sh.Length; i++ {
+		if err := r.sr.Skip(sh.Type); err != nil {
+			return nil, err
+		}
+	}
+
+	if err := r.sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+
+	items := borrowLazyValueList()
+	items.count = int32(sh.Length)
+	items.typ = sh.Type
+	items.reader = r
+	items.startOffset = start
+
+	return items, nil
+}
+
+// ReadValue is the underlying call made from the exported `Reader.ReadValue`
+// that's meant to be safe for concurrent calls.
+func (r *reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
+	r.or.offset = off
+
+	switch t {
+	case wire.TBool:
+		b, err := r.sr.ReadBool()
+		return wire.NewValueBool(b), r.or.offset, err
+
+	case wire.TI8:
+		b, err := r.sr.ReadInt8()
+		return wire.NewValueI8(int8(b)), r.or.offset, err
+
+	case wire.TDouble:
+		value, err := r.sr.ReadDouble()
+		return wire.NewValueDouble(value), r.or.offset, err
+
+	case wire.TI16:
+		n, err := r.sr.ReadInt16()
+		return wire.NewValueI16(n), r.or.offset, err
+
+	case wire.TI32:
+		n, err := r.sr.ReadInt32()
+		return wire.NewValueI32(n), r.or.offset, err
+
+	case wire.TI64:
+		n, err := r.sr.ReadInt64()
+		return wire.NewValueI64(n), r.or.offset, err
+
+	case wire.TBinary:
+		v, err := r.sr.ReadBinary()
+		return wire.NewValueBinary(v), r.or.offset, err
+
+	case wire.TStruct:
+		s, err := r.readStructStream()
+		return wire.NewValueStruct(s), r.or.offset, err
+
+	case wire.TMap:
+		m, err := r.readMapStream()
+		return wire.NewValueMap(m), r.or.offset, err
+
+	case wire.TSet:
+		s, err := r.readSetStream()
+		return wire.NewValueSet(s), r.or.offset, err
+
+	case wire.TList:
+		l, err := r.readListStream()
+		return wire.NewValueList(l), r.or.offset, err
+
+	default:
+		return wire.Value{}, r.or.offset, decodeErrorf("unknown ttype %v", t)
+	}
+}
 
 // Reader implements a parser for the Thrift Binary Protocol based on an
 // io.ReaderAt.
 type Reader struct {
 	reader io.ReaderAt
-
-	// This buffer is re-used every time we need a slice of up to 8 bytes.
-	buffer [8]byte
 }
 
 // NewReader builds a new Reader based on the given io.ReaderAt.
@@ -46,440 +242,11 @@ func NewReader(r io.ReaderAt) Reader {
 	return Reader{reader: r}
 }
 
-// For the reader, we keep track of the read offset manually everywhere so
-// that we can implement lazy collections without extra allocations
-
-// fixedWidth returns the encoded size of a value of the given type. If the
-// type's width depends on the value, -1 is returned.
-func fixedWidth(t wire.Type) int64 {
-	switch t {
-	case wire.TBool:
-		return 1
-	case wire.TI8:
-		return 1
-	case wire.TDouble:
-		return 8
-	case wire.TI16:
-		return 2
-	case wire.TI32:
-		return 4
-	case wire.TI64:
-		return 8
-	default:
-		return -1
-	}
-}
-
-func (br *Reader) skipStruct(off int64) (int64, error) {
-	typ, off, err := br.readByte(off)
-	if err != nil {
-		return off, err
-	}
-
-	for typ != 0 {
-		off += 2 // field ID
-		off, err = br.skipValue(wire.Type(typ), off)
-		if err != nil {
-			return off, err
-		}
-
-		typ, off, err = br.readByte(off)
-		if err != nil {
-			return off, err
-		}
-	}
-	return off, err
-}
-
-func (br *Reader) skipMap(off int64) (int64, error) {
-	ktByte, off, err := br.readByte(off)
-	if err != nil {
-		return off, err
-	}
-
-	vtByte, off, err := br.readByte(off)
-	if err != nil {
-		return off, err
-	}
-
-	kt := wire.Type(ktByte)
-	vt := wire.Type(vtByte)
-
-	count, off, err := br.readInt32(off)
-	if err != nil {
-		return off, err
-	}
-	if count < 0 {
-		return off, decodeErrorf("negative length %d requested for map", count)
-	}
-
-	kw := fixedWidth(kt)
-	vw := fixedWidth(vt)
-	if kw > 0 && vw > 0 {
-		// key and value are fixed width. calculate exact offset increase.
-		off += int64(count) * (kw + vw)
-		return off, err
-	}
-
-	for i := int32(0); i < count; i++ {
-		off, err = br.skipValue(kt, off)
-		if err != nil {
-			return off, err
-		}
-
-		off, err = br.skipValue(vt, off)
-		if err != nil {
-			return off, err
-		}
-	}
-	return off, err
-}
-
-func (br *Reader) skipList(off int64) (int64, error) {
-	vtByte, off, err := br.readByte(off)
-	if err != nil {
-		return off, err
-	}
-	vt := wire.Type(vtByte)
-
-	count, off, err := br.readInt32(off)
-	if err != nil {
-		return off, err
-	}
-	if count < 0 {
-		return off, decodeErrorf("negative length %d requested for collection", count)
-	}
-
-	vw := fixedWidth(vt)
-	if vw > 0 {
-		// value is fixed width. can calculate new offset right away.
-		off += int64(count) * vw
-		return off, err
-	}
-
-	for i := int32(0); i < count; i++ {
-		off, err = br.skipValue(vt, off)
-		if err != nil {
-			return off, err
-		}
-	}
-	return off, err
-}
-
-func (br *Reader) skipValue(t wire.Type, off int64) (int64, error) {
-	if w := fixedWidth(t); w > 0 {
-		return off + w, nil
-	}
-
-	switch t {
-	case wire.TBinary:
-		length, off, err := br.readInt32(off)
-		if err != nil {
-			return off, err
-		}
-		if length < 0 {
-			return off, decodeErrorf(
-				"negative length %d requested for binary value", length,
-			)
-		}
-		off += int64(length)
-		return off, err
-	case wire.TStruct:
-		return br.skipStruct(off)
-	case wire.TMap:
-		return br.skipMap(off)
-	case wire.TSet:
-		return br.skipList(off)
-	case wire.TList:
-		return br.skipList(off)
-	default:
-		return off, decodeErrorf("unknown ttype %v", t)
-	}
-}
-
-func (br *Reader) read(bs []byte, off int64) (int64, error) {
-	n, err := br.reader.ReadAt(bs, off)
-	off += int64(n)
-	if err == io.EOF {
-		// All EOFs are unexpected for the decoder
-		err = io.ErrUnexpectedEOF
-	}
-	return off, err
-}
-
-// copyN copies n bytes starting at offset off into the given Writer.
-func (br *Reader) copyN(w io.Writer, off int64, n int64) (int64, error) {
-	src := io.NewSectionReader(br.reader, off, n)
-	copied, err := io.CopyN(w, src, n)
-	off += copied
-	if err == io.EOF {
-		// All EOFs are unexpected for the decoder
-		err = io.ErrUnexpectedEOF
-	}
-	return off, err
-}
-
-func (br *Reader) readByte(off int64) (byte, int64, error) {
-	bs := br.buffer[0:1]
-	off, err := br.read(bs, off)
-	return bs[0], off, err
-}
-
-func (br *Reader) readInt16(off int64) (int16, int64, error) {
-	bs := br.buffer[0:2]
-	off, err := br.read(bs, off)
-	return int16(bigEndian.Uint16(bs)), off, err
-}
-
-func (br *Reader) readInt32(off int64) (int32, int64, error) {
-	bs := br.buffer[0:4]
-	off, err := br.read(bs, off)
-	return int32(bigEndian.Uint32(bs)), off, err
-}
-
-func (br *Reader) readInt64(off int64) (int64, int64, error) {
-	bs := br.buffer[0:8]
-	off, err := br.read(bs, off)
-	return int64(bigEndian.Uint64(bs)), off, err
-}
-
-func (br *Reader) readBytes(off int64) ([]byte, int64, error) {
-	length, off, err := br.readInt32(off)
-	if err != nil {
-		return nil, off, err
-	}
-	if length < 0 {
-		return nil, off, decodeErrorf(
-			"negative length %d requested for binary value", length,
-		)
-	}
-	if length == 0 {
-		return nil, off, nil
-	}
-
-	// Use a dynamically resizing buffer for requests larger than
-	// bytesAllocThreshold. We don't want bad requests to lock the system up.
-	if length > bytesAllocThreshold {
-		var buff bytes.Buffer
-		off, err = br.copyN(&buff, off, int64(length))
-		if err != nil {
-			return nil, off, err
-		}
-		return buff.Bytes(), off, err
-	}
-
-	bs := make([]byte, length)
-	off, err = br.read(bs, off)
-	return bs, off, err
-}
-
-func (br *Reader) readString(off int64) (string, int64, error) {
-	v, off, err := br.readBytes(off)
-	return string(v), off, err
-}
-
-func (br *Reader) readStruct(off int64) (wire.Struct, int64, error) {
-	var fields []wire.Field
-	// TODO(abg) add a lazy FieldList type instead of []Field.
-
-	typ, off, err := br.readByte(off)
-	if err != nil {
-		return wire.Struct{}, off, err
-	}
-
-	for typ != 0 {
-		var fid int16
-		var val wire.Value
-
-		fid, off, err = br.readInt16(off)
-		if err != nil {
-			return wire.Struct{}, off, err
-		}
-
-		val, off, err = br.ReadValue(wire.Type(typ), off)
-		if err != nil {
-			return wire.Struct{}, off, err
-		}
-
-		fields = append(fields, wire.Field{ID: fid, Value: val})
-
-		typ, off, err = br.readByte(off)
-		if err != nil {
-			return wire.Struct{}, off, err
-		}
-	}
-	return wire.Struct{Fields: fields}, off, err
-}
-
-func (br *Reader) readMap(off int64) (wire.MapItemList, int64, error) {
-	ktByte, off, err := br.readByte(off)
-	if err != nil {
-		return nil, off, err
-	}
-
-	vtByte, off, err := br.readByte(off)
-	if err != nil {
-		return nil, off, err
-	}
-
-	count, off, err := br.readInt32(off)
-	if err != nil {
-		return nil, off, err
-	}
-	if count < 0 {
-		return nil, off, decodeErrorf("negative length %d requested for map", count)
-	}
-
-	kt := wire.Type(ktByte)
-	vt := wire.Type(vtByte)
-
-	start := off
-	for i := int32(0); i < count; i++ {
-		off, err = br.skipValue(kt, off)
-		if err != nil {
-			return nil, off, err
-		}
-
-		off, err = br.skipValue(vt, off)
-		if err != nil {
-			return nil, off, err
-		}
-	}
-
-	items := borrowLazyMapItemList()
-	items.ktype = kt
-	items.vtype = vt
-	items.count = count
-	items.reader = br
-	items.startOffset = start
-
-	return items, off, err
-}
-
-func (br *Reader) readSet(off int64) (wire.ValueList, int64, error) {
-	typ, off, err := br.readByte(off)
-	if err != nil {
-		return nil, off, err
-	}
-
-	count, off, err := br.readInt32(off)
-	if err != nil {
-		return nil, off, err
-	}
-	if count < 0 {
-		return nil, off, decodeErrorf("negative length %d requested for set", count)
-	}
-
-	start := off
-	for i := int32(0); i < count; i++ {
-		off, err = br.skipValue(wire.Type(typ), off)
-		if err != nil {
-			return nil, off, err
-		}
-	}
-
-	items := borrowLazyValueList()
-	items.count = count
-	items.typ = wire.Type(typ)
-	items.reader = br
-	items.startOffset = start
-
-	return items, off, err
-}
-
-func (br *Reader) readList(off int64) (wire.ValueList, int64, error) {
-	typ, off, err := br.readByte(off)
-	if err != nil {
-		return nil, off, err
-	}
-
-	count, off, err := br.readInt32(off)
-	if err != nil {
-		return nil, off, err
-	}
-	if count < 0 {
-		return nil, off, decodeErrorf("negative length %d requested for list", count)
-	}
-
-	start := off
-	for i := int32(0); i < count; i++ {
-		off, err = br.skipValue(wire.Type(typ), off)
-		if err != nil {
-			return nil, off, err
-		}
-	}
-
-	items := borrowLazyValueList()
-	items.count = count
-	items.typ = wire.Type(typ)
-	items.reader = br
-	items.startOffset = start
-
-	return items, off, err
-}
-
 // ReadValue reads a value off the given type off the wire starting at the
 // given offset.
 //
 // Returns the Value, the new offset, and an error if there was a decode error.
 func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
-	switch t {
-	case wire.TBool:
-		b, off, err := br.readByte(off)
-		if err != nil {
-			return wire.Value{}, off, err
-		}
-
-		if b != 0 && b != 1 {
-			return wire.Value{}, off, decodeErrorf(
-				"invalid value %q for bool field", b,
-			)
-		}
-
-		return wire.NewValueBool(b == 1), off, nil
-
-	case wire.TI8:
-		b, off, err := br.readByte(off)
-		return wire.NewValueI8(int8(b)), off, err
-
-	case wire.TDouble:
-		value, off, err := br.readInt64(off)
-		d := math.Float64frombits(uint64(value))
-		return wire.NewValueDouble(d), off, err
-
-	case wire.TI16:
-		n, off, err := br.readInt16(off)
-		return wire.NewValueI16(n), off, err
-
-	case wire.TI32:
-		n, off, err := br.readInt32(off)
-		return wire.NewValueI32(n), off, err
-
-	case wire.TI64:
-		n, off, err := br.readInt64(off)
-		return wire.NewValueI64(n), off, err
-
-	case wire.TBinary:
-		v, off, err := br.readBytes(off)
-		return wire.NewValueBinary(v), off, err
-
-	case wire.TStruct:
-		s, off, err := br.readStruct(off)
-		return wire.NewValueStruct(s), off, err
-
-	case wire.TMap:
-		m, off, err := br.readMap(off)
-		return wire.NewValueMap(m), off, err
-
-	case wire.TSet:
-		s, off, err := br.readSet(off)
-		return wire.NewValueSet(s), off, err
-
-	case wire.TList:
-		l, off, err := br.readList(off)
-		return wire.NewValueList(l), off, err
-
-	default:
-		return wire.Value{}, off, decodeErrorf("unknown ttype %v", t)
-	}
+	reader := newReader(br.reader)
+	return reader.ReadValue(t, off)
 }

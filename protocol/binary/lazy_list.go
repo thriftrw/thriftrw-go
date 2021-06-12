@@ -48,7 +48,7 @@ func borrowLazyMapItemList() *lazyMapItemList {
 type lazyValueList struct {
 	count       int32
 	typ         wire.Type
-	reader      *Reader
+	reader      *reader
 	startOffset int64
 }
 
@@ -91,7 +91,7 @@ func (ll *lazyValueList) Close() {
 type lazyMapItemList struct {
 	ktype, vtype wire.Type
 	count        int32
-	reader       *Reader
+	reader       *reader
 	startOffset  int64
 }
 
