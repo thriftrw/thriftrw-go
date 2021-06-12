@@ -89,11 +89,12 @@ func (bw *Writer) WriteLegacyEnveloped(e wire.Envelope) error {
 // version numbers such that the value will always be negative.
 func (bw *Reader) ReadEnveloped() (wire.Envelope, error) {
 	var e wire.Envelope
-	initial, off, err := bw.readInt32(0)
+	val, off, err := bw.ReadValue(wire.TI32, 0)
 	if err != nil {
 		return wire.Envelope{}, err
 	}
 
+	initial := val.GetI32()
 	if initial > 0 {
 		e, off, err = bw.readNonStrictNameType()
 	} else {
@@ -103,7 +104,8 @@ func (bw *Reader) ReadEnveloped() (wire.Envelope, error) {
 		return e, err
 	}
 
-	e.SeqID, off, err = bw.readInt32(off)
+	val, off, err = bw.ReadValue(wire.TI32, off)
+	e.SeqID = val.GetI32()
 	if err != nil {
 		return e, err
 	}
@@ -126,25 +128,25 @@ func (bw *Reader) readStrictNameType(initial int32, off int64) (wire.Envelope, i
 	// This will truncate the bits that are not required.
 	e.Type = wire.EnvelopeType(initial)
 
-	var err error
-	e.Name, off, err = bw.readString(off)
+	name, off, err := bw.ReadValue(wire.TBinary, off)
+	e.Name = name.GetString()
 	return e, off, err
 }
 
 func (bw *Reader) readNonStrictNameType() (wire.Envelope, int64, error) {
 	var e wire.Envelope
 
-	name, off, err := bw.readString(0)
+	name, off, err := bw.ReadValue(wire.TBinary, 0)
 	if err != nil {
 		return e, off, err
 	}
-	e.Name = name
+	e.Name = name.GetString()
 
-	typeID, off, err := bw.readByte(off)
+	val, off, err := bw.ReadValue(wire.TI8, off)
 	if err != nil {
 		return e, off, err
 	}
-	e.Type = wire.EnvelopeType(typeID)
+	e.Type = wire.EnvelopeType(val.GetI8())
 
 	return e, off, nil
 }

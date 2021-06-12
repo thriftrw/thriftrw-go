@@ -31,6 +31,34 @@ import (
 	"go.uber.org/thriftrw/wire"
 )
 
+// Requests for byte slices longer than this will use a dynamically resizing
+// buffer.
+const bytesAllocThreshold = 1048576 // 1 MB
+
+// For the reader, we keep track of the read offset manually everywhere so
+// that we can implement lazy collections without extra allocations
+
+// fixedWidth returns the encoded size of a value of the given type. If the
+// type's width depends on the value, -1 is returned.
+func fixedWidth(t wire.Type) int64 {
+	switch t {
+	case wire.TBool:
+		return 1
+	case wire.TI8:
+		return 1
+	case wire.TDouble:
+		return 8
+	case wire.TI16:
+		return 2
+	case wire.TI32:
+		return 4
+	case wire.TI64:
+		return 8
+	default:
+		return -1
+	}
+}
+
 // StreamReader provides an implementation of a "stream.Reader".
 type StreamReader struct {
 	iface.Private
