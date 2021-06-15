@@ -46,5 +46,5 @@ type streamingThriftType interface {
 	thriftType
 
 	Encode(stream.Writer) error
-	//Decode(stream.Reader) error
+	Decode(stream.Reader) error
 }

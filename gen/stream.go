@@ -32,6 +32,10 @@ type StreamGenerator struct {
 	mapG  mapGenerator
 	setG  setGenerator
 	listG listGenerator
+
+	enumG    enumGenerator
+	structG  structGenerator
+	typedefG typedefGenerator
 }
 
 // Encode generates code that knows how to serialize Thrift types into bytes.
@@ -79,4 +83,90 @@ func (sg *StreamGenerator) EncodePtr(g Generator, spec compile.TypeSpec, varName
 		// on it that does automatic dereferencing.
 		return sg.Encode(g, spec, varName, sw)
 	}
+}
+
+// Decode generates an expression that can deserialize Thrift data into their
+// raw types.
+func (sg *StreamGenerator) Decode(g Generator, spec compile.TypeSpec, reader string) (string, error) {
+	switch s := spec.(type) {
+	case *compile.BoolSpec:
+		return fmt.Sprintf("%s.ReadBool()", reader), nil
+	case *compile.I8Spec:
+		return fmt.Sprintf("%s.ReadInt8()", reader), nil
+	case *compile.I16Spec:
+		return fmt.Sprintf("%s.ReadInt16()", reader), nil
+	case *compile.I32Spec:
+		return fmt.Sprintf("%s.ReadInt32()", reader), nil
+	case *compile.I64Spec:
+		return fmt.Sprintf("%s.ReadInt64()", reader), nil
+	case *compile.DoubleSpec:
+		return fmt.Sprintf("%s.ReadDouble()", reader), nil
+	case *compile.StringSpec:
+		return fmt.Sprintf("%s.ReadString()", reader), nil
+	case *compile.BinarySpec:
+		return fmt.Sprintf("%s.ReadBinary()", reader), nil
+	case *compile.MapSpec:
+		decoder, err := sg.mapG.Decoder(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s)", decoder, reader), nil
+	case *compile.ListSpec:
+		decoder, err := sg.listG.Decoder(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s)", decoder, reader), nil
+	case *compile.SetSpec:
+		decoder, err := sg.setG.Decoder(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s)", decoder, reader), nil
+	case *compile.TypedefSpec:
+		decoder, err := sg.typedefG.Decoder(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s)", decoder, reader), nil
+	case *compile.EnumSpec:
+		decoder, err := sg.enumG.Decoder(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s)", decoder, reader), nil
+	case *compile.StructSpec:
+		decoder, err := sg.structG.Decoder(g, s)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s(%s)", decoder, reader), nil
+	default:
+		panic(fmt.Sprintf("Unknown TypeSpec (%T) %v", spec, spec))
+	}
+}
+
+// DecodePtr generates an expression that assigns the "lhs" to a pointer of the
+// decoded value.
+func (sg *StreamGenerator) DecodePtr(g Generator, spec compile.TypeSpec, lhs string, reader string) (string, error) {
+	if !isPrimitiveType(spec) {
+		out, err := sg.Decode(g, spec, reader)
+		if err != nil {
+			return "", err
+		}
+		return fmt.Sprintf("%s, err = %s", lhs, out), err
+	}
+	return g.TextTemplate(
+		`
+		<- $x := newVar "x" ->
+		var <$x> <typeReference .Spec>
+		<$x>, err = <decode .Spec .Reader>
+		<.LHS> = &<$x ->
+		`,
+		struct {
+			Spec   compile.TypeSpec
+			LHS    string
+			Reader string
+		}{Spec: spec, LHS: lhs, Reader: reader},
+	)
 }

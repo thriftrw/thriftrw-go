@@ -204,6 +204,10 @@ func readerFuncName(g Generator, spec compile.TypeSpec) string {
 	return fmt.Sprintf("_%s_Read", g.MangleType(spec))
 }
 
+func decoderFuncName(g Generator, spec compile.TypeSpec) string {
+	return fmt.Sprintf("_%s_Decode", g.MangleType(spec))
+}
+
 func valueListName(g Generator, spec compile.TypeSpec) string {
 	return fmt.Sprintf("_%s_ValueList", g.MangleType(spec))
 }

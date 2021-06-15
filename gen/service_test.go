@@ -200,6 +200,10 @@ func TestServiceArgsAndResult(t *testing.T) {
 		assertRoundTrip(t, tt.x, tt.value, tt.desc)
 		assert.Equal(t, tt.methodName, tt.x.MethodName(), tt.desc)
 		assert.Equal(t, tt.envelopeType, tt.x.EnvelopeType(), tt.desc)
+
+		testRoundTripCombos(t, tt.x, tt.value, tt.desc)
+		assert.Equal(t, tt.methodName, tt.x.MethodName(), tt.desc)
+		assert.Equal(t, tt.envelopeType, tt.x.EnvelopeType(), tt.desc)
 	}
 }
 

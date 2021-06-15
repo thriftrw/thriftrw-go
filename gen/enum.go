@@ -53,6 +53,29 @@ func (e *enumGenerator) Reader(g Generator, spec *compile.EnumSpec) (string, err
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+func (e *enumGenerator) Decoder(g Generator, spec *compile.EnumSpec) (string, error) {
+	name := decoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+
+		<$sr := newVar "sr">
+		<$v := newVar "v">
+		func <.Name>(<$sr> <$stream>.Reader) (<typeName .Spec>, error) {
+			var <$v> <typeName .Spec>
+			err := <$v>.Decode(<$sr>)
+			return <$v>, err
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.EnumSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
 func enum(g Generator, spec *compile.EnumSpec) error {
 	if err := verifyUniqueEnumItemLabels(spec); err != nil {
 		return err
@@ -70,7 +93,6 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 
 		<$stream := import "go.uber.org/thriftrw/protocol/stream">
 		<$wire := import "go.uber.org/thriftrw/wire">
-		<$stream := import "go.uber.org/thriftrw/protocol/stream">
 
 		<$enumName := goName .Spec>
 		<formatDoc .Spec.Doc>type <$enumName> int32

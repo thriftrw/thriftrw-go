@@ -128,6 +128,62 @@ func (v *DocumentStruct) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _Second_Decode(sr stream.Reader) (*non_hyphenated.Second, error) {
+	var v non_hyphenated.Second
+	err := v.Decode(sr)
+	return &v, err
+}
+
+// Decode deserializes a DocumentStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a DocumentStruct struct could not be generated from the wire
+// representation.
+func (v *DocumentStruct) Decode(sr stream.Reader) error {
+
+	secondIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TStruct {
+				v.Second, err = _Second_Decode(sr)
+				if err != nil {
+					return err
+				}
+				secondIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !secondIsSet {
+		return errors.New("field Second of DocumentStruct is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a DocumentStruct
 // struct.
 func (v *DocumentStruct) String() string {

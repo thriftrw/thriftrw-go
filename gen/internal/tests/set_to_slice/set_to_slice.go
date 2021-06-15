@@ -33,6 +33,12 @@ func _MyStringList_Read(w wire.Value) (MyStringList, error) {
 	return x, err
 }
 
+func _MyStringList_Decode(sr stream.Reader) (MyStringList, error) {
+	var x MyStringList
+	err := x.Decode(sr)
+	return x, err
+}
+
 type _Set_String_sliceType_Zapper []string
 
 // MarshalLogArray implements zapcore.ArrayMarshaler, enabling
@@ -70,6 +76,13 @@ func (v AnotherStringList) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *AnotherStringList) FromWire(w wire.Value) error {
 	x, err := _MyStringList_Read(w)
+	*v = (AnotherStringList)(x)
+	return err
+}
+
+// Decode deserializes AnotherStringList directly off the wire.
+func (v *AnotherStringList) Decode(sr stream.Reader) error {
+	x, err := _MyStringList_Decode(sr)
 	*v = (AnotherStringList)(x)
 	return err
 }
@@ -781,6 +794,305 @@ func (v *Bar) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _Set_I32_sliceType_Decode(sr stream.Reader) ([]int32, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TI32 {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make([]int32, 0, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := sr.ReadInt32()
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, v)
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Set_String_sliceType_Decode(sr stream.Reader) ([]string, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TBinary {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make([]string, 0, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, v)
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _StringList_Decode(sr stream.Reader) (StringList, error) {
+	var x StringList
+	err := x.Decode(sr)
+	return x, err
+}
+
+func _Foo_Decode(sr stream.Reader) (*Foo, error) {
+	var v Foo
+	err := v.Decode(sr)
+	return &v, err
+}
+
+func _Set_Foo_sliceType_Decode(sr stream.Reader) ([]*Foo, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TStruct {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make([]*Foo, 0, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := _Foo_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, v)
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _FooList_Decode(sr stream.Reader) (FooList, error) {
+	var x FooList
+	err := x.Decode(sr)
+	return x, err
+}
+
+func _Set_Set_String_sliceType_sliceType_Decode(sr stream.Reader) ([][]string, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TSet {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make([][]string, 0, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := _Set_String_sliceType_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, v)
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _StringListList_Decode(sr stream.Reader) (StringListList, error) {
+	var x StringListList
+	err := x.Decode(sr)
+	return x, err
+}
+
+// Decode deserializes a Bar struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Bar struct could not be generated from the wire
+// representation.
+func (v *Bar) Decode(sr stream.Reader) error {
+
+	requiredInt32ListFieldIsSet := false
+
+	requiredTypedefStringListFieldIsSet := false
+
+	requiredFooListFieldIsSet := false
+
+	requiredTypedefFooListFieldIsSet := false
+
+	requiredStringListListFieldIsSet := false
+	requiredTypedefStringListListFieldIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TSet {
+				v.RequiredInt32ListField, err = _Set_I32_sliceType_Decode(sr)
+				if err != nil {
+					return err
+				}
+				requiredInt32ListFieldIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TSet {
+				v.OptionalStringListField, err = _Set_String_sliceType_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if fh.Type == wire.TSet {
+				v.RequiredTypedefStringListField, err = _StringList_Decode(sr)
+				if err != nil {
+					return err
+				}
+				requiredTypedefStringListFieldIsSet = true
+			}
+		case 4:
+			if fh.Type == wire.TSet {
+				v.OptionalTypedefStringListField, err = _StringList_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 5:
+			if fh.Type == wire.TSet {
+				v.RequiredFooListField, err = _Set_Foo_sliceType_Decode(sr)
+				if err != nil {
+					return err
+				}
+				requiredFooListFieldIsSet = true
+			}
+		case 6:
+			if fh.Type == wire.TSet {
+				v.OptionalFooListField, err = _Set_Foo_sliceType_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 7:
+			if fh.Type == wire.TSet {
+				v.RequiredTypedefFooListField, err = _FooList_Decode(sr)
+				if err != nil {
+					return err
+				}
+				requiredTypedefFooListFieldIsSet = true
+			}
+		case 8:
+			if fh.Type == wire.TSet {
+				v.OptionalTypedefFooListField, err = _FooList_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 9:
+			if fh.Type == wire.TSet {
+				v.RequiredStringListListField, err = _Set_Set_String_sliceType_sliceType_Decode(sr)
+				if err != nil {
+					return err
+				}
+				requiredStringListListFieldIsSet = true
+			}
+		case 10:
+			if fh.Type == wire.TSet {
+				v.RequiredTypedefStringListListField, err = _StringListList_Decode(sr)
+				if err != nil {
+					return err
+				}
+				requiredTypedefStringListListFieldIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !requiredInt32ListFieldIsSet {
+		return errors.New("field RequiredInt32ListField of Bar is required")
+	}
+
+	if !requiredTypedefStringListFieldIsSet {
+		return errors.New("field RequiredTypedefStringListField of Bar is required")
+	}
+
+	if !requiredFooListFieldIsSet {
+		return errors.New("field RequiredFooListField of Bar is required")
+	}
+
+	if !requiredTypedefFooListFieldIsSet {
+		return errors.New("field RequiredTypedefFooListField of Bar is required")
+	}
+
+	if !requiredStringListListFieldIsSet {
+		return errors.New("field RequiredStringListListField of Bar is required")
+	}
+
+	if !requiredTypedefStringListListFieldIsSet {
+		return errors.New("field RequiredTypedefStringListListField of Bar is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a Bar
 // struct.
 func (v *Bar) String() string {
@@ -1255,6 +1567,56 @@ func (v *Foo) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+// Decode deserializes a Foo struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Foo struct could not be generated from the wire
+// representation.
+func (v *Foo) Decode(sr stream.Reader) error {
+
+	stringFieldIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				v.StringField, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				stringFieldIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !stringFieldIsSet {
+		return errors.New("field StringField of Foo is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a Foo
 // struct.
 func (v *Foo) String() string {
@@ -1336,6 +1698,13 @@ func (v *FooList) FromWire(w wire.Value) error {
 	return err
 }
 
+// Decode deserializes FooList directly off the wire.
+func (v *FooList) Decode(sr stream.Reader) error {
+	x, err := _Set_Foo_sliceType_Decode(sr)
+	*v = (FooList)(x)
+	return err
+}
+
 // Equals returns true if this FooList is equal to the provided
 // FooList.
 func (lhs FooList) Equals(rhs FooList) bool {
@@ -1372,6 +1741,13 @@ func (v MyStringList) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *MyStringList) FromWire(w wire.Value) error {
 	x, err := _StringList_Read(w)
+	*v = (MyStringList)(x)
+	return err
+}
+
+// Decode deserializes MyStringList directly off the wire.
+func (v *MyStringList) Decode(sr stream.Reader) error {
+	x, err := _StringList_Decode(sr)
 	*v = (MyStringList)(x)
 	return err
 }
@@ -1416,6 +1792,13 @@ func (v *StringList) FromWire(w wire.Value) error {
 	return err
 }
 
+// Decode deserializes StringList directly off the wire.
+func (v *StringList) Decode(sr stream.Reader) error {
+	x, err := _Set_String_sliceType_Decode(sr)
+	*v = (StringList)(x)
+	return err
+}
+
 // Equals returns true if this StringList is equal to the provided
 // StringList.
 func (lhs StringList) Equals(rhs StringList) bool {
@@ -1452,6 +1835,13 @@ func (v StringListList) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *StringListList) FromWire(w wire.Value) error {
 	x, err := _Set_Set_String_sliceType_sliceType_Read(w.GetSet())
+	*v = (StringListList)(x)
+	return err
+}
+
+// Decode deserializes StringListList directly off the wire.
+func (v *StringListList) Decode(sr stream.Reader) error {
+	x, err := _Set_Set_String_sliceType_sliceType_Decode(sr)
 	*v = (StringListList)(x)
 	return err
 }
@@ -1531,6 +1921,37 @@ func _Set_String_mapType_Read(s wire.ValueList) (map[string]struct{}, error) {
 	return o, err
 }
 
+func _Set_String_mapType_Decode(sr stream.Reader) (map[string]struct{}, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TBinary {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make(map[string]struct{}, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		o[v] = struct{}{}
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
 func _Set_String_mapType_Equals(lhs, rhs map[string]struct{}) bool {
 	if len(lhs) != len(rhs) {
 		return false
@@ -1582,6 +2003,13 @@ func (v StringSet) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *StringSet) FromWire(w wire.Value) error {
 	x, err := _Set_String_mapType_Read(w.GetSet())
+	*v = (StringSet)(x)
+	return err
+}
+
+// Decode deserializes StringSet directly off the wire.
+func (v *StringSet) Decode(sr stream.Reader) error {
+	x, err := _Set_String_mapType_Decode(sr)
 	*v = (StringSet)(x)
 	return err
 }

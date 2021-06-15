@@ -23,6 +23,7 @@ type streamingThriftType interface {
 	thriftType
 
 	Encode(stream.Writer) error
+	Decode(stream.Reader) error
 }
 
 func BenchmarkRoundTrip(b *testing.B) {
@@ -159,18 +160,41 @@ func BenchmarkRoundTrip(b *testing.B) {
 		}
 	}
 
+	benchmarkStreamingRead := func(b *testing.B, bb benchCase) {
+		var buff bytes.Buffer
+		w, err := bb.give.ToWire()
+		require.NoError(b, err, "ToWire")
+		require.NoError(b, protocol.Binary.Encode(w, &buff), "Encode")
+
+		r := bytes.NewReader(buff.Bytes())
+		give, ok := bb.give.(streamingThriftType)
+		require.True(b, ok)
+
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			r.Seek(0, 0)
+
+			reader := protocol.BinaryStreamer.Reader(r)
+			require.NoError(b, give.Decode(reader), "Decode")
+		}
+	}
+
 	for _, bb := range benchmarks {
 		b.Run(bb.name, func(b *testing.B) {
 			b.Run("Encode", func(b *testing.B) {
 				benchmarkEncode(b, bb)
 			})
 
-			b.Run("Stream Encode", func(b *testing.B) {
+			b.Run("Streaming Encode", func(b *testing.B) {
 				benchmarkStreamEncode(b, bb)
 			})
 
 			b.Run("Decode", func(b *testing.B) {
 				benchmarkDecode(b, bb)
+			})
+
+			b.Run("Streaming Decode", func(b *testing.B) {
+				benchmarkStreamingRead(b, bb)
 			})
 		})
 	}

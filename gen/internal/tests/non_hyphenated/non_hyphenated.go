@@ -78,6 +78,42 @@ func (v *First) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+// Decode deserializes a First struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a First struct could not be generated from the wire
+// representation.
+func (v *First) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a First
 // struct.
 func (v *First) String() string {
@@ -178,6 +214,42 @@ func (v *Second) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a Second struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Second struct could not be generated from the wire
+// representation.
+func (v *Second) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a Second
