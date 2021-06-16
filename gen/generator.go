@@ -215,6 +215,7 @@ func (g *generator) LookupConstantName(c *compile.Constant) (string, error) {
 // TextTemplate renders the given template with the given template context.
 func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOption) (string, error) {
 	templateFuncs := template.FuncMap{
+		"lessthan":         lessThanSymbol,
 		"enumItemName":     enumItemName,
 		"formatDoc":        formatDoc,
 		"goCase":           goCase,
@@ -538,4 +539,8 @@ func formatDoc(s string) string {
 		}
 	}
 	return strings.Join(lines, "\n") + "\n"
+}
+
+func lessThanSymbol() string {
+	return "<"
 }
