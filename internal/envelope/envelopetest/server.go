@@ -25,9 +25,10 @@
 package envelopetest
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	wire "go.uber.org/thriftrw/wire"
-	reflect "reflect"
 )
 
 // MockHandler is a mock of Handler interface

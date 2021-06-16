@@ -5,10 +5,11 @@
 package gen
 
 import (
-	gomock "github.com/golang/mock/gomock"
-	zapcore "go.uber.org/zap/zapcore"
 	reflect "reflect"
 	time "time"
+
+	gomock "github.com/golang/mock/gomock"
+	zapcore "go.uber.org/zap/zapcore"
 )
 
 // MockObjectEncoder is a mock of ObjectEncoder interface

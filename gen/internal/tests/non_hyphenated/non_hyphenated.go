@@ -5,10 +5,12 @@ package non_hyphenated
 
 import (
 	fmt "fmt"
+	strings "strings"
+
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
-	strings "strings"
 )
 
 type First struct {
@@ -63,6 +65,21 @@ func (v *First) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a First struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a First struct could not be generated from the wire
+// representation.
+func (v *First) Encode(sw stream.Writer) error {
+	var ()
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a First
@@ -153,6 +170,21 @@ func (v *Second) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a Second struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Second struct could not be generated from the wire
+// representation.
+func (v *Second) Encode(sw stream.Writer) error {
+	var ()
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Second

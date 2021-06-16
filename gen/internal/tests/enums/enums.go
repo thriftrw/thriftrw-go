@@ -7,13 +7,15 @@ import (
 	bytes "bytes"
 	json "encoding/json"
 	fmt "fmt"
-	multierr "go.uber.org/multierr"
-	thriftreflect "go.uber.org/thriftrw/thriftreflect"
-	wire "go.uber.org/thriftrw/wire"
-	zapcore "go.uber.org/zap/zapcore"
 	math "math"
 	strconv "strconv"
 	strings "strings"
+
+	multierr "go.uber.org/multierr"
+	stream "go.uber.org/thriftrw/protocol/stream"
+	thriftreflect "go.uber.org/thriftrw/thriftreflect"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
 )
 
 type EmptyEnum int32
@@ -59,6 +61,19 @@ func (v EmptyEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 // Ptr returns a pointer to this enum value.
 func (v EmptyEnum) Ptr() *EmptyEnum {
 	return &v
+}
+
+// Encode encodes EmptyEnum directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v EmptyEnum
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v EmptyEnum) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates EmptyEnum into a Thrift-level intermediate
@@ -227,6 +242,19 @@ func (v EnumDefault) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 // Ptr returns a pointer to this enum value.
 func (v EnumDefault) Ptr() *EnumDefault {
 	return &v
+}
+
+// Encode encodes EnumDefault directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v EnumDefault
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v EnumDefault) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates EnumDefault into a Thrift-level intermediate
@@ -467,6 +495,19 @@ func (v EnumWithDuplicateName) Ptr() *EnumWithDuplicateName {
 	return &v
 }
 
+// Encode encodes EnumWithDuplicateName directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v EnumWithDuplicateName
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v EnumWithDuplicateName) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
+}
+
 // ToWire translates EnumWithDuplicateName into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -669,6 +710,19 @@ func (v EnumWithDuplicateValues) MarshalLogObject(enc zapcore.ObjectEncoder) err
 // Ptr returns a pointer to this enum value.
 func (v EnumWithDuplicateValues) Ptr() *EnumWithDuplicateValues {
 	return &v
+}
+
+// Encode encodes EnumWithDuplicateValues directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v EnumWithDuplicateValues
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v EnumWithDuplicateValues) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates EnumWithDuplicateValues into a Thrift-level intermediate
@@ -878,6 +932,19 @@ func (v EnumWithLabel) Ptr() *EnumWithLabel {
 	return &v
 }
 
+// Encode encodes EnumWithLabel directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v EnumWithLabel
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v EnumWithLabel) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
+}
+
 // ToWire translates EnumWithLabel into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -1074,6 +1141,19 @@ func (v EnumWithValues) Ptr() *EnumWithValues {
 	return &v
 }
 
+// Encode encodes EnumWithValues directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v EnumWithValues
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v EnumWithValues) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
+}
+
 // ToWire translates EnumWithValues into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -1266,6 +1346,19 @@ func (v RecordType) Ptr() *RecordType {
 	return &v
 }
 
+// Encode encodes RecordType directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v RecordType
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v RecordType) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
+}
+
 // ToWire translates RecordType into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -1439,6 +1532,19 @@ func (v RecordTypeValues) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 // Ptr returns a pointer to this enum value.
 func (v RecordTypeValues) Ptr() *RecordTypeValues {
 	return &v
+}
+
+// Encode encodes RecordTypeValues directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v RecordTypeValues
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v RecordTypeValues) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates RecordTypeValues into a Thrift-level intermediate
@@ -1621,6 +1727,40 @@ func (v *StructWithOptionalEnum) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a StructWithOptionalEnum struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a StructWithOptionalEnum struct could not be generated from the wire
+// representation.
+func (v *StructWithOptionalEnum) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.E != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TI32}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = v.E.Encode(sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a StructWithOptionalEnum
 // struct.
 func (v *StructWithOptionalEnum) String() string {
@@ -1773,6 +1913,19 @@ func (v LowerCaseEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 // Ptr returns a pointer to this enum value.
 func (v LowerCaseEnum) Ptr() *LowerCaseEnum {
 	return &v
+}
+
+// Encode encodes LowerCaseEnum directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v LowerCaseEnum
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v LowerCaseEnum) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates LowerCaseEnum into a Thrift-level intermediate

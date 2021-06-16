@@ -44,6 +44,7 @@ var reservedIdentifiers = map[string]struct{}{
 	"FromWire": {},
 	"String":   {},
 	"Equals":   {},
+	"Encode":   {},
 }
 
 // fieldGroupGenerator is responsible for generating code for FieldGroups.
@@ -92,6 +93,10 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 	}
 
 	if err := f.FromWire(g); err != nil {
+		return err
+	}
+
+	if err := f.Encode(g); err != nil {
 		return err
 	}
 
@@ -463,6 +468,108 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				<- end>
 			<end>
 			return nil
+		}
+		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))
+}
+
+func (f fieldGroupGenerator) Encode(g Generator) error {
+	return g.DeclareFromTemplate(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+
+		<$v := newVar "v">
+		<$sw := newVar "sw">
+		// Encode Serializes a <.Name> struct directly into bytes, without going
+		// through an intemediary type.
+		//
+		// An error is returned if a <.Name> struct could not be encoded.
+		func (<$v> *<.Name>) Encode(<$sw> <$stream>.Writer) error {
+			<- $i := newVar "i" ->
+
+			var (
+				<if len .Fields ->
+					<$i> int = 0
+					err error
+					fh <$stream>.FieldHeader
+				<- end>
+			)
+
+			if err := <$sw>.WriteStructBegin(); err != nil {
+				return err
+			}
+			
+			<$structName := .Name>
+			<range .Fields>
+				<- $fname := goName . ->
+				<- $f := printf "%s.%s" $v $fname ->
+				<$t := typeCode .Type>
+				<- if .Required ->
+					<- if and (not (isPrimitiveType .Type)) (not (isListType .Type)) ->
+						if <$f> == nil {
+							return <import "errors">.New("field <$fname> of <$structName> is required")
+						}
+					<- end>
+						fh = <$stream>.FieldHeader{ID: <.ID>, Type: <$t>,}
+						if err := <$sw>.WriteFieldBegin(fh); err != nil {
+							return err
+						}
+						err = <encode .Type $f $sw>
+						if err != nil {
+							return err
+						}
+						<$i>++
+						if err := <$sw>.WriteFieldEnd(); err != nil {
+							return err
+						}
+				<- else ->
+					<- if isNotNil .Default ->
+						<- $fval := printf "%s%s" $v $fname ->
+						<$fval> := <$f>
+						if <$fval> == nil {
+							<$fval> = <constantValuePtr .Default .Type>
+						}
+						{
+							fh = <$stream>.FieldHeader{ID: <.ID>, Type: <$t>,}
+							if err := <$sw>.WriteFieldBegin(fh); err != nil {
+								return err
+							}
+							if err := <encodePtr .Type $fval $sw>; err != nil {
+								return err
+							}
+					<- else ->
+						if <$f> != nil {
+							fh = <$stream>.FieldHeader{ID: <.ID>, Type: <$t>,}
+							if err := <$sw>.WriteFieldBegin(fh); err != nil {
+								return err
+							}
+							err = <encodePtr .Type $f $sw>
+					<- end>
+							if err != nil {
+								return err
+							}
+							<$i>++
+							if err := <$sw>.WriteFieldEnd(); err != nil {
+								return err
+							}
+						}
+				<- end>
+
+			<end>
+
+			<if and .IsUnion (len .Fields)>
+				<$fmt := import "fmt">
+				<if .AllowEmptyUnion>
+					if <$i> > 1 {
+						return <$fmt>.Errorf("<.Name> should have at most one field: got %v fields", <$i>)
+					}
+				<else>
+					if <$i> != 1 {
+						return <$fmt>.Errorf("<.Name> should have exactly one field: got %v fields", <$i>)
+					}
+				<end>
+			<end>
+
+			return <$sw>.WriteStructEnd()
 		}
 		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))
 }

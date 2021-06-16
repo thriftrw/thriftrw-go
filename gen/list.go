@@ -140,6 +140,58 @@ func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, err
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+// Encoder generates a function to encode a list given a stream.Writer
+//
+//     func $name(val []listType, sr *stream.Writer) error {
+//             ...
+//     }
+//
+// And returns its name.
+func (l *listGenerator) Encoder(g Generator, spec *compile.ListSpec) (string, error) {
+	name := encoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+		<$listType := typeReference .Spec>
+		<$sw := newVar "sw">
+		<$lh := newVar "lh">
+		<$o := newVar "o">
+		<$k := newVar "k">
+		<$v := newVar "v">
+		<$val := newVar "val">
+		func <.Name>(<$val> <$listType>, <$sw> <$stream>.Writer) error {
+			var (
+				err error
+			)
+			
+			<$vt := typeCode .Spec.ValueSpec>
+			<$lh> := <$stream>.ListHeader{
+				Type: <$vt>,
+				Length: len(<$val>),
+			}
+			err = <$sw>.WriteListBegin(<$lh>)
+			if err != nil {
+				return err
+			}
+
+			for _, <$v> := range <$val> {
+				err = <encode .Spec.ValueSpec $v $sw>
+				if err != nil {
+					return err
+				}
+			}
+			return <$sw>.WriteListEnd()
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.ListSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
 // Equals generates a function to compare lists of the given type
 //
 // 	func $name(lhs, rhs $listType) bool {

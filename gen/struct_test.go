@@ -471,6 +471,7 @@ func TestStructRoundTripAndString(t *testing.T) {
 		} else {
 			assert.NotPanics(t, func() { _ = tt.x.String() }, "ToString: %v", tt.desc)
 		}
+		testRoundTripCombos(t, tt.x, tt.v, tt.desc)
 	}
 }
 

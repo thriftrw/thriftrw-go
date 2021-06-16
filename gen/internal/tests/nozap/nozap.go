@@ -8,11 +8,13 @@ import (
 	json "encoding/json"
 	errors "errors"
 	fmt "fmt"
-	thriftreflect "go.uber.org/thriftrw/thriftreflect"
-	wire "go.uber.org/thriftrw/wire"
 	math "math"
 	strconv "strconv"
 	strings "strings"
+
+	stream "go.uber.org/thriftrw/protocol/stream"
+	thriftreflect "go.uber.org/thriftrw/thriftreflect"
+	wire "go.uber.org/thriftrw/wire"
 )
 
 type EnumDefault int32
@@ -79,6 +81,19 @@ func (v EnumDefault) MarshalText() ([]byte, error) {
 // Ptr returns a pointer to this enum value.
 func (v EnumDefault) Ptr() *EnumDefault {
 	return &v
+}
+
+// Encode encodes EnumDefault directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v EnumDefault
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v EnumDefault) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates EnumDefault into a Thrift-level intermediate
@@ -629,6 +644,253 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_String_Encode(val []string, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	lh := stream.ListHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+	err = sw.WriteListBegin(lh)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		err = sw.WriteString(v)
+		if err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _Set_I32_mapType_Encode(val map[int32]struct{}, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	sh := stream.SetHeader{
+		Type:   wire.TI32,
+		Length: len(val),
+	}
+	err = sw.WriteSetBegin(sh)
+	if err != nil {
+		return err
+	}
+
+	for v, _ := range val {
+
+		err = sw.WriteInt32(v)
+		if err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _Map_I64_Double_Encode(val map[int64]float64, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TI64,
+		ValueType: wire.TDouble,
+		Length:    len(val),
+	}
+	err = sw.WriteMapBegin(mh)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		err = sw.WriteInt64(k)
+		if err != nil {
+			return err
+		}
+		err = sw.WriteDouble(v)
+		if err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+// Decode deserializes a PrimitiveRequiredStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a PrimitiveRequiredStruct struct could not be generated from the wire
+// representation.
+func (v *PrimitiveRequiredStruct) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBool}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteBool(v.BoolField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 2, Type: wire.TI8}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteInt8(v.ByteField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 3, Type: wire.TI16}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteInt16(v.Int16Field)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 4, Type: wire.TI32}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteInt32(v.Int32Field)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 5, Type: wire.TI64}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteInt64(v.Int64Field)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 6, Type: wire.TDouble}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteDouble(v.DoubleField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 7, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.StringField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.BinaryField == nil {
+		return errors.New("field BinaryField of PrimitiveRequiredStruct is required")
+	}
+	fh = stream.FieldHeader{ID: 8, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteBinary(v.BinaryField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 9, Type: wire.TList}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = _List_String_Encode(v.ListOfStrings, sw)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.SetOfInts == nil {
+		return errors.New("field SetOfInts of PrimitiveRequiredStruct is required")
+	}
+	fh = stream.FieldHeader{ID: 10, Type: wire.TSet}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = _Set_I32_mapType_Encode(v.SetOfInts, sw)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.MapOfIntsToDoubles == nil {
+		return errors.New("field MapOfIntsToDoubles of PrimitiveRequiredStruct is required")
+	}
+	fh = stream.FieldHeader{ID: 11, Type: wire.TMap}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = _Map_I64_Double_Encode(v.MapOfIntsToDoubles, sw)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a PrimitiveRequiredStruct
 // struct.
 func (v *PrimitiveRequiredStruct) String() string {
@@ -892,6 +1154,11 @@ func (v *Primitives) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v *Primitives) Encode(sw stream.Writer) error {
+	x := (*PrimitiveRequiredStruct)(v)
+	return x.Encode(sw)
+}
+
 // FromWire deserializes Primitives from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -919,6 +1186,11 @@ func (v StringList) ToWire() (wire.Value, error) {
 func (v StringList) String() string {
 	x := ([]string)(v)
 	return fmt.Sprint(x)
+}
+
+func (v StringList) Encode(sw stream.Writer) error {
+	x := ([]string)(v)
+	return _List_String_Encode(x, sw)
 }
 
 // FromWire deserializes StringList from its Thrift-level
@@ -970,6 +1242,35 @@ func (_Map_String_String_MapItemList) ValueType() wire.Type {
 }
 
 func (_Map_String_String_MapItemList) Close() {}
+
+func _Map_String_String_Encode(val map[string]string, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TBinary,
+		Length:    len(val),
+	}
+	err = sw.WriteMapBegin(mh)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		err = sw.WriteString(k)
+		if err != nil {
+			return err
+		}
+		err = sw.WriteString(v)
+		if err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
 
 func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 	if m.KeyType() != wire.TBinary {
@@ -1030,6 +1331,11 @@ func (v StringMap) ToWire() (wire.Value, error) {
 func (v StringMap) String() string {
 	x := (map[string]string)(v)
 	return fmt.Sprint(x)
+}
+
+func (v StringMap) Encode(sw stream.Writer) error {
+	x := (map[string]string)(v)
+	return _Map_String_String_Encode(x, sw)
 }
 
 // FromWire deserializes StringMap from its Thrift-level

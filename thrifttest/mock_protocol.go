@@ -25,11 +25,12 @@
 package thrifttest
 
 import (
+	io "io"
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	protocol "go.uber.org/thriftrw/protocol"
 	wire "go.uber.org/thriftrw/wire"
-	io "io"
-	reflect "reflect"
 )
 
 // MockProtocol is a mock of Protocol interface

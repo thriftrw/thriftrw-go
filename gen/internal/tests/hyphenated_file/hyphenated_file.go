@@ -6,12 +6,14 @@ package hyphenated_file
 import (
 	errors "errors"
 	fmt "fmt"
+	strings "strings"
+
 	multierr "go.uber.org/multierr"
 	non_hyphenated "go.uber.org/thriftrw/gen/internal/tests/non_hyphenated"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
-	strings "strings"
 )
 
 type DocumentStructure struct {
@@ -100,6 +102,41 @@ func (v *DocumentStructure) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a DocumentStructure struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a DocumentStructure struct could not be generated from the wire
+// representation.
+func (v *DocumentStructure) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.R2 == nil {
+		return errors.New("field R2 of DocumentStructure is required")
+	}
+	fh = stream.FieldHeader{ID: 1, Type: wire.TStruct}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = v.R2.Encode(sw)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a DocumentStructure

@@ -5,10 +5,11 @@
 package envelope
 
 import (
-	gomock "github.com/golang/mock/gomock"
-	wire "go.uber.org/thriftrw/wire"
 	io "io"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
+	wire "go.uber.org/thriftrw/wire"
 )
 
 // MockProtocol is a mock of Protocol interface

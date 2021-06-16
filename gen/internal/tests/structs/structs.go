@@ -8,13 +8,15 @@ import (
 	base64 "encoding/base64"
 	errors "errors"
 	fmt "fmt"
+	strings "strings"
+
 	multierr "go.uber.org/multierr"
 	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	ptr "go.uber.org/thriftrw/ptr"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
-	strings "strings"
 )
 
 type ContactInfo struct {
@@ -94,6 +96,38 @@ func (v *ContactInfo) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a ContactInfo struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ContactInfo struct could not be generated from the wire
+// representation.
+func (v *ContactInfo) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.EmailAddress)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a ContactInfo
@@ -725,6 +759,348 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_String_Encode(val []string, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	lh := stream.ListHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+	err = sw.WriteListBegin(lh)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		err = sw.WriteString(v)
+		if err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _List_Double_Encode(val []float64, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	lh := stream.ListHeader{
+		Type:   wire.TDouble,
+		Length: len(val),
+	}
+	err = sw.WriteListBegin(lh)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		err = sw.WriteDouble(v)
+		if err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Decode deserializes a DefaultsStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a DefaultsStruct struct could not be generated from the wire
+// representation.
+func (v *DefaultsStruct) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	vRequiredPrimitive := v.RequiredPrimitive
+	if vRequiredPrimitive == nil {
+		vRequiredPrimitive = ptr.Int32(100)
+	}
+	{
+		fh = stream.FieldHeader{ID: 1, Type: wire.TI32}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := sw.WriteInt32(*(vRequiredPrimitive)); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vOptionalPrimitive := v.OptionalPrimitive
+	if vOptionalPrimitive == nil {
+		vOptionalPrimitive = ptr.Int32(200)
+	}
+	{
+		fh = stream.FieldHeader{ID: 2, Type: wire.TI32}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := sw.WriteInt32(*(vOptionalPrimitive)); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vRequiredEnum := v.RequiredEnum
+	if vRequiredEnum == nil {
+		vRequiredEnum = _EnumDefault_ptr(enums.EnumDefaultBar)
+	}
+	{
+		fh = stream.FieldHeader{ID: 3, Type: wire.TI32}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := vRequiredEnum.Encode(sw); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vOptionalEnum := v.OptionalEnum
+	if vOptionalEnum == nil {
+		vOptionalEnum = _EnumDefault_ptr(enums.EnumDefaultBaz)
+	}
+	{
+		fh = stream.FieldHeader{ID: 4, Type: wire.TI32}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := vOptionalEnum.Encode(sw); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vRequiredList := v.RequiredList
+	if vRequiredList == nil {
+		vRequiredList = []string{
+			"hello",
+			"world",
+		}
+	}
+	{
+		fh = stream.FieldHeader{ID: 5, Type: wire.TList}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := _List_String_Encode(vRequiredList, sw); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vOptionalList := v.OptionalList
+	if vOptionalList == nil {
+		vOptionalList = []float64{
+			1,
+			2,
+			3,
+		}
+	}
+	{
+		fh = stream.FieldHeader{ID: 6, Type: wire.TList}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := _List_Double_Encode(vOptionalList, sw); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vRequiredStruct := v.RequiredStruct
+	if vRequiredStruct == nil {
+		vRequiredStruct = &Frame{
+			Size: &Size{
+				Height: 200,
+				Width:  100,
+			},
+			TopLeft: &Point{
+				X: 1,
+				Y: 2,
+			},
+		}
+	}
+	{
+		fh = stream.FieldHeader{ID: 7, Type: wire.TStruct}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := vRequiredStruct.Encode(sw); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vOptionalStruct := v.OptionalStruct
+	if vOptionalStruct == nil {
+		vOptionalStruct = &Edge{
+			EndPoint: &Point{
+				X: 3,
+				Y: 4,
+			},
+			StartPoint: &Point{
+				X: 1,
+				Y: 2,
+			},
+		}
+	}
+	{
+		fh = stream.FieldHeader{ID: 8, Type: wire.TStruct}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := vOptionalStruct.Encode(sw); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vRequiredBoolDefaultTrue := v.RequiredBoolDefaultTrue
+	if vRequiredBoolDefaultTrue == nil {
+		vRequiredBoolDefaultTrue = ptr.Bool(true)
+	}
+	{
+		fh = stream.FieldHeader{ID: 9, Type: wire.TBool}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := sw.WriteBool(*(vRequiredBoolDefaultTrue)); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vOptionalBoolDefaultTrue := v.OptionalBoolDefaultTrue
+	if vOptionalBoolDefaultTrue == nil {
+		vOptionalBoolDefaultTrue = ptr.Bool(true)
+	}
+	{
+		fh = stream.FieldHeader{ID: 10, Type: wire.TBool}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := sw.WriteBool(*(vOptionalBoolDefaultTrue)); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vRequiredBoolDefaultFalse := v.RequiredBoolDefaultFalse
+	if vRequiredBoolDefaultFalse == nil {
+		vRequiredBoolDefaultFalse = ptr.Bool(false)
+	}
+	{
+		fh = stream.FieldHeader{ID: 11, Type: wire.TBool}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := sw.WriteBool(*(vRequiredBoolDefaultFalse)); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vOptionalBoolDefaultFalse := v.OptionalBoolDefaultFalse
+	if vOptionalBoolDefaultFalse == nil {
+		vOptionalBoolDefaultFalse = ptr.Bool(false)
+	}
+	{
+		fh = stream.FieldHeader{ID: 12, Type: wire.TBool}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := sw.WriteBool(*(vOptionalBoolDefaultFalse)); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a DefaultsStruct
 // struct.
 func (v *DefaultsStruct) String() string {
@@ -1279,6 +1655,57 @@ func (v *Edge) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a Edge struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Edge struct could not be generated from the wire
+// representation.
+func (v *Edge) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.StartPoint == nil {
+		return errors.New("field StartPoint of Edge is required")
+	}
+	fh = stream.FieldHeader{ID: 1, Type: wire.TStruct}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = v.StartPoint.Encode(sw)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.EndPoint == nil {
+		return errors.New("field EndPoint of Edge is required")
+	}
+	fh = stream.FieldHeader{ID: 2, Type: wire.TStruct}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = v.EndPoint.Encode(sw)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Edge
 // struct.
 func (v *Edge) String() string {
@@ -1407,6 +1834,21 @@ func (v *EmptyStruct) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a EmptyStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a EmptyStruct struct could not be generated from the wire
+// representation.
+func (v *EmptyStruct) Encode(sw stream.Writer) error {
+	var ()
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a EmptyStruct
@@ -1554,6 +1996,57 @@ func (v *Frame) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a Frame struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Frame struct could not be generated from the wire
+// representation.
+func (v *Frame) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.TopLeft == nil {
+		return errors.New("field TopLeft of Frame is required")
+	}
+	fh = stream.FieldHeader{ID: 1, Type: wire.TStruct}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = v.TopLeft.Encode(sw)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Size == nil {
+		return errors.New("field Size of Frame is required")
+	}
+	fh = stream.FieldHeader{ID: 2, Type: wire.TStruct}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = v.Size.Encode(sw)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Frame
@@ -1812,6 +2305,107 @@ func (v *GoTags) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a GoTags struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a GoTags struct could not be generated from the wire
+// representation.
+func (v *GoTags) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.Foo)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Bar != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.Bar))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	fh = stream.FieldHeader{ID: 3, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.FooBar)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 4, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.FooBarWithSpace)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.FooBarWithOmitEmpty != nil {
+		fh = stream.FieldHeader{ID: 5, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.FooBarWithOmitEmpty))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	fh = stream.FieldHeader{ID: 6, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.FooBarWithRequired)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a GoTags
@@ -2100,6 +2694,61 @@ func (v *Graph) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_Edge_Encode(val []*Edge, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	lh := stream.ListHeader{
+		Type:   wire.TStruct,
+		Length: len(val),
+	}
+	err = sw.WriteListBegin(lh)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		err = v.Encode(sw)
+		if err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Decode deserializes a Graph struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Graph struct could not be generated from the wire
+// representation.
+func (v *Graph) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TList}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = _List_Edge_Encode(v.Edges, sw)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Graph
 // struct.
 func (v *Graph) String() string {
@@ -2196,6 +2845,11 @@ func (v *List) ToWire() (wire.Value, error) {
 func (v *List) String() string {
 	x := (*Node)(v)
 	return fmt.Sprint(x)
+}
+
+func (v *List) Encode(sw stream.Writer) error {
+	x := (*Node)(v)
+	return x.Encode(sw)
 }
 
 // FromWire deserializes List from its Thrift-level
@@ -2317,6 +2971,53 @@ func (v *Node) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a Node struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Node struct could not be generated from the wire
+// representation.
+func (v *Node) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TI32}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteInt32(v.Value)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Tail != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TStruct}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = v.Tail.Encode(sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Node
@@ -2658,6 +3359,174 @@ func (v *NotOmitEmpty) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+func _Map_String_String_Encode(val map[string]string, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TBinary,
+		Length:    len(val),
+	}
+	err = sw.WriteMapBegin(mh)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		err = sw.WriteString(k)
+		if err != nil {
+			return err
+		}
+		err = sw.WriteString(v)
+		if err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+// Decode deserializes a NotOmitEmpty struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a NotOmitEmpty struct could not be generated from the wire
+// representation.
+func (v *NotOmitEmpty) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.NotOmitEmptyString != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.NotOmitEmptyString))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.NotOmitEmptyInt != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.NotOmitEmptyInt))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.NotOmitEmptyBool != nil {
+		fh = stream.FieldHeader{ID: 3, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.NotOmitEmptyBool))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.NotOmitEmptyList != nil {
+		fh = stream.FieldHeader{ID: 4, Type: wire.TList}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = _List_String_Encode(v.NotOmitEmptyList, sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.NotOmitEmptyMap != nil {
+		fh = stream.FieldHeader{ID: 5, Type: wire.TMap}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = _Map_String_String_Encode(v.NotOmitEmptyMap, sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.NotOmitEmptyListMixedWithOmitEmpty != nil {
+		fh = stream.FieldHeader{ID: 6, Type: wire.TList}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = _List_String_Encode(v.NotOmitEmptyListMixedWithOmitEmpty, sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.NotOmitEmptyListMixedWithOmitEmptyV2 != nil {
+		fh = stream.FieldHeader{ID: 7, Type: wire.TList}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = _List_String_Encode(v.NotOmitEmptyListMixedWithOmitEmptyV2, sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.OmitEmptyString != nil {
+		fh = stream.FieldHeader{ID: 8, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.OmitEmptyString))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a NotOmitEmpty
@@ -3024,6 +3893,51 @@ func (v *Omit) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a Omit struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Omit struct could not be generated from the wire
+// representation.
+func (v *Omit) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.Serialized)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.Hidden)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Omit
 // struct.
 func (v *Omit) String() string {
@@ -3165,6 +4079,40 @@ func (v *PersonalInfo) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a PersonalInfo struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a PersonalInfo struct could not be generated from the wire
+// representation.
+func (v *PersonalInfo) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Age != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TI32}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteInt32(*(v.Age))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a PersonalInfo
@@ -3327,6 +4275,51 @@ func (v *Point) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a Point struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Point struct could not be generated from the wire
+// representation.
+func (v *Point) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TDouble}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteDouble(v.X)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 2, Type: wire.TDouble}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteDouble(v.Y)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Point
@@ -3604,6 +4597,145 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a PrimitiveOptionalStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a PrimitiveOptionalStruct struct could not be generated from the wire
+// representation.
+func (v *PrimitiveOptionalStruct) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.BoolField != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TBool}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteBool(*(v.BoolField))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.ByteField != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TI8}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteInt8(*(v.ByteField))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Int16Field != nil {
+		fh = stream.FieldHeader{ID: 3, Type: wire.TI16}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteInt16(*(v.Int16Field))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Int32Field != nil {
+		fh = stream.FieldHeader{ID: 4, Type: wire.TI32}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteInt32(*(v.Int32Field))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Int64Field != nil {
+		fh = stream.FieldHeader{ID: 5, Type: wire.TI64}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteInt64(*(v.Int64Field))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.DoubleField != nil {
+		fh = stream.FieldHeader{ID: 6, Type: wire.TDouble}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteDouble(*(v.DoubleField))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.StringField != nil {
+		fh = stream.FieldHeader{ID: 7, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.StringField))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.BinaryField != nil {
+		fh = stream.FieldHeader{ID: 8, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteBinary(v.BinaryField)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a PrimitiveOptionalStruct
@@ -4113,6 +5245,132 @@ func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a PrimitiveRequiredStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a PrimitiveRequiredStruct struct could not be generated from the wire
+// representation.
+func (v *PrimitiveRequiredStruct) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBool}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteBool(v.BoolField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 2, Type: wire.TI8}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteInt8(v.ByteField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 3, Type: wire.TI16}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteInt16(v.Int16Field)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 4, Type: wire.TI32}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteInt32(v.Int32Field)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 5, Type: wire.TI64}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteInt64(v.Int64Field)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 6, Type: wire.TDouble}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteDouble(v.DoubleField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 7, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.StringField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.BinaryField == nil {
+		return errors.New("field BinaryField of PrimitiveRequiredStruct is required")
+	}
+	fh = stream.FieldHeader{ID: 8, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteBinary(v.BinaryField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a PrimitiveRequiredStruct
 // struct.
 func (v *PrimitiveRequiredStruct) String() string {
@@ -4374,6 +5632,51 @@ func (v *Rename) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a Rename struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Rename struct could not be generated from the wire
+// representation.
+func (v *Rename) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.Default)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.CamelCase)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Rename
 // struct.
 func (v *Rename) String() string {
@@ -4541,6 +5844,51 @@ func (v *Size) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a Size struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Size struct could not be generated from the wire
+// representation.
+func (v *Size) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TDouble}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteDouble(v.Width)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 2, Type: wire.TDouble}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteDouble(v.Height)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Size
@@ -4741,6 +6089,85 @@ func (v *StructLabels) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a StructLabels struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a StructLabels struct could not be generated from the wire
+// representation.
+func (v *StructLabels) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.IsRequired != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TBool}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteBool(*(v.IsRequired))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Foo != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.Foo))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Qux != nil {
+		fh = stream.FieldHeader{ID: 3, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.Qux))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Quux != nil {
+		fh = stream.FieldHeader{ID: 4, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.Quux))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a StructLabels
@@ -5004,6 +6431,68 @@ func (v *User) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a User struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a User struct could not be generated from the wire
+// representation.
+func (v *User) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.Name)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Contact != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TStruct}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = v.Contact.Encode(sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Personal != nil {
+		fh = stream.FieldHeader{ID: 3, Type: wire.TStruct}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = v.Personal.Encode(sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a User
 // struct.
 func (v *User) String() string {
@@ -5143,6 +6632,35 @@ func (_Map_String_User_MapItemList) ValueType() wire.Type {
 
 func (_Map_String_User_MapItemList) Close() {}
 
+func _Map_String_User_Encode(val map[string]*User, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TStruct,
+		Length:    len(val),
+	}
+	err = sw.WriteMapBegin(mh)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		err = sw.WriteString(k)
+		if err != nil {
+			return err
+		}
+		err = v.Encode(sw)
+		if err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
 func _User_Read(w wire.Value) (*User, error) {
 	var v User
 	err := v.FromWire(w)
@@ -5219,6 +6737,11 @@ func (v UserMap) ToWire() (wire.Value, error) {
 func (v UserMap) String() string {
 	x := (map[string]*User)(v)
 	return fmt.Sprint(x)
+}
+
+func (v UserMap) Encode(sw stream.Writer) error {
+	x := (map[string]*User)(v)
+	return _Map_String_User_Encode(x, sw)
 }
 
 // FromWire deserializes UserMap from its Thrift-level
@@ -5338,6 +6861,51 @@ func (v *ZapOptOutStruct) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a ZapOptOutStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ZapOptOutStruct struct could not be generated from the wire
+// representation.
+func (v *ZapOptOutStruct) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.Name)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.Optout)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a ZapOptOutStruct

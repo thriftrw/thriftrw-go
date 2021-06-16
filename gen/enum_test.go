@@ -185,6 +185,7 @@ func TestOptionalEnum(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.s, tt.v, "StructWithOptionalEnum")
+		testRoundTripCombos(t, &tt.s, tt.v, "StructWithOptionalEnum")
 	}
 }
 

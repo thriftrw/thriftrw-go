@@ -51,6 +51,27 @@ func (s *structGenerator) Reader(g Generator, spec *compile.StructSpec) (string,
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+func (s *structGenerator) Encoder(g Generator, spec *compile.StructSpec) (string, error) {
+	name := encoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+		<$val := newVar "val">
+		<$sw := newVar "sw">
+		<$t := typeReference .Spec>
+		func <.Name>(<$val> <$t>, <$sw> <$stream>.Writer) error {
+			return <$val>.Encode(<$sw>)
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.StructSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
 func structure(g Generator, spec *compile.StructSpec) error {
 	name, err := goName(spec)
 	if err != nil {

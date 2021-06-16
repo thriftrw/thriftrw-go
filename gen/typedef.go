@@ -52,11 +52,38 @@ func (t *typedefGenerator) Reader(g Generator, spec *compile.TypedefSpec) (strin
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+func (t *typedefGenerator) Encoder(g Generator, spec *compile.TypedefSpec) (string, error) {
+	name := encoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+		<$sw := newVar "sw">
+		<$x := newVar "x">
+		<$val := newVar "val">
+		func <.Name>(<$val> <.Spec.Name>, <$sw> <$stream>.Writer) error {
+			<if isStructType .Spec ->
+				return (<typeReference .Spec.Target>)(<$val>).Encode(<$sw>)
+			<- else ->
+				<$x> := (<typeReference .Spec.Target>)(<$val>)
+				return <encode .Spec.Target $x $sw>
+			<- end>
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.TypedefSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
 // typedef generates code for the given typedef.
 func typedef(g Generator, spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$fmt := import "fmt">
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
 		<$wire := import "go.uber.org/thriftrw/wire">
 		<$typedefType := typeReference .>
 
@@ -64,6 +91,7 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 
 		<$v := newVar "v">
 		<$x := newVar "x">
+		<$sw := newVar "sw">
 
 		<- if isPrimitiveType .>
 		// <typeName .>Ptr returns a pointer to a <$typedefType>
@@ -84,6 +112,11 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 		func (<$v> <$typedefType>) String() string {
 			<$x> := (<typeReference .Target>)(<$v>)
 			return <$fmt>.Sprint(<$x>)
+		}
+
+		func (<$v> <$typedefType>) Encode(<$sw> <$stream>.Writer) error {
+			<$x> := (<typeReference .Target>)(<$v>)
+			return <encode .Target $x $sw>
 		}
 
 		<$w := newVar "w">

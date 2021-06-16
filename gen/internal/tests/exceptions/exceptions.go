@@ -6,10 +6,12 @@ package exceptions
 import (
 	errors "errors"
 	fmt "fmt"
+	strings "strings"
+
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
-	strings "strings"
 )
 
 // Raised when something doesn't exist.
@@ -110,6 +112,53 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a DoesNotExistException struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a DoesNotExistException struct could not be generated from the wire
+// representation.
+func (v *DoesNotExistException) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.Key)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Error2 != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.Error2))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a DoesNotExistException
@@ -307,6 +356,53 @@ func (v *DoesNotExistException2) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a DoesNotExistException2 struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a DoesNotExistException2 struct could not be generated from the wire
+// representation.
+func (v *DoesNotExistException2) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.Key)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Error2 != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.Error2))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a DoesNotExistException2
 // struct.
 func (v *DoesNotExistException2) String() string {
@@ -445,6 +541,21 @@ func (v *EmptyException) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a EmptyException struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a EmptyException struct could not be generated from the wire
+// representation.
+func (v *EmptyException) Encode(sw stream.Writer) error {
+	var ()
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a EmptyException

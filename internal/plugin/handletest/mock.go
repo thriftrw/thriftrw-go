@@ -25,10 +25,11 @@
 package handletest
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	plugin "go.uber.org/thriftrw/internal/plugin"
 	api "go.uber.org/thriftrw/plugin/api"
-	reflect "reflect"
 )
 
 // MockHandle is a mock of Handle interface

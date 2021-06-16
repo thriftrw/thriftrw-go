@@ -5,8 +5,9 @@
 package ast
 
 import (
-	gomock "github.com/golang/mock/gomock"
 	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockVisitor is a mock of Visitor interface

@@ -6,12 +6,14 @@ package unions
 import (
 	base64 "encoding/base64"
 	fmt "fmt"
+	strings "strings"
+
 	multierr "go.uber.org/multierr"
 	typedefs "go.uber.org/thriftrw/gen/internal/tests/typedefs"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
-	strings "strings"
 )
 
 // ArbitraryValue allows constructing complex values without a schema.
@@ -313,6 +315,156 @@ func (v *ArbitraryValue) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+func _List_ArbitraryValue_Encode(val []*ArbitraryValue, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	lh := stream.ListHeader{
+		Type:   wire.TStruct,
+		Length: len(val),
+	}
+	err = sw.WriteListBegin(lh)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		err = v.Encode(sw)
+		if err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _Map_String_ArbitraryValue_Encode(val map[string]*ArbitraryValue, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TStruct,
+		Length:    len(val),
+	}
+	err = sw.WriteMapBegin(mh)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		err = sw.WriteString(k)
+		if err != nil {
+			return err
+		}
+		err = v.Encode(sw)
+		if err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+// Decode deserializes a ArbitraryValue struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ArbitraryValue struct could not be generated from the wire
+// representation.
+func (v *ArbitraryValue) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.BoolValue != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TBool}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteBool(*(v.BoolValue))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Int64Value != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TI64}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteInt64(*(v.Int64Value))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.StringValue != nil {
+		fh = stream.FieldHeader{ID: 3, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.StringValue))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.ListValue != nil {
+		fh = stream.FieldHeader{ID: 4, Type: wire.TList}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = _List_ArbitraryValue_Encode(v.ListValue, sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.MapValue != nil {
+		fh = stream.FieldHeader{ID: 5, Type: wire.TMap}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = _Map_String_ArbitraryValue_Encode(v.MapValue, sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if i != 1 {
+		return fmt.Errorf("ArbitraryValue should have exactly one field: got %v fields", i)
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a ArbitraryValue
@@ -675,6 +827,59 @@ func (v *Document) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a Document struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Document struct could not be generated from the wire
+// representation.
+func (v *Document) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Pdf != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = v.Pdf.Encode(sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.PlainText != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.PlainText))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if i != 1 {
+		return fmt.Errorf("Document should have exactly one field: got %v fields", i)
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Document
 // struct.
 func (v *Document) String() string {
@@ -813,6 +1018,21 @@ func (v *EmptyUnion) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a EmptyUnion struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a EmptyUnion struct could not be generated from the wire
+// representation.
+func (v *EmptyUnion) Encode(sw stream.Writer) error {
+	var ()
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a EmptyUnion

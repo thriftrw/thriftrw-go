@@ -8,13 +8,15 @@ import (
 	json "encoding/json"
 	errors "errors"
 	fmt "fmt"
-	multierr "go.uber.org/multierr"
-	thriftreflect "go.uber.org/thriftrw/thriftreflect"
-	wire "go.uber.org/thriftrw/wire"
-	zapcore "go.uber.org/zap/zapcore"
 	math "math"
 	strconv "strconv"
 	strings "strings"
+
+	multierr "go.uber.org/multierr"
+	stream "go.uber.org/thriftrw/protocol/stream"
+	thriftreflect "go.uber.org/thriftrw/thriftreflect"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
 )
 
 var StructConstant *StructCollision2 = &StructCollision2{
@@ -135,6 +137,70 @@ func (v *AccessorConflict) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a AccessorConflict struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a AccessorConflict struct could not be generated from the wire
+// representation.
+func (v *AccessorConflict) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Name != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.Name))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.GetName2 != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.GetName2))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.IsSetName2 != nil {
+		fh = stream.FieldHeader{ID: 3, Type: wire.TBool}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteBool(*(v.IsSetName2))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a AccessorConflict
@@ -364,6 +430,55 @@ func (v *AccessorNoConflict) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a AccessorNoConflict struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a AccessorNoConflict struct could not be generated from the wire
+// representation.
+func (v *AccessorNoConflict) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Getname != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.Getname))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.GetName != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.GetName))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a AccessorNoConflict
 // struct.
 func (v *AccessorNoConflict) String() string {
@@ -469,6 +584,11 @@ func (v LittlePotatoe) ToWire() (wire.Value, error) {
 func (v LittlePotatoe) String() string {
 	x := (int64)(v)
 	return fmt.Sprint(x)
+}
+
+func (v LittlePotatoe) Encode(sw stream.Writer) error {
+	x := (int64)(v)
+	return sw.WriteInt64(x)
 }
 
 // FromWire deserializes LittlePotatoe from its Thrift-level
@@ -585,6 +705,19 @@ func (v MyEnum) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 // Ptr returns a pointer to this enum value.
 func (v MyEnum) Ptr() *MyEnum {
 	return &v
+}
+
+// Encode encodes MyEnum directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v MyEnum
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v MyEnum) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates MyEnum into a Thrift-level intermediate
@@ -957,6 +1090,146 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_String_Encode(val []string, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	lh := stream.ListHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+	err = sw.WriteListBegin(lh)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		err = sw.WriteString(v)
+		if err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _Set_String_mapType_Encode(val map[string]struct{}, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	sh := stream.SetHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+	err = sw.WriteSetBegin(sh)
+	if err != nil {
+		return err
+	}
+
+	for v, _ := range val {
+
+		err = sw.WriteString(v)
+		if err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _Map_String_String_Encode(val map[string]string, sw stream.Writer) error {
+	var (
+		err error
+	)
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TBinary,
+		Length:    len(val),
+	}
+	err = sw.WriteMapBegin(mh)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		err = sw.WriteString(k)
+		if err != nil {
+			return err
+		}
+		err = sw.WriteString(v)
+		if err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+// Decode deserializes a PrimitiveContainers struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a PrimitiveContainers struct could not be generated from the wire
+// representation.
+func (v *PrimitiveContainers) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.A != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TList}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = _List_String_Encode(v.A, sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.B != nil {
+		fh = stream.FieldHeader{ID: 3, Type: wire.TSet}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = _Set_String_mapType_Encode(v.B, sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.C != nil {
+		fh = stream.FieldHeader{ID: 5, Type: wire.TMap}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = _Map_String_String_Encode(v.C, sw)
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a PrimitiveContainers
 // struct.
 func (v *PrimitiveContainers) String() string {
@@ -1247,6 +1520,51 @@ func (v *StructCollision) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a StructCollision struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a StructCollision struct could not be generated from the wire
+// representation.
+func (v *StructCollision) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBool}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteBool(v.CollisionField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.CollisionField2)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a StructCollision
 // struct.
 func (v *StructCollision) String() string {
@@ -1422,6 +1740,59 @@ func (v *UnionCollision) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a UnionCollision struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a UnionCollision struct could not be generated from the wire
+// representation.
+func (v *UnionCollision) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.CollisionField != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TBool}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteBool(*(v.CollisionField))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.CollisionField2 != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.CollisionField2))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if i != 1 {
+		return fmt.Errorf("UnionCollision should have exactly one field: got %v fields", i)
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a UnionCollision
@@ -1616,6 +1987,49 @@ func (v *WithDefault) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a WithDefault struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a WithDefault struct could not be generated from the wire
+// representation.
+func (v *WithDefault) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	vPouet := v.Pouet
+	if vPouet == nil {
+		vPouet = &StructCollision2{
+			CollisionField:  false,
+			CollisionField2: "false indeed",
+		}
+	}
+	{
+		fh = stream.FieldHeader{ID: 1, Type: wire.TStruct}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := vPouet.Encode(sw); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a WithDefault
 // struct.
 func (v *WithDefault) String() string {
@@ -1699,6 +2113,11 @@ func (v LittlePotatoe2) ToWire() (wire.Value, error) {
 func (v LittlePotatoe2) String() string {
 	x := (float64)(v)
 	return fmt.Sprint(x)
+}
+
+func (v LittlePotatoe2) Encode(sw stream.Writer) error {
+	x := (float64)(v)
+	return sw.WriteDouble(x)
 }
 
 // FromWire deserializes LittlePotatoe2 from its Thrift-level
@@ -1797,6 +2216,19 @@ func (v MyEnum2) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 // Ptr returns a pointer to this enum value.
 func (v MyEnum2) Ptr() *MyEnum2 {
 	return &v
+}
+
+// Encode encodes MyEnum2 directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v MyEnum2
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v MyEnum2) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates MyEnum2 into a Thrift-level intermediate
@@ -2000,6 +2432,51 @@ func (v *StructCollision2) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode deserializes a StructCollision2 struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a StructCollision2 struct could not be generated from the wire
+// representation.
+func (v *StructCollision2) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 1, Type: wire.TBool}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteBool(v.CollisionField)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+	if err := sw.WriteFieldBegin(fh); err != nil {
+		return err
+	}
+	err = sw.WriteString(v.CollisionField2)
+	if err != nil {
+		return err
+	}
+	i++
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a StructCollision2
 // struct.
 func (v *StructCollision2) String() string {
@@ -2175,6 +2652,59 @@ func (v *UnionCollision2) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a UnionCollision2 struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a UnionCollision2 struct could not be generated from the wire
+// representation.
+func (v *UnionCollision2) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.CollisionField != nil {
+		fh = stream.FieldHeader{ID: 1, Type: wire.TBool}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteBool(*(v.CollisionField))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.CollisionField2 != nil {
+		fh = stream.FieldHeader{ID: 2, Type: wire.TBinary}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		err = sw.WriteString(*(v.CollisionField2))
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if i != 1 {
+		return fmt.Errorf("UnionCollision2 should have exactly one field: got %v fields", i)
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a UnionCollision2

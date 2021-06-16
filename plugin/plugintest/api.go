@@ -25,9 +25,10 @@
 package plugintest
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	api "go.uber.org/thriftrw/plugin/api"
-	reflect "reflect"
 )
 
 // MockPlugin is a mock of Plugin interface

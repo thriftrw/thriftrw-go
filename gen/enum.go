@@ -53,6 +53,29 @@ func (e *enumGenerator) Reader(g Generator, spec *compile.EnumSpec) (string, err
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+func (e *enumGenerator) Encoder(g Generator, spec *compile.EnumSpec) (string, error) {
+	name := encoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$wire := import "go.uber.org/thriftrw/wire">
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+
+		<$val := newVar "val">
+		<$w := newVar "w">
+		<$sw := newVar "sw">
+		func <.Name>(<$val> <.Spec.Name>, <$sw> <$stream>.Writer) error {
+			return <$sw>.WriteInt32(int32(<$val>))
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.EnumSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
 func enum(g Generator, spec *compile.EnumSpec) error {
 	if err := verifyUniqueEnumItemLabels(spec); err != nil {
 		return err
@@ -68,6 +91,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<$math := import "math">
 		<$strconv := import "strconv">
 
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
 		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$enumName := goName .Spec>
@@ -160,6 +184,20 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		// Ptr returns a pointer to this enum value.
 		func (<$v> <$enumName>) Ptr() *<$enumName> {
 			return &<$v>
+		}
+
+		<$sw := newVar "sw">
+		// Encode encodes <$enumName> directly to the wire.
+		//
+		//   sWriter := BinaryStreamer.Writer(writer)
+		//
+		//   var <$v> <$enumName>
+		//   if err := <$v>.Encode(sWriter); err != nil {
+		//     return err
+		//   }
+		//   return nil
+		func (<$v> <$enumName>) Encode(<$sw> <$stream>.Writer) error {
+			return <$sw>.WriteInt32(int32(<$v>))
 		}
 
 		// ToWire translates <$enumName> into a Thrift-level intermediate

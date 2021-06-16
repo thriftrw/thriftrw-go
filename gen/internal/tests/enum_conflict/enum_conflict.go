@@ -7,14 +7,16 @@ import (
 	bytes "bytes"
 	json "encoding/json"
 	fmt "fmt"
-	multierr "go.uber.org/multierr"
-	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
-	thriftreflect "go.uber.org/thriftrw/thriftreflect"
-	wire "go.uber.org/thriftrw/wire"
-	zapcore "go.uber.org/zap/zapcore"
 	math "math"
 	strconv "strconv"
 	strings "strings"
+
+	multierr "go.uber.org/multierr"
+	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	stream "go.uber.org/thriftrw/protocol/stream"
+	thriftreflect "go.uber.org/thriftrw/thriftreflect"
+	wire "go.uber.org/thriftrw/wire"
+	zapcore "go.uber.org/zap/zapcore"
 )
 
 const DefaultOtherRecordType enums.RecordType = enums.RecordTypeName
@@ -93,6 +95,19 @@ func (v RecordType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 // Ptr returns a pointer to this enum value.
 func (v RecordType) Ptr() *RecordType {
 	return &v
+}
+
+// Encode encodes RecordType directly to the wire.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v RecordType
+//   if err := v.Encode(sWriter); err != nil {
+//     return err
+//   }
+//   return nil
+func (v RecordType) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates RecordType into a Thrift-level intermediate
@@ -331,6 +346,67 @@ func (v *Records) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Decode deserializes a Records struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Records struct could not be generated from the wire
+// representation.
+func (v *Records) Encode(sw stream.Writer) error {
+	var (
+		i   int = 0
+		err error
+		fh  stream.FieldHeader
+	)
+
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	vRecordType := v.RecordType
+	if vRecordType == nil {
+		vRecordType = _RecordType_ptr(DefaultRecordType)
+	}
+	{
+		fh = stream.FieldHeader{ID: 1, Type: wire.TI32}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := vRecordType.Encode(sw); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vOtherRecordType := v.OtherRecordType
+	if vOtherRecordType == nil {
+		vOtherRecordType = _RecordType_1_ptr(DefaultOtherRecordType)
+	}
+	{
+		fh = stream.FieldHeader{ID: 2, Type: wire.TI32}
+		if err := sw.WriteFieldBegin(fh); err != nil {
+			return err
+		}
+		if err := vOtherRecordType.Encode(sw); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		i++
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Records
