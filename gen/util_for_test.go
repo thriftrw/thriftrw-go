@@ -23,6 +23,7 @@ package gen
 import (
 	"fmt"
 
+	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
 )
 
@@ -36,4 +37,14 @@ type thriftType interface {
 
 	ToWire() (wire.Value, error)
 	FromWire(wire.Value) error
+}
+
+// streamingThriftType is implemented by all generated types that know how to
+// write and read themselves to the Thrift Protocol, skipping over the
+// intermediary wire.Type
+type streamingThriftType interface {
+	thriftType
+
+	Encode(stream.Writer) error
+	//Decode(stream.Reader) error
 }

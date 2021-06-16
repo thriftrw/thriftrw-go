@@ -11,6 +11,7 @@ import (
 	multierr "go.uber.org/multierr"
 	exceptions "go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	unions "go.uber.org/thriftrw/gen/internal/tests/unions"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -117,6 +118,41 @@ func (v *ConflictingNamesSetValueArgs) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a ConflictingNamesSetValueArgs struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ConflictingNamesSetValueArgs struct could not be encoded.
+func (v *ConflictingNamesSetValueArgs) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.Key); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Value == nil {
+		return errors.New("field Value of ConflictingNamesSetValueArgs is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteBinary(v.Value); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a ConflictingNamesSetValueArgs
@@ -267,6 +303,30 @@ func (v *InternalError) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a InternalError struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a InternalError struct could not be encoded.
+func (v *InternalError) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Message != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := sw.WriteString(*(v.Message)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a InternalError
 // struct.
 func (v *InternalError) String() string {
@@ -369,6 +429,11 @@ func (v Key) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v Key) Encode(sw stream.Writer) error {
+	x := (string)(v)
+	return sw.WriteString(x)
+}
+
 // FromWire deserializes Key from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -454,6 +519,18 @@ func (v *Cache_Clear_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a Cache_Clear_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Cache_Clear_Args struct could not be encoded.
+func (v *Cache_Clear_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Cache_Clear_Args
@@ -601,6 +678,30 @@ func (v *Cache_ClearAfter_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a Cache_ClearAfter_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Cache_ClearAfter_Args struct could not be encoded.
+func (v *Cache_ClearAfter_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.DurationMS != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TI64}); err != nil {
+			return err
+		}
+		if err := sw.WriteInt64(*(v.DurationMS)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Cache_ClearAfter_Args
@@ -793,6 +894,30 @@ func (v *ConflictingNames_SetValue_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a ConflictingNames_SetValue_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ConflictingNames_SetValue_Args struct could not be encoded.
+func (v *ConflictingNames_SetValue_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Request != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.Request.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a ConflictingNames_SetValue_Args
@@ -1003,6 +1128,18 @@ func (v *ConflictingNames_SetValue_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a ConflictingNames_SetValue_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ConflictingNames_SetValue_Result struct could not be encoded.
+func (v *ConflictingNames_SetValue_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a ConflictingNames_SetValue_Result
 // struct.
 func (v *ConflictingNames_SetValue_Result) String() string {
@@ -1138,6 +1275,30 @@ func (v *KeyValue_DeleteValue_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a KeyValue_DeleteValue_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_DeleteValue_Args struct could not be encoded.
+func (v *KeyValue_DeleteValue_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Key != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := v.Key.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a KeyValue_DeleteValue_Args
@@ -1449,6 +1610,54 @@ func (v *KeyValue_DeleteValue_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a KeyValue_DeleteValue_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_DeleteValue_Result struct could not be encoded.
+func (v *KeyValue_DeleteValue_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.DoesNotExist != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.DoesNotExist.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.InternalError != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.InternalError.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.DoesNotExist != nil {
+		count++
+	}
+	if v.InternalError != nil {
+		count++
+	}
+
+	if count > 1 {
+		return fmt.Errorf("KeyValue_DeleteValue_Result should have at most one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a KeyValue_DeleteValue_Result
 // struct.
 func (v *KeyValue_DeleteValue_Result) String() string {
@@ -1670,6 +1879,48 @@ func (v *KeyValue_GetManyValues_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+func _List_Key_Encode(val []Key, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Encode serializes a KeyValue_GetManyValues_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_GetManyValues_Args struct could not be encoded.
+func (v *KeyValue_GetManyValues_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Range != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_Key_Encode(v.Range, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a KeyValue_GetManyValues_Args
@@ -2035,6 +2286,72 @@ func (v *KeyValue_GetManyValues_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_ArbitraryValue_Encode(val []*unions.ArbitraryValue, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TStruct,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Encode serializes a KeyValue_GetManyValues_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_GetManyValues_Result struct could not be encoded.
+func (v *KeyValue_GetManyValues_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Success != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 0, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_ArbitraryValue_Encode(v.Success, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.DoesNotExist != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.DoesNotExist.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.DoesNotExist != nil {
+		count++
+	}
+
+	if count != 1 {
+		return fmt.Errorf("KeyValue_GetManyValues_Result should have exactly one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a KeyValue_GetManyValues_Result
 // struct.
 func (v *KeyValue_GetManyValues_Result) String() string {
@@ -2240,6 +2557,30 @@ func (v *KeyValue_GetValue_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a KeyValue_GetValue_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_GetValue_Args struct could not be encoded.
+func (v *KeyValue_GetValue_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Key != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := v.Key.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a KeyValue_GetValue_Args
@@ -2526,6 +2867,54 @@ func (v *KeyValue_GetValue_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a KeyValue_GetValue_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_GetValue_Result struct could not be encoded.
+func (v *KeyValue_GetValue_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Success != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 0, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.Success.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.DoesNotExist != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.DoesNotExist.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.DoesNotExist != nil {
+		count++
+	}
+
+	if count != 1 {
+		return fmt.Errorf("KeyValue_GetValue_Result should have exactly one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a KeyValue_GetValue_Result
 // struct.
 func (v *KeyValue_GetValue_Result) String() string {
@@ -2722,6 +3111,42 @@ func (v *KeyValue_SetValue_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a KeyValue_SetValue_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_SetValue_Args struct could not be encoded.
+func (v *KeyValue_SetValue_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Key != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := v.Key.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Value != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.Value.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a KeyValue_SetValue_Args
@@ -2960,6 +3385,18 @@ func (v *KeyValue_SetValue_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a KeyValue_SetValue_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_SetValue_Result struct could not be encoded.
+func (v *KeyValue_SetValue_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a KeyValue_SetValue_Result
 // struct.
 func (v *KeyValue_SetValue_Result) String() string {
@@ -3118,6 +3555,41 @@ func (v *KeyValue_SetValueV2_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a KeyValue_SetValueV2_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_SetValueV2_Args struct could not be encoded.
+func (v *KeyValue_SetValueV2_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := v.Key.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Value == nil {
+		return errors.New("field Value of KeyValue_SetValueV2_Args is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TStruct}); err != nil {
+		return err
+	}
+	if err := v.Value.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a KeyValue_SetValueV2_Args
@@ -3341,6 +3813,18 @@ func (v *KeyValue_SetValueV2_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a KeyValue_SetValueV2_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_SetValueV2_Result struct could not be encoded.
+func (v *KeyValue_SetValueV2_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a KeyValue_SetValueV2_Result
 // struct.
 func (v *KeyValue_SetValueV2_Result) String() string {
@@ -3447,6 +3931,18 @@ func (v *KeyValue_Size_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a KeyValue_Size_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_Size_Args struct could not be encoded.
+func (v *KeyValue_Size_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a KeyValue_Size_Args
@@ -3670,6 +4166,39 @@ func (v *KeyValue_Size_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a KeyValue_Size_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_Size_Result struct could not be encoded.
+func (v *KeyValue_Size_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Success != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 0, Type: wire.TI64}); err != nil {
+			return err
+		}
+		if err := sw.WriteInt64(*(v.Success)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+
+	if count != 1 {
+		return fmt.Errorf("KeyValue_Size_Result should have exactly one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a KeyValue_Size_Result
 // struct.
 func (v *KeyValue_Size_Result) String() string {
@@ -3801,6 +4330,18 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) FromWire(w wire.Va
 	}
 
 	return nil
+}
+
+// Encode serializes a NonStandardServiceName_NonStandardFunctionName_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a NonStandardServiceName_NonStandardFunctionName_Args struct could not be encoded.
+func (v *NonStandardServiceName_NonStandardFunctionName_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a NonStandardServiceName_NonStandardFunctionName_Args
@@ -3978,6 +4519,18 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) FromWire(w wire.
 	}
 
 	return nil
+}
+
+// Encode serializes a NonStandardServiceName_NonStandardFunctionName_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a NonStandardServiceName_NonStandardFunctionName_Result struct could not be encoded.
+func (v *NonStandardServiceName_NonStandardFunctionName_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a NonStandardServiceName_NonStandardFunctionName_Result

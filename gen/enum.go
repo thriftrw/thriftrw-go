@@ -68,6 +68,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<$math := import "math">
 		<$strconv := import "strconv">
 
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
 		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$enumName := goName .Spec>
@@ -160,6 +161,17 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		// Ptr returns a pointer to this enum value.
 		func (<$v> <$enumName>) Ptr() *<$enumName> {
 			return &<$v>
+		}
+
+		<$sw := newVar "sw">
+		// Encode encodes <$enumName> directly to bytes.
+		//
+		//   sWriter := BinaryStreamer.Writer(writer)
+		//
+		//   var <$v> <$enumName>
+		//   return <$v>.Encode(sWriter)
+		func (<$v> <$enumName>) Encode(<$sw> <$stream>.Writer) error {
+			return <$sw>.WriteInt32(int32(<$v>))
 		}
 
 		// ToWire translates <$enumName> into a Thrift-level intermediate

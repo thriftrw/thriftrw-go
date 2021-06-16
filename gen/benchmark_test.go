@@ -9,6 +9,7 @@ import (
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 )
@@ -16,6 +17,12 @@ import (
 type thriftType interface {
 	ToWire() (wire.Value, error)
 	FromWire(wire.Value) error
+}
+
+type streamingThriftType interface {
+	thriftType
+
+	Encode(stream.Writer) error
 }
 
 func BenchmarkRoundTrip(b *testing.B) {
@@ -119,6 +126,20 @@ func BenchmarkRoundTrip(b *testing.B) {
 		}
 	}
 
+	benchmarkStreamEncode := func(b *testing.B, bb benchCase) {
+		var buff bytes.Buffer
+
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			buff.Reset()
+
+			writer := protocol.BinaryStreamer.Writer(&buff)
+			give, ok := bb.give.(streamingThriftType)
+			require.True(b, ok)
+			require.NoError(b, give.Encode(writer), "StreamEncode")
+		}
+	}
+
 	benchmarkDecode := func(b *testing.B, bb benchCase) {
 		var buff bytes.Buffer
 		w, err := bb.give.ToWire()
@@ -142,6 +163,10 @@ func BenchmarkRoundTrip(b *testing.B) {
 		b.Run(bb.name, func(b *testing.B) {
 			b.Run("Encode", func(b *testing.B) {
 				benchmarkEncode(b, bb)
+			})
+
+			b.Run("Stream Encode", func(b *testing.B) {
+				benchmarkStreamEncode(b, bb)
 			})
 
 			b.Run("Decode", func(b *testing.B) {

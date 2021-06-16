@@ -8,6 +8,7 @@ import (
 	fmt "fmt"
 	multierr "go.uber.org/multierr"
 	non_hyphenated "go.uber.org/thriftrw/gen/internal/tests/non_hyphenated"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -100,6 +101,31 @@ func (v *DocumentStructure) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a DocumentStructure struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a DocumentStructure struct could not be encoded.
+func (v *DocumentStructure) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.R2 == nil {
+		return errors.New("field R2 of DocumentStructure is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+		return err
+	}
+	if err := v.R2.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a DocumentStructure

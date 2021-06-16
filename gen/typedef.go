@@ -57,6 +57,7 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
 		<$fmt := import "fmt">
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
 		<$wire := import "go.uber.org/thriftrw/wire">
 		<$typedefType := typeReference .>
 
@@ -64,6 +65,7 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 
 		<$v := newVar "v">
 		<$x := newVar "x">
+		<$sw := newVar "sw">
 
 		<- if isPrimitiveType .>
 		// <typeName .>Ptr returns a pointer to a <$typedefType>
@@ -84,6 +86,11 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 		func (<$v> <$typedefType>) String() string {
 			<$x> := (<typeReference .Target>)(<$v>)
 			return <$fmt>.Sprint(<$x>)
+		}
+
+		func (<$v> <$typedefType>) Encode(<$sw> <$stream>.Writer) error {
+			<$x> := (<typeReference .Target>)(<$v>)
+			return <encode .Target $x $sw>
 		}
 
 		<$w := newVar "w">

@@ -108,6 +108,7 @@ func TestEnumDefaultWire(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.e, tt.v, "EnumDefault")
+		testRoundTripCombos(t, &tt.e, tt.v, "EnumDefault")
 	}
 }
 
@@ -154,6 +155,7 @@ func TestEnumWithDuplicateValuesWire(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.e, tt.v, "EnumWithDuplicateValues")
+		testRoundTripCombos(t, &tt.e, tt.v, "EnumWithDuplicateValues")
 	}
 }
 
@@ -185,6 +187,7 @@ func TestOptionalEnum(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.s, tt.v, "StructWithOptionalEnum")
+		testRoundTripCombos(t, &tt.s, tt.v, "StructWithOptionalEnum")
 	}
 }
 

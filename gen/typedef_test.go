@@ -89,6 +89,7 @@ func TestTypedefString(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "State")
+		testRoundTripCombos(t, &tt.x, tt.v, "State")
 		assert.True(t, tt.x.Equals(tt.x), "State equal")
 	}
 }
@@ -126,6 +127,7 @@ func TestTypedefBinary(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "PDF")
+		testRoundTripCombos(t, &tt.x, tt.v, "PDF")
 		assert.True(t, tt.x.Equals(tt.x))
 	}
 }
@@ -162,6 +164,7 @@ func TestTypedefStruct(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, tt.x, tt.v, "UUID")
+		testRoundTripCombos(t, tt.x, tt.v, "UUID")
 		assert.True(t, tt.x.Equals(tt.x), "UUID equal")
 	}
 }
@@ -221,6 +224,7 @@ func TestTypedefContainer(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "EventGroup")
+		testRoundTripCombos(t, &tt.x, tt.v, "EventGroup")
 		assert.True(t, tt.x.Equals(tt.x), "EventGroup equal")
 	}
 }
@@ -304,6 +308,7 @@ func TestUnhashableSetAlias(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "FrameGroup")
+		testRoundTripCombos(t, &tt.x, tt.v, "FrameGroup")
 		assert.True(t, tt.x.Equals(tt.x), "FrameGroup equal")
 	}
 }
@@ -401,6 +406,7 @@ func TestUnhashableMapKeyAlias(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "PointMap")
+		testRoundTripCombos(t, &tt.x, tt.v, "PointMap")
 		assert.True(t, tt.x.Equals(tt.x), "PointMap equal")
 	}
 }
@@ -483,6 +489,7 @@ func TestBinarySet(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, "BinarySet")
+		testRoundTripCombos(t, &tt.x, tt.v, "BinarySet")
 		assert.True(t, tt.x.Equals(tt.x), "BinarySet equal")
 	}
 }
@@ -563,17 +570,21 @@ func TestTypedefAnnotatedSetToSlice(t *testing.T) {
 	s := "[foo]"
 
 	assertRoundTrip(t, &a, l, "StringList")
+	testRoundTripCombos(t, &a, l, "StringList")
 	assert.True(t, a.Equals(b))
 	assert.Equal(t, s, a.String())
 
 	assertRoundTrip(t, &c, l, "MyStringList")
+	testRoundTripCombos(t, &c, l, "MyStringList")
 	assert.True(t, c.Equals(d))
 	assert.Equal(t, s, c.String())
 
 	assertRoundTrip(t, &e, l, "AnotherStringList")
+	testRoundTripCombos(t, &e, l, "AnotherStringList")
 	assert.True(t, e.Equals(f))
 	assert.Equal(t, s, e.String())
 
 	assertRoundTrip(t, &g, ll, "StringListList")
+	testRoundTripCombos(t, &g, ll, "StringListList")
 	assert.Equal(t, "[[foo]]", g.String())
 }

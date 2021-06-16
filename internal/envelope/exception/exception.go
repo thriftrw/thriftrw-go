@@ -28,6 +28,7 @@ import (
 	json "encoding/json"
 	fmt "fmt"
 	multierr "go.uber.org/multierr"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -189,6 +190,16 @@ func (v ExceptionType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 // Ptr returns a pointer to this enum value.
 func (v ExceptionType) Ptr() *ExceptionType {
 	return &v
+}
+
+// Encode encodes ExceptionType directly to bytes.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v ExceptionType
+//   return v.Encode(sWriter)
+func (v ExceptionType) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates ExceptionType into a Thrift-level intermediate
@@ -424,6 +435,42 @@ func (v *TApplicationException) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a TApplicationException struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a TApplicationException struct could not be encoded.
+func (v *TApplicationException) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Message != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := sw.WriteString(*(v.Message)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Type != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TI32}); err != nil {
+			return err
+		}
+		if err := v.Type.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a TApplicationException

@@ -5,6 +5,7 @@ package non_hyphenated
 
 import (
 	fmt "fmt"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -63,6 +64,18 @@ func (v *First) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a First struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a First struct could not be encoded.
+func (v *First) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a First
@@ -153,6 +166,18 @@ func (v *Second) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a Second struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Second struct could not be encoded.
+func (v *Second) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Second
