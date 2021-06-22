@@ -20,8 +20,8 @@
 
 package internal
 
-// LineError holds a parse error and the line number that caused it.
-type LineError struct {
-	Line int
-	Err  error
+// ParseError holds a parse error and the position that caused it.
+type ParseError struct {
+	Pos Position
+	Err error
 }

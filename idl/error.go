@@ -29,30 +29,33 @@ import (
 
 // ParseError is an error type listing parse errors and the positions
 // that caused them.
-type ParseError struct{ Lines []LineError }
+type ParseError struct{ Errors []Error }
 
-// LineError holds an error and the line number that caused it.
-type LineError struct {
-	Line int
-	Err  error
+// Error holds an error and the position that caused it.
+type Error struct {
+	Pos Position
+	Err error
 }
 
-func newParseError(errors []internal.LineError) error {
+func newParseError(errors []internal.ParseError) error {
 	if len(errors) == 0 {
 		return nil
 	}
-	lines := make([]LineError, len(errors))
+	errs := make([]Error, len(errors))
 	for i, err := range errors {
-		lines[i] = LineError{Line: err.Line, Err: err.Err}
+		errs[i] = Error{
+			Pos: Position{Line: err.Pos.Line},
+			Err: err.Err,
+		}
 	}
-	return &ParseError{Lines: lines}
+	return &ParseError{Errors: errs}
 }
 
 func (pe *ParseError) Error() string {
 	var buffer bytes.Buffer
 	buffer.WriteString("parse error\n")
-	for _, line := range pe.Lines {
-		buffer.WriteString(fmt.Sprintf("  line %d: %s\n", line.Line, line.Err))
+	for _, pe := range pe.Errors {
+		buffer.WriteString(fmt.Sprintf("  line %d: %s\n", pe.Pos.Line, pe.Err))
 	}
 	return buffer.String()
 }

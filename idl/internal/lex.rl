@@ -28,7 +28,7 @@ type lexer struct {
     lastDocstring string
     linesSinceDocstring int
 
-    errors []LineError
+    errors []ParseError
     parseFailed bool
 
     // Ragel:
@@ -349,7 +349,7 @@ func (lex *lexer) Error(e string) {
 
 func (lex *lexer) AppendError(err error)  {
   lex.parseFailed = true
-  lex.errors = append(lex.errors, LineError{Line: lex.line, Err: err})
+  lex.errors = append(lex.errors, ParseError{Pos: Position{Line: lex.line}, Err: err})
 }
 
 func (lex *lexer) LastDocstring() string {
