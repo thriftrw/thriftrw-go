@@ -20,26 +20,7 @@
 
 package internal
 
-import "go.uber.org/thriftrw/ast"
-
-func init() {
-	yyErrorVerbose = true
+// Position represents a position in the parsed document.
+type Position struct {
+	Line int
 }
-
-// Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, []ParseError) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return lex.program, nil
-	}
-	return nil, lex.errors
-}
-
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
-
-//go:generate goyacc -l thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
