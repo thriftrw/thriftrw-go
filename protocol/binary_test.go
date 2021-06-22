@@ -29,6 +29,7 @@ import (
 	"testing"
 
 	"go.uber.org/thriftrw/protocol/binary"
+	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
@@ -36,35 +37,38 @@ import (
 )
 
 type encodeDecodeTest struct {
+	desc    string
 	value   wire.Value
 	encoded []byte
 }
 
 func checkEncodeDecode(t *testing.T, typ wire.Type, tests []encodeDecodeTest) {
 	for _, tt := range tests {
-		buffer := bytes.Buffer{}
+		t.Run(tt.desc, func(t *testing.T) {
+			buffer := bytes.Buffer{}
 
-		// encode and match bytes
-		err := Binary.Encode(tt.value, &buffer)
-		if assert.NoError(t, err, "Encode failed:\n%s", tt.value) {
-			assert.Equal(t, tt.encoded, buffer.Bytes())
-		}
+			// encode and match bytes
+			err := Binary.Encode(tt.value, &buffer)
+			if assert.NoError(t, err, "Encode failed:\n%s", tt.value) {
+				assert.Equal(t, tt.encoded, buffer.Bytes())
+			}
 
-		// decode and match value
-		value, err := Binary.Decode(bytes.NewReader(tt.encoded), typ)
-		if assert.NoError(t, err, "Decode failed:\n%s", tt.value) {
-			assert.True(
-				t, wire.ValuesAreEqual(tt.value, value),
-				fmt.Sprintf("\n\t   %v (expected)\n\t!= %v (actual)", tt.value, value),
-			)
-		}
+			// decode and match value
+			value, err := Binary.Decode(bytes.NewReader(tt.encoded), typ)
+			if assert.NoError(t, err, "Decode failed:\n%s", tt.value) {
+				assert.True(
+					t, wire.ValuesAreEqual(tt.value, value),
+					fmt.Sprintf("\n\t   %v (expected)\n\t!= %v (actual)", tt.value, value),
+				)
+			}
 
-		// encode the decoded value again
-		buffer = bytes.Buffer{}
-		err = Binary.Encode(value, &buffer)
-		if assert.NoError(t, err, "Encode of decoded value failed:\n%s", tt.value) {
-			assert.Equal(t, tt.encoded, buffer.Bytes())
-		}
+			// encode the decoded value again
+			buffer = bytes.Buffer{}
+			err = Binary.Encode(value, &buffer)
+			if assert.NoError(t, err, "Encode of decoded value failed:\n%s", tt.value) {
+				assert.Equal(t, tt.encoded, buffer.Bytes())
+			}
+		})
 	}
 }
 
@@ -109,8 +113,8 @@ func checkEOFError(t *testing.T, typ wire.Type, tests []failureTest) {
 
 func TestBool(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vbool(false), []byte{0x00}},
-		{vbool(true), []byte{0x01}},
+		{"false", vbool(false), []byte{0x00}},
+		{"true", vbool(true), []byte{0x01}},
 	}
 
 	checkEncodeDecode(t, wire.TBool, tests)
@@ -134,11 +138,11 @@ func TestBoolEOFFailure(t *testing.T) {
 
 func TestI8(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vi8(0), []byte{0x00}},
-		{vi8(1), []byte{0x01}},
-		{vi8(-1), []byte{0xff}},
-		{vi8(127), []byte{0x7f}},
-		{vi8(-128), []byte{0x80}},
+		{"0", vi8(0), []byte{0x00}},
+		{"1", vi8(1), []byte{0x01}},
+		{"-1", vi8(-1), []byte{0xff}},
+		{"127", vi8(127), []byte{0x7f}},
+		{"-128", vi8(-128), []byte{0x80}},
 	}
 
 	checkEncodeDecode(t, wire.TI8, tests)
@@ -154,16 +158,16 @@ func TestI8EOFFailure(t *testing.T) {
 
 func TestI16(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vi16(1), []byte{0x00, 0x01}},
-		{vi16(255), []byte{0x00, 0xff}},
-		{vi16(256), []byte{0x01, 0x00}},
-		{vi16(257), []byte{0x01, 0x01}},
-		{vi16(32767), []byte{0x7f, 0xff}},
-		{vi16(-1), []byte{0xff, 0xff}},
-		{vi16(-2), []byte{0xff, 0xfe}},
-		{vi16(-256), []byte{0xff, 0x00}},
-		{vi16(-255), []byte{0xff, 0x01}},
-		{vi16(-32768), []byte{0x80, 0x00}},
+		{"1", vi16(1), []byte{0x00, 0x01}},
+		{"255", vi16(255), []byte{0x00, 0xff}},
+		{"256", vi16(256), []byte{0x01, 0x00}},
+		{"257", vi16(257), []byte{0x01, 0x01}},
+		{"32767", vi16(32767), []byte{0x7f, 0xff}},
+		{"-1", vi16(-1), []byte{0xff, 0xff}},
+		{"-2", vi16(-2), []byte{0xff, 0xfe}},
+		{"-256", vi16(-256), []byte{0xff, 0x00}},
+		{"-255", vi16(-255), []byte{0xff, 0x01}},
+		{"-32768", vi16(-32768), []byte{0x80, 0x00}},
 	}
 
 	checkEncodeDecode(t, wire.TI16, tests)
@@ -180,16 +184,16 @@ func TestI16EOFFailure(t *testing.T) {
 
 func TestI32(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vi32(1), []byte{0x00, 0x00, 0x00, 0x01}},
-		{vi32(255), []byte{0x00, 0x00, 0x00, 0xff}},
-		{vi32(65535), []byte{0x00, 0x00, 0xff, 0xff}},
-		{vi32(16777215), []byte{0x00, 0xff, 0xff, 0xff}},
-		{vi32(2147483647), []byte{0x7f, 0xff, 0xff, 0xff}},
-		{vi32(-1), []byte{0xff, 0xff, 0xff, 0xff}},
-		{vi32(-256), []byte{0xff, 0xff, 0xff, 0x00}},
-		{vi32(-65536), []byte{0xff, 0xff, 0x00, 0x00}},
-		{vi32(-16777216), []byte{0xff, 0x00, 0x00, 0x00}},
-		{vi32(-2147483648), []byte{0x80, 0x00, 0x00, 0x00}},
+		{"1", vi32(1), []byte{0x00, 0x00, 0x00, 0x01}},
+		{"255", vi32(255), []byte{0x00, 0x00, 0x00, 0xff}},
+		{"65535", vi32(65535), []byte{0x00, 0x00, 0xff, 0xff}},
+		{"16777215", vi32(16777215), []byte{0x00, 0xff, 0xff, 0xff}},
+		{"2147483647", vi32(2147483647), []byte{0x7f, 0xff, 0xff, 0xff}},
+		{"-1", vi32(-1), []byte{0xff, 0xff, 0xff, 0xff}},
+		{"-256", vi32(-256), []byte{0xff, 0xff, 0xff, 0x00}},
+		{"-65536", vi32(-65536), []byte{0xff, 0xff, 0x00, 0x00}},
+		{"-16777216", vi32(-16777216), []byte{0xff, 0x00, 0x00, 0x00}},
+		{"-2147483648", vi32(-2147483648), []byte{0x80, 0x00, 0x00, 0x00}},
 	}
 
 	checkEncodeDecode(t, wire.TI32, tests)
@@ -206,18 +210,18 @@ func TestI32EOFFailure(t *testing.T) {
 
 func TestI64(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vi64(1), []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}},
-		{vi64(4294967295), []byte{0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff}},
-		{vi64(1099511627775), []byte{0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff}},
-		{vi64(281474976710655), []byte{0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}},
-		{vi64(72057594037927935), []byte{0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}},
-		{vi64(9223372036854775807), []byte{0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}},
-		{vi64(-1), []byte{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}},
-		{vi64(-4294967296), []byte{0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00}},
-		{vi64(-1099511627776), []byte{0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00}},
-		{vi64(-281474976710656), []byte{0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-		{vi64(-72057594037927936), []byte{0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-		{vi64(-9223372036854775808), []byte{0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		{"1", vi64(1), []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01}},
+		{"4294967295", vi64(4294967295), []byte{0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff}},
+		{"1099511627775", vi64(1099511627775), []byte{0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff}},
+		{"281474976710655", vi64(281474976710655), []byte{0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}},
+		{"72057594037927935", vi64(72057594037927935), []byte{0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}},
+		{"9223372036854775807", vi64(9223372036854775807), []byte{0x7f, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}},
+		{"-1", vi64(-1), []byte{0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}},
+		{"-4294967296", vi64(-4294967296), []byte{0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00}},
+		{"-1099511627776", vi64(-1099511627776), []byte{0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		{"-281474976710656", vi64(-281474976710656), []byte{0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		{"-72057594037927936", vi64(-72057594037927936), []byte{0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		{"-9223372036854775808", vi64(-9223372036854775808), []byte{0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
 	}
 
 	checkEncodeDecode(t, wire.TI64, tests)
@@ -234,15 +238,15 @@ func TestI64EOFFailure(t *testing.T) {
 
 func TestDouble(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vdouble(0.0), []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-		{vdouble(1.0), []byte{0x3f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-		{vdouble(1.0000000001), []byte{0x3f, 0xf0, 0x0, 0x0, 0x0, 0x6, 0xdf, 0x38}},
-		{vdouble(1.1), []byte{0x3f, 0xf1, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a}},
-		{vdouble(-1.1), []byte{0xbf, 0xf1, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a}},
-		{vdouble(3.141592653589793), []byte{0x40, 0x9, 0x21, 0xfb, 0x54, 0x44, 0x2d, 0x18}},
-		{vdouble(-1.0000000001), []byte{0xbf, 0xf0, 0x0, 0x0, 0x0, 0x6, 0xdf, 0x38}},
-		{vdouble(math.Inf(0)), []byte{0x7f, 0xf0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}},
-		{vdouble(math.Inf(-1)), []byte{0xff, 0xf0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}},
+		{"0.0", vdouble(0.0), []byte{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		{"1.0", vdouble(1.0), []byte{0x3f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
+		{"1.0000000001", vdouble(1.0000000001), []byte{0x3f, 0xf0, 0x0, 0x0, 0x0, 0x6, 0xdf, 0x38}},
+		{"1.1", vdouble(1.1), []byte{0x3f, 0xf1, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a}},
+		{"-1.1", vdouble(-1.1), []byte{0xbf, 0xf1, 0x99, 0x99, 0x99, 0x99, 0x99, 0x9a}},
+		{"3.141592653589793", vdouble(3.141592653589793), []byte{0x40, 0x9, 0x21, 0xfb, 0x54, 0x44, 0x2d, 0x18}},
+		{"-1.0000000001", vdouble(-1.0000000001), []byte{0xbf, 0xf0, 0x0, 0x0, 0x0, 0x6, 0xdf, 0x38}},
+		{"0", vdouble(math.Inf(0)), []byte{0x7f, 0xf0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}},
+		{"-1", vdouble(math.Inf(-1)), []byte{0xff, 0xf0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}},
 	}
 
 	checkEncodeDecode(t, wire.TDouble, tests)
@@ -276,8 +280,8 @@ func TestDoubleNaN(t *testing.T) {
 
 func TestBinary(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vbinary(""), []byte{0x00, 0x00, 0x00, 0x00}},
-		{vbinary("hello"), []byte{
+		{"empty string", vbinary(""), []byte{0x00, 0x00, 0x00, 0x00}},
+		{"hello ", vbinary("hello"), []byte{
 			0x00, 0x00, 0x00, 0x05, // len:4 = 5
 			0x68, 0x65, 0x6c, 0x6c, 0x6f, // 'h', 'e', 'l', 'l', 'o'
 		}},
@@ -319,14 +323,15 @@ func TestBinaryEOFFailure(t *testing.T) {
 
 func TestStruct(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vstruct(), []byte{0x00}},
-		{vstruct(vfield(1, vbool(true))), []byte{
+		{"empty struct", vstruct(), []byte{0x00}},
+		{"simple struct", vstruct(vfield(1, vbool(true))), []byte{
 			0x02,       // type:1 = bool
 			0x00, 0x01, // id:2 = 1
 			0x01, // value = true
 			0x00, // stop
 		}},
 		{
+			"complex struct",
 			vstruct(
 				vfield(1, vi16(42)),
 				vfield(2, vlist(wire.TBinary, vbinary("foo"), vbinary("bar"))),
@@ -376,6 +381,19 @@ func TestStruct(t *testing.T) {
 	checkEncodeDecode(t, wire.TStruct, tests)
 }
 
+func TestStructBeginAndEndEncode(t *testing.T) {
+	var streamBuff bytes.Buffer
+
+	// Encode with Streaming protocol
+	w := binary.BorrowStreamWriter(&streamBuff)
+	require.NoError(t, w.WriteStructBegin())
+	require.NoError(t, w.WriteStructEnd())
+	binary.ReturnStreamWriter(w)
+
+	// Assert that encoded bytes are equivalent
+	assert.Equal(t, []byte{0x0}, streamBuff.Bytes())
+}
+
 func TestStructEOFFailure(t *testing.T) {
 	tests := []failureTest{
 		{},
@@ -388,8 +406,9 @@ func TestStructEOFFailure(t *testing.T) {
 
 func TestMap(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vmap(wire.TI64, wire.TBinary), []byte{0x0A, 0x0B, 0x00, 0x00, 0x00, 0x00}},
+		{"simple map", vmap(wire.TI64, wire.TBinary), []byte{0x0A, 0x0B, 0x00, 0x00, 0x00, 0x00}},
 		{
+			"complex map",
 			vmap(
 				wire.TBinary, wire.TList,
 				vitem(vbinary("a"), vlist(wire.TI16, vi16(1))),
@@ -430,6 +449,26 @@ func TestMap(t *testing.T) {
 	checkEncodeDecode(t, wire.TMap, tests)
 }
 
+func TestMapBeginEncode(t *testing.T) {
+	var (
+		streamBuff bytes.Buffer
+		err        error
+	)
+
+	// Encode with Streaming protocol
+	w := binary.BorrowStreamWriter(&streamBuff)
+	err = w.WriteMapBegin(stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TBool,
+		Length:    1,
+	})
+	require.NoError(t, err)
+	binary.ReturnStreamWriter(w)
+
+	// Assert that encoded bytes are equivalent
+	assert.Equal(t, []byte{0xb, 0x2, 0x0, 0x0, 0x0, 0x1}, streamBuff.Bytes())
+}
+
 func TestMapDecodeFailure(t *testing.T) {
 	tests := []failureTest{
 		{
@@ -452,14 +491,33 @@ func TestMapEOFFailure(t *testing.T) {
 
 func TestSet(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vset(wire.TBool), []byte{0x02, 0x00, 0x00, 0x00, 0x00}},
+		{"small set", vset(wire.TBool), []byte{0x02, 0x00, 0x00, 0x00, 0x00}},
 		{
-			vset(wire.TBool, vbool(true), vbool(false), vbool(true)),
+			"large set", vset(wire.TBool, vbool(true), vbool(false), vbool(true)),
 			[]byte{0x02, 0x00, 0x00, 0x00, 0x03, 0x01, 0x00, 0x01},
 		},
 	}
 
 	checkEncodeDecode(t, wire.TSet, tests)
+}
+
+func TestSetBeginEncode(t *testing.T) {
+	var (
+		streamBuff bytes.Buffer
+		err        error
+	)
+
+	// Encode with Streaming protocol
+	w := binary.BorrowStreamWriter(&streamBuff)
+	err = w.WriteSetBegin(stream.SetHeader{
+		Type:   wire.TList,
+		Length: 1,
+	})
+	require.NoError(t, err)
+	binary.ReturnStreamWriter(w)
+
+	// Assert that encoded bytes are equivalent
+	assert.Equal(t, []byte{0xf, 0x0, 0x0, 0x0, 0x1}, streamBuff.Bytes())
 }
 
 func TestSetDecodeFailure(t *testing.T) {
@@ -484,8 +542,9 @@ func TestSetEOFFailure(t *testing.T) {
 
 func TestList(t *testing.T) {
 	tests := []encodeDecodeTest{
-		{vlist(wire.TStruct), []byte{0x0C, 0x00, 0x00, 0x00, 0x00}},
+		{"small list", vlist(wire.TStruct), []byte{0x0C, 0x00, 0x00, 0x00, 0x00}},
 		{
+			"large list",
 			vlist(
 				wire.TStruct,
 				vstruct(
@@ -531,6 +590,25 @@ func TestList(t *testing.T) {
 	checkEncodeDecode(t, wire.TList, tests)
 }
 
+func TestListBeginEncode(t *testing.T) {
+	var (
+		streamBuff bytes.Buffer
+		err        error
+	)
+
+	// Encode with Streaming protocol
+	w := binary.BorrowStreamWriter(&streamBuff)
+	err = w.WriteListBegin(stream.ListHeader{
+		Type:   wire.TMap,
+		Length: 5,
+	})
+	require.NoError(t, err)
+	binary.ReturnStreamWriter(w)
+
+	// Assert that encoded bytes are equivalent
+	assert.Equal(t, []byte{0xd, 0x0, 0x0, 0x0, 0x5}, streamBuff.Bytes())
+}
+
 func TestListDecodeFailure(t *testing.T) {
 	tests := []failureTest{
 		{
@@ -559,6 +637,7 @@ func TestListEOFFailure(t *testing.T) {
 func TestStructOfContainers(t *testing.T) {
 	tests := []encodeDecodeTest{
 		{
+			"struct of containers",
 			vstruct(
 				vfield(1, vlist(
 					wire.TMap,
