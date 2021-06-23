@@ -39,8 +39,8 @@ func (v *EmptyEnum) UnmarshalText(value []byte) error {
 
 // MarshalText encodes EmptyEnum to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v EmptyEnum) MarshalText() ([]byte, error) {
@@ -102,8 +102,8 @@ func (v EmptyEnum) Equals(rhs EmptyEnum) bool {
 
 // MarshalJSON serializes EmptyEnum into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v EmptyEnum) MarshalJSON() ([]byte, error) {
@@ -191,8 +191,8 @@ func (v *EnumDefault) UnmarshalText(value []byte) error {
 
 // MarshalText encodes EnumDefault to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v EnumDefault) MarshalText() ([]byte, error) {
@@ -278,8 +278,8 @@ func (v EnumDefault) Equals(rhs EnumDefault) bool {
 
 // MarshalJSON serializes EnumDefault into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v EnumDefault) MarshalJSON() ([]byte, error) {
@@ -405,8 +405,8 @@ func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
 
 // MarshalText encodes EnumWithDuplicateName to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v EnumWithDuplicateName) MarshalText() ([]byte, error) {
@@ -528,8 +528,8 @@ func (v EnumWithDuplicateName) Equals(rhs EnumWithDuplicateName) bool {
 
 // MarshalJSON serializes EnumWithDuplicateName into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v EnumWithDuplicateName) MarshalJSON() ([]byte, error) {
@@ -637,8 +637,8 @@ func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
 
 // MarshalText encodes EnumWithDuplicateValues to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v EnumWithDuplicateValues) MarshalText() ([]byte, error) {
@@ -718,8 +718,8 @@ func (v EnumWithDuplicateValues) Equals(rhs EnumWithDuplicateValues) bool {
 
 // MarshalJSON serializes EnumWithDuplicateValues into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v EnumWithDuplicateValues) MarshalJSON() ([]byte, error) {
@@ -828,8 +828,8 @@ func (v *EnumWithLabel) UnmarshalText(value []byte) error {
 
 // MarshalText encodes EnumWithLabel to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v EnumWithLabel) MarshalText() ([]byte, error) {
@@ -933,8 +933,8 @@ func (v EnumWithLabel) Equals(rhs EnumWithLabel) bool {
 
 // MarshalJSON serializes EnumWithLabel into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v EnumWithLabel) MarshalJSON() ([]byte, error) {
@@ -1036,8 +1036,8 @@ func (v *EnumWithValues) UnmarshalText(value []byte) error {
 
 // MarshalText encodes EnumWithValues to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v EnumWithValues) MarshalText() ([]byte, error) {
@@ -1123,8 +1123,8 @@ func (v EnumWithValues) Equals(rhs EnumWithValues) bool {
 
 // MarshalJSON serializes EnumWithValues into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v EnumWithValues) MarshalJSON() ([]byte, error) {
@@ -1228,8 +1228,8 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 
 // MarshalText encodes RecordType to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v RecordType) MarshalText() ([]byte, error) {
@@ -1315,8 +1315,8 @@ func (v RecordType) Equals(rhs RecordType) bool {
 
 // MarshalJSON serializes RecordType into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v RecordType) MarshalJSON() ([]byte, error) {
@@ -1407,8 +1407,8 @@ func (v *RecordTypeValues) UnmarshalText(value []byte) error {
 
 // MarshalText encodes RecordTypeValues to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v RecordTypeValues) MarshalText() ([]byte, error) {
@@ -1488,8 +1488,8 @@ func (v RecordTypeValues) Equals(rhs RecordTypeValues) bool {
 
 // MarshalJSON serializes RecordTypeValues into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v RecordTypeValues) MarshalJSON() ([]byte, error) {
@@ -1737,8 +1737,8 @@ func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
 
 // MarshalText encodes LowerCaseEnum to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v LowerCaseEnum) MarshalText() ([]byte, error) {
@@ -1824,8 +1824,8 @@ func (v LowerCaseEnum) Equals(rhs LowerCaseEnum) bool {
 
 // MarshalJSON serializes LowerCaseEnum into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v LowerCaseEnum) MarshalJSON() ([]byte, error) {

@@ -23,6 +23,7 @@ package gen
 import (
 	"encoding/json"
 	"fmt"
+	tems "go.uber.org/thriftrw/gen/internal/tests/enum-text-marshal-strict"
 	"testing"
 
 	"go.uber.org/thriftrw/compile"
@@ -497,6 +498,46 @@ func TestEnumLabelValid(t *testing.T) {
 				assertRoundTrip(t, &tt.item, wire.NewValueI32(int32(tt.item)),
 					"%v", tt.item)
 			})
+		})
+	}
+}
+
+func TestEnumStrictMarshalText(t *testing.T) {
+	tests := []struct {
+		desc     string
+		give     tems.EnumMarshalStrict
+		wantText string
+		wantJSON string
+		wantErr  string
+	}{
+		{
+			desc:     "marshalText success",
+			give:     1,
+			wantText: "Bar",
+			wantJSON: `"Bar"`,
+			wantErr:  "",
+		},
+		{
+			desc:     "marshalText unknown value",
+			give:     5,
+			wantText: "",
+			wantJSON: "",
+			wantErr:  "unknown enum value \"EnumMarshalStrict(5)\" for \"EnumMarshalStrict\"",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			gotText, err := tt.give.MarshalText()
+			gotJSON, jsonErr := tt.give.MarshalJSON()
+			if len(tt.wantErr) > 0 {
+				require.Error(t, err)
+				assert.Equal(t, tt.wantErr, err.Error())
+				assert.Equal(t, tt.wantErr, jsonErr.Error())
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, tt.wantText, string(gotText))
+				assert.Equal(t, tt.wantJSON, string(gotJSON))
+			}
 		})
 	}
 }
