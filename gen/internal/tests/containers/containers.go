@@ -13,6 +13,7 @@ import (
 	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
 	typedefs "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	uuid_conflict "go.uber.org/thriftrw/gen/internal/tests/uuid_conflict"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -1226,6 +1227,507 @@ func (v *ContainersOfContainers) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_I32_Encode(val []int32, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TI32,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := sw.WriteInt32(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _List_List_I32_Encode(val [][]int32, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TList,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := _List_I32_Encode(v, sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _Set_I32_mapType_Encode(val map[int32]struct{}, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TI32,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for v, _ := range val {
+
+		if err := sw.WriteInt32(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _List_Set_I32_mapType_Encode(val []map[int32]struct{}, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TSet,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := _Set_I32_mapType_Encode(v, sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _Map_I32_I32_Encode(val map[int32]int32, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TI32,
+		ValueType: wire.TI32,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := sw.WriteInt32(k); err != nil {
+			return err
+		}
+		if err := sw.WriteInt32(v); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+func _List_Map_I32_I32_Encode(val []map[int32]int32, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TMap,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := _Map_I32_I32_Encode(v, sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _Set_String_mapType_Encode(val map[string]struct{}, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for v, _ := range val {
+
+		if err := sw.WriteString(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _Set_Set_String_mapType_sliceType_Encode(val []map[string]struct{}, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TSet,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+
+		if err := _Set_String_mapType_Encode(v, sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _List_String_Encode(val []string, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := sw.WriteString(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _Set_List_String_sliceType_Encode(val [][]string, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TList,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+
+		if err := _List_String_Encode(v, sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _Map_String_String_Encode(val map[string]string, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TBinary,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := sw.WriteString(k); err != nil {
+			return err
+		}
+		if err := sw.WriteString(v); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+func _Set_Map_String_String_sliceType_Encode(val []map[string]string, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TMap,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+
+		if err := _Map_String_String_Encode(v, sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _Map_String_I32_Encode(val map[string]int32, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TI32,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := sw.WriteString(k); err != nil {
+			return err
+		}
+		if err := sw.WriteInt32(v); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+func _Map_Map_String_I32_I64_Encode(val []struct {
+	Key   map[string]int32
+	Value int64
+}, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TMap,
+		ValueType: wire.TI64,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		key := v.Key
+		if err := _Map_String_I32_Encode(key, sw); err != nil {
+			return err
+		}
+		value := v.Value
+		if err := sw.WriteInt64(value); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+func _Set_I64_mapType_Encode(val map[int64]struct{}, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TI64,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for v, _ := range val {
+
+		if err := sw.WriteInt64(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _Map_List_I32_Set_I64_mapType_Encode(val []struct {
+	Key   []int32
+	Value map[int64]struct{}
+}, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TList,
+		ValueType: wire.TSet,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		key := v.Key
+		if err := _List_I32_Encode(key, sw); err != nil {
+			return err
+		}
+		value := v.Value
+		if err := _Set_I64_mapType_Encode(value, sw); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+func _List_Double_Encode(val []float64, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TDouble,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := sw.WriteDouble(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _Map_Set_I32_mapType_List_Double_Encode(val []struct {
+	Key   map[int32]struct{}
+	Value []float64
+}, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TSet,
+		ValueType: wire.TList,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		key := v.Key
+		if err := _Set_I32_mapType_Encode(key, sw); err != nil {
+			return err
+		}
+		value := v.Value
+		if err := _List_Double_Encode(value, sw); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+// Encode serializes a ContainersOfContainers struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ContainersOfContainers struct could not be encoded.
+func (v *ContainersOfContainers) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.ListOfLists != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_List_I32_Encode(v.ListOfLists, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.ListOfSets != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_Set_I32_mapType_Encode(v.ListOfSets, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.ListOfMaps != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_Map_I32_I32_Encode(v.ListOfMaps, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.SetOfSets != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 4, Type: wire.TSet}); err != nil {
+			return err
+		}
+		if err := _Set_Set_String_mapType_sliceType_Encode(v.SetOfSets, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.SetOfLists != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TSet}); err != nil {
+			return err
+		}
+		if err := _Set_List_String_sliceType_Encode(v.SetOfLists, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.SetOfMaps != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 6, Type: wire.TSet}); err != nil {
+			return err
+		}
+		if err := _Set_Map_String_String_sliceType_Encode(v.SetOfMaps, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.MapOfMapToInt != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 7, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_Map_String_I32_I64_Encode(v.MapOfMapToInt, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.MapOfListToSet != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 8, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_List_I32_Set_I64_mapType_Encode(v.MapOfListToSet, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.MapOfSetToListOfDouble != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 9, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_Set_I32_mapType_List_Double_Encode(v.MapOfSetToListOfDouble, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a ContainersOfContainers
 // struct.
 func (v *ContainersOfContainers) String() string {
@@ -2385,6 +2887,115 @@ func (v *EnumContainers) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_EnumDefault_Encode(val []enums.EnumDefault, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TI32,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _Set_EnumWithValues_mapType_Encode(val map[enums.EnumWithValues]struct{}, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TI32,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for v, _ := range val {
+
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _Map_EnumWithDuplicateValues_I32_Encode(val map[enums.EnumWithDuplicateValues]int32, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TI32,
+		ValueType: wire.TI32,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := k.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteInt32(v); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+// Encode serializes a EnumContainers struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a EnumContainers struct could not be encoded.
+func (v *EnumContainers) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.ListOfEnums != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_EnumDefault_Encode(v.ListOfEnums, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.SetOfEnums != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TSet}); err != nil {
+			return err
+		}
+		if err := _Set_EnumWithValues_mapType_Encode(v.SetOfEnums, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.MapOfEnums != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_EnumWithDuplicateValues_I32_Encode(v.MapOfEnums, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a EnumContainers
 // struct.
 func (v *EnumContainers) String() string {
@@ -2788,6 +3399,74 @@ func (v *ListOfConflictingEnums) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_RecordType_Encode(val []enum_conflict.RecordType, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TI32,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _List_RecordType_1_Encode(val []enums.RecordType, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TI32,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Encode serializes a ListOfConflictingEnums struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ListOfConflictingEnums struct could not be encoded.
+func (v *ListOfConflictingEnums) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TList}); err != nil {
+		return err
+	}
+	if err := _List_RecordType_Encode(v.Records, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TList}); err != nil {
+		return err
+	}
+	if err := _List_RecordType_1_Encode(v.OtherRecords, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a ListOfConflictingEnums
 // struct.
 func (v *ListOfConflictingEnums) String() string {
@@ -3119,6 +3798,74 @@ func (v *ListOfConflictingUUIDs) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_UUID_Encode(val []*typedefs.UUID, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TStruct,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _List_UUID_1_Encode(val []uuid_conflict.UUID, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Encode serializes a ListOfConflictingUUIDs struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ListOfConflictingUUIDs struct could not be encoded.
+func (v *ListOfConflictingUUIDs) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TList}); err != nil {
+		return err
+	}
+	if err := _List_UUID_Encode(v.Uuids, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TList}); err != nil {
+		return err
+	}
+	if err := _List_UUID_1_Encode(v.OtherUUIDs, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a ListOfConflictingUUIDs
 // struct.
 func (v *ListOfConflictingUUIDs) String() string {
@@ -3322,6 +4069,30 @@ func (v *ListOfOptionalPrimitives) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a ListOfOptionalPrimitives struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ListOfOptionalPrimitives struct could not be encoded.
+func (v *ListOfOptionalPrimitives) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.ListOfStrings != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_String_Encode(v.ListOfStrings, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a ListOfOptionalPrimitives
 // struct.
 func (v *ListOfOptionalPrimitives) String() string {
@@ -3460,6 +4231,28 @@ func (v *ListOfRequiredPrimitives) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a ListOfRequiredPrimitives struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ListOfRequiredPrimitives struct could not be encoded.
+func (v *ListOfRequiredPrimitives) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TList}); err != nil {
+		return err
+	}
+	if err := _List_String_Encode(v.ListOfStrings, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a ListOfRequiredPrimitives
@@ -3757,6 +4550,93 @@ func (v *MapOfBinaryAndString) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+func _Map_Binary_String_Encode(val []struct {
+	Key   []byte
+	Value string
+}, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TBinary,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		key := v.Key
+		if err := sw.WriteBinary(key); err != nil {
+			return err
+		}
+		value := v.Value
+		if err := sw.WriteString(value); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+func _Map_String_Binary_Encode(val map[string][]byte, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TBinary,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := sw.WriteString(k); err != nil {
+			return err
+		}
+		if err := sw.WriteBinary(v); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+// Encode serializes a MapOfBinaryAndString struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a MapOfBinaryAndString struct could not be encoded.
+func (v *MapOfBinaryAndString) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.BinaryToString != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_Binary_String_Encode(v.BinaryToString, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.StringToBinary != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_String_Binary_Encode(v.StringToBinary, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a MapOfBinaryAndString
@@ -4360,6 +5240,192 @@ func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_Binary_Encode(val [][]byte, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := sw.WriteBinary(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _List_I64_Encode(val []int64, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TI64,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := sw.WriteInt64(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _Set_Byte_mapType_Encode(val map[int8]struct{}, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TI8,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for v, _ := range val {
+
+		if err := sw.WriteInt8(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _Map_I32_String_Encode(val map[int32]string, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TI32,
+		ValueType: wire.TBinary,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := sw.WriteInt32(k); err != nil {
+			return err
+		}
+		if err := sw.WriteString(v); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+func _Map_String_Bool_Encode(val map[string]bool, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TBool,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := sw.WriteString(k); err != nil {
+			return err
+		}
+		if err := sw.WriteBool(v); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+// Encode serializes a PrimitiveContainers struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a PrimitiveContainers struct could not be encoded.
+func (v *PrimitiveContainers) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.ListOfBinary != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_Binary_Encode(v.ListOfBinary, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.ListOfInts != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_I64_Encode(v.ListOfInts, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.SetOfStrings != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TSet}); err != nil {
+			return err
+		}
+		if err := _Set_String_mapType_Encode(v.SetOfStrings, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.SetOfBytes != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 4, Type: wire.TSet}); err != nil {
+			return err
+		}
+		if err := _Set_Byte_mapType_Encode(v.SetOfBytes, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.MapOfIntToString != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_I32_String_Encode(v.MapOfIntToString, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.MapOfStringToBool != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 6, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_String_Bool_Encode(v.MapOfStringToBool, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a PrimitiveContainers
 // struct.
 func (v *PrimitiveContainers) String() string {
@@ -4878,6 +5944,77 @@ func (v *PrimitiveContainersRequired) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+func _Map_I64_Double_Encode(val map[int64]float64, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TI64,
+		ValueType: wire.TDouble,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := sw.WriteInt64(k); err != nil {
+			return err
+		}
+		if err := sw.WriteDouble(v); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+// Encode serializes a PrimitiveContainersRequired struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a PrimitiveContainersRequired struct could not be encoded.
+func (v *PrimitiveContainersRequired) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TList}); err != nil {
+		return err
+	}
+	if err := _List_String_Encode(v.ListOfStrings, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.SetOfInts == nil {
+		return errors.New("field SetOfInts of PrimitiveContainersRequired is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TSet}); err != nil {
+		return err
+	}
+	if err := _Set_I32_mapType_Encode(v.SetOfInts, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.MapOfIntsToDoubles == nil {
+		return errors.New("field MapOfIntsToDoubles of PrimitiveContainersRequired is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TMap}); err != nil {
+		return err
+	}
+	if err := _Map_I64_Double_Encode(v.MapOfIntsToDoubles, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a PrimitiveContainersRequired

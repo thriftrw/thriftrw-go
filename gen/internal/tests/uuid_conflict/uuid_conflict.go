@@ -8,6 +8,7 @@ import (
 	fmt "fmt"
 	multierr "go.uber.org/multierr"
 	typedefs "go.uber.org/thriftrw/gen/internal/tests/typedefs"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -33,6 +34,11 @@ func (v UUID) ToWire() (wire.Value, error) {
 func (v UUID) String() string {
 	x := (string)(v)
 	return fmt.Sprint(x)
+}
+
+func (v UUID) Encode(sw stream.Writer) error {
+	x := (string)(v)
+	return sw.WriteString(x)
 }
 
 // FromWire deserializes UUID from its Thrift-level
@@ -162,6 +168,41 @@ func (v *UUIDConflict) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a UUIDConflict struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a UUIDConflict struct could not be encoded.
+func (v *UUIDConflict) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := v.LocalUUID.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.ImportedUUID == nil {
+		return errors.New("field ImportedUUID of UUIDConflict is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TStruct}); err != nil {
+		return err
+	}
+	if err := v.ImportedUUID.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a UUIDConflict

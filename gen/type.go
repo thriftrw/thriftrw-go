@@ -208,6 +208,10 @@ func valueListName(g Generator, spec compile.TypeSpec) string {
 	return fmt.Sprintf("_%s_ValueList", g.MangleType(spec))
 }
 
+func encoderFuncName(g Generator, spec compile.TypeSpec) string {
+	return fmt.Sprintf("_%s_Encode", g.MangleType(spec))
+}
+
 // zapperName returns the name that should be used for wrapper types that
 // implement zap.ObjectMarshaler or zap.ArrayMarshaler for the provided
 // Thrift type.

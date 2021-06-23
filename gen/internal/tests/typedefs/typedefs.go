@@ -11,6 +11,7 @@ import (
 	multierr "go.uber.org/multierr"
 	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
 	structs "go.uber.org/thriftrw/gen/internal/tests/structs"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -45,6 +46,26 @@ func (_Set_Binary_sliceType_ValueList) ValueType() wire.Type {
 }
 
 func (_Set_Binary_sliceType_ValueList) Close() {}
+
+func _Set_Binary_sliceType_Encode(val [][]byte, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+
+		if err := sw.WriteBinary(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
 
 func _Set_Binary_sliceType_Read(s wire.ValueList) ([][]byte, error) {
 	if s.ValueType() != wire.TBinary {
@@ -111,6 +132,11 @@ func (v BinarySet) ToWire() (wire.Value, error) {
 func (v BinarySet) String() string {
 	x := ([][]byte)(v)
 	return fmt.Sprint(x)
+}
+
+func (v BinarySet) Encode(sw stream.Writer) error {
+	x := ([][]byte)(v)
+	return _Set_Binary_sliceType_Encode(x, sw)
 }
 
 // FromWire deserializes BinarySet from its Thrift-level
@@ -235,6 +261,34 @@ func (v *DefaultPrimitiveTypedef) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a DefaultPrimitiveTypedef struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a DefaultPrimitiveTypedef struct could not be encoded.
+func (v *DefaultPrimitiveTypedef) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	vState := v.State
+	if vState == nil {
+		vState = _State_ptr("hello")
+	}
+	{
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := vState.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a DefaultPrimitiveTypedef
 // struct.
 func (v *DefaultPrimitiveTypedef) String() string {
@@ -351,6 +405,34 @@ func (_Map_Edge_Edge_MapItemList) ValueType() wire.Type {
 }
 
 func (_Map_Edge_Edge_MapItemList) Close() {}
+
+func _Map_Edge_Edge_Encode(val []struct {
+	Key   *structs.Edge
+	Value *structs.Edge
+}, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TStruct,
+		ValueType: wire.TStruct,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		key := v.Key
+		if err := key.Encode(sw); err != nil {
+			return err
+		}
+		value := v.Value
+		if err := value.Encode(sw); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
 
 func _Edge_Read(w wire.Value) (*structs.Edge, error) {
 	var v structs.Edge
@@ -480,6 +562,14 @@ func (v EdgeMap) String() string {
 		Value *structs.Edge
 	})(v)
 	return fmt.Sprint(x)
+}
+
+func (v EdgeMap) Encode(sw stream.Writer) error {
+	x := ([]struct {
+		Key   *structs.Edge
+		Value *structs.Edge
+	})(v)
+	return _Map_Edge_Edge_Encode(x, sw)
 }
 
 // FromWire deserializes EdgeMap from its Thrift-level
@@ -623,6 +713,43 @@ func (v *Event) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a Event struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Event struct could not be encoded.
+func (v *Event) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.UUID == nil {
+		return errors.New("field UUID of Event is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+		return err
+	}
+	if err := v.UUID.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Time != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TI64}); err != nil {
+			return err
+		}
+		if err := v.Time.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Event
 // struct.
 func (v *Event) String() string {
@@ -743,6 +870,24 @@ func (_List_Event_ValueList) ValueType() wire.Type {
 
 func (_List_Event_ValueList) Close() {}
 
+func _List_Event_Encode(val []*Event, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TStruct,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
 func _Event_Read(w wire.Value) (*Event, error) {
 	var v Event
 	err := v.FromWire(w)
@@ -809,6 +954,11 @@ func (v EventGroup) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v EventGroup) Encode(sw stream.Writer) error {
+	x := ([]*Event)(v)
+	return _List_Event_Encode(x, sw)
+}
+
 // FromWire deserializes EventGroup from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -856,6 +1006,26 @@ func (_Set_Frame_sliceType_ValueList) ValueType() wire.Type {
 }
 
 func (_Set_Frame_sliceType_ValueList) Close() {}
+
+func _Set_Frame_sliceType_Encode(val []*structs.Frame, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TStruct,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
 
 func _Frame_Read(w wire.Value) (*structs.Frame, error) {
 	var v structs.Frame
@@ -930,6 +1100,11 @@ func (v FrameGroup) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v FrameGroup) Encode(sw stream.Writer) error {
+	x := ([]*structs.Frame)(v)
+	return _Set_Frame_sliceType_Encode(x, sw)
+}
+
 // FromWire deserializes FrameGroup from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -976,6 +1151,11 @@ func (v MyEnum) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v MyEnum) Encode(sw stream.Writer) error {
+	x := (enums.EnumWithValues)(v)
+	return x.Encode(sw)
+}
+
 // FromWire deserializes MyEnum from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -1011,6 +1191,11 @@ func (v *MyUUID) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v *MyUUID) Encode(sw stream.Writer) error {
+	x := (*UUID)(v)
+	return x.Encode(sw)
+}
+
 // FromWire deserializes MyUUID from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -1042,6 +1227,11 @@ func (v PDF) ToWire() (wire.Value, error) {
 func (v PDF) String() string {
 	x := ([]byte)(v)
 	return fmt.Sprint(x)
+}
+
+func (v PDF) Encode(sw stream.Writer) error {
+	x := ([]byte)(v)
+	return sw.WriteBinary(x)
 }
 
 // FromWire deserializes PDF from its Thrift-level
@@ -1104,6 +1294,34 @@ func (_Map_Point_Point_MapItemList) ValueType() wire.Type {
 }
 
 func (_Map_Point_Point_MapItemList) Close() {}
+
+func _Map_Point_Point_Encode(val []struct {
+	Key   *structs.Point
+	Value *structs.Point
+}, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TStruct,
+		ValueType: wire.TStruct,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		key := v.Key
+		if err := key.Encode(sw); err != nil {
+			return err
+		}
+		value := v.Value
+		if err := value.Encode(sw); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
 
 func _Point_Read(w wire.Value) (*structs.Point, error) {
 	var v structs.Point
@@ -1235,6 +1453,14 @@ func (v PointMap) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v PointMap) Encode(sw stream.Writer) error {
+	x := ([]struct {
+		Key   *structs.Point
+		Value *structs.Point
+	})(v)
+	return _Map_Point_Point_Encode(x, sw)
+}
+
 // FromWire deserializes PointMap from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -1282,6 +1508,11 @@ func (v State) ToWire() (wire.Value, error) {
 func (v State) String() string {
 	x := (string)(v)
 	return fmt.Sprint(x)
+}
+
+func (v State) Encode(sw stream.Writer) error {
+	x := (string)(v)
+	return sw.WriteString(x)
 }
 
 // FromWire deserializes State from its Thrift-level
@@ -1333,6 +1564,29 @@ func (_Map_State_I64_MapItemList) ValueType() wire.Type {
 }
 
 func (_Map_State_I64_MapItemList) Close() {}
+
+func _Map_State_I64_Encode(val map[State]int64, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TI64,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := k.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteInt64(v); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
 
 func _Map_State_I64_Read(m wire.MapItemList) (map[State]int64, error) {
 	if m.KeyType() != wire.TBinary {
@@ -1406,6 +1660,11 @@ func (v StateMap) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v StateMap) Encode(sw stream.Writer) error {
+	x := (map[State]int64)(v)
+	return _Map_State_I64_Encode(x, sw)
+}
+
 // FromWire deserializes StateMap from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -1447,6 +1706,11 @@ func (v Timestamp) ToWire() (wire.Value, error) {
 func (v Timestamp) String() string {
 	x := (int64)(v)
 	return fmt.Sprint(x)
+}
+
+func (v Timestamp) Encode(sw stream.Writer) error {
+	x := (int64)(v)
+	return sw.WriteInt64(x)
 }
 
 // FromWire deserializes Timestamp from its Thrift-level
@@ -1585,6 +1849,50 @@ func (v *Transition) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a Transition struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Transition struct could not be encoded.
+func (v *Transition) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := v.FromState.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := v.ToState.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Events != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := v.Events.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Transition
@@ -1766,6 +2074,31 @@ func (v *TransitiveTypedefField) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a TransitiveTypedefField struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a TransitiveTypedefField struct could not be encoded.
+func (v *TransitiveTypedefField) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.DefUUID == nil {
+		return errors.New("field DefUUID of TransitiveTypedefField is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+		return err
+	}
+	if err := v.DefUUID.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a TransitiveTypedefField
 // struct.
 func (v *TransitiveTypedefField) String() string {
@@ -1836,6 +2169,11 @@ func (v *UUID) ToWire() (wire.Value, error) {
 func (v *UUID) String() string {
 	x := (*I128)(v)
 	return fmt.Sprint(x)
+}
+
+func (v *UUID) Encode(sw stream.Writer) error {
+	x := (*I128)(v)
+	return x.Encode(sw)
 }
 
 // FromWire deserializes UUID from its Thrift-level
@@ -1953,6 +2291,38 @@ func (v *I128) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a I128 struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a I128 struct could not be encoded.
+func (v *I128) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TI64}); err != nil {
+		return err
+	}
+	if err := sw.WriteInt64(v.High); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TI64}); err != nil {
+		return err
+	}
+	if err := sw.WriteInt64(v.Low); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a I128

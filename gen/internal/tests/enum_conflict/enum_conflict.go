@@ -9,6 +9,7 @@ import (
 	fmt "fmt"
 	multierr "go.uber.org/multierr"
 	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -93,6 +94,16 @@ func (v RecordType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 // Ptr returns a pointer to this enum value.
 func (v RecordType) Ptr() *RecordType {
 	return &v
+}
+
+// Encode encodes RecordType directly to bytes.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v RecordType
+//   return v.Encode(sWriter)
+func (v RecordType) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates RecordType into a Thrift-level intermediate
@@ -331,6 +342,50 @@ func (v *Records) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a Records struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Records struct could not be encoded.
+func (v *Records) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	vRecordType := v.RecordType
+	if vRecordType == nil {
+		vRecordType = _RecordType_ptr(DefaultRecordType)
+	}
+	{
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TI32}); err != nil {
+			return err
+		}
+		if err := vRecordType.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	vOtherRecordType := v.OtherRecordType
+	if vOtherRecordType == nil {
+		vOtherRecordType = _RecordType_1_ptr(DefaultOtherRecordType)
+	}
+	{
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TI32}); err != nil {
+			return err
+		}
+		if err := vOtherRecordType.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Records

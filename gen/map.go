@@ -179,6 +179,66 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+func (m *mapGenerator) Encode(g Generator, spec *compile.MapSpec) (string, error) {
+	name := encoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+
+		<$mapType := typeReference .Spec>
+		<$sw := newVar "sw">
+		<$mh := newVar "mh">
+		<$o := newVar "o">
+		<$k := newVar "k">
+		<$v := newVar "v">
+		<$val := newVar "val">
+		<$key := newVar "key">
+		<$value := newVar "value">
+		func <.Name>(<$val> <$mapType>, <$sw> <$stream>.Writer) error {
+			<$kt := typeCode .Spec.KeySpec>
+			<$vt := typeCode .Spec.ValueSpec>	
+			<$mh> := <$stream>.MapHeader{
+				KeyType: <$kt>,
+				ValueType: <$vt>,
+				Length: len(<$val>),
+			}
+			if err := <$sw>.WriteMapBegin(<$mh>); err != nil {
+				return err
+			}
+
+			<if isHashable .Spec.KeySpec>
+				for <$k>, <$v> := range <$val> {
+					if err := <encode .Spec.KeySpec $k $sw>; err != nil {
+						return err
+					}
+					if err := <encode .Spec.ValueSpec $v $sw>; err != nil {
+						return err
+					}
+				}		
+			<else>
+				for _, <$v> := range <$val> {
+					<$key> := <printf "%s.Key" $v>
+					if err := <encode .Spec.KeySpec $key $sw>; err != nil {
+						return err
+					}
+					<$value> := <printf "%s.Value" $v>
+					if err := <encode .Spec.ValueSpec $value $sw>; err != nil {
+						return err
+					}
+				}
+			<end>
+			return <$sw>.WriteMapEnd()
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.MapSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
 // Equals generates a function to compare maps of the given type
 //
 // 	func $name(lhs, rhs $mapType) bool {

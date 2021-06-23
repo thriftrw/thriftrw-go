@@ -7,6 +7,7 @@ import (
 	errors "errors"
 	fmt "fmt"
 	multierr "go.uber.org/multierr"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -57,6 +58,11 @@ func (v AnotherStringList) ToWire() (wire.Value, error) {
 func (v AnotherStringList) String() string {
 	x := (MyStringList)(v)
 	return fmt.Sprint(x)
+}
+
+func (v AnotherStringList) Encode(sw stream.Writer) error {
+	x := (MyStringList)(v)
+	return x.Encode(sw)
 }
 
 // FromWire deserializes AnotherStringList from its Thrift-level
@@ -557,6 +563,224 @@ func (v *Bar) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _Set_I32_sliceType_Encode(val []int32, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TI32,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+
+		if err := sw.WriteInt32(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _Set_String_sliceType_Encode(val []string, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+
+		if err := sw.WriteString(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _Set_Foo_sliceType_Encode(val []*Foo, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TStruct,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+func _Set_Set_String_sliceType_sliceType_Encode(val [][]string, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TSet,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+
+		if err := _Set_String_sliceType_Encode(v, sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
+
+// Encode serializes a Bar struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Bar struct could not be encoded.
+func (v *Bar) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.RequiredInt32ListField == nil {
+		return errors.New("field RequiredInt32ListField of Bar is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TSet}); err != nil {
+		return err
+	}
+	if err := _Set_I32_sliceType_Encode(v.RequiredInt32ListField, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.OptionalStringListField != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TSet}); err != nil {
+			return err
+		}
+		if err := _Set_String_sliceType_Encode(v.OptionalStringListField, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.RequiredTypedefStringListField == nil {
+		return errors.New("field RequiredTypedefStringListField of Bar is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TSet}); err != nil {
+		return err
+	}
+	if err := v.RequiredTypedefStringListField.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.OptionalTypedefStringListField != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 4, Type: wire.TSet}); err != nil {
+			return err
+		}
+		if err := v.OptionalTypedefStringListField.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.RequiredFooListField == nil {
+		return errors.New("field RequiredFooListField of Bar is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TSet}); err != nil {
+		return err
+	}
+	if err := _Set_Foo_sliceType_Encode(v.RequiredFooListField, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.OptionalFooListField != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 6, Type: wire.TSet}); err != nil {
+			return err
+		}
+		if err := _Set_Foo_sliceType_Encode(v.OptionalFooListField, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.RequiredTypedefFooListField == nil {
+		return errors.New("field RequiredTypedefFooListField of Bar is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 7, Type: wire.TSet}); err != nil {
+		return err
+	}
+	if err := v.RequiredTypedefFooListField.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.OptionalTypedefFooListField != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 8, Type: wire.TSet}); err != nil {
+			return err
+		}
+		if err := v.OptionalTypedefFooListField.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.RequiredStringListListField == nil {
+		return errors.New("field RequiredStringListListField of Bar is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 9, Type: wire.TSet}); err != nil {
+		return err
+	}
+	if err := _Set_Set_String_sliceType_sliceType_Encode(v.RequiredStringListListField, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.RequiredTypedefStringListListField == nil {
+		return errors.New("field RequiredTypedefStringListListField of Bar is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 10, Type: wire.TSet}); err != nil {
+		return err
+	}
+	if err := v.RequiredTypedefStringListListField.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Bar
 // struct.
 func (v *Bar) String() string {
@@ -1009,6 +1233,28 @@ func (v *Foo) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a Foo struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Foo struct could not be encoded.
+func (v *Foo) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.StringField); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Foo
 // struct.
 func (v *Foo) String() string {
@@ -1076,6 +1322,11 @@ func (v FooList) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v FooList) Encode(sw stream.Writer) error {
+	x := ([]*Foo)(v)
+	return _Set_Foo_sliceType_Encode(x, sw)
+}
+
 // FromWire deserializes FooList from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -1109,6 +1360,11 @@ func (v MyStringList) ToWire() (wire.Value, error) {
 func (v MyStringList) String() string {
 	x := (StringList)(v)
 	return fmt.Sprint(x)
+}
+
+func (v MyStringList) Encode(sw stream.Writer) error {
+	x := (StringList)(v)
+	return x.Encode(sw)
 }
 
 // FromWire deserializes MyStringList from its Thrift-level
@@ -1146,6 +1402,11 @@ func (v StringList) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v StringList) Encode(sw stream.Writer) error {
+	x := ([]string)(v)
+	return _Set_String_sliceType_Encode(x, sw)
+}
+
 // FromWire deserializes StringList from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -1179,6 +1440,11 @@ func (v StringListList) ToWire() (wire.Value, error) {
 func (v StringListList) String() string {
 	x := ([][]string)(v)
 	return fmt.Sprint(x)
+}
+
+func (v StringListList) Encode(sw stream.Writer) error {
+	x := ([][]string)(v)
+	return _Set_Set_String_sliceType_sliceType_Encode(x, sw)
 }
 
 // FromWire deserializes StringListList from its Thrift-level
@@ -1225,6 +1491,26 @@ func (_Set_String_mapType_ValueList) ValueType() wire.Type {
 }
 
 func (_Set_String_mapType_ValueList) Close() {}
+
+func _Set_String_mapType_Encode(val map[string]struct{}, sw stream.Writer) error {
+
+	sh := stream.SetHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+
+	if err := sw.WriteSetBegin(sh); err != nil {
+		return err
+	}
+
+	for v, _ := range val {
+
+		if err := sw.WriteString(v); err != nil {
+			return err
+		}
+	}
+	return sw.WriteSetEnd()
+}
 
 func _Set_String_mapType_Read(s wire.ValueList) (map[string]struct{}, error) {
 	if s.ValueType() != wire.TBinary {
@@ -1284,6 +1570,11 @@ func (v StringSet) ToWire() (wire.Value, error) {
 func (v StringSet) String() string {
 	x := (map[string]struct{})(v)
 	return fmt.Sprint(x)
+}
+
+func (v StringSet) Encode(sw stream.Writer) error {
+	x := (map[string]struct{})(v)
+	return _Set_String_mapType_Encode(x, sw)
 }
 
 // FromWire deserializes StringSet from its Thrift-level

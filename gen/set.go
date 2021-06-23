@@ -142,6 +142,52 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+func (s *setGenerator) Encode(g Generator, spec *compile.SetSpec) (string, error) {
+	name := encoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+
+		<$setType := typeReference .Spec>
+		<$sw := newVar "sw">
+		<$sh := newVar "sh">
+		<$o := newVar "o">
+		<$k := newVar "k">
+		<$v := newVar "v">
+		<$val := newVar "val">
+		func <.Name>(<$val> <$setType>, <$sw> <$stream>.Writer) error {	
+			<$vt := typeCode .Spec.ValueSpec>
+			<$sh> := <$stream>.SetHeader{
+				Type: <$vt>,
+				Length: len(<$val>),
+			}
+
+			if err := <$sw>.WriteSetBegin(<$sh>); err != nil {
+				return err
+			}
+
+			<if setUsesMap .Spec>
+				for <$v>, _ := range <$val> {
+			<else>
+				for _, <$v> := range <$val> {
+			<end>
+					if err := <encode .Spec.ValueSpec $v $sw>; err != nil {
+						return err
+					}
+				}
+			return <$sw>.WriteSetEnd()
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.SetSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+
+}
+
 // Equals generates a function to compare sets of the given type
 //
 // func $name(lhs, rhs $setType) bool {

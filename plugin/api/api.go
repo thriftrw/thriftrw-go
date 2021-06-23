@@ -30,6 +30,7 @@ import (
 	errors "errors"
 	fmt "fmt"
 	multierr "go.uber.org/multierr"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -259,6 +260,76 @@ func (v *Argument) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _Map_String_String_Encode(val map[string]string, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TBinary,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := sw.WriteString(k); err != nil {
+			return err
+		}
+		if err := sw.WriteString(v); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+// Encode serializes a Argument struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Argument struct could not be encoded.
+func (v *Argument) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.Name); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Type == nil {
+		return errors.New("field Type of Argument is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TStruct}); err != nil {
+		return err
+	}
+	if err := v.Type.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Annotations != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_String_String_Encode(v.Annotations, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Argument
 // struct.
 func (v *Argument) String() string {
@@ -452,6 +523,16 @@ func (v Feature) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 // Ptr returns a pointer to this enum value.
 func (v Feature) Ptr() *Feature {
 	return &v
+}
+
+// Encode encodes Feature directly to bytes.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v Feature
+//   return v.Encode(sWriter)
+func (v Feature) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates Feature into a Thrift-level intermediate
@@ -814,6 +895,114 @@ func (v *Function) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+func _List_Argument_Encode(val []*Argument, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TStruct,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Encode serializes a Function struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Function struct could not be encoded.
+func (v *Function) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.Name); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.ThriftName); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TList}); err != nil {
+		return err
+	}
+	if err := _List_Argument_Encode(v.Arguments, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.ReturnType != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 4, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.ReturnType.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Exceptions != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_Argument_Encode(v.Exceptions, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.OneWay != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 6, Type: wire.TBool}); err != nil {
+			return err
+		}
+		if err := sw.WriteBool(*(v.OneWay)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Annotations != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 7, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_String_String_Encode(v.Annotations, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Function
@@ -1493,6 +1682,168 @@ func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_ServiceID_Encode(val []ServiceID, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TI32,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+func _Map_ServiceID_Service_Encode(val map[ServiceID]*Service, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TI32,
+		ValueType: wire.TStruct,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := k.Encode(sw); err != nil {
+			return err
+		}
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+func _Map_ModuleID_Module_Encode(val map[ModuleID]*Module, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TI32,
+		ValueType: wire.TStruct,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := k.Encode(sw); err != nil {
+			return err
+		}
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+func _List_ModuleID_Encode(val []ModuleID, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TI32,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Encode serializes a GenerateServiceRequest struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a GenerateServiceRequest struct could not be encoded.
+func (v *GenerateServiceRequest) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TList}); err != nil {
+		return err
+	}
+	if err := _List_ServiceID_Encode(v.RootServices, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Services == nil {
+		return errors.New("field Services of GenerateServiceRequest is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TMap}); err != nil {
+		return err
+	}
+	if err := _Map_ServiceID_Service_Encode(v.Services, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Modules == nil {
+		return errors.New("field Modules of GenerateServiceRequest is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TMap}); err != nil {
+		return err
+	}
+	if err := _Map_ModuleID_Module_Encode(v.Modules, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 4, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.PackagePrefix); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.ThriftRoot); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.RootModules != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 6, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_ModuleID_Encode(v.RootModules, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a GenerateServiceRequest
 // struct.
 func (v *GenerateServiceRequest) String() string {
@@ -1927,6 +2278,53 @@ func (v *GenerateServiceResponse) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _Map_String_Binary_Encode(val map[string][]byte, sw stream.Writer) error {
+
+	mh := stream.MapHeader{
+		KeyType:   wire.TBinary,
+		ValueType: wire.TBinary,
+		Length:    len(val),
+	}
+	if err := sw.WriteMapBegin(mh); err != nil {
+		return err
+	}
+
+	for k, v := range val {
+		if err := sw.WriteString(k); err != nil {
+			return err
+		}
+		if err := sw.WriteBinary(v); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteMapEnd()
+}
+
+// Encode serializes a GenerateServiceResponse struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a GenerateServiceResponse struct could not be encoded.
+func (v *GenerateServiceResponse) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Files != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_String_Binary_Encode(v.Files, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a GenerateServiceResponse
 // struct.
 func (v *GenerateServiceResponse) String() string {
@@ -2070,6 +2468,18 @@ func (v *HandshakeRequest) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a HandshakeRequest struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a HandshakeRequest struct could not be encoded.
+func (v *HandshakeRequest) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a HandshakeRequest
@@ -2307,6 +2717,78 @@ func (v *HandshakeResponse) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+func _List_Feature_Encode(val []Feature, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TI32,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Encode serializes a HandshakeResponse struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a HandshakeResponse struct could not be encoded.
+func (v *HandshakeResponse) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.Name); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TI32}); err != nil {
+		return err
+	}
+	if err := sw.WriteInt32(v.APIVersion); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TList}); err != nil {
+		return err
+	}
+	if err := _List_Feature_Encode(v.Features, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.LibraryVersion != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 4, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := sw.WriteString(*(v.LibraryVersion)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a HandshakeResponse
@@ -2587,6 +3069,48 @@ func (v *Module) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a Module struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Module struct could not be encoded.
+func (v *Module) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.ImportPath); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.Directory); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.ThriftFilePath); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Module
 // struct.
 func (v *Module) String() string {
@@ -2689,6 +3213,11 @@ func (v ModuleID) ToWire() (wire.Value, error) {
 func (v ModuleID) String() string {
 	x := (int32)(v)
 	return fmt.Sprint(x)
+}
+
+func (v ModuleID) Encode(sw stream.Writer) error {
+	x := (int32)(v)
+	return sw.WriteInt32(x)
 }
 
 // FromWire deserializes ModuleID from its Thrift-level
@@ -2956,6 +3485,100 @@ func (v *Service) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_Function_Encode(val []*Function, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TStruct,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Encode serializes a Service struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Service struct could not be encoded.
+func (v *Service) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 7, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.Name); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.ThriftName); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.ParentID != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 4, Type: wire.TI32}); err != nil {
+			return err
+		}
+		if err := v.ParentID.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TList}); err != nil {
+		return err
+	}
+	if err := _List_Function_Encode(v.Functions, sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 6, Type: wire.TI32}); err != nil {
+		return err
+	}
+	if err := v.ModuleID.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Annotations != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 8, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_String_String_Encode(v.Annotations, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Service
 // struct.
 func (v *Service) String() string {
@@ -3166,6 +3789,11 @@ func (v ServiceID) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v ServiceID) Encode(sw stream.Writer) error {
+	x := (int32)(v)
+	return sw.WriteInt32(x)
+}
+
 // FromWire deserializes ServiceID from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -3317,6 +3945,16 @@ func (v SimpleType) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 // Ptr returns a pointer to this enum value.
 func (v SimpleType) Ptr() *SimpleType {
 	return &v
+}
+
+// Encode encodes SimpleType directly to bytes.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v SimpleType
+//   return v.Encode(sWriter)
+func (v SimpleType) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
 }
 
 // ToWire translates SimpleType into a Thrift-level intermediate
@@ -3663,6 +4301,114 @@ func (v *Type) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a Type struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Type struct could not be encoded.
+func (v *Type) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.SimpleType != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TI32}); err != nil {
+			return err
+		}
+		if err := v.SimpleType.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.SliceType != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.SliceType.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.KeyValueSliceType != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.KeyValueSliceType.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.MapType != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 4, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.MapType.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.ReferenceType != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.ReferenceType.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.PointerType != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 6, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.PointerType.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.SimpleType != nil {
+		count++
+	}
+	if v.SliceType != nil {
+		count++
+	}
+	if v.KeyValueSliceType != nil {
+		count++
+	}
+	if v.MapType != nil {
+		count++
+	}
+	if v.ReferenceType != nil {
+		count++
+	}
+	if v.PointerType != nil {
+		count++
+	}
+
+	if count != 1 {
+		return fmt.Errorf("Type should have exactly one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Type
 // struct.
 func (v *Type) String() string {
@@ -3965,6 +4711,44 @@ func (v *TypePair) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a TypePair struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a TypePair struct could not be encoded.
+func (v *TypePair) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Left == nil {
+		return errors.New("field Left of TypePair is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+		return err
+	}
+	if err := v.Left.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Right == nil {
+		return errors.New("field Right of TypePair is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TStruct}); err != nil {
+		return err
+	}
+	if err := v.Right.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a TypePair
 // struct.
 func (v *TypePair) String() string {
@@ -4178,6 +4962,50 @@ func (v *TypeReference) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a TypeReference struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a TypeReference struct could not be encoded.
+func (v *TypeReference) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.Name); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.ImportPath); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Annotations != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_String_String_Encode(v.Annotations, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a TypeReference
 // struct.
 func (v *TypeReference) String() string {
@@ -4335,6 +5163,18 @@ func (v *Plugin_Goodbye_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a Plugin_Goodbye_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Plugin_Goodbye_Args struct could not be encoded.
+func (v *Plugin_Goodbye_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Plugin_Goodbye_Args
@@ -4514,6 +5354,18 @@ func (v *Plugin_Goodbye_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a Plugin_Goodbye_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Plugin_Goodbye_Result struct could not be encoded.
+func (v *Plugin_Goodbye_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Plugin_Goodbye_Result
 // struct.
 func (v *Plugin_Goodbye_Result) String() string {
@@ -4647,6 +5499,30 @@ func (v *Plugin_Handshake_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a Plugin_Handshake_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Plugin_Handshake_Args struct could not be encoded.
+func (v *Plugin_Handshake_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Request != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.Request.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a Plugin_Handshake_Args
@@ -4905,6 +5781,39 @@ func (v *Plugin_Handshake_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a Plugin_Handshake_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Plugin_Handshake_Result struct could not be encoded.
+func (v *Plugin_Handshake_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Success != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 0, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.Success.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+
+	if count != 1 {
+		return fmt.Errorf("Plugin_Handshake_Result should have exactly one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
+}
+
 // String returns a readable string representation of a Plugin_Handshake_Result
 // struct.
 func (v *Plugin_Handshake_Result) String() string {
@@ -5063,6 +5972,30 @@ func (v *ServiceGenerator_Generate_Args) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a ServiceGenerator_Generate_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ServiceGenerator_Generate_Args struct could not be encoded.
+func (v *ServiceGenerator_Generate_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Request != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.Request.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a ServiceGenerator_Generate_Args
@@ -5319,6 +6252,39 @@ func (v *ServiceGenerator_Generate_Result) FromWire(w wire.Value) error {
 	}
 
 	return nil
+}
+
+// Encode serializes a ServiceGenerator_Generate_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ServiceGenerator_Generate_Result struct could not be encoded.
+func (v *ServiceGenerator_Generate_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Success != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 0, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.Success.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+
+	if count != 1 {
+		return fmt.Errorf("ServiceGenerator_Generate_Result should have exactly one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
 }
 
 // String returns a readable string representation of a ServiceGenerator_Generate_Result

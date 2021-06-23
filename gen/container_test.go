@@ -180,6 +180,9 @@ func TestCollectionsOfPrimitives(t *testing.T) {
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.p, tt.v, tt.desc)
 		assert.True(t, tt.p.Equals(&tt.p), tt.desc)
+
+		testRoundTripCombos(t, &tt.p, tt.v, tt.desc)
+		assert.True(t, tt.p.Equals(&tt.p), tt.desc)
 	}
 }
 
@@ -351,6 +354,9 @@ func TestEnumContainers(t *testing.T) {
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.r, tt.v, "EnumContainers")
 		assert.True(t, tt.r.Equals(&tt.r), "EnumContainers equal")
+
+		testRoundTripCombos(t, &tt.r, tt.v, "EnumContainers")
+		assert.True(t, tt.r.Equals(&tt.r), "EnumContainers equal")
 	}
 }
 
@@ -505,6 +511,9 @@ func TestListOfStructs(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.r, tt.v, "Graph")
+		assert.True(t, tt.r.Equals(&tt.r), "Graph equal")
+
+		testRoundTripCombos(t, &tt.r, tt.v, "Graph")
 		assert.True(t, tt.r.Equals(&tt.r), "Graph equal")
 	}
 }
@@ -948,6 +957,9 @@ func TestCrazyTown(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.x, tt.v, tt.desc)
+		assert.True(t, tt.x.Equals(&tt.x), tt.desc)
+
+		testRoundTripCombos(t, &tt.x, tt.v, tt.desc)
 		assert.True(t, tt.x.Equals(&tt.x), tt.desc)
 	}
 }

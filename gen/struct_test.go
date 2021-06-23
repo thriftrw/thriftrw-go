@@ -471,6 +471,7 @@ func TestStructRoundTripAndString(t *testing.T) {
 		} else {
 			assert.NotPanics(t, func() { _ = tt.x.String() }, "ToString: %v", tt.desc)
 		}
+		testRoundTripCombos(t, tt.x, tt.v, tt.desc)
 	}
 }
 
@@ -651,7 +652,7 @@ func TestBasicException(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.s, tt.v, "DoesNotExistException")
-
+		testRoundTripCombos(t, &tt.s, tt.v, "DoesNotExistException")
 		err := error(&tt.s) // should implement the error interface
 		assert.Equal(t, "DoesNotExistException{Key: foo}", err.Error())
 	}
@@ -672,7 +673,7 @@ func TestCollisionException(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, &tt.s, tt.v, "DoesNotExistException2")
-
+		testRoundTripCombos(t, &tt.s, tt.v, "DoesNotExistException2")
 		assert.Equal(t, "Does_Not_Exist_Exception_Collision", tt.s.ErrorName(),
 			"Thrift name of exception incorrect")
 
