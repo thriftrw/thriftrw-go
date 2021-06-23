@@ -119,6 +119,24 @@ func (v *EnumDefault) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode reads off the encoded EnumDefault directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v EnumDefault
+//   if err := v.Decode(sReader); err != nil {
+//     return EnumDefault(0), err
+//   }
+//   return v, nil
+func (v *EnumDefault) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (EnumDefault)(i)
+	return nil
+}
+
 // String returns a readable string representation of EnumDefault.
 func (v EnumDefault) String() string {
 	w := int32(v)

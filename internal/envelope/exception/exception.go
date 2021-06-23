@@ -229,6 +229,24 @@ func (v *ExceptionType) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode reads off the encoded ExceptionType directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v ExceptionType
+//   if err := v.Decode(sReader); err != nil {
+//     return ExceptionType(0), err
+//   }
+//   return v, nil
+func (v *ExceptionType) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (ExceptionType)(i)
+	return nil
+}
+
 // String returns a readable string representation of ExceptionType.
 func (v ExceptionType) String() string {
 	w := int32(v)

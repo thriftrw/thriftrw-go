@@ -99,6 +99,24 @@ func (v *EmptyEnum) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode reads off the encoded EmptyEnum directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v EmptyEnum
+//   if err := v.Decode(sReader); err != nil {
+//     return EmptyEnum(0), err
+//   }
+//   return v, nil
+func (v *EmptyEnum) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (EmptyEnum)(i)
+	return nil
+}
+
 // String returns a readable string representation of EmptyEnum.
 func (v EmptyEnum) String() string {
 	w := int32(v)
@@ -274,6 +292,24 @@ func (v EnumDefault) ToWire() (wire.Value, error) {
 //   return v, nil
 func (v *EnumDefault) FromWire(w wire.Value) error {
 	*v = (EnumDefault)(w.GetI32())
+	return nil
+}
+
+// Decode reads off the encoded EnumDefault directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v EnumDefault
+//   if err := v.Decode(sReader); err != nil {
+//     return EnumDefault(0), err
+//   }
+//   return v, nil
+func (v *EnumDefault) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (EnumDefault)(i)
 	return nil
 }
 
@@ -525,6 +561,24 @@ func (v *EnumWithDuplicateName) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode reads off the encoded EnumWithDuplicateName directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v EnumWithDuplicateName
+//   if err := v.Decode(sReader); err != nil {
+//     return EnumWithDuplicateName(0), err
+//   }
+//   return v, nil
+func (v *EnumWithDuplicateName) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (EnumWithDuplicateName)(i)
+	return nil
+}
+
 // String returns a readable string representation of EnumWithDuplicateName.
 func (v EnumWithDuplicateName) String() string {
 	w := int32(v)
@@ -736,6 +790,24 @@ func (v EnumWithDuplicateValues) ToWire() (wire.Value, error) {
 //   return v, nil
 func (v *EnumWithDuplicateValues) FromWire(w wire.Value) error {
 	*v = (EnumWithDuplicateValues)(w.GetI32())
+	return nil
+}
+
+// Decode reads off the encoded EnumWithDuplicateValues directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v EnumWithDuplicateValues
+//   if err := v.Decode(sReader); err != nil {
+//     return EnumWithDuplicateValues(0), err
+//   }
+//   return v, nil
+func (v *EnumWithDuplicateValues) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (EnumWithDuplicateValues)(i)
 	return nil
 }
 
@@ -956,6 +1028,24 @@ func (v *EnumWithLabel) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode reads off the encoded EnumWithLabel directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v EnumWithLabel
+//   if err := v.Decode(sReader); err != nil {
+//     return EnumWithLabel(0), err
+//   }
+//   return v, nil
+func (v *EnumWithLabel) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (EnumWithLabel)(i)
+	return nil
+}
+
 // String returns a readable string representation of EnumWithLabel.
 func (v EnumWithLabel) String() string {
 	w := int32(v)
@@ -1162,6 +1252,24 @@ func (v *EnumWithValues) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode reads off the encoded EnumWithValues directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v EnumWithValues
+//   if err := v.Decode(sReader); err != nil {
+//     return EnumWithValues(0), err
+//   }
+//   return v, nil
+func (v *EnumWithValues) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (EnumWithValues)(i)
+	return nil
+}
+
 // String returns a readable string representation of EnumWithValues.
 func (v EnumWithValues) String() string {
 	w := int32(v)
@@ -1364,6 +1472,24 @@ func (v *RecordType) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode reads off the encoded RecordType directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v RecordType
+//   if err := v.Decode(sReader); err != nil {
+//     return RecordType(0), err
+//   }
+//   return v, nil
+func (v *RecordType) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (RecordType)(i)
+	return nil
+}
+
 // String returns a readable string representation of RecordType.
 func (v RecordType) String() string {
 	w := int32(v)
@@ -1546,6 +1672,24 @@ func (v RecordTypeValues) ToWire() (wire.Value, error) {
 //   return v, nil
 func (v *RecordTypeValues) FromWire(w wire.Value) error {
 	*v = (RecordTypeValues)(w.GetI32())
+	return nil
+}
+
+// Decode reads off the encoded RecordTypeValues directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v RecordTypeValues
+//   if err := v.Decode(sReader); err != nil {
+//     return RecordTypeValues(0), err
+//   }
+//   return v, nil
+func (v *RecordTypeValues) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (RecordTypeValues)(i)
 	return nil
 }
 
@@ -1914,6 +2058,24 @@ func (v LowerCaseEnum) ToWire() (wire.Value, error) {
 //   return v, nil
 func (v *LowerCaseEnum) FromWire(w wire.Value) error {
 	*v = (LowerCaseEnum)(w.GetI32())
+	return nil
+}
+
+// Decode reads off the encoded LowerCaseEnum directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v LowerCaseEnum
+//   if err := v.Decode(sReader); err != nil {
+//     return LowerCaseEnum(0), err
+//   }
+//   return v, nil
+func (v *LowerCaseEnum) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (LowerCaseEnum)(i)
 	return nil
 }
 

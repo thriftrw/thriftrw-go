@@ -562,6 +562,24 @@ func (v *Feature) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Decode reads off the encoded Feature directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v Feature
+//   if err := v.Decode(sReader); err != nil {
+//     return Feature(0), err
+//   }
+//   return v, nil
+func (v *Feature) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (Feature)(i)
+	return nil
+}
+
 // String returns a readable string representation of Feature.
 func (v Feature) String() string {
 	w := int32(v)
@@ -3981,6 +3999,24 @@ func (v SimpleType) ToWire() (wire.Value, error) {
 //   return v, nil
 func (v *SimpleType) FromWire(w wire.Value) error {
 	*v = (SimpleType)(w.GetI32())
+	return nil
+}
+
+// Decode reads off the encoded SimpleType directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v SimpleType
+//   if err := v.Decode(sReader); err != nil {
+//     return SimpleType(0), err
+//   }
+//   return v, nil
+func (v *SimpleType) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (SimpleType)(i)
 	return nil
 }
 
