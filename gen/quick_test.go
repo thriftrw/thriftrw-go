@@ -42,6 +42,7 @@ import (
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	ahf "go.uber.org/thriftrw/gen/internal/tests/hyphenated-file"
 	hf "go.uber.org/thriftrw/gen/internal/tests/hyphenated_file"
+	nf "go.uber.org/thriftrw/gen/internal/tests/non_hyphenated"
 	tz "go.uber.org/thriftrw/gen/internal/tests/nozap"
 	tf "go.uber.org/thriftrw/gen/internal/tests/services"
 	tss "go.uber.org/thriftrw/gen/internal/tests/set_to_slice"
@@ -338,6 +339,8 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: tf.KeyValue_GetManyValues_Args{}, Kind: thriftStruct},
 		{Sample: ahf.DocumentStruct{}, Kind: thriftStruct},
 		{Sample: hf.DocumentStructure{}, Kind: thriftStruct},
+		{Sample: nf.First{}, Kind: thriftStruct},
+		{Sample: nf.Second{}, Kind: thriftStruct},
 
 		{
 			Sample:    tf.KeyValue_GetManyValues_Result{},
