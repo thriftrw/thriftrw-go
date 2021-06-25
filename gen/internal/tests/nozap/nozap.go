@@ -850,6 +850,287 @@ func (v *PrimitiveRequiredStruct) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _List_String_Decode(sr stream.Reader) ([]string, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TBinary {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]string, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Set_I32_mapType_Decode(sr stream.Reader) (map[int32]struct{}, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TI32 {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make(map[int32]struct{}, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := sr.ReadInt32()
+		if err != nil {
+			return nil, err
+		}
+
+		o[v] = struct{}{}
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Map_I64_Double_Decode(sr stream.Reader) (map[int64]float64, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TI64 || mh.ValueType != wire.TDouble {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[int64]float64, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadInt64()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadDouble()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a PrimitiveRequiredStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a PrimitiveRequiredStruct struct could not be generated from the wire
+// representation.
+func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
+
+	boolFieldIsSet := false
+	byteFieldIsSet := false
+	int16FieldIsSet := false
+	int32FieldIsSet := false
+	int64FieldIsSet := false
+	doubleFieldIsSet := false
+	stringFieldIsSet := false
+	binaryFieldIsSet := false
+	listOfStringsIsSet := false
+	setOfIntsIsSet := false
+	mapOfIntsToDoublesIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBool {
+				v.BoolField, err = sr.ReadBool()
+				if err != nil {
+					return err
+				}
+				boolFieldIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TI8 {
+				v.ByteField, err = sr.ReadInt8()
+				if err != nil {
+					return err
+				}
+				byteFieldIsSet = true
+			}
+		case 3:
+			if fh.Type == wire.TI16 {
+				v.Int16Field, err = sr.ReadInt16()
+				if err != nil {
+					return err
+				}
+				int16FieldIsSet = true
+			}
+		case 4:
+			if fh.Type == wire.TI32 {
+				v.Int32Field, err = sr.ReadInt32()
+				if err != nil {
+					return err
+				}
+				int32FieldIsSet = true
+			}
+		case 5:
+			if fh.Type == wire.TI64 {
+				v.Int64Field, err = sr.ReadInt64()
+				if err != nil {
+					return err
+				}
+				int64FieldIsSet = true
+			}
+		case 6:
+			if fh.Type == wire.TDouble {
+				v.DoubleField, err = sr.ReadDouble()
+				if err != nil {
+					return err
+				}
+				doubleFieldIsSet = true
+			}
+		case 7:
+			if fh.Type == wire.TBinary {
+				v.StringField, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				stringFieldIsSet = true
+			}
+		case 8:
+			if fh.Type == wire.TBinary {
+				v.BinaryField, err = sr.ReadBinary()
+				if err != nil {
+					return err
+				}
+				binaryFieldIsSet = true
+			}
+		case 9:
+			if fh.Type == wire.TList {
+				v.ListOfStrings, err = _List_String_Decode(sr)
+				if err != nil {
+					return err
+				}
+				listOfStringsIsSet = true
+			}
+		case 10:
+			if fh.Type == wire.TSet {
+				v.SetOfInts, err = _Set_I32_mapType_Decode(sr)
+				if err != nil {
+					return err
+				}
+				setOfIntsIsSet = true
+			}
+		case 11:
+			if fh.Type == wire.TMap {
+				v.MapOfIntsToDoubles, err = _Map_I64_Double_Decode(sr)
+				if err != nil {
+					return err
+				}
+				mapOfIntsToDoublesIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !boolFieldIsSet {
+		return errors.New("field BoolField of PrimitiveRequiredStruct is required")
+	}
+
+	if !byteFieldIsSet {
+		return errors.New("field ByteField of PrimitiveRequiredStruct is required")
+	}
+
+	if !int16FieldIsSet {
+		return errors.New("field Int16Field of PrimitiveRequiredStruct is required")
+	}
+
+	if !int32FieldIsSet {
+		return errors.New("field Int32Field of PrimitiveRequiredStruct is required")
+	}
+
+	if !int64FieldIsSet {
+		return errors.New("field Int64Field of PrimitiveRequiredStruct is required")
+	}
+
+	if !doubleFieldIsSet {
+		return errors.New("field DoubleField of PrimitiveRequiredStruct is required")
+	}
+
+	if !stringFieldIsSet {
+		return errors.New("field StringField of PrimitiveRequiredStruct is required")
+	}
+
+	if !binaryFieldIsSet {
+		return errors.New("field BinaryField of PrimitiveRequiredStruct is required")
+	}
+
+	if !listOfStringsIsSet {
+		return errors.New("field ListOfStrings of PrimitiveRequiredStruct is required")
+	}
+
+	if !setOfIntsIsSet {
+		return errors.New("field SetOfInts of PrimitiveRequiredStruct is required")
+	}
+
+	if !mapOfIntsToDoublesIsSet {
+		return errors.New("field MapOfIntsToDoubles of PrimitiveRequiredStruct is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a PrimitiveRequiredStruct
 // struct.
 func (v *PrimitiveRequiredStruct) String() string {
@@ -1125,6 +1406,11 @@ func (v *Primitives) FromWire(w wire.Value) error {
 	return (*PrimitiveRequiredStruct)(v).FromWire(w)
 }
 
+// Decode deserializes Primitives directly off the wire.
+func (v *Primitives) Decode(sr stream.Reader) error {
+	return (*PrimitiveRequiredStruct)(v).Decode(sr)
+}
+
 // Equals returns true if this Primitives is equal to the provided
 // Primitives.
 func (lhs *Primitives) Equals(rhs *Primitives) bool {
@@ -1157,6 +1443,13 @@ func (v StringList) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *StringList) FromWire(w wire.Value) error {
 	x, err := _List_String_Read(w.GetList())
+	*v = (StringList)(x)
+	return err
+}
+
+// Decode deserializes StringList directly off the wire.
+func (v *StringList) Decode(sr stream.Reader) error {
+	x, err := _List_String_Decode(sr)
 	*v = (StringList)(x)
 	return err
 }
@@ -1253,6 +1546,46 @@ func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 	return o, err
 }
 
+func _Map_String_String_Decode(sr stream.Reader) (map[string]string, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TBinary || mh.ValueType != wire.TBinary {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[string]string, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
 func _Map_String_String_Equals(lhs, rhs map[string]string) bool {
 	if len(lhs) != len(rhs) {
 		return false
@@ -1296,6 +1629,13 @@ func (v StringMap) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *StringMap) FromWire(w wire.Value) error {
 	x, err := _Map_String_String_Read(w.GetMap())
+	*v = (StringMap)(x)
+	return err
+}
+
+// Decode deserializes StringMap directly off the wire.
+func (v *StringMap) Decode(sr stream.Reader) error {
+	x, err := _Map_String_String_Decode(sr)
 	*v = (StringMap)(x)
 	return err
 }

@@ -491,6 +491,68 @@ func (v *TApplicationException) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _ExceptionType_Decode(sr stream.Reader) (ExceptionType, error) {
+	var v ExceptionType
+	err := v.Decode(sr)
+	return v, err
+}
+
+// Decode deserializes a TApplicationException struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a TApplicationException struct could not be generated from the wire
+// representation.
+func (v *TApplicationException) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.Message = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if fh.Type == wire.TI32 {
+				var x ExceptionType
+				x, err = _ExceptionType_Decode(sr)
+				v.Type = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a TApplicationException
 // struct.
 func (v *TApplicationException) String() string {

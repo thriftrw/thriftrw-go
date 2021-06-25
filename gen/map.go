@@ -179,7 +179,14 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
-func (m *mapGenerator) Encode(g Generator, spec *compile.MapSpec) (string, error) {
+// Encoder generates a function to encode a map given a stream.Writer
+//
+//     func $name(val $mapType, sr *stream.Writer) error {
+//             ...
+//     }
+//
+// And returns its name.
+func (m *mapGenerator) Encoder(g Generator, spec *compile.MapSpec) (string, error) {
 	name := encoderFuncName(g, spec)
 	err := g.EnsureDeclared(
 		`
@@ -228,6 +235,86 @@ func (m *mapGenerator) Encode(g Generator, spec *compile.MapSpec) (string, error
 				}
 			<end>
 			return <$sw>.WriteMapEnd()
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.MapSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
+// Decoder generates a function to read a map of the given types from a
+// stream.Reader.
+//
+//     func $name(sr *stream.Reader) ($mapType, error) {
+//             ...
+//     }
+//
+// And returns its name.
+func (m *mapGenerator) Decoder(g Generator, spec *compile.MapSpec) (string, error) {
+	name := decoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+		<$mapType := typeReference .Spec>
+
+		<$sr := newVar "sr">
+		<$mh := newVar "mh">
+		<$o := newVar "o">
+		<$k := newVar "k">
+		<$v := newVar "v">
+		func <.Name>(<$sr> <$stream>.Reader) (<$mapType>, error) {
+			<$mh>, err := <$sr>.ReadMapBegin()
+			if err != nil {
+				return nil, err
+			}
+
+			if <$mh>.KeyType != <typeCode .Spec.KeySpec> || <$mh>.ValueType != <typeCode .Spec.ValueSpec> {
+				for i := 0; i <lessthan> <$mh>.Length; i++ {
+					if err := <$sr>.Skip(<$mh>.KeyType); err != nil {
+						return nil, err
+					}
+
+					if err := <$sr>.Skip(<$mh>.ValueType); err != nil {
+						return nil, err
+					}
+				}
+				return nil, <$sr>.ReadMapEnd()
+			}
+
+			<if isHashable .Spec.KeySpec>
+				<$o> := make(<$mapType>, <$mh>.Length)
+			<else>
+				<$o> := make(<$mapType>, 0, <$mh>.Length)
+			<end ->
+			for i := 0; i <lessthan> <$mh>.Length; i++ {
+				<$k>, err := <decode .Spec.KeySpec $sr>
+				if err != nil {
+					return nil, err
+				}
+
+				<$v>, err := <decode .Spec.ValueSpec $sr>
+				if err != nil {
+					return nil, err
+				}
+
+				<if isHashable .Spec.KeySpec>
+					<$o>[<$k>] = <$v>
+				<else>
+					<$o> = append(<$o>, struct {
+						Key <typeReference .Spec.KeySpec>
+						Value <typeReference .Spec.ValueSpec>
+					}{<$k>, <$v>})
+				<end ->
+			}
+
+			if err = <$sr>.ReadMapEnd(); err != nil {
+				return nil, err
+			}
+			return <$o>, err
 		}
 		`,
 		struct {

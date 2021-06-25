@@ -119,6 +119,56 @@ func (v *ContactInfo) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+// Decode deserializes a ContactInfo struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ContactInfo struct could not be generated from the wire
+// representation.
+func (v *ContactInfo) Decode(sr stream.Reader) error {
+
+	emailAddressIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				v.EmailAddress, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				emailAddressIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !emailAddressIsSet {
+		return errors.New("field EmailAddress of ContactInfo is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a ContactInfo
 // struct.
 func (v *ContactInfo) String() string {
@@ -1013,6 +1063,305 @@ func (v *DefaultsStruct) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _EnumDefault_Decode(sr stream.Reader) (enums.EnumDefault, error) {
+	var v enums.EnumDefault
+	err := v.Decode(sr)
+	return v, err
+}
+
+func _List_String_Decode(sr stream.Reader) ([]string, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TBinary {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]string, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _List_Double_Decode(sr stream.Reader) ([]float64, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TDouble {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]float64, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := sr.ReadDouble()
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Frame_Decode(sr stream.Reader) (*Frame, error) {
+	var v Frame
+	err := v.Decode(sr)
+	return &v, err
+}
+
+func _Edge_Decode(sr stream.Reader) (*Edge, error) {
+	var v Edge
+	err := v.Decode(sr)
+	return &v, err
+}
+
+// Decode deserializes a DefaultsStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a DefaultsStruct struct could not be generated from the wire
+// representation.
+func (v *DefaultsStruct) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TI32 {
+				var x int32
+				x, err = sr.ReadInt32()
+				v.RequiredPrimitive = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if fh.Type == wire.TI32 {
+				var x int32
+				x, err = sr.ReadInt32()
+				v.OptionalPrimitive = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if fh.Type == wire.TI32 {
+				var x enums.EnumDefault
+				x, err = _EnumDefault_Decode(sr)
+				v.RequiredEnum = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 4:
+			if fh.Type == wire.TI32 {
+				var x enums.EnumDefault
+				x, err = _EnumDefault_Decode(sr)
+				v.OptionalEnum = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 5:
+			if fh.Type == wire.TList {
+				v.RequiredList, err = _List_String_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 6:
+			if fh.Type == wire.TList {
+				v.OptionalList, err = _List_Double_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 7:
+			if fh.Type == wire.TStruct {
+				v.RequiredStruct, err = _Frame_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 8:
+			if fh.Type == wire.TStruct {
+				v.OptionalStruct, err = _Edge_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 9:
+			if fh.Type == wire.TBool {
+				var x bool
+				x, err = sr.ReadBool()
+				v.RequiredBoolDefaultTrue = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 10:
+			if fh.Type == wire.TBool {
+				var x bool
+				x, err = sr.ReadBool()
+				v.OptionalBoolDefaultTrue = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 11:
+			if fh.Type == wire.TBool {
+				var x bool
+				x, err = sr.ReadBool()
+				v.RequiredBoolDefaultFalse = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 12:
+			if fh.Type == wire.TBool {
+				var x bool
+				x, err = sr.ReadBool()
+				v.OptionalBoolDefaultFalse = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if v.RequiredPrimitive == nil {
+		v.RequiredPrimitive = ptr.Int32(100)
+	}
+
+	if v.OptionalPrimitive == nil {
+		v.OptionalPrimitive = ptr.Int32(200)
+	}
+
+	if v.RequiredEnum == nil {
+		v.RequiredEnum = _EnumDefault_ptr(enums.EnumDefaultBar)
+	}
+
+	if v.OptionalEnum == nil {
+		v.OptionalEnum = _EnumDefault_ptr(enums.EnumDefaultBaz)
+	}
+
+	if v.RequiredList == nil {
+		v.RequiredList = []string{
+			"hello",
+			"world",
+		}
+	}
+
+	if v.OptionalList == nil {
+		v.OptionalList = []float64{
+			1,
+			2,
+			3,
+		}
+	}
+
+	if v.RequiredStruct == nil {
+		v.RequiredStruct = &Frame{
+			Size: &Size{
+				Height: 200,
+				Width:  100,
+			},
+			TopLeft: &Point{
+				X: 1,
+				Y: 2,
+			},
+		}
+	}
+
+	if v.OptionalStruct == nil {
+		v.OptionalStruct = &Edge{
+			EndPoint: &Point{
+				X: 3,
+				Y: 4,
+			},
+			StartPoint: &Point{
+				X: 1,
+				Y: 2,
+			},
+		}
+	}
+
+	if v.RequiredBoolDefaultTrue == nil {
+		v.RequiredBoolDefaultTrue = ptr.Bool(true)
+	}
+
+	if v.OptionalBoolDefaultTrue == nil {
+		v.OptionalBoolDefaultTrue = ptr.Bool(true)
+	}
+
+	if v.RequiredBoolDefaultFalse == nil {
+		v.RequiredBoolDefaultFalse = ptr.Bool(false)
+	}
+
+	if v.OptionalBoolDefaultFalse == nil {
+		v.OptionalBoolDefaultFalse = ptr.Bool(false)
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a DefaultsStruct
 // struct.
 func (v *DefaultsStruct) String() string {
@@ -1605,6 +1954,75 @@ func (v *Edge) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _Point_Decode(sr stream.Reader) (*Point, error) {
+	var v Point
+	err := v.Decode(sr)
+	return &v, err
+}
+
+// Decode deserializes a Edge struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Edge struct could not be generated from the wire
+// representation.
+func (v *Edge) Decode(sr stream.Reader) error {
+
+	startPointIsSet := false
+	endPointIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TStruct {
+				v.StartPoint, err = _Point_Decode(sr)
+				if err != nil {
+					return err
+				}
+				startPointIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TStruct {
+				v.EndPoint, err = _Point_Decode(sr)
+				if err != nil {
+					return err
+				}
+				endPointIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !startPointIsSet {
+		return errors.New("field StartPoint of Edge is required")
+	}
+
+	if !endPointIsSet {
+		return errors.New("field EndPoint of Edge is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a Edge
 // struct.
 func (v *Edge) String() string {
@@ -1745,6 +2163,42 @@ func (v *EmptyStruct) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a EmptyStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a EmptyStruct struct could not be generated from the wire
+// representation.
+func (v *EmptyStruct) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a EmptyStruct
@@ -1930,6 +2384,75 @@ func (v *Frame) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+func _Size_Decode(sr stream.Reader) (*Size, error) {
+	var v Size
+	err := v.Decode(sr)
+	return &v, err
+}
+
+// Decode deserializes a Frame struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Frame struct could not be generated from the wire
+// representation.
+func (v *Frame) Decode(sr stream.Reader) error {
+
+	topLeftIsSet := false
+	sizeIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TStruct {
+				v.TopLeft, err = _Point_Decode(sr)
+				if err != nil {
+					return err
+				}
+				topLeftIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TStruct {
+				v.Size, err = _Size_Decode(sr)
+				if err != nil {
+					return err
+				}
+				sizeIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !topLeftIsSet {
+		return errors.New("field TopLeft of Frame is required")
+	}
+
+	if !sizeIsSet {
+		return errors.New("field Size of Frame is required")
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a Frame
@@ -2266,6 +2789,117 @@ func (v *GoTags) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+// Decode deserializes a GoTags struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a GoTags struct could not be generated from the wire
+// representation.
+func (v *GoTags) Decode(sr stream.Reader) error {
+
+	FooIsSet := false
+
+	FooBarIsSet := false
+	FooBarWithSpaceIsSet := false
+
+	FooBarWithRequiredIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				v.Foo, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				FooIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.Bar = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if fh.Type == wire.TBinary {
+				v.FooBar, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				FooBarIsSet = true
+			}
+		case 4:
+			if fh.Type == wire.TBinary {
+				v.FooBarWithSpace, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				FooBarWithSpaceIsSet = true
+			}
+		case 5:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.FooBarWithOmitEmpty = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 6:
+			if fh.Type == wire.TBinary {
+				v.FooBarWithRequired, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				FooBarWithRequiredIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !FooIsSet {
+		return errors.New("field Foo of GoTags is required")
+	}
+
+	if !FooBarIsSet {
+		return errors.New("field FooBar of GoTags is required")
+	}
+
+	if !FooBarWithSpaceIsSet {
+		return errors.New("field FooBarWithSpace of GoTags is required")
+	}
+
+	if !FooBarWithRequiredIsSet {
+		return errors.New("field FooBarWithRequired of GoTags is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a GoTags
 // struct.
 func (v *GoTags) String() string {
@@ -2592,6 +3226,86 @@ func (v *Graph) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _List_Edge_Decode(sr stream.Reader) ([]*Edge, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TStruct {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]*Edge, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _Edge_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a Graph struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Graph struct could not be generated from the wire
+// representation.
+func (v *Graph) Decode(sr stream.Reader) error {
+
+	edgesIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TList {
+				v.Edges, err = _List_Edge_Decode(sr)
+				if err != nil {
+					return err
+				}
+				edgesIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !edgesIsSet {
+		return errors.New("field Edges of Graph is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a Graph
 // struct.
 func (v *Graph) String() string {
@@ -2700,6 +3414,11 @@ func (v *List) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *List) FromWire(w wire.Value) error {
 	return (*Node)(v).FromWire(w)
+}
+
+// Decode deserializes List directly off the wire.
+func (v *List) Decode(sr stream.Reader) error {
+	return (*Node)(v).Decode(sr)
 }
 
 // Equals returns true if this List is equal to the provided
@@ -2848,6 +3567,70 @@ func (v *Node) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+func _List_Decode(sr stream.Reader) (*List, error) {
+	var x List
+	err := x.Decode(sr)
+	return &x, err
+}
+
+// Decode deserializes a Node struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Node struct could not be generated from the wire
+// representation.
+func (v *Node) Decode(sr stream.Reader) error {
+
+	valueIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TI32 {
+				v.Value, err = sr.ReadInt32()
+				if err != nil {
+					return err
+				}
+				valueIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TStruct {
+				v.Tail, err = _List_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !valueIsSet {
+		return errors.New("field Value of Node is required")
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a Node
@@ -3322,6 +4105,154 @@ func (v *NotOmitEmpty) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _Map_String_String_Decode(sr stream.Reader) (map[string]string, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TBinary || mh.ValueType != wire.TBinary {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[string]string, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a NotOmitEmpty struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a NotOmitEmpty struct could not be generated from the wire
+// representation.
+func (v *NotOmitEmpty) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.NotOmitEmptyString = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.NotOmitEmptyInt = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.NotOmitEmptyBool = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 4:
+			if fh.Type == wire.TList {
+				v.NotOmitEmptyList, err = _List_String_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 5:
+			if fh.Type == wire.TMap {
+				v.NotOmitEmptyMap, err = _Map_String_String_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 6:
+			if fh.Type == wire.TList {
+				v.NotOmitEmptyListMixedWithOmitEmpty, err = _List_String_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 7:
+			if fh.Type == wire.TList {
+				v.NotOmitEmptyListMixedWithOmitEmptyV2, err = _List_String_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 8:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.OmitEmptyString = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a NotOmitEmpty
 // struct.
 func (v *NotOmitEmpty) String() string {
@@ -3718,6 +4649,69 @@ func (v *Omit) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+// Decode deserializes a Omit struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Omit struct could not be generated from the wire
+// representation.
+func (v *Omit) Decode(sr stream.Reader) error {
+
+	serializedIsSet := false
+	hiddenIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				v.Serialized, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				serializedIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TBinary {
+				v.Hidden, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				hiddenIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !serializedIsSet {
+		return errors.New("field Serialized of Omit is required")
+	}
+
+	if !hiddenIsSet {
+		return errors.New("field Hidden of Omit is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a Omit
 // struct.
 func (v *Omit) String() string {
@@ -3883,6 +4877,52 @@ func (v *PersonalInfo) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a PersonalInfo struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a PersonalInfo struct could not be generated from the wire
+// representation.
+func (v *PersonalInfo) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TI32 {
+				var x int32
+				x, err = sr.ReadInt32()
+				v.Age = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a PersonalInfo
@@ -4077,6 +5117,69 @@ func (v *Point) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a Point struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Point struct could not be generated from the wire
+// representation.
+func (v *Point) Decode(sr stream.Reader) error {
+
+	xIsSet := false
+	yIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TDouble {
+				v.X, err = sr.ReadDouble()
+				if err != nil {
+					return err
+				}
+				xIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TDouble {
+				v.Y, err = sr.ReadDouble()
+				if err != nil {
+					return err
+				}
+				yIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !xIsSet {
+		return errors.New("field X of Point is required")
+	}
+
+	if !yIsSet {
+		return errors.New("field Y of Point is required")
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a Point
@@ -4462,6 +5565,120 @@ func (v *PrimitiveOptionalStruct) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a PrimitiveOptionalStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a PrimitiveOptionalStruct struct could not be generated from the wire
+// representation.
+func (v *PrimitiveOptionalStruct) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBool {
+				var x bool
+				x, err = sr.ReadBool()
+				v.BoolField = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if fh.Type == wire.TI8 {
+				var x int8
+				x, err = sr.ReadInt8()
+				v.ByteField = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if fh.Type == wire.TI16 {
+				var x int16
+				x, err = sr.ReadInt16()
+				v.Int16Field = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 4:
+			if fh.Type == wire.TI32 {
+				var x int32
+				x, err = sr.ReadInt32()
+				v.Int32Field = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 5:
+			if fh.Type == wire.TI64 {
+				var x int64
+				x, err = sr.ReadInt64()
+				v.Int64Field = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 6:
+			if fh.Type == wire.TDouble {
+				var x float64
+				x, err = sr.ReadDouble()
+				v.DoubleField = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 7:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.StringField = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 8:
+			if fh.Type == wire.TBinary {
+				v.BinaryField, err = sr.ReadBinary()
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a PrimitiveOptionalStruct
@@ -5066,6 +6283,147 @@ func (v *PrimitiveRequiredStruct) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+// Decode deserializes a PrimitiveRequiredStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a PrimitiveRequiredStruct struct could not be generated from the wire
+// representation.
+func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
+
+	boolFieldIsSet := false
+	byteFieldIsSet := false
+	int16FieldIsSet := false
+	int32FieldIsSet := false
+	int64FieldIsSet := false
+	doubleFieldIsSet := false
+	stringFieldIsSet := false
+	binaryFieldIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBool {
+				v.BoolField, err = sr.ReadBool()
+				if err != nil {
+					return err
+				}
+				boolFieldIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TI8 {
+				v.ByteField, err = sr.ReadInt8()
+				if err != nil {
+					return err
+				}
+				byteFieldIsSet = true
+			}
+		case 3:
+			if fh.Type == wire.TI16 {
+				v.Int16Field, err = sr.ReadInt16()
+				if err != nil {
+					return err
+				}
+				int16FieldIsSet = true
+			}
+		case 4:
+			if fh.Type == wire.TI32 {
+				v.Int32Field, err = sr.ReadInt32()
+				if err != nil {
+					return err
+				}
+				int32FieldIsSet = true
+			}
+		case 5:
+			if fh.Type == wire.TI64 {
+				v.Int64Field, err = sr.ReadInt64()
+				if err != nil {
+					return err
+				}
+				int64FieldIsSet = true
+			}
+		case 6:
+			if fh.Type == wire.TDouble {
+				v.DoubleField, err = sr.ReadDouble()
+				if err != nil {
+					return err
+				}
+				doubleFieldIsSet = true
+			}
+		case 7:
+			if fh.Type == wire.TBinary {
+				v.StringField, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				stringFieldIsSet = true
+			}
+		case 8:
+			if fh.Type == wire.TBinary {
+				v.BinaryField, err = sr.ReadBinary()
+				if err != nil {
+					return err
+				}
+				binaryFieldIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !boolFieldIsSet {
+		return errors.New("field BoolField of PrimitiveRequiredStruct is required")
+	}
+
+	if !byteFieldIsSet {
+		return errors.New("field ByteField of PrimitiveRequiredStruct is required")
+	}
+
+	if !int16FieldIsSet {
+		return errors.New("field Int16Field of PrimitiveRequiredStruct is required")
+	}
+
+	if !int32FieldIsSet {
+		return errors.New("field Int32Field of PrimitiveRequiredStruct is required")
+	}
+
+	if !int64FieldIsSet {
+		return errors.New("field Int64Field of PrimitiveRequiredStruct is required")
+	}
+
+	if !doubleFieldIsSet {
+		return errors.New("field DoubleField of PrimitiveRequiredStruct is required")
+	}
+
+	if !stringFieldIsSet {
+		return errors.New("field StringField of PrimitiveRequiredStruct is required")
+	}
+
+	if !binaryFieldIsSet {
+		return errors.New("field BinaryField of PrimitiveRequiredStruct is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a PrimitiveRequiredStruct
 // struct.
 func (v *PrimitiveRequiredStruct) String() string {
@@ -5359,6 +6717,69 @@ func (v *Rename) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+// Decode deserializes a Rename struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Rename struct could not be generated from the wire
+// representation.
+func (v *Rename) Decode(sr stream.Reader) error {
+
+	DefaultIsSet := false
+	camelCaseIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				v.Default, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				DefaultIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TBinary {
+				v.CamelCase, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				camelCaseIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !DefaultIsSet {
+		return errors.New("field Default of Rename is required")
+	}
+
+	if !camelCaseIsSet {
+		return errors.New("field CamelCase of Rename is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a Rename
 // struct.
 func (v *Rename) String() string {
@@ -5558,6 +6979,69 @@ func (v *Size) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a Size struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Size struct could not be generated from the wire
+// representation.
+func (v *Size) Decode(sr stream.Reader) error {
+
+	widthIsSet := false
+	heightIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TDouble {
+				v.Width, err = sr.ReadDouble()
+				if err != nil {
+					return err
+				}
+				widthIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TDouble {
+				v.Height, err = sr.ReadDouble()
+				if err != nil {
+					return err
+				}
+				heightIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !widthIsSet {
+		return errors.New("field Width of Size is required")
+	}
+
+	if !heightIsSet {
+		return errors.New("field Height of Size is required")
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a Size
@@ -5818,6 +7302,82 @@ func (v *StructLabels) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a StructLabels struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a StructLabels struct could not be generated from the wire
+// representation.
+func (v *StructLabels) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBool {
+				var x bool
+				x, err = sr.ReadBool()
+				v.IsRequired = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.Foo = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.Qux = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 4:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.Quux = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a StructLabels
@@ -6127,6 +7687,84 @@ func (v *User) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _ContactInfo_Decode(sr stream.Reader) (*ContactInfo, error) {
+	var v ContactInfo
+	err := v.Decode(sr)
+	return &v, err
+}
+
+func _PersonalInfo_Decode(sr stream.Reader) (*PersonalInfo, error) {
+	var v PersonalInfo
+	err := v.Decode(sr)
+	return &v, err
+}
+
+// Decode deserializes a User struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a User struct could not be generated from the wire
+// representation.
+func (v *User) Decode(sr stream.Reader) error {
+
+	nameIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				v.Name, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				nameIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TStruct {
+				v.Contact, err = _ContactInfo_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if fh.Type == wire.TStruct {
+				v.Personal, err = _PersonalInfo_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !nameIsSet {
+		return errors.New("field Name of User is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a User
 // struct.
 func (v *User) String() string {
@@ -6323,6 +7961,52 @@ func _Map_String_User_Read(m wire.MapItemList) (map[string]*User, error) {
 	return o, err
 }
 
+func _User_Decode(sr stream.Reader) (*User, error) {
+	var v User
+	err := v.Decode(sr)
+	return &v, err
+}
+
+func _Map_String_User_Decode(sr stream.Reader) (map[string]*User, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TBinary || mh.ValueType != wire.TStruct {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[string]*User, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := _User_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
 func _Map_String_User_Equals(lhs, rhs map[string]*User) bool {
 	if len(lhs) != len(rhs) {
 		return false
@@ -6377,6 +8061,13 @@ func (v UserMap) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *UserMap) FromWire(w wire.Value) error {
 	x, err := _Map_String_User_Read(w.GetMap())
+	*v = (UserMap)(x)
+	return err
+}
+
+// Decode deserializes UserMap directly off the wire.
+func (v *UserMap) Decode(sr stream.Reader) error {
+	x, err := _Map_String_User_Decode(sr)
 	*v = (UserMap)(x)
 	return err
 }
@@ -6521,6 +8212,69 @@ func (v *ZapOptOutStruct) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a ZapOptOutStruct struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ZapOptOutStruct struct could not be generated from the wire
+// representation.
+func (v *ZapOptOutStruct) Decode(sr stream.Reader) error {
+
+	nameIsSet := false
+	optoutIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				v.Name, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				nameIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TBinary {
+				v.Optout, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				optoutIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !nameIsSet {
+		return errors.New("field Name of ZapOptOutStruct is required")
+	}
+
+	if !optoutIsSet {
+		return errors.New("field Optout of ZapOptOutStruct is required")
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a ZapOptOutStruct

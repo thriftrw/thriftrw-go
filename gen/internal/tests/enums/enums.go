@@ -1870,6 +1870,58 @@ func (v *StructWithOptionalEnum) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _EnumDefault_Decode(sr stream.Reader) (EnumDefault, error) {
+	var v EnumDefault
+	err := v.Decode(sr)
+	return v, err
+}
+
+// Decode deserializes a StructWithOptionalEnum struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a StructWithOptionalEnum struct could not be generated from the wire
+// representation.
+func (v *StructWithOptionalEnum) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TI32 {
+				var x EnumDefault
+				x, err = _EnumDefault_Decode(sr)
+				v.E = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a StructWithOptionalEnum
 // struct.
 func (v *StructWithOptionalEnum) String() string {

@@ -147,7 +147,7 @@ func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, err
 //     }
 //
 // And returns its name.
-func (l *listGenerator) Encode(g Generator, spec *compile.ListSpec) (string, error) {
+func (l *listGenerator) Encoder(g Generator, spec *compile.ListSpec) (string, error) {
 	name := encoderFuncName(g, spec)
 	err := g.EnsureDeclared(
 		`
@@ -176,6 +176,64 @@ func (l *listGenerator) Encode(g Generator, spec *compile.ListSpec) (string, err
 				}
 			}
 			return <$sw>.WriteListEnd()
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.ListSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
+// Decoder generates a function to read a list of the given type from a
+// stream.Reader.
+//
+//     func $name(sr *stream.Reader) ($listType, error) {
+//             ...
+//     }
+//
+// And returns its name.
+func (l *listGenerator) Decoder(g Generator, spec *compile.ListSpec) (string, error) {
+	name := decoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+		<$listType := typeReference .Spec>
+
+		<$sr := newVar "sr">
+		<$lh := newVar "lh">
+		<$o := newVar "o">
+		<$v := newVar "v">
+		func <.Name>(<$sr> <$stream>.Reader) (<$listType>, error) {
+			<$lh>, err := <$sr>.ReadListBegin()
+			if err != nil {
+				return nil, err
+			}
+
+			if <$lh>.Type != <typeCode .Spec.ValueSpec> {
+				for i := 0; i <lessthan> <$lh>.Length; i++ {
+					if err := <$sr>.Skip(<$lh>.Type); err != nil {
+						return nil, err
+					}
+				}
+				return nil, <$sr>.ReadListEnd()
+			}
+
+			<$o> := make(<$listType>, 0, <$lh>.Length)
+			for i := 0; i <lessthan> <$lh>.Length; i++ {
+				<$v>, err := <decode .Spec.ValueSpec $sr>
+				if err != nil {
+					return nil, err
+				}
+				<$o> = append(<$o>, <$v>)
+			}
+
+			if err = <$sr>.ReadListEnd(); err != nil {
+				return nil, err
+			}
+			return <$o>, err
 		}
 		`,
 		struct {

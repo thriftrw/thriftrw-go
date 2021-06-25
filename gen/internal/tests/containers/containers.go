@@ -1728,6 +1728,747 @@ func (v *ContainersOfContainers) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _List_I32_Decode(sr stream.Reader) ([]int32, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TI32 {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]int32, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := sr.ReadInt32()
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _List_List_I32_Decode(sr stream.Reader) ([][]int32, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TList {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([][]int32, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _List_I32_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Set_I32_mapType_Decode(sr stream.Reader) (map[int32]struct{}, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TI32 {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make(map[int32]struct{}, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := sr.ReadInt32()
+		if err != nil {
+			return nil, err
+		}
+
+		o[v] = struct{}{}
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _List_Set_I32_mapType_Decode(sr stream.Reader) ([]map[int32]struct{}, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TSet {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]map[int32]struct{}, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _Set_I32_mapType_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Map_I32_I32_Decode(sr stream.Reader) (map[int32]int32, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TI32 || mh.ValueType != wire.TI32 {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[int32]int32, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadInt32()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadInt32()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _List_Map_I32_I32_Decode(sr stream.Reader) ([]map[int32]int32, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TMap {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]map[int32]int32, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _Map_I32_I32_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Set_String_mapType_Decode(sr stream.Reader) (map[string]struct{}, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TBinary {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make(map[string]struct{}, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		o[v] = struct{}{}
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Set_Set_String_mapType_sliceType_Decode(sr stream.Reader) ([]map[string]struct{}, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TSet {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make([]map[string]struct{}, 0, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := _Set_String_mapType_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, v)
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _List_String_Decode(sr stream.Reader) ([]string, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TBinary {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]string, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Set_List_String_sliceType_Decode(sr stream.Reader) ([][]string, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TList {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make([][]string, 0, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := _List_String_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, v)
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Map_String_String_Decode(sr stream.Reader) (map[string]string, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TBinary || mh.ValueType != wire.TBinary {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[string]string, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Set_Map_String_String_sliceType_Decode(sr stream.Reader) ([]map[string]string, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TMap {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make([]map[string]string, 0, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := _Map_String_String_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, v)
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Map_String_I32_Decode(sr stream.Reader) (map[string]int32, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TBinary || mh.ValueType != wire.TI32 {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[string]int32, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadInt32()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Map_Map_String_I32_I64_Decode(sr stream.Reader) ([]struct {
+	Key   map[string]int32
+	Value int64
+}, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TMap || mh.ValueType != wire.TI64 {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make([]struct {
+		Key   map[string]int32
+		Value int64
+	}, 0, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := _Map_String_I32_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadInt64()
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, struct {
+			Key   map[string]int32
+			Value int64
+		}{k, v})
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Set_I64_mapType_Decode(sr stream.Reader) (map[int64]struct{}, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TI64 {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make(map[int64]struct{}, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := sr.ReadInt64()
+		if err != nil {
+			return nil, err
+		}
+
+		o[v] = struct{}{}
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Map_List_I32_Set_I64_mapType_Decode(sr stream.Reader) ([]struct {
+	Key   []int32
+	Value map[int64]struct{}
+}, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TList || mh.ValueType != wire.TSet {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make([]struct {
+		Key   []int32
+		Value map[int64]struct{}
+	}, 0, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := _List_I32_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := _Set_I64_mapType_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, struct {
+			Key   []int32
+			Value map[int64]struct{}
+		}{k, v})
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _List_Double_Decode(sr stream.Reader) ([]float64, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TDouble {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]float64, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := sr.ReadDouble()
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Map_Set_I32_mapType_List_Double_Decode(sr stream.Reader) ([]struct {
+	Key   map[int32]struct{}
+	Value []float64
+}, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TSet || mh.ValueType != wire.TList {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make([]struct {
+		Key   map[int32]struct{}
+		Value []float64
+	}, 0, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := _Set_I32_mapType_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := _List_Double_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, struct {
+			Key   map[int32]struct{}
+			Value []float64
+		}{k, v})
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a ContainersOfContainers struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ContainersOfContainers struct could not be generated from the wire
+// representation.
+func (v *ContainersOfContainers) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TList {
+				v.ListOfLists, err = _List_List_I32_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if fh.Type == wire.TList {
+				v.ListOfSets, err = _List_Set_I32_mapType_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if fh.Type == wire.TList {
+				v.ListOfMaps, err = _List_Map_I32_I32_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 4:
+			if fh.Type == wire.TSet {
+				v.SetOfSets, err = _Set_Set_String_mapType_sliceType_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 5:
+			if fh.Type == wire.TSet {
+				v.SetOfLists, err = _Set_List_String_sliceType_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 6:
+			if fh.Type == wire.TSet {
+				v.SetOfMaps, err = _Set_Map_String_String_sliceType_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 7:
+			if fh.Type == wire.TMap {
+				v.MapOfMapToInt, err = _Map_Map_String_I32_I64_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 8:
+			if fh.Type == wire.TMap {
+				v.MapOfListToSet, err = _Map_List_I32_Set_I64_mapType_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 9:
+			if fh.Type == wire.TMap {
+				v.MapOfSetToListOfDouble, err = _Map_Set_I32_mapType_List_Double_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a ContainersOfContainers
 // struct.
 func (v *ContainersOfContainers) String() string {
@@ -2996,6 +3737,185 @@ func (v *EnumContainers) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _EnumDefault_Decode(sr stream.Reader) (enums.EnumDefault, error) {
+	var v enums.EnumDefault
+	err := v.Decode(sr)
+	return v, err
+}
+
+func _List_EnumDefault_Decode(sr stream.Reader) ([]enums.EnumDefault, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TI32 {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]enums.EnumDefault, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _EnumDefault_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _EnumWithValues_Decode(sr stream.Reader) (enums.EnumWithValues, error) {
+	var v enums.EnumWithValues
+	err := v.Decode(sr)
+	return v, err
+}
+
+func _Set_EnumWithValues_mapType_Decode(sr stream.Reader) (map[enums.EnumWithValues]struct{}, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TI32 {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make(map[enums.EnumWithValues]struct{}, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := _EnumWithValues_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o[v] = struct{}{}
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _EnumWithDuplicateValues_Decode(sr stream.Reader) (enums.EnumWithDuplicateValues, error) {
+	var v enums.EnumWithDuplicateValues
+	err := v.Decode(sr)
+	return v, err
+}
+
+func _Map_EnumWithDuplicateValues_I32_Decode(sr stream.Reader) (map[enums.EnumWithDuplicateValues]int32, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TI32 || mh.ValueType != wire.TI32 {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[enums.EnumWithDuplicateValues]int32, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := _EnumWithDuplicateValues_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadInt32()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a EnumContainers struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a EnumContainers struct could not be generated from the wire
+// representation.
+func (v *EnumContainers) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TList {
+				v.ListOfEnums, err = _List_EnumDefault_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if fh.Type == wire.TSet {
+				v.SetOfEnums, err = _Set_EnumWithValues_mapType_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if fh.Type == wire.TMap {
+				v.MapOfEnums, err = _Map_EnumWithDuplicateValues_I32_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a EnumContainers
 // struct.
 func (v *EnumContainers) String() string {
@@ -3467,6 +4387,141 @@ func (v *ListOfConflictingEnums) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _RecordType_Decode(sr stream.Reader) (enum_conflict.RecordType, error) {
+	var v enum_conflict.RecordType
+	err := v.Decode(sr)
+	return v, err
+}
+
+func _List_RecordType_Decode(sr stream.Reader) ([]enum_conflict.RecordType, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TI32 {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]enum_conflict.RecordType, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _RecordType_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _RecordType_1_Decode(sr stream.Reader) (enums.RecordType, error) {
+	var v enums.RecordType
+	err := v.Decode(sr)
+	return v, err
+}
+
+func _List_RecordType_1_Decode(sr stream.Reader) ([]enums.RecordType, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TI32 {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]enums.RecordType, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _RecordType_1_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a ListOfConflictingEnums struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ListOfConflictingEnums struct could not be generated from the wire
+// representation.
+func (v *ListOfConflictingEnums) Decode(sr stream.Reader) error {
+
+	recordsIsSet := false
+	otherRecordsIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TList {
+				v.Records, err = _List_RecordType_Decode(sr)
+				if err != nil {
+					return err
+				}
+				recordsIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TList {
+				v.OtherRecords, err = _List_RecordType_1_Decode(sr)
+				if err != nil {
+					return err
+				}
+				otherRecordsIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !recordsIsSet {
+		return errors.New("field Records of ListOfConflictingEnums is required")
+	}
+
+	if !otherRecordsIsSet {
+		return errors.New("field OtherRecords of ListOfConflictingEnums is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a ListOfConflictingEnums
 // struct.
 func (v *ListOfConflictingEnums) String() string {
@@ -3866,6 +4921,141 @@ func (v *ListOfConflictingUUIDs) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _UUID_Decode(sr stream.Reader) (*typedefs.UUID, error) {
+	var x typedefs.UUID
+	err := x.Decode(sr)
+	return &x, err
+}
+
+func _List_UUID_Decode(sr stream.Reader) ([]*typedefs.UUID, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TStruct {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]*typedefs.UUID, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _UUID_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _UUID_1_Decode(sr stream.Reader) (uuid_conflict.UUID, error) {
+	var x uuid_conflict.UUID
+	err := x.Decode(sr)
+	return x, err
+}
+
+func _List_UUID_1_Decode(sr stream.Reader) ([]uuid_conflict.UUID, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TBinary {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]uuid_conflict.UUID, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _UUID_1_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a ListOfConflictingUUIDs struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ListOfConflictingUUIDs struct could not be generated from the wire
+// representation.
+func (v *ListOfConflictingUUIDs) Decode(sr stream.Reader) error {
+
+	uuidsIsSet := false
+	otherUUIDsIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TList {
+				v.Uuids, err = _List_UUID_Decode(sr)
+				if err != nil {
+					return err
+				}
+				uuidsIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TList {
+				v.OtherUUIDs, err = _List_UUID_1_Decode(sr)
+				if err != nil {
+					return err
+				}
+				otherUUIDsIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !uuidsIsSet {
+		return errors.New("field Uuids of ListOfConflictingUUIDs is required")
+	}
+
+	if !otherUUIDsIsSet {
+		return errors.New("field OtherUUIDs of ListOfConflictingUUIDs is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a ListOfConflictingUUIDs
 // struct.
 func (v *ListOfConflictingUUIDs) String() string {
@@ -4093,6 +5283,50 @@ func (v *ListOfOptionalPrimitives) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+// Decode deserializes a ListOfOptionalPrimitives struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ListOfOptionalPrimitives struct could not be generated from the wire
+// representation.
+func (v *ListOfOptionalPrimitives) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TList {
+				v.ListOfStrings, err = _List_String_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a ListOfOptionalPrimitives
 // struct.
 func (v *ListOfOptionalPrimitives) String() string {
@@ -4253,6 +5487,56 @@ func (v *ListOfRequiredPrimitives) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a ListOfRequiredPrimitives struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ListOfRequiredPrimitives struct could not be generated from the wire
+// representation.
+func (v *ListOfRequiredPrimitives) Decode(sr stream.Reader) error {
+
+	listOfStringsIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TList {
+				v.ListOfStrings, err = _List_String_Decode(sr)
+				if err != nil {
+					return err
+				}
+				listOfStringsIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !listOfStringsIsSet {
+		return errors.New("field ListOfStrings of ListOfRequiredPrimitives is required")
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a ListOfRequiredPrimitives
@@ -4637,6 +5921,147 @@ func (v *MapOfBinaryAndString) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+func _Map_Binary_String_Decode(sr stream.Reader) ([]struct {
+	Key   []byte
+	Value string
+}, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TBinary || mh.ValueType != wire.TBinary {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make([]struct {
+		Key   []byte
+		Value string
+	}, 0, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadBinary()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, struct {
+			Key   []byte
+			Value string
+		}{k, v})
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Map_String_Binary_Decode(sr stream.Reader) (map[string][]byte, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TBinary || mh.ValueType != wire.TBinary {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[string][]byte, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadBinary()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a MapOfBinaryAndString struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a MapOfBinaryAndString struct could not be generated from the wire
+// representation.
+func (v *MapOfBinaryAndString) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TMap {
+				v.BinaryToString, err = _Map_Binary_String_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if fh.Type == wire.TMap {
+				v.StringToBinary, err = _Map_String_Binary_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a MapOfBinaryAndString
@@ -5426,6 +6851,261 @@ func (v *PrimitiveContainers) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _List_Binary_Decode(sr stream.Reader) ([][]byte, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TBinary {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([][]byte, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := sr.ReadBinary()
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _List_I64_Decode(sr stream.Reader) ([]int64, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TI64 {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]int64, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := sr.ReadInt64()
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Set_Byte_mapType_Decode(sr stream.Reader) (map[int8]struct{}, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TI8 {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make(map[int8]struct{}, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := sr.ReadInt8()
+		if err != nil {
+			return nil, err
+		}
+
+		o[v] = struct{}{}
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Map_I32_String_Decode(sr stream.Reader) (map[int32]string, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TI32 || mh.ValueType != wire.TBinary {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[int32]string, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadInt32()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+func _Map_String_Bool_Decode(sr stream.Reader) (map[string]bool, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TBinary || mh.ValueType != wire.TBool {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[string]bool, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadString()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadBool()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a PrimitiveContainers struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a PrimitiveContainers struct could not be generated from the wire
+// representation.
+func (v *PrimitiveContainers) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TList {
+				v.ListOfBinary, err = _List_Binary_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if fh.Type == wire.TList {
+				v.ListOfInts, err = _List_I64_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if fh.Type == wire.TSet {
+				v.SetOfStrings, err = _Set_String_mapType_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 4:
+			if fh.Type == wire.TSet {
+				v.SetOfBytes, err = _Set_Byte_mapType_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 5:
+			if fh.Type == wire.TMap {
+				v.MapOfIntToString, err = _Map_I32_String_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 6:
+			if fh.Type == wire.TMap {
+				v.MapOfStringToBool, err = _Map_String_Bool_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a PrimitiveContainers
 // struct.
 func (v *PrimitiveContainers) String() string {
@@ -6015,6 +7695,122 @@ func (v *PrimitiveContainersRequired) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+func _Map_I64_Double_Decode(sr stream.Reader) (map[int64]float64, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TI64 || mh.ValueType != wire.TDouble {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[int64]float64, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := sr.ReadInt64()
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadDouble()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a PrimitiveContainersRequired struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a PrimitiveContainersRequired struct could not be generated from the wire
+// representation.
+func (v *PrimitiveContainersRequired) Decode(sr stream.Reader) error {
+
+	listOfStringsIsSet := false
+	setOfIntsIsSet := false
+	mapOfIntsToDoublesIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TList {
+				v.ListOfStrings, err = _List_String_Decode(sr)
+				if err != nil {
+					return err
+				}
+				listOfStringsIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TSet {
+				v.SetOfInts, err = _Set_I32_mapType_Decode(sr)
+				if err != nil {
+					return err
+				}
+				setOfIntsIsSet = true
+			}
+		case 3:
+			if fh.Type == wire.TMap {
+				v.MapOfIntsToDoubles, err = _Map_I64_Double_Decode(sr)
+				if err != nil {
+					return err
+				}
+				mapOfIntsToDoublesIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !listOfStringsIsSet {
+		return errors.New("field ListOfStrings of PrimitiveContainersRequired is required")
+	}
+
+	if !setOfIntsIsSet {
+		return errors.New("field SetOfInts of PrimitiveContainersRequired is required")
+	}
+
+	if !mapOfIntsToDoublesIsSet {
+		return errors.New("field MapOfIntsToDoubles of PrimitiveContainersRequired is required")
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a PrimitiveContainersRequired

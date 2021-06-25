@@ -86,6 +86,37 @@ func _Set_Binary_sliceType_Read(s wire.ValueList) ([][]byte, error) {
 	return o, err
 }
 
+func _Set_Binary_sliceType_Decode(sr stream.Reader) ([][]byte, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TBinary {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make([][]byte, 0, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := sr.ReadBinary()
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, v)
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
 func _Set_Binary_sliceType_Equals(lhs, rhs [][]byte) bool {
 	if len(lhs) != len(rhs) {
 		return false
@@ -144,6 +175,13 @@ func (v BinarySet) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *BinarySet) FromWire(w wire.Value) error {
 	x, err := _Set_Binary_sliceType_Read(w.GetSet())
+	*v = (BinarySet)(x)
+	return err
+}
+
+// Decode deserializes BinarySet directly off the wire.
+func (v *BinarySet) Decode(sr stream.Reader) error {
+	x, err := _Set_Binary_sliceType_Decode(sr)
 	*v = (BinarySet)(x)
 	return err
 }
@@ -287,6 +325,62 @@ func (v *DefaultPrimitiveTypedef) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+func _State_Decode(sr stream.Reader) (State, error) {
+	var x State
+	err := x.Decode(sr)
+	return x, err
+}
+
+// Decode deserializes a DefaultPrimitiveTypedef struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a DefaultPrimitiveTypedef struct could not be generated from the wire
+// representation.
+func (v *DefaultPrimitiveTypedef) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				var x State
+				x, err = _State_Decode(sr)
+				v.State = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if v.State == nil {
+		v.State = _State_ptr("hello")
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a DefaultPrimitiveTypedef
@@ -477,6 +571,61 @@ func _Map_Edge_Edge_Read(m wire.MapItemList) ([]struct {
 	return o, err
 }
 
+func _Edge_Decode(sr stream.Reader) (*structs.Edge, error) {
+	var v structs.Edge
+	err := v.Decode(sr)
+	return &v, err
+}
+
+func _Map_Edge_Edge_Decode(sr stream.Reader) ([]struct {
+	Key   *structs.Edge
+	Value *structs.Edge
+}, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TStruct || mh.ValueType != wire.TStruct {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make([]struct {
+		Key   *structs.Edge
+		Value *structs.Edge
+	}, 0, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := _Edge_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := _Edge_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, struct {
+			Key   *structs.Edge
+			Value *structs.Edge
+		}{k, v})
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
 func _Map_Edge_Edge_Equals(lhs, rhs []struct {
 	Key   *structs.Edge
 	Value *structs.Edge
@@ -577,6 +726,13 @@ func (v EdgeMap) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *EdgeMap) FromWire(w wire.Value) error {
 	x, err := _Map_Edge_Edge_Read(w.GetMap())
+	*v = (EdgeMap)(x)
+	return err
+}
+
+// Decode deserializes EdgeMap directly off the wire.
+func (v *EdgeMap) Decode(sr stream.Reader) error {
+	x, err := _Map_Edge_Edge_Decode(sr)
 	*v = (EdgeMap)(x)
 	return err
 }
@@ -750,6 +906,78 @@ func (v *Event) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _UUID_Decode(sr stream.Reader) (*UUID, error) {
+	var x UUID
+	err := x.Decode(sr)
+	return &x, err
+}
+
+func _Timestamp_Decode(sr stream.Reader) (Timestamp, error) {
+	var x Timestamp
+	err := x.Decode(sr)
+	return x, err
+}
+
+// Decode deserializes a Event struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Event struct could not be generated from the wire
+// representation.
+func (v *Event) Decode(sr stream.Reader) error {
+
+	uuidIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TStruct {
+				v.UUID, err = _UUID_Decode(sr)
+				if err != nil {
+					return err
+				}
+				uuidIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TI64 {
+				var x Timestamp
+				x, err = _Timestamp_Decode(sr)
+				v.Time = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !uuidIsSet {
+		return errors.New("field UUID of Event is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a Event
 // struct.
 func (v *Event) String() string {
@@ -912,6 +1140,42 @@ func _List_Event_Read(l wire.ValueList) ([]*Event, error) {
 	return o, err
 }
 
+func _Event_Decode(sr stream.Reader) (*Event, error) {
+	var v Event
+	err := v.Decode(sr)
+	return &v, err
+}
+
+func _List_Event_Decode(sr stream.Reader) ([]*Event, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TStruct {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]*Event, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _Event_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
 func _List_Event_Equals(lhs, rhs []*Event) bool {
 	if len(lhs) != len(rhs) {
 		return false
@@ -964,6 +1228,13 @@ func (v EventGroup) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *EventGroup) FromWire(w wire.Value) error {
 	x, err := _List_Event_Read(w.GetList())
+	*v = (EventGroup)(x)
+	return err
+}
+
+// Decode deserializes EventGroup directly off the wire.
+func (v *EventGroup) Decode(sr stream.Reader) error {
+	x, err := _List_Event_Decode(sr)
 	*v = (EventGroup)(x)
 	return err
 }
@@ -1052,6 +1323,43 @@ func _Set_Frame_sliceType_Read(s wire.ValueList) ([]*structs.Frame, error) {
 	return o, err
 }
 
+func _Frame_Decode(sr stream.Reader) (*structs.Frame, error) {
+	var v structs.Frame
+	err := v.Decode(sr)
+	return &v, err
+}
+
+func _Set_Frame_sliceType_Decode(sr stream.Reader) ([]*structs.Frame, error) {
+	sh, err := sr.ReadSetBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if sh.Type != wire.TStruct {
+		for i := 0; i < sh.Length; i++ {
+			if err := sr.Skip(sh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadSetEnd()
+	}
+
+	o := make([]*structs.Frame, 0, sh.Length)
+	for i := 0; i < sh.Length; i++ {
+		v, err := _Frame_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, v)
+	}
+
+	if err = sr.ReadSetEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
 func _Set_Frame_sliceType_Equals(lhs, rhs []*structs.Frame) bool {
 	if len(lhs) != len(rhs) {
 		return false
@@ -1114,6 +1422,13 @@ func (v *FrameGroup) FromWire(w wire.Value) error {
 	return err
 }
 
+// Decode deserializes FrameGroup directly off the wire.
+func (v *FrameGroup) Decode(sr stream.Reader) error {
+	x, err := _Set_Frame_sliceType_Decode(sr)
+	*v = (FrameGroup)(x)
+	return err
+}
+
 // Equals returns true if this FrameGroup is equal to the provided
 // FrameGroup.
 func (lhs FrameGroup) Equals(rhs FrameGroup) bool {
@@ -1127,6 +1442,12 @@ func (v FrameGroup) MarshalLogArray(enc zapcore.ArrayEncoder) error {
 func _EnumWithValues_Read(w wire.Value) (enums.EnumWithValues, error) {
 	var v enums.EnumWithValues
 	err := v.FromWire(w)
+	return v, err
+}
+
+func _EnumWithValues_Decode(sr stream.Reader) (enums.EnumWithValues, error) {
+	var v enums.EnumWithValues
+	err := v.Decode(sr)
 	return v, err
 }
 
@@ -1161,6 +1482,13 @@ func (v MyEnum) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *MyEnum) FromWire(w wire.Value) error {
 	x, err := _EnumWithValues_Read(w)
+	*v = (MyEnum)(x)
+	return err
+}
+
+// Decode deserializes MyEnum directly off the wire.
+func (v *MyEnum) Decode(sr stream.Reader) error {
+	x, err := _EnumWithValues_Decode(sr)
 	*v = (MyEnum)(x)
 	return err
 }
@@ -1203,6 +1531,11 @@ func (v *MyUUID) FromWire(w wire.Value) error {
 	return (*UUID)(v).FromWire(w)
 }
 
+// Decode deserializes MyUUID directly off the wire.
+func (v *MyUUID) Decode(sr stream.Reader) error {
+	return (*UUID)(v).Decode(sr)
+}
+
 // Equals returns true if this MyUUID is equal to the provided
 // MyUUID.
 func (lhs *MyUUID) Equals(rhs *MyUUID) bool {
@@ -1239,6 +1572,13 @@ func (v PDF) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *PDF) FromWire(w wire.Value) error {
 	x, err := w.GetBinary(), error(nil)
+	*v = (PDF)(x)
+	return err
+}
+
+// Decode deserializes PDF directly off the wire.
+func (v *PDF) Decode(sr stream.Reader) error {
+	x, err := sr.ReadBinary()
 	*v = (PDF)(x)
 	return err
 }
@@ -1366,6 +1706,61 @@ func _Map_Point_Point_Read(m wire.MapItemList) ([]struct {
 	return o, err
 }
 
+func _Point_Decode(sr stream.Reader) (*structs.Point, error) {
+	var v structs.Point
+	err := v.Decode(sr)
+	return &v, err
+}
+
+func _Map_Point_Point_Decode(sr stream.Reader) ([]struct {
+	Key   *structs.Point
+	Value *structs.Point
+}, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TStruct || mh.ValueType != wire.TStruct {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make([]struct {
+		Key   *structs.Point
+		Value *structs.Point
+	}, 0, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := _Point_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := _Point_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		o = append(o, struct {
+			Key   *structs.Point
+			Value *structs.Point
+		}{k, v})
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
 func _Map_Point_Point_Equals(lhs, rhs []struct {
 	Key   *structs.Point
 	Value *structs.Point
@@ -1470,6 +1865,13 @@ func (v *PointMap) FromWire(w wire.Value) error {
 	return err
 }
 
+// Decode deserializes PointMap directly off the wire.
+func (v *PointMap) Decode(sr stream.Reader) error {
+	x, err := _Map_Point_Point_Decode(sr)
+	*v = (PointMap)(x)
+	return err
+}
+
 // Equals returns true if this PointMap is equal to the provided
 // PointMap.
 func (lhs PointMap) Equals(rhs PointMap) bool {
@@ -1520,6 +1922,13 @@ func (v State) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *State) FromWire(w wire.Value) error {
 	x, err := w.GetString(), error(nil)
+	*v = (State)(x)
+	return err
+}
+
+// Decode deserializes State directly off the wire.
+func (v *State) Decode(sr stream.Reader) error {
+	x, err := sr.ReadString()
 	*v = (State)(x)
 	return err
 }
@@ -1616,6 +2025,46 @@ func _Map_State_I64_Read(m wire.MapItemList) (map[State]int64, error) {
 	return o, err
 }
 
+func _Map_State_I64_Decode(sr stream.Reader) (map[State]int64, error) {
+	mh, err := sr.ReadMapBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if mh.KeyType != wire.TBinary || mh.ValueType != wire.TI64 {
+		for i := 0; i < mh.Length; i++ {
+			if err := sr.Skip(mh.KeyType); err != nil {
+				return nil, err
+			}
+
+			if err := sr.Skip(mh.ValueType); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadMapEnd()
+	}
+
+	o := make(map[State]int64, mh.Length)
+	for i := 0; i < mh.Length; i++ {
+		k, err := _State_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+
+		v, err := sr.ReadInt64()
+		if err != nil {
+			return nil, err
+		}
+
+		o[k] = v
+	}
+
+	if err = sr.ReadMapEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
 func _Map_State_I64_Equals(lhs, rhs map[State]int64) bool {
 	if len(lhs) != len(rhs) {
 		return false
@@ -1674,6 +2123,13 @@ func (v *StateMap) FromWire(w wire.Value) error {
 	return err
 }
 
+// Decode deserializes StateMap directly off the wire.
+func (v *StateMap) Decode(sr stream.Reader) error {
+	x, err := _Map_State_I64_Decode(sr)
+	*v = (StateMap)(x)
+	return err
+}
+
 // Equals returns true if this StateMap is equal to the provided
 // StateMap.
 func (lhs StateMap) Equals(rhs StateMap) bool {
@@ -1718,6 +2174,13 @@ func (v Timestamp) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *Timestamp) FromWire(w wire.Value) error {
 	x, err := w.GetI64(), error(nil)
+	*v = (Timestamp)(x)
+	return err
+}
+
+// Decode deserializes Timestamp directly off the wire.
+func (v *Timestamp) Decode(sr stream.Reader) error {
+	x, err := sr.ReadInt64()
 	*v = (Timestamp)(x)
 	return err
 }
@@ -1893,6 +2356,83 @@ func (v *Transition) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+func _EventGroup_Decode(sr stream.Reader) (EventGroup, error) {
+	var x EventGroup
+	err := x.Decode(sr)
+	return x, err
+}
+
+// Decode deserializes a Transition struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Transition struct could not be generated from the wire
+// representation.
+func (v *Transition) Decode(sr stream.Reader) error {
+
+	fromStateIsSet := false
+	toStateIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				v.FromState, err = _State_Decode(sr)
+				if err != nil {
+					return err
+				}
+				fromStateIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TBinary {
+				v.ToState, err = _State_Decode(sr)
+				if err != nil {
+					return err
+				}
+				toStateIsSet = true
+			}
+		case 3:
+			if fh.Type == wire.TList {
+				v.Events, err = _EventGroup_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !fromStateIsSet {
+		return errors.New("field FromState of Transition is required")
+	}
+
+	if !toStateIsSet {
+		return errors.New("field ToState of Transition is required")
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a Transition
@@ -2099,6 +2639,62 @@ func (v *TransitiveTypedefField) Encode(sw stream.Writer) error {
 	return sw.WriteStructEnd()
 }
 
+func _MyUUID_Decode(sr stream.Reader) (*MyUUID, error) {
+	var x MyUUID
+	err := x.Decode(sr)
+	return &x, err
+}
+
+// Decode deserializes a TransitiveTypedefField struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a TransitiveTypedefField struct could not be generated from the wire
+// representation.
+func (v *TransitiveTypedefField) Decode(sr stream.Reader) error {
+
+	defUUIDIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TStruct {
+				v.DefUUID, err = _MyUUID_Decode(sr)
+				if err != nil {
+					return err
+				}
+				defUUIDIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !defUUIDIsSet {
+		return errors.New("field DefUUID of TransitiveTypedefField is required")
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a TransitiveTypedefField
 // struct.
 func (v *TransitiveTypedefField) String() string {
@@ -2181,6 +2777,11 @@ func (v *UUID) Encode(sw stream.Writer) error {
 // from a ThriftRW protocol implementation.
 func (v *UUID) FromWire(w wire.Value) error {
 	return (*I128)(v).FromWire(w)
+}
+
+// Decode deserializes UUID directly off the wire.
+func (v *UUID) Decode(sr stream.Reader) error {
+	return (*I128)(v).Decode(sr)
 }
 
 // Equals returns true if this UUID is equal to the provided
@@ -2323,6 +2924,69 @@ func (v *I128) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a I128 struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a I128 struct could not be generated from the wire
+// representation.
+func (v *I128) Decode(sr stream.Reader) error {
+
+	highIsSet := false
+	lowIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TI64 {
+				v.High, err = sr.ReadInt64()
+				if err != nil {
+					return err
+				}
+				highIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TI64 {
+				v.Low, err = sr.ReadInt64()
+				if err != nil {
+					return err
+				}
+				lowIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	if !highIsSet {
+		return errors.New("field High of I128 is required")
+	}
+
+	if !lowIsSet {
+		return errors.New("field Low of I128 is required")
+	}
+
+	return nil
 }
 
 // String returns a readable string representation of a I128

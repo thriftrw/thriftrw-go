@@ -21,6 +21,7 @@
 package gen
 
 import (
+	"bytes"
 	"encoding"
 	"encoding/json"
 	"fmt"
@@ -41,6 +42,7 @@ import (
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	ahf "go.uber.org/thriftrw/gen/internal/tests/hyphenated-file"
 	hf "go.uber.org/thriftrw/gen/internal/tests/hyphenated_file"
+	nf "go.uber.org/thriftrw/gen/internal/tests/non_hyphenated"
 	tz "go.uber.org/thriftrw/gen/internal/tests/nozap"
 	tf "go.uber.org/thriftrw/gen/internal/tests/services"
 	tss "go.uber.org/thriftrw/gen/internal/tests/set_to_slice"
@@ -49,6 +51,7 @@ import (
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
 	tul "go.uber.org/thriftrw/gen/internal/tests/uuid_conflict"
 	envex "go.uber.org/thriftrw/internal/envelope/exception"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/wire"
 )
 
@@ -336,6 +339,8 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: tf.KeyValue_GetManyValues_Args{}, Kind: thriftStruct},
 		{Sample: ahf.DocumentStruct{}, Kind: thriftStruct},
 		{Sample: hf.DocumentStructure{}, Kind: thriftStruct},
+		{Sample: nf.First{}, Kind: thriftStruct},
+		{Sample: nf.Second{}, Kind: thriftStruct},
 
 		{
 			Sample:    tf.KeyValue_GetManyValues_Result{},
@@ -570,6 +575,12 @@ func TestQuickSuite(t *testing.T) {
 				}
 			})
 
+			t.Run("Thrift Streaming", func(t *testing.T) {
+				for _, give := range values {
+					suite.testThriftRoundTripStreaming(t, give, tt.DefaultThriftType)
+				}
+			})
+
 			t.Run("String", func(t *testing.T) {
 				for _, give := range values {
 					suite.testString(t, give)
@@ -736,6 +747,39 @@ func (q *quickSuite) testThriftRoundTrip(t *testing.T, give, defaults thriftType
 	if shouldCheckForMutation {
 		// assert that give has not been mutated to the want object during the ToWire call
 		assert.NotEqual(t, want, give)
+	}
+}
+
+func (q *quickSuite) testThriftRoundTripStreaming(t *testing.T, give, defaults thriftType) {
+	var buf bytes.Buffer
+
+	want := populateDefaults(give, defaults)
+	shouldCheckForMutation := defaults != nil && !assert.ObjectsAreEqual(want, give)
+
+	sGive, ok := give.(streamingThriftType)
+	require.True(t, ok, "given thrift type must satisfy streaming requirements")
+
+	sWant, ok := want.(streamingThriftType)
+	require.True(t, ok, "default thrift type must satisfy streaming requirements")
+
+	sw := binary.BorrowStreamWriter(&buf)
+	require.NoError(t, sGive.Encode(sw), "failed to streaming encode %v", sGive)
+	binary.ReturnStreamWriter(sw)
+
+	gType := reflect.TypeOf(sGive)
+	if gType.Kind() == reflect.Ptr {
+		gType = gType.Elem()
+	}
+
+	got := reflect.New(gType).Interface().(streamingThriftType)
+
+	sr := binary.NewStreamReader(&buf)
+	require.NoError(t, got.Decode(&sr), "failed to streaming decode from %v", buf)
+
+	assert.Equal(t, want, got)
+	if shouldCheckForMutation {
+		// assert that give has not been mutated to the want object during the ToWire call
+		assert.NotEqual(t, sWant, sGive)
 	}
 }
 

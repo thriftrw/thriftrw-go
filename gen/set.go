@@ -142,7 +142,7 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
-func (s *setGenerator) Encode(g Generator, spec *compile.SetSpec) (string, error) {
+func (s *setGenerator) Encoder(g Generator, spec *compile.SetSpec) (string, error) {
 	name := encoderFuncName(g, spec)
 	err := g.EnsureDeclared(
 		`
@@ -185,7 +185,72 @@ func (s *setGenerator) Encode(g Generator, spec *compile.SetSpec) (string, error
 	)
 
 	return name, wrapGenerateError(spec.ThriftName(), err)
+}
 
+// Decoder generates a function to read a set of the given type from a
+// stream.Reader.
+//
+//     func $name(sr *stream.Reader) ($setType, error) {
+//             ...
+//     }
+//
+// And returns its name.
+func (s *setGenerator) Decoder(g Generator, spec *compile.SetSpec) (string, error) {
+	name := decoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+		<$setType := typeReference .Spec>
+
+		<$sr := newVar "sr">
+		<$sh := newVar "sh">
+		<$o := newVar "o">
+		<$v := newVar "v">
+		func <.Name>(<$sr> <$stream>.Reader) (<$setType>, error) {
+			<$sh>, err := <$sr>.ReadSetBegin()
+			if err != nil {
+				return nil, err
+			}
+
+			if <$sh>.Type != <typeCode .Spec.ValueSpec> {
+				for i := 0; i <lessthan> <$sh>.Length; i++ {
+					if err := <$sr>.Skip(<$sh>.Type); err != nil {
+						return nil, err
+					}
+				}
+				return nil, <$sr>.ReadSetEnd()
+			}
+
+			<if setUsesMap .Spec>
+				<$o> := make(<$setType>, <$sh>.Length)
+			<else>
+				<$o> := make(<$setType>, 0, <$sh>.Length)
+			<end ->
+			for i := 0; i <lessthan> <$sh>.Length; i++ {
+				<$v>, err := <decode .Spec.ValueSpec $sr>
+				if err != nil {
+					return nil, err
+				}
+				<if setUsesMap .Spec>
+					<$o>[<$v>] = struct{}{}
+				<else>
+					<$o> = append(<$o>, <$v>)
+				<end ->
+			}
+
+			if err = <$sr>.ReadSetEnd(); err != nil {
+				return nil, err
+			}
+			return <$o>, err
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.SetSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
 // Equals generates a function to compare sets of the given type

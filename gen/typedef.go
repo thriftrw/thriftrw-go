@@ -52,6 +52,33 @@ func (t *typedefGenerator) Reader(g Generator, spec *compile.TypedefSpec) (strin
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+func (t *typedefGenerator) Decoder(g Generator, spec *compile.TypedefSpec) (string, error) {
+	name := decoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+
+		<$sr := newVar "sr">
+		<$x := newVar "x">
+		func <.Name>(<$sr> <$stream>.Reader) (<typeReference .Spec>, error) {
+			var <$x> <typeName .Spec>
+			err := <$x>.Decode(<$sr>)
+			<if isStructType .Spec.Target ->
+				return &<$x>, err
+			<- else ->
+				return <$x>, err
+			<- end>
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.TypedefSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
 // typedef generates code for the given typedef.
 func typedef(g Generator, spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
@@ -102,6 +129,18 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 				return (<typeReference .Target>)(<$v>).FromWire(<$w>)
 			<- else ->
 				<$x>, err := <fromWire .Target $w>
+				*<$v> = (<$typedefType>)(<$x>)
+				return err
+			<- end>
+		}
+
+		<$sr := newVar "sr">
+		// Decode deserializes <typeName .> directly off the wire.
+		func (<$v> *<typeName .>) Decode(<$sr> <$stream>.Reader) error {
+			<if isStructType . ->
+				return (<typeReference .Target>)(<$v>).Decode(<$sr>)
+			<- else ->
+				<$x>, err := <decode .Target $sr>
 				*<$v> = (<$typedefType>)(<$x>)
 				return err
 			<- end>

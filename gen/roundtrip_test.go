@@ -91,9 +91,9 @@ func testRoundTripCombos(t *testing.T, x thriftType, v wire.Value, msg string) {
 		decode bool
 	}{
 		{false, false},
-		//{false, true},
+		{false, true},
 		{true, false},
-		//{true, true},
+		{true, true},
 	}
 
 	for _, streaming := range useStreaming {
@@ -105,6 +105,8 @@ func testRoundTripCombos(t *testing.T, x thriftType, v wire.Value, msg string) {
 			if xType.Kind() == reflect.Ptr {
 				xType = xType.Elem()
 			}
+
+			streamer := protocol.BinaryStreamer
 
 			if streaming.encode {
 				w := binary.BorrowStreamWriter(&buff)
@@ -120,8 +122,12 @@ func testRoundTripCombos(t *testing.T, x thriftType, v wire.Value, msg string) {
 			}
 
 			if streaming.decode {
-				// TODO: Fill in with streaming decode implementation
-				t.Skip()
+				reader := streamer.Reader(bytes.NewReader(buff.Bytes()))
+				gotX, ok := reflect.New(xType).Interface().(streamingThriftType)
+				require.True(t, ok)
+
+				require.NoError(t, gotX.Decode(reader), "streaming decode")
+				assert.Equal(t, x, gotX)
 			} else {
 				newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), v.Type())
 				require.NoError(t, err, "failed to deserialize")
