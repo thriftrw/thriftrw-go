@@ -20,8 +20,10 @@
 
 package internal
 
+import "go.uber.org/thriftrw/ast"
+
 // ParseError holds a parse error and the position that caused it.
 type ParseError struct {
-	Pos Position
+	Pos ast.Position
 	Err error
 }

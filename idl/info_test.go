@@ -31,7 +31,7 @@ import (
 func TestPos(t *testing.T) {
 	tests := []struct {
 		node ast.Node
-		pos  *internal.Position
+		pos  *ast.Position
 		want ast.Position
 	}{
 		{
@@ -44,7 +44,7 @@ func TestPos(t *testing.T) {
 		},
 		{
 			node: ast.ConstantString("s"),
-			pos:  &internal.Position{Line: 1},
+			pos:  &ast.Position{Line: 1},
 			want: ast.Position{Line: 1},
 		},
 	}

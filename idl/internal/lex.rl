@@ -351,11 +351,11 @@ func (lex *lexer) Error(e string) {
 
 func (lex *lexer) AppendError(err error)  {
   lex.parseFailed = true
-  lex.errors = append(lex.errors, ParseError{Pos: Position{Line: lex.line}, Err: err})
+  lex.errors = append(lex.errors, ParseError{Pos: ast.Position{Line: lex.line}, Err: err})
 }
 
 func (lex* lexer) RecordPosition(n ast.Node) {
-    lex.nodePositions[n] = Position{Line: lex.line}
+    lex.nodePositions[n] = ast.Position{Line: lex.line}
 }
 
 func (lex *lexer) LastDocstring() string {
