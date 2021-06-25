@@ -18,7 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package idl provides a parser for Thrift IDL files.
 package idl
 
 import (
@@ -26,9 +25,16 @@ import (
 	"go.uber.org/thriftrw/idl/internal"
 )
 
-// Parse parses a Thrift document. If there is an error, it will be of type
-// *ParseError.
-func Parse(s []byte) (*ast.Program, error) {
-	prog, _, errors := internal.Parse(s)
-	return prog, newParseError(errors)
+// Info contains additional information about the parsed document.
+type Info struct {
+	nodePositions internal.NodePositions
+}
+
+// Pos returns a node's position in the parsed document.
+func (i *Info) Pos(n ast.Node) Position {
+	if line := ast.LineNumber(n); line != 0 {
+		return Position{Line: line}
+	}
+	pos := i.nodePositions[n]
+	return Position{Line: pos.Line}
 }

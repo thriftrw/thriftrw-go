@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Uber Technologies, Inc.
+// Copyright (c) 2015 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,17 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package idl provides a parser for Thrift IDL files.
 package idl
 
 import (
+	"testing"
+
 	"go.uber.org/thriftrw/ast"
-	"go.uber.org/thriftrw/idl/internal"
+
+	"github.com/stretchr/testify/assert"
 )
 
-// Parse parses a Thrift document. If there is an error, it will be of type
-// *ParseError.
-func Parse(s []byte) (*ast.Program, error) {
-	prog, _, errors := internal.Parse(s)
-	return prog, newParseError(errors)
+func TestParse(t *testing.T) {
+	c := &Config{}
+	prog, err := c.Parse([]byte{})
+	if assert.NoError(t, err, "%v", err) {
+		assert.Equal(t, &ast.Program{}, prog)
+	}
+}
+
+func TestInfoPos(t *testing.T) {
+	c := &Config{Info: &Info{}}
+	prog, err := c.Parse([]byte(`const string a = 'a';`))
+	if assert.NoError(t, err, "%v", err) {
+		assert.Equal(t, Position{Line: 0}, c.Info.Pos(prog))
+		assert.Equal(t, Position{Line: 1}, c.Info.Pos(prog.Definitions[0]))
+	}
 }

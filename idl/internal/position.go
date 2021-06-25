@@ -20,7 +20,12 @@
 
 package internal
 
+import "go.uber.org/thriftrw/ast"
+
 // Position represents a position in the parsed document.
 type Position struct {
 	Line int
 }
+
+// NodePositions maps (hashable) nodes to their document positions.
+type NodePositions map[ast.Node]Position

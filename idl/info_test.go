@@ -18,17 +18,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package idl provides a parser for Thrift IDL files.
 package idl
 
 import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 	"go.uber.org/thriftrw/ast"
 	"go.uber.org/thriftrw/idl/internal"
 )
 
-// Parse parses a Thrift document. If there is an error, it will be of type
-// *ParseError.
-func Parse(s []byte) (*ast.Program, error) {
-	prog, _, errors := internal.Parse(s)
-	return prog, newParseError(errors)
+func TestPos(t *testing.T) {
+	tests := []struct {
+		node ast.Node
+		pos  *internal.Position
+		want Position
+	}{
+		{
+			node: &ast.Struct{Line: 10},
+			want: Position{Line: 10},
+		},
+		{
+			node: ast.ConstantString("s"),
+			want: Position{Line: 0},
+		},
+		{
+			node: ast.ConstantString("s"),
+			pos:  &internal.Position{Line: 1},
+			want: Position{Line: 1},
+		},
+	}
+
+	for _, tt := range tests {
+		i := &Info{}
+		if tt.pos != nil {
+			i.nodePositions = internal.NodePositions{tt.node: *tt.pos}
+		}
+		assert.Equal(t, tt.want, i.Pos(tt.node))
+	}
 }
