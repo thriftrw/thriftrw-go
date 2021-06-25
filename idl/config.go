@@ -34,9 +34,9 @@ type Config struct {
 
 // Parse parses the given Thrift document.
 func (c *Config) Parse(s []byte) (*ast.Program, error) {
-	prog, nodePositions, errors := internal.Parse(s)
+	result, errors := internal.Parse(s)
 	if c.Info != nil {
-		c.Info.nodePositions = nodePositions
+		c.Info.nodePositions = result.NodePositions
 	}
-	return prog, newParseError(errors)
+	return result.Program, newParseError(errors)
 }

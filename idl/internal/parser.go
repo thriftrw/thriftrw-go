@@ -26,14 +26,23 @@ func init() {
 	yyErrorVerbose = true
 }
 
+// ParseResult holds the result of a successful Parse.
+type ParseResult struct {
+	Program       *ast.Program
+	NodePositions NodePositions
+}
+
 // Parse parses the given Thrift document.
-func Parse(s []byte) (*ast.Program, NodePositions, []ParseError) {
+func Parse(s []byte) (ParseResult, []ParseError) {
 	lex := newLexer(s)
 	e := yyParse(lex)
 	if e == 0 && !lex.parseFailed {
-		return lex.program, lex.nodePositions, nil
+		return ParseResult{
+			Program:       lex.program,
+			NodePositions: lex.nodePositions,
+		}, nil
 	}
-	return nil, nil, lex.errors
+	return ParseResult{}, lex.errors
 }
 
 //go:generate ragel -Z -G2 -o lex.go lex.rl
