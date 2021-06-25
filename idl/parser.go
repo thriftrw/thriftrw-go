@@ -29,6 +29,6 @@ import (
 // Parse parses a Thrift document. If there is an error, it will be of type
 // *ParseError.
 func Parse(s []byte) (*ast.Program, error) {
-	prog, errors := internal.Parse(s)
-	return prog, newParseError(errors)
+	result, errors := internal.Parse(s)
+	return result.Program, newParseError(errors)
 }

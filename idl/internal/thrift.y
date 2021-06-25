@@ -386,13 +386,12 @@ base_type_name
 /***************************************************************************
  Constant values
  ***************************************************************************/
-
 const_value
-    : INTCONSTANT { $$ = ast.ConstantInteger($1) }
-    | DUBCONSTANT { $$ = ast.ConstantDouble($1) }
-    | TRUE        { $$ = ast.ConstantBoolean(true) }
-    | FALSE       { $$ = ast.ConstantBoolean(false) }
-    | LITERAL     { $$ = ast.ConstantString($1) }
+    : INTCONSTANT { $$ = ast.ConstantInteger($1); yylex.(*lexer).RecordPosition($$) }
+    | DUBCONSTANT { $$ = ast.ConstantDouble($1); yylex.(*lexer).RecordPosition($$) }
+    | TRUE        { $$ = ast.ConstantBoolean(true); yylex.(*lexer).RecordPosition($$) }
+    | FALSE       { $$ = ast.ConstantBoolean(false); yylex.(*lexer).RecordPosition($$) }
+    | LITERAL     { $$ = ast.ConstantString($1); yylex.(*lexer).RecordPosition($$) }
     | lineno IDENTIFIER
         { $$ = ast.ConstantReference{Name: $2, Line: $1} }
 
