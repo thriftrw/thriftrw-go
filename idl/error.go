@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"fmt"
 
+	"go.uber.org/thriftrw/ast"
 	"go.uber.org/thriftrw/idl/internal"
 )
 
@@ -33,7 +34,7 @@ type ParseError struct{ Errors []Error }
 
 // Error holds an error and the position that caused it.
 type Error struct {
-	Pos Position
+	Pos ast.Position
 	Err error
 }
 
@@ -44,7 +45,7 @@ func newParseError(errors []internal.ParseError) error {
 	errs := make([]Error, len(errors))
 	for i, err := range errors {
 		errs[i] = Error{
-			Pos: Position{Line: err.Pos.Line},
+			Pos: ast.Position{Line: err.Pos.Line},
 			Err: err.Err,
 		}
 	}

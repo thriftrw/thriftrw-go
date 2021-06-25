@@ -30,11 +30,11 @@ type Info struct {
 	nodePositions internal.NodePositions
 }
 
-// Pos returns a node's position in the parsed document.
-func (i *Info) Pos(n ast.Node) Position {
-	if line := ast.LineNumber(n); line != 0 {
-		return Position{Line: line}
+// Pos returns a Node's position in the parsed document.
+func (i *Info) Pos(n ast.Node) ast.Position {
+	if pos, ok := ast.Pos(n); ok {
+		return pos
 	}
 	pos := i.nodePositions[n]
-	return Position{Line: pos.Line}
+	return ast.Position{Line: pos.Line}
 }
