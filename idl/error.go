@@ -45,7 +45,7 @@ func newParseError(errors []internal.ParseError) error {
 	errs := make([]Error, len(errors))
 	for i, err := range errors {
 		errs[i] = Error{
-			Pos: ast.Position{Line: err.Pos.Line},
+			Pos: err.Pos,
 			Err: err.Err,
 		}
 	}
