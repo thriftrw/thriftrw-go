@@ -26,6 +26,7 @@ type Position struct {
 }
 
 // Pos attempts to return the position of a Node in the parsed document.
+// For most use cases, prefer to use idl.Info to access positional information.
 func Pos(n Node) (Position, bool) {
 	if nl, ok := n.(nodeWithLine); ok {
 		return Position{Line: nl.lineNumber()}, true
