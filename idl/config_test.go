@@ -39,8 +39,8 @@ func TestParse(t *testing.T) {
 func TestInfoPos(t *testing.T) {
 	c := &Config{Info: &Info{}}
 	prog, err := c.Parse([]byte(`const string a = 'a';`))
-	if assert.NoError(t, err, "%v", err) {
-		assert.Equal(t, Position{Line: 0}, c.Info.Pos(prog))
-		assert.Equal(t, Position{Line: 1}, c.Info.Pos(prog.Definitions[0]))
+	if assert.NoError(t, err) {
+		assert.Equal(t, ast.Position{Line: 0}, c.Info.Pos(prog))
+		assert.Equal(t, ast.Position{Line: 1}, c.Info.Pos(prog.Definitions[0]))
 	}
 }
