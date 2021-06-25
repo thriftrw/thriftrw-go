@@ -32,20 +32,20 @@ func TestPos(t *testing.T) {
 	tests := []struct {
 		node ast.Node
 		pos  *internal.Position
-		want Position
+		want ast.Position
 	}{
 		{
 			node: &ast.Struct{Line: 10},
-			want: Position{Line: 10},
+			want: ast.Position{Line: 10},
 		},
 		{
 			node: ast.ConstantString("s"),
-			want: Position{Line: 0},
+			want: ast.Position{Line: 0},
 		},
 		{
 			node: ast.ConstantString("s"),
 			pos:  &internal.Position{Line: 1},
-			want: Position{Line: 1},
+			want: ast.Position{Line: 1},
 		},
 	}
 

@@ -18,9 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package idl
+package ast
 
 // Position represents a position in the parsed document.
 type Position struct {
 	Line int
+}
+
+// Pos attempts to return the position of a Node in the parsed document.
+func Pos(n Node) (Position, bool) {
+	if nl, ok := n.(nodeWithLine); ok {
+		return Position{Line: nl.lineNumber()}, true
+	}
+	return Position{}, false
 }
