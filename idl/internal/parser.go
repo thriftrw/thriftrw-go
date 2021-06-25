@@ -26,6 +26,9 @@ func init() {
 	yyErrorVerbose = true
 }
 
+// NodePositions maps (hashable) nodes to their document positions.
+type NodePositions map[ast.Node]ast.Position
+
 // ParseResult holds the result of a successful Parse.
 type ParseResult struct {
 	Program       *ast.Program
