@@ -27,6 +27,7 @@ type lexer struct {
     docstringStart int
     lastDocstring string
     linesSinceDocstring int
+    nodePositions NodePositions
 
     errors []ParseError
     parseFailed bool
@@ -40,6 +41,7 @@ type lexer struct {
 func newLexer(data []byte) *lexer {
     lex := &lexer{
         line: 1,
+        nodePositions: make(NodePositions, 0),
         parseFailed: false,
         data: data,
         p: 0,
@@ -350,6 +352,10 @@ func (lex *lexer) Error(e string) {
 func (lex *lexer) AppendError(err error)  {
   lex.parseFailed = true
   lex.errors = append(lex.errors, ParseError{Pos: Position{Line: lex.line}, Err: err})
+}
+
+func (lex* lexer) RecordPosition(n ast.Node) {
+    lex.nodePositions[n] = Position{Line: lex.line}
 }
 
 func (lex *lexer) LastDocstring() string {

@@ -18,37 +18,42 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package idl
 
-import "go.uber.org/thriftrw/ast"
+import (
+	"testing"
 
-func init() {
-	yyErrorVerbose = true
-}
+	"github.com/stretchr/testify/assert"
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/idl/internal"
+)
 
-// ParseResult holds the result of a successful Parse.
-type ParseResult struct {
-	Program       *ast.Program
-	NodePositions NodePositions
-}
-
-// Parse parses the given Thrift document.
-func Parse(s []byte) (ParseResult, []ParseError) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return ParseResult{
-			Program:       lex.program,
-			NodePositions: lex.nodePositions,
-		}, nil
+func TestPos(t *testing.T) {
+	tests := []struct {
+		node ast.Node
+		pos  *internal.Position
+		want Position
+	}{
+		{
+			node: &ast.Struct{Line: 10},
+			want: Position{Line: 10},
+		},
+		{
+			node: ast.ConstantString("s"),
+			want: Position{Line: 0},
+		},
+		{
+			node: ast.ConstantString("s"),
+			pos:  &internal.Position{Line: 1},
+			want: Position{Line: 1},
+		},
 	}
-	return ParseResult{}, lex.errors
+
+	for _, tt := range tests {
+		i := &Info{}
+		if tt.pos != nil {
+			i.nodePositions = internal.NodePositions{tt.node: *tt.pos}
+		}
+		assert.Equal(t, tt.want, i.Pos(tt.node))
+	}
 }
-
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
-
-//go:generate goyacc -l thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh

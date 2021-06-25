@@ -1037,26 +1037,31 @@ yydefault:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
 			yyVAL.constantValue = ast.ConstantInteger(yyDollar[1].i64)
+			yylex.(*lexer).RecordPosition(yyVAL.constantValue)
 		}
 	case 57:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
 			yyVAL.constantValue = ast.ConstantDouble(yyDollar[1].dub)
+			yylex.(*lexer).RecordPosition(yyVAL.constantValue)
 		}
 	case 58:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
 			yyVAL.constantValue = ast.ConstantBoolean(true)
+			yylex.(*lexer).RecordPosition(yyVAL.constantValue)
 		}
 	case 59:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
 			yyVAL.constantValue = ast.ConstantBoolean(false)
+			yylex.(*lexer).RecordPosition(yyVAL.constantValue)
 		}
 	case 60:
 		yyDollar = yyS[yypt-1 : yypt+1]
 		{
 			yyVAL.constantValue = ast.ConstantString(yyDollar[1].str)
+			yylex.(*lexer).RecordPosition(yyVAL.constantValue)
 		}
 	case 61:
 		yyDollar = yyS[yypt-2 : yypt+1]
