@@ -58,13 +58,13 @@ func (sg *StreamGenerator) Encode(g Generator, spec compile.TypeSpec, varName st
 	case *compile.BinarySpec:
 		return fmt.Sprintf("%s.WriteBinary(%s)", sw, varName), nil
 	case *compile.MapSpec:
-		encoder, err := sg.mapG.Encode(g, s)
+		encoder, err := sg.mapG.Encoder(g, s)
 		return fmt.Sprintf("%s(%s, %s)", encoder, varName, sw), err
 	case *compile.ListSpec:
-		encoder, err := sg.listG.Encode(g, s)
+		encoder, err := sg.listG.Encoder(g, s)
 		return fmt.Sprintf("%s(%s, %s)", encoder, varName, sw), err
 	case *compile.SetSpec:
-		encoder, err := sg.setG.Encode(g, s)
+		encoder, err := sg.setG.Encoder(g, s)
 		return fmt.Sprintf("%s(%s, %s)", encoder, varName, sw), err
 	default:
 		return fmt.Sprintf("%s.Encode(%s)", varName, sw), nil

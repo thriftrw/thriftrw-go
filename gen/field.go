@@ -309,8 +309,8 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 		//     return err
 		//   }
 		func (<$v> *<.Name>) ToWire() (<$wire>.Value, error) {
-    		<$fields := newVar "fields" ->
-    		<- $i := newVar "i" ->
+			<$fields := newVar "fields" ->
+			<- $i := newVar "i" ->
 			<- $wVal := newVar "w" ->
 
 			var (

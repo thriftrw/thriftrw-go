@@ -186,7 +186,7 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 //     }
 //
 // And returns its name.
-func (m *mapGenerator) Encode(g Generator, spec *compile.MapSpec) (string, error) {
+func (m *mapGenerator) Encoder(g Generator, spec *compile.MapSpec) (string, error) {
 	name := encoderFuncName(g, spec)
 	err := g.EnsureDeclared(
 		`

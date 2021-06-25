@@ -147,7 +147,7 @@ func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, err
 //     }
 //
 // And returns its name.
-func (l *listGenerator) Encode(g Generator, spec *compile.ListSpec) (string, error) {
+func (l *listGenerator) Encoder(g Generator, spec *compile.ListSpec) (string, error) {
 	name := encoderFuncName(g, spec)
 	err := g.EnsureDeclared(
 		`

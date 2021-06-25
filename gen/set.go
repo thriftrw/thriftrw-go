@@ -142,7 +142,7 @@ func (s *setGenerator) Reader(g Generator, spec *compile.SetSpec) (string, error
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
-func (s *setGenerator) Encode(g Generator, spec *compile.SetSpec) (string, error) {
+func (s *setGenerator) Encoder(g Generator, spec *compile.SetSpec) (string, error) {
 	name := encoderFuncName(g, spec)
 	err := g.EnsureDeclared(
 		`
