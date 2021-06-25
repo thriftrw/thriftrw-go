@@ -31,7 +31,7 @@ import (
 func TestParse(t *testing.T) {
 	c := &Config{}
 	prog, err := c.Parse([]byte{})
-	if assert.NoError(t, err, "%v", err) {
+	if assert.NoError(t, err) {
 		assert.Equal(t, &ast.Program{}, prog)
 	}
 }
