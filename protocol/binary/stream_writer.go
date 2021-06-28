@@ -231,3 +231,10 @@ func (sw *StreamWriter) WriteMapBegin(m stream.MapHeader) error {
 func (sw *StreamWriter) WriteMapEnd() error {
 	return nil
 }
+
+// Close frees up the resources used by the StreamWriter and returns it back
+// to the pool.
+func (sw *StreamWriter) Close() error {
+	ReturnStreamWriter(sw)
+	return nil
+}

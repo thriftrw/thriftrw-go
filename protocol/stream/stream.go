@@ -95,6 +95,7 @@ type Writer interface {
 	WriteSetEnd() error
 	WriteListBegin(l ListHeader) error
 	WriteListEnd() error
+	Close() error
 }
 
 // Reader defines an decoder for a Thrift value, implemented in a streaming

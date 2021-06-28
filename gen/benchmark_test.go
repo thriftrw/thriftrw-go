@@ -138,6 +138,7 @@ func BenchmarkRoundTrip(b *testing.B) {
 			give, ok := bb.give.(streamingThriftType)
 			require.True(b, ok)
 			require.NoError(b, give.Encode(writer), "StreamEncode")
+			require.NoError(b, writer.Close(), "Close StreamWriter")
 		}
 	}
 
