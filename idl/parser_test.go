@@ -95,58 +95,58 @@ func TestParseErrors(t *testing.T) {
 	}{
 		{
 			give:       "namespace foo \x00",
-			wantErrors: []string{"line 1: unknown token at index 14"},
+			wantErrors: []string{"line 1:15: unknown token"},
 		},
 		{
 			give:       `const string 42 = "foo"`,
-			wantErrors: []string{"line 1:", "unexpected INTCONSTANT, expecting IDENTIFIER"},
+			wantErrors: []string{"line 1:14", "unexpected INTCONSTANT, expecting IDENTIFIER"},
 		},
 		{
 			give:       `typedef foo bar baz`,
-			wantErrors: []string{"line 1:", "unexpected IDENTIFIER"},
+			wantErrors: []string{"line 1:17", "unexpected IDENTIFIER"},
 		},
 		{
 			give:       `typedef foo`,
-			wantErrors: []string{"line 1:", "unexpected $end"},
+			wantErrors: []string{"line 1:9", "unexpected $end"},
 		},
 		{
 			give:       `enum Foo {`,
-			wantErrors: []string{"line 1:", "unexpected $end"},
+			wantErrors: []string{"line 1:10", "unexpected $end"},
 		},
 		{
 			give:       `enum { }`,
-			wantErrors: []string{"line 1:", "unexpected '{'"},
+			wantErrors: []string{"line 1:6", "unexpected '{'"},
 		},
 		{
 			give: `
 				enum Foo {}
 				include "bar.thrift"
 			`,
-			wantErrors: []string{"line 3:", "unexpected INCLUDE"},
+			wantErrors: []string{"line 3:5", "unexpected INCLUDE"},
 		},
 		{
 			give:       `service Foo extends {}`,
-			wantErrors: []string{"line 1:", "unexpected '{'"},
+			wantErrors: []string{"line 1:21", "unexpected '{'"},
 		},
 		{
 			give:       `service Foo Bar {}`,
-			wantErrors: []string{"line 1:", "unexpected IDENTIFIER"},
+			wantErrors: []string{"line 1:13", "unexpected IDENTIFIER"},
 		},
 		{
 			give:       `service Foo { void foo() () (foo = "bar") }`,
-			wantErrors: []string{"line 1:", "unexpected '('"},
+			wantErrors: []string{"line 1:29", "unexpected '('"},
 		},
 		{
 			give:       `service Foo { void foo() throws }`,
-			wantErrors: []string{"line 1:", "unexpected '}'"},
+			wantErrors: []string{"line 1:33", "unexpected '}'"},
 		},
 		{
 			give:       `typedef string (foo =) UUID`,
-			wantErrors: []string{"line 1:", "unexpected ')'"},
+			wantErrors: []string{"line 1:22", "unexpected ')'"},
 		},
 		{
 			give:       `union Operation { 1: Insert insert; 2: Delete delete }`,
-			wantErrors: []string{"line 1:", `"delete" is a reserved keyword`},
+			wantErrors: []string{"line 1:47", `"delete" is a reserved keyword`},
 		},
 	}
 

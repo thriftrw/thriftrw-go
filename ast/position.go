@@ -21,8 +21,10 @@
 package ast
 
 // Position represents a position in the parsed document.
+// Line and column numbers are 1-based.
 type Position struct {
-	Line int
+	Line   int
+	Column int
 }
 
 // Pos attempts to return the position of a Node in the parsed document.
