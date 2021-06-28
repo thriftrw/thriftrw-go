@@ -56,7 +56,7 @@ func (pe *ParseError) Error() string {
 	var buffer bytes.Buffer
 	buffer.WriteString("parse error\n")
 	for _, pe := range pe.Errors {
-		buffer.WriteString(fmt.Sprintf("  line %d:%d: %s\n", pe.Pos.Line, pe.Pos.Column, pe.Err))
+		buffer.WriteString(fmt.Sprintf("  line %s: %s\n", pe.Pos, pe.Err))
 	}
 	return buffer.String()
 }

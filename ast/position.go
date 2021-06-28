@@ -20,11 +20,21 @@
 
 package ast
 
+import "strconv"
+
 // Position represents a position in the parsed document.
 // Line and column numbers are 1-based.
 type Position struct {
 	Line   int
 	Column int
+}
+
+func (p Position) String() string {
+	s := strconv.Itoa(p.Line)
+	if c := p.Column; c > 0 {
+		s += ":" + strconv.Itoa(c)
+	}
+	return s
 }
 
 // Pos attempts to return the position of a Node in the parsed document.
