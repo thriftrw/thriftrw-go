@@ -41,13 +41,16 @@ const thrift_en_main int = 19
 
 
 type lexer struct {
-	line    int
 	program *ast.Program
+
+	line      int
+	lineStart int
 
 	docstringStart      int
 	lastDocstring       string
 	linesSinceDocstring int
-	nodePositions       NodePositions
+
+	nodePositions NodePositions
 
 	errors      []ParseError
 	parseFailed bool
@@ -1365,6 +1368,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr29:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		lex.te = (lex.p) + 1
@@ -2094,6 +2098,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr13:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st10
@@ -2143,6 +2148,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr18:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st13
@@ -2481,6 +2487,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr73:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st33
@@ -4369,6 +4376,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr134:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st93
@@ -4490,6 +4498,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr139:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st97
@@ -4704,6 +4713,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr146:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st104
@@ -5116,6 +5126,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr162:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st117
@@ -5545,6 +5556,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr176:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st131
@@ -6073,6 +6085,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr194:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st147
@@ -6985,6 +6998,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr223:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st175
@@ -7274,6 +7288,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr234:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st184
@@ -7457,6 +7472,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr241:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st190
@@ -7650,6 +7666,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr252:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st196
@@ -8438,6 +8455,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr278:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st221
@@ -8528,6 +8546,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr282:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st224
@@ -8618,6 +8637,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr286:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st227
@@ -8677,6 +8697,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr289:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st229
@@ -9125,6 +9146,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr306:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st243
@@ -9775,6 +9797,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr325:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st264
@@ -9898,6 +9921,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr331:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st268
@@ -10275,6 +10299,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr345:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st280
@@ -10588,6 +10613,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr355:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st290
@@ -10833,6 +10859,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr364:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st298
@@ -11811,6 +11838,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr397:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st329
@@ -12165,6 +12193,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr412:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st340
@@ -12224,6 +12253,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr415:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st342
@@ -12473,6 +12503,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr424:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st350
@@ -12594,6 +12625,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr429:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st354
@@ -13104,6 +13136,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr446:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st370
@@ -13384,6 +13417,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr456:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st379
@@ -13598,6 +13632,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr464:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st386
@@ -13822,6 +13857,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr475:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st393
@@ -14228,6 +14264,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 	tr487:
 
 		lex.line++
+		lex.lineStart = lex.p + 1
 		lex.linesSinceDocstring++
 
 		goto st406
@@ -16596,7 +16633,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 
 
 	if lex.cs == thrift_error {
-		lex.AppendError(fmt.Errorf("unknown token at index %d", lex.p))
+		lex.Error("unknown token")
 	}
 	return tok
 }
@@ -16607,7 +16644,10 @@ func (lex *lexer) Error(e string) {
 
 func (lex *lexer) AppendError(err error) {
 	lex.parseFailed = true
-	lex.errors = append(lex.errors, ParseError{Pos: ast.Position{Line: lex.line}, Err: err})
+	lex.errors = append(lex.errors, ParseError{
+		Pos: ast.Position{Line: lex.line, Column: lex.ts - lex.lineStart + 1},
+		Err: err,
+	})
 }
 
 func (lex *lexer) RecordPosition(n ast.Node) {
