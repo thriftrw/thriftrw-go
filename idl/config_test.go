@@ -42,5 +42,9 @@ func TestInfoPos(t *testing.T) {
 	if assert.NoError(t, err) {
 		assert.Equal(t, ast.Position{Line: 0}, c.Info.Pos(prog))
 		assert.Equal(t, ast.Position{Line: 1}, c.Info.Pos(prog.Definitions[0]))
+		if assert.IsType(t, &ast.Constant{}, prog.Definitions[0]) {
+			cv := prog.Definitions[0].(*ast.Constant).Value
+			assert.Equal(t, ast.Position{Line: 1, Column: 18}, c.Info.Pos(cv))
+		}
 	}
 }

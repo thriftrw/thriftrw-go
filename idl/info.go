@@ -35,6 +35,5 @@ func (i *Info) Pos(n ast.Node) ast.Position {
 	if pos, ok := ast.Pos(n); ok {
 		return pos
 	}
-	pos := i.nodePositions[n]
-	return ast.Position{Line: pos.Line}
+	return i.nodePositions[n]
 }
