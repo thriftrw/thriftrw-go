@@ -21,6 +21,7 @@
 package binary
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 
@@ -161,54 +162,89 @@ func (p *Protocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Valu
 	return val, NoEnvelopeResponder, err
 }
 
-// noEnvelopeResponder responds to a request without an envelope.
-type noEnvelopeResponder struct{}
+// ReadRequest reads off the request envelope (if present) from the Reader and
+// returns a stream.Reader for the caller to read off the remaining un-enveloped
+// request struct. In addition, ReadRequest also returns a stream.ResponseWriter
+// for writing the response with an envelope style that matches the request.
+// This allows a Thrift request handler to transparently accept requests
+// regardless of whether the caller submits an envelope.
+// The caller specifies the expected envelope type, one of OneWay or Unary, on
+// which the decoder asserts if the envelope is present.
+//
+// This is possible because we can distinguish an envelope from a bare request
+// struct by looking at the first byte and the length of the message.
+//
+// 1. A message of length 1 containing only 0x00 can only be an empty struct.
+// 0x00 is the type ID for STOP, indicating the end of the struct.
+//
+// 2. A message of length >1 starting with 0x00 can only be a non-strict
+// envelope (not versioned), assuming the message name is less than 16MB long.
+// In this case, the first four bytes indicate the length of the method name,
+// which is unlikely to overflow into the high byte.
+//
+// 3. A message of length >1, where the first byte is <0 can only be a strict envelope.
+// The MSB indicates that the message is versioned. Reading the first two bytes
+// and masking out the MSB indicates the version number.
+// At this time, there is only one version.
+//
+// 4. A message of length >1, where the first byte is >=0 can only be a bare
+// struct starting with that field identifier. Valid field identifiers today
+// are in the range 0x00-0x0f. There is some chance that a future version of
+// the protocol will add more field types, but it is very unlikely that the
+// field type will flow into the MSB (128 type identifiers, starting with the
+// 15 valid types today).
+//
+// Callers must call Close() on the stream.Reader once finished.
+func (p *Protocol) ReadRequest(et wire.EnvelopeType, r io.Reader) (stream.Reader, stream.ResponseWriter, error) {
+	var buf [2]byte
 
-func (noEnvelopeResponder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error {
-	return Default.Encode(v, w)
+	if count, _ := r.Read(buf[0:2]); count < 2 {
+		return p.Reader(bytes.NewReader(buf[:])), NoEnvelopeResponder, nil
+	}
+
+	// reset the Reader to properly read the envelope, if it exists;
+	r = io.MultiReader(bytes.NewReader(buf[:]), r)
+	sr := p.Reader(r)
+
+	if buf[0] == 0x00 {
+		eh, err := p.readEnvelopeHeader(sr, et)
+		if err != nil {
+			sr.Close()
+			return nil, NoEnvelopeResponder, err
+		}
+		return sr, &EnvelopeV0Responder{
+			Name:  eh.Name,
+			SeqID: eh.SeqID,
+		}, nil
+	}
+
+	if buf[0]&0x80 > 0 {
+		eh, err := p.readEnvelopeHeader(sr, et)
+		if err != nil {
+			sr.Close()
+			return nil, NoEnvelopeResponder, err
+		}
+		return sr, &EnvelopeV1Responder{
+			Name:  eh.Name,
+			SeqID: eh.SeqID,
+		}, nil
+	}
+
+	// For anything else, the request is either not-enveloped or invalid, let the
+	// caller manage that data
+	return sr, NoEnvelopeResponder, nil
 }
 
-// NoEnvelopeResponder responds to a request without an envelope.
-var NoEnvelopeResponder = &noEnvelopeResponder{}
-
-// EnvelopeV0Responder responds to requests with a non-strict (unversioned) envelope.
-type EnvelopeV0Responder struct {
-	Name  string
-	SeqID int32
-}
-
-// EncodeResponse writes the response to the writer using a non-strict
-// envelope.
-func (r EnvelopeV0Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error {
-	writer := BorrowWriter(w)
-	err := writer.WriteLegacyEnveloped(wire.Envelope{
-		Name:  r.Name,
-		Type:  t,
-		SeqID: r.SeqID,
-		Value: v,
-	})
-	ReturnWriter(writer)
-	return err
-}
-
-// EnvelopeV1Responder responds to requests with a strict, version 1 envelope.
-type EnvelopeV1Responder struct {
-	Name  string
-	SeqID int32
-}
-
-// EncodeResponse writes the response to the writer using a strict, version 1
-// envelope.
-func (r EnvelopeV1Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error {
-	writer := BorrowWriter(w)
-	err := writer.WriteEnveloped(wire.Envelope{
-		Name:  r.Name,
-		Type:  t,
-		SeqID: r.SeqID,
-		Value: v,
-	})
-	ReturnWriter(writer)
-	return err
+func (p *Protocol) readEnvelopeHeader(sr stream.Reader, et wire.EnvelopeType) (stream.EnvelopeHeader, error) {
+	eh, err := sr.ReadEnvelopeBegin()
+	if err != nil {
+		return eh, err
+	}
+	if eh.Type != et {
+		return eh, errUnexpectedEnvelopeType(eh.Type)
+	}
+	err = sr.ReadEnvelopeEnd()
+	return eh, err
 }
 
 type errUnexpectedEnvelopeType wire.EnvelopeType
