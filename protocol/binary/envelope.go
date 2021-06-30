@@ -23,6 +23,7 @@ package binary
 import (
 	"fmt"
 
+	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
 )
 
@@ -33,39 +34,41 @@ const (
 
 // WriteEnveloped writes enveloped value using the strict envelope.
 func (bw *Writer) WriteEnveloped(e wire.Envelope) error {
-	version := uint32(version1) | uint32(e.Type)
-
-	if err := bw.sw.WriteInt32(int32(version)); err != nil {
+	if err := bw.sw.WriteEnvelopeBegin(
+		stream.EnvelopeHeader{
+			Name:  e.Name,
+			Type:  e.Type,
+			SeqID: e.SeqID,
+		},
+	); err != nil {
 		return err
 	}
 
-	if err := bw.sw.WriteString(e.Name); err != nil {
+	if err := bw.WriteValue(e.Value); err != nil {
 		return err
 	}
 
-	if err := bw.sw.WriteInt32(e.SeqID); err != nil {
-		return err
-	}
-
-	return bw.WriteValue(e.Value)
+	return bw.sw.WriteEnvelopeEnd()
 }
 
 // WriteLegacyEnveloped writes enveloped value using the non-strict envelope
 // (non-strict lacks an envelope version).
 func (bw *Writer) WriteLegacyEnveloped(e wire.Envelope) error {
-	if err := bw.sw.WriteString(e.Name); err != nil {
+	if err := bw.sw.WriteLegacyEnvelopeBegin(
+		stream.EnvelopeHeader{
+			Name:  e.Name,
+			Type:  e.Type,
+			SeqID: e.SeqID,
+		},
+	); err != nil {
 		return err
 	}
 
-	if err := bw.sw.writeByte(uint8(e.Type)); err != nil {
+	if err := bw.WriteValue(e.Value); err != nil {
 		return err
 	}
 
-	if err := bw.sw.WriteInt32(e.SeqID); err != nil {
-		return err
-	}
-
-	return bw.WriteValue(e.Value)
+	return bw.sw.WriteLegacyEnvelopeEnd()
 }
 
 // ReadEnveloped reads an Apache Thrift envelope
