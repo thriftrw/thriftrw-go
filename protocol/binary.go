@@ -21,6 +21,7 @@
 package protocol
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 
@@ -29,6 +30,12 @@ import (
 	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
 )
+
+
+// TBinary an implementation of the Thrift Binary and Streaming Protocol.
+// TODO: Deprecate Binary, BinaryStreamer, and EnvelopeAgnosticBinary
+//  in favor of TBinary
+var TBinary = binaryProtocol{}
 
 // Binary implements the Thrift Binary Protocol.
 // Binary can be cast up to EnvelopeAgnosticProtocol to support DecodeRequest.
@@ -229,6 +236,92 @@ func (b binaryProtocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire
 	// identifiers, outside the 0-15 range.
 	val, err := b.Decode(r, wire.TStruct)
 	return val, NoEnvelopeResponder, err
+}
+
+// ReadRequest reads off the request envelope (if present) from the Reader and
+// returns a stream.Reader for the caller to read off the remaining un-enveloped request struct.
+// Additionally, the method returns a stream.ResponseWriter for writing a response with
+// an envelope style that matches the request.
+//
+// This allows a Thrift request handler to transparently accept requests
+// regardless of whether the caller submits an envelope.
+// The caller specifies the expected envelope type, one of OneWay or Unary, on
+// which the decoder asserts if the envelope is present.
+//
+// This is possible because we can distinguish an envelope from a bare request
+// struct by looking at the first byte and the length of the message.
+//
+// 1. A message of length 1 containing only 0x00 can only be an empty struct.
+// 0x00 is the type ID for STOP, indicating the end of the struct.
+//
+// 2. A message of length >1 starting with 0x00 can only be a non-strict
+// envelope (not versioned), assuming the message name is less than 16MB long.
+// In this case, the first four bytes indicate the length of the method name,
+// which is unlikely to overflow into the high byte.
+//
+// 3. A message of length >1, where the first byte is <0 can only be a strict envelope.
+// The MSB indicates that the message is versioned. Reading the first two bytes
+// and masking out the MSB indicates the version number.
+// At this time, there is only one version.
+//
+// 4. A message of length >1, where the first byte is >=0 can only be a bare
+// struct starting with that field identifier. Valid field identifiers today
+// are in the range 0x00-0x0f. There is some chance that a future version of
+// the protocol will add more field types, but it is very unlikely that the
+// field type will flow into the MSB (128 type identifiers, starting with the
+// 15 valid types today).
+func (b binaryProtocol) ReadRequest(et wire.EnvelopeType, r io.Reader) (stream.Reader, stream.ResponseWriter, error) {
+	var buf [2]byte
+
+	if count, _ := r.Read(buf[0:2]); count < 2 {
+		return b.Reader(bytes.NewReader(buf[:])), binary.NoEnvelopeStreamResponder, nil
+	}
+
+	// reset the Reader to properly read out the enveloping, if it exists;
+	// also, use a TeeReader to make sure that if there is no enveloping, we can
+	// reset it again.
+	var teeBuf bytes.Buffer
+	r = io.MultiReader(bytes.NewReader(buf[:]), r)
+	sr := b.Reader(io.TeeReader(r, &teeBuf))
+
+	if buf[0] == 0x00 {
+		eh, err := b.readEnvelopeHeader(sr, et)
+		if err != nil {
+			return nil, binary.NoEnvelopeStreamResponder, err
+		}
+		return sr, &binary.EnvelopeV0StreamResponder{
+			Name:  eh.Name,
+			SeqID: eh.SeqID,
+		}, nil
+	}
+
+	if buf[0]&0x80 > 0 {
+		eh, err := b.readEnvelopeHeader(sr, et)
+		if err != nil {
+			return nil, binary.NoEnvelopeStreamResponder, err
+		}
+		return sr, &binary.EnvelopeV1StreamResponder{
+			Name:  eh.Name,
+			SeqID: eh.SeqID,
+		}, nil
+	}
+
+	// For anything else, the request is either not-enveloped or invalid, let the
+	// caller manage that data
+	noEnvSr := b.Reader(io.MultiReader(&teeBuf, r))
+	return noEnvSr, binary.NoEnvelopeStreamResponder, nil
+}
+
+func (b binaryProtocol) readEnvelopeHeader(sr stream.Reader, et wire.EnvelopeType) (stream.EnvelopeHeader, error) {
+	eh, err := sr.ReadEnvelopeBegin()
+	if err != nil {
+		return eh, err
+	}
+	if eh.Type != et {
+		return eh, errUnexpectedEnvelopeType(eh.Type)
+	}
+	err = sr.ReadEnvelopeEnd()
+	return eh, err
 }
 
 // noEnvelopeResponder responds to a request without an envelope.

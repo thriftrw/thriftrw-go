@@ -35,6 +35,30 @@ import (
 	"go.uber.org/thriftrw/wire"
 )
 
+var (
+	_testNonStrictEnvelopeOneWayBytes = []byte{
+		// envelope
+		0x00, 0x00, 0x00, 0x05, // length:4 = 5
+		0x77, 0x72, 0x69, 0x74, 0x65, // 'write'
+		0x04,                   // type:1 = OneWay
+		0x00, 0x00, 0x00, 0x2a, // seqid:4 = 42
+	}
+
+	_testNonStrictEnvelopeExceptionBytes = []byte{
+		// envelope
+		0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+		0x03,                   // type:1 = Exception
+		0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+	}
+
+	_testStrictEnvelopeCallBytes = []byte{
+		// envelope
+		0x80, 0x01, 0x00, 0x01, // version|type:4 = 1 | call
+		0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+		0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+	}
+)
+
 type encodeDecodeTest struct {
 	msg     string
 	value   wire.Value
@@ -75,6 +99,18 @@ func getStreamReader(t *testing.T, encoded []byte) stream.Reader {
 	t.Helper()
 
 	return BinaryStreamer.Reader(bytes.NewReader(encoded))
+}
+
+func readStructFieldHeader(t *testing.T, r stream.Reader) stream.FieldHeader {
+	t.Helper()
+
+	require.NoError(t, r.ReadStructBegin(), "failed to read struct begin")
+	fh, ok, err := r.ReadFieldBegin()
+	require.NoError(t, err, "failed to read field begin")
+	require.True(t, ok, "failed to read field begin")
+	require.NoError(t, r.ReadFieldEnd(), "failed to read field end")
+	require.NoError(t, r.ReadStructEnd(), "failed to read struct end")
+	return fh
 }
 
 type failureTest struct {
@@ -1482,6 +1518,169 @@ func TestBinaryEnvelopeSuccessful(t *testing.T) {
 		}
 
 		assert.Equal(t, tt.encoded, buf.Bytes(), "%v: reencoded bytes mismatch")
+	}
+}
+
+func TestStreamingEnvelopeErrors(t *testing.T) {
+	tests := []struct {
+		inputEnvType  wire.EnvelopeType
+		inputReqBytes []byte
+		errMsg        string
+	}{
+		{
+			inputEnvType: wire.OneWay,
+			inputReqBytes: []byte{
+				// envelope
+				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+				0x03,                   // type:1 = Exception
+				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+
+				// request
+			},
+			errMsg: "unexpected envelope type",
+		},
+		{
+			inputEnvType: wire.Call,
+			inputReqBytes: []byte{
+				// envelope
+				0x80, 0x02, 0x00, 0x01, // version|type:4 = 2 | call
+				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+
+				// request
+			},
+			errMsg: "cannot decode envelope of version",
+		},
+		{
+			inputEnvType: wire.Call,
+			inputReqBytes: []byte{
+				// envelope
+				0x80, 0x02, 0x00, 0x01, // version|type:4 = 2 | call
+				0x00, 0x00, 0x00, 0x03, 'a', 'b', 'c', // name~4 = "abc"
+				0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
+
+				// request
+			},
+			errMsg: "cannot decode envelope of version",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.errMsg, func(t *testing.T) {
+			_, responder, err := TBinary.ReadRequest(tt.inputEnvType, bytes.NewReader(tt.inputReqBytes))
+			require.Error(t, err, "ReadRequest should fail")
+			require.Equal(t, binary.NoEnvelopeStreamResponder, responder, "ReadRequest should fail with noEnvelopeResponder")
+			assert.Contains(t, err.Error(), tt.errMsg, "ReadRequest should fail with error message")
+		})
+	}
+}
+
+func TestStreamingEnvelopeSuccessful(t *testing.T) {
+	tests := []struct {
+		msg               string
+		inputReqBytes     []byte
+		inputEnvType      wire.EnvelopeType
+		wantReqFieldID    int16
+		wantResponderType reflect.Type
+		wantResBytes      []byte
+	}{
+		{
+			msg:               "no envelope",
+			inputEnvType:      wire.OneWay,
+			inputReqBytes:     tbinary(vstruct(vfield(1, vbinary("hello")))),
+			wantReqFieldID:    1,
+			wantResponderType: reflect.TypeOf(binary.NoEnvelopeStreamResponder),
+			wantResBytes: 	   tbinary(vstruct()),
+		},
+		{
+			msg:          "non-strict envelope, envelope type OneWay",
+			inputEnvType: wire.OneWay,
+			inputReqBytes: append(
+				// envelope
+				_testNonStrictEnvelopeOneWayBytes,
+
+				// request
+				tbinary(vstruct(vfield(2, vbinary("hello"))))...,
+			),
+			wantReqFieldID:    2,
+			wantResponderType: reflect.TypeOf((*binary.EnvelopeV0StreamResponder)(nil)),
+			wantResBytes:      append(
+				// envelope
+				_testNonStrictEnvelopeOneWayBytes,
+
+				// response
+				tbinary(vstruct())...,
+			),
+		},
+		{
+			msg:          "strict envelope, envelope type Call",
+			inputEnvType: wire.Call,
+			inputReqBytes: append(
+				// envelope
+				_testStrictEnvelopeCallBytes,
+
+				// request
+				tbinary(vstruct(vfield(3, vbinary("hello"))))...,
+			),
+			wantReqFieldID:    3,
+			wantResponderType: reflect.TypeOf((*binary.EnvelopeV1StreamResponder)(nil)),
+			wantResBytes:      append(
+				// envelope
+				_testStrictEnvelopeCallBytes,
+
+				// response
+				tbinary(vstruct())...,
+			),
+		},
+		{
+			msg:          "non-strict envelope, envelope type Exception",
+			inputEnvType: wire.Exception,
+			inputReqBytes: append(
+				// envelope
+				_testNonStrictEnvelopeExceptionBytes,
+
+				// request
+				tbinary(vstruct(vfield(4, vbinary("hello"))))...,
+			),
+			wantReqFieldID:    4,
+			wantResponderType: reflect.TypeOf((*binary.EnvelopeV0StreamResponder)(nil)),
+			wantResBytes:      append(
+				// envelope
+				_testNonStrictEnvelopeExceptionBytes,
+
+				// response
+				tbinary(vstruct())...,
+			),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.msg, func(t *testing.T) {
+			// Verify whether we can infer the presence of the envelope
+			// reliably when reading a request.
+			reader, responder, err := TBinary.ReadRequest(tt.inputEnvType, bytes.NewReader(tt.inputReqBytes))
+			require.NoError(t, err, "failed to read request with envelope")
+			require.True(t, tt.wantResponderType == reflect.TypeOf(responder), "read request should have responder want %v got %T", tt.wantResponderType, responder)
+
+			// Verify whether we can read the correct request field ID from the stream.Reader
+			// This is a basic test to ensure the stream.Reader is at the correct offset in the request.
+			// It is not intended to test the functionality of stream.Reader
+			fh := readStructFieldHeader(t, reader)
+			require.Equal(t, tt.wantReqFieldID, fh.ID, "request field ID mismatch")
+			require.NoError(t, reader.Skip(fh.Type), "failed to skip")
+
+			// Verify response has the correct envelope
+			writer := &bytes.Buffer{}
+			ws, err := responder.WriteResponse(tt.inputEnvType, writer)
+			require.NoError(t, err, "failed to write response with envelope")
+
+			// Verify response can be written to with an empty struct
+			// This is an action executed on each test to verify stream.Writer is at the correct offset
+			require.NoError(t, ws.WriteStructBegin(), "failed to write response struct begin")
+			require.NoError(t, ws.WriteStructEnd(), "failed to write response struct end")
+			require.Equal(t, tt.wantResBytes, writer.Bytes(), "encoded response envelope bytes mismatch")
+			assert.NoError(t, ws.Close())
+		})
 	}
 }
 
