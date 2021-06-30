@@ -54,7 +54,7 @@ func newReader(r io.ReaderAt) reader {
 
 	return reader{
 		or: &or,
-		sr: NewStreamReader(&or),
+		sr: newStreamReader(&or),
 	}
 }
 

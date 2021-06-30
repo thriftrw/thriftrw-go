@@ -121,6 +121,7 @@ type Reader interface {
 	ReadSetEnd() error
 	ReadMapBegin() (MapHeader, error)
 	ReadMapEnd() error
+	Close() error
 
 	// Skip skips over the bytes of the wire type and any applicable headers.
 	Skip(w wire.Type) error

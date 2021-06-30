@@ -25,6 +25,7 @@ import (
 	"io"
 	"io/ioutil"
 	"math"
+	"sync"
 
 	"go.uber.org/thriftrw/internal/iface"
 	"go.uber.org/thriftrw/protocol/stream"
@@ -67,9 +68,31 @@ type StreamReader struct {
 	buffer [8]byte
 }
 
-// NewStreamReader returns a new StreamReader.
-func NewStreamReader(r io.Reader) StreamReader {
+// newStreamReader returns a new StreamReader.
+func newStreamReader(r io.Reader) StreamReader {
 	return StreamReader{reader: r}
+}
+
+var streamReaderPool = sync.Pool{
+	New: func() interface{} {
+		return &StreamReader{}
+	}}
+
+// BorrowStreamReader fetches a StreamReader from the system that will write
+// its output to the given io.Reader.
+//
+// This StreamReader must be returned back using ReturnStreamReader.
+func BorrowStreamReader(r io.Reader) *StreamReader {
+	streamReader := streamReaderPool.Get().(*StreamReader)
+	streamReader.reader = r
+	return streamReader
+}
+
+// ReturnStreamReader returns a previously borrowed StreamReader back to the
+// system.
+func ReturnStreamReader(sr *StreamReader) {
+	sr.reader = nil
+	streamReaderPool.Put(sr)
 }
 
 func (sr *StreamReader) read(bs []byte) (int, error) {
@@ -343,6 +366,13 @@ func (sr *StreamReader) Skip(t wire.Type) error {
 	default:
 		return decodeErrorf("unknown ttype %v", t)
 	}
+}
+
+// Close frees up the resources used by the StreamReader and returns it back
+// to the pool.
+func (sr *StreamReader) Close() error {
+	ReturnStreamReader(sr)
+	return nil
 }
 
 func (sr *StreamReader) skipStruct() error {

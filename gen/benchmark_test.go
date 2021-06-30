@@ -177,6 +177,7 @@ func BenchmarkRoundTrip(b *testing.B) {
 
 			reader := protocol.BinaryStreamer.Reader(r)
 			require.NoError(b, give.Decode(reader), "Decode")
+			require.NoError(b, reader.Close(), "Close StreamReader")
 		}
 	}
 
