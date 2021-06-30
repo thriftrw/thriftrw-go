@@ -36,6 +36,7 @@ type parseCase struct {
 }
 
 func assertParseCases(t *testing.T, tests []parseCase) {
+	t.Helper()
 	for _, tt := range tests {
 		program, err := Parse([]byte(tt.document))
 		if assert.NoError(t, err, "Parsing failed:\n%s", tt.document) {
