@@ -5,9 +5,9 @@ import "go.uber.org/thriftrw/ast"
 %}
 
 %union {
-    // Used to record line numbers when the line number at the start point is
-    // required.
+    // Used to record line and column numbers when position is required.
     line int
+    pos ast.Position
 
     docstring string
 
@@ -61,6 +61,7 @@ import "go.uber.org/thriftrw/ast"
 %token REQUIRED OPTIONAL TRUE FALSE
 
 %type <line> lineno
+%type <pos> pos
 %type <docstring> docstring
 %type <prog> program
 %type <fieldType> type
@@ -387,11 +388,11 @@ base_type_name
  Constant values
  ***************************************************************************/
 const_value
-    : INTCONSTANT { $$ = ast.ConstantInteger($1); yylex.(*lexer).RecordPosition($$) }
-    | DUBCONSTANT { $$ = ast.ConstantDouble($1); yylex.(*lexer).RecordPosition($$) }
-    | TRUE        { $$ = ast.ConstantBoolean(true); yylex.(*lexer).RecordPosition($$) }
-    | FALSE       { $$ = ast.ConstantBoolean(false); yylex.(*lexer).RecordPosition($$) }
-    | LITERAL     { $$ = ast.ConstantString($1); yylex.(*lexer).RecordPosition($$) }
+    : pos INTCONSTANT { $$ = ast.ConstantInteger($2); yylex.(*lexer).RecordPosition($$, $1) }
+    | pos DUBCONSTANT { $$ = ast.ConstantDouble($2); yylex.(*lexer).RecordPosition($$, $1) }
+    | pos TRUE        { $$ = ast.ConstantBoolean(true); yylex.(*lexer).RecordPosition($$, $1) }
+    | pos FALSE       { $$ = ast.ConstantBoolean(false); yylex.(*lexer).RecordPosition($$, $1) }
+    | pos LITERAL     { $$ = ast.ConstantString($2); yylex.(*lexer).RecordPosition($$, $1) }
     | lineno IDENTIFIER
         { $$ = ast.ConstantReference{Name: $2, Line: $1} }
 
@@ -443,6 +444,10 @@ type_annotation_list
  */
 lineno
     : /* nothing */ { $$ = yylex.(*lexer).line }
+    ;
+
+pos
+    : /* nothing */ { $$ = yylex.(*lexer).Pos() }
     ;
 
 docstring

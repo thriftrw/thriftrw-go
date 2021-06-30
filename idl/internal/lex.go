@@ -16644,14 +16644,15 @@ func (lex *lexer) Error(e string) {
 
 func (lex *lexer) AppendError(err error) {
 	lex.parseFailed = true
-	lex.errors = append(lex.errors, ParseError{
-		Pos: ast.Position{Line: lex.line, Column: lex.ts - lex.lineStart + 1},
-		Err: err,
-	})
+	lex.errors = append(lex.errors, ParseError{Pos: lex.Pos(), Err: err})
 }
 
-func (lex *lexer) RecordPosition(n ast.Node) {
-	lex.nodePositions[n] = ast.Position{Line: lex.line}
+func (lex *lexer) Pos() ast.Position {
+	return ast.Position{Line: lex.line, Column: lex.ts - lex.lineStart + 1}
+}
+
+func (lex *lexer) RecordPosition(n ast.Node, pos ast.Position) {
+	lex.nodePositions[n] = pos
 }
 
 func (lex *lexer) LastDocstring() string {
