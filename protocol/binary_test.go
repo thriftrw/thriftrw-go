@@ -584,10 +584,10 @@ func TestStructBeginAndEndEncode(t *testing.T) {
 	var streamBuff bytes.Buffer
 
 	// Encode with Streaming protocol
-	w := binary.BorrowStreamWriter(&streamBuff)
+	w := binary.NewStreamWriter(&streamBuff)
 	require.NoError(t, w.WriteStructBegin())
 	require.NoError(t, w.WriteStructEnd())
-	binary.ReturnStreamWriter(w)
+	require.NoError(t, w.Close())
 
 	// Assert that encoded bytes are equivalent
 	assert.Equal(t, []byte{0x0}, streamBuff.Bytes())
@@ -720,14 +720,14 @@ func TestMapBeginEncode(t *testing.T) {
 	)
 
 	// Encode with Streaming protocol
-	w := binary.BorrowStreamWriter(&streamBuff)
+	w := binary.NewStreamWriter(&streamBuff)
 	err = w.WriteMapBegin(stream.MapHeader{
 		KeyType:   wire.TBinary,
 		ValueType: wire.TBool,
 		Length:    1,
 	})
 	require.NoError(t, err)
-	binary.ReturnStreamWriter(w)
+	require.NoError(t, w.Close())
 
 	// Assert that encoded bytes are equivalent
 	assert.Equal(t, []byte{0xb, 0x2, 0x0, 0x0, 0x0, 0x1}, streamBuff.Bytes())
@@ -844,13 +844,13 @@ func TestSetBeginEncode(t *testing.T) {
 	)
 
 	// Encode with Streaming protocol
-	w := binary.BorrowStreamWriter(&streamBuff)
+	w := binary.NewStreamWriter(&streamBuff)
 	err = w.WriteSetBegin(stream.SetHeader{
 		Type:   wire.TList,
 		Length: 1,
 	})
 	require.NoError(t, err)
-	binary.ReturnStreamWriter(w)
+	require.NoError(t, w.Close())
 
 	// Assert that encoded bytes are equivalent
 	assert.Equal(t, []byte{0xf, 0x0, 0x0, 0x0, 0x1}, streamBuff.Bytes())
@@ -999,13 +999,13 @@ func TestListBeginEncode(t *testing.T) {
 	)
 
 	// Encode with Streaming protocol
-	w := binary.BorrowStreamWriter(&streamBuff)
+	w := binary.NewStreamWriter(&streamBuff)
 	err = w.WriteListBegin(stream.ListHeader{
 		Type:   wire.TMap,
 		Length: 5,
 	})
 	require.NoError(t, err)
-	binary.ReturnStreamWriter(w)
+	require.NoError(t, w.Close())
 
 	// Assert that encoded bytes are equivalent
 	assert.Equal(t, []byte{0xd, 0x0, 0x0, 0x0, 0x5}, streamBuff.Bytes())

@@ -46,19 +46,19 @@ type StreamWriter struct {
 	buffer [8]byte
 }
 
-// BorrowStreamWriter fetches a StreamWriter from the system that will write
+// NewStreamWriter fetches a StreamWriter from the system that will write
 // its output to the given io.Writer.
 //
 // This StreamWriter must be returned back using ReturnStreamWriter.
-func BorrowStreamWriter(w io.Writer) *StreamWriter {
+func NewStreamWriter(w io.Writer) *StreamWriter {
 	streamWriter := streamWriterPool.Get().(*StreamWriter)
 	streamWriter.writer = w
 	return streamWriter
 }
 
-// ReturnStreamWriter returns a previously borrowed StreamWriter back to the
+// returnStreamWriter returns a previously borrowed StreamWriter back to the
 // system.
-func ReturnStreamWriter(sw *StreamWriter) {
+func returnStreamWriter(sw *StreamWriter) {
 	sw.writer = nil
 	streamWriterPool.Put(sw)
 }
@@ -235,6 +235,6 @@ func (sw *StreamWriter) WriteMapEnd() error {
 // Close frees up the resources used by the StreamWriter and returns it back
 // to the pool.
 func (sw *StreamWriter) Close() error {
-	ReturnStreamWriter(sw)
+	returnStreamWriter(sw)
 	return nil
 }

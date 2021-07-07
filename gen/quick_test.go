@@ -762,9 +762,9 @@ func (q *quickSuite) testThriftRoundTripStreaming(t *testing.T, give, defaults t
 	sWant, ok := want.(streamingThriftType)
 	require.True(t, ok, "default thrift type must satisfy streaming requirements")
 
-	sw := binary.BorrowStreamWriter(&buf)
+	sw := binary.NewStreamWriter(&buf)
 	require.NoError(t, sGive.Encode(sw), "failed to streaming encode %v", sGive)
-	binary.ReturnStreamWriter(sw)
+	require.NoError(t, sw.Close())
 
 	gType := reflect.TypeOf(sGive)
 	if gType.Kind() == reflect.Ptr {
