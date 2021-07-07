@@ -144,7 +144,7 @@ func (binaryProtocol) DecodeEnveloped(r io.ReaderAt) (wire.Envelope, error) {
 }
 
 func (binaryProtocol) Writer(w io.Writer) stream.Writer {
-	return binary.BorrowStreamWriter(w)
+	return binary.NewStreamWriter(w)
 }
 
 func (binaryProtocol) Reader(r io.Reader) stream.Reader {

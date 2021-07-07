@@ -57,7 +57,7 @@ type Writer struct {
 //
 // This Writer must be returned back using ReturnWriter.
 func BorrowWriter(w io.Writer) *Writer {
-	streamWriter := BorrowStreamWriter(w)
+	streamWriter := NewStreamWriter(w)
 	writer := writerPool.Get().(*Writer)
 	writer.sw = streamWriter
 	return writer
@@ -67,7 +67,7 @@ func BorrowWriter(w io.Writer) *Writer {
 func ReturnWriter(w *Writer) {
 	sw := w.sw
 	w.sw = nil
-	ReturnStreamWriter(sw)
+	returnStreamWriter(sw)
 	writerPool.Put(w)
 }
 

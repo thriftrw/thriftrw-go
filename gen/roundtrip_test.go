@@ -109,11 +109,11 @@ func testRoundTripCombos(t *testing.T, x thriftType, v wire.Value, msg string) {
 			streamer := protocol.BinaryStreamer
 
 			if streaming.encode {
-				w := binary.BorrowStreamWriter(&buff)
+				w := binary.NewStreamWriter(&buff)
 				give, ok := x.(streamingThriftType)
 				require.True(t, ok)
 				require.NoError(t, give.Encode(w), "%v: failed to stream encode", msg)
-				binary.ReturnStreamWriter(w)
+				require.NoError(t, w.Close())
 			} else {
 				w, err := x.ToWire()
 				require.NoError(t, err, "failed to serialize: %v", x)
