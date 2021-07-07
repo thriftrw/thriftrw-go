@@ -134,6 +134,7 @@ type Reader interface {
 	ReadSetEnd() error
 	ReadMapBegin() (MapHeader, error)
 	ReadMapEnd() error
+	Close() error
 
 	ReadEnvelopeBegin() (EnvelopeHeader, error)
 	ReadEnvelopeEnd() error
