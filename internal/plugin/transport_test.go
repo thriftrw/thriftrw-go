@@ -12,7 +12,7 @@ import (
 	"go.uber.org/thriftrw/internal/multiplex"
 	"go.uber.org/thriftrw/plugin/api"
 	"go.uber.org/thriftrw/plugin/plugintest"
-	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/version"
 
@@ -46,7 +46,7 @@ func newFakePluginServer(mockCtrl *gomock.Controller) *fakePluginServer {
 
 	done := make(chan error)
 	go func() {
-		err := server.Serve(envelope.NewServer(protocol.Binary, handler))
+		err := server.Serve(envelope.NewServer(binary.Default, handler))
 		if err != nil {
 			done <- err
 		}

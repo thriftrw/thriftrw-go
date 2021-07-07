@@ -67,11 +67,11 @@ func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args 
 // assertBinaryRoundTrip checks that De/Encode returns the same value.
 func assertBinaryRoundTrip(t *testing.T, w wire.Value, message string) (wire.Value, bool) {
 	var buff bytes.Buffer
-	if !assert.NoError(t, protocol.Binary.Encode(w, &buff), "%v: failed to serialize", message) {
+	if !assert.NoError(t, binary.Default.Encode(w, &buff), "%v: failed to serialize", message) {
 		return w, false
 	}
 
-	newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), w.Type())
+	newV, err := binary.Default.Decode(bytes.NewReader(buff.Bytes()), w.Type())
 	if !assert.NoError(t, err, "%v: failed to deserialize", message) {
 		return newV, false
 	}

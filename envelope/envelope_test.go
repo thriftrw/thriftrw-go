@@ -29,7 +29,7 @@ import (
 	// without causing a circular dependency.
 	. "go.uber.org/thriftrw/envelope"
 
-	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/wire"
 
 	"github.com/golang/mock/gomock"
@@ -75,7 +75,7 @@ func TestWrite(t *testing.T) {
 		defer ctrl.Finish()
 
 		var buff bytes.Buffer
-		require.NoError(t, Write(protocol.Binary, &buff, 1234, enveloper))
+		require.NoError(t, Write(binary.Default, &buff, 1234, enveloper))
 		assert.Equal(t,
 			[]byte{
 				0x80, 0x01, 0x00, 0x01, // version|type:4 = 1 | call
@@ -97,7 +97,7 @@ func TestWrite(t *testing.T) {
 		errEnveloper.Err = fmt.Errorf("great sadness")
 
 		var buff bytes.Buffer
-		require.Error(t, Write(protocol.Binary, &buff, 1234, errEnveloper))
+		require.Error(t, Write(binary.Default, &buff, 1234, errEnveloper))
 	})
 }
 
@@ -197,7 +197,7 @@ func TestReadReply(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		result, seqID, err := ReadReply(protocol.Binary, bytes.NewReader(tt.bs))
+		result, seqID, err := ReadReply(binary.Default, bytes.NewReader(tt.bs))
 		if tt.wantErr != "" {
 			if assert.Error(t, err, tt.desc) {
 				assert.Contains(t, err.Error(), tt.wantErr, "%v: error mismatch", tt.desc)

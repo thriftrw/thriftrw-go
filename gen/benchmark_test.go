@@ -9,6 +9,7 @@ import (
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
@@ -123,7 +124,7 @@ func BenchmarkRoundTrip(b *testing.B) {
 
 			w, err := bb.give.ToWire()
 			require.NoError(b, err, "ToWire")
-			require.NoError(b, protocol.Binary.Encode(w, &buff), "Encode")
+			require.NoError(b, binary.Default.Encode(w, &buff), "Encode")
 		}
 	}
 
@@ -146,7 +147,7 @@ func BenchmarkRoundTrip(b *testing.B) {
 		var buff bytes.Buffer
 		w, err := bb.give.ToWire()
 		require.NoError(b, err, "ToWire")
-		require.NoError(b, protocol.Binary.Encode(w, &buff), "Encode")
+		require.NoError(b, binary.Default.Encode(w, &buff), "Encode")
 
 		r := bytes.NewReader(buff.Bytes())
 
@@ -154,7 +155,7 @@ func BenchmarkRoundTrip(b *testing.B) {
 		for i := 0; i < b.N; i++ {
 			r.Seek(0, 0)
 
-			wval, err := protocol.Binary.Decode(r, wire.TStruct)
+			wval, err := binary.Default.Decode(r, wire.TStruct)
 			require.NoError(b, err, "Decode")
 
 			require.NoError(b, bb.give.FromWire(wval), "FromWire")

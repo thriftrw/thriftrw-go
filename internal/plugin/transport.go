@@ -25,16 +25,15 @@ import (
 	"io"
 	"strings"
 
+	"go.uber.org/atomic"
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/internal/envelope"
 	"go.uber.org/thriftrw/internal/multiplex"
 	"go.uber.org/thriftrw/plugin/api"
-	"go.uber.org/thriftrw/protocol"
-
-	"go.uber.org/atomic"
-	"go.uber.org/multierr"
+	"go.uber.org/thriftrw/protocol/binary"
 )
 
-var _proto = protocol.Binary
+var _proto = binary.Default
 
 // transportHandle is a Handle to a plugin which is behind an envelope.Transport.
 type transportHandle struct {
