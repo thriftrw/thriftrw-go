@@ -43,6 +43,15 @@ type Protocol interface {
 	Reader(r io.Reader) Reader
 }
 
+// EnvelopeHeader represents the envelope of a response or a request which includes
+// metadata about the method, the type of data in the envelope, and the value.
+// It is equivalent of `wire.Envelope`, but for streaming purposes.
+type EnvelopeHeader struct {
+	Name  string
+	Type  wire.EnvelopeType
+	SeqID int32
+}
+
 // FieldHeader defines the metadata needed to define the beginning of a field
 // in a Thrift value.
 type FieldHeader struct {
@@ -95,6 +104,10 @@ type Writer interface {
 	WriteSetEnd() error
 	WriteListBegin(l ListHeader) error
 	WriteListEnd() error
+
+	WriteEnvelopeBegin(eh EnvelopeHeader) error
+	WriteEnvelopeEnd() error
+
 	Close() error
 }
 
@@ -121,6 +134,9 @@ type Reader interface {
 	ReadSetEnd() error
 	ReadMapBegin() (MapHeader, error)
 	ReadMapEnd() error
+
+	ReadEnvelopeBegin() (EnvelopeHeader, error)
+	ReadEnvelopeEnd() error
 
 	// Skip skips over the bytes of the wire type and any applicable headers.
 	Skip(w wire.Type) error
