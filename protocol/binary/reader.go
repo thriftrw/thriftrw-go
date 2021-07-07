@@ -46,15 +46,15 @@ func (or *offsetReader) Read(p []byte) (int, error) {
 // the offset in already running 'ReadValue' calls.
 type reader struct {
 	or *offsetReader
-	sr StreamReader
+	sr *StreamReader
 }
 
-func newReader(r io.ReaderAt) reader {
-	or := offsetReader{reader: r}
+func newReader(r io.ReaderAt, off int64) reader {
+	or := offsetReader{reader: r, offset: off}
 
 	return reader{
 		or: &or,
-		sr: newStreamReader(&or),
+		sr: NewStreamReader(&or),
 	}
 }
 
@@ -118,7 +118,7 @@ func (r *reader) readMapStream() (wire.MapItemList, error) {
 	items.ktype = mh.KeyType
 	items.vtype = mh.ValueType
 	items.count = int32(mh.Length)
-	items.reader = r
+	items.readerAt = r.or.reader
 	items.startOffset = start
 
 	return items, nil
@@ -144,7 +144,7 @@ func (r *reader) readListStream() (wire.ValueList, error) {
 	items := borrowLazyValueList()
 	items.count = int32(lh.Length)
 	items.typ = lh.Type
-	items.reader = r
+	items.readerAt = r.or.reader
 	items.startOffset = start
 
 	return items, nil
@@ -170,10 +170,18 @@ func (r *reader) readSetStream() (wire.ValueList, error) {
 	items := borrowLazyValueList()
 	items.count = int32(sh.Length)
 	items.typ = sh.Type
-	items.reader = r
+	items.readerAt = r.or.reader
 	items.startOffset = start
 
 	return items, nil
+}
+
+func (r *reader) close() error {
+	err := r.sr.Close()
+	r.sr = nil
+	r.or = nil
+
+	return err
 }
 
 // ReadValue is the underlying call made from the exported `Reader.ReadValue`
@@ -247,6 +255,6 @@ func NewReader(r io.ReaderAt) Reader {
 //
 // Returns the Value, the new offset, and an error if there was a decode error.
 func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
-	reader := newReader(br.reader)
+	reader := newReader(br.reader, off)
 	return reader.ReadValue(t, off)
 }

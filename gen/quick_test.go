@@ -773,9 +773,9 @@ func (q *quickSuite) testThriftRoundTripStreaming(t *testing.T, give, defaults t
 
 	got := reflect.New(gType).Interface().(streamingThriftType)
 
-	sr := binary.BorrowStreamReader(&buf)
+	sr := binary.NewStreamReader(&buf)
 	require.NoError(t, got.Decode(sr), "failed to streaming decode from %v", buf)
-	binary.ReturnStreamReader(sr)
+	require.NoError(t, sr.Close())
 
 	assert.Equal(t, want, got)
 	if shouldCheckForMutation {

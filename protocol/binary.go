@@ -148,7 +148,7 @@ func (binaryProtocol) Writer(w io.Writer) stream.Writer {
 }
 
 func (binaryProtocol) Reader(r io.Reader) stream.Reader {
-	return binary.BorrowStreamReader(r)
+	return binary.NewStreamReader(r)
 }
 
 // DecodeRequest specializes Decode and replaces DecodeEnveloped for the

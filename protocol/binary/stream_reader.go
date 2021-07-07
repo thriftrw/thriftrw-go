@@ -68,29 +68,21 @@ type StreamReader struct {
 	buffer [8]byte
 }
 
-// newStreamReader returns a new StreamReader.
-func newStreamReader(r io.Reader) StreamReader {
-	return StreamReader{reader: r}
+var streamReaderPool = sync.Pool{
+	New: func() interface{} { return &StreamReader{} },
 }
 
-var streamReaderPool = sync.Pool{
-	New: func() interface{} {
-		return &StreamReader{}
-	}}
-
-// BorrowStreamReader fetches a StreamReader from the system that will write
+// NewStreamReader fetches a StreamReader from the system that will write
 // its output to the given io.Reader.
 //
-// This StreamReader must be returned back using ReturnStreamReader.
-func BorrowStreamReader(r io.Reader) *StreamReader {
+// This StreamReader must be closed using `Close()`
+func NewStreamReader(r io.Reader) *StreamReader {
 	streamReader := streamReaderPool.Get().(*StreamReader)
 	streamReader.reader = r
 	return streamReader
 }
 
-// ReturnStreamReader returns a previously borrowed StreamReader back to the
-// system.
-func ReturnStreamReader(sr *StreamReader) {
+func returnStreamReader(sr *StreamReader) {
 	sr.reader = nil
 	streamReaderPool.Put(sr)
 }
@@ -371,7 +363,7 @@ func (sr *StreamReader) Skip(t wire.Type) error {
 // Close frees up the resources used by the StreamReader and returns it back
 // to the pool.
 func (sr *StreamReader) Close() error {
-	ReturnStreamReader(sr)
+	returnStreamReader(sr)
 	return nil
 }
 
