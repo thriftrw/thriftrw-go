@@ -31,7 +31,7 @@ import (
 // Binary implements the Thrift Binary Protocol.
 // Binary can be cast up to EnvelopeAgnosticProtocol to support DecodeRequest.
 //
-// Deprecated: binary.Default.
+// Deprecated: Don't use this directly. Use binary.Default.
 var Binary Protocol
 
 // BinaryStreamer implements a streaming version of the Thrift Binary Protocol.
