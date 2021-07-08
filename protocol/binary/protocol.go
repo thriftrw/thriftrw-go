@@ -52,10 +52,14 @@ func (*Protocol) Decode(r io.ReaderAt, t wire.Type) (wire.Value, error) {
 	return value, err
 }
 
+// Writer builds a stream writer that writes to the provided stream using the
+// Thrift Binary Protocol.
 func (*Protocol) Writer(w io.Writer) stream.Writer {
 	return NewStreamWriter(w)
 }
 
+// Reader builds a stream reader that reads from the provided stream using the
+// Thrift Binary Protocol.
 func (*Protocol) Reader(r io.Reader) stream.Reader {
 	return NewStreamReader(r)
 }
