@@ -392,12 +392,12 @@ func (sr *StreamReader) skipStruct() error {
 }
 
 func (sr *StreamReader) skipMap() error {
-	keyRaw, err := sr.ReadInt8()
+	key, err := sr.ReadInt8()
 	if err != nil {
 		return err
 	}
 
-	valueRaw, err := sr.ReadInt8()
+	value, err := sr.ReadInt8()
 	if err != nil {
 		return err
 	}
@@ -411,11 +411,12 @@ func (sr *StreamReader) skipMap() error {
 		return decodeErrorf("got negative length: %v", size)
 	}
 
-	key := wire.Type(keyRaw)
-	keyWidth := fixedWidth(key)
-	value := wire.Type(valueRaw)
-	valueWidth := fixedWidth(value)
+	return sr.skipMapItems(wire.Type(key), wire.Type(value), size)
+}
 
+func (sr *StreamReader) skipMapItems(key, value wire.Type, size int32) error {
+	keyWidth := fixedWidth(key)
+	valueWidth := fixedWidth(value)
 	if keyWidth > 0 && valueWidth > 0 {
 		length := int64(size) * (keyWidth + valueWidth)
 		return sr.discard(length)
@@ -440,6 +441,10 @@ func (sr *StreamReader) skipList() error {
 		return err
 	}
 
+	return sr.skipListItems(elemType, size)
+}
+
+func (sr *StreamReader) skipListItems(elemType wire.Type, size int) error {
 	width := fixedWidth(elemType)
 	if width > 0 {
 		length := width * int64(size)

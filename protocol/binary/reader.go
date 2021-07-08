@@ -100,14 +100,8 @@ func (r *reader) readMapStream() (wire.MapItemList, error) {
 	}
 
 	start := r.or.offset
-	for i := 0; i < mh.Length; i++ {
-		if err := r.sr.Skip(mh.KeyType); err != nil {
-			return nil, err
-		}
-
-		if err := r.sr.Skip(mh.ValueType); err != nil {
-			return nil, err
-		}
+	if err := r.sr.skipMapItems(mh.KeyType, mh.ValueType, int32(mh.Length)); err != nil {
+		return nil, err
 	}
 
 	if err := r.sr.ReadMapEnd(); err != nil {
@@ -131,10 +125,8 @@ func (r *reader) readListStream() (wire.ValueList, error) {
 	}
 
 	start := r.or.offset
-	for i := 0; i < lh.Length; i++ {
-		if err := r.sr.Skip(lh.Type); err != nil {
-			return nil, err
-		}
+	if err := r.sr.skipListItems(lh.Type, lh.Length); err != nil {
+		return nil, err
 	}
 
 	if err := r.sr.ReadListEnd(); err != nil {
@@ -157,10 +149,8 @@ func (r *reader) readSetStream() (wire.ValueList, error) {
 	}
 
 	start := r.or.offset
-	for i := 0; i < sh.Length; i++ {
-		if err := r.sr.Skip(sh.Type); err != nil {
-			return nil, err
-		}
+	if err := r.sr.skipListItems(sh.Type, sh.Length); err != nil {
+		return nil, err
 	}
 
 	if err := r.sr.ReadSetEnd(); err != nil {
