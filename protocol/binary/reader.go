@@ -256,5 +256,6 @@ func NewReader(r io.ReaderAt) Reader {
 // Returns the Value, the new offset, and an error if there was a decode error.
 func (br *Reader) ReadValue(t wire.Type, off int64) (wire.Value, int64, error) {
 	reader := newReader(br.reader, off)
+	defer reader.close()
 	return reader.ReadValue(t, off)
 }
