@@ -67,7 +67,7 @@ type StreamReader struct {
 	reader io.Reader
 	buffer [8]byte
 
-	// discard is points to either discardOffset or discardStream based on
+	// discard points to either discardOffset or discardStream based on
 	// the implementation of the io.Reader we're using.
 	discard func(int64) error
 
@@ -78,7 +78,7 @@ type StreamReader struct {
 	_discardOffset func(int64) error
 
 	// This field is set only if the wrapped reader is an offset reader.
-	// DO NOT USE if you're not discardOffset.
+	// ONLY USE if you are discardOffset.
 	_or *offsetReader
 }
 
