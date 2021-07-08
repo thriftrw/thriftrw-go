@@ -95,6 +95,14 @@ func TestParseErrors(t *testing.T) {
 		wantErrors []string
 	}{
 		{
+			give:       "\x00",
+			wantErrors: []string{"line 1:1: unknown token"},
+		},
+		{
+			give: `	 	\x00`,
+			wantErrors: []string{"line 1:17: unknown token"},
+		},
+		{
 			give:       "namespace foo \x00",
 			wantErrors: []string{"line 1:15: unknown token"},
 		},
@@ -123,7 +131,7 @@ func TestParseErrors(t *testing.T) {
 				enum Foo {}
 				include "bar.thrift"
 			`,
-			wantErrors: []string{"line 3:5", "unexpected INCLUDE"},
+			wantErrors: []string{"line 3:33", "unexpected INCLUDE"},
 		},
 		{
 			give:       `service Foo extends {}`,

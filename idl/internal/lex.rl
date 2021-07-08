@@ -25,6 +25,8 @@ type lexer struct {
 
     line int
     lineStart int
+    tabExtra int
+    tabWidth int
 
     docstringStart int
     lastDocstring string
@@ -44,6 +46,7 @@ type lexer struct {
 func newLexer(data []byte) *lexer {
     lex := &lexer{
         line: 1,
+        tabWidth: 8,
         nodePositions: make(NodePositions, 0),
         parseFailed: false,
         data: data,
@@ -71,17 +74,28 @@ func (lex *lexer) Lex(out *yySymType) int {
                 lex.linesSinceDocstring = 0
             };
 
-        ws = [ \t\r];
+        ws = [ \r];
 
-        # All uses of \n MUST use this instead if we want accurate line
-        # number tracking.
-        newline = '\n' >{
-            lex.line++
-            lex.lineStart = lex.p + 1
-            lex.linesSinceDocstring++
+        # Tabs are a single byte in the data buffer but should account for some
+        # additional amount of whitespace for our column calculations. This is
+        # computed based on the current "virtual column" (taking into account
+        # any prior tab expansion on this line) and the configured tab width.
+        # The result is the amount of *additional* column space added by this
+        # tab (beyond the single byte contributed by the tab character itself).
+        tab = '\t' >{
+            lex.tabExtra += lex.tabWidth - (lex.te - lex.lineStart + lex.tabExtra) % lex.tabWidth - 1
         };
 
-        __ = (ws | newline)*;
+        # All uses of \n MUST use this instead if we want accurate line
+        # and column tracking.
+        newline = '\n' >{
+            lex.line++
+            lex.lineStart = lex.te + 1
+            lex.linesSinceDocstring++
+            lex.tabExtra = 0
+        };
+
+        __ = (ws | tab | newline)*;
 
         # Comments
         line_comment = ('#'|'//') [^\n]*;
@@ -273,6 +287,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 
             # Ignore comments and whitespace
             ws;
+            tab;
             newline;
             docstring;
             line_comment;
@@ -359,7 +374,7 @@ func (lex *lexer) AppendError(err error)  {
 }
 
 func (lex* lexer) Pos() ast.Position {
-    return ast.Position{Line: lex.line, Column: lex.ts - lex.lineStart + 1}
+    return ast.Position{Line: lex.line, Column: lex.ts - lex.lineStart + lex.tabExtra + 1}
 }
 
 func (lex* lexer) RecordPosition(n ast.Node, pos ast.Position) {
