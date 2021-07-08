@@ -18,22 +18,16 @@ import (
 type thriftType interface {
 	ToWire() (wire.Value, error)
 	FromWire(wire.Value) error
-}
-
-type streamingThriftType interface {
-	thriftType
 
 	Encode(stream.Writer) error
 	Decode(stream.Reader) error
 }
 
 func BenchmarkRoundTrip(b *testing.B) {
-	type benchCase struct {
+	benchmarks := []struct {
 		name string
 		give thriftType
-	}
-
-	benchmarks := []benchCase{
+	}{
 		{
 			name: "PrimitiveOptionalStruct",
 			give: &ts.PrimitiveOptionalStruct{
@@ -115,91 +109,90 @@ func BenchmarkRoundTrip(b *testing.B) {
 		},
 	}
 
-	benchmarkEncode := func(b *testing.B, bb benchCase) {
-		var buff bytes.Buffer
-
-		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
-			buff.Reset()
-
-			w, err := bb.give.ToWire()
-			require.NoError(b, err, "ToWire")
-			require.NoError(b, binary.Default.Encode(w, &buff), "Encode")
-		}
-	}
-
-	benchmarkStreamEncode := func(b *testing.B, bb benchCase) {
-		var buff bytes.Buffer
-
-		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
-			buff.Reset()
-
-			writer := protocol.BinaryStreamer.Writer(&buff)
-			give, ok := bb.give.(streamingThriftType)
-			require.True(b, ok)
-			require.NoError(b, give.Encode(writer), "StreamEncode")
-			require.NoError(b, writer.Close(), "Close StreamWriter")
-		}
-	}
-
-	benchmarkDecode := func(b *testing.B, bb benchCase) {
-		var buff bytes.Buffer
-		w, err := bb.give.ToWire()
-		require.NoError(b, err, "ToWire")
-		require.NoError(b, binary.Default.Encode(w, &buff), "Encode")
-
-		r := bytes.NewReader(buff.Bytes())
-
-		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
-			r.Seek(0, 0)
-
-			wval, err := binary.Default.Decode(r, wire.TStruct)
-			require.NoError(b, err, "Decode")
-
-			require.NoError(b, bb.give.FromWire(wval), "FromWire")
-		}
-	}
-
-	benchmarkStreamingRead := func(b *testing.B, bb benchCase) {
-		var buff bytes.Buffer
-		w, err := bb.give.ToWire()
-		require.NoError(b, err, "ToWire")
-		require.NoError(b, protocol.Binary.Encode(w, &buff), "Encode")
-
-		r := bytes.NewReader(buff.Bytes())
-		give, ok := bb.give.(streamingThriftType)
-		require.True(b, ok)
-
-		b.ResetTimer()
-		for i := 0; i < b.N; i++ {
-			r.Seek(0, 0)
-
-			reader := protocol.BinaryStreamer.Reader(r)
-			require.NoError(b, give.Decode(reader), "Decode")
-			require.NoError(b, reader.Close(), "Close StreamReader")
-		}
-	}
-
 	for _, bb := range benchmarks {
 		b.Run(bb.name, func(b *testing.B) {
+			var suite benchSuite
+
 			b.Run("Encode", func(b *testing.B) {
-				benchmarkEncode(b, bb)
+				suite.BenchmarkEncode(b, bb.give)
 			})
 
 			b.Run("Streaming Encode", func(b *testing.B) {
-				benchmarkStreamEncode(b, bb)
+				suite.BenchmarkStreamEncode(b, bb.give)
 			})
 
 			b.Run("Decode", func(b *testing.B) {
-				benchmarkDecode(b, bb)
+				suite.BenchmarkDecode(b, bb.give)
 			})
 
 			b.Run("Streaming Decode", func(b *testing.B) {
-				benchmarkStreamingRead(b, bb)
+				suite.BenchmarkStreamDecode(b, bb.give)
 			})
 		})
+	}
+}
+
+type benchSuite struct{}
+
+func (*benchSuite) BenchmarkEncode(b *testing.B, give thriftType) {
+	var buff bytes.Buffer
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		buff.Reset()
+
+		w, err := give.ToWire()
+		require.NoError(b, err, "ToWire")
+		require.NoError(b, binary.Default.Encode(w, &buff), "Encode")
+	}
+}
+
+func (*benchSuite) BenchmarkStreamEncode(b *testing.B, give thriftType) {
+	var buff bytes.Buffer
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		buff.Reset()
+
+		writer := binary.Default.Writer(&buff)
+		require.NoError(b, give.Encode(writer), "StreamEncode")
+		require.NoError(b, writer.Close(), "Close StreamWriter")
+	}
+}
+
+func (*benchSuite) BenchmarkDecode(b *testing.B, give thriftType) {
+	var buff bytes.Buffer
+	w, err := give.ToWire()
+	require.NoError(b, err, "ToWire")
+	require.NoError(b, protocol.Binary.Encode(w, &buff), "Encode")
+
+	r := bytes.NewReader(buff.Bytes())
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		r.Seek(0, 0)
+
+		wval, err := protocol.Binary.Decode(r, wire.TStruct)
+		require.NoError(b, err, "Decode")
+		require.NoError(b, give.FromWire(wval), "FromWire")
+	}
+}
+
+func (*benchSuite) BenchmarkStreamDecode(b *testing.B, give thriftType) {
+	var buff bytes.Buffer
+	w, err := give.ToWire()
+	require.NoError(b, err, "ToWire")
+	require.NoError(b, protocol.Binary.Encode(w, &buff), "Encode")
+
+	r := bytes.NewReader(buff.Bytes())
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		r.Seek(0, 0)
+
+		reader := protocol.BinaryStreamer.Reader(r)
+		require.NoError(b, give.Decode(reader), "Decode")
+		require.NoError(b, reader.Close(), "Close StreamReader")
 	}
 }
 
