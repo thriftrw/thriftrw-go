@@ -29,12 +29,12 @@ import (
 	"go.uber.org/thriftrw/internal/frame"
 	"go.uber.org/thriftrw/internal/multiplex"
 	"go.uber.org/thriftrw/plugin/api"
-	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/version"
 )
 
-var _proto = protocol.Binary
+var _proto = binary.Default
 
 // Plugin defines a ThriftRW plugin.
 //
