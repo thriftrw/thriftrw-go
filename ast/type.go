@@ -62,12 +62,13 @@ type BaseType struct {
 	// Type annotations associated with this reference.
 	Annotations []*Annotation
 	Line        int
+	Column      int
 }
 
 func (BaseType) node()      {}
 func (BaseType) fieldType() {}
 
-func (bt BaseType) lineNumber() int { return bt.Line }
+func (bt BaseType) pos() Position { return Position{Line: bt.Line, Column: bt.Column} }
 
 func (bt BaseType) visitChildren(ss nodeStack, v visitor) {
 	for _, ann := range bt.Annotations {
@@ -113,12 +114,13 @@ type MapType struct {
 	KeyType, ValueType Type
 	Annotations        []*Annotation
 	Line               int
+	Column             int
 }
 
 func (MapType) node()      {}
 func (MapType) fieldType() {}
 
-func (mt MapType) lineNumber() int { return mt.Line }
+func (mt MapType) pos() Position { return Position{Line: mt.Line, Column: mt.Column} }
 
 func (mt MapType) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, mt.KeyType)
@@ -146,12 +148,13 @@ type ListType struct {
 	ValueType   Type
 	Annotations []*Annotation
 	Line        int
+	Column      int
 }
 
 func (ListType) node()      {}
 func (ListType) fieldType() {}
 
-func (lt ListType) lineNumber() int { return lt.Line }
+func (lt ListType) pos() Position { return Position{Line: lt.Line, Column: lt.Column} }
 
 func (lt ListType) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, lt.ValueType)
@@ -178,12 +181,13 @@ type SetType struct {
 	ValueType   Type
 	Annotations []*Annotation
 	Line        int
+	Column      int
 }
 
 func (SetType) node()      {}
 func (SetType) fieldType() {}
 
-func (st SetType) lineNumber() int { return st.Line }
+func (st SetType) pos() Position { return Position{Line: st.Line, Column: st.Column} }
 
 func (st SetType) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, st.ValueType)
@@ -201,14 +205,15 @@ func (st SetType) String() string {
 
 // TypeReference references a user-defined type.
 type TypeReference struct {
-	Name string
-	Line int
+	Name   string
+	Line   int
+	Column int
 }
 
 func (TypeReference) node()      {}
 func (TypeReference) fieldType() {}
 
-func (tr TypeReference) lineNumber() int { return tr.Line }
+func (tr TypeReference) pos() Position { return Position{Line: tr.Line, Column: tr.Column} }
 
 func (TypeReference) visitChildren(nodeStack, visitor) {}
 

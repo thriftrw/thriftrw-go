@@ -67,10 +67,10 @@ func (i ConstantMapItem) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, i.Value)
 }
 
-func (m ConstantMap) lineNumber() int       { return m.Line }
-func (i ConstantMapItem) lineNumber() int   { return i.Line }
-func (l ConstantList) lineNumber() int      { return l.Line }
-func (r ConstantReference) lineNumber() int { return r.Line }
+func (m ConstantMap) pos() Position       { return Position{Line: m.Line, Column: m.Column} }
+func (i ConstantMapItem) pos() Position   { return Position{Line: i.Line, Column: i.Column} }
+func (l ConstantList) pos() Position      { return Position{Line: l.Line, Column: l.Column} }
+func (r ConstantReference) pos() Position { return Position{Line: r.Line, Column: r.Column} }
 
 // ConstantBoolean is a boolean value specified in the Thrift file.
 //
@@ -99,14 +99,16 @@ type ConstantDouble float64
 //
 // Note that map literals can also be used to build structs.
 type ConstantMap struct {
-	Items []ConstantMapItem
-	Line  int
+	Items  []ConstantMapItem
+	Line   int
+	Column int
 }
 
 // ConstantMapItem is a single item in a ConstantMap.
 type ConstantMapItem struct {
 	Key, Value ConstantValue
 	Line       int
+	Column     int
 }
 
 func (ConstantMapItem) node() {}
@@ -115,8 +117,9 @@ func (ConstantMapItem) node() {}
 //
 // 	[1, 2, 3]
 type ConstantList struct {
-	Items []ConstantValue
-	Line  int
+	Items  []ConstantValue
+	Line   int
+	Column int
 }
 
 // ConstantReference is a reference to another constant value defined in the
@@ -127,6 +130,6 @@ type ConstantReference struct {
 	// Name of the referenced value.
 	Name string
 
-	// Line number on which this reference was made.
-	Line int
+	Line   int
+	Column int
 }

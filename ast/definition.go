@@ -23,8 +23,9 @@ package ast
 // DefinitionInfo provides a common way to access name and line information
 // for definitions.
 type DefinitionInfo struct {
-	Name string
-	Line int
+	Name   string
+	Line   int
+	Column int
 }
 
 // Definition unifies the different types representing items defined in the
@@ -40,17 +41,18 @@ type Definition interface {
 //
 // 	const i32 foo = 42
 type Constant struct {
-	Name  string
-	Type  Type
-	Value ConstantValue
-	Line  int
-	Doc   string
+	Name   string
+	Type   Type
+	Value  ConstantValue
+	Line   int
+	Column int
+	Doc    string
 }
 
 func (*Constant) node()       {}
 func (*Constant) definition() {}
 
-func (c *Constant) lineNumber() int { return c.Line }
+func (c *Constant) pos() Position { return Position{Line: c.Line, Column: c.Column} }
 
 func (c *Constant) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, c.Type)
@@ -59,7 +61,7 @@ func (c *Constant) visitChildren(ss nodeStack, v visitor) {
 
 // Info for Constant
 func (c *Constant) Info() DefinitionInfo {
-	return DefinitionInfo{Name: c.Name, Line: c.Line}
+	return DefinitionInfo{Name: c.Name, Line: c.Line, Column: c.Column}
 }
 
 // Typedef is used to define an alias for another type.
@@ -71,6 +73,7 @@ type Typedef struct {
 	Type        Type
 	Annotations []*Annotation
 	Line        int
+	Column      int
 	Doc         string
 }
 
@@ -78,7 +81,7 @@ type Typedef struct {
 func (*Typedef) node()       {}
 func (*Typedef) definition() {}
 
-func (t *Typedef) lineNumber() int { return t.Line }
+func (t *Typedef) pos() Position { return Position{Line: t.Line, Column: t.Column} }
 
 func (t *Typedef) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, t.Type)
@@ -89,7 +92,7 @@ func (t *Typedef) visitChildren(ss nodeStack, v visitor) {
 
 // Info for Typedef.
 func (t *Typedef) Info() DefinitionInfo {
-	return DefinitionInfo{Name: t.Name, Line: t.Line}
+	return DefinitionInfo{Name: t.Name, Line: t.Line, Column: t.Column}
 }
 
 // Enum is a set of named integer values.
@@ -106,13 +109,14 @@ type Enum struct {
 	Items       []*EnumItem
 	Annotations []*Annotation
 	Line        int
+	Column      int
 	Doc         string
 }
 
 func (*Enum) node()       {}
 func (*Enum) definition() {}
 
-func (e *Enum) lineNumber() int { return e.Line }
+func (e *Enum) pos() Position { return Position{Line: e.Line, Column: e.Column} }
 
 func (e *Enum) visitChildren(ss nodeStack, v visitor) {
 	for _, item := range e.Items {
@@ -126,7 +130,7 @@ func (e *Enum) visitChildren(ss nodeStack, v visitor) {
 
 // Info for Enum.
 func (e *Enum) Info() DefinitionInfo {
-	return DefinitionInfo{Name: e.Name, Line: e.Line}
+	return DefinitionInfo{Name: e.Name, Line: e.Line, Column: e.Column}
 }
 
 // EnumItem is a single item in an Enum definition.
@@ -136,12 +140,13 @@ type EnumItem struct {
 	Value       *int
 	Annotations []*Annotation
 	Line        int
+	Column      int
 	Doc         string
 }
 
 func (*EnumItem) node() {}
 
-func (i *EnumItem) lineNumber() int { return i.Line }
+func (i *EnumItem) pos() Position { return Position{Line: i.Line, Column: i.Column} }
 
 func (i *EnumItem) visitChildren(ss nodeStack, v visitor) {
 	for _, ann := range i.Annotations {
@@ -186,13 +191,14 @@ type Struct struct {
 	Fields      []*Field
 	Annotations []*Annotation
 	Line        int
+	Column      int
 	Doc         string
 }
 
 func (*Struct) node()       {}
 func (*Struct) definition() {}
 
-func (s *Struct) lineNumber() int { return s.Line }
+func (s *Struct) pos() Position { return Position{Line: s.Line, Column: s.Column} }
 
 func (s *Struct) visitChildren(ss nodeStack, v visitor) {
 	for _, field := range s.Fields {
@@ -205,7 +211,7 @@ func (s *Struct) visitChildren(ss nodeStack, v visitor) {
 
 // Info for Struct.
 func (s *Struct) Info() DefinitionInfo {
-	return DefinitionInfo{Name: s.Name, Line: s.Line}
+	return DefinitionInfo{Name: s.Name, Line: s.Line, Column: s.Column}
 }
 
 // Service is a collection of functions.
@@ -222,13 +228,14 @@ type Service struct {
 	Parent      *ServiceReference
 	Annotations []*Annotation
 	Line        int
+	Column      int
 	Doc         string
 }
 
 func (*Service) node()       {}
 func (*Service) definition() {}
 
-func (s *Service) lineNumber() int { return s.Line }
+func (s *Service) pos() Position { return Position{Line: s.Line, Column: s.Column} }
 
 func (s *Service) visitChildren(ss nodeStack, v visitor) {
 	for _, function := range s.Functions {
@@ -241,7 +248,7 @@ func (s *Service) visitChildren(ss nodeStack, v visitor) {
 
 // Info for Service.
 func (s *Service) Info() DefinitionInfo {
-	return DefinitionInfo{Name: s.Name, Line: s.Line}
+	return DefinitionInfo{Name: s.Name, Line: s.Line, Column: s.Column}
 }
 
 // Function is a single function inside a service.
@@ -258,12 +265,13 @@ type Function struct {
 	OneWay      bool
 	Annotations []*Annotation
 	Line        int
+	Column      int
 	Doc         string
 }
 
 func (*Function) node() {}
 
-func (n *Function) lineNumber() int { return n.Line }
+func (n *Function) pos() Position { return Position{Line: n.Line, Column: n.Column} }
 
 func (n *Function) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, n.ReturnType)
@@ -306,12 +314,13 @@ type Field struct {
 	Default      ConstantValue
 	Annotations  []*Annotation
 	Line         int
+	Column       int
 	Doc          string
 }
 
 func (*Field) node() {}
 
-func (n *Field) lineNumber() int { return n.Line }
+func (n *Field) pos() Position { return Position{Line: n.Line, Column: n.Column} }
 
 func (n *Field) visitChildren(ss nodeStack, v visitor) {
 	v.visit(ss, n.Type)
@@ -323,6 +332,7 @@ func (n *Field) visitChildren(ss nodeStack, v visitor) {
 
 // ServiceReference is a reference to another service.
 type ServiceReference struct {
-	Name string
-	Line int
+	Name   string
+	Line   int
+	Column int
 }

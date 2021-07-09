@@ -40,8 +40,46 @@ func (p Position) String() string {
 // Pos attempts to return the position of a Node in the parsed document.
 // For most use cases, prefer to use idl.Info to access positional information.
 func Pos(n Node) (Position, bool) {
-	if nl, ok := n.(nodeWithLine); ok {
-		return Position{Line: nl.lineNumber()}, true
+	if np, ok := n.(nodeWithPosition); ok {
+		return np.pos(), true
 	}
 	return Position{}, false
 }
+
+// LineNumber returns the line in the file at which the given node was defined
+// or 0 if the Node does not record its line number.
+func LineNumber(n Node) int {
+	if np, ok := n.(nodeWithPosition); ok {
+		return np.pos().Line
+	}
+	return 0
+}
+
+// Nodes which know their document position can implement this interface.
+type nodeWithPosition interface {
+	Node
+
+	pos() Position
+}
+
+var _ nodeWithPosition = (*Annotation)(nil)
+var _ nodeWithPosition = BaseType{}
+var _ nodeWithPosition = (*Constant)(nil)
+var _ nodeWithPosition = ConstantList{}
+var _ nodeWithPosition = ConstantMap{}
+var _ nodeWithPosition = ConstantMapItem{}
+var _ nodeWithPosition = ConstantReference{}
+var _ nodeWithPosition = (*Enum)(nil)
+var _ nodeWithPosition = (*EnumItem)(nil)
+var _ nodeWithPosition = (*Field)(nil)
+var _ nodeWithPosition = (*Function)(nil)
+var _ nodeWithPosition = (*Include)(nil)
+var _ nodeWithPosition = (*CppInclude)(nil)
+var _ nodeWithPosition = ListType{}
+var _ nodeWithPosition = MapType{}
+var _ nodeWithPosition = (*Namespace)(nil)
+var _ nodeWithPosition = (*Service)(nil)
+var _ nodeWithPosition = SetType{}
+var _ nodeWithPosition = (*Struct)(nil)
+var _ nodeWithPosition = (*Typedef)(nil)
+var _ nodeWithPosition = TypeReference{}
