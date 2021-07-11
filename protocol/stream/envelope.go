@@ -26,6 +26,9 @@ import (
 	"go.uber.org/thriftrw/wire"
 )
 
+type ReadBodyFunc func(Reader) error
+type WriteBodyFunc func(Writer) error
+
 // RequestReader captures how to read from a request in a streaming fashion.
 type RequestReader interface {
 	// ReadRequest reads off the request envelope (if present) from a Reader
@@ -34,7 +37,7 @@ type RequestReader interface {
 	// regardless of whether the caller is configured to submit envelopes.
 	// The caller specifies the expected EnvelopeType, either OneWay or Unary,
 	// on which the read asserts the specified envelope is present.
-	ReadRequest(wire.EnvelopeType, io.Reader) (body Reader, res ResponseWriter, err error)
+	ReadRequest(wire.EnvelopeType, io.Reader, ReadBodyFunc) (res ResponseWriter, err error)
 }
 
 // ResponseWriter captures how to respond to a request in a streaming fashion.
@@ -45,5 +48,5 @@ type ResponseWriter interface {
 	// whether successful or not (error), users must call Close() on the stream.Writer.
 	//
 	// The EnvelopeType should be either wire.Reply or wire.Exception.
-	WriteResponse(wire.EnvelopeType, io.Writer) (body Writer, err error)
+	WriteResponse(wire.EnvelopeType, io.Writer, WriteBodyFunc) (err error)
 }

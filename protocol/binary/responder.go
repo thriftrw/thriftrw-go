@@ -37,13 +37,17 @@ type Responder interface {
 // noEnvelopeResponder responds to a request without an envelope.
 type noEnvelopeResponder struct{}
 
+var _ stream.ResponseWriter = &noEnvelopeResponder{}
+
 func (noEnvelopeResponder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error {
 	return Default.Encode(v, w)
 }
 
-func (noEnvelopeResponder) WriteResponse(et wire.EnvelopeType, w io.Writer) (stream.Writer, error) {
+func (noEnvelopeResponder) WriteResponse(et wire.EnvelopeType, w io.Writer, bodyFunc stream.WriteBodyFunc) error {
 	writer := NewStreamWriter(w)
-	return writer, nil
+	defer writer.Close()
+
+	return bodyFunc(writer)
 }
 
 // NoEnvelopeResponder responds to a request without an envelope.
@@ -54,6 +58,8 @@ type EnvelopeV0Responder struct {
 	Name  string
 	SeqID int32
 }
+
+var _ stream.ResponseWriter = &EnvelopeV0Responder{}
 
 // EncodeResponse writes the response to the writer using a non-strict
 // envelope.
@@ -71,14 +77,23 @@ func (r EnvelopeV0Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w
 
 // WriteResponse writes an envelope to the writer (non-strict envelope) and
 // returns a borrowed stream.Writer. Callers must call Close() on stream.Writer once finished.
-func (r EnvelopeV0Responder) WriteResponse(et wire.EnvelopeType, w io.Writer) (stream.Writer, error) {
+func (r EnvelopeV0Responder) WriteResponse(et wire.EnvelopeType, w io.Writer, bodyFunc stream.WriteBodyFunc) error {
 	writer := NewStreamWriter(w)
-	err := writer.WriteLegacyEnvelopeBegin(stream.EnvelopeHeader{
+	defer writer.Close()
+
+	if err := writer.WriteLegacyEnvelopeBegin(stream.EnvelopeHeader{
 		Name:  r.Name,
 		Type:  et,
 		SeqID: r.SeqID,
-	})
-	return writer, err
+	}); err != nil {
+		return err
+	}
+
+	if err := bodyFunc(writer); err != nil {
+		return err
+	}
+
+	return writer.WriteLegacyEnvelopeEnd()
 }
 
 // EnvelopeV1Responder responds to requests with a strict, version 1 envelope.
@@ -86,6 +101,8 @@ type EnvelopeV1Responder struct {
 	Name  string
 	SeqID int32
 }
+
+var _ stream.ResponseWriter = &EnvelopeV1Responder{}
 
 // EncodeResponse writes the response to the writer using a strict, version 1
 // envelope.
@@ -103,12 +120,21 @@ func (r EnvelopeV1Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w
 
 // WriteResponse writes an envelope to the writer (strict envelope) and returns a
 // borrowed stream.Writer. Callers must call Close() on stream.Writer once finished.
-func (r EnvelopeV1Responder) WriteResponse(et wire.EnvelopeType, w io.Writer) (stream.Writer, error) {
+func (r EnvelopeV1Responder) WriteResponse(et wire.EnvelopeType, w io.Writer, bodyFunc stream.WriteBodyFunc) error {
 	writer := NewStreamWriter(w)
-	err := writer.WriteEnvelopeBegin(stream.EnvelopeHeader{
+	defer writer.Close()
+
+	if err := writer.WriteEnvelopeBegin(stream.EnvelopeHeader{
 		Name:  r.Name,
 		Type:  et,
 		SeqID: r.SeqID,
-	})
-	return writer, err
+	}); err != nil {
+		return err
+	}
+
+	if err := bodyFunc(writer); err != nil {
+		return err
+	}
+
+	return writer.WriteEnvelopeEnd()
 }
