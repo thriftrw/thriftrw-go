@@ -21,11 +21,8 @@
 package protocol
 
 import (
-	"io"
-
 	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/protocol/stream"
-	"go.uber.org/thriftrw/wire"
 )
 
 // Binary implements the Thrift Binary Protocol.
@@ -104,16 +101,7 @@ var EnvelopeAgnosticBinary EnvelopeAgnosticProtocol
 func init() {
 	Binary = binary.Default
 	BinaryStreamer = binary.Default
-	EnvelopeAgnosticBinary = binaryAdapter{binary.Default}
-}
-
-// adapts binary.Protocol (which returns a binary.Responder) into
-// protocol.Protocol (which returns a protocol.Responder).
-type binaryAdapter struct{ *binary.Protocol }
-
-func (b binaryAdapter) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Value, Responder, error) {
-	v, res, err := b.Protocol.DecodeRequest(et, r)
-	return v, res, err
+	EnvelopeAgnosticBinary = binary.Default
 }
 
 // NoEnvelopeResponder responds to a request without an envelope.
