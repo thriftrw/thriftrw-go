@@ -1,5 +1,5 @@
 BUILD_DIR = $(shell pwd)/build
-RAGEL_VERSION = 6.9
+RAGEL_VERSION = 6.10
 
 export GOBIN = $(BUILD_DIR)/bin
 
