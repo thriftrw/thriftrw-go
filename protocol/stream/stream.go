@@ -23,6 +23,7 @@
 package stream
 
 import (
+	"context"
 	"io"
 
 	"go.uber.org/thriftrw/internal/iface"
@@ -41,6 +42,17 @@ type Protocol interface {
 	// Reader returns a streaming implementation of a decoder for a
 	// Thrift value.
 	Reader(r io.Reader) Reader
+}
+
+type Call struct {
+	Request  Reader
+	Response Writer
+}
+
+type CallHandler interface {
+	iface.Private
+
+	HandleCall(context.Context, *Call) error
 }
 
 // EnvelopeHeader represents the envelope of a response or a request which includes
