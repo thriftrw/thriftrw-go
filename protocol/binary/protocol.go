@@ -25,6 +25,7 @@ import (
 	"io"
 
 	"go.uber.org/thriftrw/internal/iface"
+	"go.uber.org/thriftrw/protocol/envelope"
 	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
 )
@@ -111,7 +112,7 @@ func (*Protocol) DecodeEnveloped(r io.ReaderAt) (wire.Envelope, error) {
 // the protocol will add more field types, but it is very unlikely that the
 // field type will flow into the MSB (128 type identifiers, starting with the
 // 15 valid types today).
-func (p *Protocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Value, Responder, error) {
+func (p *Protocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Value, envelope.Responder, error) {
 	var buf [2]byte
 
 	// If we fail to read two bytes, the only possible valid value is the empty struct.
@@ -158,13 +159,6 @@ func (p *Protocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Valu
 	// identifiers, outside the 0-15 range.
 	val, err := p.Decode(r, wire.TStruct)
 	return val, NoEnvelopeResponder, err
-}
-
-// Responder captures how to respond to a request, concerning whether and what
-// kind of envelope to use, how to match the sequence identifier of the
-// corresponding request.
-type Responder interface {
-	EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error
 }
 
 // noEnvelopeResponder responds to a request without an envelope.
