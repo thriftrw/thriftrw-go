@@ -452,6 +452,7 @@ func TestQuickSuite(t *testing.T) {
 		// typedefs
 		{Sample: td.BinarySet{}, Kind: thriftTypedef},
 		{Sample: td.EdgeMap{}, Kind: thriftTypedef},
+		{Sample: td.EventGroup{}, Kind: thriftTypedef},
 		{Sample: td.FrameGroup{}, Kind: thriftTypedef},
 		{Sample: td.MyEnum(0), Kind: thriftTypedef},
 		{Sample: td.PDF{}, NoLog: true, Kind: thriftTypedef},
@@ -464,10 +465,12 @@ func TestQuickSuite(t *testing.T) {
 		{Sample: td.TransitiveTypedefField{}, Kind: thriftStruct},
 		{Sample: tl.LittlePotatoe(0), NoLog: true, Kind: thriftTypedef},
 		{Sample: tl.LittlePotatoe2(0.0), NoLog: true, Kind: thriftTypedef},
+		{Sample: ts.UserMap{}, Kind: thriftTypedef},
 		{Sample: tul.UUID(""), NoLog: true, Kind: thriftTypedef},
 		{Sample: tz.StringMap{}, NoLog: true, Kind: thriftTypedef},
 		{Sample: tz.Primitives{}, NoLog: true, Kind: thriftTypedef},
 		{Sample: tz.StringList{}, NoLog: true, Kind: thriftTypedef},
+		{Sample: tss.StringSet{}, Kind: thriftTypedef},
 		{Sample: tss.StringList{}, Kind: thriftTypedef},
 		{Sample: tss.FooList{}, Kind: thriftTypedef},
 		{Sample: tss.MyStringList{}, Kind: thriftTypedef},
@@ -675,7 +678,6 @@ func TestQuickSuite(t *testing.T) {
 					t.Run("EqualsNil", suite.testEqualsNil)
 				}
 			}
-
 		})
 	}
 }
