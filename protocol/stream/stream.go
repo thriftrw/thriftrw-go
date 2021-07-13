@@ -50,8 +50,6 @@ type Call struct {
 }
 
 type CallHandler interface {
-	iface.Private
-
 	HandleCall(context.Context, *Call) error
 }
 

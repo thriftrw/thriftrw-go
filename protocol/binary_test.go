@@ -22,6 +22,7 @@ package protocol
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"math"
@@ -58,6 +59,43 @@ var (
 		0x00, 0x00, 0x15, 0x3c, // seqID:4 = 5436
 	}
 )
+
+type testResponseHandler struct {
+	t *testing.T
+}
+
+func (h testResponseHandler) HandleCall(_ context.Context, call *stream.Call) error {
+	h.t.Helper()
+
+	require.NoError(h.t, call.Response.WriteStructBegin(), "failed to write response struct begin")
+	require.NoError(h.t, call.Response.WriteStructEnd(), "failed to write response struct end")
+	return nil
+}
+
+type testRequestHandler struct {
+	t  *testing.T
+	fh *stream.FieldHeader
+}
+
+func (h testRequestHandler) HandleCall(_ context.Context, call *stream.Call) error {
+	h.t.Helper()
+
+	r := call.Request
+	require.NoError(h.t, r.ReadStructBegin(), "failed to read struct begin")
+	tempFh, ok, err := r.ReadFieldBegin()
+	require.NoError(h.t, err, "failed to read field begin")
+	require.True(h.t, ok, "failed to read field begin")
+	require.NoError(h.t, r.ReadFieldEnd(), "failed to read field end")
+	require.NoError(h.t, r.ReadStructEnd(), "failed to read struct end")
+	h.fh = &tempFh
+
+	return nil
+}
+
+type emptyHandler struct {
+}
+
+func (h emptyHandler) HandleCall(context.Context, *stream.Call) error { return nil }
 
 type encodeDecodeTest struct {
 	msg     string
@@ -99,21 +137,6 @@ func getStreamReader(t *testing.T, encoded []byte) stream.Reader {
 	t.Helper()
 
 	return BinaryStreamer.Reader(bytes.NewReader(encoded))
-}
-
-func readStructFieldHeaderFunc(t *testing.T, fh *stream.FieldHeader) stream.ReadBodyFunc {
-	return func(r stream.Reader) error {
-		t.Helper()
-		require.NoError(t, r.ReadStructBegin(), "failed to read struct begin")
-		tempFh, ok, err := r.ReadFieldBegin()
-		require.NoError(t, err, "failed to read field begin")
-		require.True(t, ok, "failed to read field begin")
-		require.NoError(t, r.ReadFieldEnd(), "failed to read field end")
-		require.NoError(t, r.ReadStructEnd(), "failed to read struct end")
-		fh = &tempFh
-
-		return nil
-	}
 }
 
 type failureTest struct {
@@ -1570,11 +1593,7 @@ func TestStreamingEnvelopeErrors(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.errMsg, func(t *testing.T) {
-			dropReader := func(stream.Reader) error {
-				return nil
-			}
-
-			responder, err := binary.Default.ReadRequest(tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), dropReader)
+			responder, err := binary.Default.ReadRequest(tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), &emptyHandler{})
 			require.Error(t, err, "ReadRequest should fail")
 			require.Equal(t, binary.NoEnvelopeResponder, responder, "ReadRequest should fail with noEnvelopeResponder")
 			assert.Contains(t, err.Error(), tt.errMsg, "ReadRequest should fail with error message")
@@ -1667,7 +1686,12 @@ func TestStreamingEnvelopeSuccessful(t *testing.T) {
 
 			// Verify whether we can infer the presence of the envelope
 			// reliably when reading a request.
-			responder, err := binary.Default.ReadRequest(tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), readStructFieldHeaderFunc(t, &fh))
+			h := testRequestHandler{
+				t:  t,
+				fh: &fh,
+			}
+
+			responder, err := binary.Default.ReadRequest(tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), h)
 			require.NoError(t, err, "failed to read request with envelope")
 			require.True(t, tt.wantResponderType == reflect.TypeOf(responder), "read request should have responder want %v got %T", tt.wantResponderType, responder)
 
@@ -1679,14 +1703,8 @@ func TestStreamingEnvelopeSuccessful(t *testing.T) {
 			//require.NoError(t, reader.Skip(fh.Type), "failed to skip")
 
 			// Verify response has the correct envelope
-			writeBodyFunc := func(ws stream.Writer) error {
-				require.NoError(t, ws.WriteStructBegin(), "failed to write response struct begin")
-				require.NoError(t, ws.WriteStructEnd(), "failed to write response struct end")
-				return nil
-			}
-
 			writer := &bytes.Buffer{}
-			err = responder.WriteResponse(tt.inputEnvType, writer, writeBodyFunc)
+			err = responder.WriteResponse(tt.inputEnvType, writer, &testResponseHandler{t: t})
 			require.NoError(t, err, "failed to write response with envelope")
 
 			// Verify response can be written to with an empty struct
