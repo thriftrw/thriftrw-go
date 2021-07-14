@@ -21,7 +21,6 @@
 package binary
 
 import (
-	"context"
 	"io"
 
 	"go.uber.org/thriftrw/protocol/stream"
@@ -44,11 +43,11 @@ func (noEnvelopeResponder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w i
 	return Default.Encode(v, w)
 }
 
-func (noEnvelopeResponder) WriteResponse(et wire.EnvelopeType, w io.Writer, h stream.CallHandler) error {
+func (noEnvelopeResponder) WriteResponse(et wire.EnvelopeType, w io.Writer, ev stream.Enveloper) error {
 	writer := NewStreamWriter(w)
 	defer writer.Close()
 
-	return h.HandleCall(context.Background(), &stream.Call{Response: writer})
+	return ev.Encode(writer)
 }
 
 // NoEnvelopeResponder responds to a request without an envelope.
@@ -78,7 +77,7 @@ func (r EnvelopeV0Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w
 
 // WriteResponse writes an envelope to the writer (non-strict envelope) and
 // returns a borrowed stream.Writer. Callers must call Close() on stream.Writer once finished.
-func (r EnvelopeV0Responder) WriteResponse(et wire.EnvelopeType, w io.Writer, h stream.CallHandler) error {
+func (r EnvelopeV0Responder) WriteResponse(et wire.EnvelopeType, w io.Writer, ev stream.Enveloper) error {
 	writer := NewStreamWriter(w)
 	defer writer.Close()
 
@@ -90,7 +89,7 @@ func (r EnvelopeV0Responder) WriteResponse(et wire.EnvelopeType, w io.Writer, h 
 		return err
 	}
 
-	if err := h.HandleCall(context.Background(), &stream.Call{Response: writer}); err != nil {
+	if err := ev.Encode(writer); err != nil {
 		return err
 	}
 
@@ -121,7 +120,7 @@ func (r EnvelopeV1Responder) EncodeResponse(v wire.Value, t wire.EnvelopeType, w
 
 // WriteResponse writes an envelope to the writer (strict envelope) and returns a
 // borrowed stream.Writer. Callers must call Close() on stream.Writer once finished.
-func (r EnvelopeV1Responder) WriteResponse(et wire.EnvelopeType, w io.Writer, h stream.CallHandler) error {
+func (r EnvelopeV1Responder) WriteResponse(et wire.EnvelopeType, w io.Writer, ev stream.Enveloper) error {
 	writer := NewStreamWriter(w)
 	defer writer.Close()
 
@@ -133,7 +132,7 @@ func (r EnvelopeV1Responder) WriteResponse(et wire.EnvelopeType, w io.Writer, h 
 		return err
 	}
 
-	if err := h.HandleCall(context.Background(), &stream.Call{Response: writer}); err != nil {
+	if err := ev.Encode(writer); err != nil {
 		return err
 	}
 

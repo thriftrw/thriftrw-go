@@ -21,20 +21,42 @@
 package stream
 
 import (
+	"context"
 	"io"
 
 	"go.uber.org/thriftrw/wire"
 )
 
+type Call struct {
+	Request Reader
+}
+
+type CallHandler interface {
+	HandleCall(context.Context, *Call) (Enveloper, error)
+}
+
+// Enveloper is the interface implemented by a type that can be written with
+// an envelope via a stream.Writer.
+type Enveloper interface {
+	MethodName() string
+	EnvelopeType() wire.EnvelopeType
+	Encode(Writer) error
+}
+
 // RequestReader captures how to read from a request in a streaming fashion.
-type RequestReader interface {
+type Handler interface {
 	// ReadRequest reads off the request envelope (if present) from a Reader
 	// and returns a stream.Reader to read the remaining un-enveloped request struct.
 	// This allows a Thrift request handler to transparently read requests
 	// regardless of whether the caller is configured to submit envelopes.
 	// The caller specifies the expected EnvelopeType, either OneWay or Unary,
 	// on which the read asserts the specified envelope is present.
-	ReadRequest(wire.EnvelopeType, io.Reader, CallHandler) (res ResponseWriter, err error)
+
+	// XXX: thrfitrw defines the wire types that can be returned in a response
+	// (Reply or Exception), can `Handle` handle sending back the response as
+	// well? likely no, Handle doesn't know/care whether the call is a oneway or
+	// not
+	Handle(context.Context, wire.EnvelopeType, io.Reader, CallHandler) (ResponseWriter, Enveloper, error)
 }
 
 // ResponseWriter captures how to respond to a request in a streaming fashion.
@@ -45,5 +67,5 @@ type ResponseWriter interface {
 	// whether successful or not (error), users must call Close() on the stream.Writer.
 	//
 	// The EnvelopeType should be either wire.Reply or wire.Exception.
-	WriteResponse(wire.EnvelopeType, io.Writer, CallHandler) (err error)
+	WriteResponse(wire.EnvelopeType, io.Writer, Enveloper) (err error)
 }
