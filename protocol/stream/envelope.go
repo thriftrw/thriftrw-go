@@ -51,11 +51,6 @@ type Handler interface {
 	// regardless of whether the caller is configured to submit envelopes.
 	// The caller specifies the expected EnvelopeType, either OneWay or Unary,
 	// on which the read asserts the specified envelope is present.
-
-	// XXX: thrfitrw defines the wire types that can be returned in a response
-	// (Reply or Exception), can `Handle` handle sending back the response as
-	// well? likely no, Handle doesn't know/care whether the call is a oneway or
-	// not
 	Handle(context.Context, wire.EnvelopeType, io.Reader, CallHandler) (ResponseWriter, Enveloper, error)
 }
 
@@ -67,5 +62,5 @@ type ResponseWriter interface {
 	// whether successful or not (error), users must call Close() on the stream.Writer.
 	//
 	// The EnvelopeType should be either wire.Reply or wire.Exception.
-	WriteResponse(wire.EnvelopeType, io.Writer, Enveloper) (err error)
+	WriteResponse(wire.EnvelopeType, io.Writer, Enveloper) error
 }

@@ -225,7 +225,6 @@ func (p *Protocol) Handle(
 		if err != nil {
 			return responder, nil, err
 		}
-		defer sr.ReadEnvelopeEnd()
 
 		switch {
 		case buf[0] == 0x00:
@@ -244,8 +243,13 @@ func (p *Protocol) Handle(
 
 		ev, err := h.HandleCall(ctx, &call)
 		if err != nil {
-			return NoEnvelopeResponder, nil, err
+			return responder, nil, err
 		}
+
+		if err := sr.ReadEnvelopeEnd(); err != nil {
+			return responder, nil, err
+		}
+
 		return responder, ev, nil
 	}
 
