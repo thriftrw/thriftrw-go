@@ -41,7 +41,7 @@ type Protocol struct {
 }
 
 var _ stream.Protocol = (*Protocol)(nil)
-var _ stream.Handler = (*Protocol)(nil)
+var _ stream.RequestReader = (*Protocol)(nil)
 
 // Encode the given Value and write the result to the given Writer.
 func (*Protocol) Encode(v wire.Value, w io.Writer) error {
@@ -166,14 +166,14 @@ func (p *Protocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Valu
 	return val, NoEnvelopeResponder, err
 }
 
-// ReadRequest reads off the request envelope (if present) from the Reader and
-// returns a stream.Reader for the caller to read off the remaining un-enveloped
-// request struct. In addition, ReadRequest also returns a stream.ResponseWriter
-// for writing the response with an envelope style that matches the request.
-// This allows a Thrift request handler to transparently accept requests
-// regardless of whether the caller submits an envelope.
-// The caller specifies the expected envelope type, one of OneWay or Unary, on
-// which the decoder asserts if the envelope is present.
+// ReadRequest reads off the request envelope (if present) from an io.Reader,
+// using the provided BodyReader to read off the full request struct,
+// asserting the EnvelopeType (either OneWay or Unary) if an envlope exists.
+// A ResponseWriter that understands the enveloping used and the request's
+// body are returned.
+//
+// This allows a Thrift request handler to transparently read requests
+// regardless of whether the caller is configured to submit envelopes.
 //
 // This is possible because we can distinguish an envelope from a bare request
 // struct by looking at the first byte and the length of the message.
@@ -199,26 +199,25 @@ func (p *Protocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Valu
 // 15 valid types today).
 //
 // Callers must call Close() on the stream.Reader once finished.
-func (p *Protocol) Handle(
+func (p *Protocol) ReadRequest(
 	ctx context.Context,
 	et wire.EnvelopeType,
 	r io.Reader,
-	h stream.CallHandler,
-) (stream.ResponseWriter, stream.Enveloper, error) {
+	br stream.BodyReader,
+) (stream.ResponseWriter, stream.Body, error) {
 	var buf [2]byte
 
-	call := stream.Call{Request: p.Reader(bytes.NewReader(buf[:]))}
+	sr := p.Reader(bytes.NewReader(buf[:]))
 	if count, _ := r.Read(buf[0:2]); count < 2 {
-		ev, err := h.HandleCall(ctx, &call)
-		return NoEnvelopeResponder, ev, err
+		body, err := br.ReadBody(ctx, sr)
+		return NoEnvelopeResponder, body, err
 	}
 
 	// Reset the Reader to allow for properly reading the envelope, if it exists.
 	r = io.MultiReader(bytes.NewReader(buf[:]), r)
-	sr := p.Reader(r)
+	sr = p.Reader(r)
 	defer sr.Close()
 
-	call = stream.Call{Request: sr}
 	if buf[0] == 0x00 || buf[0]&0x80 > 0 {
 		var responder stream.ResponseWriter = NoEnvelopeResponder
 		eh, err := p.readEnvelopeHeader(sr, et)
@@ -241,7 +240,7 @@ func (p *Protocol) Handle(
 			return responder, nil, fmt.Errorf("should never happen")
 		}
 
-		ev, err := h.HandleCall(ctx, &call)
+		ev, err := br.ReadBody(ctx, sr)
 		if err != nil {
 			return responder, nil, err
 		}
@@ -255,8 +254,8 @@ func (p *Protocol) Handle(
 
 	// For anything else, the request is either not-enveloped or invalid, let the
 	// bodyFunc manage that data.
-	ev, err := h.HandleCall(ctx, &call)
-	return NoEnvelopeResponder, ev, err
+	body, err := br.ReadBody(ctx, sr)
+	return NoEnvelopeResponder, body, err
 }
 
 func (p *Protocol) readEnvelopeHeader(sr stream.Reader, et wire.EnvelopeType) (stream.EnvelopeHeader, error) {

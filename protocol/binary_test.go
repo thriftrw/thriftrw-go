@@ -76,34 +76,33 @@ func (h testResponse) Encode(w stream.Writer) error {
 	return nil
 }
 
-type testRequestHandler struct {
+type testRequestBody struct {
 	t  *testing.T
 	fh *stream.FieldHeader
 }
 
-var _ stream.CallHandler = (*testRequestHandler)(nil)
+var _ stream.BodyReader = (*testRequestBody)(nil)
 
-func (h testRequestHandler) HandleCall(_ context.Context, call *stream.Call) (stream.Enveloper, error) {
+func (h testRequestBody) ReadBody(_ context.Context, sr stream.Reader) (stream.Body, error) {
 	h.t.Helper()
 
-	r := call.Request
-	require.NoError(h.t, r.ReadStructBegin(), "failed to read struct begin")
-	tempFh, ok, err := r.ReadFieldBegin()
+	require.NoError(h.t, sr.ReadStructBegin(), "failed to read struct begin")
+	tempFh, ok, err := sr.ReadFieldBegin()
 	require.NoError(h.t, err, "failed to read field begin")
 	require.True(h.t, ok, "failed to read field begin")
-	require.NoError(h.t, r.ReadFieldEnd(), "failed to read field end")
-	require.NoError(h.t, r.ReadStructEnd(), "failed to read struct end")
+	require.NoError(h.t, sr.ReadFieldEnd(), "failed to read field end")
+	require.NoError(h.t, sr.ReadStructEnd(), "failed to read struct end")
 	h.fh = &tempFh
 
 	return nil, nil
 }
 
-type emptyHandler struct {
+type emptyBody struct {
 }
 
-var _ stream.CallHandler = (*emptyHandler)(nil)
+var _ stream.BodyReader = (*emptyBody)(nil)
 
-func (h emptyHandler) HandleCall(context.Context, *stream.Call) (stream.Enveloper, error) {
+func (h emptyBody) ReadBody(context.Context, stream.Reader) (stream.Body, error) {
 	return nil, nil
 }
 
@@ -1603,7 +1602,7 @@ func TestStreamingEnvelopeErrors(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.errMsg, func(t *testing.T) {
-			responder, _, err := binary.Default.Handle(context.Background(), tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), &emptyHandler{})
+			responder, _, err := binary.Default.ReadRequest(context.Background(), tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), &emptyBody{})
 			require.Error(t, err, "ReadRequest should fail")
 			require.Equal(t, binary.NoEnvelopeResponder, responder, "ReadRequest should fail with noEnvelopeResponder")
 			assert.Contains(t, err.Error(), tt.errMsg, "ReadRequest should fail with error message")
@@ -1696,12 +1695,12 @@ func TestStreamingEnvelopeSuccessful(t *testing.T) {
 
 			// Verify whether we can infer the presence of the envelope
 			// reliably when reading a request.
-			h := testRequestHandler{
+			h := testRequestBody{
 				t:  t,
 				fh: &fh,
 			}
 
-			responder, _, err := binary.Default.Handle(context.Background(), tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), h)
+			responder, _, err := binary.Default.ReadRequest(context.Background(), tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), h)
 			require.NoError(t, err, "failed to read request with envelope")
 			require.True(t, tt.wantResponderType == reflect.TypeOf(responder), "read request should have responder want %v got %T", tt.wantResponderType, responder)
 

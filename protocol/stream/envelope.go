@@ -27,12 +27,16 @@ import (
 	"go.uber.org/thriftrw/wire"
 )
 
-type Call struct {
-	Request Reader
+// Body represents a type that can be read out from a stream.Writer.
+type Body interface {
+	Decode(Reader) error
 }
 
-type CallHandler interface {
-	HandleCall(context.Context, *Call) (Enveloper, error)
+// A BodyReader knows how to read the body of a thriftrw type.
+type BodyReader interface {
+	// ReadBody returns a thriftrw type that has read the contents off the wire
+	// using the supplied Reader.
+	ReadBody(context.Context, Reader) (Body, error)
 }
 
 // Enveloper is the interface implemented by a type that can be written with
@@ -44,14 +48,16 @@ type Enveloper interface {
 }
 
 // RequestReader captures how to read from a request in a streaming fashion.
-type Handler interface {
-	// ReadRequest reads off the request envelope (if present) from a Reader
-	// and returns a stream.Reader to read the remaining un-enveloped request struct.
+type RequestReader interface {
+	// ReadRequest reads off the request envelope (if present) from an io.Reader,
+	// using the provided BodyReader to read off the full request struct,
+	// asserting the EnvelopeType (either OneWay or Unary) if an envlope exists.
+	// A ResponseWriter that understands the enveloping used and the request's
+	// body are returned.
+	//
 	// This allows a Thrift request handler to transparently read requests
 	// regardless of whether the caller is configured to submit envelopes.
-	// The caller specifies the expected EnvelopeType, either OneWay or Unary,
-	// on which the read asserts the specified envelope is present.
-	Handle(context.Context, wire.EnvelopeType, io.Reader, CallHandler) (ResponseWriter, Enveloper, error)
+	ReadRequest(context.Context, wire.EnvelopeType, io.Reader, BodyReader) (ResponseWriter, Body, error)
 }
 
 // ResponseWriter captures how to respond to a request in a streaming fashion.
