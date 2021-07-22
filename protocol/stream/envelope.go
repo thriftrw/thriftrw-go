@@ -27,16 +27,9 @@ import (
 	"go.uber.org/thriftrw/wire"
 )
 
-// Body represents a type that can be read out from a stream.Writer.
-type Body interface {
-	Decode(Reader) error
-}
-
-// A BodyReader knows how to read the body of a thriftrw type.
+// BodyReader represents a type that can be read out from a stream.Reader.
 type BodyReader interface {
-	// ReadBody returns a thriftrw type that has read the contents off the wire
-	// using the supplied Reader.
-	ReadBody(context.Context, Reader) (Body, error)
+	Decode(Reader) error
 }
 
 // Enveloper is the interface implemented by a type that can be written with
@@ -57,7 +50,7 @@ type RequestReader interface {
 	//
 	// This allows a Thrift request handler to transparently read requests
 	// regardless of whether the caller is configured to submit envelopes.
-	ReadRequest(context.Context, wire.EnvelopeType, io.Reader, BodyReader) (ResponseWriter, Body, error)
+	ReadRequest(context.Context, wire.EnvelopeType, io.Reader, BodyReader) (ResponseWriter, error)
 }
 
 // ResponseWriter captures how to respond to a request in a streaming fashion.

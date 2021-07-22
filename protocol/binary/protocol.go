@@ -203,14 +203,13 @@ func (p *Protocol) ReadRequest(
 	ctx context.Context,
 	et wire.EnvelopeType,
 	r io.Reader,
-	br stream.BodyReader,
-) (stream.ResponseWriter, stream.Body, error) {
+	body stream.BodyReader,
+) (stream.ResponseWriter, error) {
 	var buf [2]byte
 
 	sr := p.Reader(bytes.NewReader(buf[:]))
 	if count, _ := r.Read(buf[0:2]); count < 2 {
-		body, err := br.ReadBody(ctx, sr)
-		return NoEnvelopeResponder, body, err
+		return NoEnvelopeResponder, body.Decode(sr)
 	}
 
 	// Reset the Reader to allow for properly reading the envelope, if it exists.
@@ -222,7 +221,7 @@ func (p *Protocol) ReadRequest(
 		var responder stream.ResponseWriter = NoEnvelopeResponder
 		eh, err := p.readEnvelopeHeader(sr, et)
 		if err != nil {
-			return responder, nil, err
+			return responder, err
 		}
 
 		switch {
@@ -237,25 +236,24 @@ func (p *Protocol) ReadRequest(
 				SeqID: eh.SeqID,
 			}
 		default:
-			return responder, nil, fmt.Errorf("should never happen")
+			return responder, fmt.Errorf("should never happen")
 		}
 
-		ev, err := br.ReadBody(ctx, sr)
+		err = body.Decode(sr)
 		if err != nil {
-			return responder, nil, err
+			return responder, err
 		}
 
 		if err := sr.ReadEnvelopeEnd(); err != nil {
-			return responder, nil, err
+			return responder, err
 		}
 
-		return responder, ev, nil
+		return responder, nil
 	}
 
 	// For anything else, the request is either not-enveloped or invalid, let the
 	// bodyFunc manage that data.
-	body, err := br.ReadBody(ctx, sr)
-	return NoEnvelopeResponder, body, err
+	return NoEnvelopeResponder, body.Decode(sr)
 }
 
 func (p *Protocol) readEnvelopeHeader(sr stream.Reader, et wire.EnvelopeType) (stream.EnvelopeHeader, error) {

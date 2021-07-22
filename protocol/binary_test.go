@@ -83,7 +83,7 @@ type testRequestBody struct {
 
 var _ stream.BodyReader = (*testRequestBody)(nil)
 
-func (h testRequestBody) ReadBody(_ context.Context, sr stream.Reader) (stream.Body, error) {
+func (h testRequestBody) Decode(sr stream.Reader) error {
 	h.t.Helper()
 
 	require.NoError(h.t, sr.ReadStructBegin(), "failed to read struct begin")
@@ -94,7 +94,7 @@ func (h testRequestBody) ReadBody(_ context.Context, sr stream.Reader) (stream.B
 	require.NoError(h.t, sr.ReadStructEnd(), "failed to read struct end")
 	h.fh = &tempFh
 
-	return nil, nil
+	return nil
 }
 
 type emptyBody struct {
@@ -102,8 +102,8 @@ type emptyBody struct {
 
 var _ stream.BodyReader = (*emptyBody)(nil)
 
-func (h emptyBody) ReadBody(context.Context, stream.Reader) (stream.Body, error) {
-	return nil, nil
+func (h emptyBody) Decode(stream.Reader) error {
+	return nil
 }
 
 type encodeDecodeTest struct {
@@ -1602,7 +1602,7 @@ func TestStreamingEnvelopeErrors(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.errMsg, func(t *testing.T) {
-			responder, _, err := binary.Default.ReadRequest(context.Background(), tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), &emptyBody{})
+			responder, err := binary.Default.ReadRequest(context.Background(), tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), &emptyBody{})
 			require.Error(t, err, "ReadRequest should fail")
 			require.Equal(t, binary.NoEnvelopeResponder, responder, "ReadRequest should fail with noEnvelopeResponder")
 			assert.Contains(t, err.Error(), tt.errMsg, "ReadRequest should fail with error message")
@@ -1700,7 +1700,7 @@ func TestStreamingEnvelopeSuccessful(t *testing.T) {
 				fh: &fh,
 			}
 
-			responder, _, err := binary.Default.ReadRequest(context.Background(), tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), h)
+			responder, err := binary.Default.ReadRequest(context.Background(), tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), h)
 			require.NoError(t, err, "failed to read request with envelope")
 			require.True(t, tt.wantResponderType == reflect.TypeOf(responder), "read request should have responder want %v got %T", tt.wantResponderType, responder)
 
