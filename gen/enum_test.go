@@ -25,15 +25,13 @@ import (
 	"fmt"
 	"testing"
 
-	tems "go.uber.org/thriftrw/gen/internal/tests/enum-text-marshal-strict"
-
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/thriftrw/compile"
+	tems "go.uber.org/thriftrw/gen/internal/tests/enum-text-marshal-strict"
 	tec "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	"go.uber.org/thriftrw/wire"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestValueOfEnumDefault(t *testing.T) {

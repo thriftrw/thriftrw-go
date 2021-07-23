@@ -36,6 +36,7 @@ import (
 
 	tl "go.uber.org/thriftrw/gen/internal/tests/collision"
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
+	tems "go.uber.org/thriftrw/gen/internal/tests/enum-text-marshal-strict"
 	tle "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
@@ -124,28 +125,49 @@ func unionValueGenerator(sample interface{}) func(*testing.T, *rand.Rand) thrift
 	}
 }
 
+type enumValueGen struct {
+	typ         reflect.Type
+	knownValues reflect.Value // output of Foo_Values()
+	onlyKnown   bool          // use only known enum values
+}
+
+func newEnumValueGen(valuesFunc interface{}) *enumValueGen {
+	vfunc := reflect.ValueOf(valuesFunc)
+	typ := vfunc.Type().Out(0).Elem() // Foo_Values() []Foo -> Foo
+	return &enumValueGen{
+		typ:         typ,
+		knownValues: vfunc.Call(nil)[0],
+	}
+}
+
+func (g *enumValueGen) Generate(t *testing.T, rand *rand.Rand) thriftType {
+	var giveV reflect.Value
+	// Flip a coin to decide whether we're evaluating a known or
+	// unknown value, unless onlyKnown is set to true.
+	if (g.onlyKnown || rand.Int()%2 == 0) && g.knownValues.Len() > 0 {
+		// Pick a known value at random
+		giveV = g.knownValues.Index(rand.Intn(g.knownValues.Len()))
+	} else {
+		// give = MyEnum($randomValue)
+		giveV = reflect.New(g.typ).Elem()
+		giveV.Set(reflect.ValueOf(rand.Int31()).Convert(g.typ))
+	}
+
+	return giveV.Addr().Interface().(thriftType)
+}
+
 // enumValueGenerator builds a generator for random enum values given the
 // `*_Values` function for that enum.
 func enumValueGenerator(valuesFunc interface{}) func(*testing.T, *rand.Rand) thriftType {
-	vfunc := reflect.ValueOf(valuesFunc)
-	typ := vfunc.Type().Out(0).Elem() // Foo_Values() []Foo -> Foo
-	return func(t *testing.T, rand *rand.Rand) thriftType {
-		knownValues := vfunc.Call(nil)[0]
+	return newEnumValueGen(valuesFunc).Generate
+}
 
-		var giveV reflect.Value
-		// Flip a coin to decide whether we're evaluating a known or
-		// unknown value.
-		if rand.Int()%2 == 0 && knownValues.Len() > 0 {
-			// Pick a known value at random
-			giveV = knownValues.Index(rand.Intn(knownValues.Len()))
-		} else {
-			// give = MyEnum($randomValue)
-			giveV = reflect.New(typ).Elem()
-			giveV.Set(reflect.ValueOf(rand.Int31()).Convert(typ))
-		}
-
-		return giveV.Addr().Interface().(thriftType)
-	}
+// knownEnumValuesGenerator builds a generator for random enum values that only
+// yields known enum values.
+func knownEnumValuesGenerator(valuesFunc interface{}) func(*testing.T, *rand.Rand) thriftType {
+	gen := newEnumValueGen(valuesFunc)
+	gen.onlyKnown = true
+	return gen.Generate
 }
 
 // populateDefaults copies the given thrift object to a new object
@@ -541,6 +563,11 @@ func TestQuickSuite(t *testing.T) {
 			Kind:      thriftEnum,
 			NoLog:     true,
 		},
+		{
+			Sample:    tems.EnumMarshalStrict(0),
+			Generator: knownEnumValuesGenerator(tems.EnumMarshalStrict_Values),
+			Kind:      thriftEnum,
+		},
 	}
 
 	// Log the seed so that we can reproduce this if it ever fails.
@@ -664,7 +691,6 @@ func TestQuickSuite(t *testing.T) {
 					t.Run("EqualsNil", suite.testEqualsNil)
 				}
 			}
-
 		})
 	}
 }
