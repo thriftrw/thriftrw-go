@@ -61,8 +61,8 @@ func (v *RecordType) UnmarshalText(value []byte) error {
 
 // MarshalText encodes RecordType to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v RecordType) MarshalText() ([]byte, error) {
@@ -142,8 +142,8 @@ func (v RecordType) Equals(rhs RecordType) bool {
 
 // MarshalJSON serializes RecordType into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v RecordType) MarshalJSON() ([]byte, error) {
