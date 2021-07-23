@@ -19,5 +19,8 @@ $(THRIFTRW):
 nozap: thrift/nozap.thrift $(THRIFTRW)
 	$(THRIFTRW) $(THRIFTRW_FLAGS) --no-recurse --no-zap $<
 
+enum-text-marshal-strict: thrift/enum-text-marshal-strict.thrift $(THRIFTRW)
+	$(THRIFTRW) $(THRIFTRW_FLAGS) --no-recurse --enum-text-marshal-strict $<
+
 %: thrift/%.thrift $(THRIFTRW)
 	$(THRIFTRW) $(THRIFTRW_FLAGS) $<

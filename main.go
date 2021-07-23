@@ -52,14 +52,15 @@ type genOptions struct {
 	NoRecurse bool         `long:"no-recurse" description:"Don't generate code for included Thrift files."`
 	Plugins   plugin.Flags `long:"plugin" short:"p" value-name:"PLUGIN" description:"Code generation plugin for ThriftRW. This option may be provided multiple times to apply multiple plugins."`
 
-	GeneratePluginAPI bool   `long:"generate-plugin-api" hidden:"true" description:"Generates code for the plugin API"`
-	NoVersionCheck    bool   `long:"no-version-check" hidden:"true" description:"Does not add library version checks to generated code."`
-	NoTypes           bool   `long:"no-types" description:"Do not generate code for types, implies --no-service-helpers."`
-	NoConstants       bool   `long:"no-constants" description:"Do not generate code for const declarations."`
-	NoServiceHelpers  bool   `long:"no-service-helpers" description:"Do not generate service helpers."`
-	NoEmbedIDL        bool   `long:"no-embed-idl" description:"Do not embed IDLs into the generated code."`
-	NoZap             bool   `long:"no-zap" description:"Do not generate code for Zap logging."`
-	OutputFile        string `long:"output-file" value-name:"FILENAME" description:"Generates a single .go file as an output. Specifying an OutputFile prevents code generation for included Thrift Files."`
+	GeneratePluginAPI     bool   `long:"generate-plugin-api" hidden:"true" description:"Generates code for the plugin API"`
+	NoVersionCheck        bool   `long:"no-version-check" hidden:"true" description:"Does not add library version checks to generated code."`
+	NoTypes               bool   `long:"no-types" description:"Do not generate code for types, implies --no-service-helpers."`
+	NoConstants           bool   `long:"no-constants" description:"Do not generate code for const declarations."`
+	NoServiceHelpers      bool   `long:"no-service-helpers" description:"Do not generate service helpers."`
+	NoEmbedIDL            bool   `long:"no-embed-idl" description:"Do not embed IDLs into the generated code."`
+	NoZap                 bool   `long:"no-zap" description:"Do not generate code for Zap logging."`
+	OutputFile            string `long:"output-file" value-name:"FILENAME" description:"Generates a single .go file as an output. Specifying an OutputFile prevents code generation for included Thrift Files."`
+	EnumTextMarshalStrict bool   `long:"enum-text-marshal-strict" hidden:"true" description:"Generate code to throw error on trying to marshal unknown enum"`
 
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
 	// and --plugin
@@ -177,18 +178,19 @@ func do() (err error) {
 		ServiceGenerator: pluginHandle.ServiceGenerator(),
 	}
 	generatorOptions := gen.Options{
-		OutputDir:        gopts.OutputDirectory,
-		PackagePrefix:    gopts.PackagePrefix,
-		ThriftRoot:       gopts.ThriftRoot,
-		NoRecurse:        gopts.NoRecurse,
-		NoVersionCheck:   gopts.NoVersionCheck,
-		Plugin:           codeGenerator,
-		NoTypes:          gopts.NoTypes,
-		NoConstants:      gopts.NoConstants,
-		NoServiceHelpers: gopts.NoServiceHelpers || gopts.NoTypes,
-		NoEmbedIDL:       gopts.NoEmbedIDL,
-		NoZap:            gopts.NoZap,
-		OutputFile:       gopts.OutputFile,
+		OutputDir:             gopts.OutputDirectory,
+		PackagePrefix:         gopts.PackagePrefix,
+		ThriftRoot:            gopts.ThriftRoot,
+		NoRecurse:             gopts.NoRecurse,
+		NoVersionCheck:        gopts.NoVersionCheck,
+		Plugin:                codeGenerator,
+		NoTypes:               gopts.NoTypes,
+		NoConstants:           gopts.NoConstants,
+		NoServiceHelpers:      gopts.NoServiceHelpers || gopts.NoTypes,
+		NoEmbedIDL:            gopts.NoEmbedIDL,
+		NoZap:                 gopts.NoZap,
+		OutputFile:            gopts.OutputFile,
+		EnumTextMarshalStrict: gopts.EnumTextMarshalStrict,
 	}
 	if err := gen.Generate(module, &generatorOptions); err != nil {
 		return fmt.Errorf("Failed to generate code: %+v", err)

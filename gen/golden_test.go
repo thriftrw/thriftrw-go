@@ -42,6 +42,10 @@ var noZapFiles = map[string]struct{}{
 	"nozap": {},
 }
 
+var enumTextMarshalStrictFiles = map[string]struct{}{
+	"enum-text-marshal-strict": {},
+}
+
 func TestCodeIsUpToDate(t *testing.T) {
 	// This test just verifies that the generated code in internal/tests/ is up to
 	// date. If this test failed, run 'make' in the internal/tests/ directory and
@@ -69,12 +73,14 @@ func TestCodeIsUpToDate(t *testing.T) {
 		require.NoError(t, err, "failed to compile %q", thriftFile)
 
 		_, nozap := noZapFiles[pkgRelPath]
+		_, enumTextMarshalStrict := enumTextMarshalStrictFiles[pkgRelPath]
 		err = Generate(module, &Options{
-			OutputDir:     outputDir,
-			PackagePrefix: "go.uber.org/thriftrw/gen/internal/tests",
-			ThriftRoot:    thriftRoot,
-			NoRecurse:     true,
-			NoZap:         nozap,
+			OutputDir:             outputDir,
+			PackagePrefix:         "go.uber.org/thriftrw/gen/internal/tests",
+			ThriftRoot:            thriftRoot,
+			NoRecurse:             true,
+			NoZap:                 nozap,
+			EnumTextMarshalStrict: enumTextMarshalStrict,
 		})
 		require.NoError(t, err, "failed to generate code for %q", thriftFile)
 

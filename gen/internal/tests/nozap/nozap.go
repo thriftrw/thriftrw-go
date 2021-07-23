@@ -60,8 +60,8 @@ func (v *EnumDefault) UnmarshalText(value []byte) error {
 
 // MarshalText encodes EnumDefault to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v EnumDefault) MarshalText() ([]byte, error) {
@@ -130,8 +130,8 @@ func (v EnumDefault) Equals(rhs EnumDefault) bool {
 
 // MarshalJSON serializes EnumDefault into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v EnumDefault) MarshalJSON() ([]byte, error) {
