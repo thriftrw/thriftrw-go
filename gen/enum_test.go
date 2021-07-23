@@ -520,9 +520,7 @@ func TestEnumStrictMarshalText(t *testing.T) {
 		{
 			desc:     "marshalText unknown value",
 			give:     5,
-			wantText: "",
-			wantJSON: "",
-			wantErr:  "unknown enum value \"EnumMarshalStrict(5)\" for \"EnumMarshalStrict\"",
+			wantErr:  `unknown enum value "EnumMarshalStrict(5)" for "EnumMarshalStrict"`,
 		},
 	}
 	for _, tt := range tests {
