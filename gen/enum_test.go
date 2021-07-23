@@ -23,8 +23,9 @@ package gen
 import (
 	"encoding/json"
 	"fmt"
-	tems "go.uber.org/thriftrw/gen/internal/tests/enum-text-marshal-strict"
 	"testing"
+
+	tems "go.uber.org/thriftrw/gen/internal/tests/enum-text-marshal-strict"
 
 	"go.uber.org/thriftrw/compile"
 	tec "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
@@ -504,27 +505,38 @@ func TestEnumLabelValid(t *testing.T) {
 
 func TestEnumStrictMarshalText(t *testing.T) {
 	tests := []struct {
-		desc     string
 		give     tems.EnumMarshalStrict
 		wantText string
 		wantJSON string
 		wantErr  string
 	}{
 		{
-			desc:     "marshalText success",
-			give:     1,
-			wantText: "Bar",
-			wantJSON: `"Bar"`,
-			wantErr:  "",
+			give:     tems.EnumMarshalStrictFoo,
+			wantText: "Foo",
+			wantJSON: `"Foo"`,
 		},
 		{
-			desc:     "marshalText unknown value",
-			give:     5,
-			wantErr:  `unknown enum value "EnumMarshalStrict(5)" for "EnumMarshalStrict"`,
+			give:     tems.EnumMarshalStrictBar,
+			wantText: "Bar",
+			wantJSON: `"Bar"`,
+		},
+		{
+			give:     tems.EnumMarshalStrictBaz,
+			wantText: "Baz",
+			wantJSON: `"Baz"`,
+		},
+		{
+			give:     tems.EnumMarshalStrictBat,
+			wantText: "Bat",
+			wantJSON: `"Bat"`,
+		},
+		{
+			give:    5,
+			wantErr: `unknown enum value "EnumMarshalStrict(5)" for "EnumMarshalStrict"`,
 		},
 	}
 	for _, tt := range tests {
-		t.Run(tt.desc, func(t *testing.T) {
+		t.Run(fmt.Sprint(tt.give), func(t *testing.T) {
 			gotText, err := tt.give.MarshalText()
 			gotJSON, jsonErr := tt.give.MarshalJSON()
 			if len(tt.wantErr) > 0 {
