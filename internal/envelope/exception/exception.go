@@ -121,8 +121,8 @@ func (v *ExceptionType) UnmarshalText(value []byte) error {
 
 // MarshalText encodes ExceptionType to text.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements the TextMarshaler interface.
 func (v ExceptionType) MarshalText() ([]byte, error) {
@@ -256,8 +256,8 @@ func (v ExceptionType) Equals(rhs ExceptionType) bool {
 
 // MarshalJSON serializes ExceptionType into JSON.
 //
-// If the enum value is recognized, its name is returned. Otherwise,
-// its integer value is returned.
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
 //
 // This implements json.Marshaler.
 func (v ExceptionType) MarshalJSON() ([]byte, error) {
