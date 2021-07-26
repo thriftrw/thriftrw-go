@@ -18,40 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package idl
 
-import "go.uber.org/thriftrw/ast"
+import (
+	"testing"
 
-func init() {
-	yyErrorVerbose = true
-}
+	"go.uber.org/thriftrw/ast"
 
-// NodePositions maps (hashable) nodes to their document positions.
-type NodePositions map[ast.Node]ast.Position
+	"github.com/stretchr/testify/assert"
+)
 
-// ParseResult holds the result of a successful Parse.
-type ParseResult struct {
-	Program       *ast.Program
-	NodePositions NodePositions
-}
-
-// Parse parses the given Thrift document.
-func Parse(s []byte) (ParseResult, []ParseError) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return ParseResult{
-			Program:       lex.program,
-			NodePositions: lex.nodePositions,
-		}, nil
+func TestParse(t *testing.T) {
+	c := &Config{}
+	prog, err := c.Parse([]byte{})
+	if assert.NoError(t, err) {
+		assert.Equal(t, &ast.Program{}, prog)
 	}
-	return ParseResult{}, lex.errors
 }
 
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
-
-//go:generate goyacc -l thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
+func TestInfoPos(t *testing.T) {
+	c := &Config{Info: &Info{}}
+	prog, err := c.Parse([]byte(`const string a = 'a';`))
+	if assert.NoError(t, err) {
+		assert.Equal(t, ast.Position{Line: 0}, c.Info.Pos(prog))
+		assert.Equal(t, ast.Position{Line: 1}, c.Info.Pos(prog.Definitions[0]))
+	}
+}

@@ -21,10 +21,14 @@
 // Package idl provides a parser for Thrift IDL files.
 package idl
 
-import "go.uber.org/thriftrw/ast"
-import "go.uber.org/thriftrw/idl/internal"
+import (
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/idl/internal"
+)
 
-// Parse parses a Thrift document.
+// Parse parses a Thrift document. If there is an error, it will be of type
+// *ParseError.
 func Parse(s []byte) (*ast.Program, error) {
-	return internal.Parse(s)
+	result, errors := internal.Parse(s)
+	return result.Program, newParseError(errors)
 }

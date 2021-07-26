@@ -26,6 +26,7 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 
@@ -46,8 +47,9 @@ type lexer struct {
 	docstringStart      int
 	lastDocstring       string
 	linesSinceDocstring int
+	nodePositions       NodePositions
 
-	err         parseError
+	errors      []ParseError
 	parseFailed bool
 
 	// Ragel:
@@ -57,12 +59,12 @@ type lexer struct {
 
 func newLexer(data []byte) *lexer {
 	lex := &lexer{
-		line:        1,
-		err:         newParseError(),
-		parseFailed: false,
-		data:        data,
-		p:           0,
-		pe:          len(data),
+		line:          1,
+		nodePositions: make(NodePositions, 0),
+		parseFailed:   false,
+		data:          data,
+		p:             0,
+		pe:            len(data),
 	}
 
 	{
@@ -936,7 +938,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 
 			if err != nil {
-				lex.Error(err.Error())
+				lex.AppendError(err)
 			} else {
 				out.str = str
 				tok = LITERAL
@@ -1263,7 +1265,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 				}
 
 				if i64, err := strconv.ParseInt(str, base, 64); err != nil {
-					lex.Error(err.Error())
+					lex.AppendError(err)
 				} else {
 					out.i64 = i64
 					tok = INTCONSTANT
@@ -1280,7 +1282,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 
 				str := string(lex.data[lex.ts:lex.te])
 				if dub, err := strconv.ParseFloat(str, 64); err != nil {
-					lex.Error(err.Error())
+					lex.AppendError(err)
 				} else {
 					out.dub = dub
 					tok = DUBCONSTANT
@@ -1295,7 +1297,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			{
 				(lex.p) = (lex.te) - 1
 
-				lex.Error(fmt.Sprintf("%q is a reserved keyword", reservedKeyword))
+				lex.AppendError(fmt.Errorf("%q is a reserved keyword", reservedKeyword))
 				{
 					(lex.p)++
 					lex.cs = 19
@@ -1344,7 +1346,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 
 			if i64, err := strconv.ParseInt(str, base, 64); err != nil {
-				lex.Error(err.Error())
+				lex.AppendError(err)
 			} else {
 				out.i64 = i64
 				tok = INTCONSTANT
@@ -1396,7 +1398,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			}
 
 			if i64, err := strconv.ParseInt(str, base, 64); err != nil {
-				lex.Error(err.Error())
+				lex.AppendError(err)
 			} else {
 				out.i64 = i64
 				tok = INTCONSTANT
@@ -1414,7 +1416,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		{
 			str := string(lex.data[lex.ts:lex.te])
 			if dub, err := strconv.ParseFloat(str, 64); err != nil {
-				lex.Error(err.Error())
+				lex.AppendError(err)
 			} else {
 				out.dub = dub
 				tok = DUBCONSTANT
@@ -1448,7 +1450,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 		lex.te = (lex.p)
 		(lex.p)--
 		{
-			lex.Error(fmt.Sprintf("%q is a reserved keyword", reservedKeyword))
+			lex.AppendError(fmt.Errorf("%q is a reserved keyword", reservedKeyword))
 			{
 				(lex.p)++
 				lex.cs = 19
@@ -16594,14 +16596,22 @@ func (lex *lexer) Lex(out *yySymType) int {
 
 
 	if lex.cs == thrift_error {
-		lex.Error(fmt.Sprintf("unknown token at index %d", lex.p))
+		lex.AppendError(fmt.Errorf("unknown token at index %d", lex.p))
 	}
 	return tok
 }
 
 func (lex *lexer) Error(e string) {
+	lex.AppendError(errors.New(e))
+}
+
+func (lex *lexer) AppendError(err error) {
 	lex.parseFailed = true
-	lex.err.add(lex.line, e)
+	lex.errors = append(lex.errors, ParseError{Pos: ast.Position{Line: lex.line}, Err: err})
+}
+
+func (lex *lexer) RecordPosition(n ast.Node) {
+	lex.nodePositions[n] = ast.Position{Line: lex.line}
 }
 
 func (lex *lexer) LastDocstring() string {

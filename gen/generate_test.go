@@ -324,12 +324,13 @@ func TestGenerate(t *testing.T) {
 			}
 
 			err = Generate(module, &Options{
-				OutputDir:     outputDir,
-				PackagePrefix: "go.uber.org/thriftrw/gen/internal/tests",
-				ThriftRoot:    testdata(t, "thrift"),
-				Plugin:        p,
-				NoRecurse:     tt.noRecurse,
-				OutputFile:    tt.outputFile,
+				OutputDir:             outputDir,
+				PackagePrefix:         "go.uber.org/thriftrw/gen/internal/tests",
+				ThriftRoot:            testdata(t, "thrift"),
+				Plugin:                p,
+				NoRecurse:             tt.noRecurse,
+				OutputFile:            tt.outputFile,
+				EnumTextMarshalStrict: true,
 			})
 			if tt.wantError != "" {
 				assert.Contains(t, err.Error(), tt.wantError)

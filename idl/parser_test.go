@@ -36,6 +36,7 @@ type parseCase struct {
 }
 
 func assertParseCases(t *testing.T, tests []parseCase) {
+	t.Helper()
 	for _, tt := range tests {
 		program, err := Parse([]byte(tt.document))
 		if assert.NoError(t, err, "Parsing failed:\n%s", tt.document) {
@@ -153,6 +154,7 @@ func TestParseErrors(t *testing.T) {
 	for _, tt := range tests {
 		_, err := Parse([]byte(tt.give))
 		if assert.Error(t, err, "expected error while parsing:\n%s", tt.give) {
+			assert.IsType(t, &ParseError{}, err)
 			for _, msg := range tt.wantErrors {
 				assert.Contains(t, err.Error(), msg, "error for %q must contain %q", tt.give, err.Error(), msg)
 			}
@@ -906,6 +908,38 @@ func TestParseStruct(t *testing.T) {
 				},
 			}},
 		},
+		{
+			`
+				struct LegacyStruct {
+					optional string a
+					optional string b = "string"
+				}
+			`,
+			&Program{Definitions: []Definition{
+				&Struct{
+					Name: "LegacyStruct",
+					Line: 2,
+					Type: StructType,
+					Fields: []*Field{
+						{
+							IDUnset:      true,
+							Name:         "a",
+							Requiredness: Optional,
+							Type:         BaseType{ID: StringTypeID, Line: 3},
+							Line:         3,
+						},
+						{
+							IDUnset:      true,
+							Name:         "b",
+							Requiredness: Optional,
+							Default:      ConstantString("string"),
+							Type:         BaseType{ID: StringTypeID, Line: 4},
+							Line:         4,
+						},
+					},
+				},
+			}},
+		},
 	}
 
 	assertParseCases(t, tests)
@@ -1080,6 +1114,40 @@ func TestParseServices(t *testing.T) {
 									Type: TypeReference{Name: "TimedOutException", Line: 23},
 									Line: 23,
 									Doc:  "The request timed out.",
+								},
+							},
+						},
+					},
+				},
+			}},
+		},
+		{
+			`
+				service LegacyService {
+					string legacyFunc(string a, string b)
+				}
+			`,
+			&Program{Definitions: []Definition{
+				&Service{
+					Name: "LegacyService",
+					Line: 2,
+					Functions: []*Function{
+						{
+							Name:       "legacyFunc",
+							Line:       3,
+							ReturnType: BaseType{ID: StringTypeID, Line: 3},
+							Parameters: []*Field{
+								{
+									IDUnset: true,
+									Name:    "a",
+									Type:    BaseType{ID: StringTypeID, Line: 3},
+									Line:    3,
+								},
+								{
+									IDUnset: true,
+									Name:    "b",
+									Type:    BaseType{ID: StringTypeID, Line: 3},
+									Line:    3,
 								},
 							},
 						},

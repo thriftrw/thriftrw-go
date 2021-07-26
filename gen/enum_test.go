@@ -25,13 +25,13 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.uber.org/thriftrw/compile"
+	tems "go.uber.org/thriftrw/gen/internal/tests/enum-text-marshal-strict"
 	tec "go.uber.org/thriftrw/gen/internal/tests/enum_conflict"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	"go.uber.org/thriftrw/wire"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestValueOfEnumDefault(t *testing.T) {
@@ -497,6 +497,55 @@ func TestEnumLabelValid(t *testing.T) {
 				assertRoundTrip(t, &tt.item, wire.NewValueI32(int32(tt.item)),
 					"%v", tt.item)
 			})
+		})
+	}
+}
+
+func TestEnumStrictMarshalText(t *testing.T) {
+	tests := []struct {
+		give     tems.EnumMarshalStrict
+		wantText string
+		wantJSON string
+		wantErr  string
+	}{
+		{
+			give:     tems.EnumMarshalStrictFoo,
+			wantText: "Foo",
+			wantJSON: `"Foo"`,
+		},
+		{
+			give:     tems.EnumMarshalStrictBar,
+			wantText: "Bar",
+			wantJSON: `"Bar"`,
+		},
+		{
+			give:     tems.EnumMarshalStrictBaz,
+			wantText: "Baz",
+			wantJSON: `"Baz"`,
+		},
+		{
+			give:     tems.EnumMarshalStrictBat,
+			wantText: "Bat",
+			wantJSON: `"Bat"`,
+		},
+		{
+			give:    5,
+			wantErr: `unknown enum value "EnumMarshalStrict(5)" for "EnumMarshalStrict"`,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(fmt.Sprint(tt.give), func(t *testing.T) {
+			gotText, err := tt.give.MarshalText()
+			gotJSON, jsonErr := tt.give.MarshalJSON()
+			if len(tt.wantErr) > 0 {
+				require.Error(t, err)
+				assert.Equal(t, tt.wantErr, err.Error())
+				assert.Equal(t, tt.wantErr, jsonErr.Error())
+			} else {
+				require.NoError(t, err)
+				assert.Equal(t, tt.wantText, string(gotText))
+				assert.Equal(t, tt.wantJSON, string(gotJSON))
+			}
 		})
 	}
 }

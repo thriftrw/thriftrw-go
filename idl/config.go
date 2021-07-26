@@ -18,40 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package idl
 
-import "go.uber.org/thriftrw/ast"
+import (
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/idl/internal"
+)
 
-func init() {
-	yyErrorVerbose = true
-}
-
-// NodePositions maps (hashable) nodes to their document positions.
-type NodePositions map[ast.Node]ast.Position
-
-// ParseResult holds the result of a successful Parse.
-type ParseResult struct {
-	Program       *ast.Program
-	NodePositions NodePositions
+// Config configures the Thrift IDL parser.
+type Config struct {
+	// If Info is non-nil, it will be populated with information about the
+	// parsed nodes.
+	Info *Info
 }
 
 // Parse parses the given Thrift document.
-func Parse(s []byte) (ParseResult, []ParseError) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return ParseResult{
-			Program:       lex.program,
-			NodePositions: lex.nodePositions,
-		}, nil
+func (c *Config) Parse(s []byte) (*ast.Program, error) {
+	result, errors := internal.Parse(s)
+	if c.Info != nil {
+		c.Info.nodePositions = result.NodePositions
 	}
-	return ParseResult{}, lex.errors
+	return result.Program, newParseError(errors)
 }
-
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
-
-//go:generate goyacc -l thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh

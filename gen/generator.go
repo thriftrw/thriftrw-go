@@ -134,7 +134,8 @@ type generator struct {
 	thriftImporter ThriftPackageImporter
 	mangler        *mangler
 
-	fset *token.FileSet
+	fset                  *token.FileSet
+	enumTextMarshalStrict bool
 
 	// TODO use something to group related decls together
 }
@@ -145,7 +146,8 @@ type GeneratorOptions struct {
 	ImportPath  string
 	PackageName string
 
-	NoZap bool
+	NoZap                 bool
+	EnumTextMarshalStrict bool
 }
 
 // NewGenerator sets up a new generator for Go code.
@@ -153,14 +155,15 @@ func NewGenerator(o *GeneratorOptions) Generator {
 	// TODO(abg): Determine package name from `namespace go` directive.
 	namespace := NewNamespace()
 	return &generator{
-		PackageName:    o.PackageName,
-		ImportPath:     o.ImportPath,
-		Namespace:      namespace,
-		importer:       newImporter(namespace.Child()),
-		mangler:        newMangler(),
-		thriftImporter: o.Importer,
-		fset:           token.NewFileSet(),
-		noZap:          o.NoZap,
+		PackageName:           o.PackageName,
+		ImportPath:            o.ImportPath,
+		Namespace:             namespace,
+		importer:              newImporter(namespace.Child()),
+		mangler:               newMangler(),
+		thriftImporter:        o.Importer,
+		fset:                  token.NewFileSet(),
+		noZap:                 o.NoZap,
+		enumTextMarshalStrict: o.EnumTextMarshalStrict,
 	}
 }
 
@@ -168,6 +171,13 @@ func NewGenerator(o *GeneratorOptions) Generator {
 func checkNoZap(g Generator) bool {
 	if gen, ok := g.(*generator); ok {
 		return gen.noZap
+	}
+	return false
+}
+
+func checkEnumTextMarshalStrict(g Generator) bool {
+	if gen, ok := g.(*generator); ok {
+		return gen.enumTextMarshalStrict
 	}
 	return false
 }
@@ -215,6 +225,7 @@ func (g *generator) LookupConstantName(c *compile.Constant) (string, error) {
 // TextTemplate renders the given template with the given template context.
 func (g *generator) TextTemplate(s string, data interface{}, opts ...TemplateOption) (string, error) {
 	templateFuncs := template.FuncMap{
+		"lessthan":         lessThanSymbol,
 		"enumItemName":     enumItemName,
 		"formatDoc":        formatDoc,
 		"goCase":           goCase,
@@ -538,4 +549,8 @@ func formatDoc(s string) string {
 		}
 	}
 	return strings.Join(lines, "\n") + "\n"
+}
+
+func lessThanSymbol() string {
+	return "<"
 }

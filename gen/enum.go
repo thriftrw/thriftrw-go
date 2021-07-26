@@ -66,7 +66,6 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<$fmt := import "fmt">
 		<$json := import "encoding/json">
 		<$math := import "math">
-		<$strconv := import "strconv">
 
 		<$wire := import "go.uber.org/thriftrw/wire">
 
@@ -110,7 +109,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 					return nil
 			<end ->
 				default:
-					<$val>, err := <$strconv>.ParseInt(<$s>, 10, 32)
+					<$val>, err := <import "strconv">.ParseInt(<$s>, 10, 32)
 					if err != nil {
 						return <$fmt>.Errorf("unknown enum value %q for %q: %v", <$s>, "<$enumName>", err)
 					}
@@ -121,8 +120,12 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 
 		// MarshalText encodes <$enumName> to text.
 		//
-		// If the enum value is recognized, its name is returned. Otherwise,
-		// its integer value is returned.
+		// If the enum value is recognized, its name is returned.
+		<if checkEnumTextMarshalStrict ->
+		// Otherwise, an error is returned.
+		<else ->
+		// Otherwise, its integer value is returned.
+		<end ->
 		//
 		// This implements the TextMarshaler interface.
 		func (<$v> <$enumName>) MarshalText() ([]byte, error) {
@@ -134,7 +137,11 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				<end ->
 				}
 			<end ->
-			return []byte(<$strconv>.FormatInt(int64(<$v>), 10)), nil
+			<if checkEnumTextMarshalStrict ->
+				return nil, <$fmt>.Errorf("unknown enum value %q for %q", <$v>, "<$enumName>")
+			<else ->	
+				return []byte(<import "strconv">.FormatInt(int64(<$v>), 10)), nil
+			<end ->
 		}
 
 		<if not (checkNoZap) ->
@@ -213,8 +220,12 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 
 		// MarshalJSON serializes <$enumName> into JSON.
 		//
-		// If the enum value is recognized, its name is returned. Otherwise,
-		// its integer value is returned.
+		// If the enum value is recognized, its name is returned.
+		<if checkEnumTextMarshalStrict ->
+		// Otherwise, an error is returned.
+		<else ->
+		// Otherwise, its integer value is returned.
+		<end ->
 		//
 		// This implements json.Marshaler.
 		func (<$v> <$enumName>) MarshalJSON() ([]byte, error) {
@@ -226,7 +237,11 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 				<end ->
 				}
 			<end ->
-			return ([]byte)(<$strconv>.FormatInt(int64(<$v>), 10)), nil
+			<if checkEnumTextMarshalStrict ->
+				return nil, <$fmt>.Errorf("unknown enum value %q for %q", <$v>, "<$enumName>")
+			<else ->
+				return ([]byte)(<import "strconv">.FormatInt(int64(<$v>), 10)), nil
+			<end ->
 		}
 
 		<$text := newVar "text">
@@ -279,6 +294,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		},
 		TemplateFunc("enumItemLabelName", entityLabel),
 		TemplateFunc("checkNoZap", checkNoZap),
+		TemplateFunc("checkEnumTextMarshalStrict", checkEnumTextMarshalStrict),
 	)
 
 	return wrapGenerateError(spec.Name, err)

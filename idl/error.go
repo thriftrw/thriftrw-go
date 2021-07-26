@@ -18,40 +18,45 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package internal
+package idl
 
-import "go.uber.org/thriftrw/ast"
+import (
+	"bytes"
+	"fmt"
 
-func init() {
-	yyErrorVerbose = true
+	"go.uber.org/thriftrw/ast"
+	"go.uber.org/thriftrw/idl/internal"
+)
+
+// ParseError is an error type listing parse errors and the positions
+// that caused them.
+type ParseError struct{ Errors []Error }
+
+// Error holds an error and the position that caused it.
+type Error struct {
+	Pos ast.Position
+	Err error
 }
 
-// NodePositions maps (hashable) nodes to their document positions.
-type NodePositions map[ast.Node]ast.Position
-
-// ParseResult holds the result of a successful Parse.
-type ParseResult struct {
-	Program       *ast.Program
-	NodePositions NodePositions
-}
-
-// Parse parses the given Thrift document.
-func Parse(s []byte) (ParseResult, []ParseError) {
-	lex := newLexer(s)
-	e := yyParse(lex)
-	if e == 0 && !lex.parseFailed {
-		return ParseResult{
-			Program:       lex.program,
-			NodePositions: lex.nodePositions,
-		}, nil
+func newParseError(errors []internal.ParseError) error {
+	if len(errors) == 0 {
+		return nil
 	}
-	return ParseResult{}, lex.errors
+	errs := make([]Error, len(errors))
+	for i, err := range errors {
+		errs[i] = Error{
+			Pos: err.Pos,
+			Err: err.Err,
+		}
+	}
+	return &ParseError{Errors: errs}
 }
 
-//go:generate ragel -Z -G2 -o lex.go lex.rl
-//go:generate goimports -w ./lex.go
-
-//go:generate goyacc -l thrift.y
-//go:generate goimports -w ./y.go
-
-//go:generate ./generated.sh
+func (pe *ParseError) Error() string {
+	var buffer bytes.Buffer
+	buffer.WriteString("parse error\n")
+	for _, pe := range pe.Errors {
+		buffer.WriteString(fmt.Sprintf("  line %d: %s\n", pe.Pos.Line, pe.Err))
+	}
+	return buffer.String()
+}

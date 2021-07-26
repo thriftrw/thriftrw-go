@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.28.0] - 2021-07-26
+### Added
+- `idl.Parse` now returns structured `ParseError` on parse failures.
+- `idl.Config` provides a new means of parsing Thrift IDLs. This is the
+  recommended API going forward.
+
+### Changed
+- ThriftRW now tracks positional information about constant values in the
+  Thrift IDL. These were previously ignored. To access this information, see
+  the documentation for `idl.Config`.
+
+### Fixed
+- Support parsing `struct` fields without field identifiers. This is legacy
+  syntax still supported by Apache Thrift. Note that this is a parser-level
+  change only; ThriftRW will refuse to generate Go code from these.
+
+Thanks to [@jparise](https://github.com/jparise) for their contributions to
+this release.
+
 ## [1.27.0] - 2021-05-20
 ### Added
 - ThriftRW is now able to parse Thrift files with `cpp_include` statements.
@@ -365,6 +384,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Initial release.
 
+[1.28.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.27.0...v1.28.0
 [1.27.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.26.0...v1.27.0
 [1.26.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.25.1...v1.26.0
 [1.25.1]: https://github.com/thriftrw/thriftrw-go/compare/v1.25.0...v1.25.1
