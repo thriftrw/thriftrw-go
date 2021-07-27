@@ -25,35 +25,36 @@
 package envelopetest
 
 import (
+	reflect "reflect"
+
 	gomock "github.com/golang/mock/gomock"
 	wire "go.uber.org/thriftrw/wire"
-	reflect "reflect"
 )
 
-// MockTransport is a mock of Transport interface
+// MockTransport is a mock of Transport interface.
 type MockTransport struct {
 	ctrl     *gomock.Controller
 	recorder *MockTransportMockRecorder
 }
 
-// MockTransportMockRecorder is the mock recorder for MockTransport
+// MockTransportMockRecorder is the mock recorder for MockTransport.
 type MockTransportMockRecorder struct {
 	mock *MockTransport
 }
 
-// NewMockTransport creates a new mock instance
+// NewMockTransport creates a new mock instance.
 func NewMockTransport(ctrl *gomock.Controller) *MockTransport {
 	mock := &MockTransport{ctrl: ctrl}
 	mock.recorder = &MockTransportMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockTransport) EXPECT() *MockTransportMockRecorder {
 	return m.recorder
 }
 
-// Send mocks base method
+// Send mocks base method.
 func (m *MockTransport) Send(arg0 []byte) ([]byte, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Send", arg0)
@@ -62,36 +63,36 @@ func (m *MockTransport) Send(arg0 []byte) ([]byte, error) {
 	return ret0, ret1
 }
 
-// Send indicates an expected call of Send
+// Send indicates an expected call of Send.
 func (mr *MockTransportMockRecorder) Send(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockTransport)(nil).Send), arg0)
 }
 
-// MockClient is a mock of Client interface
+// MockClient is a mock of Client interface.
 type MockClient struct {
 	ctrl     *gomock.Controller
 	recorder *MockClientMockRecorder
 }
 
-// MockClientMockRecorder is the mock recorder for MockClient
+// MockClientMockRecorder is the mock recorder for MockClient.
 type MockClientMockRecorder struct {
 	mock *MockClient
 }
 
-// NewMockClient creates a new mock instance
+// NewMockClient creates a new mock instance.
 func NewMockClient(ctrl *gomock.Controller) *MockClient {
 	mock := &MockClient{ctrl: ctrl}
 	mock.recorder = &MockClientMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use
+// EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
 }
 
-// Send mocks base method
+// Send mocks base method.
 func (m *MockClient) Send(name string, body wire.Value) (wire.Value, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Send", name, body)
@@ -100,7 +101,7 @@ func (m *MockClient) Send(name string, body wire.Value) (wire.Value, error) {
 	return ret0, ret1
 }
 
-// Send indicates an expected call of Send
+// Send indicates an expected call of Send.
 func (mr *MockClientMockRecorder) Send(name, body interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Send", reflect.TypeOf((*MockClient)(nil).Send), name, body)
