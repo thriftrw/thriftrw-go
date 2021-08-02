@@ -62,24 +62,26 @@ type nodeWithPosition interface {
 	pos() Position
 }
 
-var _ nodeWithPosition = (*Annotation)(nil)
-var _ nodeWithPosition = BaseType{}
-var _ nodeWithPosition = (*Constant)(nil)
-var _ nodeWithPosition = ConstantList{}
-var _ nodeWithPosition = ConstantMap{}
-var _ nodeWithPosition = ConstantMapItem{}
-var _ nodeWithPosition = ConstantReference{}
-var _ nodeWithPosition = (*Enum)(nil)
-var _ nodeWithPosition = (*EnumItem)(nil)
-var _ nodeWithPosition = (*Field)(nil)
-var _ nodeWithPosition = (*Function)(nil)
-var _ nodeWithPosition = (*Include)(nil)
-var _ nodeWithPosition = (*CppInclude)(nil)
-var _ nodeWithPosition = ListType{}
-var _ nodeWithPosition = MapType{}
-var _ nodeWithPosition = (*Namespace)(nil)
-var _ nodeWithPosition = (*Service)(nil)
-var _ nodeWithPosition = SetType{}
-var _ nodeWithPosition = (*Struct)(nil)
-var _ nodeWithPosition = (*Typedef)(nil)
-var _ nodeWithPosition = TypeReference{}
+var (
+	_ nodeWithPosition = (*Annotation)(nil)
+	_ nodeWithPosition = BaseType{}
+	_ nodeWithPosition = (*Constant)(nil)
+	_ nodeWithPosition = ConstantList{}
+	_ nodeWithPosition = ConstantMap{}
+	_ nodeWithPosition = ConstantMapItem{}
+	_ nodeWithPosition = ConstantReference{}
+	_ nodeWithPosition = (*Enum)(nil)
+	_ nodeWithPosition = (*EnumItem)(nil)
+	_ nodeWithPosition = (*Field)(nil)
+	_ nodeWithPosition = (*Function)(nil)
+	_ nodeWithPosition = (*Include)(nil)
+	_ nodeWithPosition = (*CppInclude)(nil)
+	_ nodeWithPosition = ListType{}
+	_ nodeWithPosition = MapType{}
+	_ nodeWithPosition = (*Namespace)(nil)
+	_ nodeWithPosition = (*Service)(nil)
+	_ nodeWithPosition = SetType{}
+	_ nodeWithPosition = (*Struct)(nil)
+	_ nodeWithPosition = (*Typedef)(nil)
+	_ nodeWithPosition = TypeReference{}
+)
