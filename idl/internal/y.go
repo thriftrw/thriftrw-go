@@ -179,94 +179,68 @@ var yyExca = [...]int{
 	-1, 3,
 	1, 1,
 	-2, 73,
-	-1, 57,
-	4, 73,
-	40, 73,
-	48, 73,
-	-2, 74,
-	-1, 109,
-	4, 73,
-	40, 73,
-	48, 73,
-	-2, 74,
-	-1, 125,
-	4, 73,
-	40, 73,
-	48, 73,
-	-2, 74,
-	-1, 145,
-	4, 73,
-	40, 73,
-	48, 73,
-	-2, 74,
-	-1, 152,
-	4, 73,
-	40, 73,
-	48, 73,
-	-2, 74,
 }
 
 const yyPrivate = 57344
 
-const yyLast = 181
+const yyLast = 177
 
 var yyAct = [...]int{
-	32, 58, 65, 5, 7, 68, 83, 31, 11, 66,
-	126, 12, 90, 122, 14, 13, 128, 12, 163, 97,
-	96, 13, 95, 62, 61, 60, 156, 152, 130, 33,
-	93, 59, 59, 161, 59, 149, 145, 134, 136, 124,
-	81, 78, 89, 85, 86, 75, 108, 54, 92, 56,
-	53, 57, 19, 159, 63, 107, 91, 67, 70, 141,
-	55, 132, 133, 119, 117, 77, 80, 139, 72, 73,
-	74, 28, 94, 87, 88, 16, 15, 98, 17, 148,
-	101, 143, 115, 104, 100, 99, 18, 103, 102, 111,
-	84, 105, 52, 37, 21, 25, 26, 27, 113, 114,
-	24, 22, 20, 112, 10, 8, 9, 36, 35, 34,
-	70, 125, 30, 29, 120, 123, 158, 129, 121, 135,
-	127, 118, 106, 71, 110, 109, 70, 3, 6, 64,
-	140, 138, 137, 76, 82, 2, 4, 79, 144, 142,
-	23, 131, 116, 147, 38, 1, 70, 69, 146, 0,
-	151, 150, 153, 70, 80, 0, 0, 157, 155, 154,
-	160, 42, 0, 80, 162, 0, 0, 0, 0, 43,
-	44, 45, 46, 47, 48, 49, 50, 51, 39, 40,
-	41,
+	32, 59, 66, 5, 7, 69, 120, 31, 11, 67,
+	124, 83, 90, 89, 85, 86, 12, 12, 95, 14,
+	13, 13, 126, 97, 96, 63, 62, 61, 163, 34,
+	156, 152, 128, 93, 52, 60, 60, 161, 60, 149,
+	145, 132, 136, 122, 87, 88, 81, 78, 92, 57,
+	75, 107, 55, 54, 58, 64, 91, 141, 68, 70,
+	56, 130, 131, 159, 118, 116, 77, 80, 33, 72,
+	73, 74, 94, 139, 19, 134, 28, 98, 16, 15,
+	101, 17, 148, 104, 106, 99, 143, 33, 102, 100,
+	114, 105, 103, 110, 21, 25, 26, 27, 112, 113,
+	24, 22, 20, 111, 10, 8, 9, 84, 18, 70,
+	123, 53, 38, 37, 121, 36, 127, 119, 35, 125,
+	30, 29, 158, 133, 70, 135, 117, 71, 140, 138,
+	137, 109, 108, 3, 6, 65, 76, 142, 144, 82,
+	2, 4, 79, 147, 23, 129, 70, 115, 146, 39,
+	151, 150, 153, 70, 80, 1, 0, 157, 155, 154,
+	160, 0, 0, 80, 162, 43, 44, 45, 46, 47,
+	48, 49, 50, 51, 40, 41, 42,
 }
 
 var yyPact = [...]int{
-	-1000, -1000, -1000, -1000, -1000, 96, -35, -1000, 71, 73,
-	48, -1000, -1000, -1000, 69, -1000, 66, -1000, 109, 108,
-	-1000, -1000, 105, 104, 103, -1000, -1000, -1000, -1000, -1000,
-	-1000, 89, 157, 88, 10, 7, 20, 12, -9, -20,
-	-21, -22, -1000, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
-	-1000, -1000, -9, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
-	-1000, -1000, -1000, -1000, 4, 0, -1, 86, -1000, 37,
-	8, -14, -24, -27, -28, -9, -35, -1000, -9, -35,
-	-1000, -9, -35, 31, 6, -1000, -1000, -1000, -1000, -1000,
-	-1000, -1000, -1000, -1000, 85, -1000, -9, -9, -1000, -1000,
-	78, -1000, -1000, 58, -1000, -1000, 52, -1000, -1000, -36,
-	-2, -29, -31, -1000, -1000, -11, 27, -5, -1000, -1000,
-	-1000, -3, -1000, -35, -1000, -1000, 62, -1000, -9, -1000,
-	53, -1000, -1000, -1000, -1000, 77, -9, -1000, -6, -35,
-	-1000, -9, 75, -8, -1000, -1000, -1000, -1000, -12, -1000,
-	-35, -1000, -1000, -18, -1000, -9, 23, -1000, -9, -10,
-	-1000, -1000, -26, -1000,
+	-1000, -1000, -1000, -1000, -1000, 96, -30, -1000, 74, 76,
+	70, -1000, -1000, -1000, 69, -1000, 71, -1000, 117, 116,
+	83, 83, 114, 111, 109, -1000, -1000, -1000, -1000, -1000,
+	-1000, 108, 153, -1000, 107, 13, 12, 20, 15, -5,
+	-18, -19, -20, -1000, -1000, -1000, -1000, -1000, -1000, -1000,
+	-1000, -1000, -1000, -5, -1000, -1000, -1000, -1000, -1000, -1000,
+	-1000, 83, 83, 83, -1000, 9, 6, 5, 103, -1000,
+	8, -11, -28, -23, -24, -5, -30, -1000, -5, -30,
+	-1000, -5, -30, -1000, 11, -1000, -1000, -1000, -1000, -1000,
+	-1000, -1000, -1000, -1000, 89, 83, -5, -5, -1000, -1000,
+	86, -1000, -1000, 59, -1000, -1000, 40, -1000, -43, 2,
+	-29, -25, -1000, -1000, -7, 27, -1, 64, -1000, 1,
+	-1000, -30, -1000, -1000, 68, -1000, -5, -1000, 51, 83,
+	-1000, -1000, -1000, 82, -1000, -1000, -5, -1000, -2, -30,
+	-1000, -5, 78, -4, -1000, -1000, -1000, -1000, -8, -1000,
+	-30, -1000, -1000, -14, -1000, -5, 33, -1000, -5, -6,
+	-1000, -1000, -16, -1000,
 }
 
 var yyPgo = [...]int{
-	0, 0, 147, 6, 145, 7, 144, 142, 141, 140,
-	137, 2, 136, 135, 134, 9, 133, 129, 128, 127,
-	5, 125, 124, 123, 1, 8, 122, 121, 116,
+	0, 0, 11, 155, 7, 149, 147, 145, 144, 142,
+	2, 141, 140, 139, 9, 136, 135, 134, 133, 5,
+	132, 131, 127, 1, 8, 126, 123, 122,
 }
 
 var yyR1 = [...]int{
-	0, 4, 13, 13, 12, 12, 12, 12, 12, 19,
-	19, 18, 18, 18, 18, 18, 18, 9, 9, 9,
-	17, 17, 16, 16, 11, 11, 10, 10, 7, 7,
-	8, 8, 8, 15, 15, 14, 26, 26, 27, 27,
-	28, 28, 5, 5, 5, 5, 5, 6, 6, 6,
-	6, 6, 6, 6, 6, 6, 20, 20, 20, 20,
-	20, 20, 20, 20, 21, 21, 22, 22, 24, 24,
-	23, 23, 23, 1, 2, 3, 25, 25, 25,
+	0, 3, 12, 12, 11, 11, 11, 11, 11, 18,
+	18, 17, 17, 17, 17, 17, 17, 8, 8, 8,
+	16, 16, 15, 15, 10, 10, 9, 9, 6, 6,
+	7, 7, 7, 14, 14, 13, 25, 25, 26, 26,
+	27, 27, 4, 4, 4, 4, 4, 5, 5, 5,
+	5, 5, 5, 5, 5, 5, 19, 19, 19, 19,
+	19, 19, 19, 19, 20, 20, 21, 21, 23, 23,
+	22, 22, 22, 1, 2, 24, 24, 24,
 }
 
 var yyR2 = [...]int{
@@ -277,46 +251,46 @@ var yyR2 = [...]int{
 	0, 4, 3, 8, 6, 6, 2, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 2, 2, 2, 2,
 	2, 2, 4, 4, 0, 3, 0, 6, 0, 3,
-	0, 6, 4, 0, 0, 0, 1, 1, 0,
+	0, 6, 4, 0, 0, 1, 1, 0,
 }
 
 var yyChk = [...]int{
-	-1000, -4, -13, -19, -12, -1, -18, -1, 9, 10,
-	8, -25, 46, 50, -3, 5, 4, 5, 38, 4,
-	33, 25, 32, -9, 31, 26, 27, 28, 5, 4,
-	4, -5, -1, -5, 4, 4, 4, 4, -6, 21,
-	22, 23, 4, 12, 13, 14, 15, 16, 17, 18,
-	19, 20, 4, 40, 40, 40, 29, 39, -24, 43,
-	45, 45, 45, -24, -17, -11, -15, -1, -20, -2,
-	-1, -23, -5, -5, -5, 41, -16, -1, 41, -10,
-	-1, 41, -14, -3, 4, 6, 7, 36, 37, 5,
-	4, 48, 40, 44, -1, 46, 47, 47, -24, -25,
-	-3, -24, -25, -3, -24, -25, -26, 24, 40, -21,
-	-22, 4, -5, -24, -24, 4, -7, 6, -27, 11,
-	-5, -15, 49, -20, 41, -1, 39, -25, 47, -24,
-	39, -8, 34, 35, 42, -1, 41, -25, -20, 5,
-	-24, 6, -5, 4, -24, 42, -25, -24, 4, 43,
-	-20, -24, 39, -11, -25, -20, 44, -24, -28, 30,
-	-24, 43, -11, 44,
+	-1000, -3, -12, -18, -11, -1, -17, -1, 9, 10,
+	8, -24, 46, 50, -2, 5, 4, 5, 38, 4,
+	33, 25, 32, -8, 31, 26, 27, 28, 5, 4,
+	4, -4, -1, 4, -4, 4, 4, 4, 4, -5,
+	21, 22, 23, 12, 13, 14, 15, 16, 17, 18,
+	19, 20, -1, 4, 40, 40, 40, 29, 39, -23,
+	43, 45, 45, 45, -23, -16, -10, -14, -1, -19,
+	-1, -22, -4, -4, -4, 41, -15, -1, 41, -9,
+	-1, 41, -13, -2, 4, 6, 7, 36, 37, 5,
+	4, 48, 40, 44, -1, 46, 47, 47, -23, -24,
+	-2, -23, -24, -2, -23, -24, -1, 40, -20, -21,
+	4, -4, -23, -23, 4, -6, 6, -25, 24, -14,
+	49, -19, 41, -1, 39, -24, 47, -23, 39, -7,
+	34, 35, 42, -26, 11, -4, 41, -24, -19, 5,
+	-23, 6, -4, 4, -23, 42, -24, -23, 4, 43,
+	-19, -23, 39, -10, -24, -19, 44, -23, -27, 30,
+	-23, 43, -10, 44,
 }
 
 var yyDef = [...]int{
-	2, -2, -2, -2, 3, 0, 78, 75, 0, 0,
-	0, 10, 76, 77, 0, 4, 0, 6, 0, 0,
+	2, -2, -2, -2, 3, 0, 77, 74, 0, 0,
+	0, 10, 75, 76, 0, 4, 0, 6, 0, 0,
 	73, 73, 0, 0, 0, 17, 18, 19, 5, 7,
-	8, 0, 0, 0, 0, 0, 0, 0, 68, 0,
-	0, 0, 46, 47, 48, 49, 50, 51, 52, 53,
-	54, 55, 68, 20, 24, 33, 73, -2, 42, 70,
-	73, 73, 73, 12, 73, 73, 75, 0, 11, 0,
-	0, 73, 0, 0, 0, 68, 78, 75, 68, 78,
-	75, 68, 78, 37, 0, 56, 57, 58, 59, 60,
+	8, 0, 0, 73, 0, 0, 0, 0, 0, 68,
+	0, 0, 0, 47, 48, 49, 50, 51, 52, 53,
+	54, 55, 46, 68, 20, 24, 33, 73, 73, 42,
+	70, 73, 73, 73, 12, 73, 73, 74, 0, 11,
+	0, 73, 0, 0, 0, 68, 77, 74, 68, 77,
+	74, 68, 77, 73, 0, 56, 57, 58, 59, 60,
 	61, 64, 66, 69, 0, 73, 68, 68, 13, 21,
-	0, 14, 25, 29, 15, 34, 73, 36, 33, -2,
-	73, 78, 0, 44, 45, 68, 32, 0, 73, 38,
-	39, 75, 62, 78, 63, -2, 0, 72, 68, 22,
-	0, 73, 30, 31, 28, 0, 68, 65, 0, 78,
-	43, 68, 0, 0, 16, -2, 71, 23, 68, 24,
-	78, 26, -2, 73, 67, 68, 40, 27, 68, 0,
+	0, 14, 25, 29, 15, 34, 37, 33, 73, 73,
+	77, 0, 44, 45, 68, 32, 0, 73, 36, 74,
+	62, 77, 63, 73, 0, 72, 68, 22, 0, 73,
+	30, 31, 28, 0, 38, 39, 68, 65, 0, 77,
+	43, 68, 0, 0, 16, 73, 71, 23, 68, 24,
+	77, 26, 73, 73, 67, 68, 40, 27, 68, 0,
 	35, 24, 73, 41,
 }
 
@@ -703,43 +677,48 @@ yydefault:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
 			yyVAL.header = &ast.Include{
-				Path: yyDollar[3].str,
-				Line: yyDollar[1].line,
+				Path:   yyDollar[3].str,
+				Line:   yyDollar[1].pos.Line,
+				Column: yyDollar[1].pos.Column,
 			}
 		}
 	case 5:
 		yyDollar = yyS[yypt-4 : yypt+1]
 		{
 			yyVAL.header = &ast.Include{
-				Name: yyDollar[3].str,
-				Path: yyDollar[4].str,
-				Line: yyDollar[1].line,
+				Name:   yyDollar[3].str,
+				Path:   yyDollar[4].str,
+				Line:   yyDollar[1].pos.Line,
+				Column: yyDollar[1].pos.Column,
 			}
 		}
 	case 6:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
 			yyVAL.header = &ast.CppInclude{
-				Path: yyDollar[3].str,
-				Line: yyDollar[1].line,
+				Path:   yyDollar[3].str,
+				Line:   yyDollar[1].pos.Line,
+				Column: yyDollar[1].pos.Column,
 			}
 		}
 	case 7:
 		yyDollar = yyS[yypt-4 : yypt+1]
 		{
 			yyVAL.header = &ast.Namespace{
-				Scope: "*",
-				Name:  yyDollar[4].str,
-				Line:  yyDollar[1].line,
+				Scope:  "*",
+				Name:   yyDollar[4].str,
+				Line:   yyDollar[1].pos.Line,
+				Column: yyDollar[1].pos.Column,
 			}
 		}
 	case 8:
 		yyDollar = yyS[yypt-4 : yypt+1]
 		{
 			yyVAL.header = &ast.Namespace{
-				Scope: yyDollar[3].str,
-				Name:  yyDollar[4].str,
-				Line:  yyDollar[1].line,
+				Scope:  yyDollar[3].str,
+				Name:   yyDollar[4].str,
+				Line:   yyDollar[1].pos.Line,
+				Column: yyDollar[1].pos.Column,
 			}
 		}
 	case 9:
@@ -756,11 +735,12 @@ yydefault:
 		yyDollar = yyS[yypt-7 : yypt+1]
 		{
 			yyVAL.definition = &ast.Constant{
-				Name:  yyDollar[5].str,
-				Type:  yyDollar[4].fieldType,
-				Value: yyDollar[7].constantValue,
-				Line:  yyDollar[1].line,
-				Doc:   ParseDocstring(yyDollar[2].docstring),
+				Name:   yyDollar[5].str,
+				Type:   yyDollar[4].fieldType,
+				Value:  yyDollar[7].constantValue,
+				Line:   yyDollar[1].pos.Line,
+				Column: yyDollar[1].pos.Column,
+				Doc:    ParseDocstring(yyDollar[2].docstring),
 			}
 		}
 	case 12:
@@ -770,7 +750,8 @@ yydefault:
 				Name:        yyDollar[5].str,
 				Type:        yyDollar[4].fieldType,
 				Annotations: yyDollar[6].typeAnnotations,
-				Line:        yyDollar[1].line,
+				Line:        yyDollar[1].pos.Line,
+				Column:      yyDollar[1].pos.Column,
 				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
@@ -781,7 +762,8 @@ yydefault:
 				Name:        yyDollar[4].str,
 				Items:       yyDollar[6].enumItems,
 				Annotations: yyDollar[8].typeAnnotations,
-				Line:        yyDollar[1].line,
+				Line:        yyDollar[1].pos.Line,
+				Column:      yyDollar[1].pos.Column,
 				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
@@ -793,7 +775,8 @@ yydefault:
 				Type:        yyDollar[3].structType,
 				Fields:      yyDollar[6].fields,
 				Annotations: yyDollar[8].typeAnnotations,
-				Line:        yyDollar[1].line,
+				Line:        yyDollar[1].pos.Line,
+				Column:      yyDollar[1].pos.Column,
 				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
@@ -804,7 +787,8 @@ yydefault:
 				Name:        yyDollar[4].str,
 				Functions:   yyDollar[6].functions,
 				Annotations: yyDollar[8].typeAnnotations,
-				Line:        yyDollar[1].line,
+				Line:        yyDollar[1].pos.Line,
+				Column:      yyDollar[1].pos.Column,
 				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
@@ -812,8 +796,9 @@ yydefault:
 		yyDollar = yyS[yypt-11 : yypt+1]
 		{
 			parent := &ast.ServiceReference{
-				Name: yyDollar[7].str,
-				Line: yyDollar[6].line,
+				Name:   yyDollar[7].str,
+				Line:   yyDollar[6].pos.Line,
+				Column: yyDollar[6].pos.Column,
 			}
 
 			yyVAL.definition = &ast.Service{
@@ -821,7 +806,8 @@ yydefault:
 				Functions:   yyDollar[9].functions,
 				Parent:      parent,
 				Annotations: yyDollar[11].typeAnnotations,
-				Line:        yyDollar[1].line,
+				Line:        yyDollar[1].pos.Line,
+				Column:      yyDollar[1].pos.Column,
 				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
@@ -856,7 +842,8 @@ yydefault:
 			yyVAL.enumItem = &ast.EnumItem{
 				Name:        yyDollar[3].str,
 				Annotations: yyDollar[4].typeAnnotations,
-				Line:        yyDollar[1].line,
+				Line:        yyDollar[1].pos.Line,
+				Column:      yyDollar[1].pos.Column,
 				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
@@ -868,7 +855,8 @@ yydefault:
 				Name:        yyDollar[3].str,
 				Value:       &value,
 				Annotations: yyDollar[6].typeAnnotations,
-				Line:        yyDollar[1].line,
+				Line:        yyDollar[1].pos.Line,
+				Column:      yyDollar[1].pos.Column,
 				Doc:         ParseDocstring(yyDollar[2].docstring),
 			}
 		}
@@ -892,7 +880,8 @@ yydefault:
 				Type:         yyDollar[5].fieldType,
 				Requiredness: yyDollar[4].fieldRequired,
 				Annotations:  yyDollar[7].typeAnnotations,
-				Line:         yyDollar[1].line,
+				Line:         yyDollar[1].pos.Line,
+				Column:       yyDollar[1].pos.Column,
 				Doc:          ParseDocstring(yyDollar[2].docstring),
 			}
 		}
@@ -907,7 +896,8 @@ yydefault:
 				Requiredness: yyDollar[4].fieldRequired,
 				Default:      yyDollar[8].constantValue,
 				Annotations:  yyDollar[9].typeAnnotations,
-				Line:         yyDollar[1].line,
+				Line:         yyDollar[1].pos.Line,
+				Column:       yyDollar[1].pos.Column,
 				Doc:          ParseDocstring(yyDollar[2].docstring),
 			}
 		}
@@ -952,11 +942,12 @@ yydefault:
 			yyVAL.function = &ast.Function{
 				Name:        yyDollar[5].str,
 				Parameters:  yyDollar[7].fields,
-				ReturnType:  yyDollar[3].fieldType,
+				ReturnType:  yyDollar[4].fieldType,
 				Exceptions:  yyDollar[9].fields,
-				OneWay:      yyDollar[2].bul,
+				OneWay:      yyDollar[3].bul,
 				Annotations: yyDollar[10].typeAnnotations,
-				Line:        yyDollar[4].line,
+				Line:        yyDollar[2].pos.Line,
+				Column:      yyDollar[2].pos.Column,
 				Doc:         ParseDocstring(yyDollar[1].docstring),
 			}
 		}
@@ -993,27 +984,27 @@ yydefault:
 	case 42:
 		yyDollar = yyS[yypt-3 : yypt+1]
 		{
-			yyVAL.fieldType = ast.BaseType{ID: yyDollar[2].baseTypeID, Annotations: yyDollar[3].typeAnnotations, Line: yyDollar[1].line}
+			yyVAL.fieldType = ast.BaseType{ID: yyDollar[2].baseTypeID, Annotations: yyDollar[3].typeAnnotations, Line: yyDollar[1].pos.Line, Column: yyDollar[1].pos.Column}
 		}
 	case 43:
 		yyDollar = yyS[yypt-8 : yypt+1]
 		{
-			yyVAL.fieldType = ast.MapType{KeyType: yyDollar[4].fieldType, ValueType: yyDollar[6].fieldType, Annotations: yyDollar[8].typeAnnotations, Line: yyDollar[1].line}
+			yyVAL.fieldType = ast.MapType{KeyType: yyDollar[4].fieldType, ValueType: yyDollar[6].fieldType, Annotations: yyDollar[8].typeAnnotations, Line: yyDollar[1].pos.Line, Column: yyDollar[1].pos.Column}
 		}
 	case 44:
 		yyDollar = yyS[yypt-6 : yypt+1]
 		{
-			yyVAL.fieldType = ast.ListType{ValueType: yyDollar[4].fieldType, Annotations: yyDollar[6].typeAnnotations, Line: yyDollar[1].line}
+			yyVAL.fieldType = ast.ListType{ValueType: yyDollar[4].fieldType, Annotations: yyDollar[6].typeAnnotations, Line: yyDollar[1].pos.Line, Column: yyDollar[1].pos.Column}
 		}
 	case 45:
 		yyDollar = yyS[yypt-6 : yypt+1]
 		{
-			yyVAL.fieldType = ast.SetType{ValueType: yyDollar[4].fieldType, Annotations: yyDollar[6].typeAnnotations, Line: yyDollar[1].line}
+			yyVAL.fieldType = ast.SetType{ValueType: yyDollar[4].fieldType, Annotations: yyDollar[6].typeAnnotations, Line: yyDollar[1].pos.Line, Column: yyDollar[1].pos.Column}
 		}
 	case 46:
 		yyDollar = yyS[yypt-2 : yypt+1]
 		{
-			yyVAL.fieldType = ast.TypeReference{Name: yyDollar[2].str, Line: yyDollar[1].line}
+			yyVAL.fieldType = ast.TypeReference{Name: yyDollar[1].str, Line: yyDollar[2].pos.Line, Column: yyDollar[2].pos.Column}
 		}
 	case 47:
 		yyDollar = yyS[yypt-1 : yypt+1]
@@ -1093,17 +1084,17 @@ yydefault:
 	case 61:
 		yyDollar = yyS[yypt-2 : yypt+1]
 		{
-			yyVAL.constantValue = ast.ConstantReference{Name: yyDollar[2].str, Line: yyDollar[1].line}
+			yyVAL.constantValue = ast.ConstantReference{Name: yyDollar[2].str, Line: yyDollar[1].pos.Line, Column: yyDollar[1].pos.Column}
 		}
 	case 62:
 		yyDollar = yyS[yypt-4 : yypt+1]
 		{
-			yyVAL.constantValue = ast.ConstantList{Items: yyDollar[3].constantValues, Line: yyDollar[1].line}
+			yyVAL.constantValue = ast.ConstantList{Items: yyDollar[3].constantValues, Line: yyDollar[1].pos.Line, Column: yyDollar[1].pos.Column}
 		}
 	case 63:
 		yyDollar = yyS[yypt-4 : yypt+1]
 		{
-			yyVAL.constantValue = ast.ConstantMap{Items: yyDollar[3].constantMapItems, Line: yyDollar[1].line}
+			yyVAL.constantValue = ast.ConstantMap{Items: yyDollar[3].constantMapItems, Line: yyDollar[1].pos.Line, Column: yyDollar[1].pos.Column}
 		}
 	case 64:
 		yyDollar = yyS[yypt-0 : yypt+1]
@@ -1123,7 +1114,7 @@ yydefault:
 	case 67:
 		yyDollar = yyS[yypt-6 : yypt+1]
 		{
-			yyVAL.constantMapItems = append(yyDollar[1].constantMapItems, ast.ConstantMapItem{Key: yyDollar[3].constantValue, Value: yyDollar[5].constantValue, Line: yyDollar[2].line})
+			yyVAL.constantMapItems = append(yyDollar[1].constantMapItems, ast.ConstantMapItem{Key: yyDollar[3].constantValue, Value: yyDollar[5].constantValue, Line: yyDollar[2].pos.Line, Column: yyDollar[2].pos.Column})
 		}
 	case 68:
 		yyDollar = yyS[yypt-0 : yypt+1]
@@ -1143,24 +1134,19 @@ yydefault:
 	case 71:
 		yyDollar = yyS[yypt-6 : yypt+1]
 		{
-			yyVAL.typeAnnotations = append(yyDollar[1].typeAnnotations, &ast.Annotation{Name: yyDollar[3].str, Value: yyDollar[5].str, Line: yyDollar[2].line})
+			yyVAL.typeAnnotations = append(yyDollar[1].typeAnnotations, &ast.Annotation{Name: yyDollar[3].str, Value: yyDollar[5].str, Line: yyDollar[2].pos.Line, Column: yyDollar[2].pos.Column})
 		}
 	case 72:
 		yyDollar = yyS[yypt-4 : yypt+1]
 		{
-			yyVAL.typeAnnotations = append(yyDollar[1].typeAnnotations, &ast.Annotation{Name: yyDollar[3].str, Line: yyDollar[2].line})
+			yyVAL.typeAnnotations = append(yyDollar[1].typeAnnotations, &ast.Annotation{Name: yyDollar[3].str, Line: yyDollar[2].pos.Line, Column: yyDollar[2].pos.Column})
 		}
 	case 73:
 		yyDollar = yyS[yypt-0 : yypt+1]
 		{
-			yyVAL.line = yylex.(*lexer).line
-		}
-	case 74:
-		yyDollar = yyS[yypt-0 : yypt+1]
-		{
 			yyVAL.pos = yylex.(*lexer).Pos()
 		}
-	case 75:
+	case 74:
 		yyDollar = yyS[yypt-0 : yypt+1]
 		{
 			yyVAL.docstring = yylex.(*lexer).LastDocstring()

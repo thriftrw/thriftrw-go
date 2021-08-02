@@ -25,36 +25,35 @@
 package plugintest
 
 import (
-	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
 	api "go.uber.org/thriftrw/plugin/api"
+	reflect "reflect"
 )
 
-// MockPlugin is a mock of Plugin interface.
+// MockPlugin is a mock of Plugin interface
 type MockPlugin struct {
 	ctrl     *gomock.Controller
 	recorder *MockPluginMockRecorder
 }
 
-// MockPluginMockRecorder is the mock recorder for MockPlugin.
+// MockPluginMockRecorder is the mock recorder for MockPlugin
 type MockPluginMockRecorder struct {
 	mock *MockPlugin
 }
 
-// NewMockPlugin creates a new mock instance.
+// NewMockPlugin creates a new mock instance
 func NewMockPlugin(ctrl *gomock.Controller) *MockPlugin {
 	mock := &MockPlugin{ctrl: ctrl}
 	mock.recorder = &MockPluginMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockPlugin) EXPECT() *MockPluginMockRecorder {
 	return m.recorder
 }
 
-// Goodbye mocks base method.
+// Goodbye mocks base method
 func (m *MockPlugin) Goodbye() error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Goodbye")
@@ -62,13 +61,13 @@ func (m *MockPlugin) Goodbye() error {
 	return ret0
 }
 
-// Goodbye indicates an expected call of Goodbye.
+// Goodbye indicates an expected call of Goodbye
 func (mr *MockPluginMockRecorder) Goodbye() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Goodbye", reflect.TypeOf((*MockPlugin)(nil).Goodbye))
 }
 
-// Handshake mocks base method.
+// Handshake mocks base method
 func (m *MockPlugin) Handshake(arg0 *api.HandshakeRequest) (*api.HandshakeResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Handshake", arg0)
@@ -77,36 +76,36 @@ func (m *MockPlugin) Handshake(arg0 *api.HandshakeRequest) (*api.HandshakeRespon
 	return ret0, ret1
 }
 
-// Handshake indicates an expected call of Handshake.
+// Handshake indicates an expected call of Handshake
 func (mr *MockPluginMockRecorder) Handshake(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Handshake", reflect.TypeOf((*MockPlugin)(nil).Handshake), arg0)
 }
 
-// MockServiceGenerator is a mock of ServiceGenerator interface.
+// MockServiceGenerator is a mock of ServiceGenerator interface
 type MockServiceGenerator struct {
 	ctrl     *gomock.Controller
 	recorder *MockServiceGeneratorMockRecorder
 }
 
-// MockServiceGeneratorMockRecorder is the mock recorder for MockServiceGenerator.
+// MockServiceGeneratorMockRecorder is the mock recorder for MockServiceGenerator
 type MockServiceGeneratorMockRecorder struct {
 	mock *MockServiceGenerator
 }
 
-// NewMockServiceGenerator creates a new mock instance.
+// NewMockServiceGenerator creates a new mock instance
 func NewMockServiceGenerator(ctrl *gomock.Controller) *MockServiceGenerator {
 	mock := &MockServiceGenerator{ctrl: ctrl}
 	mock.recorder = &MockServiceGeneratorMockRecorder{mock}
 	return mock
 }
 
-// EXPECT returns an object that allows the caller to indicate expected use.
+// EXPECT returns an object that allows the caller to indicate expected use
 func (m *MockServiceGenerator) EXPECT() *MockServiceGeneratorMockRecorder {
 	return m.recorder
 }
 
-// Generate mocks base method.
+// Generate mocks base method
 func (m *MockServiceGenerator) Generate(arg0 *api.GenerateServiceRequest) (*api.GenerateServiceResponse, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Generate", arg0)
@@ -115,7 +114,7 @@ func (m *MockServiceGenerator) Generate(arg0 *api.GenerateServiceRequest) (*api.
 	return ret0, ret1
 }
 
-// Generate indicates an expected call of Generate.
+// Generate indicates an expected call of Generate
 func (mr *MockServiceGeneratorMockRecorder) Generate(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Generate", reflect.TypeOf((*MockServiceGenerator)(nil).Generate), arg0)

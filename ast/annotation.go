@@ -33,16 +33,17 @@ import (
 // They may be used to customize the generated code. Annotations are optional
 // anywhere in the code where they're accepted and may be skipped completely.
 type Annotation struct {
-	Name  string
-	Value string
-	Line  int
+	Name   string
+	Value  string
+	Line   int
+	Column int
 }
 
 func (*Annotation) node() {}
 
 func (*Annotation) visitChildren(nodeStack, visitor) {}
 
-func (ann *Annotation) lineNumber() int { return ann.Line }
+func (ann *Annotation) pos() Position { return Position{Line: ann.Line, Column: ann.Column} }
 
 func (ann *Annotation) String() string {
 	return fmt.Sprintf("%s = %q", ann.Name, ann.Value)

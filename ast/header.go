@@ -42,15 +42,16 @@ type Header interface {
 //
 // 	include t "shared.thrift"
 type Include struct {
-	Path string
-	Name string
-	Line int
+	Path   string
+	Name   string
+	Line   int
+	Column int
 }
 
 func (*Include) node()   {}
 func (*Include) header() {}
 
-func (i *Include) lineNumber() int { return i.Line }
+func (i *Include) pos() Position { return Position{Line: i.Line, Column: i.Column} }
 
 func (*Include) visitChildren(nodeStack, visitor) {}
 
@@ -63,14 +64,15 @@ func (i *Include) Info() HeaderInfo {
 //
 //  cpp_include "<unordered_map>"
 type CppInclude struct {
-	Path string
-	Line int
+	Path   string
+	Line   int
+	Column int
 }
 
 func (*CppInclude) node()   {}
 func (*CppInclude) header() {}
 
-func (i *CppInclude) lineNumber() int { return i.Line }
+func (i *CppInclude) pos() Position { return Position{Line: i.Line, Column: i.Column} }
 
 func (*CppInclude) visitChildren(nodeStack, visitor) {}
 
@@ -84,15 +86,16 @@ func (i *CppInclude) Info() HeaderInfo {
 //
 // 	namespace py foo.bar
 type Namespace struct {
-	Scope string
-	Name  string
-	Line  int
+	Scope  string
+	Name   string
+	Line   int
+	Column int
 }
 
 func (*Namespace) node()   {}
 func (*Namespace) header() {}
 
-func (n *Namespace) lineNumber() int { return n.Line }
+func (n *Namespace) pos() Position { return Position{Line: n.Line, Column: n.Column} }
 
 func (*Namespace) visitChildren(nodeStack, visitor) {}
 
