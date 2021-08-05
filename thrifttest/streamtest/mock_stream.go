@@ -21,8 +21,8 @@
 // THE SOFTWARE.
 // Source: go.uber.org/thriftrw/protocol/stream (interfaces: Protocol,Writer,Reader,BodyReader,Enveloper,RequestReader,ResponseWriter)
 
-// Package thrifttest is a generated GoMock package.
-package thrifttest
+// Package streamtest is a generated GoMock package.
+package streamtest
 
 import (
 	context "context"

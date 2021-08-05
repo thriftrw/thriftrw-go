@@ -18,6 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package thrifttest
+package streamtest
 
-//go:generate mockgen -destination=mock_stream.go -package=thrifttest go.uber.org/thriftrw/protocol/stream Protocol,Writer,Reader,BodyReader,Enveloper,RequestReader,ResponseWriter
+//go:generate mockgen -destination=mock_stream.go -package=streamtest go.uber.org/thriftrw/protocol/stream Protocol,Writer,Reader,BodyReader,Enveloper,RequestReader,ResponseWriter
