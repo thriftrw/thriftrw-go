@@ -167,10 +167,9 @@ func (p *Protocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Valu
 }
 
 // ReadRequest reads off the request envelope (if present) from an io.Reader,
-// using the provided BodyReader to read off the full request struct,
+// populating the provided BodyReader to read off the full request struct,
 // asserting the EnvelopeType (either OneWay or Unary) if an envlope exists.
-// A ResponseWriter that understands the enveloping used and the request's
-// body are returned.
+// A ResponseWriter that understands the enveloping used is returned.
 //
 // This allows a Thrift request handler to transparently read requests
 // regardless of whether the caller is configured to submit envelopes.
@@ -197,8 +196,6 @@ func (p *Protocol) DecodeRequest(et wire.EnvelopeType, r io.ReaderAt) (wire.Valu
 // the protocol will add more field types, but it is very unlikely that the
 // field type will flow into the MSB (128 type identifiers, starting with the
 // 15 valid types today).
-//
-// Callers must call Close() on the stream.Reader once finished.
 func (p *Protocol) ReadRequest(
 	ctx context.Context,
 	et wire.EnvelopeType,
