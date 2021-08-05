@@ -217,43 +217,58 @@ func (p *Protocol) ReadRequest(
 	sr = p.Reader(r)
 	defer sr.Close()
 
-	if buf[0] == 0x00 || buf[0]&0x80 > 0 {
-		var responder stream.ResponseWriter = NoEnvelopeResponder
-		eh, err := p.readEnvelopeHeader(sr, et)
+	switch {
+	case buf[0] == 0x00:
+		// If length > 1, 0x00 is only a valid preamble for a
+		// non-strict enveloped request.
+		e, err := p.readEnvelopeHeader(sr, et)
 		if err != nil {
-			return responder, err
+			return NoEnvelopeResponder, err
 		}
 
-		switch {
-		case buf[0] == 0x00:
-			responder = &EnvelopeV0Responder{
-				Name:  eh.Name,
-				SeqID: eh.SeqID,
-			}
-		case buf[0]&0x80 > 0:
-			responder = &EnvelopeV1Responder{
-				Name:  eh.Name,
-				SeqID: eh.SeqID,
-			}
-		default:
-			return responder, fmt.Errorf("should never happen")
-		}
-
-		err = body.Decode(sr)
-		if err != nil {
-			return responder, err
+		if err := body.Decode(sr); err != nil {
+			return NoEnvelopeResponder, err
 		}
 
 		if err := sr.ReadEnvelopeEnd(); err != nil {
-			return responder, err
+			return NoEnvelopeResponder, err
 		}
 
-		return responder, nil
-	}
+		return &EnvelopeV0Responder{
+			Name:  e.Name,
+			SeqID: e.SeqID,
+		}, nil
 
-	// For anything else, the request is either not-enveloped or invalid, let the
-	// bodyFunc manage that data.
-	return NoEnvelopeResponder, body.Decode(sr)
+	case buf[0]&0x80 > 0:
+		// Only strict (versioned) envelopes begin with the most
+		// significant bit set. This could only be confused for a type
+		// identifier greater than 127 (beyond the 15 Thrift has at
+		// time of writing), or a message name longer than 16MB.
+
+		e, err := p.readEnvelopeHeader(sr, et)
+		if err != nil {
+			return NoEnvelopeResponder, err
+		}
+
+		if err := body.Decode(sr); err != nil {
+			return NoEnvelopeResponder, err
+		}
+
+		if err := sr.ReadEnvelopeEnd(); err != nil {
+			return NoEnvelopeResponder, err
+		}
+
+		return &EnvelopeV1Responder{
+			Name:  e.Name,
+			SeqID: e.SeqID,
+		}, nil
+
+	default:
+		// All other patterns are either bare structs or invalid. We
+		// delegate to the struct decoder to distinguish invalid type
+		// identifiers, outside the 0-15 range.
+		return NoEnvelopeResponder, body.Decode(sr)
+	}
 }
 
 func (p *Protocol) readEnvelopeHeader(sr stream.Reader, et wire.EnvelopeType) (stream.EnvelopeHeader, error) {
