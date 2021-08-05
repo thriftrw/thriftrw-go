@@ -204,14 +204,18 @@ func (p *Protocol) ReadRequest(
 ) (stream.ResponseWriter, error) {
 	var buf [2]byte
 
-	sr := p.Reader(bytes.NewReader(buf[:]))
+	// If we fail to read two bytes, the only possible valid value is the
+	// empty struct.
 	if count, _ := r.Read(buf[0:2]); count < 2 {
+		sr := p.Reader(bytes.NewReader(buf[:count]))
+		defer sr.Close()
 		return NoEnvelopeResponder, body.Decode(sr)
 	}
 
-	// Reset the Reader to allow for properly reading the envelope, if it exists.
+	// Reset the Reader to allow for properly reading the envelope if it
+	// exists.
 	r = io.MultiReader(bytes.NewReader(buf[:]), r)
-	sr = p.Reader(r)
+	sr := p.Reader(r)
 	defer sr.Close()
 
 	switch {
