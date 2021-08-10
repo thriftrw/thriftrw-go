@@ -21,6 +21,7 @@
 package binary
 
 import (
+	"fmt"
 	"io"
 
 	"go.uber.org/thriftrw/wire"
@@ -33,12 +34,29 @@ type offsetReader struct {
 	reader io.ReaderAt
 }
 
+var (
+	_ io.Reader = (*offsetReader)(nil)
+	_ io.Seeker = (*offsetReader)(nil)
+)
+
 // Read reads len(p) bytes into p.
 func (or *offsetReader) Read(p []byte) (int, error) {
 	n, err := or.reader.ReadAt(p, or.offset)
 	or.offset += int64(n)
 
 	return n, err
+}
+
+func (or *offsetReader) Seek(offset int64, whence int) (int64, error) {
+	switch whence {
+	case io.SeekStart:
+		or.offset = offset
+	case io.SeekCurrent:
+		or.offset += offset
+	default:
+		return or.offset, fmt.Errorf("unsupported whence %d", whence)
+	}
+	return or.offset, nil
 }
 
 // reader functions as the actual reader behind the exported `Reader` type.
