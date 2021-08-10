@@ -71,21 +71,21 @@ type StreamReader struct {
 	// the implementation of the io.Reader we're using.
 	discard func(int64) error
 
-	// These are bound versions of the discardStream and discardOffset
+	// These are bound versions of the discardStream and discardSeek
 	// methods on the StreamReader. Putting them here ensures that we don't
 	// cause an alloc when we do "sr.discard = sr.discardOffset".
 	_discardStream func(int64) error
-	_discardOffset func(int64) error
+	_discardSeek   func(int64) error
 
-	// This field is set only if the wrapped reader is an offset reader.
-	// ONLY USE if you are discardOffset.
-	_or *offsetReader
+	// This field is set only if the wrapped reader is an io.Seeker. ONLY
+	// USE if you are discardSeek.
+	_seeker io.Seeker
 }
 
 var streamReaderPool = sync.Pool{
 	New: func() interface{} {
 		sr := new(StreamReader)
-		sr._discardOffset = sr.discardOffset
+		sr._discardSeek = sr.discardSeek
 		sr._discardStream = sr.discardStream
 		return sr
 	},
@@ -99,18 +99,18 @@ func NewStreamReader(r io.Reader) *StreamReader {
 	sr := streamReaderPool.Get().(*StreamReader)
 	sr.reader = r
 	sr.discard = sr._discardStream
-	if or, ok := r.(*offsetReader); ok {
-		// If we're wrapping an offsetReader, we can skip bytes much
-		// more efficiently.
-		sr._or = or
-		sr.discard = sr._discardOffset
+	if seeker, ok := r.(io.Seeker); ok {
+		// If we're wrapping a seeker (like *offsetReader), we can skip
+		// bytes much more efficiently.
+		sr._seeker = seeker
+		sr.discard = sr._discardSeek
 	}
 	return sr
 }
 
 func returnStreamReader(sr *StreamReader) {
 	sr.reader = nil
-	sr._or = nil
+	sr._seeker = nil
 	streamReaderPool.Put(sr)
 }
 
@@ -125,9 +125,9 @@ func (sr *StreamReader) read(bs []byte) (int, error) {
 	return n, err
 }
 
-func (sr *StreamReader) discardOffset(n int64) error {
-	sr._or.offset += n
-	return nil
+func (sr *StreamReader) discardSeek(n int64) error {
+	_, err := sr._seeker.Seek(n, io.SeekCurrent)
+	return err
 }
 
 func (sr *StreamReader) discardStream(n int64) error {
