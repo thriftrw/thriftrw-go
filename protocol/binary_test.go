@@ -83,13 +83,14 @@ type testRequestBody struct {
 
 var _ stream.BodyReader = (*testRequestBody)(nil)
 
-func (h testRequestBody) Decode(sr stream.Reader) error {
+func (h *testRequestBody) Decode(sr stream.Reader) error {
 	h.t.Helper()
 
 	require.NoError(h.t, sr.ReadStructBegin(), "failed to read struct begin")
 	tempFh, ok, err := sr.ReadFieldBegin()
 	require.NoError(h.t, err, "failed to read field begin")
 	require.True(h.t, ok, "failed to read field begin")
+	require.NoError(h.t, sr.Skip(tempFh.Type), "failed to skip field type")
 	require.NoError(h.t, sr.ReadFieldEnd(), "failed to read field end")
 	require.NoError(h.t, sr.ReadStructEnd(), "failed to read struct end")
 	h.fh = &tempFh
@@ -1700,16 +1701,14 @@ func TestStreamingEnvelopeSuccessful(t *testing.T) {
 				fh: &fh,
 			}
 
-			responder, err := binary.Default.ReadRequest(context.Background(), tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), h)
+			responder, err := binary.Default.ReadRequest(context.Background(), tt.inputEnvType, bytes.NewReader(tt.inputReqBytes), &h)
 			require.NoError(t, err, "failed to read request with envelope")
 			require.True(t, tt.wantResponderType == reflect.TypeOf(responder), "read request should have responder want %v got %T", tt.wantResponderType, responder)
 
 			// Verify whether we can read the correct request field ID from the stream.Reader
 			// This is a basic test to ensure the stream.Reader is at the correct offset in the request.
 			// It is not intended to test the functionality of stream.Reader
-			//fh := readStructFieldHeader(t, reader)
-			//require.Equal(t, tt.wantReqFieldID, fh.ID, "request field ID mismatch")
-			//require.NoError(t, reader.Skip(fh.Type), "failed to skip")
+			assert.Equal(t, tt.wantReqFieldID, h.fh.ID, "request field ID mismatch")
 
 			// Verify response has the correct envelope
 			writer := &bytes.Buffer{}
