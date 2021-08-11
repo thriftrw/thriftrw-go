@@ -19,16 +19,3 @@
 // THE SOFTWARE.
 
 package stream
-
-import (
-	"go.uber.org/thriftrw/protocol/stream"
-	"go.uber.org/thriftrw/wire"
-)
-
-// Enveloper is the interface implemented by a type that can be written with
-// an envelope via a stream.Writer.
-type Enveloper interface {
-	MethodName() string
-	EnvelopeType() wire.EnvelopeType
-	Encode(stream.Writer) error
-}
