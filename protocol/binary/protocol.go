@@ -214,7 +214,16 @@ func (p *Protocol) ReadRequest(
 
 	// Reset the Reader to allow for properly reading the envelope if it
 	// exists.
-	r = io.MultiReader(bytes.NewReader(buf[:]), r)
+	if seeker, ok := r.(io.Seeker); ok {
+		// If the reader supports seking, use that.
+		if _, err := seeker.Seek(int64(-len(buf)), io.SeekCurrent); err != nil {
+			return nil, err
+		}
+	} else {
+		// Otherwise, create a new reader with the buffered bytes.
+		r = io.MultiReader(bytes.NewReader(buf[:]), r)
+	}
+
 	sr := p.Reader(r)
 	defer sr.Close()
 
