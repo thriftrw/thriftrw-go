@@ -42,8 +42,6 @@ type Enveloper interface {
 
 // RequestReader captures how to read from a request in a streaming fashion.
 type RequestReader interface {
-	Protocol
-
 	// ReadRequest reads off the request envelope (if present) from an io.Reader,
 	// using the provided BodyReader to read off the full request struct,
 	// asserting the EnvelopeType (either OneWay or Unary) if an envlope exists.
