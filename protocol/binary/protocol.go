@@ -26,7 +26,6 @@ import (
 	"fmt"
 	"io"
 
-	"go.uber.org/thriftrw/internal/iface"
 	"go.uber.org/thriftrw/protocol/envelope"
 	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
@@ -36,9 +35,7 @@ import (
 var Default = new(Protocol)
 
 // Protocol implements the Thrift Binary Protocol.
-type Protocol struct {
-	iface.Private
-}
+type Protocol struct{}
 
 var _ stream.Protocol = (*Protocol)(nil)
 var _ stream.RequestReader = (*Protocol)(nil)

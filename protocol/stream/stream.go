@@ -25,15 +25,12 @@ package stream
 import (
 	"io"
 
-	"go.uber.org/thriftrw/internal/iface"
 	"go.uber.org/thriftrw/wire"
 )
 
 // Protocol defines a specific way for a Thrift value to be encoded or
 // decoded, implemented in a streaming fashion.
 type Protocol interface {
-	iface.Private // this interface is meant for internal implementations only
-
 	// Writer returns a streaming implementation of an encoder for a
 	// Thrift value.
 	Writer(w io.Writer) Writer
@@ -84,8 +81,6 @@ type ListHeader struct {
 // Writer defines an encoder for a Thrift value, implemented in a streaming
 // fashion.
 type Writer interface {
-	iface.Private // this interface is meant for internal implementations only
-
 	WriteBool(b bool) error
 	WriteInt8(i int8) error
 	WriteInt16(i int16) error
@@ -114,8 +109,6 @@ type Writer interface {
 // Reader defines an decoder for a Thrift value, implemented in a streaming
 // fashion.
 type Reader interface {
-	iface.Private // this interface is meant for internal implementations only
-
 	ReadBool() (bool, error)
 	ReadInt8() (int8, error)
 	ReadInt16() (int16, error)

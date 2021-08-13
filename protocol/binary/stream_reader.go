@@ -27,7 +27,6 @@ import (
 	"math"
 	"sync"
 
-	"go.uber.org/thriftrw/internal/iface"
 	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
 )
@@ -62,8 +61,6 @@ func fixedWidth(t wire.Type) int64 {
 
 // StreamReader provides an implementation of a "stream.Reader".
 type StreamReader struct {
-	iface.Private
-
 	reader io.Reader
 	buffer [8]byte
 

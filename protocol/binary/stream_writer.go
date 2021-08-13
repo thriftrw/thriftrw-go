@@ -25,7 +25,6 @@ import (
 	"math"
 	"sync"
 
-	"go.uber.org/thriftrw/internal/iface"
 	"go.uber.org/thriftrw/protocol/stream"
 )
 
@@ -37,9 +36,6 @@ var streamWriterPool = sync.Pool{
 // StreamWriter implements basic logic for writing the Thrift Binary Protocol
 // to an io.Writer.
 type StreamWriter struct {
-	// Private implementation to satisfy the private Writer interface.
-	iface.Impl
-
 	writer io.Writer
 
 	// This buffer is re-used every time we need a slice of up to 8 bytes.
