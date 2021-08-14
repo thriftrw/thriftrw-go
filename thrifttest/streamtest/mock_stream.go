@@ -84,18 +84,6 @@ func (mr *MockProtocolMockRecorder) Writer(arg0 interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Writer", reflect.TypeOf((*MockProtocol)(nil).Writer), arg0)
 }
 
-// private mocks base method
-func (m *MockProtocol) private() {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "private")
-}
-
-// private indicates an expected call of private
-func (mr *MockProtocolMockRecorder) private() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "private", reflect.TypeOf((*MockProtocol)(nil).private))
-}
-
 // MockWriter is a mock of Writer interface
 type MockWriter struct {
 	ctrl     *gomock.Controller
@@ -411,18 +399,6 @@ func (m *MockWriter) WriteStructEnd() error {
 func (mr *MockWriterMockRecorder) WriteStructEnd() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WriteStructEnd", reflect.TypeOf((*MockWriter)(nil).WriteStructEnd))
-}
-
-// private mocks base method
-func (m *MockWriter) private() {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "private")
-}
-
-// private indicates an expected call of private
-func (mr *MockWriterMockRecorder) private() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "private", reflect.TypeOf((*MockWriter)(nil).private))
 }
 
 // MockReader is a mock of Reader interface
@@ -768,18 +744,6 @@ func (m *MockReader) Skip(arg0 wire.Type) error {
 func (mr *MockReaderMockRecorder) Skip(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Skip", reflect.TypeOf((*MockReader)(nil).Skip), arg0)
-}
-
-// private mocks base method
-func (m *MockReader) private() {
-	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "private")
-}
-
-// private indicates an expected call of private
-func (mr *MockReaderMockRecorder) private() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "private", reflect.TypeOf((*MockReader)(nil).private))
 }
 
 // MockBodyReader is a mock of BodyReader interface
