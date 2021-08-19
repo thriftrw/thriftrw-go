@@ -21,6 +21,7 @@
 package binary
 
 import (
+	"io"
 	"sync"
 
 	"go.uber.org/thriftrw/wire"
@@ -48,7 +49,7 @@ func borrowLazyMapItemList() *lazyMapItemList {
 type lazyValueList struct {
 	count       int32
 	typ         wire.Type
-	reader      *Reader
+	readerAt    io.ReaderAt
 	startOffset int64
 }
 
@@ -62,6 +63,8 @@ func (ll *lazyValueList) Size() int {
 
 func (ll *lazyValueList) ForEach(f func(wire.Value) error) error {
 	off := ll.startOffset
+	reader := newReader(ll.readerAt, off)
+	defer reader.close()
 
 	for i := int32(0); i < ll.count; i++ {
 		var (
@@ -69,7 +72,7 @@ func (ll *lazyValueList) ForEach(f func(wire.Value) error) error {
 			err error
 		)
 
-		val, off, err = ll.reader.ReadValue(ll.typ, off)
+		val, off, err = reader.ReadValue(ll.typ, off)
 		if err != nil {
 			return err
 		}
@@ -82,7 +85,7 @@ func (ll *lazyValueList) ForEach(f func(wire.Value) error) error {
 }
 
 func (ll *lazyValueList) Close() {
-	ll.reader = nil
+	ll.readerAt = nil
 	lazyValueListPool.Put(ll)
 }
 
@@ -91,7 +94,7 @@ func (ll *lazyValueList) Close() {
 type lazyMapItemList struct {
 	ktype, vtype wire.Type
 	count        int32
-	reader       *Reader
+	readerAt     io.ReaderAt
 	startOffset  int64
 }
 
@@ -109,6 +112,8 @@ func (lm *lazyMapItemList) Size() int {
 
 func (lm *lazyMapItemList) ForEach(f func(wire.MapItem) error) error {
 	off := lm.startOffset
+	reader := newReader(lm.readerAt, off)
+	defer reader.close()
 
 	for i := int32(0); i < lm.count; i++ {
 		var (
@@ -116,12 +121,12 @@ func (lm *lazyMapItemList) ForEach(f func(wire.MapItem) error) error {
 			err  error
 		)
 
-		k, off, err = lm.reader.ReadValue(lm.ktype, off)
+		k, off, err = reader.ReadValue(lm.ktype, off)
 		if err != nil {
 			return err
 		}
 
-		v, off, err = lm.reader.ReadValue(lm.vtype, off)
+		v, off, err = reader.ReadValue(lm.vtype, off)
 		if err != nil {
 			return err
 		}
@@ -135,6 +140,6 @@ func (lm *lazyMapItemList) ForEach(f func(wire.MapItem) error) error {
 }
 
 func (lm *lazyMapItemList) Close() {
-	lm.reader = nil
+	lm.readerAt = nil
 	lazyMapItemListPool.Put(lm)
 }

@@ -24,6 +24,7 @@ package protocol
 import (
 	"io"
 
+	"go.uber.org/thriftrw/protocol/envelope"
 	"go.uber.org/thriftrw/wire"
 )
 
@@ -65,9 +66,6 @@ type EnvelopeAgnosticProtocol interface {
 // Responder captures how to respond to a request, concerning whether and what
 // kind of envelope to use, how to match the sequence identifier of the
 // corresponding request.
-type Responder interface {
-	// EncodeResponse writes a response value to the writer, with the envelope
-	// style of the corresponding request.
-	// The EnvelopeType should be either wire.Reply or wire.Exception.
-	EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error
-}
+//
+// Deprecated: Use envelope.Responder.
+type Responder = envelope.Responder

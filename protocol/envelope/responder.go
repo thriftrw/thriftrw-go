@@ -18,30 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package iface
+package envelope
 
-// Private will be used to make interfaces defined in ThriftRW private.
-// Example usage:
-//
-// 	import ".../internal/iface"
-//
-// 	type PrivateInterface interface {
-// 		iface.Private
-//
-//		Method1()
-// 	}
-type Private interface{ private() }
+import (
+	"io"
 
-// Impl is the implementation for the private interface and should also be
-// referenced.
-// Example usage:
-//
-// 	import ".../internal/iface"
-//
-// 	type PrivateImpl struct {
-// 		iface.Impl
-// 		...
-// 	}
-type Impl struct{}
+	"go.uber.org/thriftrw/wire"
+)
 
-func (Impl) private() {}
+// Responder captures how to respond to a request, concerning whether and what
+// kind of envelope to use, how to match the sequence identifier of the
+// corresponding request.
+type Responder interface {
+	EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error
+}

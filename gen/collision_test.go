@@ -26,7 +26,7 @@ import (
 	"testing"
 
 	tc "go.uber.org/thriftrw/gen/internal/tests/collision"
-	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 
@@ -539,11 +539,11 @@ func roundTrip(t *testing.T, give thriftType, want thriftType, msg string) thrif
 	}
 
 	var buff bytes.Buffer
-	if !assert.NoError(t, protocol.Binary.Encode(v, &buff), "%v: failed to serialize", msg) {
+	if !assert.NoError(t, binary.Default.Encode(v, &buff), "%v: failed to serialize", msg) {
 		return nil
 	}
 
-	newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), v.Type())
+	newV, err := binary.Default.Decode(bytes.NewReader(buff.Bytes()), v.Type())
 	if !assert.NoError(t, err, "%v: failed to deserialize", msg) {
 		return nil
 	}

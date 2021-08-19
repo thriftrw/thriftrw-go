@@ -204,8 +204,16 @@ func readerFuncName(g Generator, spec compile.TypeSpec) string {
 	return fmt.Sprintf("_%s_Read", g.MangleType(spec))
 }
 
+func decoderFuncName(g Generator, spec compile.TypeSpec) string {
+	return fmt.Sprintf("_%s_Decode", g.MangleType(spec))
+}
+
 func valueListName(g Generator, spec compile.TypeSpec) string {
 	return fmt.Sprintf("_%s_ValueList", g.MangleType(spec))
+}
+
+func encoderFuncName(g Generator, spec compile.TypeSpec) string {
+	return fmt.Sprintf("_%s_Encode", g.MangleType(spec))
 }
 
 // zapperName returns the name that should be used for wrapper types that
