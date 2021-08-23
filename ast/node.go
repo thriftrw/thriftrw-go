@@ -45,6 +45,7 @@ var _ Node = ConstantMap{}
 var _ Node = ConstantMapItem{}
 var _ Node = ConstantReference{}
 var _ Node = ConstantString("hi")
+var _ Node = (*CppInclude)(nil)
 var _ Node = (*Enum)(nil)
 var _ Node = (*EnumItem)(nil)
 var _ Node = (*Field)(nil)
