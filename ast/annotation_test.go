@@ -21,10 +21,56 @@
 package ast
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestAnnotations(t *testing.T) {
+	anns := []*Annotation{
+		{Name: "annotation", Value: "value"},
+	}
+
+	tests := []struct {
+		give Node
+		want []*Annotation
+	}{
+		{give: &Annotation{}, want: nil},
+		{give: BaseType{Annotations: anns}, want: anns},
+		{give: &Constant{}, want: nil},
+		{give: ConstantBoolean(true), want: nil},
+		{give: ConstantDouble(42.0), want: nil},
+		{give: ConstantInteger(42), want: nil},
+		{give: ConstantMap{Line: 2, Column: 1}, want: nil},
+		{give: ConstantMapItem{Line: 3, Column: 1}, want: nil},
+		{give: ConstantList{Line: 4, Column: 1}, want: nil},
+		{give: ConstantReference{Line: 5, Column: 1}, want: nil},
+		{give: ConstantString("foo"), want: nil},
+		{give: &CppInclude{}, want: nil},
+		{give: &Enum{Annotations: anns}, want: anns},
+		{give: &EnumItem{Annotations: anns}, want: anns},
+		{give: &Field{Annotations: anns}, want: anns},
+		{give: &Function{Annotations: anns}, want: anns},
+		{give: &Include{}, want: nil},
+		{give: ListType{Annotations: anns}, want: anns},
+		{give: MapType{Annotations: anns}, want: anns},
+		{give: &Namespace{}, want: nil},
+		{give: &Program{}, want: nil},
+		{give: &Service{Annotations: anns}, want: anns},
+		{give: SetType{Annotations: anns}, want: anns},
+		{give: &Struct{Annotations: anns}, want: anns},
+		{give: &Typedef{Annotations: anns}, want: anns},
+		{give: TypeReference{}, want: nil},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("%T", tt.give), func(t *testing.T) {
+			actual := Annotations(tt.give)
+			assert.Equal(t, tt.want, actual)
+		})
+	}
+}
 
 func TestFormatAnnotations(t *testing.T) {
 	var anns []*Annotation

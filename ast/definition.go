@@ -81,6 +81,8 @@ type Typedef struct {
 func (*Typedef) node()       {}
 func (*Typedef) definition() {}
 
+func (t *Typedef) annotations() []*Annotation { return t.Annotations }
+
 func (t *Typedef) pos() Position { return Position{Line: t.Line, Column: t.Column} }
 
 func (t *Typedef) visitChildren(ss nodeStack, v visitor) {
@@ -116,6 +118,8 @@ type Enum struct {
 func (*Enum) node()       {}
 func (*Enum) definition() {}
 
+func (e *Enum) annotations() []*Annotation { return e.Annotations }
+
 func (e *Enum) pos() Position { return Position{Line: e.Line, Column: e.Column} }
 
 func (e *Enum) visitChildren(ss nodeStack, v visitor) {
@@ -145,6 +149,8 @@ type EnumItem struct {
 }
 
 func (*EnumItem) node() {}
+
+func (i *EnumItem) annotations() []*Annotation { return i.Annotations }
 
 func (i *EnumItem) pos() Position { return Position{Line: i.Line, Column: i.Column} }
 
@@ -198,6 +204,8 @@ type Struct struct {
 func (*Struct) node()       {}
 func (*Struct) definition() {}
 
+func (s *Struct) annotations() []*Annotation { return s.Annotations }
+
 func (s *Struct) pos() Position { return Position{Line: s.Line, Column: s.Column} }
 
 func (s *Struct) visitChildren(ss nodeStack, v visitor) {
@@ -235,6 +243,8 @@ type Service struct {
 func (*Service) node()       {}
 func (*Service) definition() {}
 
+func (s *Service) annotations() []*Annotation { return s.Annotations }
+
 func (s *Service) pos() Position { return Position{Line: s.Line, Column: s.Column} }
 
 func (s *Service) visitChildren(ss nodeStack, v visitor) {
@@ -270,6 +280,8 @@ type Function struct {
 }
 
 func (*Function) node() {}
+
+func (n *Function) annotations() []*Annotation { return n.Annotations }
 
 func (n *Function) pos() Position { return Position{Line: n.Line, Column: n.Column} }
 
@@ -319,6 +331,8 @@ type Field struct {
 }
 
 func (*Field) node() {}
+
+func (n *Field) annotations() []*Annotation { return n.Annotations }
 
 func (n *Field) pos() Position { return Position{Line: n.Line, Column: n.Column} }
 

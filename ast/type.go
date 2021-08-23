@@ -68,6 +68,8 @@ type BaseType struct {
 func (BaseType) node()      {}
 func (BaseType) fieldType() {}
 
+func (bt BaseType) annotations() []*Annotation { return bt.Annotations }
+
 func (bt BaseType) pos() Position { return Position{Line: bt.Line, Column: bt.Column} }
 
 func (bt BaseType) visitChildren(ss nodeStack, v visitor) {
@@ -120,6 +122,8 @@ type MapType struct {
 func (MapType) node()      {}
 func (MapType) fieldType() {}
 
+func (mt MapType) annotations() []*Annotation { return mt.Annotations }
+
 func (mt MapType) pos() Position { return Position{Line: mt.Line, Column: mt.Column} }
 
 func (mt MapType) visitChildren(ss nodeStack, v visitor) {
@@ -154,6 +158,8 @@ type ListType struct {
 func (ListType) node()      {}
 func (ListType) fieldType() {}
 
+func (lt ListType) annotations() []*Annotation { return lt.Annotations }
+
 func (lt ListType) pos() Position { return Position{Line: lt.Line, Column: lt.Column} }
 
 func (lt ListType) visitChildren(ss nodeStack, v visitor) {
@@ -186,6 +192,8 @@ type SetType struct {
 
 func (SetType) node()      {}
 func (SetType) fieldType() {}
+
+func (st SetType) annotations() []*Annotation { return st.Annotations }
 
 func (st SetType) pos() Position { return Position{Line: st.Line, Column: st.Column} }
 

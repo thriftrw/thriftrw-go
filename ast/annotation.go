@@ -49,6 +49,14 @@ func (ann *Annotation) String() string {
 	return fmt.Sprintf("%s = %q", ann.Name, ann.Value)
 }
 
+// Annotations returns the annotations for the given node.
+func Annotations(n Node) []*Annotation {
+	if na, ok := n.(nodeWithAnnotations); ok {
+		return na.annotations()
+	}
+	return nil
+}
+
 // FormatAnnotations formats a collection of annotations into a string.
 func FormatAnnotations(anns []*Annotation) string {
 	if len(anns) == 0 {
@@ -62,3 +70,24 @@ func FormatAnnotations(anns []*Annotation) string {
 
 	return "(" + strings.Join(as, ", ") + ")"
 }
+
+// Nodes which have annoations can implement this interface.
+type nodeWithAnnotations interface {
+	Node
+
+	annotations() []*Annotation
+}
+
+var (
+	_ nodeWithAnnotations = BaseType{}
+	_ nodeWithAnnotations = (*Enum)(nil)
+	_ nodeWithAnnotations = (*EnumItem)(nil)
+	_ nodeWithAnnotations = (*Field)(nil)
+	_ nodeWithAnnotations = (*Function)(nil)
+	_ nodeWithAnnotations = ListType{}
+	_ nodeWithAnnotations = MapType{}
+	_ nodeWithAnnotations = (*Service)(nil)
+	_ nodeWithAnnotations = SetType{}
+	_ nodeWithAnnotations = (*Struct)(nil)
+	_ nodeWithAnnotations = (*Typedef)(nil)
+)
