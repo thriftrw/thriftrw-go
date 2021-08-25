@@ -53,6 +53,29 @@ func (e *enumGenerator) Reader(g Generator, spec *compile.EnumSpec) (string, err
 	return name, wrapGenerateError(spec.ThriftName(), err)
 }
 
+func (e *enumGenerator) Decoder(g Generator, spec *compile.EnumSpec) (string, error) {
+	name := decoderFuncName(g, spec)
+	err := g.EnsureDeclared(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+
+		<$sr := newVar "sr">
+		<$v := newVar "v">
+		func <.Name>(<$sr> <$stream>.Reader) (<typeName .Spec>, error) {
+			var <$v> <typeName .Spec>
+			err := <$v>.Decode(<$sr>)
+			return <$v>, err
+		}
+		`,
+		struct {
+			Name string
+			Spec *compile.EnumSpec
+		}{Name: name, Spec: spec},
+	)
+
+	return name, wrapGenerateError(spec.ThriftName(), err)
+}
+
 func enum(g Generator, spec *compile.EnumSpec) error {
 	if err := verifyUniqueEnumItemLabels(spec); err != nil {
 		return err
@@ -67,6 +90,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<$json := import "encoding/json">
 		<$math := import "math">
 
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
 		<$wire := import "go.uber.org/thriftrw/wire">
 
 		<$enumName := goName .Spec>
@@ -169,6 +193,17 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			return &<$v>
 		}
 
+		<$sw := newVar "sw">
+		// Encode encodes <$enumName> directly to bytes.
+		//
+		//   sWriter := BinaryStreamer.Writer(writer)
+		//
+		//   var <$v> <$enumName>
+		//   return <$v>.Encode(sWriter)
+		func (<$v> <$enumName>) Encode(<$sw> <$stream>.Writer) error {
+			return <$sw>.WriteInt32(int32(<$v>))
+		}
+
 		// ToWire translates <$enumName> into a Thrift-level intermediate
 		// representation. This intermediate representation may be serialized
 		// into bytes using a ThriftRW protocol implementation.
@@ -194,6 +229,26 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		//   return <$v>, nil
 		func (<$v> *<$enumName>) FromWire(<$w> <$wire>.Value) error {
 			*<$v> = (<$enumName>)(<$w>.GetI32());
+			return nil
+		}
+
+		<$sr := newVar "sr">
+		// Decode reads off the encoded <$enumName> directly off of the wire.
+		//
+		//   sReader := BinaryStreamer.Reader(reader)
+		//
+		//   var <$v> <$enumName>
+		//   if err := <$v>.Decode(sReader); err != nil {
+		//     return <$enumName>(0), err
+		//   }
+		//   return <$v>, nil
+		func (<$v> *<$enumName>) Decode(<$sr> <$stream>.Reader) error {
+			<- $i := newVar "i" ->
+			<$i>, err := <$sr>.ReadInt32()
+			if err != nil {
+				return err
+			}
+			*<$v> = (<$enumName>)(<$i>)
 			return nil
 		}
 

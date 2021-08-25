@@ -11,6 +11,7 @@ import (
 	multierr "go.uber.org/multierr"
 	exceptions "go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	unions "go.uber.org/thriftrw/gen/internal/tests/unions"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -106,6 +107,104 @@ func (v *ConflictingNamesSetValueArgs) FromWire(w wire.Value) error {
 				valueIsSet = true
 			}
 		}
+	}
+
+	if !keyIsSet {
+		return errors.New("field Key of ConflictingNamesSetValueArgs is required")
+	}
+
+	if !valueIsSet {
+		return errors.New("field Value of ConflictingNamesSetValueArgs is required")
+	}
+
+	return nil
+}
+
+// Encode serializes a ConflictingNamesSetValueArgs struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ConflictingNamesSetValueArgs struct could not be encoded.
+func (v *ConflictingNamesSetValueArgs) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteString(v.Key); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Value == nil {
+		return errors.New("field Value of ConflictingNamesSetValueArgs is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := sw.WriteBinary(v.Value); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a ConflictingNamesSetValueArgs struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ConflictingNamesSetValueArgs struct could not be generated from the wire
+// representation.
+func (v *ConflictingNamesSetValueArgs) Decode(sr stream.Reader) error {
+
+	keyIsSet := false
+	valueIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				v.Key, err = sr.ReadString()
+				if err != nil {
+					return err
+				}
+				keyIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TBinary {
+				v.Value, err = sr.ReadBinary()
+				if err != nil {
+					return err
+				}
+				valueIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	if !keyIsSet {
@@ -267,6 +366,76 @@ func (v *InternalError) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a InternalError struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a InternalError struct could not be encoded.
+func (v *InternalError) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Message != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := sw.WriteString(*(v.Message)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a InternalError struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a InternalError struct could not be generated from the wire
+// representation.
+func (v *InternalError) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				var x string
+				x, err = sr.ReadString()
+				v.Message = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a InternalError
 // struct.
 func (v *InternalError) String() string {
@@ -369,11 +538,23 @@ func (v Key) String() string {
 	return fmt.Sprint(x)
 }
 
+func (v Key) Encode(sw stream.Writer) error {
+	x := (string)(v)
+	return sw.WriteString(x)
+}
+
 // FromWire deserializes Key from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 func (v *Key) FromWire(w wire.Value) error {
 	x, err := w.GetString(), error(nil)
+	*v = (Key)(x)
+	return err
+}
+
+// Decode deserializes Key directly off the wire.
+func (v *Key) Decode(sr stream.Reader) error {
+	x, err := sr.ReadString()
 	*v = (Key)(x)
 	return err
 }
@@ -451,6 +632,54 @@ func (v *Cache_Clear_Args) FromWire(w wire.Value) error {
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		}
+	}
+
+	return nil
+}
+
+// Encode serializes a Cache_Clear_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Cache_Clear_Args struct could not be encoded.
+func (v *Cache_Clear_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a Cache_Clear_Args struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Cache_Clear_Args struct could not be generated from the wire
+// representation.
+func (v *Cache_Clear_Args) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	return nil
@@ -598,6 +827,76 @@ func (v *Cache_ClearAfter_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+	}
+
+	return nil
+}
+
+// Encode serializes a Cache_ClearAfter_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a Cache_ClearAfter_Args struct could not be encoded.
+func (v *Cache_ClearAfter_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.DurationMS != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TI64}); err != nil {
+			return err
+		}
+		if err := sw.WriteInt64(*(v.DurationMS)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a Cache_ClearAfter_Args struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a Cache_ClearAfter_Args struct could not be generated from the wire
+// representation.
+func (v *Cache_ClearAfter_Args) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TI64 {
+				var x int64
+				x, err = sr.ReadInt64()
+				v.DurationMS = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	return nil
@@ -790,6 +1089,80 @@ func (v *ConflictingNames_SetValue_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+	}
+
+	return nil
+}
+
+// Encode serializes a ConflictingNames_SetValue_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ConflictingNames_SetValue_Args struct could not be encoded.
+func (v *ConflictingNames_SetValue_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Request != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.Request.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
+func _ConflictingNamesSetValueArgs_Decode(sr stream.Reader) (*ConflictingNamesSetValueArgs, error) {
+	var v ConflictingNamesSetValueArgs
+	err := v.Decode(sr)
+	return &v, err
+}
+
+// Decode deserializes a ConflictingNames_SetValue_Args struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ConflictingNames_SetValue_Args struct could not be generated from the wire
+// representation.
+func (v *ConflictingNames_SetValue_Args) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TStruct {
+				v.Request, err = _ConflictingNamesSetValueArgs_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	return nil
@@ -1003,6 +1376,54 @@ func (v *ConflictingNames_SetValue_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a ConflictingNames_SetValue_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a ConflictingNames_SetValue_Result struct could not be encoded.
+func (v *ConflictingNames_SetValue_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a ConflictingNames_SetValue_Result struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a ConflictingNames_SetValue_Result struct could not be generated from the wire
+// representation.
+func (v *ConflictingNames_SetValue_Result) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a ConflictingNames_SetValue_Result
 // struct.
 func (v *ConflictingNames_SetValue_Result) String() string {
@@ -1135,6 +1556,82 @@ func (v *KeyValue_DeleteValue_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+	}
+
+	return nil
+}
+
+// Encode serializes a KeyValue_DeleteValue_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_DeleteValue_Args struct could not be encoded.
+func (v *KeyValue_DeleteValue_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Key != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := v.Key.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
+func _Key_Decode(sr stream.Reader) (Key, error) {
+	var x Key
+	err := x.Decode(sr)
+	return x, err
+}
+
+// Decode deserializes a KeyValue_DeleteValue_Args struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_DeleteValue_Args struct could not be generated from the wire
+// representation.
+func (v *KeyValue_DeleteValue_Args) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				var x Key
+				x, err = _Key_Decode(sr)
+				v.Key = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	return nil
@@ -1449,6 +1946,129 @@ func (v *KeyValue_DeleteValue_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a KeyValue_DeleteValue_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_DeleteValue_Result struct could not be encoded.
+func (v *KeyValue_DeleteValue_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.DoesNotExist != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.DoesNotExist.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.InternalError != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.InternalError.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.DoesNotExist != nil {
+		count++
+	}
+	if v.InternalError != nil {
+		count++
+	}
+
+	if count > 1 {
+		return fmt.Errorf("KeyValue_DeleteValue_Result should have at most one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
+}
+
+func _DoesNotExistException_Decode(sr stream.Reader) (*exceptions.DoesNotExistException, error) {
+	var v exceptions.DoesNotExistException
+	err := v.Decode(sr)
+	return &v, err
+}
+
+func _InternalError_Decode(sr stream.Reader) (*InternalError, error) {
+	var v InternalError
+	err := v.Decode(sr)
+	return &v, err
+}
+
+// Decode deserializes a KeyValue_DeleteValue_Result struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_DeleteValue_Result struct could not be generated from the wire
+// representation.
+func (v *KeyValue_DeleteValue_Result) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TStruct {
+				v.DoesNotExist, err = _DoesNotExistException_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if fh.Type == wire.TStruct {
+				v.InternalError, err = _InternalError_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	count := 0
+	if v.DoesNotExist != nil {
+		count++
+	}
+	if v.InternalError != nil {
+		count++
+	}
+	if count > 1 {
+		return fmt.Errorf("KeyValue_DeleteValue_Result should have at most one field: got %v fields", count)
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a KeyValue_DeleteValue_Result
 // struct.
 func (v *KeyValue_DeleteValue_Result) String() string {
@@ -1667,6 +2287,122 @@ func (v *KeyValue_GetManyValues_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+	}
+
+	return nil
+}
+
+func _List_Key_Encode(val []Key, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TBinary,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Encode serializes a KeyValue_GetManyValues_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_GetManyValues_Args struct could not be encoded.
+func (v *KeyValue_GetManyValues_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Range != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_Key_Encode(v.Range, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
+func _List_Key_Decode(sr stream.Reader) ([]Key, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TBinary {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]Key, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _Key_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a KeyValue_GetManyValues_Args struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_GetManyValues_Args struct could not be generated from the wire
+// representation.
+func (v *KeyValue_GetManyValues_Args) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TList {
+				v.Range, err = _List_Key_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	return nil
@@ -2035,6 +2771,171 @@ func (v *KeyValue_GetManyValues_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+func _List_ArbitraryValue_Encode(val []*unions.ArbitraryValue, sw stream.Writer) error {
+
+	lh := stream.ListHeader{
+		Type:   wire.TStruct,
+		Length: len(val),
+	}
+	if err := sw.WriteListBegin(lh); err != nil {
+		return err
+	}
+
+	for _, v := range val {
+		if err := v.Encode(sw); err != nil {
+			return err
+		}
+	}
+	return sw.WriteListEnd()
+}
+
+// Encode serializes a KeyValue_GetManyValues_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_GetManyValues_Result struct could not be encoded.
+func (v *KeyValue_GetManyValues_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Success != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 0, Type: wire.TList}); err != nil {
+			return err
+		}
+		if err := _List_ArbitraryValue_Encode(v.Success, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.DoesNotExist != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.DoesNotExist.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.DoesNotExist != nil {
+		count++
+	}
+
+	if count != 1 {
+		return fmt.Errorf("KeyValue_GetManyValues_Result should have exactly one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
+}
+
+func _ArbitraryValue_Decode(sr stream.Reader) (*unions.ArbitraryValue, error) {
+	var v unions.ArbitraryValue
+	err := v.Decode(sr)
+	return &v, err
+}
+
+func _List_ArbitraryValue_Decode(sr stream.Reader) ([]*unions.ArbitraryValue, error) {
+	lh, err := sr.ReadListBegin()
+	if err != nil {
+		return nil, err
+	}
+
+	if lh.Type != wire.TStruct {
+		for i := 0; i < lh.Length; i++ {
+			if err := sr.Skip(lh.Type); err != nil {
+				return nil, err
+			}
+		}
+		return nil, sr.ReadListEnd()
+	}
+
+	o := make([]*unions.ArbitraryValue, 0, lh.Length)
+	for i := 0; i < lh.Length; i++ {
+		v, err := _ArbitraryValue_Decode(sr)
+		if err != nil {
+			return nil, err
+		}
+		o = append(o, v)
+	}
+
+	if err = sr.ReadListEnd(); err != nil {
+		return nil, err
+	}
+	return o, err
+}
+
+// Decode deserializes a KeyValue_GetManyValues_Result struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_GetManyValues_Result struct could not be generated from the wire
+// representation.
+func (v *KeyValue_GetManyValues_Result) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 0:
+			if fh.Type == wire.TList {
+				v.Success, err = _List_ArbitraryValue_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 1:
+			if fh.Type == wire.TStruct {
+				v.DoesNotExist, err = _DoesNotExistException_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.DoesNotExist != nil {
+		count++
+	}
+	if count != 1 {
+		return fmt.Errorf("KeyValue_GetManyValues_Result should have exactly one field: got %v fields", count)
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a KeyValue_GetManyValues_Result
 // struct.
 func (v *KeyValue_GetManyValues_Result) String() string {
@@ -2237,6 +3138,76 @@ func (v *KeyValue_GetValue_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+	}
+
+	return nil
+}
+
+// Encode serializes a KeyValue_GetValue_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_GetValue_Args struct could not be encoded.
+func (v *KeyValue_GetValue_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Key != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := v.Key.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a KeyValue_GetValue_Args struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_GetValue_Args struct could not be generated from the wire
+// representation.
+func (v *KeyValue_GetValue_Args) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				var x Key
+				x, err = _Key_Decode(sr)
+				v.Key = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	return nil
@@ -2526,6 +3497,117 @@ func (v *KeyValue_GetValue_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a KeyValue_GetValue_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_GetValue_Result struct could not be encoded.
+func (v *KeyValue_GetValue_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Success != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 0, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.Success.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.DoesNotExist != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.DoesNotExist.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.DoesNotExist != nil {
+		count++
+	}
+
+	if count != 1 {
+		return fmt.Errorf("KeyValue_GetValue_Result should have exactly one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a KeyValue_GetValue_Result struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_GetValue_Result struct could not be generated from the wire
+// representation.
+func (v *KeyValue_GetValue_Result) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 0:
+			if fh.Type == wire.TStruct {
+				v.Success, err = _ArbitraryValue_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 1:
+			if fh.Type == wire.TStruct {
+				v.DoesNotExist, err = _DoesNotExistException_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if v.DoesNotExist != nil {
+		count++
+	}
+	if count != 1 {
+		return fmt.Errorf("KeyValue_GetValue_Result should have exactly one field: got %v fields", count)
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a KeyValue_GetValue_Result
 // struct.
 func (v *KeyValue_GetValue_Result) String() string {
@@ -2719,6 +3801,96 @@ func (v *KeyValue_SetValue_Args) FromWire(w wire.Value) error {
 
 			}
 		}
+	}
+
+	return nil
+}
+
+// Encode serializes a KeyValue_SetValue_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_SetValue_Args struct could not be encoded.
+func (v *KeyValue_SetValue_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Key != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := v.Key.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Value != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TStruct}); err != nil {
+			return err
+		}
+		if err := v.Value.Encode(sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a KeyValue_SetValue_Args struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_SetValue_Args struct could not be generated from the wire
+// representation.
+func (v *KeyValue_SetValue_Args) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				var x Key
+				x, err = _Key_Decode(sr)
+				v.Key = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if fh.Type == wire.TStruct {
+				v.Value, err = _ArbitraryValue_Decode(sr)
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	return nil
@@ -2960,6 +4132,54 @@ func (v *KeyValue_SetValue_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a KeyValue_SetValue_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_SetValue_Result struct could not be encoded.
+func (v *KeyValue_SetValue_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a KeyValue_SetValue_Result struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_SetValue_Result struct could not be generated from the wire
+// representation.
+func (v *KeyValue_SetValue_Result) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a KeyValue_SetValue_Result
 // struct.
 func (v *KeyValue_SetValue_Result) String() string {
@@ -3107,6 +4327,104 @@ func (v *KeyValue_SetValueV2_Args) FromWire(w wire.Value) error {
 				valueIsSet = true
 			}
 		}
+	}
+
+	if !keyIsSet {
+		return errors.New("field Key of KeyValue_SetValueV2_Args is required")
+	}
+
+	if !valueIsSet {
+		return errors.New("field Value of KeyValue_SetValueV2_Args is required")
+	}
+
+	return nil
+}
+
+// Encode serializes a KeyValue_SetValueV2_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_SetValueV2_Args struct could not be encoded.
+func (v *KeyValue_SetValueV2_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+		return err
+	}
+	if err := v.Key.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	if v.Value == nil {
+		return errors.New("field Value of KeyValue_SetValueV2_Args is required")
+	}
+	if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TStruct}); err != nil {
+		return err
+	}
+	if err := v.Value.Encode(sw); err != nil {
+		return err
+	}
+	if err := sw.WriteFieldEnd(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a KeyValue_SetValueV2_Args struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_SetValueV2_Args struct could not be generated from the wire
+// representation.
+func (v *KeyValue_SetValueV2_Args) Decode(sr stream.Reader) error {
+
+	keyIsSet := false
+	valueIsSet := false
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 1:
+			if fh.Type == wire.TBinary {
+				v.Key, err = _Key_Decode(sr)
+				if err != nil {
+					return err
+				}
+				keyIsSet = true
+			}
+		case 2:
+			if fh.Type == wire.TStruct {
+				v.Value, err = _ArbitraryValue_Decode(sr)
+				if err != nil {
+					return err
+				}
+				valueIsSet = true
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	if !keyIsSet {
@@ -3341,6 +4659,54 @@ func (v *KeyValue_SetValueV2_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a KeyValue_SetValueV2_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_SetValueV2_Result struct could not be encoded.
+func (v *KeyValue_SetValueV2_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a KeyValue_SetValueV2_Result struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_SetValueV2_Result struct could not be generated from the wire
+// representation.
+func (v *KeyValue_SetValueV2_Result) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a KeyValue_SetValueV2_Result
 // struct.
 func (v *KeyValue_SetValueV2_Result) String() string {
@@ -3444,6 +4810,54 @@ func (v *KeyValue_Size_Args) FromWire(w wire.Value) error {
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		}
+	}
+
+	return nil
+}
+
+// Encode serializes a KeyValue_Size_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_Size_Args struct could not be encoded.
+func (v *KeyValue_Size_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a KeyValue_Size_Args struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_Size_Args struct could not be generated from the wire
+// representation.
+func (v *KeyValue_Size_Args) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	return nil
@@ -3670,6 +5084,93 @@ func (v *KeyValue_Size_Result) FromWire(w wire.Value) error {
 	return nil
 }
 
+// Encode serializes a KeyValue_Size_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a KeyValue_Size_Result struct could not be encoded.
+func (v *KeyValue_Size_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.Success != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 0, Type: wire.TI64}); err != nil {
+			return err
+		}
+		if err := sw.WriteInt64(*(v.Success)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+
+	if count != 1 {
+		return fmt.Errorf("KeyValue_Size_Result should have exactly one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a KeyValue_Size_Result struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a KeyValue_Size_Result struct could not be generated from the wire
+// representation.
+func (v *KeyValue_Size_Result) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		case 0:
+			if fh.Type == wire.TI64 {
+				var x int64
+				x, err = sr.ReadInt64()
+				v.Success = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	count := 0
+	if v.Success != nil {
+		count++
+	}
+	if count != 1 {
+		return fmt.Errorf("KeyValue_Size_Result should have exactly one field: got %v fields", count)
+	}
+
+	return nil
+}
+
 // String returns a readable string representation of a KeyValue_Size_Result
 // struct.
 func (v *KeyValue_Size_Result) String() string {
@@ -3798,6 +5299,54 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) FromWire(w wire.Va
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		}
+	}
+
+	return nil
+}
+
+// Encode serializes a NonStandardServiceName_NonStandardFunctionName_Args struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a NonStandardServiceName_NonStandardFunctionName_Args struct could not be encoded.
+func (v *NonStandardServiceName_NonStandardFunctionName_Args) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a NonStandardServiceName_NonStandardFunctionName_Args struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a NonStandardServiceName_NonStandardFunctionName_Args struct could not be generated from the wire
+// representation.
+func (v *NonStandardServiceName_NonStandardFunctionName_Args) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	return nil
@@ -3975,6 +5524,54 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) FromWire(w wire.
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		}
+	}
+
+	return nil
+}
+
+// Encode serializes a NonStandardServiceName_NonStandardFunctionName_Result struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a NonStandardServiceName_NonStandardFunctionName_Result struct could not be encoded.
+func (v *NonStandardServiceName_NonStandardFunctionName_Result) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a NonStandardServiceName_NonStandardFunctionName_Result struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a NonStandardServiceName_NonStandardFunctionName_Result struct could not be generated from the wire
+// representation.
+func (v *NonStandardServiceName_NonStandardFunctionName_Result) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch fh.ID {
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
 	}
 
 	return nil

@@ -7,6 +7,7 @@ import (
 	bytes "bytes"
 	json "encoding/json"
 	fmt "fmt"
+	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
 	zapcore "go.uber.org/zap/zapcore"
@@ -106,6 +107,16 @@ func (v EnumMarshalStrict) Ptr() *EnumMarshalStrict {
 	return &v
 }
 
+// Encode encodes EnumMarshalStrict directly to bytes.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v EnumMarshalStrict
+//   return v.Encode(sWriter)
+func (v EnumMarshalStrict) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
+}
+
 // ToWire translates EnumMarshalStrict into a Thrift-level intermediate
 // representation. This intermediate representation may be serialized
 // into bytes using a ThriftRW protocol implementation.
@@ -130,6 +141,24 @@ func (v EnumMarshalStrict) ToWire() (wire.Value, error) {
 //   return v, nil
 func (v *EnumMarshalStrict) FromWire(w wire.Value) error {
 	*v = (EnumMarshalStrict)(w.GetI32())
+	return nil
+}
+
+// Decode reads off the encoded EnumMarshalStrict directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v EnumMarshalStrict
+//   if err := v.Decode(sReader); err != nil {
+//     return EnumMarshalStrict(0), err
+//   }
+//   return v, nil
+func (v *EnumMarshalStrict) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (EnumMarshalStrict)(i)
 	return nil
 }
 

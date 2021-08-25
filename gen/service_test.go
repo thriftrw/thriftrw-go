@@ -31,7 +31,7 @@ import (
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	tv "go.uber.org/thriftrw/gen/internal/tests/services"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
-	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 
@@ -198,6 +198,10 @@ func TestServiceArgsAndResult(t *testing.T) {
 
 	for _, tt := range tests {
 		assertRoundTrip(t, tt.x, tt.value, tt.desc)
+		assert.Equal(t, tt.methodName, tt.x.MethodName(), tt.desc)
+		assert.Equal(t, tt.envelopeType, tt.x.EnvelopeType(), tt.desc)
+
+		testRoundTripCombos(t, tt.x, tt.value, tt.desc)
 		assert.Equal(t, tt.methodName, tt.x.MethodName(), tt.desc)
 		assert.Equal(t, tt.envelopeType, tt.x.EnvelopeType(), tt.desc)
 	}
@@ -538,12 +542,12 @@ func TestServiceTypesEnveloper(t *testing.T) {
 
 	for _, tt := range tests {
 		buf := &bytes.Buffer{}
-		err := envelope.Write(protocol.Binary, buf, 1234, tt.s)
+		err := envelope.Write(binary.Default, buf, 1234, tt.s)
 		require.NoError(t, err, "envelope.Write for %v failed", tt)
 
 		// Decode the payload and validate the payload.
 		reader := bytes.NewReader(buf.Bytes())
-		envelope, err := protocol.Binary.DecodeEnveloped(reader)
+		envelope, err := binary.Default.DecodeEnveloped(reader)
 		require.NoError(t, err, "Failed to read enveloped data for %v", tt)
 
 		expected := tt.wantEnvelope

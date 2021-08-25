@@ -25,15 +25,12 @@ package stream
 import (
 	"io"
 
-	"go.uber.org/thriftrw/internal/iface"
 	"go.uber.org/thriftrw/wire"
 )
 
 // Protocol defines a specific way for a Thrift value to be encoded or
 // decoded, implemented in a streaming fashion.
 type Protocol interface {
-	iface.Private // this interface is meant for internal implementations only
-
 	// Writer returns a streaming implementation of an encoder for a
 	// Thrift value.
 	Writer(w io.Writer) Writer
@@ -41,6 +38,15 @@ type Protocol interface {
 	// Reader returns a streaming implementation of a decoder for a
 	// Thrift value.
 	Reader(r io.Reader) Reader
+}
+
+// EnvelopeHeader represents the envelope of a response or a request which includes
+// metadata about the method, the type of data in the envelope, and the value.
+// It is equivalent of `wire.Envelope`, but for streaming purposes.
+type EnvelopeHeader struct {
+	Name  string
+	Type  wire.EnvelopeType
+	SeqID int32
 }
 
 // FieldHeader defines the metadata needed to define the beginning of a field
@@ -75,8 +81,6 @@ type ListHeader struct {
 // Writer defines an encoder for a Thrift value, implemented in a streaming
 // fashion.
 type Writer interface {
-	iface.Private // this interface is meant for internal implementations only
-
 	WriteBool(b bool) error
 	WriteInt8(i int8) error
 	WriteInt16(i int16) error
@@ -95,13 +99,16 @@ type Writer interface {
 	WriteSetEnd() error
 	WriteListBegin(l ListHeader) error
 	WriteListEnd() error
+
+	WriteEnvelopeBegin(eh EnvelopeHeader) error
+	WriteEnvelopeEnd() error
+
+	Close() error
 }
 
 // Reader defines an decoder for a Thrift value, implemented in a streaming
 // fashion.
 type Reader interface {
-	iface.Private // this interface is meant for internal implementations only
-
 	ReadBool() (bool, error)
 	ReadInt8() (int8, error)
 	ReadInt16() (int16, error)
@@ -120,6 +127,10 @@ type Reader interface {
 	ReadSetEnd() error
 	ReadMapBegin() (MapHeader, error)
 	ReadMapEnd() error
+	Close() error
+
+	ReadEnvelopeBegin() (EnvelopeHeader, error)
+	ReadEnvelopeEnd() error
 
 	// Skip skips over the bytes of the wire type and any applicable headers.
 	Skip(w wire.Type) error

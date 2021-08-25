@@ -163,6 +163,7 @@ func TestRoundtripOptionalListFields(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			// assertRoundTrip does more than we need as we only need to test wire.Value FromWire response.
 			assertRoundTrip(t, tt.want, tt.give, tt.desc)
+			testRoundTripCombos(t, tt.want, tt.give, tt.desc)
 		})
 	}
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Uber Technologies, Inc.
+// Copyright (c) 2021 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,33 +18,4 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package gen
-
-import (
-	"fmt"
-
-	"go.uber.org/thriftrw/protocol/stream"
-	"go.uber.org/thriftrw/wire"
-)
-
-// thriftType is implemented by all generated types that know how to encode
-// and decode themselves.
-//
-// Having this interface allows tests that use reflection to be more readable
-// by relying on the interface rather than reflection to call methods.
-type thriftType interface {
-	fmt.Stringer
-
-	ToWire() (wire.Value, error)
-	FromWire(wire.Value) error
-}
-
-// streamingThriftType is implemented by all generated types that know how to
-// write and read themselves to the Thrift Protocol, skipping over the
-// intermediary wire.Type
-type streamingThriftType interface {
-	thriftType
-
-	Encode(stream.Writer) error
-	Decode(stream.Reader) error
-}
+package stream
