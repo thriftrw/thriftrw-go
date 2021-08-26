@@ -41,6 +41,7 @@ func StructSpecs(from, to *compile.StructSpec) error {
 	return multierr.Combine(errors...)
 }
 
+// Services compares two service definitions.
 func Services(toModule, fromModule *compile.Module) error {
 	var errors []error
 	for n, fromService := range fromModule.Services {
@@ -50,7 +51,7 @@ func Services(toModule, fromModule *compile.Module) error {
 			errors = append(errors, fmt.Errorf(deleteServiceError, n))
 			continue
 		}
-		for f, _ := range fromService.Functions {
+		for f := range fromService.Functions {
 			if _, ok :=  toServ.Functions[f]; !ok {
 
 				errors = append(errors, fmt.Errorf(removeMethodError, f, n))

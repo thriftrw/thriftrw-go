@@ -26,7 +26,6 @@ func run(args []string) error {
 		return err
 	}
 
-	args = fs.Args()
 	if *toFile == "" {
 		return fmt.Errorf("must provide an updated Thrift file")
 	}
