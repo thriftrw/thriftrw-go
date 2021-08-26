@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 
+	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/compile"
 	"go.uber.org/thriftrw/internal/compare"
 )
@@ -49,18 +50,26 @@ func compileFiles(toFile, fromFile string) error {
 		return err
 	}
 
+	err = checkRemovedMethods(toModule, fromModule)
 
-	return checkRequired(toModule, fromModule)
+	return multierr.Combine(err, checkRequiredFields(toModule, fromModule))
 }
 
-func checkRequired(toModule, fromModule *compile.Module) error {
-	// How do we find the correct Types to compare.
+func checkRemovedMethods(toModule, fromModule *compile.Module) error {
+	return compare.Services(toModule, fromModule)
+}
+
+func checkRequiredFields(toModule, fromModule *compile.Module) error {
 	for n, spec := range toModule.Types {
+		fromSpec, ok := fromModule.Types[n]
+		if !ok {
+			// This is a new Type, which is backwards compatible.
+			continue
+		}
 		if s, ok := spec.(*compile.StructSpec); ok {
 			// Match on Type names. Here we hit a limitation, that if someone
 			// renames the struct and then adds a new field, we don't really have
 			// a good way of tracking it.
-			fromSpec := fromModule.Types[n]
 			if fromStructSpec, ok := fromSpec.(*compile.StructSpec); ok {
 				err := compare.StructSpecs(fromStructSpec, s)
 				if err != nil {
@@ -71,33 +80,5 @@ func checkRequired(toModule, fromModule *compile.Module) error {
 	}
 
 	return nil
-
-	// for n, spec := range .Types {
-	// 	fmt.Println(spec)
-	// 	fmt.Printf("n: %s, type is %T", n, spec)
-	// 	fmt.Println()
-	//
-	// 	if s, ok := spec.(*compile.StructSpec); ok {
-	// 		fmt.Println(len(s.Fields))
-	// 		for _, f := range s.Fields {
-	// 			fmt.Println(f)
-	// 		}
-	// 	}
-	// }
-	//
-	// for _, spec := range originalModule.Types {
-	// 	fmt.Println(spec)
-	// 	fmt.Printf("type is %T", spec)
-	// 	fmt.Println()
-	//
-	// 	if s, ok := spec.(*compile.StructSpec); ok {
-	// 		fmt.Println(len(s.Fields))
-	// 		for _, f := range s.Fields {
-	// 			fmt.Println(f)
-	// 		}
-	// 	}
-	// }
-	//
-	// return nil
 }
 

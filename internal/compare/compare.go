@@ -39,3 +39,20 @@ func StructSpecs(from, to *compile.StructSpec) error {
 	return multierr.Combine(errors...)
 }
 
+func Services(toModule, fromModule *compile.Module) error {
+	var errors []error
+	for n, fromService := range fromModule.Services {
+		toServ, ok := toModule.Services[n]
+		if !ok {
+			// Service was deleted, which is not backwards compatible.
+			return fmt.Errorf("deleting service %s is not backwards compatible", n)
+		}
+		for f, _ := range fromService.Functions {
+			if _, ok :=  toServ.Functions[f]; !ok {
+				errors = append(errors, fmt.Errorf("removing method %s in service %s is not backwards compatible", f, n))
+			}
+		}
+	}
+
+	return multierr.Combine(errors...)
+}

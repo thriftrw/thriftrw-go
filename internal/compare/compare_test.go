@@ -148,3 +148,37 @@ func TestRequiredCaseOk(t *testing.T) {
 		})
 	}
 }
+
+func TestServicesError(t *testing.T) {
+	type test struct {
+		desc string
+		fromModule *compile.Module
+		toModule *compile.Module
+		wantError string
+	}
+	tests := []test{
+		{
+			desc: "removing service",
+			fromModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}},
+			toModule: &compile.Module{},
+			wantError: "deleting service foo is not backwards compatible",
+		},
+		{
+			desc: "removing a method",
+			fromModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {
+				Functions: map[string]*compile.FunctionSpec{"bar": {}},
+			}}},
+			toModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}},
+			wantError: "removing method bar in service foo is not backwards compatible",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			err := Services(tt.toModule, tt.fromModule)
+			require.Error(t, err, "expected error")
+			assert.EqualError(t, err, tt.wantError, "wrong error message")
+		})
+	}
+
+
+}
