@@ -21,23 +21,19 @@ func run(args []string) error {
 
 	fs := flag.NewFlagSet("thriftcompat", flag.ContinueOnError)
 	toFile := fs.String("to_file", "", "updated file")
-	fromFile := fs.String("from_file", "", "updated file")
+	fromFile := fs.String("from_file", "", "original file")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
 
 	args = fs.Args()
-	if toFile == nil {
+	if *toFile == "" {
 		return fmt.Errorf("must provide an updated Thrift file")
 	}
 	// TODO: here we'll get into interesting stuff with git, but for now default to
 	// using originalFile as an argument.
 
-	if err := compileFiles(*toFile, *fromFile); err != nil {
-		return err
-	}
-
-	return nil
+	return compileFiles(*toFile, *fromFile)
 }
 
 func compileFiles(toFile, fromFile string) error {
