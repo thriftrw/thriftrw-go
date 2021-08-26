@@ -76,4 +76,3 @@ func checkRequiredFields(toModule, fromModule *compile.Module) error {
 
 	return nil
 }
-

@@ -8,10 +8,10 @@ import (
 )
 
 const (
-	addReqError = "adding a required field %s to %s is not backwards compatible"
+	addReqError        = "adding a required field %s to %s is not backwards compatible"
 	changOptToReqError = "changing an optional field %s in %s to required is not backwards compatible"
 	deleteServiceError = "deleting service %s is not backwards compatible"
-	removeMethodError = "removing method %s in service %s is not backwards compatible"
+	removeMethodError  = "removing method %s in service %s is not backwards compatible"
 )
 
 // StructSpecs compares two structs defined in a Thrift file.
@@ -52,7 +52,7 @@ func Services(toModule, fromModule *compile.Module) error {
 			continue
 		}
 		for f := range fromService.Functions {
-			if _, ok :=  toServ.Functions[f]; !ok {
+			if _, ok := toServ.Functions[f]; !ok {
 
 				errors = append(errors, fmt.Errorf(removeMethodError, f, n))
 			}

@@ -29,7 +29,7 @@ func TestThriftBreak(t *testing.T) {
 	})
 	t.Run("invalid thrift for from_file", func(t *testing.T) {
 		t.Parallel()
-		err := run([]string{"--to_file=tests/v1.thrift","--from_file=tests/invalid.thrift"})
+		err := run([]string{"--to_file=tests/v1.thrift", "--from_file=tests/invalid.thrift"})
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "could not parse file")
 	})
@@ -44,9 +44,9 @@ func TestThriftBreak(t *testing.T) {
 		err := run([]string{"--to_file=tests/v2.thrift", "--from_file=tests/v1.thrift"})
 		require.Error(t, err)
 
-		assert.Equal(t, "removing method methodA in service Foo is not backwards compatible;" +
-			" deleting service Bar is not backwards compatible;" +
-			" changing an optional field B in AddedRequiredField to required is not backwards compatible;" +
+		assert.Equal(t, "removing method methodA in service Foo is not backwards compatible;"+
+			" deleting service Bar is not backwards compatible;"+
+			" changing an optional field B in AddedRequiredField to required is not backwards compatible;"+
 			" adding a required field C to AddedRequiredField is not backwards compatible",
 			err.Error())
 	})
@@ -55,6 +55,6 @@ func TestThriftBreak(t *testing.T) {
 		err := run([]string{"--to_file=tests/v3.thrift", "--from_file=tests/v1.thrift"})
 		require.Error(t, err)
 
-		assert.Equal(t,  "removing method methodA in service Foo is not backwards compatible", err.Error())
+		assert.Equal(t, "removing method methodA in service Foo is not backwards compatible", err.Error())
 	})
 }

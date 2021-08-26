@@ -10,29 +10,29 @@ import (
 
 func TestErrorRequiredCase(t *testing.T) {
 	type test struct {
-		desc string
+		desc       string
 		fromStruct *compile.StructSpec
-		toStruct *compile.StructSpec
-		wantError string
+		toStruct   *compile.StructSpec
+		wantError  string
 	}
 	tests := []test{
 		{
 			desc: "changed an optional field to required",
 			fromStruct: &compile.StructSpec{
 				Name: "structA",
-				Fields:      compile.FieldGroup{
+				Fields: compile.FieldGroup{
 					&compile.FieldSpec{
-						Required:    false,
-						Name: "fieldA",
+						Required: false,
+						Name:     "fieldA",
 					},
 				},
 			},
 			toStruct: &compile.StructSpec{
 				Name: "structA",
-				Fields:      compile.FieldGroup{
+				Fields: compile.FieldGroup{
 					&compile.FieldSpec{
-						Required:    true,
-						Name: "fieldA",
+						Required: true,
+						Name:     "fieldA",
 					},
 				},
 			},
@@ -41,14 +41,14 @@ func TestErrorRequiredCase(t *testing.T) {
 		{
 			desc: "found a new required field",
 			fromStruct: &compile.StructSpec{
-				Fields:      compile.FieldGroup{},
+				Fields: compile.FieldGroup{},
 			},
 			toStruct: &compile.StructSpec{
 				Name: "structA",
-				Fields:      compile.FieldGroup{
+				Fields: compile.FieldGroup{
 					&compile.FieldSpec{
-						Required:    true,
-						Name: "fieldA",
+						Required: true,
+						Name:     "fieldA",
 					},
 				},
 			},
@@ -57,24 +57,23 @@ func TestErrorRequiredCase(t *testing.T) {
 		{
 			desc: "found a new required and changed optional field",
 			fromStruct: &compile.StructSpec{
-				Fields:      compile.FieldGroup{
+				Fields: compile.FieldGroup{
 					&compile.FieldSpec{
-						Required:    false,
-						Name: "fieldA",
+						Required: false,
+						Name:     "fieldA",
 					},
-
 				},
 			},
 			toStruct: &compile.StructSpec{
 				Name: "structA",
-				Fields:      compile.FieldGroup{
+				Fields: compile.FieldGroup{
 					&compile.FieldSpec{
-						Required:    true,
-						Name: "fieldA",
+						Required: true,
+						Name:     "fieldA",
 					},
 					&compile.FieldSpec{
-						Required:    true,
-						Name: "fieldB",
+						Required: true,
+						Name:     "fieldB",
 					},
 				},
 			},
@@ -83,7 +82,6 @@ func TestErrorRequiredCase(t *testing.T) {
 				" field fieldB in structA to required is not backwards" +
 				" compatible",
 		},
-
 	}
 
 	for _, tt := range tests {
@@ -97,30 +95,30 @@ func TestErrorRequiredCase(t *testing.T) {
 
 func TestRequiredCaseOk(t *testing.T) {
 	type test struct {
-		desc string
+		desc       string
 		fromStruct *compile.StructSpec
-		toStruct *compile.StructSpec
+		toStruct   *compile.StructSpec
 	}
 	tests := []test{
 		{
 			desc: "adding an optional field",
 			fromStruct: &compile.StructSpec{
-				Fields:      compile.FieldGroup{
+				Fields: compile.FieldGroup{
 					&compile.FieldSpec{
-						Required:    false,
-						Name: "fieldA",
+						Required: false,
+						Name:     "fieldA",
 					},
 				},
 			},
 			toStruct: &compile.StructSpec{
-				Fields:      compile.FieldGroup{
+				Fields: compile.FieldGroup{
 					&compile.FieldSpec{
-						Required:    false,
-						Name: "fieldA",
+						Required: false,
+						Name:     "fieldA",
 					},
 					&compile.FieldSpec{
-						Required:    false,
-						Name: "fieldA",
+						Required: false,
+						Name:     "fieldA",
 					},
 				},
 			},
@@ -128,15 +126,14 @@ func TestRequiredCaseOk(t *testing.T) {
 		{
 			desc: "removing a field from a struct",
 			fromStruct: &compile.StructSpec{
-				Fields:      compile.FieldGroup{
+				Fields: compile.FieldGroup{
 					&compile.FieldSpec{
-						Required:    false,
+						Required: false,
 					},
 				},
 			},
 			toStruct: &compile.StructSpec{
-				Fields:      compile.FieldGroup{
-				},
+				Fields: compile.FieldGroup{},
 			},
 		},
 	}
@@ -151,24 +148,24 @@ func TestRequiredCaseOk(t *testing.T) {
 
 func TestServicesError(t *testing.T) {
 	type test struct {
-		desc string
+		desc       string
 		fromModule *compile.Module
-		toModule *compile.Module
-		wantError string
+		toModule   *compile.Module
+		wantError  string
 	}
 	tests := []test{
 		{
-			desc: "removing service",
+			desc:       "removing service",
 			fromModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}},
-			toModule: &compile.Module{},
-			wantError: "deleting service foo is not backwards compatible",
+			toModule:   &compile.Module{},
+			wantError:  "deleting service foo is not backwards compatible",
 		},
 		{
 			desc: "removing a method",
 			fromModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {
 				Functions: map[string]*compile.FunctionSpec{"bar": {}},
 			}}},
-			toModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}},
+			toModule:  &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}},
 			wantError: "removing method bar in service foo is not backwards compatible",
 		},
 	}
@@ -179,6 +176,5 @@ func TestServicesError(t *testing.T) {
 			assert.EqualError(t, err, tt.wantError, "wrong error message")
 		})
 	}
-
 
 }
