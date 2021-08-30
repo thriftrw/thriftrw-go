@@ -42,6 +42,8 @@ const (
 var reservedIdentifiers = map[string]struct{}{
 	"ToWire":   {},
 	"FromWire": {},
+	"Encode":   {},
+	"Decode":   {},
 	"String":   {},
 	"Equals":   {},
 }
@@ -92,6 +94,14 @@ func (f fieldGroupGenerator) Generate(g Generator) error {
 	}
 
 	if err := f.FromWire(g); err != nil {
+		return err
+	}
+
+	if err := f.Encode(g); err != nil {
+		return err
+	}
+
+	if err := f.Decode(g); err != nil {
 		return err
 	}
 
@@ -299,8 +309,8 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 		//     return err
 		//   }
 		func (<$v> *<.Name>) ToWire() (<$wire>.Value, error) {
-    		<$fields := newVar "fields" ->
-    		<- $i := newVar "i" ->
+			<$fields := newVar "fields" ->
+			<- $i := newVar "i" ->
 			<- $wVal := newVar "w" ->
 
 			var (
@@ -424,6 +434,204 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 					}
 				<end ->
 				}
+			}
+
+			<$structName := .Name>
+			<range .Fields>
+				<$fname := goName .>
+				<$f := printf "%s.%s" $v $fname>
+				<if isNotNil .Default>
+					if <$f> == nil {
+						<$f> = <constantValuePtr .Default .Type>
+					}
+				<else>
+					<if .Required>
+						if !<$isSet.Rotate (printf "%sIsSet" .Name)> {
+							return <import "errors">.New("field <$fname> of <$structName> is required")
+						}
+					<end>
+				<end>
+			<end>
+
+			<if and .IsUnion (len .Fields)>
+				<$fmt := import "fmt">
+				<$count := newVar "count">
+				<$count> := 0
+				<range .Fields ->
+					if <$v>.<goName .> != nil {
+						<$count>++
+					}
+				<end>
+				<- if .AllowEmptyUnion ->
+					if <$count> > 1 {
+						return <$fmt>.Errorf( "<.Name> should have at most one field: got %v fields", <$count>)
+					}
+				<- else ->
+					if <$count> != 1 {
+						return <$fmt>.Errorf( "<.Name> should have exactly one field: got %v fields", <$count>)
+					}
+				<- end>
+			<end>
+			return nil
+		}
+		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))
+}
+
+func (f fieldGroupGenerator) Encode(g Generator) error {
+	return g.DeclareFromTemplate(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+
+		<$v := newVar "v">
+		<$sw := newVar "sw">
+		// Encode serializes a <.Name> struct directly into bytes, without going
+		// through an intermediary type.
+		//
+		// An error is returned if a <.Name> struct could not be encoded.
+		func (<$v> *<.Name>) Encode(<$sw> <$stream>.Writer) error {
+			if err := <$sw>.WriteStructBegin(); err != nil {
+				return err
+			}
+			
+			<$structName := .Name>
+			<range .Fields>
+				<- $fname := goName . ->
+				<- $f := printf "%s.%s" $v $fname ->
+				<$t := typeCode .Type>
+				<- if .Required ->
+					<- if and (not (isPrimitiveType .Type)) (not (isListType .Type)) ->
+						if <$f> == nil {
+							return <import "errors">.New("field <$fname> of <$structName> is required")
+						}
+					<- end>
+						if err := <$sw>.WriteFieldBegin(<$stream>.FieldHeader{ID: <.ID>, Type: <$t>,}); err != nil {
+							return err
+						}
+						if err := <encode .Type $f $sw>; err != nil {
+							return err
+						}
+						if err := <$sw>.WriteFieldEnd(); err != nil {
+							return err
+						}
+				<- else ->
+					<- if isNotNil .Default ->
+						<- $fval := printf "%s%s" $v $fname ->
+						<$fval> := <$f>
+						if <$fval> == nil {
+							<$fval> = <constantValuePtr .Default .Type>
+						}
+						{
+							if err := <$sw>.WriteFieldBegin(<$stream>.FieldHeader{ID: <.ID>, Type: <$t>,}); err != nil {
+								return err
+							}
+							if err := <encodePtr .Type $fval $sw>; err != nil {
+								return err
+							}
+					<- else ->
+						if <$f> != nil {
+							if err := <$sw>.WriteFieldBegin(<$stream>.FieldHeader{ID: <.ID>, Type: <$t>,}); err != nil {
+								return err
+							}
+							if err := <encodePtr .Type $f $sw>; err != nil {
+								return err
+							}
+					<- end>
+							if err := <$sw>.WriteFieldEnd(); err != nil {
+								return err
+							}
+						}
+				<- end>
+
+			<end>
+
+			<if and .IsUnion (len .Fields)>
+				<$fmt := import "fmt">
+				<$count := newVar "count">
+				<$count> := 0
+				<range .Fields ->
+					if <$v>.<goName .> != nil {
+						<$count>++
+					}
+				<end>
+				<if .AllowEmptyUnion>
+					if <$count> > 1 {
+						return <$fmt>.Errorf("<.Name> should have at most one field: got %v fields", <$count>)
+					}
+				<else>
+					if <$count> != 1 {
+						return <$fmt>.Errorf("<.Name> should have exactly one field: got %v fields", <$count>)
+					}
+				<end>
+			<end>
+
+			return <$sw>.WriteStructEnd()
+		}
+		`, f, TemplateFunc("constantValuePtr", ConstantValuePtr))
+}
+
+func (f fieldGroupGenerator) Decode(g Generator) error {
+	return g.DeclareFromTemplate(
+		`
+		<$stream := import "go.uber.org/thriftrw/protocol/stream">
+
+		<$sr := newVar "sr">
+		<$v := newVar "v">
+		// Decode deserializes a <.Name> struct directly from its Thrift-level
+		// representation, without going through an intemediary type.
+		//
+		// An error is returned if a <.Name> struct could not be generated from the wire
+		// representation.
+		func (<$v> *<.Name>) Decode(<$sr> <$stream>.Reader) error {
+			<$isSet := newNamespace>
+			<range .Fields>
+				<- if .Required ->
+					<$isSet.NewName (printf "%sIsSet" .Name)> := false
+				<- end>
+			<end>
+
+			if err := <$sr>.ReadStructBegin(); err != nil {
+				return err
+			}
+
+			<$fh := newVar "fh">
+			<$ok := newVar "ok">
+			<$fh>, <$ok>, err := <$sr>.ReadFieldBegin()
+			if err != nil {
+				return err
+			}
+
+			for <$ok> {
+				switch <$fh>.ID {
+				<range .Fields ->
+				case <.ID>:
+					if <$fh>.Type == <typeCode .Type> {
+						<- $lhs := printf "%s.%s" $v (goName .) ->
+						<- if .Required ->
+							<$lhs>, err = <decode .Type $sr>
+						<- else ->
+							<decodePtr .Type $lhs $sr>
+						<- end>
+						if err != nil {
+							return err
+						}
+						<if .Required ->
+							<$isSet.Rotate (printf "%sIsSet" .Name)> = true
+						<- end>
+					}
+				<end ->
+				}
+
+				if err := <$sr>.ReadFieldEnd(); err != nil {
+					return err
+				}
+
+				if <$fh>, <$ok>, err = <$sr>.ReadFieldBegin(); err != nil {
+					return err
+				}
+			}
+
+			if err := <$sr>.ReadStructEnd(); err != nil {
+				return err
 			}
 
 			<$structName := .Name>

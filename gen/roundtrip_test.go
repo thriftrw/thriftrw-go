@@ -26,10 +26,11 @@ import (
 	"reflect"
 	"testing"
 
-	"go.uber.org/thriftrw/protocol"
-	"go.uber.org/thriftrw/wire"
-
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/protocol/binary"
+	"go.uber.org/thriftrw/wire"
 )
 
 // assertRoundTrip checks if x.ToWire() results in the given Value and whether
@@ -66,11 +67,11 @@ func assertRoundTrip(t *testing.T, x thriftType, v wire.Value, msg string, args 
 // assertBinaryRoundTrip checks that De/Encode returns the same value.
 func assertBinaryRoundTrip(t *testing.T, w wire.Value, message string) (wire.Value, bool) {
 	var buff bytes.Buffer
-	if !assert.NoError(t, protocol.Binary.Encode(w, &buff), "%v: failed to serialize", message) {
+	if !assert.NoError(t, binary.Default.Encode(w, &buff), "%v: failed to serialize", message) {
 		return w, false
 	}
 
-	newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), w.Type())
+	newV, err := binary.Default.Decode(bytes.NewReader(buff.Bytes()), w.Type())
 	if !assert.NoError(t, err, "%v: failed to deserialize", message) {
 		return newV, false
 	}
@@ -80,4 +81,61 @@ func assertBinaryRoundTrip(t *testing.T, w wire.Value, message string) (wire.Val
 	}
 
 	return newV, true
+}
+
+func testRoundTripCombos(t *testing.T, x thriftType, v wire.Value, msg string) {
+	t.Helper()
+
+	useStreaming := []struct {
+		encode bool
+		decode bool
+	}{
+		{false, false},
+		{false, true},
+		{true, false},
+		{true, true},
+	}
+
+	for _, streaming := range useStreaming {
+		name := fmt.Sprintf("%s: stream-encode: %v, stream-decode: %v", msg, streaming.encode, streaming.decode)
+		t.Run(name, func(t *testing.T) {
+			var buff bytes.Buffer
+
+			xType := reflect.TypeOf(x)
+			if xType.Kind() == reflect.Ptr {
+				xType = xType.Elem()
+			}
+
+			streamer := protocol.BinaryStreamer
+
+			if streaming.encode {
+				w := binary.NewStreamWriter(&buff)
+				give, ok := x.(streamingThriftType)
+				require.True(t, ok)
+				require.NoError(t, give.Encode(w), "%v: failed to stream encode", msg)
+				require.NoError(t, w.Close())
+			} else {
+				w, err := x.ToWire()
+				require.NoError(t, err, "failed to serialize: %v", x)
+				require.True(t, wire.ValuesAreEqual(v, w), "%v: %v.ToWire() != %v", msg, x, v)
+				require.NoError(t, protocol.Binary.Encode(w, &buff), "%v: failed to binary.Encode", msg)
+			}
+
+			if streaming.decode {
+				reader := streamer.Reader(bytes.NewReader(buff.Bytes()))
+				gotX, ok := reflect.New(xType).Interface().(streamingThriftType)
+				require.True(t, ok)
+
+				require.NoError(t, gotX.Decode(reader), "streaming decode")
+				assert.Equal(t, x, gotX)
+			} else {
+				newV, err := protocol.Binary.Decode(bytes.NewReader(buff.Bytes()), v.Type())
+				require.NoError(t, err, "failed to deserialize")
+
+				gotX := reflect.New(xType).Interface().(thriftType)
+				require.NoError(t, gotX.FromWire(newV), "FromWire")
+				assert.Equal(t, x, gotX)
+			}
+		})
+	}
 }

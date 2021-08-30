@@ -18,42 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package ast
+package envelope
 
-// Nodes which know the line number they were defined on can implement this
-// interface.
-type nodeWithLine interface {
-	Node
+import (
+	"io"
 
-	lineNumber() int
+	"go.uber.org/thriftrw/wire"
+)
+
+// Responder captures how to respond to a request, concerning whether and what
+// kind of envelope to use, how to match the sequence identifier of the
+// corresponding request.
+type Responder interface {
+	EncodeResponse(v wire.Value, t wire.EnvelopeType, w io.Writer) error
 }
-
-// LineNumber returns the line in the file at which the given node was defined
-// or 0 if the Node does not record its line number.
-func LineNumber(n Node) int {
-	if nl, ok := n.(nodeWithLine); ok {
-		return nl.lineNumber()
-	}
-	return 0
-}
-
-var _ nodeWithLine = (*Annotation)(nil)
-var _ nodeWithLine = BaseType{}
-var _ nodeWithLine = (*Constant)(nil)
-var _ nodeWithLine = ConstantList{}
-var _ nodeWithLine = ConstantMap{}
-var _ nodeWithLine = ConstantMapItem{}
-var _ nodeWithLine = ConstantReference{}
-var _ nodeWithLine = (*Enum)(nil)
-var _ nodeWithLine = (*EnumItem)(nil)
-var _ nodeWithLine = (*Field)(nil)
-var _ nodeWithLine = (*Function)(nil)
-var _ nodeWithLine = (*Include)(nil)
-var _ nodeWithLine = ListType{}
-var _ nodeWithLine = MapType{}
-var _ nodeWithLine = (*Namespace)(nil)
-var _ nodeWithLine = (*Service)(nil)
-var _ nodeWithLine = SetType{}
-var _ nodeWithLine = (*Struct)(nil)
-var _ nodeWithLine = TypeReference{}
-var _ nodeWithLine = (*Typedef)(nil)

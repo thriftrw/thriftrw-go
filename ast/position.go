@@ -20,16 +20,68 @@
 
 package ast
 
+import "strconv"
+
 // Position represents a position in the parsed document.
+// Line and column numbers are 1-based.
 type Position struct {
-	Line int
+	Line   int
+	Column int
+}
+
+func (p Position) String() string {
+	s := strconv.Itoa(p.Line)
+	if c := p.Column; c > 0 {
+		s += ":" + strconv.Itoa(c)
+	}
+	return s
 }
 
 // Pos attempts to return the position of a Node in the parsed document.
 // For most use cases, prefer to use idl.Info to access positional information.
 func Pos(n Node) (Position, bool) {
-	if nl, ok := n.(nodeWithLine); ok {
-		return Position{Line: nl.lineNumber()}, true
+	if np, ok := n.(nodeWithPosition); ok {
+		return np.pos(), true
 	}
 	return Position{}, false
 }
+
+// LineNumber returns the line in the file at which the given node was defined
+// or 0 if the Node does not record its line number.
+func LineNumber(n Node) int {
+	if np, ok := n.(nodeWithPosition); ok {
+		return np.pos().Line
+	}
+	return 0
+}
+
+// Nodes which know their document position can implement this interface.
+type nodeWithPosition interface {
+	Node
+
+	pos() Position
+}
+
+var (
+	_ nodeWithPosition = (*Annotation)(nil)
+	_ nodeWithPosition = BaseType{}
+	_ nodeWithPosition = (*Constant)(nil)
+	_ nodeWithPosition = ConstantList{}
+	_ nodeWithPosition = ConstantMap{}
+	_ nodeWithPosition = ConstantMapItem{}
+	_ nodeWithPosition = ConstantReference{}
+	_ nodeWithPosition = (*Enum)(nil)
+	_ nodeWithPosition = (*EnumItem)(nil)
+	_ nodeWithPosition = (*Field)(nil)
+	_ nodeWithPosition = (*Function)(nil)
+	_ nodeWithPosition = (*Include)(nil)
+	_ nodeWithPosition = (*CppInclude)(nil)
+	_ nodeWithPosition = ListType{}
+	_ nodeWithPosition = MapType{}
+	_ nodeWithPosition = (*Namespace)(nil)
+	_ nodeWithPosition = (*Service)(nil)
+	_ nodeWithPosition = SetType{}
+	_ nodeWithPosition = (*Struct)(nil)
+	_ nodeWithPosition = (*Typedef)(nil)
+	_ nodeWithPosition = TypeReference{}
+)

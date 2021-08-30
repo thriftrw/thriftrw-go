@@ -33,19 +33,28 @@ import (
 // They may be used to customize the generated code. Annotations are optional
 // anywhere in the code where they're accepted and may be skipped completely.
 type Annotation struct {
-	Name  string
-	Value string
-	Line  int
+	Name   string
+	Value  string
+	Line   int
+	Column int
 }
 
 func (*Annotation) node() {}
 
 func (*Annotation) visitChildren(nodeStack, visitor) {}
 
-func (ann *Annotation) lineNumber() int { return ann.Line }
+func (ann *Annotation) pos() Position { return Position{Line: ann.Line, Column: ann.Column} }
 
 func (ann *Annotation) String() string {
 	return fmt.Sprintf("%s = %q", ann.Name, ann.Value)
+}
+
+// Annotations returns the annotations for the given node.
+func Annotations(n Node) []*Annotation {
+	if na, ok := n.(nodeWithAnnotations); ok {
+		return na.annotations()
+	}
+	return nil
 }
 
 // FormatAnnotations formats a collection of annotations into a string.
@@ -61,3 +70,24 @@ func FormatAnnotations(anns []*Annotation) string {
 
 	return "(" + strings.Join(as, ", ") + ")"
 }
+
+// Nodes which have annoations can implement this interface.
+type nodeWithAnnotations interface {
+	Node
+
+	annotations() []*Annotation
+}
+
+var (
+	_ nodeWithAnnotations = BaseType{}
+	_ nodeWithAnnotations = (*Enum)(nil)
+	_ nodeWithAnnotations = (*EnumItem)(nil)
+	_ nodeWithAnnotations = (*Field)(nil)
+	_ nodeWithAnnotations = (*Function)(nil)
+	_ nodeWithAnnotations = ListType{}
+	_ nodeWithAnnotations = MapType{}
+	_ nodeWithAnnotations = (*Service)(nil)
+	_ nodeWithAnnotations = SetType{}
+	_ nodeWithAnnotations = (*Struct)(nil)
+	_ nodeWithAnnotations = (*Typedef)(nil)
+)

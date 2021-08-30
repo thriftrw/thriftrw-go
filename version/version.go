@@ -21,4 +21,4 @@
 package version
 
 // Version is the current ThriftRW version.
-const Version = "1.28.0"
+const Version = "1.29.0"

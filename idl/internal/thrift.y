@@ -5,9 +5,9 @@ import "go.uber.org/thriftrw/ast"
 %}
 
 %union {
-    // Used to record line numbers when the line number at the start point is
-    // required.
+    // Used to record line and column numbers when position is required.
     line int
+    pos ast.Position
 
     docstring string
 
@@ -60,7 +60,7 @@ import "go.uber.org/thriftrw/ast"
 %token ONEWAY TYPEDEF STRUCT UNION EXCEPTION EXTENDS THROWS SERVICE ENUM CONST
 %token REQUIRED OPTIONAL TRUE FALSE
 
-%type <line> lineno
+%type <pos> pos
 %type <docstring> docstring
 %type <prog> program
 %type <fieldType> type
@@ -111,42 +111,47 @@ headers
     ;
 
 header
-    : lineno INCLUDE LITERAL
+    : pos INCLUDE LITERAL
         {
             $$ = &ast.Include{
                 Path: $3,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
             }
         }
-    | lineno INCLUDE IDENTIFIER LITERAL
+    | pos INCLUDE IDENTIFIER LITERAL
         {
             $$ = &ast.Include{
                 Name: $3,
                 Path: $4,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
             }
         }
-    | lineno CPP_INCLUDE LITERAL
+    | pos CPP_INCLUDE LITERAL
         {
             $$ = &ast.CppInclude{
                 Path: $3,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
             }
         }
-    | lineno NAMESPACE '*' IDENTIFIER
+    | pos NAMESPACE '*' IDENTIFIER
         {
             $$ = &ast.Namespace{
                 Scope: "*",
                 Name: $4,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
             }
         }
-    | lineno NAMESPACE IDENTIFIER IDENTIFIER
+    | pos NAMESPACE IDENTIFIER IDENTIFIER
         {
             $$ = &ast.Namespace{
                 Scope: $3,
                 Name: $4,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
             }
         }
     ;
@@ -163,65 +168,71 @@ definitions
 
 definition
     /* constants */
-    : lineno docstring CONST type IDENTIFIER '=' const_value
+    : pos docstring CONST type IDENTIFIER '=' const_value
         {
             $$ = &ast.Constant{
                 Name: $5,
                 Type: $4,
                 Value: $7,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
                 Doc: ParseDocstring($2),
             }
         }
     /* types */
-    | lineno docstring TYPEDEF type IDENTIFIER type_annotations
+    | pos docstring TYPEDEF type IDENTIFIER type_annotations
         {
             $$ = &ast.Typedef{
                 Name: $5,
                 Type: $4,
                 Annotations: $6,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
                 Doc: ParseDocstring($2),
             }
         }
-    | lineno docstring ENUM IDENTIFIER '{' enum_items '}' type_annotations
+    | pos docstring ENUM IDENTIFIER '{' enum_items '}' type_annotations
         {
             $$ = &ast.Enum{
                 Name: $4,
                 Items: $6,
                 Annotations: $8,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
                 Doc: ParseDocstring($2),
             }
         }
-    | lineno docstring struct_type IDENTIFIER '{' fields '}' type_annotations
+    | pos docstring struct_type IDENTIFIER '{' fields '}' type_annotations
         {
             $$ = &ast.Struct{
                 Name: $4,
                 Type: $3,
                 Fields: $6,
                 Annotations: $8,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
                 Doc: ParseDocstring($2),
             }
         }
     /* services */
-    | lineno docstring SERVICE IDENTIFIER '{' functions '}' type_annotations
+    | pos docstring SERVICE IDENTIFIER '{' functions '}' type_annotations
         {
             $$ = &ast.Service{
                 Name: $4,
                 Functions: $6,
                 Annotations: $8,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
                 Doc: ParseDocstring($2),
             }
         }
-    | lineno docstring SERVICE IDENTIFIER EXTENDS lineno IDENTIFIER '{' functions '}'
+    | pos docstring SERVICE IDENTIFIER EXTENDS pos IDENTIFIER '{' functions '}'
       type_annotations
         {
             parent := &ast.ServiceReference{
                 Name: $7,
-                Line: $6,
+                Line: $6.Line,
+                Column: $6.Column,
             }
 
             $$ = &ast.Service{
@@ -229,7 +240,8 @@ definition
                 Functions: $9,
                 Parent: parent,
                 Annotations: $11,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
                 Doc: ParseDocstring($2),
             }
         }
@@ -247,23 +259,25 @@ enum_items
     ;
 
 enum_item
-    : lineno docstring IDENTIFIER type_annotations
+    : pos docstring IDENTIFIER type_annotations
         {
             $$ = &ast.EnumItem{
                 Name: $3,
                 Annotations: $4,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
                 Doc: ParseDocstring($2),
             }
         }
-    | lineno docstring IDENTIFIER '=' INTCONSTANT type_annotations
+    | pos docstring IDENTIFIER '=' INTCONSTANT type_annotations
         {
             value := int($5)
             $$ = &ast.EnumItem{
                 Name: $3,
                 Value: &value,
                 Annotations: $6,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
                 Doc: ParseDocstring($2),
             }
         }
@@ -275,7 +289,7 @@ fields
     ;
 
 field
-    : lineno docstring field_identifier field_required type IDENTIFIER type_annotations
+    : pos docstring field_identifier field_required type IDENTIFIER type_annotations
         {
             $$ = &ast.Field{
                 ID: $3.ID,
@@ -284,11 +298,12 @@ field
                 Type: $5,
                 Requiredness: $4,
                 Annotations: $7,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
                 Doc: ParseDocstring($2),
             }
         }
-    | lineno docstring field_identifier field_required type IDENTIFIER '=' const_value type_annotations
+    | pos docstring field_identifier field_required type IDENTIFIER '=' const_value type_annotations
         {
             $$ = &ast.Field{
                 ID: $3.ID,
@@ -298,7 +313,8 @@ field
                 Requiredness: $4,
                 Default: $8,
                 Annotations: $9,
-                Line: $1,
+                Line: $1.Line,
+                Column: $1.Column,
                 Doc: ParseDocstring($2),
             }
         }
@@ -321,17 +337,18 @@ functions
     ;
 
 function
-    : docstring oneway function_type lineno IDENTIFIER '(' fields ')' throws
+    : docstring pos oneway function_type IDENTIFIER '(' fields ')' throws
       type_annotations
         {
             $$ = &ast.Function{
                 Name: $5,
                 Parameters: $7,
-                ReturnType: $<fieldType>3,
+                ReturnType: $<fieldType>4,
                 Exceptions: $<fields>9,
-                OneWay: $<bul>2,
+                OneWay: $<bul>3,
                 Annotations: $10,
-                Line: $4,
+                Line: $2.Line,
+                Column: $2.Column,
                 Doc: ParseDocstring($1),
             }
         }
@@ -357,18 +374,20 @@ throws
  ***************************************************************************/
 
 type
-    : lineno base_type_name type_annotations
-        { $$ = ast.BaseType{ID: $2, Annotations: $3, Line: $1} }
+    : pos base_type_name type_annotations
+        { $$ = ast.BaseType{ID: $2, Annotations: $3, Line: $1.Line, Column: $1.Column} }
 
     /* container types */
-    | lineno MAP '<' type ',' type '>' type_annotations
-        { $$ = ast.MapType{KeyType: $4, ValueType: $6, Annotations: $8, Line: $1} }
-    | lineno LIST '<' type '>' type_annotations
-        { $$ = ast.ListType{ValueType: $4, Annotations: $6, Line: $1} }
-    | lineno SET '<' type '>' type_annotations
-        { $$ = ast.SetType{ValueType: $4, Annotations: $6, Line: $1} }
-    | lineno IDENTIFIER
-        { $$ = ast.TypeReference{Name: $2, Line: $1} }
+    | pos MAP '<' type ',' type '>' type_annotations
+        { $$ = ast.MapType{KeyType: $4, ValueType: $6, Annotations: $8, Line: $1.Line, Column: $1.Column} }
+    | pos LIST '<' type '>' type_annotations
+        { $$ = ast.ListType{ValueType: $4, Annotations: $6, Line: $1.Line, Column: $1.Column} }
+    | pos SET '<' type '>' type_annotations
+        { $$ = ast.SetType{ValueType: $4, Annotations: $6, Line: $1.Line, Column: $1.Column} }
+
+    /* type references ('pos' is last to avoid selection preference over 'base_type_name') */
+    | IDENTIFIER pos
+        { $$ = ast.TypeReference{Name: $1, Line: $2.Line, Column: $2.Column} }
     ;
 
 base_type_name
@@ -387,16 +406,14 @@ base_type_name
  Constant values
  ***************************************************************************/
 const_value
-    : INTCONSTANT { $$ = ast.ConstantInteger($1); yylex.(*lexer).RecordPosition($$) }
-    | DUBCONSTANT { $$ = ast.ConstantDouble($1); yylex.(*lexer).RecordPosition($$) }
-    | TRUE        { $$ = ast.ConstantBoolean(true); yylex.(*lexer).RecordPosition($$) }
-    | FALSE       { $$ = ast.ConstantBoolean(false); yylex.(*lexer).RecordPosition($$) }
-    | LITERAL     { $$ = ast.ConstantString($1); yylex.(*lexer).RecordPosition($$) }
-    | lineno IDENTIFIER
-        { $$ = ast.ConstantReference{Name: $2, Line: $1} }
-
-    | lineno '[' const_list_items ']' { $$ = ast.ConstantList{Items: $3, Line: $1} }
-    | lineno '{' const_map_items  '}' { $$ =  ast.ConstantMap{Items: $3, Line: $1} }
+    : pos INTCONSTANT { $$ = ast.ConstantInteger($2); yylex.(*lexer).RecordPosition($$, $1) }
+    | pos DUBCONSTANT { $$ = ast.ConstantDouble($2); yylex.(*lexer).RecordPosition($$, $1) }
+    | pos TRUE        { $$ = ast.ConstantBoolean(true); yylex.(*lexer).RecordPosition($$, $1) }
+    | pos FALSE       { $$ = ast.ConstantBoolean(false); yylex.(*lexer).RecordPosition($$, $1) }
+    | pos LITERAL     { $$ = ast.ConstantString($2); yylex.(*lexer).RecordPosition($$, $1) }
+    | pos IDENTIFIER  { $$ = ast.ConstantReference{Name: $2, Line: $1.Line, Column: $1.Column} }
+    | pos '[' const_list_items ']' { $$ = ast.ConstantList{Items: $3, Line: $1.Line, Column: $1.Column} }
+    | pos '{' const_map_items  '}' { $$ =  ast.ConstantMap{Items: $3, Line: $1.Line, Column: $1.Column} }
     ;
 
 const_list_items
@@ -407,8 +424,8 @@ const_list_items
 
 const_map_items
     : /* nothing */ { $$ = nil }
-    | const_map_items lineno const_value ':' const_value optional_sep
-        { $$ = append($1, ast.ConstantMapItem{Key: $3, Value: $5, Line: $2}) }
+    | const_map_items pos const_value ':' const_value optional_sep
+        { $$ = append($1, ast.ConstantMapItem{Key: $3, Value: $5, Line: $2.Line, Column: $2.Column}) }
     ;
 
 /***************************************************************************
@@ -422,10 +439,10 @@ type_annotations
 
 type_annotation_list
     : /* nothing */ { $$ = nil }
-    | type_annotation_list lineno IDENTIFIER '=' LITERAL optional_sep
-        { $$ = append($1, &ast.Annotation{Name: $3, Value: $5, Line: $2}) }
-    | type_annotation_list lineno IDENTIFIER optional_sep
-        { $$ = append($1, &ast.Annotation{Name: $3, Line: $2}) }
+    | type_annotation_list pos IDENTIFIER '=' LITERAL optional_sep
+        { $$ = append($1, &ast.Annotation{Name: $3, Value: $5, Line: $2.Line, Column: $2.Column}) }
+    | type_annotation_list pos IDENTIFIER optional_sep
+        { $$ = append($1, &ast.Annotation{Name: $3, Line: $2.Line, Column: $2.Column}) }
     ;
 
 /***************************************************************************
@@ -435,14 +452,15 @@ type_annotation_list
 /* Grammar rules that need to record a line number at a specific token should
    include this somewhere. For example,
 
-    foo : bar lineno baz { x := $2 }
+    foo : bar pos baz { x := $2 }
 
   $2 in the above example contains the line number right after 'bar' but before
   'baz'. This way, if 'baz' spans mulitple lines, we still get the line number
   for where the rule started rather than where it ends.
  */
-lineno
-    : /* nothing */ { $$ = yylex.(*lexer).line }
+
+pos
+    : /* nothing */ { $$ = yylex.(*lexer).Pos() }
     ;
 
 docstring

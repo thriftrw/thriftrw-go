@@ -26,7 +26,7 @@ package thrifttest
 
 import (
 	gomock "github.com/golang/mock/gomock"
-	protocol "go.uber.org/thriftrw/protocol"
+	envelope "go.uber.org/thriftrw/protocol/envelope"
 	wire "go.uber.org/thriftrw/wire"
 	io "io"
 	reflect "reflect"
@@ -167,11 +167,11 @@ func (mr *MockEnvelopeAgnosticProtocolMockRecorder) DecodeEnveloped(arg0 interfa
 }
 
 // DecodeRequest mocks base method
-func (m *MockEnvelopeAgnosticProtocol) DecodeRequest(arg0 wire.EnvelopeType, arg1 io.ReaderAt) (wire.Value, protocol.Responder, error) {
+func (m *MockEnvelopeAgnosticProtocol) DecodeRequest(arg0 wire.EnvelopeType, arg1 io.ReaderAt) (wire.Value, envelope.Responder, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DecodeRequest", arg0, arg1)
 	ret0, _ := ret[0].(wire.Value)
-	ret1, _ := ret[1].(protocol.Responder)
+	ret1, _ := ret[1].(envelope.Responder)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }

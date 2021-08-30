@@ -21,12 +21,15 @@ variable pe lex.pe;
 }%%
 
 type lexer struct {
-    line int
     program *ast.Program
+
+    line int
+    lineStart int
 
     docstringStart int
     lastDocstring string
     linesSinceDocstring int
+
     nodePositions NodePositions
 
     errors []ParseError
@@ -74,6 +77,7 @@ func (lex *lexer) Lex(out *yySymType) int {
         # number tracking.
         newline = '\n' >{
             lex.line++
+            lex.lineStart = lex.p + 1
             lex.linesSinceDocstring++
         };
 
@@ -340,7 +344,7 @@ func (lex *lexer) Lex(out *yySymType) int {
     }%%
 
     if lex.cs == thrift_error {
-        lex.AppendError(fmt.Errorf("unknown token at index %d", lex.p))
+        lex.Error("unknown token")
     }
     return tok
 }
@@ -350,12 +354,16 @@ func (lex *lexer) Error(e string) {
 }
 
 func (lex *lexer) AppendError(err error)  {
-  lex.parseFailed = true
-  lex.errors = append(lex.errors, ParseError{Pos: ast.Position{Line: lex.line}, Err: err})
+    lex.parseFailed = true
+    lex.errors = append(lex.errors, ParseError{Pos: lex.Pos(), Err: err})
 }
 
-func (lex* lexer) RecordPosition(n ast.Node) {
-    lex.nodePositions[n] = ast.Position{Line: lex.line}
+func (lex* lexer) Pos() ast.Position {
+    return ast.Position{Line: lex.line, Column: lex.ts - lex.lineStart + 1}
+}
+
+func (lex* lexer) RecordPosition(n ast.Node, pos ast.Position) {
+    lex.nodePositions[n] = pos
 }
 
 func (lex *lexer) LastDocstring() string {
