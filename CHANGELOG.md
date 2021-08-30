@@ -4,8 +4,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
-- No changes yet.
+## [1.29.0] - 2021-08-30
+This release includes support for (de)serializing Thrift structs directly
+to/from IO streams without converting them to the intermediate `wire.Value`
+representation. This method of (de)serialization is significantly faster and
+less memory intensive.
+
+### Added
+- `protocol/stream` and `envelope/stream` packages defining the core types
+  needed to implement support for streaming serialization.
+- `protocol`: `BinaryStreamer` that exports the Binary protocol as a
+  `stream.Protocol`.
+- `protocol/binary`: The new `Default` variable is the default value of
+  `*binary.Protocol` that most users should use. This variable retains the
+  struct type so that it can be used for any new interfaces declared in the
+  future without another `protocol.Binary*` export.
+- All generated types now include `Encode` and `Decode` methods that can
+  serialize or deserialize those types using `stream.Writer` and
+  `stream.Reader` objects.
+- `ast`: All nodes now track the column numbers they're defined on in addition
+  to the line numbers.
+- `ast`: Add `Annotations(Node)` function that reports the annotations for AST
+  nodes that record annotations.
+
+### Changed
+- `protocol`:
+    - Deprecate `Binary` and `EnvelopeAgnosticBinary` in favor of
+      `protocol/binary.Default`.
+    - Deprecate `NoEnvelopeResponder`, `EnvelopeV0Responder`, and
+      `EnvelopeV1Responder` in favor of versions declared in the
+      `protocol/binary` package.
+
+Thanks to [@witriew](https://github.com/witriew), [@dianale31](https://github.com/dianale31), [@usmyth](https://github.com/usmyth), and [@jparise](https://github.com/jparise) for their contributions
+to this release.
 
 ## [1.28.0] - 2021-07-26
 ### Added
@@ -387,7 +418,7 @@ this release.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.2.8...HEAD
+[1.29.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.28.0...v1.29.0
 [1.28.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.27.0...v1.28.0
 [1.27.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.26.0...v1.27.0
 [1.26.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.25.1...v1.26.0
