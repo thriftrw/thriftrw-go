@@ -1280,7 +1280,7 @@ func TestContainerValidate(t *testing.T) {
 					{4, 5, 6},
 				},
 			},
-			wantError: "invalid '[][]byte', index [2]: value is nil",
+			wantError: "invalid list '[][]byte', index [2]: value is nil",
 		},
 		{
 			desc: "nil second element of array",
@@ -1291,7 +1291,7 @@ func TestContainerValidate(t *testing.T) {
 					{StartPoint: &ts.Point{X: 5, Y: 6}, EndPoint: &ts.Point{X: 7, Y: 8}},
 				},
 			},
-			wantError: "invalid '[]*Edge', index [1]: value is nil",
+			wantError: "invalid list '[]*Edge', index [1]: value is nil",
 		},
 		{
 			desc: "nil set item",
@@ -1337,7 +1337,7 @@ func TestContainerValidate(t *testing.T) {
 			}
 		})
 
-		t.Run(tt.desc+" streaming", func(t *testing.T) {
+		t.Run(tt.desc+"/streaming", func(t *testing.T) {
 			stt, ok := tt.value.(streamingThriftType)
 			require.True(t, ok)
 

@@ -60,7 +60,7 @@ func (l *listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, 
 				<- else ->
 				for <$i>, <$x> := range <$v> {
 					if <$x> == nil {
-						return <import "fmt">.Errorf("invalid '<typeReference .Spec>', index [%v]: value is nil", <$i>)
+						return <import "fmt">.Errorf("invalid list '<typeReference .Spec>', index [%v]: value is nil", <$i>)
 					}
 				<- end>
 					<$w>, err := <toWire .Spec.ValueSpec $x>
@@ -176,7 +176,7 @@ func (l *listGenerator) Encoder(g Generator, spec *compile.ListSpec) (string, er
 			<- else ->
 			for <$i>, <$v> := range <$val> {
 				if <$v> == nil {
-					return <import "fmt">.Errorf("invalid '<typeReference .Spec>', index [%v]: value is nil", <$i>)
+					return <import "fmt">.Errorf("invalid list '<typeReference .Spec>', index [%v]: value is nil", <$i>)
 				}
 			<end ->
 
