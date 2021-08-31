@@ -60,7 +60,7 @@ func (l *listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, 
 				<- else ->
 				for <$i>, <$x> := range <$v> {
 					if <$x> == nil {
-						return <import "fmt">.Errorf("invalid [%v]: value is nil", <$i>)
+						return <import "fmt">.Errorf("invalid list '<typeReference .Spec>', index [%v]: value is nil", <$i>)
 					}
 				<- end>
 					<$w>, err := <toWire .Spec.ValueSpec $x>
@@ -156,11 +156,12 @@ func (l *listGenerator) Encoder(g Generator, spec *compile.ListSpec) (string, er
 		<$listType := typeReference .Spec>
 		<$sw := newVar "sw">
 		<$lh := newVar "lh">
+		<$i := newVar "i">
 		<$o := newVar "o">
 		<$k := newVar "k">
 		<$v := newVar "v">
 		<$val := newVar "val">
-		func <.Name>(<$val> <$listType>, <$sw> <$stream>.Writer) error {	
+		func <.Name>(<$val> <$listType>, <$sw> <$stream>.Writer) error {
 			<$vt := typeCode .Spec.ValueSpec>
 			<$lh> := <$stream>.ListHeader{
 				Type: <$vt>,
@@ -170,7 +171,15 @@ func (l *listGenerator) Encoder(g Generator, spec *compile.ListSpec) (string, er
 				return err
 			}
 
+			<if isPrimitiveType .Spec.ValueSpec ->
 			for _, <$v> := range <$val> {
+			<- else ->
+			for <$i>, <$v> := range <$val> {
+				if <$v> == nil {
+					return <import "fmt">.Errorf("invalid list '<typeReference .Spec>', index [%v]: value is nil", <$i>)
+				}
+			<end ->
+
 				if err := <encode .Spec.ValueSpec $v $sw>; err != nil {
 					return err
 				}

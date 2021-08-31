@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- No changes yet.
+### Fixed
+- Streaming encodes now handle `nil` items properly in containers.
 
 ## [1.29.0] - 2021-08-30
 This release includes support for (de)serializing Thrift structs directly

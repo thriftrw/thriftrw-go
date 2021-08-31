@@ -3069,7 +3069,7 @@ type _List_Edge_ValueList []*Edge
 func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
 	for i, x := range v {
 		if x == nil {
-			return fmt.Errorf("invalid [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]*Edge', index [%v]: value is nil", i)
 		}
 		w, err := x.ToWire()
 		if err != nil {
@@ -3196,7 +3196,10 @@ func _List_Edge_Encode(val []*Edge, sw stream.Writer) error {
 		return err
 	}
 
-	for _, v := range val {
+	for i, v := range val {
+		if v == nil {
+			return fmt.Errorf("invalid list '[]*Edge', index [%v]: value is nil", i)
+		}
 		if err := v.Encode(sw); err != nil {
 			return err
 		}
@@ -7871,7 +7874,7 @@ type _Map_String_User_MapItemList map[string]*User
 func (m _Map_String_User_MapItemList) ForEach(f func(wire.MapItem) error) error {
 	for k, v := range m {
 		if v == nil {
-			return fmt.Errorf("invalid [%v]: value is nil", k)
+			return fmt.Errorf("invalid map 'map[string]*User', key [%v]: value is nil", k)
 		}
 		kw, err := wire.NewValueString(k), error(nil)
 		if err != nil {
@@ -7916,6 +7919,9 @@ func _Map_String_User_Encode(val map[string]*User, sw stream.Writer) error {
 	}
 
 	for k, v := range val {
+		if v == nil {
+			return fmt.Errorf("invalid map 'map[string]*User', key [%v]: value is nil", k)
+		}
 		if err := sw.WriteString(k); err != nil {
 			return err
 		}
