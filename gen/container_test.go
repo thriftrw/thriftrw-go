@@ -21,12 +21,14 @@
 package gen
 
 import (
+	"bytes"
 	"encoding/json"
 	"testing"
 
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/wire"
 
 	"github.com/stretchr/testify/assert"
@@ -1278,7 +1280,7 @@ func TestContainerValidate(t *testing.T) {
 					{4, 5, 6},
 				},
 			},
-			wantError: "invalid [2]: value is nil",
+			wantError: "invalid '[][]byte', index [2]: value is nil",
 		},
 		{
 			desc: "nil second element of array",
@@ -1289,14 +1291,14 @@ func TestContainerValidate(t *testing.T) {
 					{StartPoint: &ts.Point{X: 5, Y: 6}, EndPoint: &ts.Point{X: 7, Y: 8}},
 				},
 			},
-			wantError: "invalid [1]: value is nil",
+			wantError: "invalid '[]*Edge', index [1]: value is nil",
 		},
 		{
 			desc: "nil set item",
 			value: &tc.ContainersOfContainers{
 				SetOfLists: [][]string{{}, nil},
 			},
-			wantError: "invalid set item: value is nil",
+			wantError: "invalid set '[]string': contains nil value",
 		},
 		{
 			desc: "nil map key",
@@ -1309,7 +1311,7 @@ func TestContainerValidate(t *testing.T) {
 					{Key: nil, Value: "foo"},
 				},
 			},
-			wantError: "invalid map key: value is nil",
+			wantError: "invalid map '[]struct{Key []byte; Value string}': key is nil",
 		},
 		{
 			desc: "nil map value",
@@ -1319,12 +1321,12 @@ func TestContainerValidate(t *testing.T) {
 					"foo":   nil,
 				},
 			},
-			wantError: "invalid [foo]: value is nil",
+			wantError: "invalid map 'map[string][]byte', key [foo]: value is nil",
 		},
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.desc, func(t *testing.T) {
+		t.Run(tt.desc+" wire", func(t *testing.T) {
 			value, err := tt.value.ToWire()
 			if err == nil {
 				err = wire.EvaluateValue(value) // lazy error
@@ -1333,6 +1335,21 @@ func TestContainerValidate(t *testing.T) {
 			if assert.Error(t, err) {
 				assert.Equal(t, tt.wantError, err.Error())
 			}
+		})
+
+		t.Run(tt.desc+" streaming", func(t *testing.T) {
+			stt, ok := tt.value.(streamingThriftType)
+			require.True(t, ok)
+
+			var buf bytes.Buffer
+			sw := binary.Default.Writer(&buf)
+			defer func() {
+				assert.NoError(t, sw.Close())
+			}()
+
+			err := stt.Encode(sw)
+			require.Error(t, err)
+			assert.Equal(t, tt.wantError, err.Error())
 		})
 	}
 }
