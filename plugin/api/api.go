@@ -803,7 +803,7 @@ type _List_Argument_ValueList []*Argument
 func (v _List_Argument_ValueList) ForEach(f func(wire.Value) error) error {
 	for i, x := range v {
 		if x == nil {
-			return fmt.Errorf("invalid '[]*Argument', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]*Argument', index [%v]: value is nil", i)
 		}
 		w, err := x.ToWire()
 		if err != nil {
@@ -1044,7 +1044,7 @@ func _List_Argument_Encode(val []*Argument, sw stream.Writer) error {
 
 	for i, v := range val {
 		if v == nil {
-			return fmt.Errorf("invalid '[]*Argument', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]*Argument', index [%v]: value is nil", i)
 		}
 		if err := v.Encode(sw); err != nil {
 			return err
@@ -4159,7 +4159,7 @@ type _List_Function_ValueList []*Function
 func (v _List_Function_ValueList) ForEach(f func(wire.Value) error) error {
 	for i, x := range v {
 		if x == nil {
-			return fmt.Errorf("invalid '[]*Function', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]*Function', index [%v]: value is nil", i)
 		}
 		w, err := x.ToWire()
 		if err != nil {
@@ -4389,7 +4389,7 @@ func _List_Function_Encode(val []*Function, sw stream.Writer) error {
 
 	for i, v := range val {
 		if v == nil {
-			return fmt.Errorf("invalid '[]*Function', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]*Function', index [%v]: value is nil", i)
 		}
 		if err := v.Encode(sw); err != nil {
 			return err

@@ -72,7 +72,7 @@ type _List_List_I32_ValueList [][]int32
 func (v _List_List_I32_ValueList) ForEach(f func(wire.Value) error) error {
 	for i, x := range v {
 		if x == nil {
-			return fmt.Errorf("invalid '[][]int32', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[][]int32', index [%v]: value is nil", i)
 		}
 		w, err := wire.NewValueList(_List_I32_ValueList(x)), error(nil)
 		if err != nil {
@@ -127,7 +127,7 @@ type _List_Set_I32_mapType_ValueList []map[int32]struct{}
 func (v _List_Set_I32_mapType_ValueList) ForEach(f func(wire.Value) error) error {
 	for i, x := range v {
 		if x == nil {
-			return fmt.Errorf("invalid '[]map[int32]struct{}', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]map[int32]struct{}', index [%v]: value is nil", i)
 		}
 		w, err := wire.NewValueSet(_Set_I32_mapType_ValueList(x)), error(nil)
 		if err != nil {
@@ -191,7 +191,7 @@ type _List_Map_I32_I32_ValueList []map[int32]int32
 func (v _List_Map_I32_I32_ValueList) ForEach(f func(wire.Value) error) error {
 	for i, x := range v {
 		if x == nil {
-			return fmt.Errorf("invalid '[]map[int32]int32', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]map[int32]int32', index [%v]: value is nil", i)
 		}
 		w, err := wire.NewValueMap(_Map_I32_I32_MapItemList(x)), error(nil)
 		if err != nil {
@@ -1257,7 +1257,7 @@ func _List_List_I32_Encode(val [][]int32, sw stream.Writer) error {
 
 	for i, v := range val {
 		if v == nil {
-			return fmt.Errorf("invalid '[][]int32', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[][]int32', index [%v]: value is nil", i)
 		}
 		if err := _List_I32_Encode(v, sw); err != nil {
 			return err
@@ -1298,7 +1298,7 @@ func _List_Set_I32_mapType_Encode(val []map[int32]struct{}, sw stream.Writer) er
 
 	for i, v := range val {
 		if v == nil {
-			return fmt.Errorf("invalid '[]map[int32]struct{}', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]map[int32]struct{}', index [%v]: value is nil", i)
 		}
 		if err := _Set_I32_mapType_Encode(v, sw); err != nil {
 			return err
@@ -1342,7 +1342,7 @@ func _List_Map_I32_I32_Encode(val []map[int32]int32, sw stream.Writer) error {
 
 	for i, v := range val {
 		if v == nil {
-			return fmt.Errorf("invalid '[]map[int32]int32', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]map[int32]int32', index [%v]: value is nil", i)
 		}
 		if err := _Map_I32_I32_Encode(v, sw); err != nil {
 			return err
@@ -4696,7 +4696,7 @@ type _List_UUID_ValueList []*typedefs.UUID
 func (v _List_UUID_ValueList) ForEach(f func(wire.Value) error) error {
 	for i, x := range v {
 		if x == nil {
-			return fmt.Errorf("invalid '[]*typedefs.UUID', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]*typedefs.UUID', index [%v]: value is nil", i)
 		}
 		w, err := x.ToWire()
 		if err != nil {
@@ -4901,7 +4901,7 @@ func _List_UUID_Encode(val []*typedefs.UUID, sw stream.Writer) error {
 
 	for i, v := range val {
 		if v == nil {
-			return fmt.Errorf("invalid '[]*typedefs.UUID', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]*typedefs.UUID', index [%v]: value is nil", i)
 		}
 		if err := v.Encode(sw); err != nil {
 			return err
@@ -6303,7 +6303,7 @@ type _List_Binary_ValueList [][]byte
 func (v _List_Binary_ValueList) ForEach(f func(wire.Value) error) error {
 	for i, x := range v {
 		if x == nil {
-			return fmt.Errorf("invalid '[][]byte', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[][]byte', index [%v]: value is nil", i)
 		}
 		w, err := wire.NewValueBinary(x), error(nil)
 		if err != nil {
@@ -6723,7 +6723,7 @@ func _List_Binary_Encode(val [][]byte, sw stream.Writer) error {
 
 	for i, v := range val {
 		if v == nil {
-			return fmt.Errorf("invalid '[][]byte', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[][]byte', index [%v]: value is nil", i)
 		}
 		if err := sw.WriteBinary(v); err != nil {
 			return err

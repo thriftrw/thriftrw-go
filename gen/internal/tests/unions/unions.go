@@ -37,7 +37,7 @@ type _List_ArbitraryValue_ValueList []*ArbitraryValue
 func (v _List_ArbitraryValue_ValueList) ForEach(f func(wire.Value) error) error {
 	for i, x := range v {
 		if x == nil {
-			return fmt.Errorf("invalid '[]*ArbitraryValue', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]*ArbitraryValue', index [%v]: value is nil", i)
 		}
 		w, err := x.ToWire()
 		if err != nil {
@@ -328,7 +328,7 @@ func _List_ArbitraryValue_Encode(val []*ArbitraryValue, sw stream.Writer) error 
 
 	for i, v := range val {
 		if v == nil {
-			return fmt.Errorf("invalid '[]*ArbitraryValue', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]*ArbitraryValue', index [%v]: value is nil", i)
 		}
 		if err := v.Encode(sw); err != nil {
 			return err

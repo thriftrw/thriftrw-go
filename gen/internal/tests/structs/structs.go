@@ -3069,7 +3069,7 @@ type _List_Edge_ValueList []*Edge
 func (v _List_Edge_ValueList) ForEach(f func(wire.Value) error) error {
 	for i, x := range v {
 		if x == nil {
-			return fmt.Errorf("invalid '[]*Edge', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]*Edge', index [%v]: value is nil", i)
 		}
 		w, err := x.ToWire()
 		if err != nil {
@@ -3198,7 +3198,7 @@ func _List_Edge_Encode(val []*Edge, sw stream.Writer) error {
 
 	for i, v := range val {
 		if v == nil {
-			return fmt.Errorf("invalid '[]*Edge', index [%v]: value is nil", i)
+			return fmt.Errorf("invalid list '[]*Edge', index [%v]: value is nil", i)
 		}
 		if err := v.Encode(sw); err != nil {
 			return err
