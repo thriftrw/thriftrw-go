@@ -70,12 +70,12 @@ func (m *mapGenerator) ItemList(g Generator, spec *compile.MapSpec) (string, err
 				<end>
 						<- if not (isPrimitiveType .Spec.KeySpec) ->
 							if <$k> == nil {
-								return <import "fmt">.Errorf("invalid map key: value is nil")
+								return <import "fmt">.Errorf("invalid map '<typeReference .Spec>': key is nil")
 							}
 						<end ->
 						<- if not (isPrimitiveType .Spec.ValueSpec) ->
 							if <$v> == nil {
-								return <import "fmt">.Errorf("invalid [%v]: value is nil", <$k>)
+								return <import "fmt">.Errorf("invalid map '<typeReference .Spec>', key [%v]: value is nil", <$k>)
 							}
 						<end ->
 
@@ -203,7 +203,7 @@ func (m *mapGenerator) Encoder(g Generator, spec *compile.MapSpec) (string, erro
 		<$value := newVar "value">
 		func <.Name>(<$val> <$mapType>, <$sw> <$stream>.Writer) error {
 			<$kt := typeCode .Spec.KeySpec>
-			<$vt := typeCode .Spec.ValueSpec>	
+			<$vt := typeCode .Spec.ValueSpec>
 			<$mh> := <$stream>.MapHeader{
 				KeyType: <$kt>,
 				ValueType: <$vt>,
@@ -215,20 +215,43 @@ func (m *mapGenerator) Encoder(g Generator, spec *compile.MapSpec) (string, erro
 
 			<if isHashable .Spec.KeySpec>
 				for <$k>, <$v> := range <$val> {
+					<- if not (isPrimitiveType .Spec.KeySpec) ->
+					if <$k> == nil {
+						return <import "fmt">.Errorf("invalid map '<typeReference .Spec>': key is nil")
+					}
+					<end ->
+					<- if not (isPrimitiveType .Spec.ValueSpec) ->
+					if <$v> == nil {
+						return <import "fmt">.Errorf("invalid map '<typeReference .Spec>', key [%v]: value is nil", <$k>)
+					}
+					<end ->
+
 					if err := <encode .Spec.KeySpec $k $sw>; err != nil {
 						return err
 					}
 					if err := <encode .Spec.ValueSpec $v $sw>; err != nil {
 						return err
 					}
-				}		
+				}
 			<else>
 				for _, <$v> := range <$val> {
 					<$key> := <printf "%s.Key" $v>
+					<$value> := <printf "%s.Value" $v>
+
+					<if not (isPrimitiveType .Spec.KeySpec) ->
+					if <$key> == nil {
+						return <import "fmt">.Errorf("invalid map '<typeReference .Spec>': key is nil")
+					}
+					<end ->
+					<- if not (isPrimitiveType .Spec.ValueSpec) ->
+					if <$value> == nil {
+						return <import "fmt">.Errorf("invalid map '<typeReference .Spec>', key [%v]: value is nil", <$key>)
+					}
+					<end ->
+
 					if err := <encode .Spec.KeySpec $key $sw>; err != nil {
 						return err
 					}
-					<$value> := <printf "%s.Value" $v>
 					if err := <encode .Spec.ValueSpec $value $sw>; err != nil {
 						return err
 					}

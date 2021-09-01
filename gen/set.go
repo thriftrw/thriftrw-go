@@ -61,7 +61,7 @@ func (s *setGenerator) ValueList(g Generator, spec *compile.SetSpec) (string, er
 				<- end ->
 						<if not (isPrimitiveType .Spec.ValueSpec)>
 							if <$x> == nil {
-								return <import "fmt">.Errorf("invalid set item: value is nil")
+								return <import "fmt">.Errorf("invalid set '<typeReference .Spec.ValueSpec>': contains nil value")
 							}
 						<end ->
 
@@ -155,7 +155,7 @@ func (s *setGenerator) Encoder(g Generator, spec *compile.SetSpec) (string, erro
 		<$k := newVar "k">
 		<$v := newVar "v">
 		<$val := newVar "val">
-		func <.Name>(<$val> <$setType>, <$sw> <$stream>.Writer) error {	
+		func <.Name>(<$val> <$setType>, <$sw> <$stream>.Writer) error {
 			<$vt := typeCode .Spec.ValueSpec>
 			<$sh> := <$stream>.SetHeader{
 				Type: <$vt>,
@@ -171,6 +171,12 @@ func (s *setGenerator) Encoder(g Generator, spec *compile.SetSpec) (string, erro
 			<else>
 				for _, <$v> := range <$val> {
 			<end>
+					<- if not (isPrimitiveType .Spec.ValueSpec) ->
+					if <$v> == nil {
+						return <import "fmt">.Errorf("invalid set '<typeReference .Spec.ValueSpec>': contains nil value")
+					}
+					<- end>
+
 					if err := <encode .Spec.ValueSpec $v $sw>; err != nil {
 						return err
 					}
