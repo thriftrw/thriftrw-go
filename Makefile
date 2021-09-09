@@ -36,16 +36,16 @@ GO_FILES := $(shell \
 	find . '(' -path '*/.*' -o -path './vendor' ')' -prune \
 	-o -name '*.go' -print | cut -b3-)
 
-# Installs dependencies listed in tools_test.go.
-.PHONY: tools
-tools:
-	go list -json tools_test.go | jq -r '.TestImports | .[]' | xargs -n1 go install
-
 .PHONY: build
 build: $(THRIFTRW)
 
 .PHONY: ragel
 ragel: $(RAGEL)
+
+# Installs dependencies listed in tools_test.go.
+.PHONY: tools
+tools:
+	go list -json tools_test.go | jq -r '.TestImports | .[]' | xargs -n1 go install
 
 $(THRIFTRW): $(GO_FILES)
 	go install .
