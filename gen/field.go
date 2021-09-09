@@ -601,10 +601,9 @@ func (f fieldGroupGenerator) Decode(g Generator) error {
 			}
 
 			for <$ok> {
-				switch <$fh>.ID {
+				switch {
 				<range .Fields ->
-				case <.ID>:
-					if <$fh>.Type == <typeCode .Type> {
+				case <$fh>.ID == <.ID> && <$fh>.Type == <typeCode .Type>:
 						<- $lhs := printf "%s.%s" $v (goName .) ->
 						<- if .Required ->
 							<$lhs>, err = <decode .Type $sr>
@@ -617,11 +616,6 @@ func (f fieldGroupGenerator) Decode(g Generator) error {
 						<if .Required ->
 							<$isSet.Rotate (printf "%sIsSet" .Name)> = true
 						<- end>
-					} else {
-						if err := <$sr>.Skip(<$fh>.Type); err != nil {
-							return err
-						}
-					}
 				<end ->
 				default:
 					if err := <$sr>.Skip(<$fh>.Type); err != nil {

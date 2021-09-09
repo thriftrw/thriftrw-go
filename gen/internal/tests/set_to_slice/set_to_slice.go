@@ -976,127 +976,67 @@ func (v *Bar) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TSet {
-				v.RequiredInt32ListField, err = _Set_I32_sliceType_Decode(sr)
-				if err != nil {
-					return err
-				}
-				requiredInt32ListFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TSet:
+			v.RequiredInt32ListField, err = _Set_I32_sliceType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TSet {
-				v.OptionalStringListField, err = _Set_String_sliceType_Decode(sr)
-				if err != nil {
-					return err
-				}
+			requiredInt32ListFieldIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TSet:
+			v.OptionalStringListField, err = _Set_String_sliceType_Decode(sr)
+			if err != nil {
+				return err
+			}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 3 && fh.Type == wire.TSet:
+			v.RequiredTypedefStringListField, err = _StringList_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TSet {
-				v.RequiredTypedefStringListField, err = _StringList_Decode(sr)
-				if err != nil {
-					return err
-				}
-				requiredTypedefStringListFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			requiredTypedefStringListFieldIsSet = true
+		case fh.ID == 4 && fh.Type == wire.TSet:
+			v.OptionalTypedefStringListField, err = _StringList_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 4:
-			if fh.Type == wire.TSet {
-				v.OptionalTypedefStringListField, err = _StringList_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 5 && fh.Type == wire.TSet:
+			v.RequiredFooListField, err = _Set_Foo_sliceType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 5:
-			if fh.Type == wire.TSet {
-				v.RequiredFooListField, err = _Set_Foo_sliceType_Decode(sr)
-				if err != nil {
-					return err
-				}
-				requiredFooListFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			requiredFooListFieldIsSet = true
+		case fh.ID == 6 && fh.Type == wire.TSet:
+			v.OptionalFooListField, err = _Set_Foo_sliceType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 6:
-			if fh.Type == wire.TSet {
-				v.OptionalFooListField, err = _Set_Foo_sliceType_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 7 && fh.Type == wire.TSet:
+			v.RequiredTypedefFooListField, err = _FooList_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 7:
-			if fh.Type == wire.TSet {
-				v.RequiredTypedefFooListField, err = _FooList_Decode(sr)
-				if err != nil {
-					return err
-				}
-				requiredTypedefFooListFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			requiredTypedefFooListFieldIsSet = true
+		case fh.ID == 8 && fh.Type == wire.TSet:
+			v.OptionalTypedefFooListField, err = _FooList_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 8:
-			if fh.Type == wire.TSet {
-				v.OptionalTypedefFooListField, err = _FooList_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 9 && fh.Type == wire.TSet:
+			v.RequiredStringListListField, err = _Set_Set_String_sliceType_sliceType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 9:
-			if fh.Type == wire.TSet {
-				v.RequiredStringListListField, err = _Set_Set_String_sliceType_sliceType_Decode(sr)
-				if err != nil {
-					return err
-				}
-				requiredStringListListFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			requiredStringListListFieldIsSet = true
+		case fh.ID == 10 && fh.Type == wire.TSet:
+			v.RequiredTypedefStringListListField, err = _StringListList_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 10:
-			if fh.Type == wire.TSet {
-				v.RequiredTypedefStringListListField, err = _StringListList_Decode(sr)
-				if err != nil {
-					return err
-				}
-				requiredTypedefStringListListFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
-			}
+			requiredTypedefStringListListFieldIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -1636,19 +1576,13 @@ func (v *Foo) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.StringField, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				stringFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.StringField, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
+			stringFieldIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err

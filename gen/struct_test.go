@@ -36,7 +36,7 @@ import (
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
-	"go.uber.org/thriftrw/protocol"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
@@ -732,7 +732,7 @@ func TestStructFromWireUnrecognizedField(t *testing.T) {
 			want: ts.ContactInfo{EmailAddress: "foo"},
 		},
 		{
-			desc: "unknown field, wrong order",
+			desc: "unknown field, unordered",
 			give: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
 				{ID: 2, Value: wire.NewValueI32(42)},
 				{ID: 1, Value: wire.NewValueString("foo")},
@@ -764,23 +764,22 @@ func TestStructFromWireUnrecognizedField(t *testing.T) {
 
 			require.NoError(t, binary.Default.Encode(tt.give, &buf))
 
-			sr := binary.Default.Reader(bytes.NewReader(buf.Bytes()))
+			r := bytes.NewReader(buf.Bytes())
+			sr := binary.Default.Reader(r)
 			defer sr.Close()
+
 			err := o.Decode(sr)
 			if tt.wantError != "" {
 				if assert.Error(t, err, tt.desc) {
 					assert.Contains(t, err.Error(), tt.wantError)
 				}
-				return
 			} else {
 				if assert.NoError(t, err, tt.desc) {
 					assert.Equal(t, tt.want, o)
 				}
 			}
 
-			_, err = sr.ReadBool()
-			require.Error(t, err)
-			assert.Contains(t, err.Error(), "unexpected EOF", "exepected error for continued reads")
+			assert.Zero(t, r.Len(), "expected to be at end of read")
 		})
 	}
 }
@@ -854,23 +853,22 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 
 			require.NoError(t, binary.Default.Encode(tt.input, &buf))
 
-			sr := binary.Default.Reader(bytes.NewReader(buf.Bytes()))
+			r := bytes.NewReader(buf.Bytes())
+			sr := binary.Default.Reader(r)
 			defer sr.Close()
+
 			err := o.Decode(sr)
 			if tt.success != nil {
 				if assert.NoError(t, err, tt.desc) {
 					assert.Equal(t, tt.success, &o, tt.desc)
 				}
-				return
 			} else {
 				if assert.Error(t, err, tt.desc) {
 					assert.Contains(t, err.Error(), tt.failure, tt.desc)
 				}
 			}
 
-			_, err = sr.ReadBool()
-			require.Error(t, err)
-			assert.Contains(t, err.Error(), "unexpected EOF", "exepected error for continued reads")
+			assert.Zero(t, r.Len(), "expected to be at end of read")
 		})
 	}
 }

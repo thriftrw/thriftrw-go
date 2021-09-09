@@ -175,31 +175,19 @@ func (v *ConflictingNamesSetValueArgs) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.Key, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				keyIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.Key, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				v.Value, err = sr.ReadBinary()
-				if err != nil {
-					return err
-				}
-				valueIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			keyIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			v.Value, err = sr.ReadBinary()
+			if err != nil {
+				return err
 			}
+			valueIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -419,21 +407,15 @@ func (v *InternalError) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.Message = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.Message = &x
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -686,7 +668,7 @@ func (v *Cache_Clear_Args) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
+		switch {
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -897,21 +879,15 @@ func (v *Cache_ClearAfter_Args) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TI64 {
-				var x int64
-				x, err = sr.ReadInt64()
-				v.DurationMS = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TI64:
+			var x int64
+			x, err = sr.ReadInt64()
+			v.DurationMS = &x
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -1173,19 +1149,13 @@ func (v *ConflictingNames_SetValue_Args) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TStruct {
-				v.Request, err = _ConflictingNamesSetValueArgs_Decode(sr)
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TStruct:
+			v.Request, err = _ConflictingNamesSetValueArgs_Decode(sr)
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -1445,7 +1415,7 @@ func (v *ConflictingNames_SetValue_Result) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
+		switch {
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -1652,21 +1622,15 @@ func (v *KeyValue_DeleteValue_Args) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				var x Key
-				x, err = _Key_Decode(sr)
-				v.Key = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			var x Key
+			x, err = _Key_Decode(sr)
+			v.Key = &x
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -2075,31 +2039,19 @@ func (v *KeyValue_DeleteValue_Result) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TStruct {
-				v.DoesNotExist, err = _DoesNotExistException_Decode(sr)
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TStruct:
+			v.DoesNotExist, err = _DoesNotExistException_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TStruct {
-				v.InternalError, err = _InternalError_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 2 && fh.Type == wire.TStruct:
+			v.InternalError, err = _InternalError_Decode(sr)
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -2445,19 +2397,13 @@ func (v *KeyValue_GetManyValues_Args) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TList {
-				v.Range, err = _List_Key_Decode(sr)
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TList:
+			v.Range, err = _List_Key_Decode(sr)
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -2965,31 +2911,19 @@ func (v *KeyValue_GetManyValues_Result) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 0:
-			if fh.Type == wire.TList {
-				v.Success, err = _List_ArbitraryValue_Decode(sr)
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 0 && fh.Type == wire.TList:
+			v.Success, err = _List_ArbitraryValue_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 1:
-			if fh.Type == wire.TStruct {
-				v.DoesNotExist, err = _DoesNotExistException_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 1 && fh.Type == wire.TStruct:
+			v.DoesNotExist, err = _DoesNotExistException_Decode(sr)
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -3271,21 +3205,15 @@ func (v *KeyValue_GetValue_Args) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				var x Key
-				x, err = _Key_Decode(sr)
-				v.Key = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			var x Key
+			x, err = _Key_Decode(sr)
+			v.Key = &x
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -3657,31 +3585,19 @@ func (v *KeyValue_GetValue_Result) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 0:
-			if fh.Type == wire.TStruct {
-				v.Success, err = _ArbitraryValue_Decode(sr)
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 0 && fh.Type == wire.TStruct:
+			v.Success, err = _ArbitraryValue_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 1:
-			if fh.Type == wire.TStruct {
-				v.DoesNotExist, err = _DoesNotExistException_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 1 && fh.Type == wire.TStruct:
+			v.DoesNotExist, err = _DoesNotExistException_Decode(sr)
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -3966,33 +3882,21 @@ func (v *KeyValue_SetValue_Args) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				var x Key
-				x, err = _Key_Decode(sr)
-				v.Key = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			var x Key
+			x, err = _Key_Decode(sr)
+			v.Key = &x
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TStruct {
-				v.Value, err = _ArbitraryValue_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 2 && fh.Type == wire.TStruct:
+			v.Value, err = _ArbitraryValue_Decode(sr)
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -4280,7 +4184,7 @@ func (v *KeyValue_SetValue_Result) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
+		switch {
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -4518,31 +4422,19 @@ func (v *KeyValue_SetValueV2_Args) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.Key, err = _Key_Decode(sr)
-				if err != nil {
-					return err
-				}
-				keyIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.Key, err = _Key_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TStruct {
-				v.Value, err = _ArbitraryValue_Decode(sr)
-				if err != nil {
-					return err
-				}
-				valueIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			keyIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TStruct:
+			v.Value, err = _ArbitraryValue_Decode(sr)
+			if err != nil {
+				return err
 			}
+			valueIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -4823,7 +4715,7 @@ func (v *KeyValue_SetValueV2_Result) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
+		switch {
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -4983,7 +4875,7 @@ func (v *KeyValue_Size_Args) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
+		switch {
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -5277,21 +5169,15 @@ func (v *KeyValue_Size_Result) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 0:
-			if fh.Type == wire.TI64 {
-				var x int64
-				x, err = sr.ReadInt64()
-				v.Success = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 0 && fh.Type == wire.TI64:
+			var x int64
+			x, err = sr.ReadInt64()
+			v.Success = &x
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -5484,7 +5370,7 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) Decode(sr stream.R
 	}
 
 	for ok {
-		switch fh.ID {
+		switch {
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -5713,7 +5599,7 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) Decode(sr stream
 	}
 
 	for ok {
-		switch fh.ID {
+		switch {
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err

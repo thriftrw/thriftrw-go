@@ -138,19 +138,13 @@ func (v *ContactInfo) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.EmailAddress, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				emailAddressIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.EmailAddress, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
+			emailAddressIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -1166,167 +1160,95 @@ func (v *DefaultsStruct) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TI32 {
-				var x int32
-				x, err = sr.ReadInt32()
-				v.RequiredPrimitive = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TI32:
+			var x int32
+			x, err = sr.ReadInt32()
+			v.RequiredPrimitive = &x
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TI32 {
-				var x int32
-				x, err = sr.ReadInt32()
-				v.OptionalPrimitive = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 2 && fh.Type == wire.TI32:
+			var x int32
+			x, err = sr.ReadInt32()
+			v.OptionalPrimitive = &x
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TI32 {
-				var x enums.EnumDefault
-				x, err = _EnumDefault_Decode(sr)
-				v.RequiredEnum = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 3 && fh.Type == wire.TI32:
+			var x enums.EnumDefault
+			x, err = _EnumDefault_Decode(sr)
+			v.RequiredEnum = &x
+			if err != nil {
+				return err
 			}
-		case 4:
-			if fh.Type == wire.TI32 {
-				var x enums.EnumDefault
-				x, err = _EnumDefault_Decode(sr)
-				v.OptionalEnum = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 4 && fh.Type == wire.TI32:
+			var x enums.EnumDefault
+			x, err = _EnumDefault_Decode(sr)
+			v.OptionalEnum = &x
+			if err != nil {
+				return err
 			}
-		case 5:
-			if fh.Type == wire.TList {
-				v.RequiredList, err = _List_String_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 5 && fh.Type == wire.TList:
+			v.RequiredList, err = _List_String_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 6:
-			if fh.Type == wire.TList {
-				v.OptionalList, err = _List_Double_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 6 && fh.Type == wire.TList:
+			v.OptionalList, err = _List_Double_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 7:
-			if fh.Type == wire.TStruct {
-				v.RequiredStruct, err = _Frame_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 7 && fh.Type == wire.TStruct:
+			v.RequiredStruct, err = _Frame_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 8:
-			if fh.Type == wire.TStruct {
-				v.OptionalStruct, err = _Edge_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 8 && fh.Type == wire.TStruct:
+			v.OptionalStruct, err = _Edge_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 9:
-			if fh.Type == wire.TBool {
-				var x bool
-				x, err = sr.ReadBool()
-				v.RequiredBoolDefaultTrue = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 9 && fh.Type == wire.TBool:
+			var x bool
+			x, err = sr.ReadBool()
+			v.RequiredBoolDefaultTrue = &x
+			if err != nil {
+				return err
 			}
-		case 10:
-			if fh.Type == wire.TBool {
-				var x bool
-				x, err = sr.ReadBool()
-				v.OptionalBoolDefaultTrue = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 10 && fh.Type == wire.TBool:
+			var x bool
+			x, err = sr.ReadBool()
+			v.OptionalBoolDefaultTrue = &x
+			if err != nil {
+				return err
 			}
-		case 11:
-			if fh.Type == wire.TBool {
-				var x bool
-				x, err = sr.ReadBool()
-				v.RequiredBoolDefaultFalse = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 11 && fh.Type == wire.TBool:
+			var x bool
+			x, err = sr.ReadBool()
+			v.RequiredBoolDefaultFalse = &x
+			if err != nil {
+				return err
 			}
-		case 12:
-			if fh.Type == wire.TBool {
-				var x bool
-				x, err = sr.ReadBool()
-				v.OptionalBoolDefaultFalse = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 12 && fh.Type == wire.TBool:
+			var x bool
+			x, err = sr.ReadBool()
+			v.OptionalBoolDefaultFalse = &x
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -2040,31 +1962,19 @@ func (v *Edge) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TStruct {
-				v.StartPoint, err = _Point_Decode(sr)
-				if err != nil {
-					return err
-				}
-				startPointIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TStruct:
+			v.StartPoint, err = _Point_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TStruct {
-				v.EndPoint, err = _Point_Decode(sr)
-				if err != nil {
-					return err
-				}
-				endPointIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			startPointIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TStruct:
+			v.EndPoint, err = _Point_Decode(sr)
+			if err != nil {
+				return err
 			}
+			endPointIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -2254,7 +2164,7 @@ func (v *EmptyStruct) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
+		switch {
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -2488,31 +2398,19 @@ func (v *Frame) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TStruct {
-				v.TopLeft, err = _Point_Decode(sr)
-				if err != nil {
-					return err
-				}
-				topLeftIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TStruct:
+			v.TopLeft, err = _Point_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TStruct {
-				v.Size, err = _Size_Decode(sr)
-				if err != nil {
-					return err
-				}
-				sizeIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			topLeftIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TStruct:
+			v.Size, err = _Size_Decode(sr)
+			if err != nil {
+				return err
 			}
+			sizeIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -2901,83 +2799,47 @@ func (v *GoTags) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.Foo, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				FooIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.Foo, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.Bar = &x
-				if err != nil {
-					return err
-				}
+			FooIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.Bar = &x
+			if err != nil {
+				return err
+			}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 3 && fh.Type == wire.TBinary:
+			v.FooBar, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TBinary {
-				v.FooBar, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				FooBarIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			FooBarIsSet = true
+		case fh.ID == 4 && fh.Type == wire.TBinary:
+			v.FooBarWithSpace, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 4:
-			if fh.Type == wire.TBinary {
-				v.FooBarWithSpace, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				FooBarWithSpaceIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			FooBarWithSpaceIsSet = true
+		case fh.ID == 5 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.FooBarWithOmitEmpty = &x
+			if err != nil {
+				return err
 			}
-		case 5:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.FooBarWithOmitEmpty = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 6 && fh.Type == wire.TBinary:
+			v.FooBarWithRequired, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 6:
-			if fh.Type == wire.TBinary {
-				v.FooBarWithRequired, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				FooBarWithRequiredIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
-			}
+			FooBarWithRequiredIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -3394,19 +3256,13 @@ func (v *Graph) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TList {
-				v.Edges, err = _List_Edge_Decode(sr)
-				if err != nil {
-					return err
-				}
-				edgesIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TList:
+			v.Edges, err = _List_Edge_Decode(sr)
+			if err != nil {
+				return err
 			}
+			edgesIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -3721,31 +3577,19 @@ func (v *Node) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TI32 {
-				v.Value, err = sr.ReadInt32()
-				if err != nil {
-					return err
-				}
-				valueIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TI32:
+			v.Value, err = sr.ReadInt32()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TStruct {
-				v.Tail, err = _List_Decode(sr)
-				if err != nil {
-					return err
-				}
+			valueIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TStruct:
+			v.Tail, err = _List_Decode(sr)
+			if err != nil {
+				return err
+			}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
-			}
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -4301,111 +4145,63 @@ func (v *NotOmitEmpty) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.NotOmitEmptyString = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.NotOmitEmptyString = &x
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.NotOmitEmptyInt = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.NotOmitEmptyInt = &x
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.NotOmitEmptyBool = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 3 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.NotOmitEmptyBool = &x
+			if err != nil {
+				return err
 			}
-		case 4:
-			if fh.Type == wire.TList {
-				v.NotOmitEmptyList, err = _List_String_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 4 && fh.Type == wire.TList:
+			v.NotOmitEmptyList, err = _List_String_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 5:
-			if fh.Type == wire.TMap {
-				v.NotOmitEmptyMap, err = _Map_String_String_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 5 && fh.Type == wire.TMap:
+			v.NotOmitEmptyMap, err = _Map_String_String_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 6:
-			if fh.Type == wire.TList {
-				v.NotOmitEmptyListMixedWithOmitEmpty, err = _List_String_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 6 && fh.Type == wire.TList:
+			v.NotOmitEmptyListMixedWithOmitEmpty, err = _List_String_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 7:
-			if fh.Type == wire.TList {
-				v.NotOmitEmptyListMixedWithOmitEmptyV2, err = _List_String_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 7 && fh.Type == wire.TList:
+			v.NotOmitEmptyListMixedWithOmitEmptyV2, err = _List_String_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 8:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.OmitEmptyString = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 8 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.OmitEmptyString = &x
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -4844,31 +4640,19 @@ func (v *Omit) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.Serialized, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				serializedIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.Serialized, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				v.Hidden, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				hiddenIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			serializedIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			v.Hidden, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
+			hiddenIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -5083,21 +4867,15 @@ func (v *PersonalInfo) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TI32 {
-				var x int32
-				x, err = sr.ReadInt32()
-				v.Age = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TI32:
+			var x int32
+			x, err = sr.ReadInt32()
+			v.Age = &x
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -5334,31 +5112,19 @@ func (v *Point) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TDouble {
-				v.X, err = sr.ReadDouble()
-				if err != nil {
-					return err
-				}
-				xIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TDouble:
+			v.X, err = sr.ReadDouble()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TDouble {
-				v.Y, err = sr.ReadDouble()
-				if err != nil {
-					return err
-				}
-				yIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			xIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TDouble:
+			v.Y, err = sr.ReadDouble()
+			if err != nil {
+				return err
 			}
+			yIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -5791,117 +5557,69 @@ func (v *PrimitiveOptionalStruct) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBool {
-				var x bool
-				x, err = sr.ReadBool()
-				v.BoolField = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBool:
+			var x bool
+			x, err = sr.ReadBool()
+			v.BoolField = &x
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TI8 {
-				var x int8
-				x, err = sr.ReadInt8()
-				v.ByteField = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 2 && fh.Type == wire.TI8:
+			var x int8
+			x, err = sr.ReadInt8()
+			v.ByteField = &x
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TI16 {
-				var x int16
-				x, err = sr.ReadInt16()
-				v.Int16Field = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 3 && fh.Type == wire.TI16:
+			var x int16
+			x, err = sr.ReadInt16()
+			v.Int16Field = &x
+			if err != nil {
+				return err
 			}
-		case 4:
-			if fh.Type == wire.TI32 {
-				var x int32
-				x, err = sr.ReadInt32()
-				v.Int32Field = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 4 && fh.Type == wire.TI32:
+			var x int32
+			x, err = sr.ReadInt32()
+			v.Int32Field = &x
+			if err != nil {
+				return err
 			}
-		case 5:
-			if fh.Type == wire.TI64 {
-				var x int64
-				x, err = sr.ReadInt64()
-				v.Int64Field = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 5 && fh.Type == wire.TI64:
+			var x int64
+			x, err = sr.ReadInt64()
+			v.Int64Field = &x
+			if err != nil {
+				return err
 			}
-		case 6:
-			if fh.Type == wire.TDouble {
-				var x float64
-				x, err = sr.ReadDouble()
-				v.DoubleField = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 6 && fh.Type == wire.TDouble:
+			var x float64
+			x, err = sr.ReadDouble()
+			v.DoubleField = &x
+			if err != nil {
+				return err
 			}
-		case 7:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.StringField = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 7 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.StringField = &x
+			if err != nil {
+				return err
 			}
-		case 8:
-			if fh.Type == wire.TBinary {
-				v.BinaryField, err = sr.ReadBinary()
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 8 && fh.Type == wire.TBinary:
+			v.BinaryField, err = sr.ReadBinary()
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -6552,103 +6270,55 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBool {
-				v.BoolField, err = sr.ReadBool()
-				if err != nil {
-					return err
-				}
-				boolFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBool:
+			v.BoolField, err = sr.ReadBool()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TI8 {
-				v.ByteField, err = sr.ReadInt8()
-				if err != nil {
-					return err
-				}
-				byteFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			boolFieldIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TI8:
+			v.ByteField, err = sr.ReadInt8()
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TI16 {
-				v.Int16Field, err = sr.ReadInt16()
-				if err != nil {
-					return err
-				}
-				int16FieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			byteFieldIsSet = true
+		case fh.ID == 3 && fh.Type == wire.TI16:
+			v.Int16Field, err = sr.ReadInt16()
+			if err != nil {
+				return err
 			}
-		case 4:
-			if fh.Type == wire.TI32 {
-				v.Int32Field, err = sr.ReadInt32()
-				if err != nil {
-					return err
-				}
-				int32FieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			int16FieldIsSet = true
+		case fh.ID == 4 && fh.Type == wire.TI32:
+			v.Int32Field, err = sr.ReadInt32()
+			if err != nil {
+				return err
 			}
-		case 5:
-			if fh.Type == wire.TI64 {
-				v.Int64Field, err = sr.ReadInt64()
-				if err != nil {
-					return err
-				}
-				int64FieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			int32FieldIsSet = true
+		case fh.ID == 5 && fh.Type == wire.TI64:
+			v.Int64Field, err = sr.ReadInt64()
+			if err != nil {
+				return err
 			}
-		case 6:
-			if fh.Type == wire.TDouble {
-				v.DoubleField, err = sr.ReadDouble()
-				if err != nil {
-					return err
-				}
-				doubleFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			int64FieldIsSet = true
+		case fh.ID == 6 && fh.Type == wire.TDouble:
+			v.DoubleField, err = sr.ReadDouble()
+			if err != nil {
+				return err
 			}
-		case 7:
-			if fh.Type == wire.TBinary {
-				v.StringField, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				stringFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			doubleFieldIsSet = true
+		case fh.ID == 7 && fh.Type == wire.TBinary:
+			v.StringField, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 8:
-			if fh.Type == wire.TBinary {
-				v.BinaryField, err = sr.ReadBinary()
-				if err != nil {
-					return err
-				}
-				binaryFieldIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			stringFieldIsSet = true
+		case fh.ID == 8 && fh.Type == wire.TBinary:
+			v.BinaryField, err = sr.ReadBinary()
+			if err != nil {
+				return err
 			}
+			binaryFieldIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -7016,31 +6686,19 @@ func (v *Rename) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.Default, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				DefaultIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.Default, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				v.CamelCase, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				camelCaseIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			DefaultIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			v.CamelCase, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
+			camelCaseIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -7292,31 +6950,19 @@ func (v *Size) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TDouble {
-				v.Width, err = sr.ReadDouble()
-				if err != nil {
-					return err
-				}
-				widthIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TDouble:
+			v.Width, err = sr.ReadDouble()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TDouble {
-				v.Height, err = sr.ReadDouble()
-				if err != nil {
-					return err
-				}
-				heightIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			widthIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TDouble:
+			v.Height, err = sr.ReadDouble()
+			if err != nil {
+				return err
 			}
+			heightIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -7624,63 +7270,39 @@ func (v *StructLabels) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBool {
-				var x bool
-				x, err = sr.ReadBool()
-				v.IsRequired = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBool:
+			var x bool
+			x, err = sr.ReadBool()
+			v.IsRequired = &x
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.Foo = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.Foo = &x
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.Qux = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 3 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.Qux = &x
+			if err != nil {
+				return err
 			}
-		case 4:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.Quux = &x
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 4 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.Quux = &x
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -8041,43 +7663,25 @@ func (v *User) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.Name, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				nameIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.Name, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TStruct {
-				v.Contact, err = _ContactInfo_Decode(sr)
-				if err != nil {
-					return err
-				}
+			nameIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TStruct:
+			v.Contact, err = _ContactInfo_Decode(sr)
+			if err != nil {
+				return err
+			}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		case fh.ID == 3 && fh.Type == wire.TStruct:
+			v.Personal, err = _PersonalInfo_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TStruct {
-				v.Personal, err = _PersonalInfo_Decode(sr)
-				if err != nil {
-					return err
-				}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
-			}
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -8576,31 +8180,19 @@ func (v *ZapOptOutStruct) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.Name, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				nameIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.Name, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				v.Optout, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				optoutIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			nameIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			v.Optout, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
+			optoutIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err

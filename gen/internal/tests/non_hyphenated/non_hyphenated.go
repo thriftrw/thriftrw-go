@@ -95,7 +95,7 @@ func (v *First) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
+		switch {
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -237,7 +237,7 @@ func (v *Second) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
+		switch {
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err

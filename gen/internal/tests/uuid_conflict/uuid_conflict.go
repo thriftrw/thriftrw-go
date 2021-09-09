@@ -244,31 +244,19 @@ func (v *UUIDConflict) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.LocalUUID, err = _UUID_Decode(sr)
-				if err != nil {
-					return err
-				}
-				localUUIDIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.LocalUUID, err = _UUID_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TStruct {
-				v.ImportedUUID, err = _UUID_1_Decode(sr)
-				if err != nil {
-					return err
-				}
-				importedUUIDIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			localUUIDIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TStruct:
+			v.ImportedUUID, err = _UUID_1_Decode(sr)
+			if err != nil {
+				return err
 			}
+			importedUUIDIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err

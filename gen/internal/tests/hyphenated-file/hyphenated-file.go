@@ -153,19 +153,13 @@ func (v *DocumentStruct) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TStruct {
-				v.Second, err = _Second_Decode(sr)
-				if err != nil {
-					return err
-				}
-				secondIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TStruct:
+			v.Second, err = _Second_Decode(sr)
+			if err != nil {
+				return err
 			}
+			secondIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err

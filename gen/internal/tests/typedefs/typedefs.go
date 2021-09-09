@@ -353,21 +353,15 @@ func (v *DefaultPrimitiveTypedef) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				var x State
-				x, err = _State_Decode(sr)
-				v.State = &x
-				if err != nil {
-					return err
-				}
-
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			var x State
+			x, err = _State_Decode(sr)
+			v.State = &x
+			if err != nil {
+				return err
 			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -955,33 +949,21 @@ func (v *Event) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TStruct {
-				v.UUID, err = _UUID_Decode(sr)
-				if err != nil {
-					return err
-				}
-				uuidIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TStruct:
+			v.UUID, err = _UUID_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TI64 {
-				var x Timestamp
-				x, err = _Timestamp_Decode(sr)
-				v.Time = &x
-				if err != nil {
-					return err
-				}
+			uuidIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TI64:
+			var x Timestamp
+			x, err = _Timestamp_Decode(sr)
+			v.Time = &x
+			if err != nil {
+				return err
+			}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
-			}
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -2427,43 +2409,25 @@ func (v *Transition) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.FromState, err = _State_Decode(sr)
-				if err != nil {
-					return err
-				}
-				fromStateIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.FromState, err = _State_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				v.ToState, err = _State_Decode(sr)
-				if err != nil {
-					return err
-				}
-				toStateIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			fromStateIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			v.ToState, err = _State_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TList {
-				v.Events, err = _EventGroup_Decode(sr)
-				if err != nil {
-					return err
-				}
+			toStateIsSet = true
+		case fh.ID == 3 && fh.Type == wire.TList:
+			v.Events, err = _EventGroup_Decode(sr)
+			if err != nil {
+				return err
+			}
 
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
-			}
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -2723,19 +2687,13 @@ func (v *TransitiveTypedefField) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TStruct {
-				v.DefUUID, err = _MyUUID_Decode(sr)
-				if err != nil {
-					return err
-				}
-				defUUIDIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TStruct:
+			v.DefUUID, err = _MyUUID_Decode(sr)
+			if err != nil {
+				return err
 			}
+			defUUIDIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -3013,31 +2971,19 @@ func (v *I128) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TI64 {
-				v.High, err = sr.ReadInt64()
-				if err != nil {
-					return err
-				}
-				highIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TI64:
+			v.High, err = sr.ReadInt64()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TI64 {
-				v.Low, err = sr.ReadInt64()
-				if err != nil {
-					return err
-				}
-				lowIsSet = true
-			} else {
-				if err := sr.Skip(fh.Type); err != nil {
-					return err
-				}
+			highIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TI64:
+			v.Low, err = sr.ReadInt64()
+			if err != nil {
+				return err
 			}
+			lowIsSet = true
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
