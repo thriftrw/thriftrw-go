@@ -15,8 +15,7 @@ LINT_EXCLUDES = \
 	plugin/api/plugin.go \
 	plugin/api/plugin_client.go \
 	plugin/api/servicegenerator.go \
-	plugin/api/servicegenerator_client.go \
-	vendor/
+	plugin/api/servicegenerator_client.go
 
 # For tests on generated code, ignore deprecated warnings.
 LINT_EXCLUDES += gen/.*_test.go:.*deprecated
@@ -33,7 +32,7 @@ LINT_EXCLUDES += unknown.*JSON.*option.*required
 RAGEL_TAR = $(BUILD_DIR)/src/ragel-$(RAGEL_VERSION).tar.gz
 
 GO_FILES := $(shell \
-	find . '(' -path '*/.*' -o -path './vendor' ')' -prune \
+	find . -path '*/.*' -prune \
 	-o -name '*.go' -print | cut -b3-)
 
 .PHONY: build
