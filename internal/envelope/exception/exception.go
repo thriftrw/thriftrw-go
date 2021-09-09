@@ -524,6 +524,10 @@ func (v *TApplicationException) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TI32 {
@@ -534,6 +538,14 @@ func (v *TApplicationException) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

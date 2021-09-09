@@ -2422,6 +2422,10 @@ func (v *ContainersOfContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TList {
@@ -2430,6 +2434,10 @@ func (v *ContainersOfContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TList {
@@ -2438,6 +2446,10 @@ func (v *ContainersOfContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 4:
 			if fh.Type == wire.TSet {
@@ -2446,6 +2458,10 @@ func (v *ContainersOfContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 5:
 			if fh.Type == wire.TSet {
@@ -2454,6 +2470,10 @@ func (v *ContainersOfContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 6:
 			if fh.Type == wire.TSet {
@@ -2462,6 +2482,10 @@ func (v *ContainersOfContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 7:
 			if fh.Type == wire.TMap {
@@ -2470,6 +2494,10 @@ func (v *ContainersOfContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 8:
 			if fh.Type == wire.TMap {
@@ -2478,6 +2506,10 @@ func (v *ContainersOfContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 9:
 			if fh.Type == wire.TMap {
@@ -2486,6 +2518,14 @@ func (v *ContainersOfContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -3917,6 +3957,10 @@ func (v *EnumContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TSet {
@@ -3925,6 +3969,10 @@ func (v *EnumContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TMap {
@@ -3933,6 +3981,14 @@ func (v *EnumContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -4523,6 +4579,10 @@ func (v *ListOfConflictingEnums) Decode(sr stream.Reader) error {
 					return err
 				}
 				recordsIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TList {
@@ -4531,6 +4591,14 @@ func (v *ListOfConflictingEnums) Decode(sr stream.Reader) error {
 					return err
 				}
 				otherRecordsIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -5060,6 +5128,10 @@ func (v *ListOfConflictingUUIDs) Decode(sr stream.Reader) error {
 					return err
 				}
 				uuidsIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TList {
@@ -5068,6 +5140,14 @@ func (v *ListOfConflictingUUIDs) Decode(sr stream.Reader) error {
 					return err
 				}
 				otherUUIDsIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -5347,6 +5427,14 @@ func (v *ListOfOptionalPrimitives) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -5555,6 +5643,14 @@ func (v *ListOfRequiredPrimitives) Decode(sr stream.Reader) error {
 					return err
 				}
 				listOfStringsIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -6083,6 +6179,10 @@ func (v *MapOfBinaryAndString) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TMap {
@@ -6091,6 +6191,14 @@ func (v *MapOfBinaryAndString) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -7096,6 +7204,10 @@ func (v *PrimitiveContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TList {
@@ -7104,6 +7216,10 @@ func (v *PrimitiveContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TSet {
@@ -7112,6 +7228,10 @@ func (v *PrimitiveContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 4:
 			if fh.Type == wire.TSet {
@@ -7120,6 +7240,10 @@ func (v *PrimitiveContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 5:
 			if fh.Type == wire.TMap {
@@ -7128,6 +7252,10 @@ func (v *PrimitiveContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 6:
 			if fh.Type == wire.TMap {
@@ -7136,6 +7264,14 @@ func (v *PrimitiveContainers) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -7815,6 +7951,10 @@ func (v *PrimitiveContainersRequired) Decode(sr stream.Reader) error {
 					return err
 				}
 				listOfStringsIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TSet {
@@ -7823,6 +7963,10 @@ func (v *PrimitiveContainersRequired) Decode(sr stream.Reader) error {
 					return err
 				}
 				setOfIntsIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TMap {
@@ -7831,6 +7975,14 @@ func (v *PrimitiveContainersRequired) Decode(sr stream.Reader) error {
 					return err
 				}
 				mapOfIntsToDoublesIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

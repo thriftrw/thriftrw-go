@@ -988,6 +988,10 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 					return err
 				}
 				boolFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TI8 {
@@ -996,6 +1000,10 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 					return err
 				}
 				byteFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TI16 {
@@ -1004,6 +1012,10 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 					return err
 				}
 				int16FieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 4:
 			if fh.Type == wire.TI32 {
@@ -1012,6 +1024,10 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 					return err
 				}
 				int32FieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 5:
 			if fh.Type == wire.TI64 {
@@ -1020,6 +1036,10 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 					return err
 				}
 				int64FieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 6:
 			if fh.Type == wire.TDouble {
@@ -1028,6 +1048,10 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 					return err
 				}
 				doubleFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 7:
 			if fh.Type == wire.TBinary {
@@ -1036,6 +1060,10 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 					return err
 				}
 				stringFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 8:
 			if fh.Type == wire.TBinary {
@@ -1044,6 +1072,10 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 					return err
 				}
 				binaryFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 9:
 			if fh.Type == wire.TList {
@@ -1052,6 +1084,10 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 					return err
 				}
 				listOfStringsIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 10:
 			if fh.Type == wire.TSet {
@@ -1060,6 +1096,10 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 					return err
 				}
 				setOfIntsIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 11:
 			if fh.Type == wire.TMap {
@@ -1068,6 +1108,14 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 					return err
 				}
 				mapOfIntsToDoublesIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

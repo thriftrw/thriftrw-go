@@ -21,6 +21,7 @@
 package gen
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"reflect"
@@ -35,6 +36,7 @@ import (
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
+	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
@@ -729,20 +731,55 @@ func TestStructFromWireUnrecognizedField(t *testing.T) {
 			}}),
 			want: ts.ContactInfo{EmailAddress: "foo"},
 		},
+		{
+			desc: "unknown field, wrong order",
+			give: wire.NewValueStruct(wire.Struct{Fields: []wire.Field{
+				{ID: 2, Value: wire.NewValueI32(42)},
+				{ID: 1, Value: wire.NewValueString("foo")},
+			}}),
+			want: ts.ContactInfo{EmailAddress: "foo"},
+		},
 	}
 
 	for _, tt := range tests {
-		var o ts.ContactInfo
-		err := o.FromWire(tt.give)
-		if tt.wantError != "" {
-			if assert.Error(t, err, tt.desc) {
-				assert.Contains(t, err.Error(), tt.wantError)
+		t.Run(tt.desc+"/wire", func(t *testing.T) {
+			var o ts.ContactInfo
+			err := o.FromWire(tt.give)
+			if tt.wantError != "" {
+				if assert.Error(t, err, tt.desc) {
+					assert.Contains(t, err.Error(), tt.wantError)
+				}
+			} else {
+				if assert.NoError(t, err, tt.desc) {
+					assert.Equal(t, tt.want, o)
+				}
 			}
-		} else {
-			if assert.NoError(t, err, tt.desc) {
-				assert.Equal(t, tt.want, o)
+		})
+
+		t.Run(tt.desc+"/streaming", func(t *testing.T) {
+			var (
+				o   ts.ContactInfo
+				buf bytes.Buffer
+			)
+
+			protocol.Binary.Encode(tt.give, &buf)
+
+			sr := protocol.BinaryStreamer.Reader(bytes.NewReader(buf.Bytes()))
+			err := o.Decode(sr)
+			if tt.wantError != "" {
+				if assert.Error(t, err, tt.desc) {
+					assert.Contains(t, err.Error(), tt.wantError)
+				}
+			} else {
+				if assert.NoError(t, err, tt.desc) {
+					assert.Equal(t, tt.want, o)
+				}
 			}
-		}
+
+			_, err = sr.ReadBool()
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), "unexpected EOF", "exepected error for continued reads")
+		})
 	}
 }
 
@@ -793,17 +830,44 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		var o tu.Document
-		err := o.FromWire(tt.input)
-		if tt.success != nil {
-			if assert.NoError(t, err, tt.desc) {
-				assert.Equal(t, tt.success, &o, tt.desc)
+		t.Run(tt.desc+"/streaming", func(t *testing.T) {
+			var o tu.Document
+			err := o.FromWire(tt.input)
+			if tt.success != nil {
+				if assert.NoError(t, err, tt.desc) {
+					assert.Equal(t, tt.success, &o, tt.desc)
+				}
+			} else {
+				if assert.Error(t, err, tt.desc) {
+					assert.Contains(t, err.Error(), tt.failure, tt.desc)
+				}
 			}
-		} else {
-			if assert.Error(t, err, tt.desc) {
-				assert.Contains(t, err.Error(), tt.failure, tt.desc)
+		})
+
+		t.Run(tt.desc+"/streaming", func(t *testing.T) {
+			var (
+				o   tu.Document
+				buf bytes.Buffer
+			)
+
+			protocol.Binary.Encode(tt.input, &buf)
+
+			sr := protocol.BinaryStreamer.Reader(bytes.NewReader(buf.Bytes()))
+			err := o.Decode(sr)
+			if tt.success != nil {
+				if assert.NoError(t, err, tt.desc) {
+					assert.Equal(t, tt.success, &o, tt.desc)
+				}
+			} else {
+				if assert.Error(t, err, tt.desc) {
+					assert.Contains(t, err.Error(), tt.failure, tt.desc)
+				}
 			}
-		}
+
+			_, err = sr.ReadBool()
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), "unexpected EOF", "exepected error for continued reads")
+		})
 	}
 }
 

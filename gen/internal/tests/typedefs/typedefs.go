@@ -363,6 +363,14 @@ func (v *DefaultPrimitiveTypedef) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -955,6 +963,10 @@ func (v *Event) Decode(sr stream.Reader) error {
 					return err
 				}
 				uuidIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TI64 {
@@ -965,6 +977,14 @@ func (v *Event) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -2415,6 +2435,10 @@ func (v *Transition) Decode(sr stream.Reader) error {
 					return err
 				}
 				fromStateIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TBinary {
@@ -2423,6 +2447,10 @@ func (v *Transition) Decode(sr stream.Reader) error {
 					return err
 				}
 				toStateIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TList {
@@ -2431,6 +2459,14 @@ func (v *Transition) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -2695,6 +2731,14 @@ func (v *TransitiveTypedefField) Decode(sr stream.Reader) error {
 					return err
 				}
 				defUUIDIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -2977,6 +3021,10 @@ func (v *I128) Decode(sr stream.Reader) error {
 					return err
 				}
 				highIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TI64 {
@@ -2985,6 +3033,14 @@ func (v *I128) Decode(sr stream.Reader) error {
 					return err
 				}
 				lowIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

@@ -404,6 +404,10 @@ func (v *Argument) Decode(sr stream.Reader) error {
 					return err
 				}
 				nameIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TStruct {
@@ -412,6 +416,10 @@ func (v *Argument) Decode(sr stream.Reader) error {
 					return err
 				}
 				typeIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TMap {
@@ -420,6 +428,14 @@ func (v *Argument) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -1208,6 +1224,10 @@ func (v *Function) Decode(sr stream.Reader) error {
 					return err
 				}
 				nameIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TBinary {
@@ -1216,6 +1236,10 @@ func (v *Function) Decode(sr stream.Reader) error {
 					return err
 				}
 				thriftNameIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TList {
@@ -1224,6 +1248,10 @@ func (v *Function) Decode(sr stream.Reader) error {
 					return err
 				}
 				argumentsIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 4:
 			if fh.Type == wire.TStruct {
@@ -1232,6 +1260,10 @@ func (v *Function) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 5:
 			if fh.Type == wire.TList {
@@ -1240,6 +1272,10 @@ func (v *Function) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 6:
 			if fh.Type == wire.TBool {
@@ -1250,6 +1286,10 @@ func (v *Function) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 7:
 			if fh.Type == wire.TMap {
@@ -1258,6 +1298,14 @@ func (v *Function) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -2329,6 +2377,10 @@ func (v *GenerateServiceRequest) Decode(sr stream.Reader) error {
 					return err
 				}
 				rootServicesIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TMap {
@@ -2337,6 +2389,10 @@ func (v *GenerateServiceRequest) Decode(sr stream.Reader) error {
 					return err
 				}
 				servicesIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TMap {
@@ -2345,6 +2401,10 @@ func (v *GenerateServiceRequest) Decode(sr stream.Reader) error {
 					return err
 				}
 				modulesIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 4:
 			if fh.Type == wire.TBinary {
@@ -2353,6 +2413,10 @@ func (v *GenerateServiceRequest) Decode(sr stream.Reader) error {
 					return err
 				}
 				packagePrefixIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 5:
 			if fh.Type == wire.TBinary {
@@ -2361,6 +2425,10 @@ func (v *GenerateServiceRequest) Decode(sr stream.Reader) error {
 					return err
 				}
 				thriftRootIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 6:
 			if fh.Type == wire.TList {
@@ -2369,6 +2437,14 @@ func (v *GenerateServiceRequest) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -2957,6 +3033,14 @@ func (v *GenerateServiceResponse) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -3151,6 +3235,10 @@ func (v *HandshakeRequest) Decode(sr stream.Reader) error {
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {
@@ -3543,6 +3631,10 @@ func (v *HandshakeResponse) Decode(sr stream.Reader) error {
 					return err
 				}
 				nameIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TI32 {
@@ -3551,6 +3643,10 @@ func (v *HandshakeResponse) Decode(sr stream.Reader) error {
 					return err
 				}
 				apiVersionIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TList {
@@ -3559,6 +3655,10 @@ func (v *HandshakeResponse) Decode(sr stream.Reader) error {
 					return err
 				}
 				featuresIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 4:
 			if fh.Type == wire.TBinary {
@@ -3569,6 +3669,14 @@ func (v *HandshakeResponse) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -3949,6 +4057,10 @@ func (v *Module) Decode(sr stream.Reader) error {
 					return err
 				}
 				importPathIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TBinary {
@@ -3957,6 +4069,10 @@ func (v *Module) Decode(sr stream.Reader) error {
 					return err
 				}
 				directoryIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TBinary {
@@ -3965,6 +4081,14 @@ func (v *Module) Decode(sr stream.Reader) error {
 					return err
 				}
 				thriftFilePathIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -4541,6 +4665,10 @@ func (v *Service) Decode(sr stream.Reader) error {
 					return err
 				}
 				nameIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 1:
 			if fh.Type == wire.TBinary {
@@ -4549,6 +4677,10 @@ func (v *Service) Decode(sr stream.Reader) error {
 					return err
 				}
 				thriftNameIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 4:
 			if fh.Type == wire.TI32 {
@@ -4559,6 +4691,10 @@ func (v *Service) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 5:
 			if fh.Type == wire.TList {
@@ -4567,6 +4703,10 @@ func (v *Service) Decode(sr stream.Reader) error {
 					return err
 				}
 				functionsIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 6:
 			if fh.Type == wire.TI32 {
@@ -4575,6 +4715,10 @@ func (v *Service) Decode(sr stream.Reader) error {
 					return err
 				}
 				moduleIDIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 8:
 			if fh.Type == wire.TMap {
@@ -4583,6 +4727,14 @@ func (v *Service) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -5518,6 +5670,10 @@ func (v *Type) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TStruct {
@@ -5526,6 +5682,10 @@ func (v *Type) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TStruct {
@@ -5534,6 +5694,10 @@ func (v *Type) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 4:
 			if fh.Type == wire.TStruct {
@@ -5542,6 +5706,10 @@ func (v *Type) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 5:
 			if fh.Type == wire.TStruct {
@@ -5550,6 +5718,10 @@ func (v *Type) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 6:
 			if fh.Type == wire.TStruct {
@@ -5558,6 +5730,14 @@ func (v *Type) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -5968,6 +6148,10 @@ func (v *TypePair) Decode(sr stream.Reader) error {
 					return err
 				}
 				leftIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TStruct {
@@ -5976,6 +6160,14 @@ func (v *TypePair) Decode(sr stream.Reader) error {
 					return err
 				}
 				rightIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -6288,6 +6480,10 @@ func (v *TypeReference) Decode(sr stream.Reader) error {
 					return err
 				}
 				nameIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TBinary {
@@ -6296,6 +6492,10 @@ func (v *TypeReference) Decode(sr stream.Reader) error {
 					return err
 				}
 				importPathIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TMap {
@@ -6304,6 +6504,14 @@ func (v *TypeReference) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -6520,6 +6728,10 @@ func (v *Plugin_Goodbye_Args) Decode(sr stream.Reader) error {
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {
@@ -6745,6 +6957,10 @@ func (v *Plugin_Goodbye_Result) Decode(sr stream.Reader) error {
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {
@@ -6953,6 +7169,14 @@ func (v *Plugin_Handshake_Args) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -7292,6 +7516,14 @@ func (v *Plugin_Handshake_Result) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -7534,6 +7766,14 @@ func (v *ServiceGenerator_Generate_Args) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -7873,6 +8113,14 @@ func (v *ServiceGenerator_Generate_Result) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

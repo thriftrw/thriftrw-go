@@ -1903,6 +1903,14 @@ func (v *StructWithOptionalEnum) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

@@ -252,6 +252,10 @@ func (v *UUIDConflict) Decode(sr stream.Reader) error {
 					return err
 				}
 				localUUIDIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TStruct {
@@ -260,6 +264,14 @@ func (v *UUIDConflict) Decode(sr stream.Reader) error {
 					return err
 				}
 				importedUUIDIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

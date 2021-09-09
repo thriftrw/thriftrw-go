@@ -559,6 +559,10 @@ func (v *ArbitraryValue) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TI64 {
@@ -569,6 +573,10 @@ func (v *ArbitraryValue) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TBinary {
@@ -579,6 +587,10 @@ func (v *ArbitraryValue) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 4:
 			if fh.Type == wire.TList {
@@ -587,6 +599,10 @@ func (v *ArbitraryValue) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 5:
 			if fh.Type == wire.TMap {
@@ -595,6 +611,14 @@ func (v *ArbitraryValue) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -1073,6 +1097,10 @@ func (v *Document) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TBinary {
@@ -1083,6 +1111,14 @@ func (v *Document) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -1283,6 +1319,10 @@ func (v *EmptyUnion) Decode(sr stream.Reader) error {
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {

@@ -183,6 +183,10 @@ func (v *ConflictingNamesSetValueArgs) Decode(sr stream.Reader) error {
 					return err
 				}
 				keyIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TBinary {
@@ -191,6 +195,14 @@ func (v *ConflictingNamesSetValueArgs) Decode(sr stream.Reader) error {
 					return err
 				}
 				valueIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -417,6 +429,14 @@ func (v *InternalError) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -667,6 +687,10 @@ func (v *Cache_Clear_Args) Decode(sr stream.Reader) error {
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {
@@ -883,6 +907,14 @@ func (v *Cache_ClearAfter_Args) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -1149,6 +1181,14 @@ func (v *ConflictingNames_SetValue_Args) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -1406,6 +1446,10 @@ func (v *ConflictingNames_SetValue_Result) Decode(sr stream.Reader) error {
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {
@@ -1618,6 +1662,14 @@ func (v *KeyValue_DeleteValue_Args) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -2031,6 +2083,10 @@ func (v *KeyValue_DeleteValue_Result) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TStruct {
@@ -2039,6 +2095,14 @@ func (v *KeyValue_DeleteValue_Result) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -2389,6 +2453,14 @@ func (v *KeyValue_GetManyValues_Args) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -2901,6 +2973,10 @@ func (v *KeyValue_GetManyValues_Result) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 1:
 			if fh.Type == wire.TStruct {
@@ -2909,6 +2985,14 @@ func (v *KeyValue_GetManyValues_Result) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -3197,6 +3281,14 @@ func (v *KeyValue_GetValue_Args) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -3573,6 +3665,10 @@ func (v *KeyValue_GetValue_Result) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 1:
 			if fh.Type == wire.TStruct {
@@ -3581,6 +3677,14 @@ func (v *KeyValue_GetValue_Result) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -3872,6 +3976,10 @@ func (v *KeyValue_SetValue_Args) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TStruct {
@@ -3880,6 +3988,14 @@ func (v *KeyValue_SetValue_Args) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -4165,6 +4281,10 @@ func (v *KeyValue_SetValue_Result) Decode(sr stream.Reader) error {
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {
@@ -4406,6 +4526,10 @@ func (v *KeyValue_SetValueV2_Args) Decode(sr stream.Reader) error {
 					return err
 				}
 				keyIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TStruct {
@@ -4414,6 +4538,14 @@ func (v *KeyValue_SetValueV2_Args) Decode(sr stream.Reader) error {
 					return err
 				}
 				valueIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -4692,6 +4824,10 @@ func (v *KeyValue_SetValueV2_Result) Decode(sr stream.Reader) error {
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {
@@ -4848,6 +4984,10 @@ func (v *KeyValue_Size_Args) Decode(sr stream.Reader) error {
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {
@@ -5147,6 +5287,14 @@ func (v *KeyValue_Size_Result) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -5337,6 +5485,10 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) Decode(sr stream.R
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {
@@ -5562,6 +5714,10 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) Decode(sr stream
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {

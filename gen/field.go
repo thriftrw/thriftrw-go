@@ -617,8 +617,16 @@ func (f fieldGroupGenerator) Decode(g Generator) error {
 						<if .Required ->
 							<$isSet.Rotate (printf "%sIsSet" .Name)> = true
 						<- end>
+					} else {
+						if err := <$sr>.Skip(<$fh>.Type); err != nil {
+							return err
+						}
 					}
 				<end ->
+				default:
+					if err := <$sr>.Skip(<$fh>.Type); err != nil {
+						return err
+					}
 				}
 
 				if err := <$sr>.ReadFieldEnd(); err != nil {

@@ -96,6 +96,10 @@ func (v *First) Decode(sr stream.Reader) error {
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {
@@ -234,6 +238,10 @@ func (v *Second) Decode(sr stream.Reader) error {
 
 	for ok {
 		switch fh.ID {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {

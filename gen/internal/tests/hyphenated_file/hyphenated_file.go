@@ -161,6 +161,14 @@ func (v *DocumentStructure) Decode(sr stream.Reader) error {
 					return err
 				}
 				r2IsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

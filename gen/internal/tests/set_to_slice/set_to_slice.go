@@ -984,6 +984,10 @@ func (v *Bar) Decode(sr stream.Reader) error {
 					return err
 				}
 				requiredInt32ListFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 2:
 			if fh.Type == wire.TSet {
@@ -992,6 +996,10 @@ func (v *Bar) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 3:
 			if fh.Type == wire.TSet {
@@ -1000,6 +1008,10 @@ func (v *Bar) Decode(sr stream.Reader) error {
 					return err
 				}
 				requiredTypedefStringListFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 4:
 			if fh.Type == wire.TSet {
@@ -1008,6 +1020,10 @@ func (v *Bar) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 5:
 			if fh.Type == wire.TSet {
@@ -1016,6 +1032,10 @@ func (v *Bar) Decode(sr stream.Reader) error {
 					return err
 				}
 				requiredFooListFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 6:
 			if fh.Type == wire.TSet {
@@ -1024,6 +1044,10 @@ func (v *Bar) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 7:
 			if fh.Type == wire.TSet {
@@ -1032,6 +1056,10 @@ func (v *Bar) Decode(sr stream.Reader) error {
 					return err
 				}
 				requiredTypedefFooListFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 8:
 			if fh.Type == wire.TSet {
@@ -1040,6 +1068,10 @@ func (v *Bar) Decode(sr stream.Reader) error {
 					return err
 				}
 
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 9:
 			if fh.Type == wire.TSet {
@@ -1048,6 +1080,10 @@ func (v *Bar) Decode(sr stream.Reader) error {
 					return err
 				}
 				requiredStringListListFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
 			}
 		case 10:
 			if fh.Type == wire.TSet {
@@ -1056,6 +1092,14 @@ func (v *Bar) Decode(sr stream.Reader) error {
 					return err
 				}
 				requiredTypedefStringListListFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -1600,6 +1644,14 @@ func (v *Foo) Decode(sr stream.Reader) error {
 					return err
 				}
 				stringFieldIsSet = true
+			} else {
+				if err := sr.Skip(fh.Type); err != nil {
+					return err
+				}
+			}
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
