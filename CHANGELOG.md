@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [1.29.2] - 2021-09-09
+### Fixed
+- Streaming now handles unrecongized fields and non-matching field types when
+  deserializing Thrift structs.
+
 ## [1.29.1] - 2021-08-31
 ### Fixed
 - Streaming encodes now handle `nil` items properly in containers.
@@ -422,6 +427,7 @@ this release.
 ### Added
 - Initial release.
 
+[1.29.2]: https://github.com/thriftrw/thriftrw-go/compare/v1.29.1...v1.29.2
 [1.29.1]: https://github.com/thriftrw/thriftrw-go/compare/v1.29.0...v1.29.1
 [1.29.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.28.0...v1.29.0
 [1.28.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.27.0...v1.28.0
