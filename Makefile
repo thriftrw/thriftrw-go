@@ -133,4 +133,5 @@ cover:
 
 .PHONY: clean
 clean:
+	rm $(THRIFTRW)
 	go clean
