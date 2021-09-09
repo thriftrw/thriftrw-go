@@ -1,12 +1,12 @@
 module go.uber.org/thriftrw
 
-go 1.13
+go 1.15
 
 require (
 	github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239
-	github.com/fatih/structtag v1.0.0
+	github.com/fatih/structtag v1.2.0
 	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
-	github.com/golang/mock v1.2.0
+	github.com/golang/mock v1.6.0
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/kr/pretty v0.1.0
 	github.com/pkg/errors v0.8.1 // indirect

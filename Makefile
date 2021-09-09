@@ -15,8 +15,7 @@ LINT_EXCLUDES = \
 	plugin/api/plugin.go \
 	plugin/api/plugin_client.go \
 	plugin/api/servicegenerator.go \
-	plugin/api/servicegenerator_client.go \
-	vendor/
+	plugin/api/servicegenerator_client.go
 
 # For tests on generated code, ignore deprecated warnings.
 LINT_EXCLUDES += gen/.*_test.go:.*deprecated
@@ -33,19 +32,19 @@ LINT_EXCLUDES += unknown.*JSON.*option.*required
 RAGEL_TAR = $(BUILD_DIR)/src/ragel-$(RAGEL_VERSION).tar.gz
 
 GO_FILES := $(shell \
-	find . '(' -path '*/.*' -o -path './vendor' ')' -prune \
+	find . -path '*/.*' -prune \
 	-o -name '*.go' -print | cut -b3-)
-
-# Installs dependencies listed in tools_test.go.
-.PHONY: tools
-tools:
-	go list -json tools_test.go | jq -r '.TestImports | .[]' | xargs -n1 go install
 
 .PHONY: build
 build: $(THRIFTRW)
 
 .PHONY: ragel
 ragel: $(RAGEL)
+
+# Installs dependencies listed in tools_test.go.
+.PHONY: tools
+tools:
+	go list -json tools_test.go | jq -r '.TestImports | .[]' | xargs -n1 go install
 
 $(THRIFTRW): $(GO_FILES)
 	go install .
@@ -133,4 +132,5 @@ cover:
 
 .PHONY: clean
 clean:
+	rm $(THRIFTRW)
 	go clean
