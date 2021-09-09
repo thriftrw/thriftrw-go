@@ -762,14 +762,16 @@ func TestStructFromWireUnrecognizedField(t *testing.T) {
 				buf bytes.Buffer
 			)
 
-			protocol.Binary.Encode(tt.give, &buf)
+			require.NoError(t, binary.Default.Encode(tt.give, &buf))
 
-			sr := protocol.BinaryStreamer.Reader(bytes.NewReader(buf.Bytes()))
+			sr := binary.Default.Reader(bytes.NewReader(buf.Bytes()))
+			defer sr.Close()
 			err := o.Decode(sr)
 			if tt.wantError != "" {
 				if assert.Error(t, err, tt.desc) {
 					assert.Contains(t, err.Error(), tt.wantError)
 				}
+				return
 			} else {
 				if assert.NoError(t, err, tt.desc) {
 					assert.Equal(t, tt.want, o)
@@ -850,14 +852,16 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 				buf bytes.Buffer
 			)
 
-			protocol.Binary.Encode(tt.input, &buf)
+			require.NoError(t, binary.Default.Encode(tt.input, &buf))
 
-			sr := protocol.BinaryStreamer.Reader(bytes.NewReader(buf.Bytes()))
+			sr := binary.Default.Reader(bytes.NewReader(buf.Bytes()))
+			defer sr.Close()
 			err := o.Decode(sr)
 			if tt.success != nil {
 				if assert.NoError(t, err, tt.desc) {
 					assert.Equal(t, tt.success, &o, tt.desc)
 				}
+				return
 			} else {
 				if assert.Error(t, err, tt.desc) {
 					assert.Contains(t, err.Error(), tt.failure, tt.desc)
