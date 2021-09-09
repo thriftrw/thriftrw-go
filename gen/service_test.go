@@ -43,8 +43,7 @@ import (
 type serviceType interface {
 	fmt.Stringer
 	envelope.Enveloper
-
-	FromWire(wire.Value) error
+	thriftType
 }
 
 func TestServiceArgsAndResult(t *testing.T) {
