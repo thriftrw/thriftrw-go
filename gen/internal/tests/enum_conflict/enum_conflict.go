@@ -435,26 +435,26 @@ func (v *Records) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TI32 {
-				var x RecordType
-				x, err = _RecordType_Decode(sr)
-				v.RecordType = &x
-				if err != nil {
-					return err
-				}
-
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TI32:
+			var x RecordType
+			x, err = _RecordType_Decode(sr)
+			v.RecordType = &x
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TI32 {
-				var x enums.RecordType
-				x, err = _RecordType_1_Decode(sr)
-				v.OtherRecordType = &x
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 2 && fh.Type == wire.TI32:
+			var x enums.RecordType
+			x, err = _RecordType_1_Decode(sr)
+			v.OtherRecordType = &x
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

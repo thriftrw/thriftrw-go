@@ -203,36 +203,34 @@ func (v *AccessorConflict) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.Name = &x
-				if err != nil {
-					return err
-				}
-
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.Name = &x
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.GetName2 = &x
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.GetName2 = &x
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TBool {
-				var x bool
-				x, err = sr.ReadBool()
-				v.IsSetName2 = &x
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 3 && fh.Type == wire.TBool:
+			var x bool
+			x, err = sr.ReadBool()
+			v.IsSetName2 = &x
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -532,26 +530,26 @@ func (v *AccessorNoConflict) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.Getname = &x
-				if err != nil {
-					return err
-				}
-
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.Getname = &x
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.GetName = &x
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.GetName = &x
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -1431,30 +1429,28 @@ func (v *PrimitiveContainers) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TList {
-				v.A, err = _List_String_Decode(sr)
-				if err != nil {
-					return err
-				}
-
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TList:
+			v.A, err = _List_String_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TSet {
-				v.B, err = _Set_String_mapType_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 3 && fh.Type == wire.TSet:
+			v.B, err = _Set_String_mapType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 5:
-			if fh.Type == wire.TMap {
-				v.C, err = _Map_String_String_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 5 && fh.Type == wire.TMap:
+			v.C, err = _Map_String_String_Decode(sr)
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -1816,22 +1812,22 @@ func (v *StructCollision) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBool {
-				v.CollisionField, err = sr.ReadBool()
-				if err != nil {
-					return err
-				}
-				collisionFieldIsSet = true
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBool:
+			v.CollisionField, err = sr.ReadBool()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				v.CollisionField2, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				collision_fieldIsSet = true
+			collisionFieldIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			v.CollisionField2, err = sr.ReadString()
+			if err != nil {
+				return err
+			}
+			collision_fieldIsSet = true
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -2101,26 +2097,26 @@ func (v *UnionCollision) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBool {
-				var x bool
-				x, err = sr.ReadBool()
-				v.CollisionField = &x
-				if err != nil {
-					return err
-				}
-
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBool:
+			var x bool
+			x, err = sr.ReadBool()
+			v.CollisionField = &x
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.CollisionField2 = &x
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.CollisionField2 = &x
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -2397,14 +2393,16 @@ func (v *WithDefault) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TStruct {
-				v.Pouet, err = _StructCollision_Decode(sr)
-				if err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TStruct:
+			v.Pouet, err = _StructCollision_Decode(sr)
+			if err != nil {
+				return err
+			}
 
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -2907,22 +2905,22 @@ func (v *StructCollision2) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBool {
-				v.CollisionField, err = sr.ReadBool()
-				if err != nil {
-					return err
-				}
-				collisionFieldIsSet = true
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBool:
+			v.CollisionField, err = sr.ReadBool()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				v.CollisionField2, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				collision_fieldIsSet = true
+			collisionFieldIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			v.CollisionField2, err = sr.ReadString()
+			if err != nil {
+				return err
+			}
+			collision_fieldIsSet = true
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -3192,26 +3190,26 @@ func (v *UnionCollision2) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBool {
-				var x bool
-				x, err = sr.ReadBool()
-				v.CollisionField = &x
-				if err != nil {
-					return err
-				}
-
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBool:
+			var x bool
+			x, err = sr.ReadBool()
+			v.CollisionField = &x
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.CollisionField2 = &x
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.CollisionField2 = &x
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

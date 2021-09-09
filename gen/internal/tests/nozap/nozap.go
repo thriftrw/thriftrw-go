@@ -980,94 +980,76 @@ func (v *PrimitiveRequiredStruct) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBool {
-				v.BoolField, err = sr.ReadBool()
-				if err != nil {
-					return err
-				}
-				boolFieldIsSet = true
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBool:
+			v.BoolField, err = sr.ReadBool()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TI8 {
-				v.ByteField, err = sr.ReadInt8()
-				if err != nil {
-					return err
-				}
-				byteFieldIsSet = true
+			boolFieldIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TI8:
+			v.ByteField, err = sr.ReadInt8()
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TI16 {
-				v.Int16Field, err = sr.ReadInt16()
-				if err != nil {
-					return err
-				}
-				int16FieldIsSet = true
+			byteFieldIsSet = true
+		case fh.ID == 3 && fh.Type == wire.TI16:
+			v.Int16Field, err = sr.ReadInt16()
+			if err != nil {
+				return err
 			}
-		case 4:
-			if fh.Type == wire.TI32 {
-				v.Int32Field, err = sr.ReadInt32()
-				if err != nil {
-					return err
-				}
-				int32FieldIsSet = true
+			int16FieldIsSet = true
+		case fh.ID == 4 && fh.Type == wire.TI32:
+			v.Int32Field, err = sr.ReadInt32()
+			if err != nil {
+				return err
 			}
-		case 5:
-			if fh.Type == wire.TI64 {
-				v.Int64Field, err = sr.ReadInt64()
-				if err != nil {
-					return err
-				}
-				int64FieldIsSet = true
+			int32FieldIsSet = true
+		case fh.ID == 5 && fh.Type == wire.TI64:
+			v.Int64Field, err = sr.ReadInt64()
+			if err != nil {
+				return err
 			}
-		case 6:
-			if fh.Type == wire.TDouble {
-				v.DoubleField, err = sr.ReadDouble()
-				if err != nil {
-					return err
-				}
-				doubleFieldIsSet = true
+			int64FieldIsSet = true
+		case fh.ID == 6 && fh.Type == wire.TDouble:
+			v.DoubleField, err = sr.ReadDouble()
+			if err != nil {
+				return err
 			}
-		case 7:
-			if fh.Type == wire.TBinary {
-				v.StringField, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				stringFieldIsSet = true
+			doubleFieldIsSet = true
+		case fh.ID == 7 && fh.Type == wire.TBinary:
+			v.StringField, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 8:
-			if fh.Type == wire.TBinary {
-				v.BinaryField, err = sr.ReadBinary()
-				if err != nil {
-					return err
-				}
-				binaryFieldIsSet = true
+			stringFieldIsSet = true
+		case fh.ID == 8 && fh.Type == wire.TBinary:
+			v.BinaryField, err = sr.ReadBinary()
+			if err != nil {
+				return err
 			}
-		case 9:
-			if fh.Type == wire.TList {
-				v.ListOfStrings, err = _List_String_Decode(sr)
-				if err != nil {
-					return err
-				}
-				listOfStringsIsSet = true
+			binaryFieldIsSet = true
+		case fh.ID == 9 && fh.Type == wire.TList:
+			v.ListOfStrings, err = _List_String_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 10:
-			if fh.Type == wire.TSet {
-				v.SetOfInts, err = _Set_I32_mapType_Decode(sr)
-				if err != nil {
-					return err
-				}
-				setOfIntsIsSet = true
+			listOfStringsIsSet = true
+		case fh.ID == 10 && fh.Type == wire.TSet:
+			v.SetOfInts, err = _Set_I32_mapType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 11:
-			if fh.Type == wire.TMap {
-				v.MapOfIntsToDoubles, err = _Map_I64_Double_Decode(sr)
-				if err != nil {
-					return err
-				}
-				mapOfIntsToDoublesIsSet = true
+			setOfIntsIsSet = true
+		case fh.ID == 11 && fh.Type == wire.TMap:
+			v.MapOfIntsToDoubles, err = _Map_I64_Double_Decode(sr)
+			if err != nil {
+				return err
+			}
+			mapOfIntsToDoublesIsSet = true
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

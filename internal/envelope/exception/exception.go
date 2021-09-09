@@ -514,26 +514,26 @@ func (v *TApplicationException) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.Message = &x
-				if err != nil {
-					return err
-				}
-
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.Message = &x
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TI32 {
-				var x ExceptionType
-				x, err = _ExceptionType_Decode(sr)
-				v.Type = &x
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 2 && fh.Type == wire.TI32:
+			var x ExceptionType
+			x, err = _ExceptionType_Decode(sr)
+			v.Type = &x
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 

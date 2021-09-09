@@ -166,24 +166,24 @@ func (v *DoesNotExistException) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.Key, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				keyIsSet = true
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.Key, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.Error2 = &x
-				if err != nil {
-					return err
-				}
+			keyIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.Error2 = &x
+			if err != nil {
+				return err
+			}
 
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -455,24 +455,24 @@ func (v *DoesNotExistException2) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TBinary {
-				v.Key, err = sr.ReadString()
-				if err != nil {
-					return err
-				}
-				keyIsSet = true
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			v.Key, err = sr.ReadString()
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TBinary {
-				var x string
-				x, err = sr.ReadString()
-				v.Error2 = &x
-				if err != nil {
-					return err
-				}
+			keyIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.Error2 = &x
+			if err != nil {
+				return err
+			}
 
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -665,7 +665,11 @@ func (v *EmptyException) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
+		switch {
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
 		}
 
 		if err := sr.ReadFieldEnd(); err != nil {

@@ -2414,78 +2414,64 @@ func (v *ContainersOfContainers) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TList {
-				v.ListOfLists, err = _List_List_I32_Decode(sr)
-				if err != nil {
-					return err
-				}
-
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TList:
+			v.ListOfLists, err = _List_List_I32_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TList {
-				v.ListOfSets, err = _List_Set_I32_mapType_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 2 && fh.Type == wire.TList:
+			v.ListOfSets, err = _List_Set_I32_mapType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TList {
-				v.ListOfMaps, err = _List_Map_I32_I32_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 3 && fh.Type == wire.TList:
+			v.ListOfMaps, err = _List_Map_I32_I32_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 4:
-			if fh.Type == wire.TSet {
-				v.SetOfSets, err = _Set_Set_String_mapType_sliceType_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 4 && fh.Type == wire.TSet:
+			v.SetOfSets, err = _Set_Set_String_mapType_sliceType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 5:
-			if fh.Type == wire.TSet {
-				v.SetOfLists, err = _Set_List_String_sliceType_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 5 && fh.Type == wire.TSet:
+			v.SetOfLists, err = _Set_List_String_sliceType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 6:
-			if fh.Type == wire.TSet {
-				v.SetOfMaps, err = _Set_Map_String_String_sliceType_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 6 && fh.Type == wire.TSet:
+			v.SetOfMaps, err = _Set_Map_String_String_sliceType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 7:
-			if fh.Type == wire.TMap {
-				v.MapOfMapToInt, err = _Map_Map_String_I32_I64_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 7 && fh.Type == wire.TMap:
+			v.MapOfMapToInt, err = _Map_Map_String_I32_I64_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 8:
-			if fh.Type == wire.TMap {
-				v.MapOfListToSet, err = _Map_List_I32_Set_I64_mapType_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 8 && fh.Type == wire.TMap:
+			v.MapOfListToSet, err = _Map_List_I32_Set_I64_mapType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 9:
-			if fh.Type == wire.TMap {
-				v.MapOfSetToListOfDouble, err = _Map_Set_I32_mapType_List_Double_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 9 && fh.Type == wire.TMap:
+			v.MapOfSetToListOfDouble, err = _Map_Set_I32_mapType_List_Double_Decode(sr)
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -3909,30 +3895,28 @@ func (v *EnumContainers) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TList {
-				v.ListOfEnums, err = _List_EnumDefault_Decode(sr)
-				if err != nil {
-					return err
-				}
-
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TList:
+			v.ListOfEnums, err = _List_EnumDefault_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TSet {
-				v.SetOfEnums, err = _Set_EnumWithValues_mapType_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 2 && fh.Type == wire.TSet:
+			v.SetOfEnums, err = _Set_EnumWithValues_mapType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TMap {
-				v.MapOfEnums, err = _Map_EnumWithDuplicateValues_I32_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 3 && fh.Type == wire.TMap:
+			v.MapOfEnums, err = _Map_EnumWithDuplicateValues_I32_Decode(sr)
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -4515,22 +4499,22 @@ func (v *ListOfConflictingEnums) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TList {
-				v.Records, err = _List_RecordType_Decode(sr)
-				if err != nil {
-					return err
-				}
-				recordsIsSet = true
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TList:
+			v.Records, err = _List_RecordType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TList {
-				v.OtherRecords, err = _List_RecordType_1_Decode(sr)
-				if err != nil {
-					return err
-				}
-				otherRecordsIsSet = true
+			recordsIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TList:
+			v.OtherRecords, err = _List_RecordType_1_Decode(sr)
+			if err != nil {
+				return err
+			}
+			otherRecordsIsSet = true
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -5052,22 +5036,22 @@ func (v *ListOfConflictingUUIDs) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TList {
-				v.Uuids, err = _List_UUID_Decode(sr)
-				if err != nil {
-					return err
-				}
-				uuidsIsSet = true
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TList:
+			v.Uuids, err = _List_UUID_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TList {
-				v.OtherUUIDs, err = _List_UUID_1_Decode(sr)
-				if err != nil {
-					return err
-				}
-				otherUUIDsIsSet = true
+			uuidsIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TList:
+			v.OtherUUIDs, err = _List_UUID_1_Decode(sr)
+			if err != nil {
+				return err
+			}
+			otherUUIDsIsSet = true
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -5339,14 +5323,16 @@ func (v *ListOfOptionalPrimitives) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TList {
-				v.ListOfStrings, err = _List_String_Decode(sr)
-				if err != nil {
-					return err
-				}
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TList:
+			v.ListOfStrings, err = _List_String_Decode(sr)
+			if err != nil {
+				return err
+			}
 
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -5547,14 +5533,16 @@ func (v *ListOfRequiredPrimitives) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TList {
-				v.ListOfStrings, err = _List_String_Decode(sr)
-				if err != nil {
-					return err
-				}
-				listOfStringsIsSet = true
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TList:
+			v.ListOfStrings, err = _List_String_Decode(sr)
+			if err != nil {
+				return err
+			}
+			listOfStringsIsSet = true
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -6075,22 +6063,22 @@ func (v *MapOfBinaryAndString) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TMap {
-				v.BinaryToString, err = _Map_Binary_String_Decode(sr)
-				if err != nil {
-					return err
-				}
-
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TMap:
+			v.BinaryToString, err = _Map_Binary_String_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TMap {
-				v.StringToBinary, err = _Map_String_Binary_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 2 && fh.Type == wire.TMap:
+			v.StringToBinary, err = _Map_String_Binary_Decode(sr)
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -7088,54 +7076,46 @@ func (v *PrimitiveContainers) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TList {
-				v.ListOfBinary, err = _List_Binary_Decode(sr)
-				if err != nil {
-					return err
-				}
-
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TList:
+			v.ListOfBinary, err = _List_Binary_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TList {
-				v.ListOfInts, err = _List_I64_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 2 && fh.Type == wire.TList:
+			v.ListOfInts, err = _List_I64_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TSet {
-				v.SetOfStrings, err = _Set_String_mapType_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 3 && fh.Type == wire.TSet:
+			v.SetOfStrings, err = _Set_String_mapType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 4:
-			if fh.Type == wire.TSet {
-				v.SetOfBytes, err = _Set_Byte_mapType_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 4 && fh.Type == wire.TSet:
+			v.SetOfBytes, err = _Set_Byte_mapType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 5:
-			if fh.Type == wire.TMap {
-				v.MapOfIntToString, err = _Map_I32_String_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 5 && fh.Type == wire.TMap:
+			v.MapOfIntToString, err = _Map_I32_String_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 6:
-			if fh.Type == wire.TMap {
-				v.MapOfStringToBool, err = _Map_String_Bool_Decode(sr)
-				if err != nil {
-					return err
-				}
 
+		case fh.ID == 6 && fh.Type == wire.TMap:
+			v.MapOfStringToBool, err = _Map_String_Bool_Decode(sr)
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
@@ -7807,30 +7787,28 @@ func (v *PrimitiveContainersRequired) Decode(sr stream.Reader) error {
 	}
 
 	for ok {
-		switch fh.ID {
-		case 1:
-			if fh.Type == wire.TList {
-				v.ListOfStrings, err = _List_String_Decode(sr)
-				if err != nil {
-					return err
-				}
-				listOfStringsIsSet = true
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TList:
+			v.ListOfStrings, err = _List_String_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 2:
-			if fh.Type == wire.TSet {
-				v.SetOfInts, err = _Set_I32_mapType_Decode(sr)
-				if err != nil {
-					return err
-				}
-				setOfIntsIsSet = true
+			listOfStringsIsSet = true
+		case fh.ID == 2 && fh.Type == wire.TSet:
+			v.SetOfInts, err = _Set_I32_mapType_Decode(sr)
+			if err != nil {
+				return err
 			}
-		case 3:
-			if fh.Type == wire.TMap {
-				v.MapOfIntsToDoubles, err = _Map_I64_Double_Decode(sr)
-				if err != nil {
-					return err
-				}
-				mapOfIntsToDoublesIsSet = true
+			setOfIntsIsSet = true
+		case fh.ID == 3 && fh.Type == wire.TMap:
+			v.MapOfIntsToDoubles, err = _Map_I64_Double_Decode(sr)
+			if err != nil {
+				return err
+			}
+			mapOfIntsToDoublesIsSet = true
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
 			}
 		}
 
