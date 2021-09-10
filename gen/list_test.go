@@ -21,11 +21,13 @@
 package gen
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/wire"
 )
 
@@ -89,17 +91,40 @@ func TestListRequiredToWire(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			w, err := tt.give.ToWire()
-			require.NoError(t, err, "failed to serialize: %v", tt.give)
-			require.True(t, wire.ValuesAreEqual(tt.want, w))
-			assert.True(t, tt.give.Equals(tt.give))
-			// Round trip them all.
-			got, ok := assertBinaryRoundTrip(t, w, tt.desc)
-			require.True(t, ok, "failed round trip")
-			// Allocate a new instance to deserialize from Thrift representation.
-			x := new(tc.ListOfRequiredPrimitives)
-			require.NoError(t, x.FromWire(got))
-			assert.Equal(t, tt.wantList, x.ListOfStrings)
+			t.Run("Wire", func(t *testing.T) {
+				w, err := tt.give.ToWire()
+				require.NoError(t, err, "failed to serialize: %v", tt.give)
+				require.True(t, wire.ValuesAreEqual(tt.want, w))
+				assert.True(t, tt.give.Equals(tt.give))
+				// Round trip them all.
+				got, ok := assertBinaryRoundTrip(t, w, tt.desc)
+				require.True(t, ok, "failed round trip")
+				// Allocate a new instance to deserialize from Thrift representation.
+				x := new(tc.ListOfRequiredPrimitives)
+				require.NoError(t, x.FromWire(got))
+				assert.Equal(t, tt.wantList, x.ListOfStrings)
+			})
+
+			t.Run("Stream", func(t *testing.T) {
+				var buff bytes.Buffer
+				sw := binary.Default.Writer(&buff)
+				defer sw.Close()
+
+				require.NoError(t, tt.give.Encode(sw))
+
+				sr := binary.Default.Reader(bytes.NewReader(buff.Bytes()))
+				defer sr.Close()
+
+				x := new(tc.ListOfRequiredPrimitives)
+				require.NoError(t, x.Decode(sr))
+				assert.Equal(t, tt.wantList, x.ListOfStrings)
+			})
+
+			t.Run("StreamFromWire", func(t *testing.T) {
+				x := new(tc.ListOfRequiredPrimitives)
+				require.NoError(t, streamDecodeWireType(t, tt.want, x))
+				assert.Equal(t, tt.wantList, x.ListOfStrings)
+			})
 		})
 	}
 }
