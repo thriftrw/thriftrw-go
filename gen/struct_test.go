@@ -23,6 +23,7 @@ package gen
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"reflect"
 	"testing"
 
@@ -35,6 +36,7 @@ import (
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 	"go.uber.org/zap/zapcore"
@@ -1801,28 +1803,49 @@ func TestStructValidation(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		var typ reflect.Type
-		if tt.serialize != nil {
-			typ = reflect.TypeOf(tt.serialize).Elem()
-			v, err := tt.serialize.ToWire()
-			if err == nil {
-				err = wire.EvaluateValue(v)
-			}
-			if assert.Error(t, err, "%v: expected failure but got %v", tt.desc, v) {
-				assert.Contains(t, err.Error(), tt.wantError, tt.desc)
-			}
-		} else {
-			typ = tt.typ
-		}
+		t.Run(tt.desc, func(t *testing.T) {
+			var typ reflect.Type
+			if tt.serialize != nil {
+				typ = reflect.TypeOf(tt.serialize).Elem()
+				t.Run("ToWire", func(t *testing.T) {
+					v, err := tt.serialize.ToWire()
+					if err == nil {
+						err = wire.EvaluateValue(v)
+					}
+					require.Error(t, err)
+					assert.Contains(t, err.Error(), tt.wantError)
+				})
 
-		if typ == nil {
-			t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
-		}
+				t.Run("StreamEncode", func(t *testing.T) {
+					sw := binary.Default.Writer(ioutil.Discard)
+					defer sw.Close()
 
-		x := reflect.New(typ).Interface().(thriftType)
-		if err := x.FromWire(tt.deserialize); assert.Error(t, err, "%v: expected failure but got %v", tt.desc, x) {
-			assert.Contains(t, err.Error(), tt.wantError, tt.desc)
-		}
+					err := tt.serialize.Encode(sw)
+					require.Error(t, err)
+					assert.Contains(t, err.Error(), tt.wantError)
+				})
+			} else {
+				typ = tt.typ
+			}
+
+			if typ == nil {
+				t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
+			}
+
+			t.Run("FromWire", func(t *testing.T) {
+				x := reflect.New(typ).Interface().(thriftType)
+				err := x.FromWire(tt.deserialize)
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantError)
+			})
+
+			t.Run("StreamDecode", func(t *testing.T) {
+				x := reflect.New(typ).Interface().(thriftType)
+				err := streamDecodeWireType(t, tt.deserialize, x)
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantError)
+			})
+		})
 	}
 }
 
