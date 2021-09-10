@@ -22,6 +22,7 @@ package gen
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -33,6 +34,7 @@ import (
 	tv "go.uber.org/thriftrw/gen/internal/tests/services"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
 	"go.uber.org/thriftrw/protocol/binary"
+	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 
@@ -514,25 +516,29 @@ func TestServiceTypesEnveloper(t *testing.T) {
 	require.NoError(t, err, "Failed to get successful GetValue response")
 
 	tests := []struct {
+		desc         string
 		s            envelope.Enveloper
 		wantEnvelope wire.Envelope
 	}{
 		{
-			s: tv.KeyValue_GetValue_Helper.Args((*tv.Key)(stringp("foo"))),
+			desc: "'getValue' call",
+			s:    tv.KeyValue_GetValue_Helper.Args((*tv.Key)(stringp("foo"))),
 			wantEnvelope: wire.Envelope{
 				Name: "getValue",
 				Type: wire.Call,
 			},
 		},
 		{
-			s: getResponse,
+			desc: "reply, with wrapped response",
+			s:    getResponse,
 			wantEnvelope: wire.Envelope{
 				Name: "getValue",
 				Type: wire.Reply,
 			},
 		},
 		{
-			s: tv.KeyValue_DeleteValue_Helper.Args((*tv.Key)(stringp("foo"))),
+			desc: "'deleteValue' call",
+			s:    tv.KeyValue_DeleteValue_Helper.Args((*tv.Key)(stringp("foo"))),
 			wantEnvelope: wire.Envelope{
 				Name: "deleteValue",
 				Type: wire.Call,
@@ -541,21 +547,45 @@ func TestServiceTypesEnveloper(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		buf := &bytes.Buffer{}
-		err := envelope.Write(binary.Default, buf, 1234, tt.s)
-		require.NoError(t, err, "envelope.Write for %v failed", tt)
+		t.Run(tt.desc+"/wire", func(t *testing.T) {
+			buf := &bytes.Buffer{}
+			err := envelope.Write(binary.Default, buf, 1234, tt.s)
+			require.NoError(t, err, "envelope.Write for %v failed", tt)
 
-		// Decode the payload and validate the payload.
-		reader := bytes.NewReader(buf.Bytes())
-		envelope, err := binary.Default.DecodeEnveloped(reader)
-		require.NoError(t, err, "Failed to read enveloped data for %v", tt)
+			// Decode the payload and validate the payload.
+			reader := bytes.NewReader(buf.Bytes())
+			envelope, err := binary.Default.DecodeEnveloped(reader)
+			require.NoError(t, err, "Failed to read enveloped data for %v", tt)
 
-		expected := tt.wantEnvelope
-		expected.SeqID = 1234
-		expected.Value, err = tt.s.ToWire()
-		if assert.NoError(t, err, "Error serializing %v", tt.s) {
+			expected := tt.wantEnvelope
+			expected.SeqID = 1234
+			expected.Value, err = tt.s.ToWire()
+			require.NoError(t, err, "Error serializing %v", tt.s)
 			assert.Equal(t, expected, envelope, "Envelope mismatch for %v", tt)
-		}
+		})
+
+		t.Run(tt.desc+"/stream", func(t *testing.T) {
+			buf := &bytes.Buffer{}
+			ev := binary.EnvelopeV1Responder{
+				Name:  tt.s.MethodName(),
+				SeqID: 1234,
+			}
+
+			err := ev.WriteResponse(tt.s.EnvelopeType(), buf, tt.s.(stream.Enveloper))
+			require.NoError(t, err)
+
+			sType := reflect.TypeOf(tt.s)
+			if sType.Kind() == reflect.Ptr {
+				sType = sType.Elem()
+			}
+
+			reader := bytes.NewReader(buf.Bytes())
+			gotS := reflect.New(sType).Interface().(stream.BodyReader)
+			rw, err := binary.Default.ReadRequest(context.Background(), tt.s.EnvelopeType(), reader, gotS)
+			require.NoError(t, err)
+			assert.Equal(t, &ev, rw)
+			assert.Equal(t, tt.s, gotS)
+		})
 	}
 }
 
