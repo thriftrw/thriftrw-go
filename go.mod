@@ -5,12 +5,11 @@ go 1.15
 require (
 	github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239
 	github.com/fatih/structtag v1.2.0
-	github.com/flynn/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
+	github.com/go-git/go-git/v5 v5.4.2
 	github.com/golang/mock v1.6.0
-	github.com/jessevdk/go-flags v1.4.0
-	github.com/kr/pretty v0.1.0
-	github.com/pkg/errors v0.8.1 // indirect
-	github.com/stretchr/testify v1.4.0
+	github.com/jessevdk/go-flags v1.5.0
+	github.com/kr/pretty v0.2.1
+	github.com/stretchr/testify v1.7.0
 	go.uber.org/atomic v1.3.2
 	go.uber.org/multierr v1.1.0
 	go.uber.org/zap v1.9.1

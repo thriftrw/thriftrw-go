@@ -86,7 +86,7 @@ func TestErrorRequiredCase(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			err := StructSpecs(tt.fromStruct, tt.toStruct)
+			err := structSpecs(tt.fromStruct, tt.toStruct)
 			require.Error(t, err, "expected error")
 			assert.EqualError(t, err, tt.wantError, "wrong error message")
 		})
@@ -140,7 +140,7 @@ func TestRequiredCaseOk(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			err := StructSpecs(tt.fromStruct, tt.toStruct)
+			err := structSpecs(tt.fromStruct, tt.toStruct)
 			require.NoError(t, err, "do not expect an error")
 		})
 	}
@@ -171,7 +171,7 @@ func TestServicesError(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			err := Services(tt.toModule, tt.fromModule)
+			err := services(tt.toModule, tt.fromModule)
 			require.Error(t, err, "expected error")
 			assert.EqualError(t, err, tt.wantError, "wrong error message")
 		})
