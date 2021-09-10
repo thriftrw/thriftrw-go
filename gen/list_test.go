@@ -143,17 +143,28 @@ func TestListRequiredFromWire(t *testing.T) {
 		got := new(tc.ListOfRequiredPrimitives)
 		require.NoError(t, got.FromWire(give), "failed to decode")
 		require.Equal(t, want, got)
-		_, ok := assertBinaryRoundTrip(t, give, t.Name())
-		assert.True(t, ok, "failed round trip")
+
+		testRoundTripCombos(t, want, give, "")
 	})
 
 	// Error if required list is missing in the wire representation.
 	t.Run("absent list field results in an error", func(t *testing.T) {
 		give := wire.NewValueStruct(wire.Struct{})
-		x := new(tc.ListOfRequiredPrimitives)
-		err := x.FromWire(give)
-		require.Error(t, err, "failed to decode")
-		assert.Equal(t, "field ListOfStrings of ListOfRequiredPrimitives is required", err.Error())
+
+		t.Run("FromWire", func(t *testing.T) {
+			x := new(tc.ListOfRequiredPrimitives)
+			err := x.FromWire(give)
+			require.Error(t, err, "failed to fromwire")
+			assert.Equal(t, "field ListOfStrings of ListOfRequiredPrimitives is required", err.Error())
+		})
+
+		t.Run("StreamDecode", func(t *testing.T) {
+			x := new(tc.ListOfRequiredPrimitives)
+			err := streamDecodeWireType(t, give, x)
+			require.Error(t, err, "failed to stream decode")
+			assert.Equal(t, "field ListOfStrings of ListOfRequiredPrimitives is required", err.Error())
+		})
+
 	})
 }
 
