@@ -21,8 +21,13 @@
 package gen
 
 import (
+	"bytes"
 	"fmt"
+	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
 )
@@ -39,4 +44,25 @@ type thriftType interface {
 	FromWire(wire.Value) error
 	Encode(stream.Writer) error
 	Decode(stream.Reader) error
+}
+
+func streamDecodeWireType(t *testing.T, wv wire.Value, tt thriftType) error {
+	t.Helper()
+
+	var buf bytes.Buffer
+	require.NoError(t, binary.Default.Encode(wv, &buf))
+
+	r := bytes.NewReader(buf.Bytes())
+	sr := binary.Default.Reader(r)
+	defer func() {
+		assert.NoError(t, sr.Close())
+	}()
+
+	// Only IO errors would cause Decode to error early - since we shouldn't
+	// expect any of those, the full contents of the raw bytes should be read out.
+	defer func() {
+		assert.Zero(t, r.Len(), "expected to be end of read")
+	}()
+
+	return tt.Decode(sr)
 }
