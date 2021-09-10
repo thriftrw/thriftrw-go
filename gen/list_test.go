@@ -231,9 +231,8 @@ func TestListOptionalFromWire(t *testing.T) {
 			x := new(tc.ListOfOptionalPrimitives)
 			require.NoError(t, x.FromWire(tt.give), tt.desc)
 			assert.Equal(t, tt.want, x.ListOfStrings)
-			_, ok := assertBinaryRoundTrip(t, tt.give, tt.desc)
-			assert.True(t, ok, "failed round trip")
 
+			testRoundTripCombos(t, x, tt.give, "" /* test desc, not needed because already in a t.Run */)
 		})
 	}
 }
