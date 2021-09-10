@@ -1338,16 +1338,13 @@ func TestContainerValidate(t *testing.T) {
 		})
 
 		t.Run(tt.desc+"/streaming", func(t *testing.T) {
-			stt, ok := tt.value.(streamingThriftType)
-			require.True(t, ok)
-
 			var buf bytes.Buffer
 			sw := binary.Default.Writer(&buf)
 			defer func() {
 				assert.NoError(t, sw.Close())
 			}()
 
-			err := stt.Encode(sw)
+			err := tt.value.Encode(sw)
 			require.Error(t, err)
 			assert.Equal(t, tt.wantError, err.Error())
 		})
