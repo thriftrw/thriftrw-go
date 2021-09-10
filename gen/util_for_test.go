@@ -58,11 +58,12 @@ func streamDecodeWireType(t *testing.T, wv wire.Value, tt thriftType) error {
 		assert.NoError(t, sr.Close())
 	}()
 
-	// Only IO errors would cause Decode to error early - since we shouldn't
-	// expect any of those, the full contents of the raw bytes should be read out.
-	defer func() {
+	err := tt.Decode(sr)
+	if err == nil {
+		// We expect to read the entire payload only if it was a valid
+		// request. Invalid requests may return early because, say, one
+		// of the fields failed to decode because it was invalid.
 		assert.Zero(t, r.Len(), "expected to be end of read")
-	}()
-
-	return tt.Decode(sr)
+	}
+	return err
 }
