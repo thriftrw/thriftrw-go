@@ -26,6 +26,7 @@ import (
 	"testing"
 
 	tc "go.uber.org/thriftrw/gen/internal/tests/collision"
+	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
@@ -97,7 +98,9 @@ func TestStruct(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		roundTrip(t, tt.x, tt.x, tt.desc)
+		t.Run(tt.desc, func(t *testing.T) {
+			roundTrip(t, tt.x, tt.x)
+		})
 	}
 }
 
@@ -441,11 +444,13 @@ func TestWithDefault(t *testing.T) {
 	noDefault := &tc.WithDefault{}
 
 	// expect FromWire values to have defaults and be equivalent
-	a := roundTrip(t, withDefault, withDefault, "WithDefault{filled in}").(*tc.WithDefault)
-	b := roundTrip(t, noDefault, withDefault, "WithDefault{}").(*tc.WithDefault)
-	if a != nil && b != nil {
-		require.Equal(t, a, b)
-	}
+	t.Run("WithDefault{filled in}", func(t *testing.T) {
+		roundTrip(t, withDefault, withDefault)
+	})
+
+	t.Run("WithDefault{}", func(t *testing.T) {
+		roundTrip(t, noDefault, withDefault)
+	})
 }
 
 func TestWithDefaultEquals(t *testing.T) {
@@ -532,39 +537,43 @@ func TestMyEnum2Equals(t *testing.T) {
 	}
 }
 
-func roundTrip(t *testing.T, give thriftType, want thriftType, msg string) thriftType {
+func roundTrip(t *testing.T, give thriftType, want thriftType) {
+	t.Helper()
+
+	var buf, sbuf bytes.Buffer
+
 	v, err := give.ToWire()
-	if !assert.NoError(t, err, "failed to serialize: %v", give) {
-		return nil
-	}
+	require.NoError(t, err, "failed to ToWire: %v", give)
+	require.NoError(t, binary.Default.Encode(v, &buf), "failed to serialize")
 
-	var buff bytes.Buffer
-	if !assert.NoError(t, binary.Default.Encode(v, &buff), "%v: failed to serialize", msg) {
-		return nil
-	}
+	sw := protocol.BinaryStreamer.Writer(&sbuf)
+	require.NoError(t, give.Encode(sw))
+	require.NoError(t, sw.Close())
 
-	newV, err := binary.Default.Decode(bytes.NewReader(buff.Bytes()), v.Type())
-	if !assert.NoError(t, err, "%v: failed to deserialize", msg) {
-		return nil
-	}
+	for desc, giveBuf := range map[string]bytes.Buffer{"wire": buf, "stream": sbuf} {
+		t.Run(desc, func(t *testing.T) {
+			giveType := reflect.TypeOf(give)
+			if giveType.Kind() == reflect.Ptr {
+				giveType = giveType.Elem()
+			}
 
-	if !assert.True(
-		t, wire.ValuesAreEqual(newV, v), "%v: deserialize(serialize(%v.ToWire())) != %v", msg, give, v) {
-		return nil
-	}
+			r := bytes.NewReader(giveBuf.Bytes())
 
-	xType := reflect.TypeOf(give)
-	if xType.Kind() == reflect.Ptr {
-		xType = xType.Elem()
-	}
+			newV, err := binary.Default.Decode(r, v.Type())
+			require.NoError(t, err, "failed to decode %s buffer", desc)
+			assert.True(t, wire.ValuesAreEqual(newV, v), "deserialize(serialize(%v.ToWire())) != %v", give, v)
 
-	gotX := reflect.New(xType).Interface().(thriftType)
-	if err := gotX.FromWire(newV); !assert.NoError(t, err, "FromWire: %v", msg) {
-		return nil
-	}
+			got := reflect.New(giveType).Interface().(thriftType)
+			require.NoError(t, got.FromWire(newV), "failed to FromWire")
+			assert.Equal(t, want, got, "unexepected wire decoded thrift obj")
 
-	assert.Equal(t, want, gotX, "FromWire: %v", msg)
-	return gotX
+			r.Seek(0, 0)
+			sGot := reflect.New(giveType).Interface().(thriftType)
+			sr := protocol.BinaryStreamer.Reader(r)
+			require.NoError(t, sGot.Decode(sr))
+			assert.Equal(t, want, sGot, "unexpected stream decoded thrift obj")
+		})
+	}
 }
 
 func TestCollisionAccessors(t *testing.T) {

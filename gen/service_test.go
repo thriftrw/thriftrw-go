@@ -24,6 +24,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"reflect"
 	"testing"
 
@@ -31,7 +32,9 @@ import (
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	tv "go.uber.org/thriftrw/gen/internal/tests/services"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
+	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/protocol/binary"
+	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/ptr"
 	"go.uber.org/thriftrw/wire"
 
@@ -513,25 +516,29 @@ func TestServiceTypesEnveloper(t *testing.T) {
 	require.NoError(t, err, "Failed to get successful GetValue response")
 
 	tests := []struct {
+		desc         string
 		s            envelope.Enveloper
 		wantEnvelope wire.Envelope
 	}{
 		{
-			s: tv.KeyValue_GetValue_Helper.Args((*tv.Key)(stringp("foo"))),
+			desc: "'getValue' call",
+			s:    tv.KeyValue_GetValue_Helper.Args((*tv.Key)(stringp("foo"))),
 			wantEnvelope: wire.Envelope{
 				Name: "getValue",
 				Type: wire.Call,
 			},
 		},
 		{
-			s: getResponse,
+			desc: "reply, with wrapped response",
+			s:    getResponse,
 			wantEnvelope: wire.Envelope{
 				Name: "getValue",
 				Type: wire.Reply,
 			},
 		},
 		{
-			s: tv.KeyValue_DeleteValue_Helper.Args((*tv.Key)(stringp("foo"))),
+			desc: "'deleteValue' call",
+			s:    tv.KeyValue_DeleteValue_Helper.Args((*tv.Key)(stringp("foo"))),
 			wantEnvelope: wire.Envelope{
 				Name: "deleteValue",
 				Type: wire.Call,
@@ -540,21 +547,60 @@ func TestServiceTypesEnveloper(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		buf := &bytes.Buffer{}
-		err := envelope.Write(binary.Default, buf, 1234, tt.s)
-		require.NoError(t, err, "envelope.Write for %v failed", tt)
+		t.Run(tt.desc+"/wire", func(t *testing.T) {
+			buf := &bytes.Buffer{}
+			err := envelope.Write(binary.Default, buf, 1234, tt.s)
+			require.NoError(t, err, "envelope.Write for %v failed", tt)
 
-		// Decode the payload and validate the payload.
-		reader := bytes.NewReader(buf.Bytes())
-		envelope, err := binary.Default.DecodeEnveloped(reader)
-		require.NoError(t, err, "Failed to read enveloped data for %v", tt)
+			// Decode the payload and validate the payload.
+			reader := bytes.NewReader(buf.Bytes())
+			envelope, err := binary.Default.DecodeEnveloped(reader)
+			require.NoError(t, err, "Failed to read enveloped data for %v", tt)
 
-		expected := tt.wantEnvelope
-		expected.SeqID = 1234
-		expected.Value, err = tt.s.ToWire()
-		if assert.NoError(t, err, "Error serializing %v", tt.s) {
+			expected := tt.wantEnvelope
+			expected.SeqID = 1234
+			expected.Value, err = tt.s.ToWire()
+			require.NoError(t, err, "Error serializing %v", tt.s)
 			assert.Equal(t, expected, envelope, "Envelope mismatch for %v", tt)
-		}
+		})
+
+		t.Run(tt.desc+"/stream", func(t *testing.T) {
+			buf := &bytes.Buffer{}
+			wantEh := stream.EnvelopeHeader{
+				Name:  tt.s.MethodName(),
+				SeqID: 1234,
+			}
+
+			sw := protocol.BinaryStreamer.Writer(buf)
+			defer func() {
+				assert.NoError(t, sw.Close())
+			}()
+
+			require.NoError(t, sw.WriteEnvelopeBegin(wantEh))
+			require.NoError(t, tt.s.(stream.Enveloper).Encode(sw))
+			require.NoError(t, sw.WriteEnvelopeEnd())
+
+			reader := bytes.NewReader(buf.Bytes())
+			sr := protocol.BinaryStreamer.Reader(reader)
+			defer func() {
+				assert.NoError(t, sr.Close())
+			}()
+
+			gotEh, err := sr.ReadEnvelopeBegin()
+			require.NoError(t, err)
+			assert.Equal(t, wantEh, gotEh)
+
+			sType := reflect.TypeOf(tt.s)
+			if sType.Kind() == reflect.Ptr {
+				sType = sType.Elem()
+			}
+
+			gotS := reflect.New(sType).Interface().(stream.BodyReader)
+			require.NoError(t, gotS.Decode(sr))
+			assert.Equal(t, tt.s, gotS)
+
+			require.NoError(t, sr.ReadEnvelopeEnd())
+		})
 	}
 }
 
@@ -653,27 +699,49 @@ func TestArgsAndResultValidation(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		var typ reflect.Type
-		if tt.serialize != nil {
-			typ = reflect.TypeOf(tt.serialize).Elem()
-			v, err := tt.serialize.ToWire()
-			if err == nil {
-				err = wire.EvaluateValue(v)
-			}
-			if assert.Error(t, err, "%v: expected failure but got %v", tt.desc, v) {
-				assert.Contains(t, err.Error(), tt.wantError, tt.desc)
-			}
-		} else {
-			typ = tt.typ
-		}
+		t.Run(tt.desc, func(t *testing.T) {
+			var typ reflect.Type
+			if tt.serialize != nil {
+				typ = reflect.TypeOf(tt.serialize).Elem()
 
-		if typ == nil {
-			t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
-		}
+				t.Run("WireEncode", func(t *testing.T) {
+					v, err := tt.serialize.ToWire()
+					if err == nil {
+						err = wire.EvaluateValue(v)
+					}
+					require.Error(t, err)
+					assert.Contains(t, err.Error(), tt.wantError)
+				})
 
-		x := reflect.New(typ).Interface().(serviceType)
-		if err := x.FromWire(tt.deserialize); assert.Errorf(t, err, "%v: expected failure but got %v", tt.desc, x) {
-			assert.Contains(t, err.Error(), tt.wantError, tt.desc)
-		}
+				t.Run("StreamEncode", func(t *testing.T) {
+					sw := binary.Default.Writer(ioutil.Discard)
+					defer sw.Close()
+
+					err := tt.serialize.Encode(sw)
+					require.Error(t, err)
+					assert.Contains(t, err.Error(), tt.wantError)
+				})
+			} else {
+				typ = tt.typ
+			}
+
+			if typ == nil {
+				t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
+			}
+
+			t.Run("WireDecode", func(t *testing.T) {
+				x := reflect.New(typ).Interface().(serviceType)
+				err := x.FromWire(tt.deserialize)
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantError)
+			})
+
+			t.Run("StreamDecode", func(t *testing.T) {
+				x := reflect.New(typ).Interface().(serviceType)
+				err := streamDecodeWireType(t, tt.deserialize, x)
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantError)
+			})
+		})
 	}
 }

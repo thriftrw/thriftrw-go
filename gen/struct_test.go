@@ -21,9 +21,9 @@
 package gen
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"reflect"
 	"testing"
 
@@ -596,11 +596,21 @@ func TestPrimitiveRequiredMissingFields(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		var s ts.PrimitiveRequiredStruct
-		err := s.FromWire(tt.v)
-		if assert.Error(t, err, tt.desc) {
-			assert.Contains(t, err.Error(), tt.wantError, tt.desc)
-		}
+		t.Run(tt.desc+"/wire", func(t *testing.T) {
+			var s ts.PrimitiveRequiredStruct
+			err := s.FromWire(tt.v)
+			if assert.Error(t, err, tt.desc) {
+				assert.Contains(t, err.Error(), tt.wantError, tt.desc)
+			}
+		})
+
+		t.Run(tt.desc+"/streaming", func(t *testing.T) {
+			var s ts.PrimitiveRequiredStruct
+			err := streamDecodeWireType(t, tt.v, &s)
+			if assert.Error(t, err, tt.desc) {
+				assert.Contains(t, err.Error(), tt.wantError, tt.desc)
+			}
+		})
 	}
 }
 
@@ -757,18 +767,8 @@ func TestStructFromWireUnrecognizedField(t *testing.T) {
 		})
 
 		t.Run(tt.desc+"/streaming", func(t *testing.T) {
-			var (
-				o   ts.ContactInfo
-				buf bytes.Buffer
-			)
-
-			require.NoError(t, binary.Default.Encode(tt.give, &buf))
-
-			r := bytes.NewReader(buf.Bytes())
-			sr := binary.Default.Reader(r)
-			defer sr.Close()
-
-			err := o.Decode(sr)
+			var o ts.ContactInfo
+			err := streamDecodeWireType(t, tt.give, &o)
 			if tt.wantError != "" {
 				if assert.Error(t, err, tt.desc) {
 					assert.Contains(t, err.Error(), tt.wantError)
@@ -778,8 +778,6 @@ func TestStructFromWireUnrecognizedField(t *testing.T) {
 					assert.Equal(t, tt.want, o)
 				}
 			}
-
-			assert.Zero(t, r.Len(), "expected to be at end of read")
 		})
 	}
 }
@@ -831,7 +829,7 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.desc+"/streaming", func(t *testing.T) {
+		t.Run(tt.desc+"/wire", func(t *testing.T) {
 			var o tu.Document
 			err := o.FromWire(tt.input)
 			if tt.success != nil {
@@ -846,18 +844,8 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 		})
 
 		t.Run(tt.desc+"/streaming", func(t *testing.T) {
-			var (
-				o   tu.Document
-				buf bytes.Buffer
-			)
-
-			require.NoError(t, binary.Default.Encode(tt.input, &buf))
-
-			r := bytes.NewReader(buf.Bytes())
-			sr := binary.Default.Reader(r)
-			defer sr.Close()
-
-			err := o.Decode(sr)
+			var o tu.Document
+			err := streamDecodeWireType(t, tt.input, &o)
 			if tt.success != nil {
 				if assert.NoError(t, err, tt.desc) {
 					assert.Equal(t, tt.success, &o, tt.desc)
@@ -867,8 +855,6 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 					assert.Contains(t, err.Error(), tt.failure, tt.desc)
 				}
 			}
-
-			assert.Zero(t, r.Len(), "expected to be at end of read")
 		})
 	}
 }
@@ -1097,6 +1083,11 @@ func TestStructWithDefaults(t *testing.T) {
 		var gotFromWire ts.DefaultsStruct
 		if err := gotFromWire.FromWire(tt.giveWire); assert.NoError(t, err) {
 			assert.Equal(t, tt.wantFromWire, &gotFromWire)
+		}
+
+		var sGotFromWire ts.DefaultsStruct
+		if err := streamDecodeWireType(t, tt.giveWire, &sGotFromWire); assert.NoError(t, err) {
+			assert.Equal(t, tt.wantFromWire, &sGotFromWire)
 		}
 	}
 }
@@ -1812,28 +1803,49 @@ func TestStructValidation(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		var typ reflect.Type
-		if tt.serialize != nil {
-			typ = reflect.TypeOf(tt.serialize).Elem()
-			v, err := tt.serialize.ToWire()
-			if err == nil {
-				err = wire.EvaluateValue(v)
-			}
-			if assert.Error(t, err, "%v: expected failure but got %v", tt.desc, v) {
-				assert.Contains(t, err.Error(), tt.wantError, tt.desc)
-			}
-		} else {
-			typ = tt.typ
-		}
+		t.Run(tt.desc, func(t *testing.T) {
+			var typ reflect.Type
+			if tt.serialize != nil {
+				typ = reflect.TypeOf(tt.serialize).Elem()
+				t.Run("ToWire", func(t *testing.T) {
+					v, err := tt.serialize.ToWire()
+					if err == nil {
+						err = wire.EvaluateValue(v)
+					}
+					require.Error(t, err)
+					assert.Contains(t, err.Error(), tt.wantError)
+				})
 
-		if typ == nil {
-			t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
-		}
+				t.Run("StreamEncode", func(t *testing.T) {
+					sw := binary.Default.Writer(ioutil.Discard)
+					defer sw.Close()
 
-		x := reflect.New(typ).Interface().(thriftType)
-		if err := x.FromWire(tt.deserialize); assert.Error(t, err, "%v: expected failure but got %v", tt.desc, x) {
-			assert.Contains(t, err.Error(), tt.wantError, tt.desc)
-		}
+					err := tt.serialize.Encode(sw)
+					require.Error(t, err)
+					assert.Contains(t, err.Error(), tt.wantError)
+				})
+			} else {
+				typ = tt.typ
+			}
+
+			if typ == nil {
+				t.Fatalf("invalid test %q: either typ or serialize must be set", tt.desc)
+			}
+
+			t.Run("FromWire", func(t *testing.T) {
+				x := reflect.New(typ).Interface().(thriftType)
+				err := x.FromWire(tt.deserialize)
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantError)
+			})
+
+			t.Run("StreamDecode", func(t *testing.T) {
+				x := reflect.New(typ).Interface().(thriftType)
+				err := streamDecodeWireType(t, tt.deserialize, x)
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantError)
+			})
+		})
 	}
 }
 
@@ -2075,6 +2087,10 @@ func TestEmptyPrimitivesRoundTrip(t *testing.T) {
 		var got ts.PrimitiveRequiredStruct
 		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
 		assert.Equal(t, give, got)
+
+		var sGot ts.PrimitiveRequiredStruct
+		require.NoError(t, streamDecodeWireType(t, v, &sGot), "failed to stream deserialize")
+		assert.Equal(t, give, sGot)
 	})
 
 	t.Run("optional", func(t *testing.T) {
@@ -2103,6 +2119,10 @@ func TestEmptyPrimitivesRoundTrip(t *testing.T) {
 		var got ts.PrimitiveOptionalStruct
 		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
 		assert.Equal(t, give, got)
+
+		var sGot ts.PrimitiveOptionalStruct
+		require.NoError(t, streamDecodeWireType(t, v, &sGot), "failed to stream deserialize")
+		assert.Equal(t, give, sGot)
 	})
 }
 

@@ -160,10 +160,18 @@ func TestEnumWithDuplicateValuesWire(t *testing.T) {
 }
 
 func TestUnknownEnumValue(t *testing.T) {
+	wv := wire.NewValueI32(42)
+
 	var e te.EnumDefault
-	if assert.NoError(t, e.FromWire(wire.NewValueI32(42))) {
+	if assert.NoError(t, e.FromWire(wv)) {
 		assert.Equal(t, te.EnumDefault(42), e)
 	}
+
+	var se te.EnumDefault
+	if assert.NoError(t, streamDecodeWireType(t, wv, &se)) {
+		assert.Equal(t, te.EnumDefault(42), se)
+	}
+
 }
 
 func TestOptionalEnum(t *testing.T) {
