@@ -22,7 +22,6 @@ package gen
 
 import (
 	"bytes"
-	"context"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -33,6 +32,7 @@ import (
 	tx "go.uber.org/thriftrw/gen/internal/tests/exceptions"
 	tv "go.uber.org/thriftrw/gen/internal/tests/services"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
+	"go.uber.org/thriftrw/protocol"
 	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/ptr"
@@ -566,25 +566,40 @@ func TestServiceTypesEnveloper(t *testing.T) {
 
 		t.Run(tt.desc+"/stream", func(t *testing.T) {
 			buf := &bytes.Buffer{}
-			ev := binary.EnvelopeV1Responder{
+			wantEh := stream.EnvelopeHeader{
 				Name:  tt.s.MethodName(),
 				SeqID: 1234,
 			}
 
-			err := ev.WriteResponse(tt.s.EnvelopeType(), buf, tt.s.(stream.Enveloper))
+			sw := protocol.BinaryStreamer.Writer(buf)
+			defer func() {
+				assert.NoError(t, sw.Close())
+			}()
+
+			require.NoError(t, sw.WriteEnvelopeBegin(wantEh))
+			require.NoError(t, tt.s.(stream.Enveloper).Encode(sw))
+			require.NoError(t, sw.WriteEnvelopeEnd())
+
+			reader := bytes.NewReader(buf.Bytes())
+			sr := protocol.BinaryStreamer.Reader(reader)
+			defer func() {
+				assert.NoError(t, sr.Close())
+			}()
+
+			gotEh, err := sr.ReadEnvelopeBegin()
 			require.NoError(t, err)
+			assert.Equal(t, wantEh, gotEh)
 
 			sType := reflect.TypeOf(tt.s)
 			if sType.Kind() == reflect.Ptr {
 				sType = sType.Elem()
 			}
 
-			reader := bytes.NewReader(buf.Bytes())
 			gotS := reflect.New(sType).Interface().(stream.BodyReader)
-			rw, err := binary.Default.ReadRequest(context.Background(), tt.s.EnvelopeType(), reader, gotS)
-			require.NoError(t, err)
-			assert.Equal(t, &ev, rw)
+			require.NoError(t, gotS.Decode(sr))
 			assert.Equal(t, tt.s, gotS)
+
+			require.NoError(t, sr.ReadEnvelopeEnd())
 		})
 	}
 }
