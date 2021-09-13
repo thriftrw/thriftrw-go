@@ -9,6 +9,7 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/go-git/go-git/v5/utils/merkletrie"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/thriftrw/compile"
@@ -100,7 +101,9 @@ func TestOpenRepo(t *testing.T) {
 	gitDir, repo := createRepoAndCommit(t, tmpDir)
 	changed, err := findChangedThrift(gitDir)
 	assert.NoError(t, err)
-	assert.Equal(t, []*change{&change{file: "v1.thrift", change: Modify}}, changed)
+	assert.Equal(t, []*change{
+		{file: "v1.thrift", change: merkletrie.Modify},
+	}, changed)
 
 	fs := NewGitFS(gitDir, repo, false)
 	fsFrom := NewGitFS(gitDir, repo, true)

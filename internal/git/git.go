@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/go-git/go-git/v5/utils/merkletrie"
 	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/compile"
 	"go.uber.org/thriftrw/internal/compare"
@@ -60,12 +61,12 @@ func UseGit(path string) error {
 	for _, c := range changed {
 		var toModule *compile.Module
 		// TODO: if module was deleted, we need to account for that.
-		if c.change == Modify {
+		if c.change == merkletrie.Modify {
 			toModule, err = compile.Compile(c.file, compile.Filesystem(fs))
 			if err != nil {
 				return err
 			}
-		} else if c.change == Delete {
+		} else if c.change == merkletrie.Delete {
 			// something got deleted, so we are creating an empty module here.
 			toModule = &compile.Module{
 				Name: c.file,
@@ -148,19 +149,9 @@ func (fs FS) Abs(p string) (string, error) {
 	return filepath.Join(fs.gitDir, p), nil
 }
 
-// Action represents the type of action performed in a git change.
-type Action int
-
-// There is no Add as all additions to a new files are backwards
-// compatible.
-const (
-	Modify Action = iota // A file was modified.
-	Delete               // A file was deleted between commits.
-)
-
 type change struct {
 	file   string
-	change Action
+	change merkletrie.Action
 }
 
 // findChangedThrift reads a git repo and finds any Thrift files that got changed
@@ -207,26 +198,18 @@ func findChangedThrift(gitDir string) ([]*change, error) {
 	objects, _ := object.DiffTreeWithOptions(context.Background(), pc, c, &object.DiffTreeOptions{DetectRenames: true}) // *object.Changes
 	var changed []*change
 	for _, o := range objects {
-		a, err := o.Action() // Insert, Delete or Modify.
+		a, err := o.Action() // Insert, delete or modify.
 		if err != nil {
 			return nil, err
 		}
-		if a.String() == "Modify" {
-			from, _, _ := o.Files()
-			if filepath.Ext(from.Name) == ".thrift" {
-				changed = append(changed, &change{
-					file:   o.From.Name,
-					change: Modify,
-				})
-			}
-		} else if a.String() == "Delete" {
-			// Looks like we are testing backwards.
-			// Any delete is not backwards compatible.
+		from, _, _ := o.Files()
+		if filepath.Ext(from.Name) == ".thrift" {
 			changed = append(changed, &change{
 				file:   o.From.Name,
-				change: Delete,
+				change: a,
 			})
 		}
+
 	}
 
 	return changed, nil
