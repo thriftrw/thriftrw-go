@@ -26,16 +26,14 @@ func (e changOptToReqError) Error() string {
 		e.field, e.struc)
 }
 
-
 type removeMethodError struct {
-	method string
+	method  string
 	service string
 }
 
 func (e removeMethodError) Error() string {
 	return fmt.Sprintf("removing method %s in service %s is not backwards compatible", e.method, e.service)
 }
-
 
 type deleteServiceError struct {
 	service string

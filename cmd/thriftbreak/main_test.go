@@ -55,14 +55,14 @@ func TestThriftBreak(t *testing.T) {
 			" deleting service Bar is not backwards compatible;"+
 			" changing an optional field B in AddedRequiredField to required is not backwards compatible;"+
 			" adding a required field C to AddedRequiredField is not backwards compatible",
-			)
+		)
 	})
 	t.Run("integration test single method", func(t *testing.T) {
 		t.Parallel()
 		err := run([]string{"--to_file=tests/v3.thrift", "--from_file=tests/v1.thrift"})
 		require.Error(t, err)
 
-		assert.EqualError(t, err,"removing method methodA in service Foo is not backwards compatible")
+		assert.EqualError(t, err, "removing method methodA in service Foo is not backwards compatible")
 	})
 }
 
@@ -126,7 +126,7 @@ func createRepoAndCommit(t *testing.T, tmpDir string) (string, *git.Repository) 
 		"test/d.thrift":  `service Qux {}`,
 		"somefile.go":    `service Quux{}`,
 	}
-	require.NoError(t, writeThrifts(t, tmpDir, exampleThrifts, worktree, nil,""))
+	require.NoError(t, writeThrifts(t, tmpDir, exampleThrifts, worktree, nil, ""))
 
 	exampleThrifts = map[string]string{
 		"v1.thrift": "namespace rb v1\n" +
@@ -137,7 +137,7 @@ func createRepoAndCommit(t *testing.T, tmpDir string) (string, *git.Repository) 
 			"service Foo {}",
 		"test/v2.thrift": `service Foo {}`,
 		"test/c.thrift":  `service Bar {}`,
-		"somefile.go": `service Qux{}`, // Change name for Go file.
+		"somefile.go":    `service Qux{}`, // Change name for Go file.
 	}
 
 	require.NoError(t, writeThrifts(t, tmpDir, exampleThrifts, worktree, []string{"test/d.thrift"}, "second"))
@@ -161,7 +161,7 @@ func TestThriftBreakIntegration(t *testing.T) {
 		err = run([]string{fmt.Sprintf("--git_repo=%s", gitDir)})
 		require.Error(t, err, "expected lint errors")
 		assert.EqualError(t, err, "deleting service Baz is not backwards compatible;"+
-			" deleting service Qux is not backwards compatible;" +
+			" deleting service Qux is not backwards compatible;"+
 			" deleting service Bar is not backwards compatible;"+
 			" removing method methodA in service Foo is not backwards compatible;"+
 			" adding a required field C to AddedRequiredField is not backwards compatible")

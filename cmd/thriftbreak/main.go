@@ -7,7 +7,6 @@ import (
 
 	"go.uber.org/thriftrw/internal/compare"
 	"go.uber.org/thriftrw/internal/git"
-
 )
 
 func main() {

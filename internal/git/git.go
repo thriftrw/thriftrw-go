@@ -155,7 +155,7 @@ type Action int
 // compatible.
 const (
 	Modify Action = iota // A file was modified.
-	Delete				 // A file was deleted between commits.
+	Delete               // A file was deleted between commits.
 )
 
 type change struct {
