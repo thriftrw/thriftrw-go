@@ -1,61 +1,127 @@
 package git
 
 import (
-	"fmt"
+	"context"
 	"path/filepath"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
-	// "go.uber.org/thriftrw/internal/compare"
+	"go.uber.org/multierr"
+	"go.uber.org/thriftrw/compile"
+	"go.uber.org/thriftrw/internal/compare"
 )
 
-func NewGitFS(repo *git.Repository, gitDir string, from bool) *gitFS {
-	return &gitFS{
-		repo: repo,
+// NewGitFS creates an implementation of FS to use git to discover
+// Thrift changes and previous version of a Thrift file.
+func NewGitFS(gitDir string, repo *git.Repository, from bool) *FS {
+	if repo == nil {
+		repo, err := git.PlainOpenWithOptions(gitDir, &git.PlainOpenOptions{
+			DetectDotGit:          true,
+			EnableDotGitCommonDir: true,
+		})
+		if err != nil {
+			return nil
+		}
+
+		return &FS{
+			repo:   repo,
+			gitDir: gitDir,
+			from:   from,
+		}
+	}
+
+	return &FS{
+		repo:   repo,
 		gitDir: gitDir,
-		from: from,
+		from:   from,
 	}
 }
 
-type gitFS struct{
-	repo *git.Repository
-	gitDir string
-	from bool // Whether we are looking for previous version.
-}
-
-func (fs gitFS) Read(path string) ([]byte, error) {
-	// findChangedThrift(fs.gitDir)
-	// thrift/v1.thrift
-	r, err := git.PlainOpenWithOptions(fs.gitDir, &git.PlainOpenOptions{
+// UseGit takes a path to a git repository and returns errors between HEAD and HEAD~
+// for any incompatible Thrift changes between the two shas.
+func UseGit(path string) error {
+	r, err := git.PlainOpenWithOptions(path, &git.PlainOpenOptions{
 		DetectDotGit:          true,
 		EnableDotGitCommonDir: true,
 	})
 	if err != nil {
-		return nil, err
+		return err
 	}
-	refHead, err := r.Head()
+	// If we let users pass in sha, then we should do the commit calculation here.
+
+	fs := NewGitFS(path, r, false)
+	fsFrom := NewGitFS(path, r, true)
+
+	changed, err := findChangedThrift(path)
+	if err != nil {
+		return err
+	}
+	var errs error
+	for _, c := range changed {
+		var toModule *compile.Module
+		// TODO: if module was deleted, we need to account for that.
+		if c.change == Modify {
+			toModule, err = compile.Compile(c.file, compile.Filesystem(fs))
+			if err != nil {
+				return err
+			}
+		} else if c.change == Delete {
+			// something got deleted, so we are creating an empty module here.
+			toModule = &compile.Module{
+				Name: c.file,
+			}
+		}
+
+		fromModule, err := compile.Compile(c.file, compile.Filesystem(fsFrom))
+		if err != nil {
+			return err
+		}
+		errs = multierr.Append(errs, compare.Modules(toModule, fromModule))
+	}
+
+	return errs
+}
+
+// FS holds reference to components needed for git FS.
+type FS struct {
+	repo   *git.Repository
+	gitDir string
+	from   bool // Whether we are looking for previous version.
+	// sha    string
+}
+
+func (fs FS) findCommit() (*object.Commit, error) {
+	// Default is look at HEAD.
+	refHead, err := fs.repo.Head()
 	if err != nil {
 		return nil, err
 	}
-	var commit *object.Commit
+	hash := refHead.Hash()
+
+	// Return first commit.
 	if !fs.from {
-		commit, err = fs.repo.CommitObject(refHead.Hash())
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		commitIter, err := r.Log(&git.LogOptions{From: refHead.Hash()})
-		if err != nil {
-			return nil, err
-		}
-		_, err = commitIter.Next()
-		if err != nil {
-			return nil, err
-		}
-		commit, _ = commitIter.Next()
-		if err != nil {
-			return nil, err
-		}
+		return fs.repo.CommitObject(hash)
+	}
+
+	// Otherwise, we need to look at provided sha.
+	commitIter, err := fs.repo.Log(&git.LogOptions{From: hash})
+	if err != nil {
+		return nil, err
+	}
+	// Skip one.
+	_, err = commitIter.Next()
+	if err != nil {
+		return nil, err
+	}
+
+	return commitIter.Next()
+}
+
+func (fs FS) Read(path string) ([]byte, error) {
+	commit, err := fs.findCommit()
+
+	if err != nil {
+		return nil, err
 	}
 
 	// filename is going to be the full path. We don't want that.
@@ -63,6 +129,7 @@ func (fs gitFS) Read(path string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	// It's possible that file was deleted and it will not exist.
 	f, err := commit.File(filename)
 	if err != nil {
 		return nil, err
@@ -74,126 +141,93 @@ func (fs gitFS) Read(path string) ([]byte, error) {
 	body := []byte(s)
 
 	return body, nil
-
-	//
-	// commitIter, err := r.Log(&git.LogOptions{From: refHead.Hash()})
-	// commit, err := commitIter.Next()
-	// parentCommit, _ := commit.Parent(0)
-	// fmt.Println(parentCommit.Hash)
-	// fmt.Println(commit.Hash)
-	//
-	// c, _ := commit.Tree()
-	// pc, _ := parentCommit.Tree()
-
-
-
-
-
-	return nil, nil
-	// return ioutil.ReadFile(filename)
 }
 
-func (fs gitFS) Abs(p string) (string, error) {
-
+// Abs returns absolute path to a file.
+func (fs FS) Abs(p string) (string, error) {
 	return filepath.Join(fs.gitDir, p), nil
 }
 
+// Action represents the type of action performed in a git change.
+type Action int
 
+// There is no Add as all additions to a new files are backwards
+// compatible.
+const (
+	Modify Action = iota // A file was modified.
+	Delete				 // A file was deleted between commits.
+)
 
-func findChangedThrift(gitDir string) ([]string, error) {
+type change struct {
+	file   string
+	change Action
+}
+
+// findChangedThrift reads a git repo and finds any Thrift files that got changed
+// between HEAD and previous commit.
+func findChangedThrift(gitDir string) ([]*change, error) {
+	// Init git repo.
 	r, err := git.PlainOpenWithOptions(gitDir, &git.PlainOpenOptions{
 		DetectDotGit:          true,
 		EnableDotGitCommonDir: true,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("could not open repo: %v", err)
+		return nil, err
 	}
+
 	// Get Repo's HEAD
-	refHead, err := r.Head()
-	// Look at the log.
+	refHead, err := r.Head() // *plumbing.Reference
+	if err != nil {
+		return nil, err
+	}
+	// Look at the log. Can't use filters as they need exact path which
+	// we don't know yet.
 	commitIter, err := r.Log(&git.LogOptions{From: refHead.Hash()})
-	commit, err := commitIter.Next()
-	parentCommit, _ := commit.Parent(0)
-	// Get the two commmit trees.
-	c, _ := commit.Tree()
-	pc, _ := parentCommit.Tree()
+	if err != nil {
+		return nil, err
+	}
+	commit, err := commitIter.Next() // *object.Commit
+	if err != nil {
+		return nil, err
+	}
+	parentCommit, err := commit.Parent(0) // *object.Commit
+	if err != nil {
+		return nil, err
+	}
+	// Get the two commit trees.
+	c, err := commit.Tree() // *object.Tree
+	if err != nil {
+		return nil, err
+	}
+	pc, err := parentCommit.Tree() // *object.Tree
+	if err != nil {
+		return nil, err
+	}
 	// Diff the trees and find what changed.
-	objects, _ := object.DiffTree(c, pc)
-	changed := []string{}
+	objects, _ := object.DiffTreeWithOptions(context.Background(), pc, c, &object.DiffTreeOptions{DetectRenames: true}) // *object.Changes
+	var changed []*change
 	for _, o := range objects {
-		a, _ := o.Action()
+		a, err := o.Action() // Insert, Delete or Modify.
+		if err != nil {
+			return nil, err
+		}
 		if a.String() == "Modify" {
-			to, _, _:= o.Files()
-			if filepath.Ext(to.Name) == ".thrift" {
-				changed = append(changed, to.Name)
-				fmt.Printf("changed Thrift file: %s\n", to.Name)
-				// TODO: compiler needs a location of the file, not its content.
-				// toFile, err := to.Contents()
-				if err != nil {
-					return changed, err
-				}
-				// err = compare.CompileFiles(toFile, toFile)
+			from, _, _ := o.Files()
+			if filepath.Ext(from.Name) == ".thrift" {
+				changed = append(changed, &change{
+					file:   o.From.Name,
+					change: Modify,
+				})
 			}
 		} else if a.String() == "Delete" {
-			// TODO: deal with deletes
+			// Looks like we are testing backwards.
+			// Any delete is not backwards compatible.
+			changed = append(changed, &change{
+				file:   o.From.Name,
+				change: Delete,
+			})
 		}
 	}
 
 	return changed, nil
-
-	// fmt.Println(objects)
-
-	// for _, f := range objects {
-	//
-	// 	// commit, err := repo.CommitObject(baseHash)
-	// 	// if err != nil { ... }
-	// 	//
-	// 	// // Load and read the file.
-	// 	// f, err := commit.File("path/to/file.thrift")
-	// 	// if err != nil { ... }
-	// 	//
-	// 	// body, err := f.Contents()
-	//
-	//
-	// 	out, _ := f.From.Tree.File(f.From.Name)
-	// 	fmt.Println(out)
-	// 	err := compare.CompileFiles(f.From.Name, f.To.Name)
-	// 	fmt.Println(err)
-	// }
-
-	// for _, e := range treeHead.Entries {
-	// 	if filepath.Ext(e.Name) == ".thrift" {
-	// 		fmt.Println(e.Name)
-	// 	}
-	// 	if filepath.Ext(e.Name) == ".go" {
-	// 		fmt.Println(e.Name)
-	// 	}
-	// }
-	//
-	// objs, _ := r.TreeObjects()
-	// treeHead, _ := objs.Next()
-	// treePrev, _ := objs.Next()
-
-	// commitPrev, err := r.CommitObject(refPrev.Hash())
-	// treePrev, _ := commitPrev.Tree()
-
-
-
-
-	// fmt.Println(treeHead.Hash)
-	// fmt.Println(treePrev.Hash)
-
-	// commitHead, err := r.CommitObject(refHead.Hash())
-	// treeHead, err := commitHead.Tree()
-	// objects, _ := object.DiffTree(treeHead, treePrev)
-
-	// fmt.Println(objects)
-
-
-	// tree.Files().ForEach(func(f *object.File) error {
-	// 	fmt.Println(f.Name)
-	// 	return nil
-	// })
-
-	// return nil
 }

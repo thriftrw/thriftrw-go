@@ -63,7 +63,7 @@ func Files(toFile, fromFile string) error {
 func Modules(toModule, fromModule *compile.Module) error {
 	err := checkRemovedMethods(toModule, fromModule)
 
-	return multierr.Combine(err, checkRequiredFields(toModule, fromModule))
+	return multierr.Append(err, checkRequiredFields(toModule, fromModule))
 }
 
 func checkRemovedMethods(toModule, fromModule *compile.Module) error {
@@ -102,40 +102,40 @@ func structSpecs(from, to *compile.StructSpec) error {
 		fields[f.ID] = f
 	}
 
-	var errors []error
+	var errs error
 	for _, toField := range to.Fields {
 		if fromField, ok := fields[toField.ID]; ok {
 			fromRequired := fromField.Required
 			toRequired := toField.Required
 			if !fromRequired && toRequired {
-				errors = append(errors, changOptToReqError{toField.ThriftName(), to.ThriftName()})
+				errs = multierr.Append(errs, changOptToReqError{toField.ThriftName(), to.ThriftName()})
 			}
-		} else {
-			if toField.Required {
-				errors = append(errors, addReqError{toField.ThriftName(), to.ThriftName()})
-			}
+		} else if toField.Required {
+			errs = multierr.Append(errs, addReqError{toField.ThriftName(), to.ThriftName()})
 		}
 	}
 
-	return multierr.Combine(errors...)
+	return errs
 }
 
 // Services compares two service definitions.
 func services(toModule, fromModule *compile.Module) error {
-	var errors []error
+	var errs error
 	for n, fromService := range fromModule.Services {
 		toServ, ok := toModule.Services[n]
 		if !ok {
 			// Service was deleted, which is not backwards compatible.
-			errors = append(errors, deleteServiceError{n})
+			errs = multierr.Append(errs, deleteServiceError{n})
+			// Do not need to check its functions since it was deleted.
+
 			continue
 		}
 		for f := range fromService.Functions {
 			if _, ok := toServ.Functions[f]; !ok {
-				errors = append(errors, removeMethodError{ f, n})
+				errs = multierr.Append(errs, removeMethodError{f, n})
 			}
 		}
 	}
 
-	return multierr.Combine(errors...)
+	return errs
 }

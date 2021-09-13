@@ -15,11 +15,6 @@ import (
 	"go.uber.org/thriftrw/internal/compare"
 )
 
-
-func addACommit() {
-
-}
-
 func writeThrifts(t *testing.T, tmpDir string, contents map[string]string, worktree *git.Worktree, extra string) error {
 	t.Helper()
 	for name, content := range contents {
@@ -39,13 +34,16 @@ func writeThrifts(t *testing.T, tmpDir string, contents map[string]string, workt
 		return err
 	}
 
-	_, err = worktree.Commit("thrift update file" + extra, &git.CommitOptions{
+	_, err = worktree.Commit("thrift update file"+extra, &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  "update v1.thrift",
 			Email: "thriftforeverornever@uber.com",
 			When:  time.Now(),
 		},
 	})
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -55,8 +53,6 @@ func writeThrifts(t *testing.T, tmpDir string, contents map[string]string, workt
 func createRepoAndCommit(t *testing.T, tmpDir string) (string, *git.Repository) {
 	t.Helper()
 	// Create a new repo in temp directory.
-
-
 	repository, err := git.PlainInit(tmpDir, false)
 	require.NoError(t, err)
 	worktree, err := repository.Worktree()
@@ -73,7 +69,7 @@ func createRepoAndCommit(t *testing.T, tmpDir string) (string, *git.Repository) 
 		"test/d.thrift": `include "./b.thrift"
 include "./c.thrift"`,
 	}
-	require.NoError(t,writeThrifts(t, tmpDir, exampleThrifts, worktree, ""))
+	require.NoError(t, writeThrifts(t, tmpDir, exampleThrifts, worktree, ""))
 
 	exampleThrifts = map[string]string{
 		"v1.thrift": "namespace rb v1\n" +
@@ -90,7 +86,6 @@ include "./c.thrift"`,
 
 	require.NoError(t, writeThrifts(t, tmpDir, exampleThrifts, worktree, "second"))
 
-
 	return tmpDir, repository
 }
 
@@ -105,18 +100,20 @@ func TestOpenRepo(t *testing.T) {
 	gitDir, repo := createRepoAndCommit(t, tmpDir)
 	changed, err := findChangedThrift(gitDir)
 	assert.NoError(t, err)
-	assert.Equal(t, changed, []string{"v1.thrift"})
+	assert.Equal(t, []*change{&change{file: "v1.thrift", change: Modify}}, changed)
 
-	fs := NewGitFS(repo, gitDir, false)
-	fsFrom := NewGitFS(repo, gitDir, true)
+	fs := NewGitFS(gitDir, repo, false)
+	fsFrom := NewGitFS(gitDir, repo, true)
 
-	toModule, err := compile.Compile("v1.thrift", compile.Filesystem(fs))
-	require.NoError(t, err)
-	fromModule, err := compile.Compile("v1.thrift", compile.Filesystem(fsFrom))
-	require.NoError(t, err)
+	for _, c := range changed {
+		toModule, err := compile.Compile(c.file, compile.Filesystem(fs))
+		require.NoError(t, err)
+		fromModule, err := compile.Compile(c.file, compile.Filesystem(fsFrom))
+		require.NoError(t, err)
 
-	err = compare.Modules(toModule, fromModule)
-	require.Error(t, err)
-	assert.EqualError(t, err, "removing method methodA in service Foo is not backwards compatible;" +
-		" adding a required field C to AddedRequiredField is not backwards compatible")
+		err = compare.Modules(toModule, fromModule)
+		require.Error(t, err)
+		assert.EqualError(t, err, "removing method methodA in service Foo is not backwards compatible;"+
+			" adding a required field C to AddedRequiredField is not backwards compatible")
+	}
 }

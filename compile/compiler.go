@@ -61,8 +61,6 @@ type compiler struct {
 	nonStrict bool
 	// Map from file path to Module representing that file.
 	Modules map[string]*Module
-
-	sha string
 }
 
 func newCompiler() compiler {

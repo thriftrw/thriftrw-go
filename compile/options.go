@@ -62,9 +62,3 @@ func NonStrict() Option {
 		c.nonStrict = true
 	}
 }
-
-func Sha(sha string) Option {
-	return func(c *compiler) {
-		c.sha = sha
-	}
-}
