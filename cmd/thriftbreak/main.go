@@ -10,13 +10,13 @@ import (
 )
 
 func main() {
-	if err := run(os.Args[1:]); err != nil {
-		log.Fatalf("linter error: %v", err)
+	if err := run(os.Args[1:]); err != nil && err != flag.ErrHelp {
+		log.Fatalf("%+v", err)
 	}
 }
 
 // NoFileError is returned is we fail to provide any thrift files to check
-// and no --git_repo option.
+// and no --repo option.
 type NoFileError struct{}
 
 func (e NoFileError) Error() string {
@@ -24,11 +24,11 @@ func (e NoFileError) Error() string {
 }
 
 func run(args []string) error {
-	fs := flag.NewFlagSet("thriftcompat", flag.ContinueOnError)
-	toFile := fs.String("to_file", "", "updated file")
-	fromFile := fs.String("from_file", "", "original file")
-	gitRepo := fs.String("git_repo", "", "location of git repository")
-	if err := fs.Parse(args); err != nil {
+	flag := flag.NewFlagSet("thriftbreak", flag.ContinueOnError)
+	toFile := flag.String("to", "", "updated file")
+	fromFile := flag.String("from", "", "original file")
+	gitRepo := flag.String("repo", "", "location of git repository")
+	if err := flag.Parse(args); err != nil {
 		return err
 	}
 
@@ -40,5 +40,5 @@ func run(args []string) error {
 		return git.UseGit(*gitRepo)
 	}
 
-	return compare.Files(*toFile, *fromFile)
+	return compare.Files(*fromFile, *toFile)
 }

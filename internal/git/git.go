@@ -48,8 +48,6 @@ func UseGit(path string) error {
 	if err != nil {
 		return err
 	}
-	// If we let users pass in sha, then we should do the commit calculation here.
-
 	fs := NewGitFS(path, r, false)
 	fsFrom := NewGitFS(path, r, true)
 
@@ -60,7 +58,6 @@ func UseGit(path string) error {
 	var errs error
 	for _, c := range changed {
 		var toModule *compile.Module
-		// TODO: if module was deleted, we need to account for that.
 		if c.change == merkletrie.Modify {
 			toModule, err = compile.Compile(c.file, compile.Filesystem(fs))
 			if err != nil {
@@ -77,7 +74,7 @@ func UseGit(path string) error {
 		if err != nil {
 			return err
 		}
-		errs = multierr.Append(errs, compare.Modules(toModule, fromModule))
+		errs = multierr.Append(errs, compare.Modules(fromModule, toModule))
 	}
 
 	return errs
@@ -88,7 +85,6 @@ type FS struct {
 	repo   *git.Repository
 	gitDir string
 	from   bool // Whether we are looking for previous version.
-	// sha    string
 }
 
 func (fs FS) findCommit() (*object.Commit, error) {
@@ -195,7 +191,8 @@ func findChangedThrift(gitDir string) ([]*change, error) {
 		return nil, err
 	}
 	// Diff the trees and find what changed.
-	objects, _ := object.DiffTreeWithOptions(context.Background(), pc, c, &object.DiffTreeOptions{DetectRenames: true}) // *object.Changes
+	objects, _ := object.DiffTreeWithOptions(context.Background(),
+		pc, c, &object.DiffTreeOptions{DetectRenames: true}) // *object.Changes
 	var changed []*change
 	for _, o := range objects {
 		a, err := o.Action() // Insert, delete or modify.
@@ -209,7 +206,6 @@ func findChangedThrift(gitDir string) ([]*change, error) {
 				change: a,
 			})
 		}
-
 	}
 
 	return changed, nil

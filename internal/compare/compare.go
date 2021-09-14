@@ -44,7 +44,7 @@ func (e deleteServiceError) Error() string {
 }
 
 // Files compares two full file paths.
-func Files(toFile, fromFile string) error {
+func Files(fromFile, toFile string) error {
 	toModule, err := compile.Compile(toFile)
 	if err != nil {
 		return err
@@ -54,21 +54,21 @@ func Files(toFile, fromFile string) error {
 		return err
 	}
 
-	return Modules(toModule, fromModule)
+	return Modules(fromModule, toModule)
 }
 
 // Modules looks for removed methods and added required fields.
-func Modules(toModule, fromModule *compile.Module) error {
-	err := checkRemovedMethods(toModule, fromModule)
+func Modules(fromModule, toModule *compile.Module) error {
+	err := checkRemovedMethods(fromModule, toModule)
 
-	return multierr.Append(err, checkRequiredFields(toModule, fromModule))
+	return multierr.Append(err, checkRequiredFields(fromModule, toModule))
 }
 
-func checkRemovedMethods(toModule, fromModule *compile.Module) error {
-	return services(toModule, fromModule)
+func checkRemovedMethods(fromModule, toModule *compile.Module) error {
+	return services(fromModule, toModule)
 }
 
-func checkRequiredFields(toModule, fromModule *compile.Module) error {
+func checkRequiredFields(fromModule, toModule *compile.Module) error {
 	for n, spec := range toModule.Types {
 		fromSpec, ok := fromModule.Types[n]
 		if !ok {
@@ -93,7 +93,7 @@ func checkRequiredFields(toModule, fromModule *compile.Module) error {
 
 // StructSpecs compares two structs defined in a Thrift file.
 func structSpecs(from, to *compile.StructSpec) error {
-	fields := map[int16]*compile.FieldSpec{}
+	fields := make(map[int16]*compile.FieldSpec, len(from.Fields))
 	// Assume that these two should be compared.
 	for _, f := range from.Fields {
 		// Capture state of all fields here.
@@ -117,7 +117,7 @@ func structSpecs(from, to *compile.StructSpec) error {
 }
 
 // Services compares two service definitions.
-func services(toModule, fromModule *compile.Module) error {
+func services(fromModule, toModule *compile.Module) error {
 	var errs error
 	for n, fromService := range fromModule.Services {
 		toServ, ok := toModule.Services[n]

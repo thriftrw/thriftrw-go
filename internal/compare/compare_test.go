@@ -9,6 +9,7 @@ import (
 )
 
 func TestErrorRequiredCase(t *testing.T) {
+	t.Parallel()
 	type test struct {
 		desc       string
 		fromStruct *compile.StructSpec
@@ -86,6 +87,7 @@ func TestErrorRequiredCase(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
+			t.Parallel()
 			err := structSpecs(tt.fromStruct, tt.toStruct)
 			require.Error(t, err, "expected error")
 			assert.EqualError(t, err, tt.wantError, "wrong error message")
@@ -94,6 +96,7 @@ func TestErrorRequiredCase(t *testing.T) {
 }
 
 func TestRequiredCaseOk(t *testing.T) {
+	t.Parallel()
 	type test struct {
 		desc       string
 		fromStruct *compile.StructSpec
@@ -140,6 +143,7 @@ func TestRequiredCaseOk(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
+			t.Parallel()
 			err := structSpecs(tt.fromStruct, tt.toStruct)
 			require.NoError(t, err, "do not expect an error")
 		})
@@ -147,6 +151,7 @@ func TestRequiredCaseOk(t *testing.T) {
 }
 
 func TestServicesError(t *testing.T) {
+	t.Parallel()
 	type test struct {
 		desc       string
 		fromModule *compile.Module
@@ -171,7 +176,8 @@ func TestServicesError(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			err := services(tt.toModule, tt.fromModule)
+			t.Parallel()
+			err := services(tt.fromModule, tt.toModule)
 			require.Error(t, err, "expected error")
 			assert.EqualError(t, err, tt.wantError, "wrong error message")
 		})

@@ -24,42 +24,43 @@ func TestThriftBreak(t *testing.T) {
 	})
 	t.Run("wrong file name", func(t *testing.T) {
 		t.Parallel()
-		err := run([]string{"--to_file=tests/something.thrift"})
+		err := run([]string{"--to=tests/something.thrift"})
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "no such file")
 	})
 	t.Run("invalid thrift", func(t *testing.T) {
 		t.Parallel()
-		err := run([]string{"--to_file=tests/invalid.thrift"})
+		err := run([]string{"--to=tests/invalid.thrift"})
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "could not parse file")
 	})
-	t.Run("invalid thrift for from_file", func(t *testing.T) {
+	t.Run("invalid thrift for from", func(t *testing.T) {
 		t.Parallel()
-		err := run([]string{"--to_file=tests/v1.thrift", "--from_file=tests/invalid.thrift"})
+		err := run([]string{"--to=tests/v1.thrift", "--from=tests/invalid.thrift"})
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "could not parse file")
 	})
-	t.Run("missing to_file", func(t *testing.T) {
+	t.Run("missing to", func(t *testing.T) {
 		t.Parallel()
-		err := run([]string{"--from_file=tests/something.thrift"})
+		err := run([]string{"--from=tests/something.thrift"})
 		require.Error(t, err)
 		assert.EqualError(t, err, "must provide an updated Thrift file")
 	})
 	t.Run("integration test all errors", func(t *testing.T) {
 		t.Parallel()
-		err := run([]string{"--to_file=tests/v2.thrift", "--from_file=tests/v1.thrift"})
+		err := run([]string{"--to=tests/v2.thrift", "--from=tests/v1.thrift"})
 		require.Error(t, err)
 
-		assert.EqualError(t, err, "removing method methodA in service Foo is not backwards compatible;"+
-			" deleting service Bar is not backwards compatible;"+
-			" changing an optional field B in AddedRequiredField to required is not backwards compatible;"+
-			" adding a required field C to AddedRequiredField is not backwards compatible",
+		assert.EqualError(t, err,
+			"removing method methodA in service Foo is not backwards compatible;"+
+				" deleting service Bar is not backwards compatible;"+
+				" changing an optional field B in AddedRequiredField to required is not backwards compatible;"+
+				" adding a required field C to AddedRequiredField is not backwards compatible",
 		)
 	})
 	t.Run("integration test single method", func(t *testing.T) {
 		t.Parallel()
-		err := run([]string{"--to_file=tests/v3.thrift", "--from_file=tests/v1.thrift"})
+		err := run([]string{"--to=tests/v3.thrift", "--from=tests/v1.thrift"})
 		require.Error(t, err)
 
 		assert.EqualError(t, err, "removing method methodA in service Foo is not backwards compatible")
@@ -158,7 +159,7 @@ func TestThriftBreakIntegration(t *testing.T) {
 		gitDir, _ := createRepoAndCommit(t, tmpDir)
 		assert.NoError(t, err)
 
-		err = run([]string{fmt.Sprintf("--git_repo=%s", gitDir)})
+		err = run([]string{fmt.Sprintf("--repo=%s", gitDir)})
 		require.Error(t, err, "expected lint errors")
 		assert.EqualError(t, err, "deleting service Baz is not backwards compatible;"+
 			" deleting service Qux is not backwards compatible;"+

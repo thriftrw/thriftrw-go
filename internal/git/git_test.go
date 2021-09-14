@@ -114,9 +114,10 @@ func TestOpenRepo(t *testing.T) {
 		fromModule, err := compile.Compile(c.file, compile.Filesystem(fsFrom))
 		require.NoError(t, err)
 
-		err = compare.Modules(toModule, fromModule)
+		err = compare.Modules(fromModule, toModule)
 		require.Error(t, err)
-		assert.EqualError(t, err, "removing method methodA in service Foo is not backwards compatible;"+
-			" adding a required field C to AddedRequiredField is not backwards compatible")
+		assert.EqualError(t, err,
+			"removing method methodA in service Foo is not backwards compatible;"+
+				" adding a required field C to AddedRequiredField is not backwards compatible")
 	}
 }
