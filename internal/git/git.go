@@ -16,18 +16,13 @@ import (
 // Thrift changes and previous version of a Thrift file.
 func NewGitFS(gitDir string, repo *git.Repository, from bool) *FS {
 	if repo == nil {
-		repo, err := git.PlainOpenWithOptions(gitDir, &git.PlainOpenOptions{
+		var err error
+		repo, err = git.PlainOpenWithOptions(gitDir, &git.PlainOpenOptions{
 			DetectDotGit:          true,
 			EnableDotGitCommonDir: true,
 		})
 		if err != nil {
 			return nil
-		}
-
-		return &FS{
-			repo:   repo,
-			gitDir: gitDir,
-			from:   from,
 		}
 	}
 
@@ -142,6 +137,11 @@ func (fs FS) Read(path string) ([]byte, error) {
 
 // Abs returns absolute path to a file.
 func (fs FS) Abs(p string) (string, error) {
+	// Sometimes p can be a full path already on includes, and sometimes it can be relative.
+	if filepath.IsAbs(p) {
+		return p, nil
+	}
+
 	return filepath.Join(fs.gitDir, p), nil
 }
 

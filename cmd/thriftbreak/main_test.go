@@ -124,11 +124,13 @@ func createRepoAndCommit(t *testing.T, tmpDir string) (string, *git.Repository) 
 			"\nservice Foo {\n    void methodA()\n}",
 		"test/v2.thrift": `service Bar {}`,
 		"test/c.thrift":  `service Baz {}`,
-		"test/d.thrift":  `service Qux {}`,
-		"somefile.go":    `service Quux{}`,
+		"test/d.thrift": `include "../v1.thrift"
+service Qux {}`,
+		"somefile.go": `service Quux{}`,
 	}
 	require.NoError(t, writeThrifts(t, tmpDir, exampleThrifts, worktree, nil, ""))
 
+	// For c.thrift we are also checking to make sure includes work as expected.
 	exampleThrifts = map[string]string{
 		"v1.thrift": "namespace rb v1\n" +
 			"struct AddedRequiredField {\n" +
@@ -137,8 +139,9 @@ func createRepoAndCommit(t *testing.T, tmpDir string) (string, *git.Repository) 
 			"    3: required string C\n}\n" +
 			"service Foo {}",
 		"test/v2.thrift": `service Foo {}`,
-		"test/c.thrift":  `service Bar {}`,
-		"somefile.go":    `service Qux{}`, // Change name for Go file.
+		"test/c.thrift": `include "../v1.thrift"
+service Bar {}`,
+		"somefile.go": `service Qux{}`, // Change name for Go file.
 	}
 
 	require.NoError(t, writeThrifts(t, tmpDir, exampleThrifts, worktree, []string{"test/d.thrift"}, "second"))
