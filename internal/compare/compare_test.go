@@ -24,7 +24,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"go.uber.org/thriftrw/compile"
 )
 
@@ -57,7 +56,7 @@ func TestErrorRequiredCase(t *testing.T) {
 					},
 				},
 			},
-			wantError: "changing an optional field fieldA in structA to required is not backwards compatible",
+			wantError: "file: foo.thrift, error: changing an optional field fieldA in structA to required is not backwards compatible\n",
 		},
 		{
 			desc: "found a new required field",
@@ -73,7 +72,7 @@ func TestErrorRequiredCase(t *testing.T) {
 					},
 				},
 			},
-			wantError: "adding a required field fieldA to structA is not backwards compatible",
+			wantError: "file: foo.thrift, error: adding a required field fieldA to structA is not backwards compatible\n",
 		},
 		{
 			desc: "found a new required and changed optional field",
@@ -98,19 +97,19 @@ func TestErrorRequiredCase(t *testing.T) {
 					},
 				},
 			},
-			wantError: "changing an optional field fieldA in structA to" +
-				" required is not backwards compatible; changing an optional" +
-				" field fieldB in structA to required is not backwards" +
-				" compatible",
+			wantError: "file: foo.thrift, error: changing an optional field fieldA in structA to required is not backwards compatible\n" +
+				"file: foo.thrift, error: changing an optional field fieldB in structA to required is not backwards compatible\n",
+
 		},
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.desc, func(t *testing.T) {
 			t.Parallel()
-			err := structSpecs(tt.fromStruct, tt.toStruct)
-			require.Error(t, err, "expected error")
-			assert.EqualError(t, err, tt.wantError, "wrong error message")
+			pass := Pass{}
+			pass.structSpecs(tt.fromStruct, tt.toStruct, "foo.thrift")
+			assert.Equal(t, tt.wantError, pass.String(), "wrong lint diagnostics")
 		})
 	}
 }
@@ -162,10 +161,12 @@ func TestRequiredCaseOk(t *testing.T) {
 	}
 
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.desc, func(t *testing.T) {
 			t.Parallel()
-			err := structSpecs(tt.fromStruct, tt.toStruct)
-			require.NoError(t, err, "do not expect an error")
+			pass := Pass{}
+			pass.structSpecs(tt.fromStruct, tt.toStruct, "foo.thrift")
+			assert.Equal(t, "", pass.String(), "wrong lint diagnostics")
 		})
 	}
 }
@@ -181,25 +182,26 @@ func TestServicesError(t *testing.T) {
 	tests := []test{
 		{
 			desc:       "removing service",
-			fromModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}},
+			fromModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}, ThriftPath: "/foo.thrift"},
 			toModule:   &compile.Module{},
-			wantError:  "deleting service foo is not backwards compatible",
+			wantError:  "file: foo.thrift, error: deleting service foo is not backwards compatible\n",
 		},
 		{
 			desc: "removing a method",
 			fromModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {
 				Functions: map[string]*compile.FunctionSpec{"bar": {}},
-			}}},
+			}}, ThriftPath: "/foo.thrift"},
 			toModule:  &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}},
-			wantError: "removing method bar in service foo is not backwards compatible",
+			wantError: "file: foo.thrift, error: removing method bar in service foo is not backwards compatible\n",
 		},
 	}
 	for _, tt := range tests {
+		tt := tt
 		t.Run(tt.desc, func(t *testing.T) {
 			t.Parallel()
-			err := services(tt.fromModule, tt.toModule)
-			require.Error(t, err, "expected error")
-			assert.EqualError(t, err, tt.wantError, "wrong error message")
+			pass := Pass{}
+			pass.services(tt.fromModule, tt.toModule)
+			assert.Equal(t, tt.wantError, pass.String(), "wrong error message")
 		})
 	}
 

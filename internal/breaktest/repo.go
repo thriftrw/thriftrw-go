@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package thriftbreaktest
+package breaktest
 
 import (
 	"io/ioutil"
@@ -32,11 +32,51 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func writeThrifts(t *testing.T, tmpDir string, contents map[string]string, worktree *git.Worktree, toRemove []string,
-	extra string) error {
+type writeThrift struct {
+	tmpDir   string
+	contents map[string]string
+	worktree *git.Worktree
+	toRemove []string
+}
+
+func NewWriteThrift(tmpDir string, contents map[string]string, worktree *git.Worktree, toRemove []string) *writeThrift {
+	return &writeThrift{
+		tmpDir:   tmpDir,
+		contents: contents,
+		worktree: worktree,
+		toRemove: toRemove,
+	}
+}
+
+// commit commits all changes staged before it is called.
+func (w *writeThrift) commit(t *testing.T, extra string) error {
 	t.Helper()
-	for name, content := range contents {
-		path := filepath.Join(tmpDir, name)
+	err := w.worktree.AddWithOptions(&git.AddOptions{All: true})
+	if err != nil {
+		return err
+	}
+	for _, f := range w.toRemove {
+		_, err := w.worktree.Remove(f)
+		if err != nil {
+			return err
+		}
+	}
+
+	_, err = w.worktree.Commit("thrift update file"+extra, &git.CommitOptions{
+		Author: &object.Signature{
+			Name:  "update v1.thrift",
+			Email: "thriftforeverornever@uber.com",
+			When:  time.Now(),
+		},
+	})
+
+	return err
+}
+
+func (w *writeThrift) writeThrifts(t *testing.T, extra string) error {
+	t.Helper()
+	for name, content := range w.contents {
+		path := filepath.Join(w.tmpDir, name)
 		err := os.MkdirAll(filepath.Dir(path), 0755)
 		if err != nil {
 			return err
@@ -46,29 +86,8 @@ func writeThrifts(t *testing.T, tmpDir string, contents map[string]string, workt
 			return err
 		}
 	}
-	err := worktree.AddWithOptions(&git.AddOptions{All: true})
-	if err != nil {
-		return err
-	}
-	for _, f := range toRemove {
-		_, err := worktree.Remove(f)
-		if err != nil {
-			return err
-		}
-	}
 
-	_, err = worktree.Commit("thrift update file"+extra, &git.CommitOptions{
-		Author: &object.Signature{
-			Name:  "update v1.thrift",
-			Email: "thriftforeverornever@uber.com",
-			When:  time.Now(),
-		},
-	})
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return w.commit(t, extra)
 }
 
 // createRepoAndCommit creates a temporary repository and adds
@@ -80,6 +99,8 @@ func CreateRepoAndCommit(t *testing.T, tmpDir string) {
 	require.NoError(t, err)
 	worktree, err := repository.Worktree()
 	require.NoError(t, err)
+
+	// Start writing files.
 	exampleThrifts := map[string]string{
 		"v1.thrift": "namespace rb v1\n" +
 			"struct AddedRequiredField {\n" +
@@ -90,10 +111,11 @@ func CreateRepoAndCommit(t *testing.T, tmpDir string) {
 		"test/v2.thrift": `service Bar {}`,
 		"test/c.thrift":  `service Baz {}`,
 		"test/d.thrift": `include "../v1.thrift"
-service Qux {}`,
-		"somefile.go": `service Quux{}`,
+service Qux {}`,                         // file will be deleted below.
+		"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
 	}
-	require.NoError(t, writeThrifts(t, tmpDir, exampleThrifts, worktree, nil, ""))
+	w := NewWriteThrift(tmpDir, exampleThrifts, worktree, nil)
+	require.NoError(t, w.writeThrifts(t, ""))
 
 	// For c.thrift we are also checking to make sure includes work as expected.
 	exampleThrifts = map[string]string{
@@ -106,8 +128,8 @@ service Qux {}`,
 		"test/v2.thrift": `service Foo {}`,
 		"test/c.thrift": `include "../v1.thrift"
 service Bar {}`,
-		"somefile.go": `service Qux{}`, // Change name for Go file.
+		"somefile.go": `service Qux{}`,
 	}
-
-	require.NoError(t, writeThrifts(t, tmpDir, exampleThrifts, worktree, []string{"test/d.thrift"}, "second"))
+	w = NewWriteThrift(tmpDir, exampleThrifts, worktree, []string{"test/d.thrift"})
+	require.NoError(t, w.writeThrifts(t, "second"))
 }

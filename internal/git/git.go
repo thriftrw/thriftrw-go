@@ -27,7 +27,6 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing/object"
 	"github.com/go-git/go-git/v5/utils/merkletrie"
-	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/compile"
 	"go.uber.org/thriftrw/internal/compare"
 )
@@ -55,20 +54,21 @@ func NewGitFS(gitDir string, repo *git.Repository, from bool) *FS {
 
 // Compare takes a path to a git repository and returns errors between HEAD and HEAD~
 // for any incompatible Thrift changes between the two shas.
-func Compare(path string) error {
+func Compare(path string) (compare.Pass, error) {
+	pass := compare.Pass{}
 	r, err := git.PlainOpenWithOptions(path, &git.PlainOpenOptions{
 		DetectDotGit:          true,
 		EnableDotGitCommonDir: true,
 	})
 	if err != nil {
-		return err
+		return pass, err
 	}
 	fs := NewGitFS(path, r, false)
 	fsFrom := NewGitFS(path, r, true)
 
 	changed, err := findChangedThrift(path)
 	if err != nil {
-		return err
+		return pass, err
 	}
 	var errs error
 	for _, c := range changed {
@@ -76,7 +76,7 @@ func Compare(path string) error {
 		if c.change == merkletrie.Modify {
 			toModule, err = compile.Compile(c.file, compile.Filesystem(fs))
 			if err != nil {
-				return err
+				return pass, err
 			}
 		} else if c.change == merkletrie.Delete {
 			// something got deleted, so we are creating an empty module here.
@@ -87,12 +87,14 @@ func Compare(path string) error {
 
 		fromModule, err := compile.Compile(c.file, compile.Filesystem(fsFrom))
 		if err != nil {
-			return err
+			return pass, err
 		}
-		errs = multierr.Append(errs, compare.Modules(fromModule, toModule))
+		pass.Modules(fromModule, toModule)
 	}
 
-	return errs
+	// p will have lints as a field which we can sort in cli.
+
+	return pass, errs
 }
 
 // FS holds reference to components needed for git FS.

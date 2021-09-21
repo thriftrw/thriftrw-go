@@ -22,8 +22,8 @@ package compare
 
 import (
 	"fmt"
+	"path/filepath"
 
-	"go.uber.org/multierr"
 	"go.uber.org/thriftrw/compile"
 )
 
@@ -63,32 +63,43 @@ func (e deleteServiceError) Error() string {
 	return fmt.Sprintf("deleting service %s is not backwards compatible", e.service)
 }
 
-// Files compares two full file paths.
-func Files(fromFile, toFile string) error {
-	toModule, err := compile.Compile(toFile)
-	if err != nil {
-		return err
-	}
-	fromModule, err := compile.Compile(fromFile)
-	if err != nil {
-		return err
-	}
-
-	return Modules(fromModule, toModule)
-}
-
 // Modules looks for removed methods and added required fields.
-func Modules(fromModule, toModule *compile.Module) error {
-	err := checkRemovedMethods(fromModule, toModule)
-
-	return multierr.Append(err, checkRequiredFields(fromModule, toModule))
+func (p *Pass) Modules(fromModule, toModule *compile.Module) {
+	p.services(fromModule, toModule)
+	p.checkRequiredFields(fromModule, toModule)
 }
 
-func checkRemovedMethods(fromModule, toModule *compile.Module) error {
-	return services(fromModule, toModule)
+type Diagnostic struct {
+	File string // File where error was discovered
+	Err  error  // Specific error
 }
 
-func checkRequiredFields(fromModule, toModule *compile.Module) error {
+func (d *Diagnostic) String() string {
+	return fmt.Sprintf("file: %s, error: %s", d.File, d.Err)
+}
+
+type Pass struct {
+	lints []Diagnostic
+}
+
+func (p *Pass) Report(d Diagnostic) {
+	p.lints = append(p.lints, d)
+}
+
+func (p *Pass) Lints() []Diagnostic {
+	return p.lints
+}
+
+func (p *Pass) String() string {
+	var s string
+	for _, l := range p.lints {
+		s += fmt.Sprintf("%s\n", l.String())
+	}
+
+	return s
+}
+
+func (p *Pass) checkRequiredFields(fromModule, toModule *compile.Module) {
 	for n, spec := range toModule.Types {
 		fromSpec, ok := fromModule.Types[n]
 		if !ok {
@@ -100,19 +111,14 @@ func checkRequiredFields(fromModule, toModule *compile.Module) error {
 			// renames the struct and then adds a new field, we don't really have
 			// a good way of tracking it.
 			if fromStructSpec, ok := fromSpec.(*compile.StructSpec); ok {
-				err := structSpecs(fromStructSpec, s)
-				if err != nil {
-					return err
-				}
+				p.structSpecs(fromStructSpec, s, filepath.Base(fromModule.ThriftPath))
 			}
 		}
 	}
-
-	return nil
 }
 
 // StructSpecs compares two structs defined in a Thrift file.
-func structSpecs(from, to *compile.StructSpec) error {
+func (p *Pass) structSpecs(from, to *compile.StructSpec, file string) {
 	fields := make(map[int16]*compile.FieldSpec, len(from.Fields))
 	// Assume that these two should be compared.
 	for _, f := range from.Fields {
@@ -120,40 +126,48 @@ func structSpecs(from, to *compile.StructSpec) error {
 		fields[f.ID] = f
 	}
 
-	var errs error
 	for _, toField := range to.Fields {
 		if fromField, ok := fields[toField.ID]; ok {
 			fromRequired := fromField.Required
 			toRequired := toField.Required
 			if !fromRequired && toRequired {
-				errs = multierr.Append(errs, changOptToReqError{toField.ThriftName(), to.ThriftName()})
+				p.Report(Diagnostic{
+					File: file,
+					Err: changOptToReqError{
+						field: toField.ThriftName(),
+						struc: to.ThriftName(),
+					},
+				})
 			}
 		} else if toField.Required {
-			errs = multierr.Append(errs, addReqError{toField.ThriftName(), to.ThriftName()})
+			p.Report(Diagnostic{
+				File: file,
+				Err:  addReqError{toField.ThriftName(), to.ThriftName()},
+			})
 		}
 	}
-
-	return errs
 }
 
 // Services compares two service definitions.
-func services(fromModule, toModule *compile.Module) error {
-	var errs error
+func (p *Pass) services(fromModule, toModule *compile.Module) {
 	for n, fromService := range fromModule.Services {
 		toServ, ok := toModule.Services[n]
 		if !ok {
 			// Service was deleted, which is not backwards compatible.
-			errs = multierr.Append(errs, deleteServiceError{n})
+			p.Report(Diagnostic{
+				File: filepath.Base(fromModule.ThriftPath), // toModule could have been deleted.
+				Err:  deleteServiceError{n},
+			})
 			// Do not need to check its functions since it was deleted.
-
 			continue
 		}
 		for f := range fromService.Functions {
 			if _, ok := toServ.Functions[f]; !ok {
-				errs = multierr.Append(errs, removeMethodError{f, n})
+				p.Report(Diagnostic{
+					File: filepath.Base(fromModule.ThriftPath),
+					Err:  removeMethodError{f, n},
+				})
 			}
 		}
 	}
-
-	return errs
 }

@@ -23,6 +23,7 @@ package main
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"os"
 
@@ -50,5 +51,15 @@ func run(args []string) error {
 		*gitRepo = cwd
 	}
 
-	return git.Compare(*gitRepo)
+	pass, err := git.Compare(*gitRepo)
+	// Errors in compiling phase, but not in backwards compatibility.
+	if err != nil {
+		return err
+	}
+
+	for _, l := range pass.Lints() {
+		fmt.Println(l.String())
+	}
+
+	return nil
 }
