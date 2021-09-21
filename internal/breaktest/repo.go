@@ -39,7 +39,7 @@ type writeThrift struct {
 	toRemove []string
 }
 
-func NewWriteThrift(tmpDir string, contents map[string]string, worktree *git.Worktree, toRemove []string) *writeThrift {
+func newWriteThrift(tmpDir string, contents map[string]string, worktree *git.Worktree, toRemove []string) *writeThrift {
 	return &writeThrift{
 		tmpDir:   tmpDir,
 		contents: contents,
@@ -90,7 +90,7 @@ func (w *writeThrift) writeThrifts(t *testing.T, extra string) error {
 	return w.commit(t, extra)
 }
 
-// createRepoAndCommit creates a temporary repository and adds
+// CreateRepoAndCommit creates a temporary repository and adds
 // a commit of a thrift file for us to look up later.
 func CreateRepoAndCommit(t *testing.T, tmpDir string) {
 	t.Helper()
@@ -111,10 +111,10 @@ func CreateRepoAndCommit(t *testing.T, tmpDir string) {
 		"test/v2.thrift": `service Bar {}`,
 		"test/c.thrift":  `service Baz {}`,
 		"test/d.thrift": `include "../v1.thrift"
-service Qux {}`,                         // file will be deleted below.
+service Qux {}`, // file will be deleted below.
 		"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
 	}
-	w := NewWriteThrift(tmpDir, exampleThrifts, worktree, nil)
+	w := newWriteThrift(tmpDir, exampleThrifts, worktree, nil)
 	require.NoError(t, w.writeThrifts(t, ""))
 
 	// For c.thrift we are also checking to make sure includes work as expected.
@@ -130,6 +130,6 @@ service Qux {}`,                         // file will be deleted below.
 service Bar {}`,
 		"somefile.go": `service Qux{}`,
 	}
-	w = NewWriteThrift(tmpDir, exampleThrifts, worktree, []string{"test/d.thrift"})
+	w = newWriteThrift(tmpDir, exampleThrifts, worktree, []string{"test/d.thrift"})
 	require.NoError(t, w.writeThrifts(t, "second"))
 }

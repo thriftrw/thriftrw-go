@@ -99,7 +99,6 @@ func TestErrorRequiredCase(t *testing.T) {
 			},
 			wantError: "file: foo.thrift, error: changing an optional field fieldA in structA to required is not backwards compatible\n" +
 				"file: foo.thrift, error: changing an optional field fieldB in structA to required is not backwards compatible\n",
-
 		},
 	}
 

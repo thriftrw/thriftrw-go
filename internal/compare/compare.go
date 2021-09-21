@@ -69,6 +69,7 @@ func (p *Pass) Modules(fromModule, toModule *compile.Module) {
 	p.checkRequiredFields(fromModule, toModule)
 }
 
+// Diagnostic is a message associated with an error and a file name.
 type Diagnostic struct {
 	File string // File where error was discovered
 	Err  error  // Specific error
@@ -78,14 +79,17 @@ func (d *Diagnostic) String() string {
 	return fmt.Sprintf("file: %s, error: %s", d.File, d.Err)
 }
 
+// Pass provides all reported errors.
 type Pass struct {
 	lints []Diagnostic
 }
 
+// Report reports an error.
 func (p *Pass) Report(d Diagnostic) {
 	p.lints = append(p.lints, d)
 }
 
+// Lints returns all errors.
 func (p *Pass) Lints() []Diagnostic {
 	return p.lints
 }
