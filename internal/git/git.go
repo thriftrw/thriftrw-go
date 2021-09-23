@@ -22,6 +22,7 @@ package git
 
 import (
 	"context"
+	"fmt"
 	"path/filepath"
 
 	"github.com/go-git/go-git/v5"
@@ -31,31 +32,27 @@ import (
 	"go.uber.org/thriftrw/internal/compare"
 )
 
+// FS holds reference to components needed for git FS.
+type FS struct {
+	repo *git.Repository
+	root string
+	from bool // Whether we are looking for previous version.
+}
+
 // NewGitFS creates an implementation of FS to use git to discover
 // Thrift changes and previous version of a Thrift file.
 func NewGitFS(gitDir string, repo *git.Repository, from bool) *FS {
-	if repo == nil {
-		var err error
-		repo, err = git.PlainOpenWithOptions(gitDir, &git.PlainOpenOptions{
-			DetectDotGit:          true,
-			EnableDotGitCommonDir: true,
-		})
-		if err != nil {
-			return nil
-		}
-	}
-
 	return &FS{
-		repo:   repo,
-		gitDir: gitDir,
-		from:   from,
+		repo: repo,
+		root: gitDir,
+		from: from,
 	}
 }
 
 // Compare takes a path to a git repository and returns errors between HEAD and HEAD~
 // for any incompatible Thrift changes between the two shas.
 func Compare(path string) (compare.Pass, error) {
-	pass := compare.Pass{}
+	var pass compare.Pass
 	r, err := git.PlainOpenWithOptions(path, &git.PlainOpenOptions{
 		DetectDotGit:          true,
 		EnableDotGitCommonDir: true,
@@ -66,7 +63,7 @@ func Compare(path string) (compare.Pass, error) {
 	fs := NewGitFS(path, r, false)
 	fsFrom := NewGitFS(path, r, true)
 
-	changed, err := findChangedThrift(path)
+	changed, err := findChangedThrift(r)
 	if err != nil {
 		return pass, err
 	}
@@ -95,13 +92,6 @@ func Compare(path string) (compare.Pass, error) {
 	// p will have lints as a field which we can sort in cli.
 
 	return pass, errs
-}
-
-// FS holds reference to components needed for git FS.
-type FS struct {
-	repo   *git.Repository
-	gitDir string
-	from   bool // Whether we are looking for previous version.
 }
 
 func (fs FS) findCommit() (*object.Commit, error) {
@@ -139,14 +129,14 @@ func (fs FS) Read(path string) ([]byte, error) {
 	}
 
 	// filename is going to be the full path. We don't want that.
-	filename, err := filepath.Rel(fs.gitDir, path)
+	filename, err := filepath.Rel(fs.root, path)
 	if err != nil {
 		return nil, err
 	}
 	// It's possible that file was deleted and it will not exist.
 	f, err := commit.File(filename)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("open %q: %w", filename, err)
 	}
 	s, err := f.Contents()
 	if err != nil {
@@ -164,7 +154,7 @@ func (fs FS) Abs(p string) (string, error) {
 		return p, nil
 	}
 
-	return filepath.Join(fs.gitDir, p), nil
+	return filepath.Join(fs.root, p), nil
 }
 
 type change struct {
@@ -174,28 +164,13 @@ type change struct {
 
 // findChangedThrift reads a git repo and finds any Thrift files that got changed
 // between HEAD and previous commit.
-func findChangedThrift(gitDir string) ([]*change, error) {
-	// Init git repo.
-	r, err := git.PlainOpenWithOptions(gitDir, &git.PlainOpenOptions{
-		DetectDotGit:          true,
-		EnableDotGitCommonDir: true,
-	})
-	if err != nil {
-		return nil, err
-	}
-
+func findChangedThrift(r *git.Repository) ([]*change, error) {
 	// Get Repo's HEAD
 	refHead, err := r.Head() // *plumbing.Reference
 	if err != nil {
 		return nil, err
 	}
-	// Look at the log. Can't use filters as they need exact path which
-	// we don't know yet.
-	commitIter, err := r.Log(&git.LogOptions{From: refHead.Hash()})
-	if err != nil {
-		return nil, err
-	}
-	commit, err := commitIter.Next() // *object.Commit
+	commit, err := r.CommitObject(refHead.Hash()) // *object.Commit
 	if err != nil {
 		return nil, err
 	}

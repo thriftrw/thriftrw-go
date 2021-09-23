@@ -88,7 +88,7 @@ func (w *writeThrift) writeThrifts(extraMsg string) error {
 // CreateRepoAndCommit creates a temporary repository and adds
 // a commit of a thrift files for us to look up later.
 // TODO(GO-891): finish implementation of this integration.
-func CreateRepoAndCommit(t *testing.T, tmpDir string) {
+func CreateRepoAndCommit(t *testing.T, tmpDir string) *git.Repository {
 	t.Helper()
 	// Create a new repo in temp directory.
 	repository, err := git.PlainInit(tmpDir, false)
@@ -128,4 +128,6 @@ service Bar {}`,
 	}
 	w = newWriteThrift(tmpDir, exampleThrifts, worktree, []string{"test/d.thrift"})
 	require.NoError(t, w.writeThrifts("second"))
+
+	return repository
 }

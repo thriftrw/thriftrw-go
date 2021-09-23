@@ -32,8 +32,8 @@ import (
 func TestOpenRepo(t *testing.T) {
 	t.Parallel()
 	tmpDir := t.TempDir()
-	breaktest.CreateRepoAndCommit(t, tmpDir)
-	changed, err := findChangedThrift(tmpDir)
+	repo := breaktest.CreateRepoAndCommit(t, tmpDir)
+	changed, err := findChangedThrift(repo)
 	assert.NoError(t, err)
 	assert.Equal(t, []*change{
 		{file: "test/c.thrift", change: merkletrie.Modify},
