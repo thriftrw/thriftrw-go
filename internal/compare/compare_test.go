@@ -173,24 +173,32 @@ func TestRequiredCaseOk(t *testing.T) {
 func TestServicesError(t *testing.T) {
 	t.Parallel()
 	type test struct {
-		desc       string
-		fromModule *compile.Module
-		toModule   *compile.Module
-		wantError  string
+		desc string
+		from      *compile.ServiceSpec
+		to        *compile.ServiceSpec
+		wantError string
 	}
 	tests := []test{
 		{
 			desc:       "removing service",
-			fromModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}, ThriftPath: "/foo.thrift"},
-			toModule:   &compile.Module{},
+			from: &compile.ServiceSpec{
+				Name:        "foo",
+				File:        "foo.thrift",
+			},
+			to: nil,
 			wantError:  "foo.thrift:deleting service foo is not backwards compatible\n",
 		},
 		{
 			desc: "removing a method",
-			fromModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {
+			from: &compile.ServiceSpec{
+				Name:        "foo",
+				File:        "foo.thrift",
 				Functions: map[string]*compile.FunctionSpec{"bar": {}},
-			}}, ThriftPath: "/foo.thrift"},
-			toModule:  &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}},
+			},
+			to: &compile.ServiceSpec{
+				Name:        "foo",
+				File:        "foo.thrift",
+			},
 			wantError: "foo.thrift:removing method bar in service foo is not backwards compatible\n",
 		},
 	}
@@ -199,7 +207,7 @@ func TestServicesError(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			t.Parallel()
 			pass := Pass{}
-			pass.services(tt.fromModule, tt.toModule)
+			pass.service(tt.from, tt.to)
 			assert.Equal(t, tt.wantError, pass.String(), "wrong error message")
 		})
 	}

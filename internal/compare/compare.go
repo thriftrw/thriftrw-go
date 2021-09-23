@@ -29,9 +29,12 @@ import (
 )
 
 // Modules looks for removed methods and added required fields.
-func (p *Pass) Modules(fromModule, toModule *compile.Module) {
-	p.services(fromModule, toModule)
-	p.checkRequiredFields(fromModule, toModule)
+func (p *Pass) Modules(from, to *compile.Module) {
+	for name, fromService := range from.Services {
+		p.service(fromService, to.Services[name])
+	}
+	// p.services(from, to)
+	p.checkRequiredFields(from, to)
 }
 
 // Diagnostic is a message associated with an error and a file name.
@@ -117,26 +120,45 @@ func (p *Pass) structSpecs(from, to *compile.StructSpec, file string) {
 	}
 }
 
-// Services compares two service definitions.
-func (p *Pass) services(fromModule, toModule *compile.Module) {
-	for n, fromService := range fromModule.Services {
-		toServ, ok := toModule.Services[n]
-		if !ok {
-			// Service was deleted, which is not backwards compatible.
+func (p *Pass) service(from, to *compile.ServiceSpec) {
+	if to == nil {
+		// Service was deleted, which is not backwards compatible.
+		p.Report(Diagnostic{
+			File:    filepath.Base(from.File), // toModule could have been deleted.
+			Message: fmt.Sprintf("deleting service %s is not backwards compatible", from.Name),
+		})
+		return
+	}
+	for f := range from.Functions {
+		if _, ok := to.Functions[f]; !ok {
 			p.Report(Diagnostic{
-				File: filepath.Base(fromModule.ThriftPath), // toModule could have been deleted.
-				Message: fmt.Sprintf("deleting service %s is not backwards compatible", n),
+				File:    filepath.Base(from.File),
+				Message: fmt.Sprintf("removing method %s in service %s is not backwards compatible", f, from.Name),
 			})
-			// Do not need to check its functions since it was deleted.
-			continue
-		}
-		for f := range fromService.Functions {
-			if _, ok := toServ.Functions[f]; !ok {
-				p.Report(Diagnostic{
-					File: filepath.Base(fromModule.ThriftPath),
-					Message: fmt.Sprintf("removing method %s in service %s is not backwards compatible", f, n),
-				})
-			}
 		}
 	}
 }
+
+// Services compares two service definitions.
+// func (p *Pass) services(fromModule, toModule *compile.Module) {
+// 	for n, fromService := range fromModule.Services {
+// 		toServ, ok := toModule.Services[n]
+// 		if !ok {
+// 			// Service was deleted, which is not backwards compatible.
+// 			p.Report(Diagnostic{
+// 				File:    filepath.Base(fromModule.ThriftPath), // toModule could have been deleted.
+// 				Message: fmt.Sprintf("deleting service %s is not backwards compatible", n),
+// 			})
+// 			// Do not need to check its functions since it was deleted.
+// 			continue
+// 		}
+// 		for f := range fromService.Functions {
+// 			if _, ok := toServ.Functions[f]; !ok {
+// 				p.Report(Diagnostic{
+// 					File:    filepath.Base(fromModule.ThriftPath),
+// 					Message: fmt.Sprintf("removing method %s in service %s is not backwards compatible", f, n),
+// 				})
+// 			}
+// 		}
+// 	}
+// }
