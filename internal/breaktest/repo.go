@@ -49,7 +49,7 @@ func newWriteThrift(tmpDir string, contents map[string]string, worktree *git.Wor
 }
 
 // commit commits all changes staged before it is called.
-func (w *writeThrift) commit(t *testing.T, extra string) error {
+func (w *writeThrift) commit(extra string) error {
 	err := w.worktree.AddWithOptions(&git.AddOptions{All: true})
 	if err != nil {
 		return err
@@ -71,20 +71,18 @@ func (w *writeThrift) commit(t *testing.T, extra string) error {
 	return err
 }
 
-func (w *writeThrift) writeThrifts(t *testing.T, extraMsg string) error {
+func (w *writeThrift) writeThrifts(extraMsg string) error {
 	for name, content := range w.contents {
 		path := filepath.Join(w.tmpDir, name)
-		err := os.MkdirAll(filepath.Dir(path), 0755)
-		if err != nil {
+		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 			return err
 		}
-		err = ioutil.WriteFile(path, []byte(content), 0600)
-		if err != nil {
+		if err := ioutil.WriteFile(path, []byte(content), 0600); err != nil {
 			return err
 		}
 	}
 
-	return w.commit(t, extraMsg)
+	return w.commit(extraMsg)
 }
 
 // CreateRepoAndCommit creates a temporary repository and adds
@@ -113,7 +111,7 @@ service Qux {}`, // file will be deleted below.
 		"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
 	}
 	w := newWriteThrift(tmpDir, exampleThrifts, worktree, nil)
-	require.NoError(t, w.writeThrifts(t, ""))
+	require.NoError(t, w.writeThrifts(""))
 
 	// For c.thrift we are also checking to make sure includes work as expected.
 	exampleThrifts = map[string]string{
@@ -129,5 +127,5 @@ service Bar {}`,
 		"somefile.go": `service Qux{}`,
 	}
 	w = newWriteThrift(tmpDir, exampleThrifts, worktree, []string{"test/d.thrift"})
-	require.NoError(t, w.writeThrifts(t, "second"))
+	require.NoError(t, w.writeThrifts("second"))
 }

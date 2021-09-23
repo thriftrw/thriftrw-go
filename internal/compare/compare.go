@@ -28,42 +28,6 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
-type addReqError struct {
-	field string
-	struc string
-}
-
-func (e addReqError) Error() string {
-	return fmt.Sprintf("adding a required field %s to %s is not backwards compatible", e.field, e.struc)
-}
-
-type changOptToReqError struct {
-	field string
-	struc string
-}
-
-func (e changOptToReqError) Error() string {
-	return fmt.Sprintf("changing an optional field %s in %s to required is not backwards compatible",
-		e.field, e.struc)
-}
-
-type removeMethodError struct {
-	method  string
-	service string
-}
-
-func (e removeMethodError) Error() string {
-	return fmt.Sprintf("removing method %s in service %s is not backwards compatible", e.method, e.service)
-}
-
-type deleteServiceError struct {
-	service string
-}
-
-func (e deleteServiceError) Error() string {
-	return fmt.Sprintf("deleting service %s is not backwards compatible", e.service)
-}
-
 // Modules looks for removed methods and added required fields.
 func (p *Pass) Modules(fromModule, toModule *compile.Module) {
 	p.services(fromModule, toModule)
@@ -72,12 +36,12 @@ func (p *Pass) Modules(fromModule, toModule *compile.Module) {
 
 // Diagnostic is a message associated with an error and a file name.
 type Diagnostic struct {
-	File string // File where error was discovered
-	Err  error  // TODO: remove specific error.
+	File    string // File where error was discovered
+	Message string // Message contains error message.
 }
 
 func (d *Diagnostic) String() string {
-	return fmt.Sprintf("%s:%s", d.File, d.Err)
+	return fmt.Sprintf("%s:%s", d.File, d.Message)
 }
 
 // Pass provides all reported errors.
@@ -138,16 +102,16 @@ func (p *Pass) structSpecs(from, to *compile.StructSpec, file string) {
 			if !fromRequired && toRequired {
 				p.Report(Diagnostic{
 					File: file,
-					Err: changOptToReqError{
-						field: toField.ThriftName(),
-						struc: to.ThriftName(),
-					},
+					Message: fmt.Sprintf(
+						"changing an optional field %s in %s to required is not backwards compatible",
+						toField.ThriftName(), to.ThriftName()),
 				})
 			}
 		} else if toField.Required {
 			p.Report(Diagnostic{
 				File: file,
-				Err:  addReqError{toField.ThriftName(), to.ThriftName()},
+				Message: fmt.Sprintf("adding a required field %s to %s is not backwards compatible",
+					toField.ThriftName(), to.ThriftName()),
 			})
 		}
 	}
@@ -161,7 +125,7 @@ func (p *Pass) services(fromModule, toModule *compile.Module) {
 			// Service was deleted, which is not backwards compatible.
 			p.Report(Diagnostic{
 				File: filepath.Base(fromModule.ThriftPath), // toModule could have been deleted.
-				Err:  deleteServiceError{n},
+				Message: fmt.Sprintf("deleting service %s is not backwards compatible", n),
 			})
 			// Do not need to check its functions since it was deleted.
 			continue
@@ -170,7 +134,7 @@ func (p *Pass) services(fromModule, toModule *compile.Module) {
 			if _, ok := toServ.Functions[f]; !ok {
 				p.Report(Diagnostic{
 					File: filepath.Base(fromModule.ThriftPath),
-					Err:  removeMethodError{f, n},
+					Message: fmt.Sprintf("removing method %s in service %s is not backwards compatible", f, n),
 				})
 			}
 		}
