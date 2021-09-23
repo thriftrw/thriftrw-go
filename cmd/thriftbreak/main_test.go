@@ -32,36 +32,31 @@ import (
 )
 
 func TestThriftBreakIntegration(t *testing.T) {
-	t.Parallel()
-	t.Run("integration test git repo", func(t *testing.T) {
-		t.Parallel()
-		tmpDir := t.TempDir()
-		breaktest.CreateRepoAndCommit(t, tmpDir)
+	tmpDir := t.TempDir()
+	breaktest.CreateRepoAndCommit(t, tmpDir)
 
-		f, err := ioutil.TempFile(tmpDir, "stdout")
-		if err != nil {
-			t.Fatalf("could not open a file for writing")
-		}
-		defer func(oldStdout *os.File) {
-			assert.NoError(t, f.Close())
-			os.Stdout = oldStdout
-		}(os.Stdout)
-		os.Stdout = f
+	f, err := ioutil.TempFile(tmpDir, "stdout")
+	require.NoError(t, err, "create temporary file")
+	defer func(oldStdout *os.File) {
+		assert.NoError(t, f.Close())
+		os.Stdout = oldStdout
+	}(os.Stdout)
+	os.Stdout = f
 
-		err = run([]string{fmt.Sprintf("-C=%s", tmpDir)})
-		require.NoError(t, err, "expected no errors")
+	err = run([]string{fmt.Sprintf("-C=%s", tmpDir)})
+	require.Error(t, err, "expected no errors")
+	assert.EqualError(t, err, "found 5 issues")
 
-		stderr, err := ioutil.ReadFile(f.Name())
-		require.NoError(t, err)
+	stderr, err := ioutil.ReadFile(f.Name())
+	require.NoError(t, err)
 
-		out := string(stderr)
+	out := string(stderr)
 
-		assert.Equal(t,
-			"file: c.thrift, error: deleting service Baz is not backwards compatible\n"+
-				"file: d.thrift, error: deleting service Qux is not backwards compatible\n"+
-				"file: v2.thrift, error: deleting service Bar is not backwards compatible\n"+
-				"file: v1.thrift, error: removing method methodA in service Foo is not backwards compatible\n"+
-				"file: v1.thrift, error: adding a required field C to AddedRequiredField is not backwards compatible\n",
-			out)
-	})
+	assert.Equal(t,
+		"c.thrift:deleting service Baz is not backwards compatible\n"+
+			"d.thrift:deleting service Qux is not backwards compatible\n"+
+			"v2.thrift:deleting service Bar is not backwards compatible\n"+
+			"v1.thrift:removing method methodA in service Foo is not backwards compatible\n"+
+			"v1.thrift:adding a required field C to AddedRequiredField is not backwards compatible\n",
+		out)
 }

@@ -56,7 +56,7 @@ func TestErrorRequiredCase(t *testing.T) {
 					},
 				},
 			},
-			wantError: "file: foo.thrift, error: changing an optional field fieldA in structA to required is not backwards compatible\n",
+			wantError: "foo.thrift:changing an optional field fieldA in structA to required is not backwards compatible\n",
 		},
 		{
 			desc: "found a new required field",
@@ -72,7 +72,7 @@ func TestErrorRequiredCase(t *testing.T) {
 					},
 				},
 			},
-			wantError: "file: foo.thrift, error: adding a required field fieldA to structA is not backwards compatible\n",
+			wantError: "foo.thrift:adding a required field fieldA to structA is not backwards compatible\n",
 		},
 		{
 			desc: "found a new required and changed optional field",
@@ -97,8 +97,8 @@ func TestErrorRequiredCase(t *testing.T) {
 					},
 				},
 			},
-			wantError: "file: foo.thrift, error: changing an optional field fieldA in structA to required is not backwards compatible\n" +
-				"file: foo.thrift, error: changing an optional field fieldB in structA to required is not backwards compatible\n",
+			wantError: "foo.thrift:changing an optional field fieldA in structA to required is not backwards compatible\n" +
+				"foo.thrift:changing an optional field fieldB in structA to required is not backwards compatible\n",
 		},
 	}
 
@@ -183,7 +183,7 @@ func TestServicesError(t *testing.T) {
 			desc:       "removing service",
 			fromModule: &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}, ThriftPath: "/foo.thrift"},
 			toModule:   &compile.Module{},
-			wantError:  "file: foo.thrift, error: deleting service foo is not backwards compatible\n",
+			wantError:  "foo.thrift:deleting service foo is not backwards compatible\n",
 		},
 		{
 			desc: "removing a method",
@@ -191,7 +191,7 @@ func TestServicesError(t *testing.T) {
 				Functions: map[string]*compile.FunctionSpec{"bar": {}},
 			}}, ThriftPath: "/foo.thrift"},
 			toModule:  &compile.Module{Services: map[string]*compile.ServiceSpec{"foo": {}}},
-			wantError: "file: foo.thrift, error: removing method bar in service foo is not backwards compatible\n",
+			wantError: "foo.thrift:removing method bar in service foo is not backwards compatible\n",
 		},
 	}
 	for _, tt := range tests {
@@ -203,5 +203,4 @@ func TestServicesError(t *testing.T) {
 			assert.Equal(t, tt.wantError, pass.String(), "wrong error message")
 		})
 	}
-
 }

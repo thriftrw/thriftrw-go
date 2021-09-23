@@ -50,14 +50,12 @@ func newWriteThrift(tmpDir string, contents map[string]string, worktree *git.Wor
 
 // commit commits all changes staged before it is called.
 func (w *writeThrift) commit(t *testing.T, extra string) error {
-	t.Helper()
 	err := w.worktree.AddWithOptions(&git.AddOptions{All: true})
 	if err != nil {
 		return err
 	}
 	for _, f := range w.toRemove {
-		_, err := w.worktree.Remove(f)
-		if err != nil {
+		if _, err := w.worktree.Remove(f); err != nil {
 			return err
 		}
 	}
@@ -65,7 +63,7 @@ func (w *writeThrift) commit(t *testing.T, extra string) error {
 	_, err = w.worktree.Commit("thrift update file"+extra, &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  "update v1.thrift",
-			Email: "thriftforeverornever@uber.com",
+			Email: "thriftforeverornever@example.com",
 			When:  time.Now(),
 		},
 	})
@@ -73,8 +71,7 @@ func (w *writeThrift) commit(t *testing.T, extra string) error {
 	return err
 }
 
-func (w *writeThrift) writeThrifts(t *testing.T, extra string) error {
-	t.Helper()
+func (w *writeThrift) writeThrifts(t *testing.T, extraMsg string) error {
 	for name, content := range w.contents {
 		path := filepath.Join(w.tmpDir, name)
 		err := os.MkdirAll(filepath.Dir(path), 0755)
@@ -87,11 +84,12 @@ func (w *writeThrift) writeThrifts(t *testing.T, extra string) error {
 		}
 	}
 
-	return w.commit(t, extra)
+	return w.commit(t, extraMsg)
 }
 
 // CreateRepoAndCommit creates a temporary repository and adds
-// a commit of a thrift file for us to look up later.
+// a commit of a thrift files for us to look up later.
+// TODO(GO-891): finish implementation of this integration.
 func CreateRepoAndCommit(t *testing.T, tmpDir string) {
 	t.Helper()
 	// Create a new repo in temp directory.

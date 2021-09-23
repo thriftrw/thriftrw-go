@@ -21,7 +21,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -46,7 +45,7 @@ func run(args []string) error {
 	if *gitRepo == "" {
 		cwd, err := os.Getwd()
 		if err != nil {
-			return errors.New("could not find current directory")
+			return fmt.Errorf("cannot determine current directory: %v", err)
 		}
 		*gitRepo = cwd
 	}
@@ -57,8 +56,12 @@ func run(args []string) error {
 		return err
 	}
 
-	for _, l := range pass.Lints() {
+	lints := pass.Lints()
+	for _, l := range lints {
 		fmt.Println(l.String())
+	}
+	if len(lints) > 0 {
+		return fmt.Errorf("found %d issues", len(lints))
 	}
 
 	return nil

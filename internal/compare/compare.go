@@ -23,6 +23,7 @@ package compare
 import (
 	"fmt"
 	"path/filepath"
+	"strings"
 
 	"go.uber.org/thriftrw/compile"
 )
@@ -72,11 +73,11 @@ func (p *Pass) Modules(fromModule, toModule *compile.Module) {
 // Diagnostic is a message associated with an error and a file name.
 type Diagnostic struct {
 	File string // File where error was discovered
-	Err  error  // Specific error
+	Err  error  // TODO: remove specific error.
 }
 
 func (d *Diagnostic) String() string {
-	return fmt.Sprintf("file: %s, error: %s", d.File, d.Err)
+	return fmt.Sprintf("%s:%s", d.File, d.Err)
 }
 
 // Pass provides all reported errors.
@@ -95,12 +96,12 @@ func (p *Pass) Lints() []Diagnostic {
 }
 
 func (p *Pass) String() string {
-	var s string
+	var b strings.Builder
 	for _, l := range p.lints {
-		s += fmt.Sprintf("%s\n", l.String())
+		_, _ = fmt.Fprintf(&b, "%s\n", l.String())
 	}
 
-	return s
+	return b.String()
 }
 
 func (p *Pass) checkRequiredFields(fromModule, toModule *compile.Module) {

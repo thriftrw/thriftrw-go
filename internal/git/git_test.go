@@ -45,10 +45,10 @@ func TestOpenRepo(t *testing.T) {
 	pass, err := Compare(tmpDir)
 	require.NoError(t, err)
 	assert.Equal(t,
-		"file: c.thrift, error: deleting service Baz is not backwards compatible\n"+
-			"file: d.thrift, error: deleting service Qux is not backwards compatible\n"+
-			"file: v2.thrift, error: deleting service Bar is not backwards compatible\n"+
-			"file: v1.thrift, error: removing method methodA in service Foo is not backwards compatible\n"+
-			"file: v1.thrift, error: adding a required field C to AddedRequiredField is not backwards compatible\n",
+		"c.thrift:deleting service Baz is not backwards compatible\n"+
+			"d.thrift:deleting service Qux is not backwards compatible\n"+
+			"v2.thrift:deleting service Bar is not backwards compatible\n"+
+			"v1.thrift:removing method methodA in service Foo is not backwards compatible\n"+
+			"v1.thrift:adding a required field C to AddedRequiredField is not backwards compatible\n",
 		pass.String())
 }
