@@ -173,31 +173,31 @@ func TestRequiredCaseOk(t *testing.T) {
 func TestServicesError(t *testing.T) {
 	t.Parallel()
 	type test struct {
-		desc string
+		desc      string
 		from      *compile.ServiceSpec
 		to        *compile.ServiceSpec
 		wantError string
 	}
 	tests := []test{
 		{
-			desc:       "removing service",
+			desc: "removing service",
 			from: &compile.ServiceSpec{
-				Name:        "foo",
-				File:        "foo.thrift",
+				Name: "foo",
+				File: "foo.thrift",
 			},
-			to: nil,
-			wantError:  "foo.thrift:deleting service foo is not backwards compatible\n",
+			to:        nil,
+			wantError: "foo.thrift:deleting service foo is not backwards compatible\n",
 		},
 		{
 			desc: "removing a method",
 			from: &compile.ServiceSpec{
-				Name:        "foo",
-				File:        "foo.thrift",
+				Name:      "foo",
+				File:      "foo.thrift",
 				Functions: map[string]*compile.FunctionSpec{"bar": {}},
 			},
 			to: &compile.ServiceSpec{
-				Name:        "foo",
-				File:        "foo.thrift",
+				Name: "foo",
+				File: "foo.thrift",
 			},
 			wantError: "foo.thrift:removing method bar in service foo is not backwards compatible\n",
 		},

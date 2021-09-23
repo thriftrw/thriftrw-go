@@ -28,15 +28,6 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
-// Modules looks for removed methods and added required fields.
-func (p *Pass) Modules(from, to *compile.Module) {
-	for name, fromService := range from.Services {
-		p.service(fromService, to.Services[name])
-	}
-	// p.services(from, to)
-	p.checkRequiredFields(from, to)
-}
-
 // Diagnostic is a message associated with an error and a file name.
 type Diagnostic struct {
 	File    string // File where error was discovered
@@ -71,21 +62,26 @@ func (p *Pass) String() string {
 	return b.String()
 }
 
-func (p *Pass) checkRequiredFields(fromModule, toModule *compile.Module) {
-	for n, spec := range toModule.Types {
-		fromSpec, ok := fromModule.Types[n]
+// Modules looks for removed methods and added required fields.
+func (p *Pass) Modules(from, to *compile.Module) {
+	for name, fromService := range from.Services {
+		p.service(fromService, to.Services[name])
+	}
+
+	for n, fromType := range from.Types {
+		p.typ(fromType, to.Types[n], filepath.Base(from.ThriftPath))
+	}
+}
+
+func (p *Pass) typ(from, to compile.TypeSpec, file string) {
+	switch f := from.(type) {
+	case *compile.StructSpec:
+		t, ok := to.(*compile.StructSpec)
 		if !ok {
 			// This is a new Type, which is backwards compatible.
-			continue
+			return
 		}
-		if s, ok := spec.(*compile.StructSpec); ok {
-			// Match on Type names. Here we hit a limitation, that if someone
-			// renames the struct and then adds a new field, we don't really have
-			// a good way of tracking it.
-			if fromStructSpec, ok := fromSpec.(*compile.StructSpec); ok {
-				p.structSpecs(fromStructSpec, s, filepath.Base(fromModule.ThriftPath))
-			}
-		}
+		p.structSpecs(f, t, file)
 	}
 }
 
@@ -127,38 +123,19 @@ func (p *Pass) service(from, to *compile.ServiceSpec) {
 			File:    filepath.Base(from.File), // toModule could have been deleted.
 			Message: fmt.Sprintf("deleting service %s is not backwards compatible", from.Name),
 		})
+
 		return
 	}
-	for f := range from.Functions {
-		if _, ok := to.Functions[f]; !ok {
-			p.Report(Diagnostic{
-				File:    filepath.Base(from.File),
-				Message: fmt.Sprintf("removing method %s in service %s is not backwards compatible", f, from.Name),
-			})
-		}
+	for n := range from.Functions {
+		p.function(to.Functions[n], n, filepath.Base(from.File), from.Name)
 	}
 }
 
-// Services compares two service definitions.
-// func (p *Pass) services(fromModule, toModule *compile.Module) {
-// 	for n, fromService := range fromModule.Services {
-// 		toServ, ok := toModule.Services[n]
-// 		if !ok {
-// 			// Service was deleted, which is not backwards compatible.
-// 			p.Report(Diagnostic{
-// 				File:    filepath.Base(fromModule.ThriftPath), // toModule could have been deleted.
-// 				Message: fmt.Sprintf("deleting service %s is not backwards compatible", n),
-// 			})
-// 			// Do not need to check its functions since it was deleted.
-// 			continue
-// 		}
-// 		for f := range fromService.Functions {
-// 			if _, ok := toServ.Functions[f]; !ok {
-// 				p.Report(Diagnostic{
-// 					File:    filepath.Base(fromModule.ThriftPath),
-// 					Message: fmt.Sprintf("removing method %s in service %s is not backwards compatible", f, n),
-// 				})
-// 			}
-// 		}
-// 	}
-// }
+func (p *Pass) function(to *compile.FunctionSpec, fn string, file string, service string) {
+	if to == nil {
+		p.Report(Diagnostic{
+			File:    file,
+			Message: fmt.Sprintf("removing method %s in service %s is not backwards compatible", fn, service),
+		})
+	}
+}
