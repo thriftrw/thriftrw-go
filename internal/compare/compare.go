@@ -62,8 +62,8 @@ func (p *Pass) String() string {
 	return b.String()
 }
 
-// Modules looks for removed methods and added required fields.
-func (p *Pass) Modules(from, to *compile.Module) {
+// CompareModules looks for removed methods and added required fields.
+func (p *Pass) CompareModules(from, to *compile.Module) {
 	for name, fromService := range from.Services {
 		p.service(fromService, to.Services[name])
 	}
@@ -74,8 +74,7 @@ func (p *Pass) Modules(from, to *compile.Module) {
 }
 
 func (p *Pass) typ(from, to compile.TypeSpec, file string) {
-	switch f := from.(type) {
-	case *compile.StructSpec:
+	if f, ok := from.(*compile.StructSpec); ok {
 		t, ok := to.(*compile.StructSpec)
 		if !ok {
 			// This is a new Type, which is backwards compatible.

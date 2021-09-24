@@ -86,7 +86,7 @@ func Compare(path string) (compare.Pass, error) {
 		if err != nil {
 			return pass, err
 		}
-		pass.Modules(fromModule, toModule)
+		pass.CompareModules(fromModule, toModule)
 	}
 	// p will have lints as a field which we can sort in cli.
 
