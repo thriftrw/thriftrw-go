@@ -33,14 +33,14 @@ func TestOpenRepo(t *testing.T) {
 	t.Parallel()
 	tmpDir := t.TempDir()
 	repo := breaktest.CreateRepoAndCommit(t, tmpDir)
-	changed, err := findChangedThrift(repo)
+	treechanges, err := findChangedThrift(repo)
 	assert.NoError(t, err)
 	assert.Equal(t, []*change{
 		{file: "test/c.thrift", change: merkletrie.Modify},
 		{file: "test/d.thrift", change: merkletrie.Delete},
 		{file: "test/v2.thrift", change: merkletrie.Modify},
 		{file: "v1.thrift", change: merkletrie.Modify},
-	}, changed)
+	}, treechanges.changes)
 
 	pass, err := Compare(tmpDir)
 	require.NoError(t, err)

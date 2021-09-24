@@ -36,16 +36,16 @@ import (
 type FS struct {
 	repo *git.Repository
 	root string
-	from bool // Whether we are looking for previous version.
+	tree *object.Tree
 }
 
 // NewGitFS creates an implementation of FS to use git to discover
 // Thrift changes and previous version of a Thrift file.
-func NewGitFS(gitDir string, repo *git.Repository, from bool) *FS {
+func NewGitFS(gitDir string, repo *git.Repository, tree *object.Tree) *FS {
 	return &FS{
 		repo: repo,
 		root: gitDir,
-		from: from,
+		tree: tree,
 	}
 }
 
@@ -60,15 +60,15 @@ func Compare(path string) (compare.Pass, error) {
 	if err != nil {
 		return pass, err
 	}
-	fs := NewGitFS(path, r, false)
-	fsFrom := NewGitFS(path, r, true)
 
-	changed, err := findChangedThrift(r)
-	if err != nil {
-		return pass, err
+	h, err := findChangedThrift(r)
+	if err != nil || h == nil {
+		return pass, fmt.Errorf("failed to find changed thrift files: %w", err)
 	}
+	fs := NewGitFS(path, r, h.to)
+	fsFrom := NewGitFS(path, r, h.from)
 	var errs error
-	for _, c := range changed {
+	for _, c := range h.changes {
 		var toModule *compile.Module
 		if c.change == merkletrie.Modify {
 			toModule, err = compile.Compile(c.file, compile.Filesystem(fs))
@@ -88,53 +88,20 @@ func Compare(path string) (compare.Pass, error) {
 		}
 		pass.Modules(fromModule, toModule)
 	}
-
 	// p will have lints as a field which we can sort in cli.
 
 	return pass, errs
 }
 
-func (fs FS) findCommit() (*object.Commit, error) {
-	// Default is look at HEAD.
-	refHead, err := fs.repo.Head()
-	if err != nil {
-		return nil, err
-	}
-	hash := refHead.Hash()
-
-	// Return first commit.
-	if !fs.from {
-		return fs.repo.CommitObject(hash)
-	}
-
-	// Otherwise, we need to look at provided sha.
-	commitIter, err := fs.repo.Log(&git.LogOptions{From: hash})
-	if err != nil {
-		return nil, err
-	}
-	// Skip one.
-	_, err = commitIter.Next()
-	if err != nil {
-		return nil, err
-	}
-
-	return commitIter.Next()
-}
-
 func (fs FS) Read(path string) ([]byte, error) {
-	commit, err := fs.findCommit()
-
-	if err != nil {
-		return nil, err
-	}
-
 	// filename is going to be the full path. We don't want that.
 	filename, err := filepath.Rel(fs.root, path)
 	if err != nil {
 		return nil, err
 	}
+
 	// It's possible that file was deleted and it will not exist.
-	f, err := commit.File(filename)
+	f, err := fs.tree.File(filename)
 	if err != nil {
 		return nil, fmt.Errorf("open %q: %w", filename, err)
 	}
@@ -157,6 +124,12 @@ func (fs FS) Abs(p string) (string, error) {
 	return filepath.Join(fs.root, p), nil
 }
 
+type treeChanges struct {
+	from    *object.Tree
+	to      *object.Tree
+	changes []*change
+}
+
 type change struct {
 	file   string
 	change merkletrie.Action
@@ -164,7 +137,7 @@ type change struct {
 
 // findChangedThrift reads a git repo and finds any Thrift files that got changed
 // between HEAD and previous commit.
-func findChangedThrift(r *git.Repository) ([]*change, error) {
+func findChangedThrift(r *git.Repository) (*treeChanges, error) {
 	// Get Repo's HEAD
 	refHead, err := r.Head() // *plumbing.Reference
 	if err != nil {
@@ -205,5 +178,8 @@ func findChangedThrift(r *git.Repository) ([]*change, error) {
 		}
 	}
 
-	return changed, nil
+	return &treeChanges{
+		from:    pc,
+		to:      c,
+		changes: changed}, nil
 }
