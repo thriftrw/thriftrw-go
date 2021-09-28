@@ -62,7 +62,7 @@ func Compare(path string) (compare.Pass, error) {
 	}
 
 	h, err := findChangedThrift(r)
-	if err != nil || h == nil {
+	if err != nil {
 		return pass, fmt.Errorf("failed to find changed thrift files: %w", err)
 	}
 	fs := NewGitFS(path, r, h.to)

@@ -21,6 +21,7 @@
 package compare
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -56,7 +57,7 @@ func TestErrorRequiredCase(t *testing.T) {
 					},
 				},
 			},
-			wantError: "foo.thrift:changing an optional field fieldA in structA to required is not backwards compatible\n",
+			wantError: `foo.thrift:changing an optional field "fieldA" in "structA" to required`,
 		},
 		{
 			desc: "found a new required field",
@@ -72,7 +73,7 @@ func TestErrorRequiredCase(t *testing.T) {
 					},
 				},
 			},
-			wantError: "foo.thrift:adding a required field fieldA to structA is not backwards compatible\n",
+			wantError: `foo.thrift:adding a required field "fieldA" to "structA"`,
 		},
 		{
 			desc: "found a new required and changed optional field",
@@ -97,8 +98,8 @@ func TestErrorRequiredCase(t *testing.T) {
 					},
 				},
 			},
-			wantError: "foo.thrift:changing an optional field fieldA in structA to required is not backwards compatible\n" +
-				"foo.thrift:changing an optional field fieldB in structA to required is not backwards compatible\n",
+			wantError: `foo.thrift:changing an optional field "fieldA" in "structA" to required` +
+				"\n" + `foo.thrift:changing an optional field "fieldB" in "structA" to required`,
 		},
 	}
 
@@ -108,7 +109,8 @@ func TestErrorRequiredCase(t *testing.T) {
 			t.Parallel()
 			pass := Pass{}
 			pass.structSpecs(tt.fromStruct, tt.toStruct, "foo.thrift")
-			assert.Equal(t, tt.wantError, pass.String(), "wrong lint diagnostics")
+			want := fmt.Sprintf("%s\n", tt.wantError)
+			assert.Equal(t, want, pass.String(), "wrong lint diagnostics")
 		})
 	}
 }
@@ -186,7 +188,7 @@ func TestServicesError(t *testing.T) {
 				File: "foo.thrift",
 			},
 			to:        nil,
-			wantError: "foo.thrift:deleting service foo is not backwards compatible\n",
+			wantError: `foo.thrift:deleting service "foo"`,
 		},
 		{
 			desc: "removing a method",
@@ -199,7 +201,7 @@ func TestServicesError(t *testing.T) {
 				Name: "foo",
 				File: "foo.thrift",
 			},
-			wantError: "foo.thrift:removing method bar in service foo is not backwards compatible\n",
+			wantError: `foo.thrift:removing method "bar" in service "foo"`,
 		},
 	}
 	for _, tt := range tests {
@@ -208,7 +210,8 @@ func TestServicesError(t *testing.T) {
 			t.Parallel()
 			pass := Pass{}
 			pass.service(tt.from, tt.to)
-			assert.Equal(t, tt.wantError, pass.String(), "wrong error message")
+			want := fmt.Sprintf("%s\n", tt.wantError)
+			assert.Equal(t, want, pass.String(), "wrong error message")
 		})
 	}
 }

@@ -53,10 +53,10 @@ func TestThriftBreakIntegration(t *testing.T) {
 	out := string(stderr)
 
 	assert.Equal(t,
-		"c.thrift:deleting service Baz is not backwards compatible\n"+
-			"d.thrift:deleting service Qux is not backwards compatible\n"+
-			"v2.thrift:deleting service Bar is not backwards compatible\n"+
-			"v1.thrift:removing method methodA in service Foo is not backwards compatible\n"+
-			"v1.thrift:adding a required field C to AddedRequiredField is not backwards compatible\n",
+		`c.thrift:deleting service "Baz"`+"\n"+
+			`d.thrift:deleting service "Qux"`+"\n"+
+			`v2.thrift:deleting service "Bar"`+"\n"+
+			`v1.thrift:removing method "methodA" in service "Foo"`+"\n"+
+			`v1.thrift:adding a required field "C" to "AddedRequiredField"`+"\n",
 		out)
 }

@@ -77,10 +77,23 @@ func (p *Pass) typ(from, to compile.TypeSpec, file string) {
 	if f, ok := from.(*compile.StructSpec); ok {
 		t, ok := to.(*compile.StructSpec)
 		if !ok {
-			// This is a new Type, which is backwards compatible.
+			// A struct was deleted which is ok if it's unused or
+			// it's usage was also removed.
 			return
 		}
 		p.structSpecs(f, t, file)
+	}
+}
+
+func (p *Pass) requiredField(fromField, toField *compile.FieldSpec, to *compile.StructSpec, file string) {
+	fromRequired := fromField.Required
+	if !fromRequired && toField.Required {
+		p.Report(Diagnostic{
+			File: file,
+			Message: fmt.Sprintf(
+				"changing an optional field %q in %q to required",
+				toField.ThriftName(), to.ThriftName()),
+		})
 	}
 }
 
@@ -89,26 +102,15 @@ func (p *Pass) structSpecs(from, to *compile.StructSpec, file string) {
 	fields := make(map[int16]*compile.FieldSpec, len(from.Fields))
 	// Assume that these two should be compared.
 	for _, f := range from.Fields {
-		// Capture state of all fields here.
 		fields[f.ID] = f
 	}
-
 	for _, toField := range to.Fields {
 		if fromField, ok := fields[toField.ID]; ok {
-			fromRequired := fromField.Required
-			toRequired := toField.Required
-			if !fromRequired && toRequired {
-				p.Report(Diagnostic{
-					File: file,
-					Message: fmt.Sprintf(
-						"changing an optional field %s in %s to required is not backwards compatible",
-						toField.ThriftName(), to.ThriftName()),
-				})
-			}
+			p.requiredField(fromField, toField, to, file)
 		} else if toField.Required {
 			p.Report(Diagnostic{
 				File: file,
-				Message: fmt.Sprintf("adding a required field %s to %s is not backwards compatible",
+				Message: fmt.Sprintf("adding a required field %q to %q",
 					toField.ThriftName(), to.ThriftName()),
 			})
 		}
@@ -120,7 +122,7 @@ func (p *Pass) service(from, to *compile.ServiceSpec) {
 		// Service was deleted, which is not backwards compatible.
 		p.Report(Diagnostic{
 			File:    filepath.Base(from.File), // toModule could have been deleted.
-			Message: fmt.Sprintf("deleting service %s is not backwards compatible", from.Name),
+			Message: fmt.Sprintf("deleting service %q", from.Name),
 		})
 
 		return
@@ -134,7 +136,7 @@ func (p *Pass) function(to *compile.FunctionSpec, fn string, file string, servic
 	if to == nil {
 		p.Report(Diagnostic{
 			File:    file,
-			Message: fmt.Sprintf("removing method %s in service %s is not backwards compatible", fn, service),
+			Message: fmt.Sprintf("removing method %q in service %q", fn, service),
 		})
 	}
 }
