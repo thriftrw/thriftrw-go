@@ -29,10 +29,36 @@ import (
 	"go.uber.org/thriftrw/internal/breaktest"
 )
 
-func TestOpenRepo(t *testing.T) {
-	t.Parallel()
+func TestOpenRepoWithErrors(t *testing.T) {
 	tmpDir := t.TempDir()
-	repo := breaktest.CreateRepoAndCommit(t, tmpDir)
+	from := map[string]string{
+		"v1.thrift": "namespace rb v1\n" +
+			"struct AddedRequiredField {\n" +
+			"    1: optional string A\n" +
+			"    2: optional string B\n" +
+			"}\n" +
+			"\nservice Foo {\n    void methodA()\n}",
+		"test/v2.thrift": `service Bar {}`,
+		"test/c.thrift":  `service Baz {}`,
+		"test/d.thrift": `include "../v1.thrift"
+		service Qux {}`,                 // d.thrift will be deleted below.
+		"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
+	}
+	// For c.thrift we are also checking to make sure includes work as expected.
+	to := map[string]string{
+		"v1.thrift": "namespace rb v1\n" +
+			"struct AddedRequiredField {\n" +
+			"    1: optional string A\n" +
+			"    2: optional string B\n" +
+			"    3: required string C\n}\n" +
+			"service Foo {}",
+		"test/v2.thrift": `service Foo {}`,
+		"test/c.thrift": `include "../v1.thrift"
+		service Bar {}`,
+		"somefile.go": `service Qux{}`,
+	}
+	remove := []string{"test/d.thrift"}
+	repo := breaktest.CreateRepoAndCommit(t, tmpDir, from, to, remove)
 	treechanges, err := findChangedThrift(repo)
 	assert.NoError(t, err)
 	assert.Equal(t, []*change{
@@ -48,6 +74,42 @@ func TestOpenRepo(t *testing.T) {
 		`c.thrift:deleting service "Baz"`+"\n"+
 			`d.thrift:deleting service "Qux"`+"\n"+
 			`v2.thrift:deleting service "Bar"`+"\n"+
+			`v1.thrift:removing method "methodA" in service "Foo"`+"\n"+
+			`v1.thrift:adding a required field "C" to "AddedRequiredField"`+"\n",
+		pass.String())
+}
+
+func TestNewFileAdded(t *testing.T) {
+	tmpDir := t.TempDir()
+	from := map[string]string{
+		"v1.thrift": "namespace rb v1\n" +
+			"struct AddedRequiredField {\n" +
+			"    1: optional string A\n" +
+			"    2: optional string B\n" +
+			"}\n" +
+			"\nservice Foo {\n    void methodA()\n}",
+	}
+	// For c.thrift we are also checking to make sure includes work as expected.
+	to := map[string]string{
+		"v1.thrift": "namespace rb v1\n" +
+			"struct AddedRequiredField {\n" +
+			"    1: optional string A\n" +
+			"    2: optional string B\n" +
+			"    3: required string C\n}\n" +
+			"service Foo {}",
+		"foo.proto": "",
+	}
+	var remove []string
+	repo := breaktest.CreateRepoAndCommit(t, tmpDir, from, to, remove)
+	treechanges, err := findChangedThrift(repo)
+	assert.NoError(t, err)
+	assert.Equal(t, []*change{
+		{file: "v1.thrift", change: merkletrie.Modify},
+	}, treechanges.changes)
+
+	pass, err := Compare(tmpDir)
+	require.NoError(t, err)
+	assert.Equal(t,
 			`v1.thrift:removing method "methodA" in service "Foo"`+"\n"+
 			`v1.thrift:adding a required field "C" to "AddedRequiredField"`+"\n",
 		pass.String())

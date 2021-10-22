@@ -88,7 +88,8 @@ func (w *writeThrift) writeThrifts(extraMsg string) error {
 // CreateRepoAndCommit creates a temporary repository and adds
 // a commit of a thrift files for us to look up later.
 // TODO(GO-891): finish implementation of this integration.
-func CreateRepoAndCommit(t *testing.T, tmpDir string) *git.Repository {
+func CreateRepoAndCommit(t *testing.T, tmpDir string, from map[string]string,
+	to map[string]string, remove []string) *git.Repository {
 	t.Helper()
 	// Create a new repo in temp directory.
 	repository, err := git.PlainInit(tmpDir, false)
@@ -96,37 +97,9 @@ func CreateRepoAndCommit(t *testing.T, tmpDir string) *git.Repository {
 	worktree, err := repository.Worktree()
 	require.NoError(t, err)
 
-	// Start writing files.
-	exampleThrifts := map[string]string{
-		"v1.thrift": "namespace rb v1\n" +
-			"struct AddedRequiredField {\n" +
-			"    1: optional string A\n" +
-			"    2: optional string B\n" +
-			"}\n" +
-			"\nservice Foo {\n    void methodA()\n}",
-		"test/v2.thrift": `service Bar {}`,
-		"test/c.thrift":  `service Baz {}`,
-		"test/d.thrift": `include "../v1.thrift"
-service Qux {}`, // file will be deleted below.
-		"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
-	}
-	w := newWriteThrift(tmpDir, exampleThrifts, worktree, nil)
+	w := newWriteThrift(tmpDir, from, worktree, nil)
 	require.NoError(t, w.writeThrifts(""))
-
-	// For c.thrift we are also checking to make sure includes work as expected.
-	exampleThrifts = map[string]string{
-		"v1.thrift": "namespace rb v1\n" +
-			"struct AddedRequiredField {\n" +
-			"    1: optional string A\n" +
-			"    2: optional string B\n" +
-			"    3: required string C\n}\n" +
-			"service Foo {}",
-		"test/v2.thrift": `service Foo {}`,
-		"test/c.thrift": `include "../v1.thrift"
-service Bar {}`,
-		"somefile.go": `service Qux{}`,
-	}
-	w = newWriteThrift(tmpDir, exampleThrifts, worktree, []string{"test/d.thrift"})
+	w = newWriteThrift(tmpDir, to, worktree, remove)
 	require.NoError(t, w.writeThrifts("second"))
 
 	return repository

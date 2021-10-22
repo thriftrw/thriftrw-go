@@ -170,6 +170,10 @@ func findChangedThrift(r *git.Repository) (*treeChanges, error) {
 			return nil, err
 		}
 		from, _, _ := o.Files()
+		// New file was added which doesnt have a name.
+		if from == nil {
+			continue
+		}
 		if filepath.Ext(from.Name) == ".thrift" {
 			changed = append(changed, &change{
 				file:   o.From.Name,
