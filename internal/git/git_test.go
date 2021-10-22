@@ -23,6 +23,7 @@ package git
 import (
 	"testing"
 
+	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/utils/merkletrie"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -113,4 +114,12 @@ func TestNewFileAdded(t *testing.T) {
 		`v1.thrift:removing method "methodA" in service "Foo"`+"\n"+
 			`v1.thrift:adding a required field "C" to "AddedRequiredField"`+"\n",
 		pass.String())
+}
+
+func TestFindChangedThriftError(t *testing.T) {
+	tmpDir := t.TempDir()
+	repository, err := git.PlainInit(tmpDir, false)
+	require.NoError(t, err, "expect no error when creating a temporary repo")
+	_, err = findChangedThrift(repository)
+	assert.Error(t, err)
 }
