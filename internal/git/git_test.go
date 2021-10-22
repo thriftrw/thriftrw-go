@@ -100,8 +100,7 @@ func TestNewFileAdded(t *testing.T) {
 			"service Foo {}",
 		"foo.proto": "", // Testing that we support new files being added.
 	}
-	var remove []string
-	repo := breaktest.CreateRepoAndCommit(t, tmpDir, from, to, remove)
+	repo := breaktest.CreateRepoAndCommit(t, tmpDir, from, to, nil)
 	treechanges, err := findChangedThrift(repo)
 	assert.NoError(t, err)
 	assert.Equal(t, []*change{
