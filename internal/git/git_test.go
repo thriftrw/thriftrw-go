@@ -41,7 +41,7 @@ func TestOpenRepoWithErrors(t *testing.T) {
 		"test/v2.thrift": `service Bar {}`,
 		"test/c.thrift":  `service Baz {}`,
 		"test/d.thrift": `include "../v1.thrift"
-		service Qux {}`,                 // d.thrift will be deleted below.
+		service Qux {}`, // d.thrift will be deleted below.
 		"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
 	}
 	// For c.thrift we are also checking to make sure includes work as expected.
@@ -97,7 +97,7 @@ func TestNewFileAdded(t *testing.T) {
 			"    2: optional string B\n" +
 			"    3: required string C\n}\n" +
 			"service Foo {}",
-		"foo.proto": "",
+		"foo.proto": "", // Testing that we support new files being added.
 	}
 	var remove []string
 	repo := breaktest.CreateRepoAndCommit(t, tmpDir, from, to, remove)
@@ -110,7 +110,7 @@ func TestNewFileAdded(t *testing.T) {
 	pass, err := Compare(tmpDir)
 	require.NoError(t, err)
 	assert.Equal(t,
-			`v1.thrift:removing method "methodA" in service "Foo"`+"\n"+
+		`v1.thrift:removing method "methodA" in service "Foo"`+"\n"+
 			`v1.thrift:adding a required field "C" to "AddedRequiredField"`+"\n",
 		pass.String())
 }

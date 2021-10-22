@@ -43,7 +43,7 @@ func TestThriftBreakIntegration(t *testing.T) {
 		"test/v2.thrift": `service Bar {}`,
 		"test/c.thrift":  `service Baz {}`,
 		"test/d.thrift": `include "../v1.thrift"
-		service Qux {}`,                 // file will be deleted below.
+		service Qux {}`, // d.thrift will be deleted below.
 		"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
 	}
 	// For c.thrift we are also checking to make sure includes work as expected.
