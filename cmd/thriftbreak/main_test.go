@@ -33,7 +33,34 @@ import (
 
 func TestThriftBreakIntegration(t *testing.T) {
 	tmpDir := t.TempDir()
-	breaktest.CreateRepoAndCommit(t, tmpDir)
+	from := map[string]string{
+		"v1.thrift": "namespace rb v1\n" +
+			"struct AddedRequiredField {\n" +
+			"    1: optional string A\n" +
+			"    2: optional string B\n" +
+			"}\n" +
+			"\nservice Foo {\n    void methodA()\n}",
+		"test/v2.thrift": `service Bar {}`,
+		"test/c.thrift":  `service Baz {}`,
+		"test/d.thrift": `include "../v1.thrift"
+		service Qux {}`, // d.thrift will be deleted below.
+		"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
+	}
+	// For c.thrift we are also checking to make sure includes work as expected.
+	to := map[string]string{
+		"v1.thrift": "namespace rb v1\n" +
+			"struct AddedRequiredField {\n" +
+			"    1: optional string A\n" +
+			"    2: optional string B\n" +
+			"    3: required string C\n}\n" +
+			"service Foo {}",
+		"test/v2.thrift": `service Foo {}`,
+		"test/c.thrift": `include "../v1.thrift"
+		service Bar {}`,
+		"somefile.go": `service Qux{}`,
+	}
+	remove := []string{"test/d.thrift"}
+	breaktest.CreateRepoAndCommit(t, tmpDir, from, to, remove)
 
 	f, err := ioutil.TempFile(tmpDir, "stdout")
 	require.NoError(t, err, "create temporary file")
