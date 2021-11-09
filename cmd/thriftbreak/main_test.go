@@ -32,58 +32,86 @@ import (
 )
 
 func TestThriftBreakIntegration(t *testing.T) {
-	tmpDir := t.TempDir()
-	from := map[string]string{
-		"v1.thrift": "namespace rb v1\n" +
-			"struct AddedRequiredField {\n" +
-			"    1: optional string A\n" +
-			"    2: optional string B\n" +
-			"}\n" +
-			"\nservice Foo {\n    void methodA()\n}",
-		"test/v2.thrift": `service Bar {}`,
-		"test/c.thrift":  `service Baz {}`,
-		"test/d.thrift": `include "../v1.thrift"
-		service Qux {}`, // d.thrift will be deleted below.
-		"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
+	type test struct {
+		desc      string
+		want      string
+		gitDirArg string
+		extraCmd  string
 	}
-	// For c.thrift we are also checking to make sure includes work as expected.
-	to := map[string]string{
-		"v1.thrift": "namespace rb v1\n" +
-			"struct AddedRequiredField {\n" +
-			"    1: optional string A\n" +
-			"    2: optional string B\n" +
-			"    3: required string C\n}\n" +
-			"service Foo {}",
-		"test/v2.thrift": `service Foo {}`,
-		"test/c.thrift": `include "../v1.thrift"
+	tests := []test{
+		{
+			desc: "output",
+			want: `c.thrift:deleting service "Baz"` + "\n" +
+				`d.thrift:deleting service "Qux"` + "\n" +
+				`v2.thrift:deleting service "Bar"` + "\n" +
+				`v1.thrift:removing method "methodA" in service "Foo"` + "\n" +
+				`v1.thrift:adding a required field "C" to "AddedRequiredField"` + "\n",
+			gitDirArg: "-C=%s",
+		},
+		{
+			desc: "json output",
+			want: `{"File":"c.thrift","Message":"deleting service \"Baz\""}` + "\n" +
+				`{"File":"d.thrift","Message":"deleting service \"Qux\""}` + "\n" +
+				`{"File":"v2.thrift","Message":"deleting service \"Bar\""}` + "\n" +
+				`{"File":"v1.thrift","Message":"removing method \"methodA\" in service \"Foo\""}` + "\n" +
+				`{"File":"v1.thrift","Message":"adding a required field \"C\" to \"AddedRequiredField\""}` + "\n",
+			gitDirArg: "-C=%s",
+			extraCmd:  "--json",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tmpDir := t.TempDir()
+			from := map[string]string{
+				"v1.thrift": "namespace rb v1\n" +
+					"struct AddedRequiredField {\n" +
+					"    1: optional string A\n" +
+					"    2: optional string B\n" +
+					"}\n" +
+					"\nservice Foo {\n    void methodA()\n}",
+				"test/v2.thrift": `service Bar {}`,
+				"test/c.thrift":  `service Baz {}`,
+				"test/d.thrift": `include "../v1.thrift"
+		service Qux {}`,                         // d.thrift will be deleted below.
+				"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
+			}
+			// For c.thrift we are also checking to make sure includes work as expected.
+			to := map[string]string{
+				"v1.thrift": "namespace rb v1\n" +
+					"struct AddedRequiredField {\n" +
+					"    1: optional string A\n" +
+					"    2: optional string B\n" +
+					"    3: required string C\n}\n" +
+					"service Foo {}",
+				"test/v2.thrift": `service Foo {}`,
+				"test/c.thrift": `include "../v1.thrift"
 		service Bar {}`,
-		"somefile.go": `service Qux{}`,
+				"somefile.go": `service Qux{}`,
+			}
+			remove := []string{"test/d.thrift"}
+			breaktest.CreateRepoAndCommit(t, tmpDir, from, to, remove)
+
+			f, err := ioutil.TempFile(tmpDir, "stdout")
+			require.NoError(t, err, "create temporary file")
+			defer func(oldStdout *os.File) {
+				assert.NoError(t, f.Close())
+				os.Stdout = oldStdout
+			}(os.Stdout)
+			os.Stdout = f
+
+			// Pinning not to run into scoping errors.
+			gitDir := tt.gitDirArg
+			extraCmd := tt.extraCmd
+			err = run([]string{fmt.Sprintf(gitDir, tmpDir), extraCmd})
+
+			require.Error(t, err, "expected no errors")
+			assert.EqualError(t, err, "found 5 issues")
+
+			stderr, err := ioutil.ReadFile(f.Name())
+			require.NoError(t, err)
+
+			out := string(stderr)
+			assert.Equal(t, tt.want, out)
+		})
 	}
-	remove := []string{"test/d.thrift"}
-	breaktest.CreateRepoAndCommit(t, tmpDir, from, to, remove)
-
-	f, err := ioutil.TempFile(tmpDir, "stdout")
-	require.NoError(t, err, "create temporary file")
-	defer func(oldStdout *os.File) {
-		assert.NoError(t, f.Close())
-		os.Stdout = oldStdout
-	}(os.Stdout)
-	os.Stdout = f
-
-	err = run([]string{fmt.Sprintf("-C=%s", tmpDir)})
-	require.Error(t, err, "expected no errors")
-	assert.EqualError(t, err, "found 5 issues")
-
-	stderr, err := ioutil.ReadFile(f.Name())
-	require.NoError(t, err)
-
-	out := string(stderr)
-
-	assert.Equal(t,
-		`c.thrift:deleting service "Baz"`+"\n"+
-			`d.thrift:deleting service "Qux"`+"\n"+
-			`v2.thrift:deleting service "Bar"`+"\n"+
-			`v1.thrift:removing method "methodA" in service "Foo"`+"\n"+
-			`v1.thrift:adding a required field "C" to "AddedRequiredField"`+"\n",
-		out)
 }

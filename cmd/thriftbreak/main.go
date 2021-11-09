@@ -21,6 +21,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -38,6 +39,7 @@ func main() {
 func run(args []string) error {
 	flag := flag.NewFlagSet("thriftbreak", flag.ContinueOnError)
 	gitRepo := flag.String("C", "", "location of git repository. Defaults to current directory.")
+	jsonOut := flag.Bool("json", false, "output as JSON")
 	if err := flag.Parse(args); err != nil {
 		return err
 	}
@@ -57,8 +59,18 @@ func run(args []string) error {
 	}
 
 	lints := pass.Lints()
+	var out string
 	for _, l := range lints {
-		fmt.Println(l.String())
+		if *jsonOut {
+			bytes, err := json.Marshal(l)
+			if err != nil {
+				return fmt.Errorf("failed to marshal error: %v", err)
+			}
+			out = string(bytes)
+		} else {
+			out = l.String()
+		}
+		fmt.Println(out)
 	}
 	if len(lints) > 0 {
 		return fmt.Errorf("found %d issues", len(lints))
