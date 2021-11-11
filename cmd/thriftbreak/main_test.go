@@ -32,13 +32,12 @@ import (
 )
 
 func TestThriftBreakIntegration(t *testing.T) {
-	type test struct {
+	tests := []struct {
 		desc      string
 		want      string
 		gitDirArg string
 		extraCmd  string
-	}
-	tests := []test{
+	}{
 		{
 			desc: "output",
 			want: `c.thrift:deleting service "Baz"` + "\n" +
@@ -59,36 +58,37 @@ func TestThriftBreakIntegration(t *testing.T) {
 			extraCmd:  "--json",
 		},
 	}
+	from := map[string]string{
+		"v1.thrift": "namespace rb v1\n" +
+			"struct AddedRequiredField {\n" +
+			"    1: optional string A\n" +
+			"    2: optional string B\n" +
+			"}\n" +
+			"\nservice Foo {\n    void methodA()\n}",
+		"test/v2.thrift": `service Bar {}`,
+		"test/c.thrift":  `service Baz {}`,
+		"test/d.thrift": `include "../v1.thrift"
+		service Qux {}`, // d.thrift will be deleted below.
+		"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
+	}
+	// For c.thrift we are also checking to make sure includes work as expected.
+	to := map[string]string{
+		"v1.thrift": "namespace rb v1\n" +
+			"struct AddedRequiredField {\n" +
+			"    1: optional string A\n" +
+			"    2: optional string B\n" +
+			"    3: required string C\n}\n" +
+			"service Foo {}",
+		"test/v2.thrift": `service Foo {}`,
+		"test/c.thrift": `include "../v1.thrift"
+		service Bar {}`,
+		"somefile.go": `service Qux{}`,
+	}
+	remove := []string{"test/d.thrift"}
+
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
 			tmpDir := t.TempDir()
-			from := map[string]string{
-				"v1.thrift": "namespace rb v1\n" +
-					"struct AddedRequiredField {\n" +
-					"    1: optional string A\n" +
-					"    2: optional string B\n" +
-					"}\n" +
-					"\nservice Foo {\n    void methodA()\n}",
-				"test/v2.thrift": `service Bar {}`,
-				"test/c.thrift":  `service Baz {}`,
-				"test/d.thrift": `include "../v1.thrift"
-		service Qux {}`, // d.thrift will be deleted below.
-				"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
-			}
-			// For c.thrift we are also checking to make sure includes work as expected.
-			to := map[string]string{
-				"v1.thrift": "namespace rb v1\n" +
-					"struct AddedRequiredField {\n" +
-					"    1: optional string A\n" +
-					"    2: optional string B\n" +
-					"    3: required string C\n}\n" +
-					"service Foo {}",
-				"test/v2.thrift": `service Foo {}`,
-				"test/c.thrift": `include "../v1.thrift"
-		service Bar {}`,
-				"somefile.go": `service Qux{}`,
-			}
-			remove := []string{"test/d.thrift"}
 			breaktest.CreateRepoAndCommit(t, tmpDir, from, to, remove)
 
 			f, err := ioutil.TempFile(tmpDir, "stdout")
