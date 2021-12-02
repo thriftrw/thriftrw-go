@@ -39,9 +39,9 @@ func main() {
 	}
 }
 
+// readableOutput prints every lint error on a separate line.
 func readableOutput(w io.Writer) func(compare.Diagnostic) error {
 	return func(diagnostic compare.Diagnostic) error {
-		// fmt.Println(diagnostic.String())
 		if _, err := fmt.Fprintln(w, diagnostic.String()); err != nil {
 			return fmt.Errorf("failed to output a lint error: %v", err)
 		}
@@ -50,6 +50,7 @@ func readableOutput(w io.Writer) func(compare.Diagnostic) error {
 	}
 }
 
+// jsonOutput prints out every lint error in JSON format.
 func jsonOutput(w io.Writer) func(compare.Diagnostic) error {
 	enc := json.NewEncoder(w)
 

@@ -21,7 +21,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -29,6 +31,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/thriftrw/internal/breaktest"
+	"go.uber.org/thriftrw/internal/compare"
 )
 
 func TestThriftBreakIntegration(t *testing.T) {
@@ -68,7 +71,7 @@ func TestThriftBreakIntegration(t *testing.T) {
 		"test/v2.thrift": `service Bar {}`,
 		"test/c.thrift":  `service Baz {}`,
 		"test/d.thrift": `include "../v1.thrift"
-		service Qux {}`, // d.thrift will be deleted below.
+		service Qux {}`,                 // d.thrift will be deleted below.
 		"somefile.go": `service Quux{}`, // a .go file, not a .thrift.
 	}
 	// For c.thrift we are also checking to make sure includes work as expected.
@@ -112,6 +115,74 @@ func TestThriftBreakIntegration(t *testing.T) {
 
 			out := string(stderr)
 			assert.Equal(t, tt.want, out)
+		})
+	}
+}
+
+func TestJsonPrinter(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		desc   string
+		want   string
+		writer func(io.Writer) func(compare.Diagnostic) error
+	}{
+		{
+			desc:   "json writer",
+			want:   "{\"File\":\"foo.thrift\",\"Message\":\"error\"}\n",
+			writer: jsonOutput,
+		},
+		{
+			desc:   "readable writer",
+			want:   "foo.thrift:error\n",
+			writer: readableOutput,
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.desc, func(t *testing.T) {
+			t.Parallel()
+			var b bytes.Buffer
+			w := tt.writer(&b)
+			err := w(compare.Diagnostic{
+				File:    "foo.thrift",
+				Message: "error",
+			})
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, b.String())
+		})
+	}
+}
+
+func TestJsonPrinterErrors(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		desc   string
+		want   string
+		writer func(io.Writer) func(compare.Diagnostic) error
+	}{
+		{
+			desc:   "json writer",
+			want:   "{\"File\":\"foo.thrift\",\"Message\":\"error\"}\n",
+			writer: jsonOutput,
+		},
+		{
+			desc:   "readable writer",
+			want:   "foo.thrift:error\n",
+			writer: readableOutput,
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.desc, func(t *testing.T) {
+			t.Parallel()
+			var b bytes.Buffer
+			w := tt.writer(&b)
+			err := w(compare.Diagnostic{
+				File:    "foo.thrift",
+				Message: "error",
+			})
+			require.Error(t, err)
+			assert.Equal(t, tt.want, b.String())
 		})
 	}
 }
