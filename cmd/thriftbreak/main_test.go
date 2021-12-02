@@ -152,37 +152,3 @@ func TestJsonPrinter(t *testing.T) {
 		})
 	}
 }
-
-func TestJsonPrinterErrors(t *testing.T) {
-	t.Parallel()
-	tests := []struct {
-		desc   string
-		want   string
-		writer func(io.Writer) func(compare.Diagnostic) error
-	}{
-		{
-			desc:   "json writer",
-			want:   "{\"File\":\"foo.thrift\",\"Message\":\"error\"}\n",
-			writer: jsonOutput,
-		},
-		{
-			desc:   "readable writer",
-			want:   "foo.thrift:error\n",
-			writer: readableOutput,
-		},
-	}
-	for _, tt := range tests {
-		tt := tt
-		t.Run(tt.desc, func(t *testing.T) {
-			t.Parallel()
-			var b bytes.Buffer
-			w := tt.writer(&b)
-			err := w(compare.Diagnostic{
-				File:    "foo.thrift",
-				Message: "error",
-			})
-			require.Error(t, err)
-			assert.Equal(t, tt.want, b.String())
-		})
-	}
-}
