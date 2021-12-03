@@ -21,23 +21,55 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 
+	"go.uber.org/thriftrw/internal/compare"
 	"go.uber.org/thriftrw/internal/git"
 )
 
 func main() {
-	if err := run(os.Args[1:]); err != nil && err != flag.ErrHelp {
+	if err := run(os.Args[1:]); err != nil && !errors.Is(err, flag.ErrHelp) {
 		log.Fatalf("%+v", err)
+	}
+}
+
+// readableOutput prints every lint error on a separate line.
+func readableOutput(w io.Writer) func(compare.Diagnostic) error {
+	return func(diagnostic compare.Diagnostic) error {
+		if _, err := fmt.Fprintln(w, diagnostic.String()); err != nil {
+			return fmt.Errorf("failed to output a lint error: %v", err)
+		}
+
+		return nil
+	}
+}
+
+// jsonOutput prints out every lint error in JSON format.
+func jsonOutput(w io.Writer) func(compare.Diagnostic) error {
+	enc := json.NewEncoder(w)
+
+	return func(diagnostic compare.Diagnostic) error {
+		// Encode adds a trailing newline.
+		if err := enc.Encode(diagnostic); err != nil {
+			return fmt.Errorf("failed to encode: %v", err)
+		}
+
+		return nil
 	}
 }
 
 func run(args []string) error {
 	flag := flag.NewFlagSet("thriftbreak", flag.ContinueOnError)
-	gitRepo := flag.String("C", "", "location of git repository. Defaults to current directory.")
+	gitRepo := flag.String("C", "",
+		"location of git repository. Defaults to current directory.")
+	jsonOut := flag.Bool("json", false,
+		"output as a list of newline-delimited JSON objects with the following fields: File and Message")
 	if err := flag.Parse(args); err != nil {
 		return err
 	}
@@ -56,10 +88,19 @@ func run(args []string) error {
 		return err
 	}
 
+	var write func(compare.Diagnostic) error
+	if *jsonOut {
+		write = jsonOutput(os.Stdout)
+	} else {
+		write = readableOutput(os.Stdout)
+	}
 	lints := pass.Lints()
 	for _, l := range lints {
-		fmt.Println(l.String())
+		if err := write(l); err != nil {
+			return fmt.Errorf("failed to output error: %v", err)
+		}
 	}
+
 	if len(lints) > 0 {
 		return fmt.Errorf("found %d issues", len(lints))
 	}

@@ -21,7 +21,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -29,10 +31,36 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/thriftrw/internal/breaktest"
+	"go.uber.org/thriftrw/internal/compare"
 )
 
 func TestThriftBreakIntegration(t *testing.T) {
-	tmpDir := t.TempDir()
+	tests := []struct {
+		desc      string
+		want      string
+		gitDirArg string
+		extraCmd  string
+	}{
+		{
+			desc: "output",
+			want: `c.thrift:deleting service "Baz"` + "\n" +
+				`d.thrift:deleting service "Qux"` + "\n" +
+				`v2.thrift:deleting service "Bar"` + "\n" +
+				`v1.thrift:removing method "methodA" in service "Foo"` + "\n" +
+				`v1.thrift:adding a required field "C" to "AddedRequiredField"` + "\n",
+			gitDirArg: "-C=%s",
+		},
+		{
+			desc: "json output",
+			want: `{"File":"c.thrift","Message":"deleting service \"Baz\""}` + "\n" +
+				`{"File":"d.thrift","Message":"deleting service \"Qux\""}` + "\n" +
+				`{"File":"v2.thrift","Message":"deleting service \"Bar\""}` + "\n" +
+				`{"File":"v1.thrift","Message":"removing method \"methodA\" in service \"Foo\""}` + "\n" +
+				`{"File":"v1.thrift","Message":"adding a required field \"C\" to \"AddedRequiredField\""}` + "\n",
+			gitDirArg: "-C=%s",
+			extraCmd:  "--json",
+		},
+	}
 	from := map[string]string{
 		"v1.thrift": "namespace rb v1\n" +
 			"struct AddedRequiredField {\n" +
@@ -60,30 +88,67 @@ func TestThriftBreakIntegration(t *testing.T) {
 		"somefile.go": `service Qux{}`,
 	}
 	remove := []string{"test/d.thrift"}
-	breaktest.CreateRepoAndCommit(t, tmpDir, from, to, remove)
 
-	f, err := ioutil.TempFile(tmpDir, "stdout")
-	require.NoError(t, err, "create temporary file")
-	defer func(oldStdout *os.File) {
-		assert.NoError(t, f.Close())
-		os.Stdout = oldStdout
-	}(os.Stdout)
-	os.Stdout = f
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			tmpDir := t.TempDir()
+			breaktest.CreateRepoAndCommit(t, tmpDir, from, to, remove)
 
-	err = run([]string{fmt.Sprintf("-C=%s", tmpDir)})
-	require.Error(t, err, "expected no errors")
-	assert.EqualError(t, err, "found 5 issues")
+			f, err := ioutil.TempFile(tmpDir, "stdout")
+			require.NoError(t, err, "create temporary file")
+			defer func(oldStdout *os.File) {
+				assert.NoError(t, f.Close())
+				os.Stdout = oldStdout
+			}(os.Stdout)
+			os.Stdout = f
 
-	stderr, err := ioutil.ReadFile(f.Name())
-	require.NoError(t, err)
+			// Pinning not to run into scoping errors.
+			gitDir := tt.gitDirArg
+			extraCmd := tt.extraCmd
+			err = run([]string{fmt.Sprintf(gitDir, tmpDir), extraCmd})
 
-	out := string(stderr)
+			require.Error(t, err, "expected no errors")
+			assert.EqualError(t, err, "found 5 issues")
 
-	assert.Equal(t,
-		`c.thrift:deleting service "Baz"`+"\n"+
-			`d.thrift:deleting service "Qux"`+"\n"+
-			`v2.thrift:deleting service "Bar"`+"\n"+
-			`v1.thrift:removing method "methodA" in service "Foo"`+"\n"+
-			`v1.thrift:adding a required field "C" to "AddedRequiredField"`+"\n",
-		out)
+			stderr, err := ioutil.ReadFile(f.Name())
+			require.NoError(t, err)
+
+			out := string(stderr)
+			assert.Equal(t, tt.want, out)
+		})
+	}
+}
+
+func TestJsonPrinter(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		desc   string
+		want   string
+		writer func(io.Writer) func(compare.Diagnostic) error
+	}{
+		{
+			desc:   "json writer",
+			want:   "{\"File\":\"foo.thrift\",\"Message\":\"error\"}\n",
+			writer: jsonOutput,
+		},
+		{
+			desc:   "readable writer",
+			want:   "foo.thrift:error\n",
+			writer: readableOutput,
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.desc, func(t *testing.T) {
+			t.Parallel()
+			var b bytes.Buffer
+			w := tt.writer(&b)
+			err := w(compare.Diagnostic{
+				File:    "foo.thrift",
+				Message: "error",
+			})
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, b.String())
+		})
+	}
 }
