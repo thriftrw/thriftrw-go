@@ -35,9 +35,9 @@ import (
 
 func TestThriftBreakIntegration(t *testing.T) {
 	tests := []struct {
-		desc      string
-		want      string
-		extraCmd  string
+		desc     string
+		want     string
+		extraCmd string
 	}{
 		{
 			desc: "output",
@@ -54,7 +54,7 @@ func TestThriftBreakIntegration(t *testing.T) {
 				`{"File":"v2.thrift","Message":"deleting service \"Bar\""}` + "\n" +
 				`{"File":"v1.thrift","Message":"removing method \"methodA\" in service \"Foo\""}` + "\n" +
 				`{"File":"v1.thrift","Message":"adding a required field \"C\" to \"AddedRequiredField\""}` + "\n",
-			extraCmd:  "--json",
+			extraCmd: "--json",
 		},
 	}
 	from := map[string]string{
@@ -98,7 +98,7 @@ func TestThriftBreakIntegration(t *testing.T) {
 			}(os.Stdout)
 			os.Stdout = f
 
-			err = run([]string{"-C="+tmpDir, tt.extraCmd})
+			err = run([]string{"-C=" + tmpDir, tt.extraCmd})
 
 			require.Error(t, err, "expected an errors with Thrift backwards incompatible changes")
 			assert.EqualError(t, err, "found 5 issues")
