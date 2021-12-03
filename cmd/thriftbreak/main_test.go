@@ -100,7 +100,7 @@ func TestThriftBreakIntegration(t *testing.T) {
 
 			err = run([]string{"-C=" + tmpDir, tt.extraCmd})
 
-			require.Error(t, err, "expected an errors with Thrift backwards incompatible changes")
+			require.Error(t, err, "expected an error with Thrift backwards incompatible changes")
 			assert.EqualError(t, err, "found 5 issues")
 
 			stderr, err := ioutil.ReadFile(f.Name())
