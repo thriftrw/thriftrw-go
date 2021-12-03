@@ -139,7 +139,7 @@ func (p *Pass) service(from, to *compile.ServiceSpec) {
 // fallbacks to file name for cases when it was deleted.
 func (p *Pass) getRelativePath(filePath string) string {
 	if file, err := filepath.Rel(p.GitDir, filePath); err == nil {
-	    return file
+		return file
 	}
 	// If a file was deleted, then we will not be able to
 	// find a relative path to it.
