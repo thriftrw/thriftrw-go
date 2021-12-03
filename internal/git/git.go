@@ -52,7 +52,9 @@ func NewGitFS(gitDir string, repo *git.Repository, tree *object.Tree) *FS {
 // Compare takes a path to a git repository and returns errors between HEAD and HEAD~
 // for any incompatible Thrift changes between the two shas.
 func Compare(path string) (compare.Pass, error) {
-	var pass compare.Pass
+	pass := compare.Pass{
+		GitDir: path,
+	}
 	r, err := git.PlainOpenWithOptions(path, &git.PlainOpenOptions{
 		DetectDotGit:          true,
 		EnableDotGitCommonDir: true,

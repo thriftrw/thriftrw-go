@@ -22,7 +22,6 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -36,10 +35,9 @@ import (
 
 func TestThriftBreakIntegration(t *testing.T) {
 	tests := []struct {
-		desc      string
-		want      string
-		gitDirArg string
-		extraCmd  string
+		desc     string
+		want     string
+		extraCmd string
 	}{
 		{
 			desc: "output",
@@ -48,17 +46,15 @@ func TestThriftBreakIntegration(t *testing.T) {
 				`v2.thrift:deleting service "Bar"` + "\n" +
 				`v1.thrift:removing method "methodA" in service "Foo"` + "\n" +
 				`v1.thrift:adding a required field "C" to "AddedRequiredField"` + "\n",
-			gitDirArg: "-C=%s",
 		},
 		{
 			desc: "json output",
-			want: `{"File":"c.thrift","Message":"deleting service \"Baz\""}` + "\n" +
-				`{"File":"d.thrift","Message":"deleting service \"Qux\""}` + "\n" +
-				`{"File":"v2.thrift","Message":"deleting service \"Bar\""}` + "\n" +
-				`{"File":"v1.thrift","Message":"removing method \"methodA\" in service \"Foo\""}` + "\n" +
-				`{"File":"v1.thrift","Message":"adding a required field \"C\" to \"AddedRequiredField\""}` + "\n",
-			gitDirArg: "-C=%s",
-			extraCmd:  "--json",
+			want: `{"FilePath":"c.thrift","Message":"deleting service \"Baz\""}` + "\n" +
+				`{"FilePath":"d.thrift","Message":"deleting service \"Qux\""}` + "\n" +
+				`{"FilePath":"v2.thrift","Message":"deleting service \"Bar\""}` + "\n" +
+				`{"FilePath":"v1.thrift","Message":"removing method \"methodA\" in service \"Foo\""}` + "\n" +
+				`{"FilePath":"v1.thrift","Message":"adding a required field \"C\" to \"AddedRequiredField\""}` + "\n",
+			extraCmd: "--json",
 		},
 	}
 	from := map[string]string{
@@ -102,12 +98,9 @@ func TestThriftBreakIntegration(t *testing.T) {
 			}(os.Stdout)
 			os.Stdout = f
 
-			// Pinning not to run into scoping errors.
-			gitDir := tt.gitDirArg
-			extraCmd := tt.extraCmd
-			err = run([]string{fmt.Sprintf(gitDir, tmpDir), extraCmd})
+			err = run([]string{"-C=" + tmpDir, tt.extraCmd})
 
-			require.Error(t, err, "expected no errors")
+			require.Error(t, err, "expected an error with Thrift backwards incompatible changes")
 			assert.EqualError(t, err, "found 5 issues")
 
 			stderr, err := ioutil.ReadFile(f.Name())
@@ -119,7 +112,7 @@ func TestThriftBreakIntegration(t *testing.T) {
 	}
 }
 
-func TestJsonPrinter(t *testing.T) {
+func TestDiagnosticPrinters(t *testing.T) {
 	t.Parallel()
 	tests := []struct {
 		desc   string
@@ -128,7 +121,7 @@ func TestJsonPrinter(t *testing.T) {
 	}{
 		{
 			desc:   "json writer",
-			want:   "{\"File\":\"foo.thrift\",\"Message\":\"error\"}\n",
+			want:   `{"FilePath":"foo.thrift","Message":"error"}` + "\n",
 			writer: jsonOutput,
 		},
 		{
@@ -144,8 +137,8 @@ func TestJsonPrinter(t *testing.T) {
 			var b bytes.Buffer
 			w := tt.writer(&b)
 			err := w(compare.Diagnostic{
-				File:    "foo.thrift",
-				Message: "error",
+				FilePath: "foo.thrift",
+				Message:  "error",
 			})
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, b.String())

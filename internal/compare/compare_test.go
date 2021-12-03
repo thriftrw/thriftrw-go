@@ -215,3 +215,34 @@ func TestServicesError(t *testing.T) {
 		})
 	}
 }
+
+func TestRelativePath(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		desc string
+		path string
+		want string
+	}{
+		{
+			desc: "good case",
+			path: "/home/foo/bar/buz/buz.go",
+			want: "buz/buz.go",
+		},
+		{
+			desc: "fallback case where we just return file name",
+			path: "foo/buz.go",
+			want: "buz.go",
+		},
+	}
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.desc, func(t *testing.T) {
+			t.Parallel()
+			p := Pass{
+				GitDir: "/home/foo/bar",
+			}
+			assert.Equal(t, tt.want, p.getRelativePath(tt.path))
+		})
+	}
+
+}

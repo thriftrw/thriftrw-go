@@ -42,7 +42,7 @@ func main() {
 // readableOutput prints every lint error on a separate line.
 func readableOutput(w io.Writer) func(compare.Diagnostic) error {
 	return func(diagnostic compare.Diagnostic) error {
-		if _, err := fmt.Fprintln(w, diagnostic.String()); err != nil {
+		if _, err := fmt.Fprintln(w, &diagnostic); err != nil {
 			return fmt.Errorf("failed to output a lint error: %v", err)
 		}
 
@@ -57,7 +57,7 @@ func jsonOutput(w io.Writer) func(compare.Diagnostic) error {
 	return func(diagnostic compare.Diagnostic) error {
 		// Encode adds a trailing newline.
 		if err := enc.Encode(diagnostic); err != nil {
-			return fmt.Errorf("failed to encode: %v", err)
+			return fmt.Errorf("encode as JSON: %v", err)
 		}
 
 		return nil
@@ -69,7 +69,7 @@ func run(args []string) error {
 	gitRepo := flag.String("C", "",
 		"location of git repository. Defaults to current directory.")
 	jsonOut := flag.Bool("json", false,
-		"output as a list of newline-delimited JSON objects with the following fields: File and Message")
+		"output as a list of newline-delimited JSON objects with the following fields: FilePath and Message")
 	if err := flag.Parse(args); err != nil {
 		return err
 	}
