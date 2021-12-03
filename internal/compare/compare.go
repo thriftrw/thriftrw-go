@@ -30,17 +30,18 @@ import (
 
 // Diagnostic is a message associated with an error and a file name.
 type Diagnostic struct {
-	File    string // File where error was discovered.
-	Message string // Message contains error message.
+	FilePath string // FilePath where error was discovered.
+	Message  string // Message contains error message.
 }
 
 func (d *Diagnostic) String() string {
-	return fmt.Sprintf("%s:%s", d.File, d.Message)
+	return fmt.Sprintf("%s:%s", d.FilePath, d.Message)
 }
 
 // Pass provides all reported errors.
 type Pass struct {
-	lints []Diagnostic
+	lints  []Diagnostic
+	GitDir string
 }
 
 // Report reports an error.
@@ -68,8 +69,9 @@ func (p *Pass) CompareModules(from, to *compile.Module) {
 		p.service(fromService, to.Services[name])
 	}
 
+	file := p.getRelativePath(from.ThriftPath)
 	for n, fromType := range from.Types {
-		p.typ(fromType, to.Types[n], filepath.Base(from.ThriftPath))
+		p.typ(fromType, to.Types[n], file)
 	}
 }
 
@@ -89,7 +91,7 @@ func (p *Pass) requiredField(fromField, toField *compile.FieldSpec, to *compile.
 	fromRequired := fromField.Required
 	if !fromRequired && toField.Required {
 		p.Report(Diagnostic{
-			File: file,
+			FilePath: file,
 			Message: fmt.Sprintf(
 				"changing an optional field %q in %q to required",
 				toField.ThriftName(), to.ThriftName()),
@@ -109,7 +111,7 @@ func (p *Pass) structSpecs(from, to *compile.StructSpec, file string) {
 			p.requiredField(fromField, toField, to, file)
 		} else if toField.Required {
 			p.Report(Diagnostic{
-				File: file,
+				FilePath: file,
 				Message: fmt.Sprintf("adding a required field %q to %q",
 					toField.ThriftName(), to.ThriftName()),
 			})
@@ -121,22 +123,37 @@ func (p *Pass) service(from, to *compile.ServiceSpec) {
 	if to == nil {
 		// Service was deleted, which is not backwards compatible.
 		p.Report(Diagnostic{
-			File:    filepath.Base(from.File), // toModule could have been deleted.
-			Message: fmt.Sprintf("deleting service %q", from.Name),
+			FilePath: filepath.Base(from.File), // toModule could have been deleted.
+			Message:  fmt.Sprintf("deleting service %q", from.Name),
 		})
 
 		return
 	}
+	file := p.getRelativePath(from.File)
 	for n := range from.Functions {
-		p.function(to.Functions[n], n, filepath.Base(from.File), from.Name)
+		p.function(to.Functions[n], n, file, from.Name)
 	}
 }
 
-func (p *Pass) function(to *compile.FunctionSpec, fn string, file string, service string) {
+// getRelativePath returns a relative path to a file or
+// fallbacks to file name for cases when it was deleted.
+func (p *Pass) getRelativePath(filePath string) string {
+	file, err := filepath.Rel(p.GitDir, filePath)
+	if err != nil {
+		// If a file was deleted, then we will not be able to
+		// find a full path to it.
+		return filepath.Base(filePath)
+	}
+
+	return file
+}
+
+func (p *Pass) function(to *compile.FunctionSpec, fn string, path string, service string) {
+	file := p.getRelativePath(path)
 	if to == nil {
 		p.Report(Diagnostic{
-			File:    file,
-			Message: fmt.Sprintf("removing method %q in service %q", fn, service),
+			FilePath: file,
+			Message:  fmt.Sprintf("removing method %q in service %q", fn, service),
 		})
 	}
 }

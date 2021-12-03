@@ -105,7 +105,7 @@ func do() (err error) {
 	inputFile := args[0]
 	if _, err := os.Stat(inputFile); err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("File %q does not exist: %v", inputFile, err)
+			return fmt.Errorf("FilePath %q does not exist: %v", inputFile, err)
 		}
 		return fmt.Errorf("Could not stat file %q: %v", inputFile, err)
 	}

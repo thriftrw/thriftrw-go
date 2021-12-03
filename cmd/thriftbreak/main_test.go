@@ -49,11 +49,11 @@ func TestThriftBreakIntegration(t *testing.T) {
 		},
 		{
 			desc: "json output",
-			want: `{"File":"c.thrift","Message":"deleting service \"Baz\""}` + "\n" +
-				`{"File":"d.thrift","Message":"deleting service \"Qux\""}` + "\n" +
-				`{"File":"v2.thrift","Message":"deleting service \"Bar\""}` + "\n" +
-				`{"File":"v1.thrift","Message":"removing method \"methodA\" in service \"Foo\""}` + "\n" +
-				`{"File":"v1.thrift","Message":"adding a required field \"C\" to \"AddedRequiredField\""}` + "\n",
+			want: `{"FilePath":"c.thrift","Message":"deleting service \"Baz\""}` + "\n" +
+				`{"FilePath":"d.thrift","Message":"deleting service \"Qux\""}` + "\n" +
+				`{"FilePath":"v2.thrift","Message":"deleting service \"Bar\""}` + "\n" +
+				`{"FilePath":"v1.thrift","Message":"removing method \"methodA\" in service \"Foo\""}` + "\n" +
+				`{"FilePath":"v1.thrift","Message":"adding a required field \"C\" to \"AddedRequiredField\""}` + "\n",
 			extraCmd: "--json",
 		},
 	}
@@ -121,7 +121,7 @@ func TestDiagnosticPrinters(t *testing.T) {
 	}{
 		{
 			desc:   "json writer",
-			want:   `{"File":"foo.thrift","Message":"error"}` + "\n",
+			want:   `{"FilePath":"foo.thrift","Message":"error"}` + "\n",
 			writer: jsonOutput,
 		},
 		{
@@ -137,8 +137,8 @@ func TestDiagnosticPrinters(t *testing.T) {
 			var b bytes.Buffer
 			w := tt.writer(&b)
 			err := w(compare.Diagnostic{
-				File:    "foo.thrift",
-				Message: "error",
+				FilePath: "foo.thrift",
+				Message:  "error",
 			})
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, b.String())

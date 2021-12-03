@@ -69,7 +69,7 @@ func run(args []string) error {
 	gitRepo := flag.String("C", "",
 		"location of git repository. Defaults to current directory.")
 	jsonOut := flag.Bool("json", false,
-		"output as a list of newline-delimited JSON objects with the following fields: File and Message")
+		"output as a list of newline-delimited JSON objects with the following fields: FilePath and Message")
 	if err := flag.Parse(args); err != nil {
 		return err
 	}
