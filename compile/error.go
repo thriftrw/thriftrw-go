@@ -264,7 +264,7 @@ func (e typeReferenceCycleError) Error() string {
 	// 	 -> bar (b.thrift)
 	// 	 -> foo (a.thrift)
 	//
-	// FilePath names are omitted if all types are from the same file.
+	// File names are omitted if all types are from the same file.
 
 	files := make(map[string]struct{})
 	for _, t := range e.Nodes {
