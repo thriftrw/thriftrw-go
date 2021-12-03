@@ -30,8 +30,8 @@ import (
 
 // Diagnostic is a message associated with an error and a file name.
 type Diagnostic struct {
-	File    string // File where error was discovered
-	Message string // Message contains error message.
+	File     string // File where error was discovered.
+	Message  string // Message contains error message.
 }
 
 func (d *Diagnostic) String() string {
