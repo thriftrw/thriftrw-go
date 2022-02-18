@@ -33,7 +33,7 @@ func (v UUID) ToWire() (wire.Value, error) {
 // String returns a readable string representation of UUID.
 func (v UUID) String() string {
 	x := (string)(v)
-	return fmt.Sprint(x)
+	return x
 }
 
 func (v UUID) Encode(sw stream.Writer) error {

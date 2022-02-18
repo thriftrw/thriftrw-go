@@ -74,6 +74,13 @@ func isPrimitiveType(spec compile.TypeSpec) bool {
 	return isEnum
 }
 
+// isStringType returns true if the given type is a string type
+func isStringType(spec compile.TypeSpec) bool {
+	spec = compile.RootTypeSpec(spec)
+	_, ok := spec.(*compile.StringSpec)
+	return ok
+}
+
 // isReferenceType checks if the given TypeSpec represents a reference type.
 //
 // Sets, maps, lists, and slices are reference types.

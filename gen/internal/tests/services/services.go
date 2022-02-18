@@ -537,7 +537,7 @@ func (v Key) ToWire() (wire.Value, error) {
 // String returns a readable string representation of Key.
 func (v Key) String() string {
 	x := (string)(v)
-	return fmt.Sprint(x)
+	return x
 }
 
 func (v Key) Encode(sw stream.Writer) error {
