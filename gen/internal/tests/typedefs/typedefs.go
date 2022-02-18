@@ -1934,7 +1934,7 @@ func (v State) ToWire() (wire.Value, error) {
 // String returns a readable string representation of State.
 func (v State) String() string {
 	x := (string)(v)
-	return fmt.Sprint(x)
+	return x
 }
 
 func (v State) Encode(sw stream.Writer) error {

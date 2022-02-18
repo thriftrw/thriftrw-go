@@ -112,7 +112,11 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 		// String returns a readable string representation of <typeName .>.
 		func (<$v> <$typedefType>) String() string {
 			<$x> := (<typeReference .Target>)(<$v>)
-			return <$fmt>.Sprint(<$x>)
+			<if isStringType .Target ->
+				return <$x>
+			<- else ->
+				return <$fmt>.Sprint(<$x>)
+			<- end>
 		}
 
 		func (<$v> <$typedefType>) Encode(<$sw> <$stream>.Writer) error {
