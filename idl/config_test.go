@@ -26,6 +26,7 @@ import (
 	"go.uber.org/thriftrw/ast"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestParse(t *testing.T) {
@@ -45,6 +46,26 @@ func TestInfoPos(t *testing.T) {
 		if assert.IsType(t, &ast.Constant{}, prog.Definitions[0]) {
 			cv := prog.Definitions[0].(*ast.Constant).Value
 			assert.Equal(t, ast.Position{Line: 1, Column: 16}, c.Info.Pos(cv))
+		}
+	}
+}
+
+func TestComment(t *testing.T) {
+	tests := []struct {
+		in  string
+		out string
+	}{
+		{`# Line Comment `, "Line Comment"},
+		{`// Line Comment `, "Line Comment"},
+	}
+
+	for _, tt := range tests {
+		c := &Config{Info: &Info{}}
+		_, err := c.Parse([]byte(tt.in))
+		if assert.NoError(t, err) {
+			s, ok := c.Info.Comment(1)
+			require.True(t, ok)
+			assert.Equal(t, tt.out, s)
 		}
 	}
 }

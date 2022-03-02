@@ -30,6 +30,7 @@ type lexer struct {
     lastDocstring string
     linesSinceDocstring int
 
+    comments Comments
     nodePositions NodePositions
 
     errors []ParseError
@@ -44,6 +45,7 @@ type lexer struct {
 func newLexer(data []byte) *lexer {
     lex := &lexer{
         line: 1,
+        comments: make(Comments, 0),
         nodePositions: make(NodePositions, 0),
         parseFailed: false,
         data: data,
@@ -84,7 +86,8 @@ func (lex *lexer) Lex(out *yySymType) int {
         __ = (ws | newline)*;
 
         # Comments
-        line_comment = ('#'|'//') [^\n]*;
+        unix_comment = '#' [^\n]*;
+        cpp_comment = '//' [^\n]*;
         multiline_comment = '/*' (newline | any)* :>> '*/';
 
         # Symbols are sent to the parser as-is.
@@ -275,8 +278,15 @@ func (lex *lexer) Lex(out *yySymType) int {
             ws;
             newline;
             docstring;
-            line_comment;
             multiline_comment;
+
+            unix_comment => {
+                lex.Comment(string(lex.data[lex.ts + 1:lex.te]))
+            };
+
+            cpp_comment => {
+                lex.Comment(string(lex.data[lex.ts + 2:lex.te]))
+            };
 
             (integer | hex_integer) => {
                 str := string(lex.data[lex.ts:lex.te])
@@ -364,6 +374,10 @@ func (lex* lexer) Pos() ast.Position {
 
 func (lex* lexer) RecordPosition(n ast.Node, pos ast.Position) {
     lex.nodePositions[n] = pos
+}
+
+func (lex *lexer) Comment(s string) {
+    lex.comments[lex.line] = strings.TrimSpace(s)
 }
 
 func (lex *lexer) LastDocstring() string {

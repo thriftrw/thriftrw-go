@@ -28,6 +28,7 @@ import (
 // Info contains additional information about the parsed document.
 type Info struct {
 	nodePositions internal.NodePositions
+	comments      internal.Comments
 }
 
 // Pos returns a Node's position in the parsed document.
@@ -36,4 +37,10 @@ func (i *Info) Pos(n ast.Node) ast.Position {
 		return pos
 	}
 	return i.nodePositions[n]
+}
+
+// Comment attempts to return a line comment string for the requested line.
+func (i *Info) Comment(line int) (string, bool) {
+	s, ok := i.comments[line]
+	return s, ok
 }

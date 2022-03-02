@@ -37,6 +37,7 @@ func (c *Config) Parse(s []byte) (*ast.Program, error) {
 	result, errors := internal.Parse(s)
 	if c.Info != nil {
 		c.Info.nodePositions = result.NodePositions
+		c.Info.comments = result.Comments
 	}
 	return result.Program, newParseError(errors)
 }

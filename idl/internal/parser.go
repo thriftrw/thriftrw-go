@@ -29,10 +29,14 @@ func init() {
 // NodePositions maps (hashable) nodes to their document positions.
 type NodePositions map[ast.Node]ast.Position
 
+// Comments maps line numbers to comment strings.
+type Comments map[int]string
+
 // ParseResult holds the result of a successful Parse.
 type ParseResult struct {
 	Program       *ast.Program
 	NodePositions NodePositions
+	Comments      Comments
 }
 
 // Parse parses the given Thrift document.
@@ -43,6 +47,7 @@ func Parse(s []byte) (ParseResult, []ParseError) {
 		return ParseResult{
 			Program:       lex.program,
 			NodePositions: lex.nodePositions,
+			Comments:      lex.comments,
 		}, nil
 	}
 	return ParseResult{}, lex.errors
