@@ -122,7 +122,7 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 		resultName, s.Name, f.Name, f.Name,
 	)
 	if f.ResultSpec.ReturnType != nil {
-		resultDoc += fmt.Sprintf("\n\nSuccess is set only if the function did not throw an exception.")
+		resultDoc += "\n\nSuccess is set only if the function did not throw an exception."
 	}
 
 	resultGen := fieldGroupGenerator{
