@@ -108,8 +108,9 @@ func (p *Pass) changedTypes(fromField, toField *compile.FieldSpec, to *compile.S
 		p.Report(Diagnostic{
 			FilePath: file,
 			Message: fmt.Sprintf(
-				"changing type field %q in %q to %q",
-				toField.Type.ThriftName(), to.ThriftName(), fromField.Type.ThriftName()),
+				"changing type of field %q in struct %q from %q to %q",
+				toField.ThriftName(), to.ThriftName(), fromField.Type.ThriftName(),
+				toField.Type.ThriftName()),
 		})
 	}
 }

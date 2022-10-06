@@ -124,7 +124,7 @@ func TestErrorRequiredCase(t *testing.T) {
 					},
 				},
 			},
-			wantError: `foo.thrift:changing type field "bool" in "structA" to "binary"`,
+			wantError: `foo.thrift:changing type of field "fieldA" in struct "structA" from "binary" to "bool"`,
 		},
 	}
 
