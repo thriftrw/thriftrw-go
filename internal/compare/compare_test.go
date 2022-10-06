@@ -104,6 +104,7 @@ func TestErrorRequiredCase(t *testing.T) {
 		{
 			desc: "found a type changed",
 			fromStruct: &compile.StructSpec{
+				Name: "structA",
 				Fields: compile.FieldGroup{
 					&compile.FieldSpec{
 						Name: "fieldA",
