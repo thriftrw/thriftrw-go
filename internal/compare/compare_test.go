@@ -101,6 +101,32 @@ func TestErrorRequiredCase(t *testing.T) {
 			wantError: `foo.thrift:changing an optional field "fieldA" in "structA" to required` +
 				"\n" + `foo.thrift:changing an optional field "fieldB" in "structA" to required`,
 		},
+		{
+			desc: "found a type changed",
+			fromStruct: &compile.StructSpec{
+				Name: "structA",
+				Fields: compile.FieldGroup{
+					&compile.FieldSpec{
+						Name: "fieldA",
+						Type: &compile.BinarySpec{},
+					},
+				},
+			},
+			toStruct: &compile.StructSpec{
+				Name: "structA",
+				Fields: compile.FieldGroup{
+					&compile.FieldSpec{
+						Name: "fieldA",
+						Type: &compile.BoolSpec{},
+					},
+					&compile.FieldSpec{
+						Name: "fieldB",
+						Type: &compile.BinarySpec{},
+					},
+				},
+			},
+			wantError: `foo.thrift:changing type of field "fieldA" in struct "structA" from "binary" to "bool"`,
+		},
 	}
 
 	for _, tt := range tests {

@@ -99,6 +99,22 @@ func (p *Pass) requiredField(fromField, toField *compile.FieldSpec, to *compile.
 	}
 }
 
+func (p *Pass) changedTypes(fromField, toField *compile.FieldSpec, to *compile.StructSpec, file string) {
+	if fromField.Type == nil || toField.Type == nil {
+		return
+	}
+
+	if fromField.Type.ThriftName() != toField.Type.ThriftName() {
+		p.Report(Diagnostic{
+			FilePath: file,
+			Message: fmt.Sprintf(
+				"changing type of field %q in struct %q from %q to %q",
+				toField.ThriftName(), to.ThriftName(), fromField.Type.ThriftName(),
+				toField.Type.ThriftName()),
+		})
+	}
+}
+
 // StructSpecs compares two structs defined in a Thrift file.
 func (p *Pass) structSpecs(from, to *compile.StructSpec, file string) {
 	fields := make(map[int16]*compile.FieldSpec, len(from.Fields))
@@ -109,6 +125,7 @@ func (p *Pass) structSpecs(from, to *compile.StructSpec, file string) {
 	for _, toField := range to.Fields {
 		if fromField, ok := fields[toField.ID]; ok {
 			p.requiredField(fromField, toField, to, file)
+			p.changedTypes(fromField, toField, to, file)
 		} else if toField.Required {
 			p.Report(Diagnostic{
 				FilePath: file,
