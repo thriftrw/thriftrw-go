@@ -1264,6 +1264,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 				base := 10
 				if len(str) > 2 && str[0:2] == "0x" {
 					// Hex constant
+					str = str[2:]
 					base = 16
 				}
 
@@ -1345,6 +1346,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			base := 10
 			if len(str) > 2 && str[0:2] == "0x" {
 				// Hex constant
+				str = str[2:]
 				base = 16
 			}
 
@@ -1398,6 +1400,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			base := 10
 			if len(str) > 2 && str[0:2] == "0x" {
 				// Hex constant
+				str = str[2:]
 				base = 16
 			}
 

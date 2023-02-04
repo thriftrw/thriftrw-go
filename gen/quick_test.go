@@ -536,6 +536,11 @@ func TestQuickSuite(t *testing.T) {
 			Kind:      thriftEnum,
 		},
 		{
+			Sample:    te.EnumWithHexValues(0),
+			Generator: enumValueGenerator(te.EnumWithHexValues_Values),
+			Kind:      thriftEnum,
+		},
+		{
 			Sample:    te.LowerCaseEnum(0),
 			Generator: enumValueGenerator(te.LowerCaseEnum_Values),
 			Kind:      thriftEnum,

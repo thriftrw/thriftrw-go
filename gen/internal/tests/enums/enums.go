@@ -881,6 +881,218 @@ func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
 	}
 }
 
+type EnumWithHexValues int32
+
+const (
+	EnumWithHexValuesX EnumWithHexValues = 291
+	EnumWithHexValuesY EnumWithHexValues = 1110
+	EnumWithHexValuesZ EnumWithHexValues = 1929
+)
+
+// EnumWithHexValues_Values returns all recognized values of EnumWithHexValues.
+func EnumWithHexValues_Values() []EnumWithHexValues {
+	return []EnumWithHexValues{
+		EnumWithHexValuesX,
+		EnumWithHexValuesY,
+		EnumWithHexValuesZ,
+	}
+}
+
+// UnmarshalText tries to decode EnumWithHexValues from a byte slice
+// containing its name.
+//
+//   var v EnumWithHexValues
+//   err := v.UnmarshalText([]byte("X"))
+func (v *EnumWithHexValues) UnmarshalText(value []byte) error {
+	switch s := string(value); s {
+	case "X":
+		*v = EnumWithHexValuesX
+		return nil
+	case "Y":
+		*v = EnumWithHexValuesY
+		return nil
+	case "Z":
+		*v = EnumWithHexValuesZ
+		return nil
+	default:
+		val, err := strconv.ParseInt(s, 10, 32)
+		if err != nil {
+			return fmt.Errorf("unknown enum value %q for %q: %v", s, "EnumWithHexValues", err)
+		}
+		*v = EnumWithHexValues(val)
+		return nil
+	}
+}
+
+// MarshalText encodes EnumWithHexValues to text.
+//
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
+//
+// This implements the TextMarshaler interface.
+func (v EnumWithHexValues) MarshalText() ([]byte, error) {
+	switch int32(v) {
+	case 291:
+		return []byte("X"), nil
+	case 1110:
+		return []byte("Y"), nil
+	case 1929:
+		return []byte("Z"), nil
+	}
+	return []byte(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of EnumWithHexValues.
+// Enums are logged as objects, where the value is logged with key "value", and
+// if this value's name is known, the name is logged with key "name".
+func (v EnumWithHexValues) MarshalLogObject(enc zapcore.ObjectEncoder) error {
+	enc.AddInt32("value", int32(v))
+	switch int32(v) {
+	case 291:
+		enc.AddString("name", "X")
+	case 1110:
+		enc.AddString("name", "Y")
+	case 1929:
+		enc.AddString("name", "Z")
+	}
+	return nil
+}
+
+// Ptr returns a pointer to this enum value.
+func (v EnumWithHexValues) Ptr() *EnumWithHexValues {
+	return &v
+}
+
+// Encode encodes EnumWithHexValues directly to bytes.
+//
+//   sWriter := BinaryStreamer.Writer(writer)
+//
+//   var v EnumWithHexValues
+//   return v.Encode(sWriter)
+func (v EnumWithHexValues) Encode(sw stream.Writer) error {
+	return sw.WriteInt32(int32(v))
+}
+
+// ToWire translates EnumWithHexValues into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// Enums are represented as 32-bit integers over the wire.
+func (v EnumWithHexValues) ToWire() (wire.Value, error) {
+	return wire.NewValueI32(int32(v)), nil
+}
+
+// FromWire deserializes EnumWithHexValues from its Thrift-level
+// representation.
+//
+//   x, err := binaryProtocol.Decode(reader, wire.TI32)
+//   if err != nil {
+//     return EnumWithHexValues(0), err
+//   }
+//
+//   var v EnumWithHexValues
+//   if err := v.FromWire(x); err != nil {
+//     return EnumWithHexValues(0), err
+//   }
+//   return v, nil
+func (v *EnumWithHexValues) FromWire(w wire.Value) error {
+	*v = (EnumWithHexValues)(w.GetI32())
+	return nil
+}
+
+// Decode reads off the encoded EnumWithHexValues directly off of the wire.
+//
+//   sReader := BinaryStreamer.Reader(reader)
+//
+//   var v EnumWithHexValues
+//   if err := v.Decode(sReader); err != nil {
+//     return EnumWithHexValues(0), err
+//   }
+//   return v, nil
+func (v *EnumWithHexValues) Decode(sr stream.Reader) error {
+	i, err := sr.ReadInt32()
+	if err != nil {
+		return err
+	}
+	*v = (EnumWithHexValues)(i)
+	return nil
+}
+
+// String returns a readable string representation of EnumWithHexValues.
+func (v EnumWithHexValues) String() string {
+	w := int32(v)
+	switch w {
+	case 291:
+		return "X"
+	case 1110:
+		return "Y"
+	case 1929:
+		return "Z"
+	}
+	return fmt.Sprintf("EnumWithHexValues(%d)", w)
+}
+
+// Equals returns true if this EnumWithHexValues value matches the provided
+// value.
+func (v EnumWithHexValues) Equals(rhs EnumWithHexValues) bool {
+	return v == rhs
+}
+
+// MarshalJSON serializes EnumWithHexValues into JSON.
+//
+// If the enum value is recognized, its name is returned.
+// Otherwise, its integer value is returned.
+//
+// This implements json.Marshaler.
+func (v EnumWithHexValues) MarshalJSON() ([]byte, error) {
+	switch int32(v) {
+	case 291:
+		return ([]byte)("\"X\""), nil
+	case 1110:
+		return ([]byte)("\"Y\""), nil
+	case 1929:
+		return ([]byte)("\"Z\""), nil
+	}
+	return ([]byte)(strconv.FormatInt(int64(v), 10)), nil
+}
+
+// UnmarshalJSON attempts to decode EnumWithHexValues from its JSON
+// representation.
+//
+// This implementation supports both, numeric and string inputs. If a
+// string is provided, it must be a known enum name.
+//
+// This implements json.Unmarshaler.
+func (v *EnumWithHexValues) UnmarshalJSON(text []byte) error {
+	d := json.NewDecoder(bytes.NewReader(text))
+	d.UseNumber()
+	t, err := d.Token()
+	if err != nil {
+		return err
+	}
+
+	switch w := t.(type) {
+	case json.Number:
+		x, err := w.Int64()
+		if err != nil {
+			return err
+		}
+		if x > math.MaxInt32 {
+			return fmt.Errorf("enum overflow from JSON %q for %q", text, "EnumWithHexValues")
+		}
+		if x < math.MinInt32 {
+			return fmt.Errorf("enum underflow from JSON %q for %q", text, "EnumWithHexValues")
+		}
+		*v = (EnumWithHexValues)(x)
+		return nil
+	case string:
+		return v.UnmarshalText([]byte(w))
+	default:
+		return fmt.Errorf("invalid JSON value %q (%T) to unmarshal into %q", t, t, "EnumWithHexValues")
+	}
+}
+
 type EnumWithLabel int32
 
 const (
@@ -2212,8 +2424,8 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "enums",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/enums",
 	FilePath: "enums.thrift",
-	SHA1:     "16921e977d77e214a9bac398d279f60889b055de",
+	SHA1:     "03c37e20af4155181f2df17e69d40dbc831c5b28",
 	Raw:      rawIDL,
 }
 
-const rawIDL = "enum EmptyEnum {}\n\nenum EnumDefault {\n    Foo, Bar, Baz\n}\n\nenum EnumWithValues {\n    X = 123,\n    Y = 456,\n    Z = 789,\n}\n\nenum EnumWithDuplicateValues {\n    P, // 0\n    Q = -1,\n    R, // 0\n}\n\n// enum with item names conflicting with those of another enum\nenum EnumWithDuplicateName {\n    A, B, C, P, Q, R, X, Y, Z\n}\n\n// Enum treated as optional inside a struct\nstruct StructWithOptionalEnum {\n    1: optional EnumDefault e\n}\n\n/**\n * Kinds of records stored in the database.\n */\nenum RecordType {\n  /** Name of the user. */\n  NAME,\n\n  /**\n   * Home address of the user.\n   *\n   * This record is always present.\n   */\n  HOME_ADDRESS,\n\n  /**\n   * Home address of the user.\n   *\n   * This record may not be present.\n   */\n  WORK_ADDRESS\n}\n\nenum lowerCaseEnum {\n    containing, lower_case, items\n}\n\n// EnumWithLabel use label name in serialization/deserialization\nenum EnumWithLabel {\n    USERNAME (go.label = \"surname\"),\n    PASSWORD (go.label = \"hashed_password\"),\n    SALT (go.label = \"\"),\n    SUGAR (go.label),\n    relay (go.label = \"RELAY\")\n    NAIVE4_N1 (go.label = \"function\")\n\n}\n\n// collision with RecordType_Values() function.\nenum RecordType_Values { FOO, BAR }\n"
+const rawIDL = "enum EmptyEnum {}\n\nenum EnumDefault {\n    Foo, Bar, Baz\n}\n\nenum EnumWithValues {\n    X = 123,\n    Y = 456,\n    Z = 789,\n}\n\nenum EnumWithHexValues {\n    X = 0x123,\n    Y = 0x456,\n    Z = 0x789,\n}\n\nenum EnumWithDuplicateValues {\n    P, // 0\n    Q = -1,\n    R, // 0\n}\n\n// enum with item names conflicting with those of another enum\nenum EnumWithDuplicateName {\n    A, B, C, P, Q, R, X, Y, Z\n}\n\n// Enum treated as optional inside a struct\nstruct StructWithOptionalEnum {\n    1: optional EnumDefault e\n}\n\n/**\n * Kinds of records stored in the database.\n */\nenum RecordType {\n  /** Name of the user. */\n  NAME,\n\n  /**\n   * Home address of the user.\n   *\n   * This record is always present.\n   */\n  HOME_ADDRESS,\n\n  /**\n   * Home address of the user.\n   *\n   * This record may not be present.\n   */\n  WORK_ADDRESS\n}\n\nenum lowerCaseEnum {\n    containing, lower_case, items\n}\n\n// EnumWithLabel use label name in serialization/deserialization\nenum EnumWithLabel {\n    USERNAME (go.label = \"surname\"),\n    PASSWORD (go.label = \"hashed_password\"),\n    SALT (go.label = \"\"),\n    SUGAR (go.label),\n    relay (go.label = \"RELAY\")\n    NAIVE4_N1 (go.label = \"function\")\n\n}\n\n// collision with RecordType_Values() function.\nenum RecordType_Values { FOO, BAR }\n"
