@@ -63,17 +63,17 @@ func TestConstants(t *testing.T) {
 		{
 			"hex16",
 			tk.Hex16,
-			int16(4660),
+			int16(0x1234),
 		},
 		{
 			"hex32",
 			tk.Hex32,
-			int32(305419896),
+			int32(0x12345678),
 		},
 		{
 			"hex64",
 			tk.Hex64,
-			int64(1311768467294899695),
+			int64(0x1234567890abcdef),
 		},
 		{
 			"primitiveContainers",

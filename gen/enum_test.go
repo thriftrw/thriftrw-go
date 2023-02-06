@@ -101,9 +101,9 @@ func TestValueOfEnumWithHexValues(t *testing.T) {
 		e te.EnumWithHexValues
 		i int32
 	}{
-		{te.EnumWithHexValuesX, 291},
-		{te.EnumWithHexValuesY, 1110},
-		{te.EnumWithHexValuesZ, 1929},
+		{te.EnumWithHexValuesX, 0x123},
+		{te.EnumWithHexValuesY, 0x456},
+		{te.EnumWithHexValuesZ, 0x789},
 	}
 	for _, tt := range tests {
 		assert.Equal(t, int32(tt.e), tt.i, "Value for %v does not match", tt.e)

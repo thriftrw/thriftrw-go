@@ -1264,6 +1264,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 				base := 10
 				if len(str) > 2 && str[0:2] == "0x" {
 					// Hex constant
+					// strconv.ParseInt doesn't want the "0x" prefix if we explicitly set the base.
 					str = str[2:]
 					base = 16
 				}
@@ -1346,6 +1347,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			base := 10
 			if len(str) > 2 && str[0:2] == "0x" {
 				// Hex constant
+				// strconv.ParseInt doesn't want the "0x" prefix if we explicitly set the base.
 				str = str[2:]
 				base = 16
 			}
@@ -1400,6 +1402,7 @@ func (lex *lexer) Lex(out *yySymType) int {
 			base := 10
 			if len(str) > 2 && str[0:2] == "0x" {
 				// Hex constant
+				// strconv.ParseInt doesn't want the "0x" prefix if we explicitly set the base.
 				str = str[2:]
 				base = 16
 			}
