@@ -121,8 +121,7 @@ COVER_IGNORE_FILES = \
 	 $(wildcard plugin/api/*.go)
 
 # literal space
-space :=
-space +=
+space := $(subst ,, )
 
 .PHONY: cover
 cover:
