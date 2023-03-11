@@ -261,6 +261,29 @@ func TestGoFileFromTemplate(t *testing.T) {
 				`var x foo_bar.Foo1 = foo_bar2.Foo2`,
 			),
 		},
+		{
+			desc: "use define block",
+			template: `
+				package hello
+
+				<template "test">
+			`,
+			options: []TemplateOption{
+				AddTemplate(unlines(
+					`<define "test">`,
+					`func myFun() string {`,
+					`	return "hello world"`,
+					`}`,
+					`<end>`)),
+			},
+			wantBody: unlines(
+				`package hello`,
+				``,
+				`func myFun() string {`,
+				`	return "hello world"`,
+				`}`,
+			),
+		},
 	}
 
 	for _, tt := range tests {
