@@ -228,7 +228,7 @@ func (g *goFileGenerator) Generate(filename, tmpl string, data interface{}) ([]b
 	for idx, additionalT := range g.additionalTmpls {
 		t, err = t.New("template_" + strconv.Itoa(idx)).Parse(additionalT)
 		if err != nil {
-			return nil, fmt.Errorf("failed to parse addiontal template %d for file %q: %v", idx, filename, err)
+			return nil, fmt.Errorf("failed to parse additional template %d for file %q: %w", idx, filename, err)
 		}
 	}
 
