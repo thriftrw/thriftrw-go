@@ -45,11 +45,11 @@ type TemplateOption struct {
 //
 // The function may be anything accepted by text/template.
 //
-// 	GoFileFromTemplate(
-// 		filename,
-// 		`package <lower "HELLO">`,
-// 		TemplateFunc("lower", strings.ToLower),
-// 	)
+//	GoFileFromTemplate(
+//		filename,
+//		`package <lower "HELLO">`,
+//		TemplateFunc("lower", strings.ToLower),
+//	)
 func TemplateFunc(name string, f interface{}) TemplateOption {
 	return TemplateOption{apply: func(t *goFileGenerator) {
 		t.templateFuncs[name] = f
@@ -59,11 +59,11 @@ func TemplateFunc(name string, f interface{}) TemplateOption {
 // GoFileImportPath is a TemplateOption that specifies the intended absolute
 // import path for the file being generated.
 //
-// 	GoFileFromTemplate(
-// 		filename,
-// 		mytemplate,
-// 		GoFileImportPath("go.uber.org/thriftrw/myservice"),
-// 	)
+//	GoFileFromTemplate(
+//		filename,
+//		mytemplate,
+//		GoFileImportPath("go.uber.org/thriftrw/myservice"),
+//	)
 //
 // If specified, this changes the behavior of the `formatType` template
 // function to NOT import this package and instead use the types directly
@@ -71,6 +71,25 @@ func TemplateFunc(name string, f interface{}) TemplateOption {
 func GoFileImportPath(path string) TemplateOption {
 	return TemplateOption{apply: func(t *goFileGenerator) {
 		t.importPath = path
+	}}
+}
+
+// AddTemplate is a TemplateOption that adds a new template into the rendering
+// context of the main template.
+//
+//	GoFileFromTemplate(
+//		filename,
+//		mytemplate,
+//		AddTemplate("example", "<define "example">Reusable block<.><end>"),
+//	)
+//
+// If specified, you can reference any defined block in the additional template
+// inside of the main template.
+//
+// tmpl should be a string version of a template, not a filename.
+func AddTemplate(tmplName string, tmpl string) TemplateOption {
+	return TemplateOption{apply: func(t *goFileGenerator) {
+		t.additionalTmpls[tmplName] = tmpl
 	}}
 }
 
@@ -84,13 +103,17 @@ type goFileGenerator struct {
 
 	// import path -> import name
 	imports map[string]string
+
+	// additional templates that can contain reusable blocks
+	additionalTmpls map[string]string
 }
 
 func newGoFileGenerator(opts []TemplateOption) *goFileGenerator {
 	t := goFileGenerator{
-		templateFuncs: make(template.FuncMap),
-		globals:       make(map[string]struct{}),
-		imports:       make(map[string]string),
+		templateFuncs:   make(template.FuncMap),
+		globals:         make(map[string]struct{}),
+		imports:         make(map[string]string),
+		additionalTmpls: make(map[string]string),
 	}
 	for _, opt := range opts {
 		opt.apply(&t)
@@ -203,6 +226,13 @@ func (g *goFileGenerator) Generate(filename, tmpl string, data interface{}) ([]b
 		return nil, fmt.Errorf("failed to parse template %q: %v", filename, err)
 	}
 
+	for tmplName, additionalTmpl := range g.additionalTmpls {
+		_, err = t.New(tmplName).Parse(additionalTmpl)
+		if err != nil {
+			return nil, fmt.Errorf("failed to parse additional template %s for file %s: %w", tmplName, filename, err)
+		}
+	}
+
 	var buff bytes.Buffer
 	if err := t.Execute(&buff, data); err != nil {
 		return nil, err
@@ -251,8 +281,8 @@ func (g *goFileGenerator) Generate(filename, tmpl string, data interface{}) ([]b
 // imported name of the package. Use the return value of this function to
 // reference the imported package.
 //
-// 	<$wire := import "go.uber.org/thriftrw/wire">
-// 	var value <$wire>.Value
+//	<$wire := import "go.uber.org/thriftrw/wire">
+//	var value <$wire>.Value
 //
 // formatType: Formats an api.Type into a Go type representation, automatically
 // importing packages needed for type references. By default, this imports all
@@ -260,7 +290,7 @@ func (g *goFileGenerator) Generate(filename, tmpl string, data interface{}) ([]b
 // specified, types from that package will not be imported and instead, will be
 // assumed to be available in the same package.
 //
-// 	var value <formatType .Type>
+//	var value <formatType .Type>
 //
 // More functions may be added to the template using the TemplateFunc template
 // option. If the name of a TemplateFunc conflicts with a pre-defined function,
