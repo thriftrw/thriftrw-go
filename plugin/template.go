@@ -27,7 +27,6 @@ import (
 	"go/parser"
 	"go/token"
 	"sort"
-	"strconv"
 	"text/template"
 
 	"go.uber.org/thriftrw/internal/goast"
@@ -86,9 +85,11 @@ func GoFileImportPath(path string) TemplateOption {
 //
 // If specified, you can reference any defined block in the additional template
 // inside of the main template.
-func AddTemplate(tmpl string) TemplateOption {
+//
+// tmpl should be a string version of a template, not a filename.
+func AddTemplate(tmplName string, tmpl string) TemplateOption {
 	return TemplateOption{apply: func(t *goFileGenerator) {
-		t.additionalTmpls = append(t.additionalTmpls, tmpl)
+		t.additionalTmpls[tmplName] = tmpl
 	}}
 }
 
@@ -104,7 +105,7 @@ type goFileGenerator struct {
 	imports map[string]string
 
 	// additional templates that can contain reusable blocks
-	additionalTmpls []string
+	additionalTmpls map[string]string
 }
 
 func newGoFileGenerator(opts []TemplateOption) *goFileGenerator {
@@ -112,7 +113,7 @@ func newGoFileGenerator(opts []TemplateOption) *goFileGenerator {
 		templateFuncs:   make(template.FuncMap),
 		globals:         make(map[string]struct{}),
 		imports:         make(map[string]string),
-		additionalTmpls: make([]string, 0),
+		additionalTmpls: make(map[string]string),
 	}
 	for _, opt := range opts {
 		opt.apply(&t)
@@ -225,16 +226,15 @@ func (g *goFileGenerator) Generate(filename, tmpl string, data interface{}) ([]b
 		return nil, fmt.Errorf("failed to parse template %q: %v", filename, err)
 	}
 
-	for idx, additionalT := range g.additionalTmpls {
-		t, err = t.New("template_" + strconv.Itoa(idx)).Parse(additionalT)
+	for tmplName, additionalTmpl := range g.additionalTmpls {
+		_, err = t.New(tmplName).Parse(additionalTmpl)
 		if err != nil {
-			return nil, fmt.Errorf("failed to parse additional template %d for file %q: %w", idx, filename, err)
+			return nil, fmt.Errorf("failed to parse additional template %s for file %s: %w", tmplName, filename, err)
 		}
 	}
 
 	var buff bytes.Buffer
-	mainT := t.Lookup(filename)
-	if err := mainT.Execute(&buff, data); err != nil {
+	if err := t.Execute(&buff, data); err != nil {
 		return nil, err
 	}
 

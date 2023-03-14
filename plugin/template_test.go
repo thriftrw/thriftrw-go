@@ -269,7 +269,7 @@ func TestGoFileFromTemplate(t *testing.T) {
 				<template "test">
 			`,
 			options: []TemplateOption{
-				AddTemplate(unlines(
+				AddTemplate("test", unlines(
 					`<define "test">`,
 					`func myFun() string {`,
 					`	return "hello world"`,
@@ -283,6 +283,23 @@ func TestGoFileFromTemplate(t *testing.T) {
 				`	return "hello world"`,
 				`}`,
 			),
+		},
+		{
+			desc: "use define error",
+			template: `
+				package hello
+
+				<template "test">
+			`,
+			options: []TemplateOption{
+				AddTemplate("test", unlines(
+					`<define "test">`,
+					`<range>`,
+					`	return "hello world"`,
+					`}`,
+					`<end>`)),
+			},
+			wantError: `failed to parse additional template test for file test.go: template: test:2: missing value for range`,
 		},
 	}
 
