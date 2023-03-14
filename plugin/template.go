@@ -80,7 +80,7 @@ func GoFileImportPath(path string) TemplateOption {
 //	GoFileFromTemplate(
 //		filename,
 //		mytemplate,
-//		AddTemplate("<define "block">Reusable block<.><end>"),
+//		AddTemplate("example", "<define "example">Reusable block<.><end>"),
 //	)
 //
 // If specified, you can reference any defined block in the additional template
