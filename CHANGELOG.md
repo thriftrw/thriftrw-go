@@ -5,7 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- No changes yet.
+### Added
+- AddTemplate template option.
+- thriftbreak: support for changed types, new files, and optional JSON output.
+### Changed
+- String() performance improvements for string type definitions.
 
 ## [1.29.2] - 2021-09-09
 ### Fixed
