@@ -1338,16 +1338,13 @@ func TestContainerValidate(t *testing.T) {
 		})
 
 		t.Run(tt.desc+"/streaming", func(t *testing.T) {
-			stt, ok := tt.value.(streamingThriftType)
-			require.True(t, ok)
-
 			var buf bytes.Buffer
 			sw := binary.Default.Writer(&buf)
 			defer func() {
 				assert.NoError(t, sw.Close())
 			}()
 
-			err := stt.Encode(sw)
+			err := tt.value.Encode(sw)
 			require.Error(t, err)
 			assert.Equal(t, tt.wantError, err.Error())
 		})
@@ -1384,21 +1381,40 @@ func TestEmptyContainersRoundTrip(t *testing.T) {
 			MapOfIntsToDoubles: make(map[int64]float64),
 		}
 
-		b, err := json.Marshal(give)
-		require.NoError(t, err, "failed to encode to JSON")
+		t.Run("JSON", func(t *testing.T) {
+			b, err := json.Marshal(give)
+			require.NoError(t, err, "failed to encode to JSON")
 
-		var decoded tc.PrimitiveContainersRequired
-		require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
+			var decoded tc.PrimitiveContainersRequired
+			require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
 
-		assert.Equal(t, give, decoded)
+			assert.Equal(t, give, decoded)
+		})
 
-		v, err := decoded.ToWire()
-		require.NoError(t, err, "failed to convert to wire.Value")
+		t.Run("Wire", func(t *testing.T) {
+			v, err := give.ToWire()
+			require.NoError(t, err, "failed to convert to wire.Value")
 
-		var got tc.PrimitiveContainersRequired
-		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
+			var got tc.PrimitiveContainersRequired
+			require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
 
-		assert.Equal(t, give, got)
+			assert.Equal(t, give, got)
+		})
+
+		t.Run("Stream", func(t *testing.T) {
+			var buff bytes.Buffer
+			sw := binary.Default.Writer(&buff)
+			defer sw.Close()
+			require.NoError(t, give.Encode(sw))
+
+			sr := binary.Default.Reader(bytes.NewReader(buff.Bytes()))
+			defer sr.Close()
+
+			var got tc.PrimitiveContainersRequired
+			require.NoError(t, got.Decode(sr))
+
+			assert.Equal(t, give, got)
+		})
 	})
 
 	t.Run("optional", func(t *testing.T) {
@@ -1408,26 +1424,49 @@ func TestEmptyContainersRoundTrip(t *testing.T) {
 			MapOfIntToString: make(map[int32]string),
 		}
 
-		b, err := json.Marshal(give)
-		require.NoError(t, err, "failed to encode to JSON")
+		t.Run("JSON", func(t *testing.T) {
+			b, err := json.Marshal(give)
+			require.NoError(t, err, "failed to encode to JSON")
 
-		var decoded tc.PrimitiveContainers
-		require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
+			var decoded tc.PrimitiveContainers
+			require.NoError(t, json.Unmarshal(b, &decoded), "failed to decode JSON")
 
-		// We check individual fields because a full assert.Equal could mismatch
-		// on nil vs empty slice.
-		assert.Empty(t, decoded.ListOfInts)
-		assert.Empty(t, decoded.SetOfStrings)
-		assert.Empty(t, decoded.MapOfIntToString)
+			// We check individual fields because a full assert.Equal could mismatch
+			// on nil vs empty slice.
+			assert.Empty(t, decoded.ListOfInts)
+			assert.Empty(t, decoded.SetOfStrings)
+			assert.Empty(t, decoded.MapOfIntToString)
 
-		v, err := decoded.ToWire()
-		require.NoError(t, err, "failed to convert to wire.Value")
+		})
 
-		var got tc.PrimitiveContainers
-		require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
+		t.Run("JSON", func(t *testing.T) {
+			v, err := give.ToWire()
+			require.NoError(t, err, "failed to convert to wire.Value")
 
-		assert.Empty(t, got.ListOfInts)
-		assert.Empty(t, got.SetOfStrings)
-		assert.Empty(t, got.MapOfIntToString)
+			var got tc.PrimitiveContainers
+			require.NoError(t, got.FromWire(v), "failed to convert from wire.Value")
+
+			assert.Empty(t, got.ListOfInts)
+			assert.Empty(t, got.SetOfStrings)
+			assert.Empty(t, got.MapOfIntToString)
+		})
+
+		t.Run("stream", func(t *testing.T) {
+			var buff bytes.Buffer
+			sw := binary.Default.Writer(&buff)
+			defer sw.Close()
+			require.NoError(t, give.Encode(sw))
+
+			sr := binary.Default.Reader(bytes.NewReader(buff.Bytes()))
+			defer sr.Close()
+
+			var got tc.PrimitiveContainers
+			require.NoError(t, got.Decode(sr))
+
+			assert.Empty(t, got.ListOfInts)
+			assert.Empty(t, got.SetOfStrings)
+			assert.Empty(t, got.MapOfIntToString)
+
+		})
 	})
 }

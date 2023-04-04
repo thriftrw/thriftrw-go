@@ -46,6 +46,36 @@ func TestConstants(t *testing.T) {
 		o    interface{}
 	}{
 		{
+			"int16",
+			tk.Int16,
+			int16(12345),
+		},
+		{
+			"int32",
+			tk.Int32,
+			int32(1234567890),
+		},
+		{
+			"int64",
+			tk.Int64,
+			int64(1234567890123456789),
+		},
+		{
+			"hex16",
+			tk.Hex16,
+			int16(0x1234),
+		},
+		{
+			"hex32",
+			tk.Hex32,
+			int32(0x12345678),
+		},
+		{
+			"hex64",
+			tk.Hex64,
+			int64(0x1234567890abcdef),
+		},
+		{
 			"primitiveContainers",
 			tk.PrimitiveContainers,
 			&tc.PrimitiveContainers{

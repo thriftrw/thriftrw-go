@@ -96,6 +96,37 @@ func TestEqualsEnumWithValues(t *testing.T) {
 	}
 }
 
+func TestValueOfEnumWithHexValues(t *testing.T) {
+	tests := []struct {
+		e te.EnumWithHexValues
+		i int32
+	}{
+		{te.EnumWithHexValuesX, 0x123},
+		{te.EnumWithHexValuesY, 0x456},
+		{te.EnumWithHexValuesZ, 0x789},
+	}
+	for _, tt := range tests {
+		assert.Equal(t, int32(tt.e), tt.i, "Value for %v does not match", tt.e)
+	}
+}
+
+func TestEqualsEnumWithHexValues(t *testing.T) {
+	tests := []struct {
+		lhs, rhs te.EnumWithHexValues
+		want     bool
+	}{
+		{te.EnumWithHexValuesX, te.EnumWithHexValuesX, true},
+		{te.EnumWithHexValuesY, te.EnumWithHexValuesY, true},
+		{te.EnumWithHexValuesZ, te.EnumWithHexValuesZ, true},
+		{te.EnumWithHexValuesX, te.EnumWithHexValuesY, false},
+		{te.EnumWithHexValuesY, te.EnumWithHexValuesZ, false},
+		{te.EnumWithHexValuesZ, te.EnumWithHexValuesX, false},
+	}
+	for _, tt := range tests {
+		assert.Equal(t, tt.lhs.Equals(tt.rhs), tt.want)
+	}
+}
+
 func TestEnumDefaultWire(t *testing.T) {
 	tests := []struct {
 		e te.EnumDefault
@@ -160,10 +191,18 @@ func TestEnumWithDuplicateValuesWire(t *testing.T) {
 }
 
 func TestUnknownEnumValue(t *testing.T) {
+	wv := wire.NewValueI32(42)
+
 	var e te.EnumDefault
-	if assert.NoError(t, e.FromWire(wire.NewValueI32(42))) {
+	if assert.NoError(t, e.FromWire(wv)) {
 		assert.Equal(t, te.EnumDefault(42), e)
 	}
+
+	var se te.EnumDefault
+	if assert.NoError(t, streamDecodeWireType(t, wv, &se)) {
+		assert.Equal(t, te.EnumDefault(42), se)
+	}
+
 }
 
 func TestOptionalEnum(t *testing.T) {

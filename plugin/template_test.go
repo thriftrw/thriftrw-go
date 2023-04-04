@@ -261,6 +261,46 @@ func TestGoFileFromTemplate(t *testing.T) {
 				`var x foo_bar.Foo1 = foo_bar2.Foo2`,
 			),
 		},
+		{
+			desc: "use define block",
+			template: `
+				package hello
+
+				<template "test">
+			`,
+			options: []TemplateOption{
+				AddTemplate("test", unlines(
+					`<define "test">`,
+					`func myFun() string {`,
+					`	return "hello world"`,
+					`}`,
+					`<end>`)),
+			},
+			wantBody: unlines(
+				`package hello`,
+				``,
+				`func myFun() string {`,
+				`	return "hello world"`,
+				`}`,
+			),
+		},
+		{
+			desc: "use define error",
+			template: `
+				package hello
+
+				<template "test">
+			`,
+			options: []TemplateOption{
+				AddTemplate("test", unlines(
+					`<define "test">`,
+					`<range>`,
+					`	return "hello world"`,
+					`}`,
+					`<end>`)),
+			},
+			wantError: `failed to parse additional template test for file test.go: template: test:2: missing value for range`,
+		},
 	}
 
 	for _, tt := range tests {

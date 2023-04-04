@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -112,7 +112,11 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 		// String returns a readable string representation of <typeName .>.
 		func (<$v> <$typedefType>) String() string {
 			<$x> := (<typeReference .Target>)(<$v>)
-			return <$fmt>.Sprint(<$x>)
+			<if isStringType .Target ->
+				return <$x>
+			<- else ->
+				return <$fmt>.Sprint(<$x>)
+			<- end>
 		}
 
 		func (<$v> <$typedefType>) Encode(<$sw> <$stream>.Writer) error {

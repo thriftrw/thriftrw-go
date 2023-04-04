@@ -10,6 +10,12 @@ enum EnumWithValues {
     Z = 789,
 }
 
+enum EnumWithHexValues {
+    X = 0x123,
+    Y = 0x456,
+    Z = 0x789,
+}
+
 enum EnumWithDuplicateValues {
     P, // 0
     Q = -1,

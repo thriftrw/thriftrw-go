@@ -6,6 +6,14 @@ include "./structs.thrift"
 include "./unions.thrift"
 include "./typedefs.thrift"
 
+const i16 int16 = 12345
+const i32 int32 = 1234567890
+const i64 int64 = 1234567890123456789
+
+const i16 hex16 = 0x1234
+const i32 hex32 = 0x12345678
+const i64 hex64 = 0x1234567890abcdef
+
 const containers.PrimitiveContainers primitiveContainers = {
     "listOfInts": other_constants.listOfInts, // imported constant
     "setOfStrings": ["foo", "bar"],

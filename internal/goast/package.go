@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,9 +30,7 @@ import (
 // path.
 func DeterminePackageName(importPath string) string {
 	packageName := filepath.Base(importPath)
-	if strings.HasSuffix(packageName, "-go") {
-		packageName = packageName[:len(packageName)-3]
-	}
+	packageName = strings.TrimSuffix(packageName, "-go")
 
 	return strings.Map(func(c rune) rune {
 		switch {

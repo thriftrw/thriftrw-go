@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -122,7 +122,7 @@ func ServiceFunction(g Generator, s *compile.ServiceSpec, f *compile.FunctionSpe
 		resultName, s.Name, f.Name, f.Name,
 	)
 	if f.ResultSpec.ReturnType != nil {
-		resultDoc += fmt.Sprintf("\n\nSuccess is set only if the function did not throw an exception.")
+		resultDoc += "\n\nSuccess is set only if the function did not throw an exception."
 	}
 
 	resultGen := fieldGroupGenerator{

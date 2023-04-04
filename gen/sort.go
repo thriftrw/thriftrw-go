@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@
 package gen
 
 import (
-	"fmt"
 	"reflect"
 	"sort"
 )
@@ -31,8 +30,7 @@ func sortStringKeys(m interface{}) []string {
 	v := reflect.ValueOf(m)
 	t := v.Type()
 	if t.Kind() != reflect.Map || t.Key().Kind() != reflect.String {
-		panic(fmt.Sprintf(
-			"sortStringKeys may be called with a map[string]* only"))
+		panic("sortStringKeys may be called with a map[string]* only")
 	}
 
 	keys := v.MapKeys()

@@ -110,9 +110,7 @@ func testRoundTripCombos(t *testing.T, x thriftType, v wire.Value, msg string) {
 
 			if streaming.encode {
 				w := binary.NewStreamWriter(&buff)
-				give, ok := x.(streamingThriftType)
-				require.True(t, ok)
-				require.NoError(t, give.Encode(w), "%v: failed to stream encode", msg)
+				require.NoError(t, x.Encode(w), "%v: failed to stream encode", msg)
 				require.NoError(t, w.Close())
 			} else {
 				w, err := x.ToWire()
@@ -123,9 +121,8 @@ func testRoundTripCombos(t *testing.T, x thriftType, v wire.Value, msg string) {
 
 			if streaming.decode {
 				reader := streamer.Reader(bytes.NewReader(buff.Bytes()))
-				gotX, ok := reflect.New(xType).Interface().(streamingThriftType)
-				require.True(t, ok)
 
+				gotX := reflect.New(xType).Interface().(thriftType)
 				require.NoError(t, gotX.Decode(reader), "streaming decode")
 				assert.Equal(t, x, gotX)
 			} else {

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -72,6 +72,13 @@ func isPrimitiveType(spec compile.TypeSpec) bool {
 
 	_, isEnum := spec.(*compile.EnumSpec)
 	return isEnum
+}
+
+// isStringType returns true if the given type is a string type
+func isStringType(spec compile.TypeSpec) bool {
+	spec = compile.RootTypeSpec(spec)
+	_, ok := spec.(*compile.StringSpec)
+	return ok
 }
 
 // isReferenceType checks if the given TypeSpec represents a reference type.

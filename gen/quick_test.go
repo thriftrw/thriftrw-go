@@ -536,6 +536,11 @@ func TestQuickSuite(t *testing.T) {
 			Kind:      thriftEnum,
 		},
 		{
+			Sample:    te.EnumWithHexValues(0),
+			Generator: enumValueGenerator(te.EnumWithHexValues_Values),
+			Kind:      thriftEnum,
+		},
+		{
 			Sample:    te.LowerCaseEnum(0),
 			Generator: enumValueGenerator(te.LowerCaseEnum_Values),
 			Kind:      thriftEnum,
@@ -785,22 +790,16 @@ func (q *quickSuite) testThriftRoundTripStreaming(t *testing.T, give, defaults t
 	want := populateDefaults(give, defaults)
 	shouldCheckForMutation := defaults != nil && !assert.ObjectsAreEqual(want, give)
 
-	sGive, ok := give.(streamingThriftType)
-	require.True(t, ok, "given thrift type must satisfy streaming requirements")
-
-	sWant, ok := want.(streamingThriftType)
-	require.True(t, ok, "default thrift type must satisfy streaming requirements")
-
 	sw := binary.NewStreamWriter(&buf)
-	require.NoError(t, sGive.Encode(sw), "failed to streaming encode %v", sGive)
+	require.NoError(t, give.Encode(sw), "failed to streaming encode %v", give)
 	require.NoError(t, sw.Close())
 
-	gType := reflect.TypeOf(sGive)
+	gType := reflect.TypeOf(give)
 	if gType.Kind() == reflect.Ptr {
 		gType = gType.Elem()
 	}
 
-	got := reflect.New(gType).Interface().(streamingThriftType)
+	got := reflect.New(gType).Interface().(thriftType)
 
 	sr := binary.NewStreamReader(&buf)
 	require.NoError(t, got.Decode(sr), "failed to streaming decode from %v", buf)
@@ -809,7 +808,7 @@ func (q *quickSuite) testThriftRoundTripStreaming(t *testing.T, give, defaults t
 	assert.Equal(t, want, got)
 	if shouldCheckForMutation {
 		// assert that give has not been mutated to the want object during the ToWire call
-		assert.NotEqual(t, sWant, sGive)
+		assert.NotEqual(t, want, give)
 	}
 }
 
