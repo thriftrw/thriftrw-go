@@ -4077,6 +4077,7 @@ func (v ModuleID) ToWire() (wire.Value, error) {
 // String returns a readable string representation of ModuleID.
 func (v ModuleID) String() string {
 	x := (int32)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -4797,6 +4798,7 @@ func (v ServiceID) ToWire() (wire.Value, error) {
 // String returns a readable string representation of ServiceID.
 func (v ServiceID) String() string {
 	x := (int32)(v)
+
 	return fmt.Sprint(x)
 }
 
