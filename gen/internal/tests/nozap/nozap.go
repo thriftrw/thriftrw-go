@@ -1373,6 +1373,7 @@ func (v *Primitives) ToWire() (wire.Value, error) {
 // String returns a readable string representation of Primitives.
 func (v *Primitives) String() string {
 	x := (*PrimitiveRequiredStruct)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1412,6 +1413,7 @@ func (v StringList) ToWire() (wire.Value, error) {
 // String returns a readable string representation of StringList.
 func (v StringList) String() string {
 	x := ([]string)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1598,6 +1600,7 @@ func (v StringMap) ToWire() (wire.Value, error) {
 // String returns a readable string representation of StringMap.
 func (v StringMap) String() string {
 	x := (map[string]string)(v)
+
 	return fmt.Sprint(x)
 }
 

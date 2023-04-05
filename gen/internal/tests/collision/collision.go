@@ -673,6 +673,7 @@ func (v LittlePotatoe) ToWire() (wire.Value, error) {
 // String returns a readable string representation of LittlePotatoe.
 func (v LittlePotatoe) String() string {
 	x := (int64)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -2511,6 +2512,7 @@ func (v LittlePotatoe2) ToWire() (wire.Value, error) {
 // String returns a readable string representation of LittlePotatoe2.
 func (v LittlePotatoe2) String() string {
 	x := (float64)(v)
+
 	return fmt.Sprint(x)
 }
 

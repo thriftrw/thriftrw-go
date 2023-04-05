@@ -3384,6 +3384,7 @@ func (v *List) ToWire() (wire.Value, error) {
 // String returns a readable string representation of List.
 func (v *List) String() string {
 	x := (*Node)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -7994,6 +7995,7 @@ func (v UserMap) ToWire() (wire.Value, error) {
 // String returns a readable string representation of UserMap.
 func (v UserMap) String() string {
 	x := (map[string]*User)(v)
+
 	return fmt.Sprint(x)
 }
 

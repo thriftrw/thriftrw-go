@@ -10,6 +10,7 @@ import (
 	fmt "fmt"
 	multierr "go.uber.org/multierr"
 	enums "go.uber.org/thriftrw/gen/internal/tests/enums"
+	stringdef "go.uber.org/thriftrw/gen/internal/tests/stringdef"
 	structs "go.uber.org/thriftrw/gen/internal/tests/structs"
 	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
@@ -165,6 +166,7 @@ func (v BinarySet) ToWire() (wire.Value, error) {
 // String returns a readable string representation of BinarySet.
 func (v BinarySet) String() string {
 	x := ([][]byte)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -722,6 +724,7 @@ func (v EdgeMap) String() string {
 		Key   *structs.Edge
 		Value *structs.Edge
 	})(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1230,6 +1233,7 @@ func (v EventGroup) ToWire() (wire.Value, error) {
 // String returns a readable string representation of EventGroup.
 func (v EventGroup) String() string {
 	x := ([]*Event)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1423,6 +1427,7 @@ func (v FrameGroup) ToWire() (wire.Value, error) {
 // String returns a readable string representation of FrameGroup.
 func (v FrameGroup) String() string {
 	x := ([]*structs.Frame)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1487,6 +1492,7 @@ func (v MyEnum) ToWire() (wire.Value, error) {
 // String returns a readable string representation of MyEnum.
 func (v MyEnum) String() string {
 	x := (enums.EnumWithValues)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1534,6 +1540,7 @@ func (v *MyUUID) ToWire() (wire.Value, error) {
 // String returns a readable string representation of MyUUID.
 func (v *MyUUID) String() string {
 	x := (*UUID)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1577,6 +1584,7 @@ func (v PDF) ToWire() (wire.Value, error) {
 // String returns a readable string representation of PDF.
 func (v PDF) String() string {
 	x := ([]byte)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1870,6 +1878,7 @@ func (v PointMap) String() string {
 		Key   *structs.Point
 		Value *structs.Point
 	})(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1934,7 +1943,7 @@ func (v State) ToWire() (wire.Value, error) {
 // String returns a readable string representation of State.
 func (v State) String() string {
 	x := (string)(v)
-	return x
+	return (string)(x)
 }
 
 func (v State) Encode(sw stream.Writer) error {
@@ -2131,6 +2140,7 @@ func (v StateMap) ToWire() (wire.Value, error) {
 // String returns a readable string representation of StateMap.
 func (v StateMap) String() string {
 	x := (map[State]int64)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -2165,6 +2175,66 @@ func (v StateMap) MarshalLogObject(enc zapcore.ObjectEncoder) error {
 	return ((_Map_State_I64_Zapper)((map[State]int64)(v))).MarshalLogObject(enc)
 }
 
+func _StringDef_Read(w wire.Value) (stringdef.StringDef, error) {
+	var x stringdef.StringDef
+	err := x.FromWire(w)
+	return x, err
+}
+
+func _StringDef_Decode(sr stream.Reader) (stringdef.StringDef, error) {
+	var x stringdef.StringDef
+	err := x.Decode(sr)
+	return x, err
+}
+
+type StringReDef stringdef.StringDef
+
+// StringReDefPtr returns a pointer to a StringReDef
+func (v StringReDef) Ptr() *StringReDef {
+	return &v
+}
+
+// ToWire translates StringReDef into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+func (v StringReDef) ToWire() (wire.Value, error) {
+	x := (stringdef.StringDef)(v)
+	return x.ToWire()
+}
+
+// String returns a readable string representation of StringReDef.
+func (v StringReDef) String() string {
+	x := (stringdef.StringDef)(v)
+	return (string)(x)
+}
+
+func (v StringReDef) Encode(sw stream.Writer) error {
+	x := (stringdef.StringDef)(v)
+	return x.Encode(sw)
+}
+
+// FromWire deserializes StringReDef from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+func (v *StringReDef) FromWire(w wire.Value) error {
+	x, err := _StringDef_Read(w)
+	*v = (StringReDef)(x)
+	return err
+}
+
+// Decode deserializes StringReDef directly off the wire.
+func (v *StringReDef) Decode(sr stream.Reader) error {
+	x, err := _StringDef_Decode(sr)
+	*v = (StringReDef)(x)
+	return err
+}
+
+// Equals returns true if this StringReDef is equal to the provided
+// StringReDef.
+func (lhs StringReDef) Equals(rhs StringReDef) bool {
+	return ((stringdef.StringDef)(lhs) == (stringdef.StringDef)(rhs))
+}
+
 // Number of seconds since epoch.
 //
 // Deprecated: Use ISOTime instead.
@@ -2186,6 +2256,7 @@ func (v Timestamp) ToWire() (wire.Value, error) {
 // String returns a readable string representation of Timestamp.
 func (v Timestamp) String() string {
 	x := (int64)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -2789,6 +2860,7 @@ func (v *UUID) ToWire() (wire.Value, error) {
 // String returns a readable string representation of UUID.
 func (v *UUID) String() string {
 	x := (*I128)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -3085,12 +3157,13 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "typedefs",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/typedefs",
 	FilePath: "typedefs.thrift",
-	SHA1:     "333cb75491c993220f7695108fa91a4a8a299a48",
+	SHA1:     "49d5bbfb109fd427820d1c1593fe41677b13dd69",
 	Includes: []*thriftreflect.ThriftModule{
 		enums.ThriftModule,
+		stringdef.ThriftModule,
 		structs.ThriftModule,
 	},
 	Raw: rawIDL,
 }
 
-const rawIDL = "include \"./structs.thrift\"\ninclude \"./enums.thrift\"\n\n/**\n * Number of seconds since epoch.\n *\n * Deprecated: Use ISOTime instead.\n */\ntypedef i64 Timestamp  // alias of primitive\ntypedef string State\n\ntypedef i128 UUID  // alias of struct\n\ntypedef UUID MyUUID // alias of alias\n\ntypedef list<Event> EventGroup  // alias fo collection\n\nstruct i128 {\n    1: required i64 high\n    2: required i64 low\n}\n\nstruct Event {\n    1: required UUID uuid  // required typedef\n    2: optional Timestamp time  // optional typedef\n}\n\nstruct TransitiveTypedefField {\n    1: required MyUUID defUUID  // required typedef of alias\n}\n\nstruct DefaultPrimitiveTypedef {\n    1: optional State state = \"hello\"\n}\n\nstruct Transition {\n    1: required State fromState\n    2: required State toState\n    3: optional EventGroup events\n}\n\ntypedef binary PDF  // alias of []byte\n\ntypedef set<structs.Frame> FrameGroup\n\ntypedef map<structs.Point, structs.Point> PointMap\n\ntypedef set<binary> BinarySet\n\ntypedef map<structs.Edge, structs.Edge> EdgeMap\n\ntypedef map<State, i64> StateMap\n\ntypedef enums.EnumWithValues MyEnum\n"
+const rawIDL = "include \"./structs.thrift\"\ninclude \"./enums.thrift\"\ninclude \"./stringdef.thrift\"\n\n/**\n * Number of seconds since epoch.\n *\n * Deprecated: Use ISOTime instead.\n */\ntypedef i64 Timestamp  // alias of primitive\ntypedef string State\n\ntypedef stringdef.StringDef StringReDef // alias of an alias of a primitive\n\ntypedef i128 UUID  // alias of struct\n\ntypedef UUID MyUUID // alias of alias\n\ntypedef list<Event> EventGroup  // alias fo collection\n\nstruct i128 {\n    1: required i64 high\n    2: required i64 low\n}\n\nstruct Event {\n    1: required UUID uuid  // required typedef\n    2: optional Timestamp time  // optional typedef\n}\n\nstruct TransitiveTypedefField {\n    1: required MyUUID defUUID  // required typedef of alias\n}\n\nstruct DefaultPrimitiveTypedef {\n    1: optional State state = \"hello\"\n}\n\nstruct Transition {\n    1: required State fromState\n    2: required State toState\n    3: optional EventGroup events\n}\n\ntypedef binary PDF  // alias of []byte\n\ntypedef set<structs.Frame> FrameGroup\n\ntypedef map<structs.Point, structs.Point> PointMap\n\ntypedef set<binary> BinarySet\n\ntypedef map<structs.Edge, structs.Edge> EdgeMap\n\ntypedef map<State, i64> StateMap\n\ntypedef enums.EnumWithValues MyEnum\n"
