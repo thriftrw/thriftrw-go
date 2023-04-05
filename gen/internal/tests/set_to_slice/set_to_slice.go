@@ -63,6 +63,7 @@ func (v AnotherStringList) ToWire() (wire.Value, error) {
 // String returns a readable string representation of AnotherStringList.
 func (v AnotherStringList) String() string {
 	x := (MyStringList)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1673,6 +1674,7 @@ func (v FooList) ToWire() (wire.Value, error) {
 // String returns a readable string representation of FooList.
 func (v FooList) String() string {
 	x := ([]*Foo)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1720,6 +1722,7 @@ func (v MyStringList) ToWire() (wire.Value, error) {
 // String returns a readable string representation of MyStringList.
 func (v MyStringList) String() string {
 	x := (StringList)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1767,6 +1770,7 @@ func (v StringList) ToWire() (wire.Value, error) {
 // String returns a readable string representation of StringList.
 func (v StringList) String() string {
 	x := ([]string)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1814,6 +1818,7 @@ func (v StringListList) ToWire() (wire.Value, error) {
 // String returns a readable string representation of StringListList.
 func (v StringListList) String() string {
 	x := ([][]string)(v)
+
 	return fmt.Sprint(x)
 }
 
@@ -1982,6 +1987,7 @@ func (v StringSet) ToWire() (wire.Value, error) {
 // String returns a readable string representation of StringSet.
 func (v StringSet) String() string {
 	x := (map[string]struct{})(v)
+
 	return fmt.Sprint(x)
 }
 

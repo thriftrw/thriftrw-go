@@ -83,7 +83,6 @@ func (t *typedefGenerator) Decoder(g Generator, spec *compile.TypedefSpec) (stri
 func typedef(g Generator, spec *compile.TypedefSpec) error {
 	err := g.DeclareFromTemplate(
 		`
-		<$fmt := import "fmt">
 		<$stream := import "go.uber.org/thriftrw/protocol/stream">
 		<$wire := import "go.uber.org/thriftrw/wire">
 		<$typedefType := typeReference .>
@@ -113,8 +112,9 @@ func typedef(g Generator, spec *compile.TypedefSpec) error {
 		func (<$v> <$typedefType>) String() string {
 			<$x> := (<typeReference .Target>)(<$v>)
 			<if isStringType .Target ->
-				return <$x>
+				return (string)(<$x>)
 			<- else ->
+				<$fmt := import "fmt">
 				return <$fmt>.Sprint(<$x>)
 			<- end>
 		}

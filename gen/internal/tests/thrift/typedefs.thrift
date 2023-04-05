@@ -1,5 +1,6 @@
 include "./structs.thrift"
 include "./enums.thrift"
+include "./stringdef.thrift"
 
 /**
  * Number of seconds since epoch.
@@ -8,6 +9,8 @@ include "./enums.thrift"
  */
 typedef i64 Timestamp  // alias of primitive
 typedef string State
+
+typedef stringdef.StringDef StringReDef // alias of an alias of a primitive
 
 typedef i128 UUID  // alias of struct
 
