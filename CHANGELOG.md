@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- No changes yet.
+
+## [1.30.0] - 2023-04-06
 ### Added
 - AddTemplate template option.
 - thriftbreak: support for changed types, new files, and optional JSON output.
@@ -434,7 +437,8 @@ this release.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.29.2...HEAD
+[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.30.0...HEAD
+[1.30.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.29.2...v1.30.0
 [1.29.2]: https://github.com/thriftrw/thriftrw-go/compare/v1.29.1...v1.29.2
 [1.29.1]: https://github.com/thriftrw/thriftrw-go/compare/v1.29.0...v1.29.1
 [1.29.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.28.0...v1.29.0
