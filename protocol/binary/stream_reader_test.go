@@ -1,4 +1,4 @@
-// Copyright (c) 2015 Uber Technologies, Inc.
+// Copyright (c) 2023 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -20,60 +20,35 @@
 
 package binary
 
-import "testing"
+import (
+	"bytes"
+	"io"
+	"testing"
+)
 
-// byteGenerator generates an infinite stream of val
-type byteGenerator struct {
-	val byte
-}
+func BenchmarkReadString(b *testing.B) {
+	var streamBuff bytes.Buffer
 
-// Read is the io.Reader implementation
-func (bg *byteGenerator) Read(p []byte) (n int, err error) {
-	p[0] = bg.val
-	return 1, nil
-}
+	// Encode with Streaming protocol
+	w := NewStreamWriter(&streamBuff)
+	w.WriteString("the quick brown fox jumps over the lazy dog")
+	w.Close()
 
-// ReadByte is the io.ByteReader implementation
-func (bg *byteGenerator) ReadByte() (byte, error) {
-	return bg.val, nil
-}
+	encoded := streamBuff.Bytes()
 
-func BenchmarkReadInt8(b *testing.B) {
-	input := &byteGenerator{val: 0xff}
-	reader := NewStreamReader(input)
-	defer reader.Close()
+	sr := new(StreamReader)
+	enc := bytes.NewReader(encoded)
+
+	b.ResetTimer()
 
 	for i:= 0; i<b.N; i++ {
-		reader.ReadInt8()
+		resetStreamReader(sr, enc)
+		sr.ReadString()
+		enc.Seek(0, io.SeekStart)
 	}
+
 }
 
-func BenchmarkReadInt16(b *testing.B) {
-	input := &byteGenerator{val: 0xff}
-	reader := NewStreamReader(input)
-	defer reader.Close()
-
-	for i:= 0; i<b.N; i++ {
-		reader.ReadInt16()
-	}
-}
-
-func BenchmarkReadInt32(b *testing.B) {
-	input := &byteGenerator{val: 0xff}
-	reader := NewStreamReader(input)
-	defer reader.Close()
-
-	for i:= 0; i<b.N; i++ {
-		reader.ReadInt32()
-	}
-}
-
-func BenchmarkReadInt64(b *testing.B) {
-	input := &byteGenerator{val: 0xff}
-	reader := NewStreamReader(input)
-	defer reader.Close()
-
-	for i:= 0; i<b.N; i++ {
-		reader.ReadInt64()
-	}
+func resetStreamReader(sr *StreamReader, r io.Reader) {
+	sr.reader = r
 }

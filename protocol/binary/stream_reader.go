@@ -26,6 +26,7 @@ import (
 	"io/ioutil"
 	"math"
 	"sync"
+	"unsafe"
 
 	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
@@ -62,7 +63,6 @@ func fixedWidth(t wire.Type) int64 {
 // StreamReader provides an implementation of a "stream.Reader".
 type StreamReader struct {
 	reader io.Reader
-	byteReader io.ByteReader
 	buffer [8]byte
 
 	// discard points to either discardOffset or discardStream based on
@@ -96,7 +96,6 @@ var streamReaderPool = sync.Pool{
 func NewStreamReader(r io.Reader) *StreamReader {
 	sr := streamReaderPool.Get().(*StreamReader)
 	sr.reader = r
-	sr.byteReader, _ = r.(io.ByteReader)
 	sr.discard = sr._discardStream
 	if seeker, ok := r.(io.Seeker); ok {
 		// If we're wrapping a seeker (like *offsetReader), we can skip
@@ -124,15 +123,6 @@ func (sr *StreamReader) read(bs []byte) (int, error) {
 	return n, err
 }
 
-func (sr *StreamReader) readByte() (byte, error) {
-	b, err := sr.byteReader.ReadByte()
-	if err == io.EOF {
-		// All EOFs are unexpected when streaming
-		err = io.ErrUnexpectedEOF
-	}
-	return b, err
-}
-
 func (sr *StreamReader) discardSeek(n int64) error {
 	_, err := sr._seeker.Seek(n, io.SeekCurrent)
 	return err
@@ -150,35 +140,23 @@ func (sr *StreamReader) discardStream(n int64) error {
 
 // ReadBool reads a Thrift encoded bool value, returning a bool.
 func (sr *StreamReader) ReadBool() (bool, error) {
-	var b byte
-	var err error
-	if sr.byteReader != nil {
-		b, err = sr.readByte()
-	} else {
-		bs := sr.buffer[0:1]
-		_, err = sr.read(bs)
-		b = bs[0]
-	}
-
-	if err != nil {
+	bs := sr.buffer[0:1]
+	if _, err := sr.read(bs); err != nil {
 		return false, err
 	}
 
-	switch b {
+	switch bs[0] {
 	case 0:
 		return false, nil
 	case 1:
 		return true, nil
 	default:
-		return false, decodeErrorf("invalid bool value: %v", b)
+		return false, decodeErrorf("invalid bool value: %v", bs[0])
 	}
 }
 
 // ReadInt8 reads a Thrift encoded int8 value.
 func (sr *StreamReader) ReadInt8() (int8, error) {
-	if sr.byteReader != nil {
-		return sr.readInt8Bytes()
-	}
 	bs := sr.buffer[0:1]
 	_, err := sr.read(bs)
 	return int8(bs[0]), err
@@ -186,9 +164,6 @@ func (sr *StreamReader) ReadInt8() (int8, error) {
 
 // ReadInt16 reads a Thrift encoded int16 value.
 func (sr *StreamReader) ReadInt16() (int16, error) {
-	if sr.byteReader != nil {
-		return sr.readInt16Bytes()
-	}
 	bs := sr.buffer[0:2]
 	_, err := sr.read(bs)
 	return int16(bigEndian.Uint16(bs)), err
@@ -196,9 +171,6 @@ func (sr *StreamReader) ReadInt16() (int16, error) {
 
 // ReadInt32 reads a Thrift encoded int32 value.
 func (sr *StreamReader) ReadInt32() (int32, error) {
-	if sr.byteReader != nil {
-		return sr.readInt32Bytes()
-	}
 	bs := sr.buffer[0:4]
 	_, err := sr.read(bs)
 	return int32(bigEndian.Uint32(bs)), err
@@ -206,9 +178,6 @@ func (sr *StreamReader) ReadInt32() (int32, error) {
 
 // ReadInt64 reads a Thrift encoded int64 value.
 func (sr *StreamReader) ReadInt64() (int64, error) {
-	if sr.byteReader != nil {
-		return sr.readInt64Bytes()
-	}
 	bs := sr.buffer[0:8]
 	_, err := sr.read(bs)
 	return int64(bigEndian.Uint64(bs)), err
@@ -217,8 +186,14 @@ func (sr *StreamReader) ReadInt64() (int64, error) {
 // ReadString reads a Thrift encoded string.
 func (sr *StreamReader) ReadString() (string, error) {
 	bs, err := sr.ReadBinary()
-	return string(bs), err
+	return b2s(bs), err
 }
+
+// b2s converts byte slice to a string without memory allocation.
+func b2s(b []byte) string {
+	return unsafe.String(unsafe.SliceData(b), len(b))
+}
+
 
 // ReadDouble reads a Thrift encoded double, returning a float64.
 func (sr *StreamReader) ReadDouble() (float64, error) {
@@ -519,95 +494,4 @@ func (sr *StreamReader) skipListItems(elemType wire.Type, size int) error {
 	}
 
 	return nil
-}
-
-// readInt8Bytes reads a Thrift encoded int8 value.
-func (sr *StreamReader) readInt8Bytes() (int8, error) {
-	b, err := sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	return int8(b), nil
-}
-
-// readInt16Bytes reads a Thrift encoded int16 value.
-func (sr *StreamReader) readInt16Bytes() (int16, error) {
-	var b0, b1 byte
-	var err error
-
-	b0, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	b1, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-
-	return int16(bigEndian.Uint16([]byte{b0, b1})), err
-}
-
-// readInt32Bytes reads a Thrift encoded int32 value.
-func (sr *StreamReader) readInt32Bytes() (int32, error) {
-	var b0, b1, b2, b3 byte
-	var err error
-
-	b0, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	b1, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	b2, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	b3, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-
-	return int32(bigEndian.Uint32([]byte{b0, b1, b2, b3})), err
-}
-
-// readInt64Bytes reads a Thrift encoded int64 value.
-func (sr *StreamReader) readInt64Bytes() (int64, error) {
-	var b0, b1, b2, b3, b4, b5, b6, b7 byte
-	var err error
-
-	b0, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	b1, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	b2, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	b3, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	b4, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	b5, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	b6, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	b7, err = sr.readByte()
-	if err != nil {
-		return 0, err
-	}
-	return int64(bigEndian.Uint64([]byte{b0, b1, b2, b3, b4, b5, b6, b7})), err
 }

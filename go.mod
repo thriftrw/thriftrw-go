@@ -1,6 +1,6 @@
 module go.uber.org/thriftrw
 
-go 1.17
+go 1.20
 
 require (
 	github.com/anmitsu/go-shlex v0.0.0-20161002113705-648efa622239

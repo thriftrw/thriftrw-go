@@ -1,13 +1,4 @@
-name         old time/op  new time/op  delta
-ReadInt8     10.7ns ±28%   5.2ns ± 2%  -51.11%  (p=0.008 n=5+5)
-ReadInt8-2   10.0ns ± 8%   5.2ns ± 2%  -48.22%  (p=0.008 n=5+5)
-ReadInt8-4   9.87ns ± 5%  5.18ns ± 1%  -47.50%  (p=0.008 n=5+5)
-ReadInt16    14.3ns ± 3%   7.2ns ± 5%  -49.49%  (p=0.008 n=5+5)
-ReadInt16-2  14.0ns ± 3%   7.0ns ± 2%  -49.93%  (p=0.008 n=5+5)
-ReadInt16-4  14.9ns ± 4%   7.2ns ± 3%  -51.98%  (p=0.008 n=5+5)
-ReadInt32    19.5ns ± 3%  11.3ns ± 1%  -42.35%  (p=0.008 n=5+5)
-ReadInt32-2  19.8ns ± 5%  11.3ns ± 3%  -43.11%  (p=0.008 n=5+5)
-ReadInt32-4  20.3ns ± 5%  11.3ns ± 4%  -44.18%  (p=0.008 n=5+5)
-ReadInt64    32.0ns ± 2%  18.6ns ± 2%  -41.76%  (p=0.008 n=5+5)
-ReadInt64-2  32.4ns ±10%  18.4ns ± 2%  -43.27%  (p=0.008 n=5+5)
-ReadInt64-4  34.9ns ± 6%  18.6ns ± 4%  -46.65%  (p=0.008 n=5+5)
+name          old time/op  new time/op  delta
+ReadString    90.4ns ± 4%  63.1ns ± 5%  -30.13%  (p=0.008 n=5+5)
+ReadString-2   103ns ±10%    68ns ± 7%  -33.31%  (p=0.008 n=5+5)
+ReadString-4   109ns ± 7%    79ns ±29%  -27.92%  (p=0.008 n=5+5)
