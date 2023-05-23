@@ -1,0 +1,14 @@
+name           old time/op    new time/op    delta
+WriteString      21.2ns ± 3%    13.3ns ± 2%  -37.48%  (p=0.000 n=10+9)
+WriteString-2    20.8ns ± 2%    13.4ns ± 4%  -35.42%  (p=0.000 n=9+10)
+WriteString-4    20.8ns ± 2%    13.4ns ± 8%  -35.86%  (p=0.000 n=9+10)
+
+name           old alloc/op   new alloc/op   delta
+WriteString       0.00B          0.00B          ~     (all equal)
+WriteString-2     0.00B          0.00B          ~     (all equal)
+WriteString-4     0.00B          0.00B          ~     (all equal)
+
+name           old allocs/op  new allocs/op  delta
+WriteString        0.00           0.00          ~     (all equal)
+WriteString-2      0.00           0.00          ~     (all equal)
+WriteString-4      0.00           0.00          ~     (all equal)

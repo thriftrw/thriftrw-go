@@ -24,6 +24,7 @@ import (
 	"io"
 	"math"
 	"sync"
+	"unsafe"
 
 	"go.uber.org/thriftrw/protocol/stream"
 )
@@ -110,8 +111,8 @@ func (sw *StreamWriter) WriteString(s string) error {
 		return err
 	}
 
-	_, err := io.WriteString(sw.writer, s)
-	return err
+	b := unsafe.Slice(unsafe.StringData(s), len(s))
+	return sw.write(b)
 }
 
 // WriteDouble encodes a double

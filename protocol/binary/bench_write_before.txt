@@ -1,0 +1,36 @@
+goos: linux
+goarch: amd64
+pkg: go.uber.org/thriftrw/protocol/binary
+cpu: AMD EPYC 7B13
+BenchmarkWriteString     	56106177	        20.71 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString     	57410724	        21.41 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString     	53637831	        20.63 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString     	56166054	        20.75 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString     	56729198	        21.17 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString     	51443841	        21.40 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString     	55173408	        21.06 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString     	57170875	        21.41 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString     	53000889	        21.79 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString     	57025579	        21.63 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-2   	57266172	        20.78 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-2   	57457564	        20.65 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-2   	57006156	        20.59 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-2   	55823847	        20.62 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-2   	56877889	        20.93 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-2   	57045447	        21.87 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-2   	56745589	        20.72 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-2   	58351741	        21.26 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-2   	57903884	        20.80 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-2   	58042630	        20.70 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-4   	58312556	        20.82 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-4   	58646817	        20.69 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-4   	56493243	        20.64 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-4   	54374402	        20.85 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-4   	55447078	        20.63 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-4   	56759464	        21.61 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-4   	58172521	        21.17 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-4   	58570161	        21.04 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-4   	56348929	        20.86 ns/op	       0 B/op	       0 allocs/op
+BenchmarkWriteString-4   	57352394	        20.87 ns/op	       0 B/op	       0 allocs/op
+PASS
+ok  	go.uber.org/thriftrw/protocol/binary	37.971s
