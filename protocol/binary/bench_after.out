@@ -1,0 +1,21 @@
+goos: linux
+goarch: amd64
+pkg: go.uber.org/thriftrw/protocol/binary
+cpu: AMD EPYC 7B13
+BenchmarkReadString     	19886934	        59.99 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString     	20681144	        61.70 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString     	18265664	        59.03 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString     	20583223	        60.83 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString     	20890675	        66.02 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString-2   	18922395	        65.52 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString-2   	12203301	        82.21 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString-2   	13370052	        75.70 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString-2   	15562228	        72.90 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString-2   	16313412	        71.69 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString-4   	19993710	        69.07 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString-4   	15968702	        68.73 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString-4   	16481830	        72.54 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString-4   	17736243	        69.60 ns/op	      48 B/op	       1 allocs/op
+BenchmarkReadString-4   	15538572	        75.82 ns/op	      48 B/op	       1 allocs/op
+PASS
+ok  	go.uber.org/thriftrw/protocol/binary	19.057s
