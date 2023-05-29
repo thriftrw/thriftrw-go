@@ -39,7 +39,7 @@ type Definition interface {
 
 // Constant is a constant declared in the Thrift file using a const statement.
 //
-// 	const i32 foo = 42
+//	const i32 foo = 42
 type Constant struct {
 	Name   string
 	Type   Type
@@ -66,8 +66,8 @@ func (c *Constant) Info() DefinitionInfo {
 
 // Typedef is used to define an alias for another type.
 //
-// 	typedef string UUID
-// 	typedef i64 Timestamp (unit = "milliseconds")
+//	typedef string UUID
+//	typedef i64 Timestamp (unit = "milliseconds")
 type Typedef struct {
 	Name        string
 	Type        Type
@@ -99,13 +99,13 @@ func (t *Typedef) Info() DefinitionInfo {
 
 // Enum is a set of named integer values.
 //
-// 	enum Status { Enabled, Disabled }
+//	enum Status { Enabled, Disabled }
 //
-// 	enum Role {
-// 		User = 1,
-// 		Moderator = 2 (py.name = "Mod"),
-// 		Admin = 3
-// 	} (go.name = "UserRole")
+//	enum Role {
+//		User = 1,
+//		Moderator = 2 (py.name = "Mod"),
+//		Admin = 3
+//	} (go.name = "UserRole")
 type Enum struct {
 	Name        string
 	Items       []*EnumItem
@@ -175,22 +175,22 @@ const (
 //
 // This type encompasses structs, unions, and exceptions.
 //
-// 	struct User {
-// 		1: required string name (min_length = "3")
-// 		2: optional Status status = Enabled;
-// 	}
+//	struct User {
+//		1: required string name (min_length = "3")
+//		2: optional Status status = Enabled;
+//	}
 //
-// 	struct i128 {
-// 		1: required i64 high
-// 		2: required i64 low
-// 	} (py.serializer = "foo.Int128Serializer")
+//	struct i128 {
+//		1: required i64 high
+//		2: required i64 low
+//	} (py.serializer = "foo.Int128Serializer")
 //
-// 	union Contents {
-// 		1: string plainText
-// 		2: binary pdf
-// 	}
+//	union Contents {
+//		1: string plainText
+//		2: binary pdf
+//	}
 //
-// 	exception ServiceError { 1: required string message }
+//	exception ServiceError { 1: required string message }
 type Struct struct {
 	Name        string
 	Type        StructureType
@@ -224,10 +224,10 @@ func (s *Struct) Info() DefinitionInfo {
 
 // Service is a collection of functions.
 //
-// 	service KeyValue {
-// 		void setValue(1: string key, 2: binary value)
-// 		binary getValue(1: string key)
-// 	} (router.serviceName = "key_value")
+//	service KeyValue {
+//		void setValue(1: string key, 2: binary value)
+//		binary getValue(1: string key)
+//	} (router.serviceName = "key_value")
 type Service struct {
 	Name      string
 	Functions []*Function
@@ -263,10 +263,10 @@ func (s *Service) Info() DefinitionInfo {
 
 // Function is a single function inside a service.
 //
-// 	binary getValue(1: string key)
-// 		throws (1: KeyNotFoundError notFound) (
-// 			ttl.milliseconds = "250"
-// 		)
+//	binary getValue(1: string key)
+//		throws (1: KeyNotFoundError notFound) (
+//			ttl.milliseconds = "250"
+//		)
 type Function struct {
 	Name        string
 	Parameters  []*Field
@@ -312,10 +312,9 @@ const (
 // Field is a single field inside a struct, union, exception, or a single item
 // in the parameter or exception list of a function.
 //
-// 	1: required i32 foo = 0
-// 	2: optional binary (max_length = "4096") bar
-// 	3: i64 baz (go.name = "qux")
-//
+//	1: required i32 foo = 0
+//	2: optional binary (max_length = "4096") bar
+//	3: i64 baz (go.name = "qux")
 type Field struct {
 	ID int
 	// IDUnset indicates that a field identifier wasn't provided.

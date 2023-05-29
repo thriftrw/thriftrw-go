@@ -624,7 +624,6 @@ func TestTypedefsZapLogging(t *testing.T) {
 func TestEnumWithLabelZapLogging(t *testing.T) {
 	// These types are created to ease building map[string]interface{}
 	type o = map[string]interface{}
-	type a = []interface{}
 	type i = int32
 
 	tests := []struct {

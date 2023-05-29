@@ -32,13 +32,13 @@ const (
 
 // ParseDocstring takes a docstring in the form,
 //
-//  /**
-//   * foo bar
-//   */
+//	/**
+//	 * foo bar
+//	 */
 //
 // And returns,
 //
-//  foo bar
+//	foo bar
 func ParseDocstring(s string) string {
 	lines := strings.Split(s, "\n")
 	if len(lines) == 0 {
@@ -104,13 +104,13 @@ func dropTrailingEmptyLines(lines []string) []string {
 //
 // So,
 //
-//  "    foo"
-//  "      bar"
+//	"    foo"
+//	"      bar"
 //
 // Becomes,
 //
-//  "foo"
-//  "  bar"
+//	"foo"
+//	"  bar"
 //
 // If the first line was not indentend, skipFirstIfUnindented controls whether
 // we strip the indentation of the second line from all lines instead. This

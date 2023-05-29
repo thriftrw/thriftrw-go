@@ -23,17 +23,17 @@
 // Plugins are standalone programs with names in the format
 // thriftrw-plugin-$name where $name is the name of the plugin.
 //
-// 	// thriftrw-plugin-myfancyplugin/main.go
-// 	package main
+//	// thriftrw-plugin-myfancyplugin/main.go
+//	package main
 //
-// 	import "go.uber.org/thriftrw/plugin"
+//	import "go.uber.org/thriftrw/plugin"
 //
-// 	func main() {
-// 		plugin.Main(&plugin.Plugin{
-// 			Name: "myfancyplugin",
-// 			// ...
-// 		})
-// 	}
+//	func main() {
+//		plugin.Main(&plugin.Plugin{
+//			Name: "myfancyplugin",
+//			// ...
+//		})
+//	}
 //
 // Note that the name in the executable MUST match the name in the Plugin
 // struct. Plugins need to be installed and available on the $PATH before they
@@ -44,13 +44,13 @@
 //
 // To use a plugin, pass its name in with the -p/--plugin option.
 //
-// 	thriftrw --plugin=myfancyplugin foo.thrift
+//	thriftrw --plugin=myfancyplugin foo.thrift
 //
 // Arguments may be sent to plugins by including them in the name. These are
 // passed through to the plugin process as command line arguments. For
 // example,
 //
-// 	thriftrw --plugin='myfancyplugin --useContext'
+//	thriftrw --plugin='myfancyplugin --useContext'
 //
 // Will pass `--useContext` to `thriftrw-plugin-myfancyplugin`.
 package plugin

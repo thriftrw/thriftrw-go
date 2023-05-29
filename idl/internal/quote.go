@@ -28,7 +28,7 @@ import (
 // UnquoteSingleQuoted unquotes a slice of bytes representing a single quoted
 // string.
 //
-// 	UnquoteSingleQuoted([]byte("'foo'")) == "foo"
+//	UnquoteSingleQuoted([]byte("'foo'")) == "foo"
 func UnquoteSingleQuoted(in []byte) (string, error) {
 	out := string(swapQuotes(unescapeQuotes(in, '"')))
 	str, err := strconv.Unquote(out)
@@ -44,15 +44,15 @@ func UnquoteSingleQuoted(in []byte) (string, error) {
 // UnquoteDoubleQuoted unquotes a slice of bytes representing a double quoted
 // string.
 //
-// 	UnquoteDoubleQuoted([]byte("\"foo\"")) == "foo"
+//	UnquoteDoubleQuoted([]byte("\"foo\"")) == "foo"
 func UnquoteDoubleQuoted(in []byte) (string, error) {
 	return strconv.Unquote(string(unescapeQuotes(in, '\'')))
 }
 
 // unescapeQuotes unescapes all occurences of a quote character in a string.
 //
-//  unescapeQuotes([]byte{'\\', '"'}, '"') == []byte{'"'}
-//  unescapeQuotes([]byte{'\\', '\''}, '\'') == []byte{'\''}
+//	unescapeQuotes([]byte{'\\', '"'}, '"') == []byte{'"'}
+//	unescapeQuotes([]byte{'\\', '\''}, '\'') == []byte{'\''}
 func unescapeQuotes(in []byte, quote byte) []byte {
 	return bytes.ReplaceAll(in, []byte{'\\', quote}, []byte{quote})
 }

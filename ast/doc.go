@@ -21,21 +21,21 @@
 // Package ast provides types and intefaces representing the abstract syntax
 // tree for a single .thrift file.
 //
-// Docstrings
+// # Docstrings
 //
 // Types which have a Doc field support parsing docstrings in the form,
 // "/** ... */". For example, given the following,
 //
-//   /**
-//    * Name of the user who composed this message.
-//    *
-//    * If unset, the comment was posted by an anonymous user.
-//    */
-//   1: optional string author
+//	/**
+//	 * Name of the user who composed this message.
+//	 *
+//	 * If unset, the comment was posted by an anonymous user.
+//	 */
+//	1: optional string author
 //
 // The Doc of the parsed Field will be,
 //
-//   Name of the user who composed this message.
+//	Name of the user who composed this message.
 //
-//   If unset, the comment was posted by an anonymous user.
+//	If unset, the comment was posted by an anonymous user.
 package ast
