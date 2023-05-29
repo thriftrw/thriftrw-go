@@ -49,12 +49,12 @@ const (
 
 // BaseType is a reference to a Thrift base type.
 //
-// 	bool, byte, i16, i32, i64, double, string, binary
+//	bool, byte, i16, i32, i64, double, string, binary
 //
 // All references to base types in the document may be followed by type
 // annotations.
 //
-// 	bool (go.type = "int")
+//	bool (go.type = "int")
 type BaseType struct {
 	// ID of the base type.
 	ID BaseTypeID
@@ -107,11 +107,11 @@ func (bt BaseType) String() string {
 
 // MapType is a reference to a the Thrift map type.
 //
-// 	map<k, v>
+//	map<k, v>
 //
 // All references to map types may be followed by type annotations.
 //
-// 	map<string, list<i32>> (java.type = "MultiMap")
+//	map<string, list<i32>> (java.type = "MultiMap")
 type MapType struct {
 	KeyType, ValueType Type
 	Annotations        []*Annotation
@@ -143,11 +143,11 @@ func (mt MapType) String() string {
 
 // ListType is a reference to the Thrift list type.
 //
-// 	list<a>
+//	list<a>
 //
 // All references to list types may be followed by type annotations.
 //
-// 	list<i64> (cpp.type = "vector")
+//	list<i64> (cpp.type = "vector")
 type ListType struct {
 	ValueType   Type
 	Annotations []*Annotation
@@ -178,11 +178,11 @@ func (lt ListType) String() string {
 
 // SetType is a reference to the Thrift set type.
 //
-// 	set<a>
+//	set<a>
 //
 // All references to set types may be followed by type annotations.
 //
-// 	set<string> (js.type = "list")
+//	set<string> (js.type = "list")
 type SetType struct {
 	ValueType   Type
 	Annotations []*Annotation

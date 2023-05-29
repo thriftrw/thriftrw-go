@@ -74,28 +74,28 @@ func (r ConstantReference) pos() Position { return Position{Line: r.Line, Column
 
 // ConstantBoolean is a boolean value specified in the Thrift file.
 //
-//   true
-//   false
+//	true
+//	false
 type ConstantBoolean bool
 
 // ConstantInteger is an integer value specified in the Thrift file.
 //
-//   42
+//	42
 type ConstantInteger int64
 
 // ConstantString is a string literal specified in the Thrift file.
 //
-//   "hello world"
+//	"hello world"
 type ConstantString string
 
 // ConstantDouble is a floating point value specified in the Thrift file.
 //
-//   1.234
+//	1.234
 type ConstantDouble float64
 
 // ConstantMap is a map literal from the Thrift file.
 //
-// 	{"a": 1, "b": 2}
+//	{"a": 1, "b": 2}
 //
 // Note that map literals can also be used to build structs.
 type ConstantMap struct {
@@ -115,7 +115,7 @@ func (ConstantMapItem) node() {}
 
 // ConstantList is a list literal from the Thrift file.
 //
-// 	[1, 2, 3]
+//	[1, 2, 3]
 type ConstantList struct {
 	Items  []ConstantValue
 	Line   int
@@ -125,7 +125,7 @@ type ConstantList struct {
 // ConstantReference is a reference to another constant value defined in the
 // Thrift file.
 //
-// 	foo.bar
+//	foo.bar
 type ConstantReference struct {
 	// Name of the referenced value.
 	Name string

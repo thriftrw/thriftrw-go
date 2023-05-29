@@ -86,7 +86,9 @@ func (v *Version) String() string {
 }
 
 // Compare returns:
-//  0 if a == b
+//
+//	0 if a == b
+//
 // -1 if a < b
 // +1 if a > b
 func (v *Version) Compare(b *Version) int {

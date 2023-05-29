@@ -26,7 +26,8 @@ package semver
 // Assuming current Version is 1.2.3-pre we get:
 //
 // begin >= 1.0.0
-//   end  < 1.3.0-pre
+//
+//	end  < 1.3.0-pre
 func CompatibleRange(v Version) (r Range) {
 	r.Begin = v
 	r.End = v

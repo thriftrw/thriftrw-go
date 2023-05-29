@@ -34,11 +34,11 @@ type listGenerator struct{}
 //
 // The following is generated:
 //
-// 	type $valueListName []$valueType
+//	type $valueListName []$valueType
 //
-// 	func (v $valueListName) ForEach(f func(wire.Value) error) error { ... }
+//	func (v $valueListName) ForEach(f func(wire.Value) error) error { ... }
 //
-// 	func (v $valueListName) Close() { ... }
+//	func (v $valueListName) Close() { ... }
 //
 // And $valueListName is returned. This may be used where a ValueList of the
 // given type is expected.
@@ -97,9 +97,9 @@ func (l *listGenerator) ValueList(g Generator, spec *compile.ListSpec) (string, 
 // Reader generates a function to read a list of the given type from a
 // wire.List.
 //
-// 	func $name(l wire.List) ($listType, error) {
-// 		...
-// 	}
+//	func $name(l wire.List) ($listType, error) {
+//		...
+//	}
 //
 // And returns its name.
 func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, error) {
@@ -142,9 +142,9 @@ func (l *listGenerator) Reader(g Generator, spec *compile.ListSpec) (string, err
 
 // Encoder generates a function to encode a list given a stream.Writer
 //
-//     func $name(val []listType, sr *stream.Writer) error {
-//             ...
-//     }
+//	func $name(val []listType, sr *stream.Writer) error {
+//	        ...
+//	}
 //
 // And returns its name.
 func (l *listGenerator) Encoder(g Generator, spec *compile.ListSpec) (string, error) {
@@ -199,9 +199,9 @@ func (l *listGenerator) Encoder(g Generator, spec *compile.ListSpec) (string, er
 // Decoder generates a function to read a list of the given type from a
 // stream.Reader.
 //
-//     func $name(sr *stream.Reader) ($listType, error) {
-//             ...
-//     }
+//	func $name(sr *stream.Reader) ($listType, error) {
+//	        ...
+//	}
 //
 // And returns its name.
 func (l *listGenerator) Decoder(g Generator, spec *compile.ListSpec) (string, error) {
@@ -256,9 +256,9 @@ func (l *listGenerator) Decoder(g Generator, spec *compile.ListSpec) (string, er
 
 // Equals generates a function to compare lists of the given type
 //
-// 	func $name(lhs, rhs $listType) bool {
-// 		...
-// 	}
+//	func $name(lhs, rhs $listType) bool {
+//		...
+//	}
 //
 // And returns its name.
 func (l *listGenerator) Equals(g Generator, spec *compile.ListSpec) (string, error) {

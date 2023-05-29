@@ -35,12 +35,12 @@ type Header interface {
 
 // Include is a request to include another Thrift file.
 //
-// 	include "shared.thrift"
+//	include "shared.thrift"
 //
 // thriftrw's custom Include-As syntax may be used to change the name under
 // which the file is imported.
 //
-// 	include t "shared.thrift"
+//	include t "shared.thrift"
 type Include struct {
 	Path   string
 	Name   string
@@ -62,7 +62,7 @@ func (i *Include) Info() HeaderInfo {
 
 // CppInclude is a request to include a C++-specific header file.
 //
-//  cpp_include "<unordered_map>"
+//	cpp_include "<unordered_map>"
 type CppInclude struct {
 	Path   string
 	Line   int
@@ -84,7 +84,7 @@ func (i *CppInclude) Info() HeaderInfo {
 // Namespace statements allow users to choose the package name used by the
 // generated code in certain languages.
 //
-// 	namespace py foo.bar
+//	namespace py foo.bar
 type Namespace struct {
 	Scope  string
 	Name   string
