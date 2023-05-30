@@ -14,6 +14,7 @@ require (
 	go.uber.org/multierr v1.1.0
 	go.uber.org/zap v1.9.1
 	golang.org/x/lint v0.0.0-20191125180803-fdd1cda4f05f
+	golang.org/x/text v0.7.0
 	golang.org/x/tools v0.4.1-0.20221208213631-3f74d914ae6d
 	honnef.co/go/tools v0.4.3
 )
