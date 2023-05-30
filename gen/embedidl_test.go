@@ -23,7 +23,7 @@ package gen
 import (
 	"crypto/sha1"
 	"encoding/hex"
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
 	"testing"
@@ -39,7 +39,7 @@ func loadIDL(filename string) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
-	rawIDL, err := ioutil.ReadAll(f)
+	rawIDL, err := io.ReadAll(f)
 	if err != nil {
 		return "", "", err
 	}

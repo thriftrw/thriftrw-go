@@ -22,7 +22,6 @@ package gen
 
 import (
 	"bufio"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -57,7 +56,7 @@ func TestCodeIsUpToDate(t *testing.T) {
 	thriftFiles, err := filepath.Glob(thriftRoot + "/*.thrift")
 	require.NoError(t, err)
 
-	outputDir, err := ioutil.TempDir("", "thriftrw-golden-test")
+	outputDir, err := os.MkdirTemp("", "thriftrw-golden-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(outputDir)
 

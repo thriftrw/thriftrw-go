@@ -24,7 +24,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"reflect"
 	"testing"
 
@@ -714,7 +714,7 @@ func TestArgsAndResultValidation(t *testing.T) {
 				})
 
 				t.Run("StreamEncode", func(t *testing.T) {
-					sw := binary.Default.Writer(ioutil.Discard)
+					sw := binary.Default.Writer(io.Discard)
 					defer sw.Close()
 
 					err := tt.serialize.Encode(sw)

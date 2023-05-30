@@ -23,7 +23,6 @@ package binary
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"math"
 	"sync"
 
@@ -128,7 +127,7 @@ func (sr *StreamReader) discardSeek(n int64) error {
 }
 
 func (sr *StreamReader) discardStream(n int64) error {
-	_, err := io.CopyN(ioutil.Discard, sr.reader, n)
+	_, err := io.CopyN(io.Discard, sr.reader, n)
 	if err == io.EOF {
 		// All EOFs are unexpected when streaming
 		err = io.ErrUnexpectedEOF
