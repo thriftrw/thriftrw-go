@@ -25,7 +25,6 @@ import (
 	"io"
 	"math"
 	"sync"
-	"unsafe"
 
 	"go.uber.org/thriftrw/protocol/stream"
 	"go.uber.org/thriftrw/wire"
@@ -180,12 +179,6 @@ func (sr *StreamReader) ReadInt64() (int64, error) {
 	bs := sr.buffer[0:8]
 	_, err := sr.read(bs)
 	return int64(bigEndian.Uint64(bs)), err
-}
-
-// ReadString reads a Thrift encoded string.
-func (sr *StreamReader) ReadString() (string, error) {
-	bs, err := sr.ReadBinary()
-	return unsafe.String(unsafe.SliceData(bs), len(bs)), err
 }
 
 // ReadDouble reads a Thrift encoded double, returning a float64.

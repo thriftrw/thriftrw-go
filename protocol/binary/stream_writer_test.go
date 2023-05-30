@@ -33,7 +33,7 @@ func BenchmarkWriteString(b *testing.B) {
 	b.ResetTimer()
 
 	s := "the quick brown fox jumps over the lazy dog"
-	for i:= 0; i<b.N; i++ {
+	for i := 0; i < b.N; i++ {
 		sw.WriteString(s)
 		streamBuff.Reset()
 	}

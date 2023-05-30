@@ -24,7 +24,6 @@ import (
 	"io"
 	"math"
 	"sync"
-	"unsafe"
 
 	"go.uber.org/thriftrw/protocol/stream"
 )
@@ -103,16 +102,6 @@ func (sw *StreamWriter) WriteInt64(i int64) error {
 	bs := sw.buffer[0:8]
 	bigEndian.PutUint64(bs, uint64(i))
 	return sw.write(bs)
-}
-
-// WriteString encodes a string
-func (sw *StreamWriter) WriteString(s string) error {
-	if err := sw.WriteInt32(int32(len(s))); err != nil {
-		return err
-	}
-
-	b := unsafe.Slice(unsafe.StringData(s), len(s))
-	return sw.write(b)
 }
 
 // WriteDouble encodes a double

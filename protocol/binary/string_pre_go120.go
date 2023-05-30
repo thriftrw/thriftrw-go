@@ -18,33 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+//go:build !go1.20
+// +build !go1.20
+
 package binary
 
-import (
-	"bytes"
-	"io"
-	"testing"
+import "io"
 
-	"github.com/stretchr/testify/require"
-)
+// ReadString reads a Thrift encoded string.
+func (sr *StreamReader) ReadString() (string, error) {
+	bs, err := sr.ReadBinary()
+	return string(bs), err
+}
 
-func BenchmarkReadString(b *testing.B) {
-	var streamBuff bytes.Buffer
-
-	// Encode with Streaming protocol
-	w := NewStreamWriter(&streamBuff)
-	require.NoError(b, w.WriteString("the quick brown fox jumps over the lazy dog"), "WriteString")
-	require.NoError(b, w.Close(), "StreamWriter Close")
-
-	encoded := streamBuff.Bytes()
-
-	enc := bytes.NewReader(encoded)
-	sr := NewStreamReader(enc)
-	defer sr.Close()
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		sr.ReadString()
-		enc.Seek(0, io.SeekStart)
+// WriteString encodes a string
+func (sw *StreamWriter) WriteString(s string) error {
+	if err := sw.WriteInt32(int32(len(s))); err != nil {
+		return err
 	}
+
+	_, err := io.WriteString(sw.writer, s)
+	return err
 }
