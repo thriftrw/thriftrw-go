@@ -24,6 +24,8 @@ import (
 	"bytes"
 	"io"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func BenchmarkReadString(b *testing.B) {
@@ -31,24 +33,18 @@ func BenchmarkReadString(b *testing.B) {
 
 	// Encode with Streaming protocol
 	w := NewStreamWriter(&streamBuff)
-	w.WriteString("the quick brown fox jumps over the lazy dog")
-	w.Close()
+	require.NoError(b, w.WriteString("the quick brown fox jumps over the lazy dog"), "WriteString")
+	require.NoError(b, w.Close(), "StreamWriter Close")
 
 	encoded := streamBuff.Bytes()
 
-	sr := new(StreamReader)
 	enc := bytes.NewReader(encoded)
+	sr := NewStreamReader(enc)
+	defer sr.Close()
 
 	b.ResetTimer()
-
 	for i:= 0; i<b.N; i++ {
-		resetStreamReader(sr, enc)
 		sr.ReadString()
 		enc.Seek(0, io.SeekStart)
 	}
-
-}
-
-func resetStreamReader(sr *StreamReader, r io.Reader) {
-	sr.reader = r
 }
