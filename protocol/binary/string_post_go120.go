@@ -28,6 +28,8 @@ import "unsafe"
 // ReadString reads a Thrift encoded string.
 func (sr *StreamReader) ReadString() (string, error) {
 	bs, err := sr.ReadBinary()
+	// It is safe to use "unsafe" here because there are no
+	// mutable references to bs.
 	return unsafe.String(unsafe.SliceData(bs), len(bs)), err
 }
 
