@@ -568,7 +568,6 @@ type limitWriter struct {
 var errWriteLimitReached = errors.New("write limit reached")
 
 func (lw *limitWriter) Write(p []byte) (int, error) {
-	fmt.Printf("[limitWriter] write %v bytes\n", len(p))
 	n := copy(lw.b, p)
 	lw.b = lw.b[n:]
 	if n < len(p) {
