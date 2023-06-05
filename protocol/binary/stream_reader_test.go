@@ -33,8 +33,8 @@ func BenchmarkReadString(b *testing.B) {
 
 	// Encode with Streaming protocol
 	w := NewStreamWriter(&streamBuff)
-	require.NoError(b, w.WriteString("the quick brown fox jumps over the lazy dog"), "WriteString")
-	require.NoError(b, w.Close(), "StreamWriter Close")
+	require.NoError(b, w.WriteString("the quick brown fox jumps over the lazy dog"))
+	require.NoError(b, w.Close())
 
 	encoded := streamBuff.Bytes()
 
