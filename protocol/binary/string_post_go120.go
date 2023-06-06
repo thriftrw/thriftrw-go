@@ -38,7 +38,11 @@ func (sw *StreamWriter) WriteString(s string) error {
 	if err := sw.WriteInt32(int32(len(s))); err != nil {
 		return err
 	}
-
+	// It is safe to use "unsafe" here because there are no
+	// mutable references to the byte slice b.
+	// sw.write() delegates to the underlying io.Writer,
+	// and according to the its documentation, "Write must
+	// not modify the slice data, even temporarily."
 	b := unsafe.Slice(unsafe.StringData(s), len(s))
 	return sw.write(b)
 }
