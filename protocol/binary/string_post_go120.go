@@ -41,7 +41,7 @@ func (sw *StreamWriter) WriteString(s string) error {
 	// It is safe to use "unsafe" here because there are no
 	// mutable references to the byte slice b.
 	// sw.write() delegates to the underlying io.Writer,
-	// and according to the its documentation, "Write must
+	// and according to its documentation, "Write must
 	// not modify the slice data, even temporarily."
 	b := unsafe.Slice(unsafe.StringData(s), len(s))
 	return sw.write(b)
