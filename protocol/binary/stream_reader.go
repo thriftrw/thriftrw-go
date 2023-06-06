@@ -181,12 +181,6 @@ func (sr *StreamReader) ReadInt64() (int64, error) {
 	return int64(bigEndian.Uint64(bs)), err
 }
 
-// ReadString reads a Thrift encoded string.
-func (sr *StreamReader) ReadString() (string, error) {
-	bs, err := sr.ReadBinary()
-	return string(bs), err
-}
-
 // ReadDouble reads a Thrift encoded double, returning a float64.
 func (sr *StreamReader) ReadDouble() (float64, error) {
 	val, err := sr.ReadInt64()

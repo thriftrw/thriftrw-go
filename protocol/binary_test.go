@@ -23,6 +23,7 @@ package protocol
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -556,6 +557,65 @@ func TestBinaryEOFFailure(t *testing.T) {
 			_, err := reader.ReadBinary()
 			require.Error(t, err)
 			assert.Equal(t, io.ErrUnexpectedEOF, err)
+		})
+	}
+}
+
+type limitWriter struct {
+	b []byte
+}
+
+var errWriteLimitReached = errors.New("write limit reached")
+
+func (lw *limitWriter) Write(p []byte) (int, error) {
+	n := copy(lw.b, p)
+	lw.b = lw.b[n:]
+	if n < len(p) {
+		return n, errWriteLimitReached
+	}
+	return n, nil
+}
+
+func TestStringEncodeFailure(t *testing.T) {
+	// WriteString("hello") requires 9 bytes
+	// - four bytes for length as int32, and
+	// - five bytes for "hello"
+
+	testCases := []struct {
+		msg     string
+		in      string
+		len     int
+		wantErr error
+	}{
+		{
+			msg:     "int_write_failure",
+			in:      "hello",
+			len:     3,
+			wantErr: errWriteLimitReached,
+		},
+		{
+			msg:     "bytes_write_failure",
+			in:      "hello",
+			len:     8,
+			wantErr: errWriteLimitReached,
+		},
+		{
+			msg: "no_failure",
+			in:  "hello",
+			len: 9,
+		},
+	}
+	for _, tt := range testCases {
+		t.Run(tt.msg, func(t *testing.T) {
+			bw := &limitWriter{b: make([]byte, tt.len)}
+			sw := binary.NewStreamWriter(bw)
+			err := sw.WriteString(tt.in)
+			if tt.wantErr != nil {
+				require.Error(t, err)
+				assert.Equal(t, tt.wantErr, err)
+			} else {
+				require.NoError(t, err)
+			}
 		})
 	}
 }
