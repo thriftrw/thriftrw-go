@@ -18,24 +18,33 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package ast provides types and intefaces representing the abstract syntax
-// tree for a single .thrift file.
-//
-// # Docstrings
-//
-// Types which have a Doc field support parsing docstrings in the form,
-// "/** ... */". For example, given the following,
-//
-//	/**
-//	 * Name of the user who composed this message.
-//	 *
-//	 * If unset, the comment was posted by an anonymous user.
-//	 */
-//	1: optional string author
-//
-// The Doc of the parsed Field will be,
-//
-//	Name of the user who composed this message.
-//
-//	If unset, the comment was posted by an anonymous user.
-package ast
+package binary
+
+import (
+	"bytes"
+	"io"
+	"testing"
+
+	"github.com/stretchr/testify/require"
+)
+
+func BenchmarkReadString(b *testing.B) {
+	var streamBuff bytes.Buffer
+
+	// Encode with Streaming protocol
+	w := NewStreamWriter(&streamBuff)
+	require.NoError(b, w.WriteString("the quick brown fox jumps over the lazy dog"))
+	require.NoError(b, w.Close())
+
+	encoded := streamBuff.Bytes()
+
+	enc := bytes.NewReader(encoded)
+	sr := NewStreamReader(enc)
+	defer sr.Close()
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		sr.ReadString()
+		enc.Seek(0, io.SeekStart)
+	}
+}

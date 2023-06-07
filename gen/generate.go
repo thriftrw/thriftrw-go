@@ -23,7 +23,6 @@ package gen
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -172,7 +171,7 @@ func Generate(m *compile.Module, o *Options) error {
 			return fmt.Errorf("could not create directory %q: %v", directory, err)
 		}
 
-		if err := ioutil.WriteFile(fullPath, contents, 0644); err != nil {
+		if err := os.WriteFile(fullPath, contents, 0644); err != nil {
 			return fmt.Errorf("failed to write %q: %v", fullPath, err)
 		}
 	}

@@ -397,14 +397,14 @@ func (g *generator) declare(ignoreConflicts bool, s string, data interface{}, op
 //
 // For example,
 //
-// 	g.DeclareFromTemplate(
-// 		'type <.Name> int32',
-// 		struct{Name string}{Name: "myType"}
-// 	)
+//	g.DeclareFromTemplate(
+//		'type <.Name> int32',
+//		struct{Name string}{Name: "myType"}
+//	)
 //
 // Will generate,
 //
-// 	type myType int32
+//	type myType int32
 //
 // The following functions are available to templates:
 //
@@ -426,8 +426,8 @@ func (g *generator) declare(ignoreConflicts bool, s string, data interface{}, op
 // the template to refer to that imported module. This helps avoid naming
 // conflicts with imports.
 //
-// 	<$fmt := import "fmt">
-// 	<$fmt>.Println("hello world")
+//	<$fmt := import "fmt">
+//	<$fmt>.Println("hello world")
 //
 // isHashable(TypeSpec): Returns true if the given TypeSpec is for a type that
 // is hashable.
@@ -440,7 +440,7 @@ func (g *generator) declare(ignoreConflicts bool, s string, data interface{}, op
 // newVar(s): Gets a new name that the template can use for a variable without
 // worrying about shadowing any globals. Prefers the given string.
 //
-// 	<$x := newVar "x">
+//	<$x := newVar "x">
 //
 // toWire(TypeSpec, v): Returns an expression of type (Value, error) that
 // contains the wire representation of the item "v" of type TypeSpec.
@@ -458,28 +458,28 @@ func (g *generator) declare(ignoreConflicts bool, s string, data interface{}, op
 // typeReference(TypeSpec): Takes any TypeSpec. Returns a string representing
 // a reference to that type.
 //
-// 	<typeReference $someType>
+//	<typeReference $someType>
 //
 // typeReferencePtr(TypeSpec): Takes any TypeSpec. Returns a string
 // representing a reference to a pointer of that type, provided that the type
 // itself is not a reference type.
 //
-// 	<typeReferencePtr $someType>
+//	<typeReferencePtr $someType>
 //
 // equals(TypeSpec, lhs, rhs): Returns an expression of type bool that
 // compares lhs and rhs of given TypeSpec for equality.
 //
-//  <equals $someType $lhs $rhs>
+//	<equals $someType $lhs $rhs>
 //
 // equalsPtr(TypeSpec, lhs, rhs):  Returns an expression of type bool that
 // compares reference to a value of the given type for equality.
 //
-//  <equalsPtr $someType $lhs $rhs>
+//	<equalsPtr $someType $lhs $rhs>
 //
 // formatDoc(string): Formats a docblock. Generates a trailing newline so use
 // this NEXT to the thing being documented.
 //
-//   <formatDoc .Doc>type Foo
+//	<formatDoc .Doc>type Foo
 func (g *generator) DeclareFromTemplate(s string, data interface{}, opts ...TemplateOption) error {
 	return g.declare(false, s, data, opts...)
 }

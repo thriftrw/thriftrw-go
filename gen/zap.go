@@ -30,10 +30,10 @@ import (
 // Fields of Thrift structs will use this annotation to opt-out of being logged
 // when that struct is logged. i.e.
 //
-// 	struct ZapOptOutStruct {
-// 		1: required string name
-// 		2: required string optout (go.nolog)
-// 	}
+//	struct ZapOptOutStruct {
+//		1: required string name
+//		2: required string optout (go.nolog)
+//	}
 //
 // The above struct will be logged without the optout string.
 const NoZapLabel = "go.nolog"
@@ -114,9 +114,8 @@ func (z *zapGenerator) zapTypedefGenerateMarshaler(g Generator, spec *compile.Ty
 //
 // This should be used in conjunction with zapEncoder:
 //
-//   v := ...
-//   enc.Add<zapEncoder .Type>("foo", <zapMarshaler .Type "v">)
-//
+//	v := ...
+//	enc.Add<zapEncoder .Type>("foo", <zapMarshaler .Type "v">)
 func (z *zapGenerator) zapMarshaler(g Generator, spec compile.TypeSpec, fieldValue string) (string, error) {
 	// For typedefs, cast to the root type and rely on that functionality if the
 	// typedef doesn't have generated Zap marshal methods.

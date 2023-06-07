@@ -23,7 +23,6 @@ package binary
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"math"
 	"sync"
 
@@ -128,7 +127,7 @@ func (sr *StreamReader) discardSeek(n int64) error {
 }
 
 func (sr *StreamReader) discardStream(n int64) error {
-	_, err := io.CopyN(ioutil.Discard, sr.reader, n)
+	_, err := io.CopyN(io.Discard, sr.reader, n)
 	if err == io.EOF {
 		// All EOFs are unexpected when streaming
 		err = io.ErrUnexpectedEOF
@@ -180,12 +179,6 @@ func (sr *StreamReader) ReadInt64() (int64, error) {
 	bs := sr.buffer[0:8]
 	_, err := sr.read(bs)
 	return int64(bigEndian.Uint64(bs)), err
-}
-
-// ReadString reads a Thrift encoded string.
-func (sr *StreamReader) ReadString() (string, error) {
-	bs, err := sr.ReadBinary()
-	return string(bs), err
 }
 
 // ReadDouble reads a Thrift encoded double, returning a float64.

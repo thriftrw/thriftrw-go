@@ -43,8 +43,8 @@ type namespace struct {
 
 // newNamespace instantiates a new namespace.
 //
-// 	ns := newNamespace(caseSensitive)
-// 	ns.claim("foo")
+//	ns := newNamespace(caseSensitive)
+//	ns.claim("foo")
 func newNamespace(t namespaceType) namespace {
 	return namespace{
 		transform: t,

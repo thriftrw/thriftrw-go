@@ -24,7 +24,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -51,7 +50,7 @@ func testdata(t *testing.T, paths ...string) string {
 }
 
 func TestGenerateWithRelativePaths(t *testing.T) {
-	outputDir, err := ioutil.TempDir("", "thriftrw-generate-test")
+	outputDir, err := os.MkdirTemp("", "thriftrw-generate-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(outputDir)
 
@@ -83,7 +82,7 @@ func TestGenerateWithRelativePaths(t *testing.T) {
 }
 
 func TestGenerateWithHyphenPaths(t *testing.T) {
-	outputDir, err := ioutil.TempDir("", "thriftrw-generate-test")
+	outputDir, err := os.MkdirTemp("", "thriftrw-generate-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(outputDir)
 
@@ -311,7 +310,7 @@ func TestGenerate(t *testing.T) {
 			mockCtrl := gomock.NewController(t)
 			defer mockCtrl.Finish()
 
-			outputDir, err := ioutil.TempDir(os.TempDir(), "test-generate-recurse")
+			outputDir, err := os.MkdirTemp(os.TempDir(), "test-generate-recurse")
 			require.NoError(t, err)
 			defer os.RemoveAll(outputDir)
 

@@ -104,16 +104,6 @@ func (sw *StreamWriter) WriteInt64(i int64) error {
 	return sw.write(bs)
 }
 
-// WriteString encodes a string
-func (sw *StreamWriter) WriteString(s string) error {
-	if err := sw.WriteInt32(int32(len(s))); err != nil {
-		return err
-	}
-
-	_, err := io.WriteString(sw.writer, s)
-	return err
-}
-
 // WriteDouble encodes a double
 func (sw *StreamWriter) WriteDouble(d float64) error {
 	value := math.Float64bits(d)

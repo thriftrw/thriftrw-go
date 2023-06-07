@@ -60,9 +60,9 @@ type Plugin struct {
 // Main serves the given plugin. It is the entry point to the plugin system.
 // User-defined plugins should call Main with their main function.
 //
-// 	func main() {
-// 		plugin.Main(myPlugin)
-// 	}
+//	func main() {
+//		plugin.Main(myPlugin)
+//	}
 func Main(p *Plugin) {
 	if p.Name == "" {
 		panic("a plugin name must be provided")

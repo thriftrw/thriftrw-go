@@ -21,7 +21,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -33,11 +32,11 @@ import (
 )
 
 func TestDeterminePackagePrefix(t *testing.T) {
-	gopath, err := ioutil.TempDir("", "thriftrw-main-test")
+	gopath, err := os.MkdirTemp("", "thriftrw-main-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(gopath)
 
-	gopath2, err := ioutil.TempDir("", "thriftrw-main-test")
+	gopath2, err := os.MkdirTemp("", "thriftrw-main-test")
 	require.NoError(t, err)
 	defer os.RemoveAll(gopath2)
 
