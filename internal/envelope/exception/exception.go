@@ -216,12 +216,12 @@ func (v ExceptionType) ToWire() (wire.Value, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TI32)
 //	if err != nil {
-//	  return ExceptionType(0), err
+//	    return ExceptionType(0), err
 //	}
 //
 //	var v ExceptionType
 //	if err := v.FromWire(x); err != nil {
-//	  return ExceptionType(0), err
+//	    return ExceptionType(0), err
 //	}
 //	return v, nil
 func (v *ExceptionType) FromWire(w wire.Value) error {
@@ -235,7 +235,7 @@ func (v *ExceptionType) FromWire(w wire.Value) error {
 //
 //	var v ExceptionType
 //	if err := v.Decode(sReader); err != nil {
-//	  return ExceptionType(0), err
+//	    return ExceptionType(0), err
 //	}
 //	return v, nil
 func (v *ExceptionType) Decode(sr stream.Reader) error {
@@ -367,11 +367,11 @@ type TApplicationException struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *TApplicationException) ToWire() (wire.Value, error) {
 	var (
@@ -416,12 +416,12 @@ func _ExceptionType_Read(w wire.Value) (ExceptionType, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v TApplicationException
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *TApplicationException) FromWire(w wire.Value) error {

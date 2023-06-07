@@ -26,14 +26,14 @@ type DocumentStruct struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *DocumentStruct) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -68,16 +68,16 @@ func _Second_Read(w wire.Value) (*non_hyphenated.Second, error) {
 // An error is returned if we were unable to build a DocumentStruct struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v DocumentStruct
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v DocumentStruct
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *DocumentStruct) FromWire(w wire.Value) error {
 	var err error
 

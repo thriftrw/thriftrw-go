@@ -27,14 +27,14 @@ type DoesNotExistException struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -68,16 +68,16 @@ func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a DoesNotExistException struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v DoesNotExistException
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v DoesNotExistException
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *DoesNotExistException) FromWire(w wire.Value) error {
 	var err error
 
@@ -316,14 +316,14 @@ type DoesNotExistException2 struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *DoesNotExistException2) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -357,16 +357,16 @@ func (v *DoesNotExistException2) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a DoesNotExistException2 struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v DoesNotExistException2
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v DoesNotExistException2
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *DoesNotExistException2) FromWire(w wire.Value) error {
 	var err error
 
@@ -592,14 +592,14 @@ type EmptyException struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *EmptyException) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -616,16 +616,16 @@ func (v *EmptyException) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a EmptyException struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v EmptyException
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v EmptyException
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *EmptyException) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {

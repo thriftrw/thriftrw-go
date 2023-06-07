@@ -36,8 +36,8 @@ func EnumDefault_Values() []EnumDefault {
 // UnmarshalText tries to decode EnumDefault from a byte slice
 // containing its name.
 //
-//   var v EnumDefault
-//   err := v.UnmarshalText([]byte("Foo"))
+//	var v EnumDefault
+//	err := v.UnmarshalText([]byte("Foo"))
 func (v *EnumDefault) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "Foo":
@@ -84,10 +84,10 @@ func (v EnumDefault) Ptr() *EnumDefault {
 
 // Encode encodes EnumDefault directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v EnumDefault
-//   return v.Encode(sWriter)
+//	var v EnumDefault
+//	return v.Encode(sWriter)
 func (v EnumDefault) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -104,16 +104,16 @@ func (v EnumDefault) ToWire() (wire.Value, error) {
 // FromWire deserializes EnumDefault from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return EnumDefault(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return EnumDefault(0), err
+//	}
 //
-//   var v EnumDefault
-//   if err := v.FromWire(x); err != nil {
-//     return EnumDefault(0), err
-//   }
-//   return v, nil
+//	var v EnumDefault
+//	if err := v.FromWire(x); err != nil {
+//	    return EnumDefault(0), err
+//	}
+//	return v, nil
 func (v *EnumDefault) FromWire(w wire.Value) error {
 	*v = (EnumDefault)(w.GetI32())
 	return nil
@@ -121,13 +121,13 @@ func (v *EnumDefault) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded EnumDefault directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v EnumDefault
-//   if err := v.Decode(sReader); err != nil {
-//     return EnumDefault(0), err
-//   }
-//   return v, nil
+//	var v EnumDefault
+//	if err := v.Decode(sReader); err != nil {
+//	    return EnumDefault(0), err
+//	}
+//	return v, nil
 func (v *EnumDefault) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -319,14 +319,14 @@ func (_Map_I64_Double_MapItemList) Close() {}
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
 	var (
 		fields [11]wire.Field
@@ -493,16 +493,16 @@ func _Map_I64_Double_Read(m wire.MapItemList) (map[int64]float64, error) {
 // An error is returned if we were unable to build a PrimitiveRequiredStruct struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v PrimitiveRequiredStruct
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v PrimitiveRequiredStruct
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
 	var err error
 

@@ -30,14 +30,14 @@ type ConflictingNamesSetValueArgs struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *ConflictingNamesSetValueArgs) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -72,16 +72,16 @@ func (v *ConflictingNamesSetValueArgs) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a ConflictingNamesSetValueArgs struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v ConflictingNamesSetValueArgs
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v ConflictingNamesSetValueArgs
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *ConflictingNamesSetValueArgs) FromWire(w wire.Value) error {
 	var err error
 
@@ -300,14 +300,14 @@ type InternalError struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *InternalError) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -335,16 +335,16 @@ func (v *InternalError) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a InternalError struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v InternalError
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v InternalError
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *InternalError) FromWire(w wire.Value) error {
 	var err error
 
@@ -595,14 +595,14 @@ type Cache_Clear_Args struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *Cache_Clear_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -619,16 +619,16 @@ func (v *Cache_Clear_Args) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a Cache_Clear_Args struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v Cache_Clear_Args
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v Cache_Clear_Args
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *Cache_Clear_Args) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {
@@ -772,14 +772,14 @@ type Cache_ClearAfter_Args struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *Cache_ClearAfter_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -807,16 +807,16 @@ func (v *Cache_ClearAfter_Args) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a Cache_ClearAfter_Args struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v Cache_ClearAfter_Args
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v Cache_ClearAfter_Args
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *Cache_ClearAfter_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -1032,14 +1032,14 @@ type ConflictingNames_SetValue_Args struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *ConflictingNames_SetValue_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -1073,16 +1073,16 @@ func _ConflictingNamesSetValueArgs_Read(w wire.Value) (*ConflictingNamesSetValue
 // An error is returned if we were unable to build a ConflictingNames_SetValue_Args struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v ConflictingNames_SetValue_Args
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v ConflictingNames_SetValue_Args
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *ConflictingNames_SetValue_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -1342,14 +1342,14 @@ type ConflictingNames_SetValue_Result struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *ConflictingNames_SetValue_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -1366,16 +1366,16 @@ func (v *ConflictingNames_SetValue_Result) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a ConflictingNames_SetValue_Result struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v ConflictingNames_SetValue_Result
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v ConflictingNames_SetValue_Result
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *ConflictingNames_SetValue_Result) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {
@@ -1503,14 +1503,14 @@ type KeyValue_DeleteValue_Args struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_DeleteValue_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -1544,16 +1544,16 @@ func _Key_Read(w wire.Value) (Key, error) {
 // An error is returned if we were unable to build a KeyValue_DeleteValue_Args struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_DeleteValue_Args
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_DeleteValue_Args
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_DeleteValue_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -1855,14 +1855,14 @@ type KeyValue_DeleteValue_Result struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_DeleteValue_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -1914,16 +1914,16 @@ func _InternalError_Read(w wire.Value) (*InternalError, error) {
 // An error is returned if we were unable to build a KeyValue_DeleteValue_Result struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_DeleteValue_Result
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_DeleteValue_Result
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_DeleteValue_Result) FromWire(w wire.Value) error {
 	var err error
 
@@ -2226,14 +2226,14 @@ func (_List_Key_ValueList) Close() {}
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_GetManyValues_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -2279,16 +2279,16 @@ func _List_Key_Read(l wire.ValueList) ([]Key, error) {
 // An error is returned if we were unable to build a KeyValue_GetManyValues_Args struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_GetManyValues_Args
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_GetManyValues_Args
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_GetManyValues_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -2670,14 +2670,14 @@ func (_List_ArbitraryValue_ValueList) Close() {}
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_GetManyValues_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -2741,16 +2741,16 @@ func _List_ArbitraryValue_Read(l wire.ValueList) ([]*unions.ArbitraryValue, erro
 // An error is returned if we were unable to build a KeyValue_GetManyValues_Result struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_GetManyValues_Result
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_GetManyValues_Result
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_GetManyValues_Result) FromWire(w wire.Value) error {
 	var err error
 
@@ -3098,14 +3098,14 @@ type KeyValue_GetValue_Args struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_GetValue_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -3133,16 +3133,16 @@ func (v *KeyValue_GetValue_Args) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a KeyValue_GetValue_Args struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_GetValue_Args
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_GetValue_Args
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_GetValue_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -3425,14 +3425,14 @@ type KeyValue_GetValue_Result struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_GetValue_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -3472,16 +3472,16 @@ func (v *KeyValue_GetValue_Result) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a KeyValue_GetValue_Result struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_GetValue_Result
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_GetValue_Result
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_GetValue_Result) FromWire(w wire.Value) error {
 	var err error
 
@@ -3747,14 +3747,14 @@ type KeyValue_SetValue_Args struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_SetValue_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -3790,16 +3790,16 @@ func (v *KeyValue_SetValue_Args) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a KeyValue_SetValue_Args struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_SetValue_Args
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_SetValue_Args
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_SetValue_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -4111,14 +4111,14 @@ type KeyValue_SetValue_Result struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_SetValue_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -4135,16 +4135,16 @@ func (v *KeyValue_SetValue_Result) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a KeyValue_SetValue_Result struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_SetValue_Result
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_SetValue_Result
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_SetValue_Result) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {
@@ -4277,14 +4277,14 @@ type KeyValue_SetValueV2_Args struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_SetValueV2_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -4319,16 +4319,16 @@ func (v *KeyValue_SetValueV2_Args) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a KeyValue_SetValueV2_Args struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_SetValueV2_Args
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_SetValueV2_Args
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_SetValueV2_Args) FromWire(w wire.Value) error {
 	var err error
 
@@ -4642,14 +4642,14 @@ type KeyValue_SetValueV2_Result struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_SetValueV2_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -4666,16 +4666,16 @@ func (v *KeyValue_SetValueV2_Result) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a KeyValue_SetValueV2_Result struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_SetValueV2_Result
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_SetValueV2_Result
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_SetValueV2_Result) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {
@@ -4802,14 +4802,14 @@ type KeyValue_Size_Args struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_Size_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -4826,16 +4826,16 @@ func (v *KeyValue_Size_Args) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a KeyValue_Size_Args struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_Size_Args
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_Size_Args
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_Size_Args) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {
@@ -5041,14 +5041,14 @@ type KeyValue_Size_Result struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *KeyValue_Size_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -5080,16 +5080,16 @@ func (v *KeyValue_Size_Result) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a KeyValue_Size_Result struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v KeyValue_Size_Result
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v KeyValue_Size_Result
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *KeyValue_Size_Result) FromWire(w wire.Value) error {
 	var err error
 
@@ -5297,14 +5297,14 @@ type NonStandardServiceName_NonStandardFunctionName_Args struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *NonStandardServiceName_NonStandardFunctionName_Args) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -5321,16 +5321,16 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) ToWire() (wire.Val
 // An error is returned if we were unable to build a NonStandardServiceName_NonStandardFunctionName_Args struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v NonStandardServiceName_NonStandardFunctionName_Args
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v NonStandardServiceName_NonStandardFunctionName_Args
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *NonStandardServiceName_NonStandardFunctionName_Args) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {
@@ -5526,14 +5526,14 @@ type NonStandardServiceName_NonStandardFunctionName_Result struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) ToWire() (wire.Value, error) {
 	var (
 		fields [0]wire.Field
@@ -5550,16 +5550,16 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) ToWire() (wire.V
 // An error is returned if we were unable to build a NonStandardServiceName_NonStandardFunctionName_Result struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v NonStandardServiceName_NonStandardFunctionName_Result
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v NonStandardServiceName_NonStandardFunctionName_Result
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) FromWire(w wire.Value) error {
 
 	for _, field := range w.GetStruct().Fields {

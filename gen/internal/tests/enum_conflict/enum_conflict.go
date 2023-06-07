@@ -40,8 +40,8 @@ func RecordType_Values() []RecordType {
 // UnmarshalText tries to decode RecordType from a byte slice
 // containing its name.
 //
-//   var v RecordType
-//   err := v.UnmarshalText([]byte("Name"))
+//	var v RecordType
+//	err := v.UnmarshalText([]byte("Name"))
 func (v *RecordType) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "Name":
@@ -98,10 +98,10 @@ func (v RecordType) Ptr() *RecordType {
 
 // Encode encodes RecordType directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v RecordType
-//   return v.Encode(sWriter)
+//	var v RecordType
+//	return v.Encode(sWriter)
 func (v RecordType) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -118,16 +118,16 @@ func (v RecordType) ToWire() (wire.Value, error) {
 // FromWire deserializes RecordType from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return RecordType(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return RecordType(0), err
+//	}
 //
-//   var v RecordType
-//   if err := v.FromWire(x); err != nil {
-//     return RecordType(0), err
-//   }
-//   return v, nil
+//	var v RecordType
+//	if err := v.FromWire(x); err != nil {
+//	    return RecordType(0), err
+//	}
+//	return v, nil
 func (v *RecordType) FromWire(w wire.Value) error {
 	*v = (RecordType)(w.GetI32())
 	return nil
@@ -135,13 +135,13 @@ func (v *RecordType) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded RecordType directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v RecordType
-//   if err := v.Decode(sReader); err != nil {
-//     return RecordType(0), err
-//   }
-//   return v, nil
+//	var v RecordType
+//	if err := v.Decode(sReader); err != nil {
+//	    return RecordType(0), err
+//	}
+//	return v, nil
 func (v *RecordType) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -250,14 +250,14 @@ func Default_Records() *Records {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *Records) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -313,16 +313,16 @@ func _RecordType_1_Read(w wire.Value) (enums.RecordType, error) {
 // An error is returned if we were unable to build a Records struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v Records
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v Records
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *Records) FromWire(w wire.Value) error {
 	var err error
 
