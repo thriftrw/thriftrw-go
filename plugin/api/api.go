@@ -122,11 +122,11 @@ func (_Map_String_String_MapItemList) Close() {}
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *Argument) ToWire() (wire.Value, error) {
 	var (
@@ -206,12 +206,12 @@ func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v Argument
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *Argument) FromWire(w wire.Value) error {
@@ -664,12 +664,12 @@ func (v Feature) ToWire() (wire.Value, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TI32)
 //	if err != nil {
-//	  return Feature(0), err
+//	    return Feature(0), err
 //	}
 //
 //	var v Feature
 //	if err := v.FromWire(x); err != nil {
-//	  return Feature(0), err
+//	    return Feature(0), err
 //	}
 //	return v, nil
 func (v *Feature) FromWire(w wire.Value) error {
@@ -683,7 +683,7 @@ func (v *Feature) FromWire(w wire.Value) error {
 //
 //	var v Feature
 //	if err := v.Decode(sReader); err != nil {
-//	  return Feature(0), err
+//	    return Feature(0), err
 //	}
 //	return v, nil
 func (v *Feature) Decode(sr stream.Reader) error {
@@ -834,11 +834,11 @@ func (_List_Argument_ValueList) Close() {}
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *Function) ToWire() (wire.Value, error) {
 	var (
@@ -937,12 +937,12 @@ func _List_Argument_Read(l wire.ValueList) ([]*Argument, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v Function
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *Function) FromWire(w wire.Value) error {
@@ -1672,11 +1672,11 @@ func (_List_ModuleID_ValueList) Close() {}
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *GenerateServiceRequest) ToWire() (wire.Value, error) {
 	var (
@@ -1861,12 +1861,12 @@ func _List_ModuleID_Read(l wire.ValueList) ([]ModuleID, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v GenerateServiceRequest
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *GenerateServiceRequest) FromWire(w wire.Value) error {
@@ -2732,11 +2732,11 @@ func (_Map_String_Binary_MapItemList) Close() {}
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *GenerateServiceResponse) ToWire() (wire.Value, error) {
 	var (
@@ -2795,12 +2795,12 @@ func _Map_String_Binary_Read(m wire.MapItemList) (map[string][]byte, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v GenerateServiceResponse
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *GenerateServiceResponse) FromWire(w wire.Value) error {
@@ -3061,11 +3061,11 @@ type HandshakeRequest struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *HandshakeRequest) ToWire() (wire.Value, error) {
 	var (
@@ -3085,12 +3085,12 @@ func (v *HandshakeRequest) ToWire() (wire.Value, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v HandshakeRequest
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *HandshakeRequest) FromWire(w wire.Value) error {
@@ -3244,11 +3244,11 @@ func (_List_Feature_ValueList) Close() {}
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *HandshakeResponse) ToWire() (wire.Value, error) {
 	var (
@@ -3323,12 +3323,12 @@ func _List_Feature_Read(l wire.ValueList) ([]Feature, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v HandshakeResponse
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *HandshakeResponse) FromWire(w wire.Value) error {
@@ -3754,11 +3754,11 @@ type Module struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *Module) ToWire() (wire.Value, error) {
 	var (
@@ -3801,12 +3801,12 @@ func (v *Module) ToWire() (wire.Value, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v Module
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *Module) FromWire(w wire.Value) error {
@@ -4173,11 +4173,11 @@ func (_List_Function_ValueList) Close() {}
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *Service) ToWire() (wire.Value, error) {
 	var (
@@ -4267,12 +4267,12 @@ func _List_Function_Read(l wire.ValueList) ([]*Function, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v Service
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *Service) FromWire(w wire.Value) error {
@@ -4991,12 +4991,12 @@ func (v SimpleType) ToWire() (wire.Value, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TI32)
 //	if err != nil {
-//	  return SimpleType(0), err
+//	    return SimpleType(0), err
 //	}
 //
 //	var v SimpleType
 //	if err := v.FromWire(x); err != nil {
-//	  return SimpleType(0), err
+//	    return SimpleType(0), err
 //	}
 //	return v, nil
 func (v *SimpleType) FromWire(w wire.Value) error {
@@ -5010,7 +5010,7 @@ func (v *SimpleType) FromWire(w wire.Value) error {
 //
 //	var v SimpleType
 //	if err := v.Decode(sReader); err != nil {
-//	  return SimpleType(0), err
+//	    return SimpleType(0), err
 //	}
 //	return v, nil
 func (v *SimpleType) Decode(sr stream.Reader) error {
@@ -5150,11 +5150,11 @@ type Type struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *Type) ToWire() (wire.Value, error) {
 	var (
@@ -5247,12 +5247,12 @@ func _TypeReference_Read(w wire.Value) (*TypeReference, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v Type
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *Type) FromWire(w wire.Value) error {
@@ -5777,11 +5777,11 @@ type TypePair struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *TypePair) ToWire() (wire.Value, error) {
 	var (
@@ -5822,12 +5822,12 @@ func (v *TypePair) ToWire() (wire.Value, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v TypePair
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *TypePair) FromWire(w wire.Value) error {
@@ -6080,11 +6080,11 @@ type TypeReference struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *TypeReference) ToWire() (wire.Value, error) {
 	var (
@@ -6128,12 +6128,12 @@ func (v *TypeReference) ToWire() (wire.Value, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v TypeReference
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *TypeReference) FromWire(w wire.Value) error {
@@ -6412,11 +6412,11 @@ type Plugin_Goodbye_Args struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *Plugin_Goodbye_Args) ToWire() (wire.Value, error) {
 	var (
@@ -6436,12 +6436,12 @@ func (v *Plugin_Goodbye_Args) ToWire() (wire.Value, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v Plugin_Goodbye_Args
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *Plugin_Goodbye_Args) FromWire(w wire.Value) error {
@@ -6641,11 +6641,11 @@ type Plugin_Goodbye_Result struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *Plugin_Goodbye_Result) ToWire() (wire.Value, error) {
 	var (
@@ -6665,12 +6665,12 @@ func (v *Plugin_Goodbye_Result) ToWire() (wire.Value, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v Plugin_Goodbye_Result
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *Plugin_Goodbye_Result) FromWire(w wire.Value) error {
@@ -6802,11 +6802,11 @@ type Plugin_Handshake_Args struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *Plugin_Handshake_Args) ToWire() (wire.Value, error) {
 	var (
@@ -6843,12 +6843,12 @@ func _HandshakeRequest_Read(w wire.Value) (*HandshakeRequest, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v Plugin_Handshake_Args
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *Plugin_Handshake_Args) FromWire(w wire.Value) error {
@@ -7122,11 +7122,11 @@ type Plugin_Handshake_Result struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *Plugin_Handshake_Result) ToWire() (wire.Value, error) {
 	var (
@@ -7167,12 +7167,12 @@ func _HandshakeResponse_Read(w wire.Value) (*HandshakeResponse, error) {
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v Plugin_Handshake_Result
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *Plugin_Handshake_Result) FromWire(w wire.Value) error {
@@ -7387,11 +7387,11 @@ type ServiceGenerator_Generate_Args struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *ServiceGenerator_Generate_Args) ToWire() (wire.Value, error) {
 	var (
@@ -7428,12 +7428,12 @@ func _GenerateServiceRequest_Read(w wire.Value) (*GenerateServiceRequest, error)
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v ServiceGenerator_Generate_Args
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *ServiceGenerator_Generate_Args) FromWire(w wire.Value) error {
@@ -7707,11 +7707,11 @@ type ServiceGenerator_Generate_Result struct {
 //
 //	x, err := v.ToWire()
 //	if err != nil {
-//	  return err
+//		return err
 //	}
 //
 //	if err := binaryProtocol.Encode(x, writer); err != nil {
-//	  return err
+//		return err
 //	}
 func (v *ServiceGenerator_Generate_Result) ToWire() (wire.Value, error) {
 	var (
@@ -7752,12 +7752,12 @@ func _GenerateServiceResponse_Read(w wire.Value) (*GenerateServiceResponse, erro
 //
 //	x, err := binaryProtocol.Decode(reader, wire.TStruct)
 //	if err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //
 //	var v ServiceGenerator_Generate_Result
 //	if err := v.FromWire(x); err != nil {
-//	  return nil, err
+//		return nil, err
 //	}
 //	return &v, nil
 func (v *ServiceGenerator_Generate_Result) FromWire(w wire.Value) error {

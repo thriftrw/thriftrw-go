@@ -618,14 +618,14 @@ func (_Map_Set_I32_mapType_List_Double_MapItemList) Close() {}
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *ContainersOfContainers) ToWire() (wire.Value, error) {
 	var (
 		fields [9]wire.Field
@@ -1134,16 +1134,16 @@ func _Map_Set_I32_mapType_List_Double_Read(m wire.MapItemList) ([]struct {
 // An error is returned if we were unable to build a ContainersOfContainers struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v ContainersOfContainers
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v ContainersOfContainers
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *ContainersOfContainers) FromWire(w wire.Value) error {
 	var err error
 
@@ -3471,14 +3471,14 @@ func (_Map_EnumWithDuplicateValues_I32_MapItemList) Close() {}
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *EnumContainers) ToWire() (wire.Value, error) {
 	var (
 		fields [3]wire.Field
@@ -3605,16 +3605,16 @@ func _Map_EnumWithDuplicateValues_I32_Read(m wire.MapItemList) (map[enums.EnumWi
 // An error is returned if we were unable to build a EnumContainers struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v EnumContainers
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v EnumContainers
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *EnumContainers) FromWire(w wire.Value) error {
 	var err error
 
@@ -4203,14 +4203,14 @@ func (_List_RecordType_1_ValueList) Close() {}
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *ListOfConflictingEnums) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -4291,16 +4291,16 @@ func _List_RecordType_1_Read(l wire.ValueList) ([]enums.RecordType, error) {
 // An error is returned if we were unable to build a ListOfConflictingEnums struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v ListOfConflictingEnums
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v ListOfConflictingEnums
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *ListOfConflictingEnums) FromWire(w wire.Value) error {
 	var err error
 
@@ -4737,14 +4737,14 @@ func (_List_UUID_1_ValueList) Close() {}
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *ListOfConflictingUUIDs) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -4825,16 +4825,16 @@ func _List_UUID_1_Read(l wire.ValueList) ([]uuid_conflict.UUID, error) {
 // An error is returned if we were unable to build a ListOfConflictingUUIDs struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v ListOfConflictingUUIDs
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v ListOfConflictingUUIDs
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *ListOfConflictingUUIDs) FromWire(w wire.Value) error {
 	var err error
 
@@ -5218,14 +5218,14 @@ type ListOfOptionalPrimitives struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *ListOfOptionalPrimitives) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -5253,16 +5253,16 @@ func (v *ListOfOptionalPrimitives) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a ListOfOptionalPrimitives struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v ListOfOptionalPrimitives
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v ListOfOptionalPrimitives
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *ListOfOptionalPrimitives) FromWire(w wire.Value) error {
 	var err error
 
@@ -5424,14 +5424,14 @@ type ListOfRequiredPrimitives struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *ListOfRequiredPrimitives) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -5457,16 +5457,16 @@ func (v *ListOfRequiredPrimitives) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a ListOfRequiredPrimitives struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v ListOfRequiredPrimitives
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v ListOfRequiredPrimitives
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *ListOfRequiredPrimitives) FromWire(w wire.Value) error {
 	var err error
 
@@ -5718,14 +5718,14 @@ func (_Map_String_Binary_MapItemList) Close() {}
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *MapOfBinaryAndString) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -5826,16 +5826,16 @@ func _Map_String_Binary_Read(m wire.MapItemList) (map[string][]byte, error) {
 // An error is returned if we were unable to build a MapOfBinaryAndString struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v MapOfBinaryAndString
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v MapOfBinaryAndString
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *MapOfBinaryAndString) FromWire(w wire.Value) error {
 	var err error
 
@@ -6444,14 +6444,14 @@ func (_Map_String_Bool_MapItemList) Close() {}
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *PrimitiveContainers) ToWire() (wire.Value, error) {
 	var (
 		fields [6]wire.Field
@@ -6630,16 +6630,16 @@ func _Map_String_Bool_Read(m wire.MapItemList) (map[string]bool, error) {
 // An error is returned if we were unable to build a PrimitiveContainers struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v PrimitiveContainers
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v PrimitiveContainers
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 	var err error
 
@@ -7515,14 +7515,14 @@ func (_Map_I64_Double_MapItemList) Close() {}
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *PrimitiveContainersRequired) ToWire() (wire.Value, error) {
 	var (
 		fields [3]wire.Field
@@ -7594,16 +7594,16 @@ func _Map_I64_Double_Read(m wire.MapItemList) (map[int64]float64, error) {
 // An error is returned if we were unable to build a PrimitiveContainersRequired struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v PrimitiveContainersRequired
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v PrimitiveContainersRequired
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *PrimitiveContainersRequired) FromWire(w wire.Value) error {
 	var err error
 

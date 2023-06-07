@@ -37,8 +37,8 @@ func EnumMarshalStrict_Values() []EnumMarshalStrict {
 // UnmarshalText tries to decode EnumMarshalStrict from a byte slice
 // containing its name.
 //
-//   var v EnumMarshalStrict
-//   err := v.UnmarshalText([]byte("Foo"))
+//	var v EnumMarshalStrict
+//	err := v.UnmarshalText([]byte("Foo"))
 func (v *EnumMarshalStrict) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "Foo":
@@ -109,10 +109,10 @@ func (v EnumMarshalStrict) Ptr() *EnumMarshalStrict {
 
 // Encode encodes EnumMarshalStrict directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v EnumMarshalStrict
-//   return v.Encode(sWriter)
+//	var v EnumMarshalStrict
+//	return v.Encode(sWriter)
 func (v EnumMarshalStrict) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -129,16 +129,16 @@ func (v EnumMarshalStrict) ToWire() (wire.Value, error) {
 // FromWire deserializes EnumMarshalStrict from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return EnumMarshalStrict(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return EnumMarshalStrict(0), err
+//	}
 //
-//   var v EnumMarshalStrict
-//   if err := v.FromWire(x); err != nil {
-//     return EnumMarshalStrict(0), err
-//   }
-//   return v, nil
+//	var v EnumMarshalStrict
+//	if err := v.FromWire(x); err != nil {
+//	    return EnumMarshalStrict(0), err
+//	}
+//	return v, nil
 func (v *EnumMarshalStrict) FromWire(w wire.Value) error {
 	*v = (EnumMarshalStrict)(w.GetI32())
 	return nil
@@ -146,13 +146,13 @@ func (v *EnumMarshalStrict) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded EnumMarshalStrict directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v EnumMarshalStrict
-//   if err := v.Decode(sReader); err != nil {
-//     return EnumMarshalStrict(0), err
-//   }
-//   return v, nil
+//	var v EnumMarshalStrict
+//	if err := v.Decode(sReader); err != nil {
+//	    return EnumMarshalStrict(0), err
+//	}
+//	return v, nil
 func (v *EnumMarshalStrict) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {

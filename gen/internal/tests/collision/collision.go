@@ -36,14 +36,14 @@ type AccessorConflict struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *AccessorConflict) ToWire() (wire.Value, error) {
 	var (
 		fields [3]wire.Field
@@ -87,16 +87,16 @@ func (v *AccessorConflict) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a AccessorConflict struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v AccessorConflict
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v AccessorConflict
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *AccessorConflict) FromWire(w wire.Value) error {
 	var err error
 
@@ -393,14 +393,14 @@ type AccessorNoConflict struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *AccessorNoConflict) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -436,16 +436,16 @@ func (v *AccessorNoConflict) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a AccessorNoConflict struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v AccessorNoConflict
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v AccessorNoConflict
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *AccessorNoConflict) FromWire(w wire.Value) error {
 	var err error
 
@@ -728,8 +728,8 @@ func MyEnum_Values() []MyEnum {
 // UnmarshalText tries to decode MyEnum from a byte slice
 // containing its name.
 //
-//   var v MyEnum
-//   err := v.UnmarshalText([]byte("X"))
+//	var v MyEnum
+//	err := v.UnmarshalText([]byte("X"))
 func (v *MyEnum) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "X":
@@ -807,10 +807,10 @@ func (v MyEnum) Ptr() *MyEnum {
 
 // Encode encodes MyEnum directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v MyEnum
-//   return v.Encode(sWriter)
+//	var v MyEnum
+//	return v.Encode(sWriter)
 func (v MyEnum) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -827,16 +827,16 @@ func (v MyEnum) ToWire() (wire.Value, error) {
 // FromWire deserializes MyEnum from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return MyEnum(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return MyEnum(0), err
+//	}
 //
-//   var v MyEnum
-//   if err := v.FromWire(x); err != nil {
-//     return MyEnum(0), err
-//   }
-//   return v, nil
+//	var v MyEnum
+//	if err := v.FromWire(x); err != nil {
+//	    return MyEnum(0), err
+//	}
+//	return v, nil
 func (v *MyEnum) FromWire(w wire.Value) error {
 	*v = (MyEnum)(w.GetI32())
 	return nil
@@ -844,13 +844,13 @@ func (v *MyEnum) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded MyEnum directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v MyEnum
-//   if err := v.Decode(sReader); err != nil {
-//     return MyEnum(0), err
-//   }
-//   return v, nil
+//	var v MyEnum
+//	if err := v.Decode(sReader); err != nil {
+//	    return MyEnum(0), err
+//	}
+//	return v, nil
 func (v *MyEnum) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -1042,14 +1042,14 @@ func (_Map_String_String_MapItemList) Close() {}
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *PrimitiveContainers) ToWire() (wire.Value, error) {
 	var (
 		fields [3]wire.Field
@@ -1158,16 +1158,16 @@ func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 // An error is returned if we were unable to build a PrimitiveContainers struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v PrimitiveContainers
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v PrimitiveContainers
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *PrimitiveContainers) FromWire(w wire.Value) error {
 	var err error
 
@@ -1673,14 +1673,14 @@ type StructCollision struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *StructCollision) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -1713,16 +1713,16 @@ func (v *StructCollision) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a StructCollision struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v StructCollision
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v StructCollision
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *StructCollision) FromWire(w wire.Value) error {
 	var err error
 
@@ -1934,14 +1934,14 @@ type UnionCollision struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *UnionCollision) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -1981,16 +1981,16 @@ func (v *UnionCollision) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a UnionCollision struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v UnionCollision
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v UnionCollision
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *UnionCollision) FromWire(w wire.Value) error {
 	var err error
 
@@ -2256,14 +2256,14 @@ func Default_WithDefault() *WithDefault {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *WithDefault) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -2304,16 +2304,16 @@ func _StructCollision_Read(w wire.Value) (*StructCollision2, error) {
 // An error is returned if we were unable to build a WithDefault struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v WithDefault
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v WithDefault
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *WithDefault) FromWire(w wire.Value) error {
 	var err error
 
@@ -2563,8 +2563,8 @@ func MyEnum2_Values() []MyEnum2 {
 // UnmarshalText tries to decode MyEnum2 from a byte slice
 // containing its name.
 //
-//   var v MyEnum2
-//   err := v.UnmarshalText([]byte("X"))
+//	var v MyEnum2
+//	err := v.UnmarshalText([]byte("X"))
 func (v *MyEnum2) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "X":
@@ -2628,10 +2628,10 @@ func (v MyEnum2) Ptr() *MyEnum2 {
 
 // Encode encodes MyEnum2 directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v MyEnum2
-//   return v.Encode(sWriter)
+//	var v MyEnum2
+//	return v.Encode(sWriter)
 func (v MyEnum2) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -2648,16 +2648,16 @@ func (v MyEnum2) ToWire() (wire.Value, error) {
 // FromWire deserializes MyEnum2 from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return MyEnum2(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return MyEnum2(0), err
+//	}
 //
-//   var v MyEnum2
-//   if err := v.FromWire(x); err != nil {
-//     return MyEnum2(0), err
-//   }
-//   return v, nil
+//	var v MyEnum2
+//	if err := v.FromWire(x); err != nil {
+//	    return MyEnum2(0), err
+//	}
+//	return v, nil
 func (v *MyEnum2) FromWire(w wire.Value) error {
 	*v = (MyEnum2)(w.GetI32())
 	return nil
@@ -2665,13 +2665,13 @@ func (v *MyEnum2) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded MyEnum2 directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v MyEnum2
-//   if err := v.Decode(sReader); err != nil {
-//     return MyEnum2(0), err
-//   }
-//   return v, nil
+//	var v MyEnum2
+//	if err := v.Decode(sReader); err != nil {
+//	    return MyEnum2(0), err
+//	}
+//	return v, nil
 func (v *MyEnum2) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -2767,14 +2767,14 @@ type StructCollision2 struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *StructCollision2) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -2807,16 +2807,16 @@ func (v *StructCollision2) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a StructCollision2 struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v StructCollision2
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v StructCollision2
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *StructCollision2) FromWire(w wire.Value) error {
 	var err error
 
@@ -3028,14 +3028,14 @@ type UnionCollision2 struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *UnionCollision2) ToWire() (wire.Value, error) {
 	var (
 		fields [2]wire.Field
@@ -3075,16 +3075,16 @@ func (v *UnionCollision2) ToWire() (wire.Value, error) {
 // An error is returned if we were unable to build a UnionCollision2 struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v UnionCollision2
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v UnionCollision2
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *UnionCollision2) FromWire(w wire.Value) error {
 	var err error
 

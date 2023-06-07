@@ -64,10 +64,10 @@ func (v EmptyEnum) Ptr() *EmptyEnum {
 
 // Encode encodes EmptyEnum directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v EmptyEnum
-//   return v.Encode(sWriter)
+//	var v EmptyEnum
+//	return v.Encode(sWriter)
 func (v EmptyEnum) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -84,16 +84,16 @@ func (v EmptyEnum) ToWire() (wire.Value, error) {
 // FromWire deserializes EmptyEnum from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return EmptyEnum(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return EmptyEnum(0), err
+//	}
 //
-//   var v EmptyEnum
-//   if err := v.FromWire(x); err != nil {
-//     return EmptyEnum(0), err
-//   }
-//   return v, nil
+//	var v EmptyEnum
+//	if err := v.FromWire(x); err != nil {
+//	    return EmptyEnum(0), err
+//	}
+//	return v, nil
 func (v *EmptyEnum) FromWire(w wire.Value) error {
 	*v = (EmptyEnum)(w.GetI32())
 	return nil
@@ -101,13 +101,13 @@ func (v *EmptyEnum) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded EmptyEnum directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v EmptyEnum
-//   if err := v.Decode(sReader); err != nil {
-//     return EmptyEnum(0), err
-//   }
-//   return v, nil
+//	var v EmptyEnum
+//	if err := v.Decode(sReader); err != nil {
+//	    return EmptyEnum(0), err
+//	}
+//	return v, nil
 func (v *EmptyEnum) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -195,8 +195,8 @@ func EnumDefault_Values() []EnumDefault {
 // UnmarshalText tries to decode EnumDefault from a byte slice
 // containing its name.
 //
-//   var v EnumDefault
-//   err := v.UnmarshalText([]byte("Foo"))
+//	var v EnumDefault
+//	err := v.UnmarshalText([]byte("Foo"))
 func (v *EnumDefault) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "Foo":
@@ -260,10 +260,10 @@ func (v EnumDefault) Ptr() *EnumDefault {
 
 // Encode encodes EnumDefault directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v EnumDefault
-//   return v.Encode(sWriter)
+//	var v EnumDefault
+//	return v.Encode(sWriter)
 func (v EnumDefault) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -280,16 +280,16 @@ func (v EnumDefault) ToWire() (wire.Value, error) {
 // FromWire deserializes EnumDefault from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return EnumDefault(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return EnumDefault(0), err
+//	}
 //
-//   var v EnumDefault
-//   if err := v.FromWire(x); err != nil {
-//     return EnumDefault(0), err
-//   }
-//   return v, nil
+//	var v EnumDefault
+//	if err := v.FromWire(x); err != nil {
+//	    return EnumDefault(0), err
+//	}
+//	return v, nil
 func (v *EnumDefault) FromWire(w wire.Value) error {
 	*v = (EnumDefault)(w.GetI32())
 	return nil
@@ -297,13 +297,13 @@ func (v *EnumDefault) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded EnumDefault directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v EnumDefault
-//   if err := v.Decode(sReader); err != nil {
-//     return EnumDefault(0), err
-//   }
-//   return v, nil
+//	var v EnumDefault
+//	if err := v.Decode(sReader); err != nil {
+//	    return EnumDefault(0), err
+//	}
+//	return v, nil
 func (v *EnumDefault) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -419,8 +419,8 @@ func EnumWithDuplicateName_Values() []EnumWithDuplicateName {
 // UnmarshalText tries to decode EnumWithDuplicateName from a byte slice
 // containing its name.
 //
-//   var v EnumWithDuplicateName
-//   err := v.UnmarshalText([]byte("A"))
+//	var v EnumWithDuplicateName
+//	err := v.UnmarshalText([]byte("A"))
 func (v *EnumWithDuplicateName) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "A":
@@ -526,10 +526,10 @@ func (v EnumWithDuplicateName) Ptr() *EnumWithDuplicateName {
 
 // Encode encodes EnumWithDuplicateName directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v EnumWithDuplicateName
-//   return v.Encode(sWriter)
+//	var v EnumWithDuplicateName
+//	return v.Encode(sWriter)
 func (v EnumWithDuplicateName) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -546,16 +546,16 @@ func (v EnumWithDuplicateName) ToWire() (wire.Value, error) {
 // FromWire deserializes EnumWithDuplicateName from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return EnumWithDuplicateName(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return EnumWithDuplicateName(0), err
+//	}
 //
-//   var v EnumWithDuplicateName
-//   if err := v.FromWire(x); err != nil {
-//     return EnumWithDuplicateName(0), err
-//   }
-//   return v, nil
+//	var v EnumWithDuplicateName
+//	if err := v.FromWire(x); err != nil {
+//	    return EnumWithDuplicateName(0), err
+//	}
+//	return v, nil
 func (v *EnumWithDuplicateName) FromWire(w wire.Value) error {
 	*v = (EnumWithDuplicateName)(w.GetI32())
 	return nil
@@ -563,13 +563,13 @@ func (v *EnumWithDuplicateName) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded EnumWithDuplicateName directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v EnumWithDuplicateName
-//   if err := v.Decode(sReader); err != nil {
-//     return EnumWithDuplicateName(0), err
-//   }
-//   return v, nil
+//	var v EnumWithDuplicateName
+//	if err := v.Decode(sReader); err != nil {
+//	    return EnumWithDuplicateName(0), err
+//	}
+//	return v, nil
 func (v *EnumWithDuplicateName) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -697,8 +697,8 @@ func EnumWithDuplicateValues_Values() []EnumWithDuplicateValues {
 // UnmarshalText tries to decode EnumWithDuplicateValues from a byte slice
 // containing its name.
 //
-//   var v EnumWithDuplicateValues
-//   err := v.UnmarshalText([]byte("P"))
+//	var v EnumWithDuplicateValues
+//	err := v.UnmarshalText([]byte("P"))
 func (v *EnumWithDuplicateValues) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "P":
@@ -758,10 +758,10 @@ func (v EnumWithDuplicateValues) Ptr() *EnumWithDuplicateValues {
 
 // Encode encodes EnumWithDuplicateValues directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v EnumWithDuplicateValues
-//   return v.Encode(sWriter)
+//	var v EnumWithDuplicateValues
+//	return v.Encode(sWriter)
 func (v EnumWithDuplicateValues) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -778,16 +778,16 @@ func (v EnumWithDuplicateValues) ToWire() (wire.Value, error) {
 // FromWire deserializes EnumWithDuplicateValues from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return EnumWithDuplicateValues(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return EnumWithDuplicateValues(0), err
+//	}
 //
-//   var v EnumWithDuplicateValues
-//   if err := v.FromWire(x); err != nil {
-//     return EnumWithDuplicateValues(0), err
-//   }
-//   return v, nil
+//	var v EnumWithDuplicateValues
+//	if err := v.FromWire(x); err != nil {
+//	    return EnumWithDuplicateValues(0), err
+//	}
+//	return v, nil
 func (v *EnumWithDuplicateValues) FromWire(w wire.Value) error {
 	*v = (EnumWithDuplicateValues)(w.GetI32())
 	return nil
@@ -795,13 +795,13 @@ func (v *EnumWithDuplicateValues) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded EnumWithDuplicateValues directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v EnumWithDuplicateValues
-//   if err := v.Decode(sReader); err != nil {
-//     return EnumWithDuplicateValues(0), err
-//   }
-//   return v, nil
+//	var v EnumWithDuplicateValues
+//	if err := v.Decode(sReader); err != nil {
+//	    return EnumWithDuplicateValues(0), err
+//	}
+//	return v, nil
 func (v *EnumWithDuplicateValues) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -901,8 +901,8 @@ func EnumWithHexValues_Values() []EnumWithHexValues {
 // UnmarshalText tries to decode EnumWithHexValues from a byte slice
 // containing its name.
 //
-//   var v EnumWithHexValues
-//   err := v.UnmarshalText([]byte("X"))
+//	var v EnumWithHexValues
+//	err := v.UnmarshalText([]byte("X"))
 func (v *EnumWithHexValues) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "X":
@@ -966,10 +966,10 @@ func (v EnumWithHexValues) Ptr() *EnumWithHexValues {
 
 // Encode encodes EnumWithHexValues directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v EnumWithHexValues
-//   return v.Encode(sWriter)
+//	var v EnumWithHexValues
+//	return v.Encode(sWriter)
 func (v EnumWithHexValues) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -986,16 +986,16 @@ func (v EnumWithHexValues) ToWire() (wire.Value, error) {
 // FromWire deserializes EnumWithHexValues from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return EnumWithHexValues(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return EnumWithHexValues(0), err
+//	}
 //
-//   var v EnumWithHexValues
-//   if err := v.FromWire(x); err != nil {
-//     return EnumWithHexValues(0), err
-//   }
-//   return v, nil
+//	var v EnumWithHexValues
+//	if err := v.FromWire(x); err != nil {
+//	    return EnumWithHexValues(0), err
+//	}
+//	return v, nil
 func (v *EnumWithHexValues) FromWire(w wire.Value) error {
 	*v = (EnumWithHexValues)(w.GetI32())
 	return nil
@@ -1003,13 +1003,13 @@ func (v *EnumWithHexValues) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded EnumWithHexValues directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v EnumWithHexValues
-//   if err := v.Decode(sReader); err != nil {
-//     return EnumWithHexValues(0), err
-//   }
-//   return v, nil
+//	var v EnumWithHexValues
+//	if err := v.Decode(sReader); err != nil {
+//	    return EnumWithHexValues(0), err
+//	}
+//	return v, nil
 func (v *EnumWithHexValues) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -1119,8 +1119,8 @@ func EnumWithLabel_Values() []EnumWithLabel {
 // UnmarshalText tries to decode EnumWithLabel from a byte slice
 // containing its name.
 //
-//   var v EnumWithLabel
-//   err := v.UnmarshalText([]byte("USERNAME"))
+//	var v EnumWithLabel
+//	err := v.UnmarshalText([]byte("USERNAME"))
 func (v *EnumWithLabel) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "surname":
@@ -1205,10 +1205,10 @@ func (v EnumWithLabel) Ptr() *EnumWithLabel {
 
 // Encode encodes EnumWithLabel directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v EnumWithLabel
-//   return v.Encode(sWriter)
+//	var v EnumWithLabel
+//	return v.Encode(sWriter)
 func (v EnumWithLabel) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -1225,16 +1225,16 @@ func (v EnumWithLabel) ToWire() (wire.Value, error) {
 // FromWire deserializes EnumWithLabel from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return EnumWithLabel(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return EnumWithLabel(0), err
+//	}
 //
-//   var v EnumWithLabel
-//   if err := v.FromWire(x); err != nil {
-//     return EnumWithLabel(0), err
-//   }
-//   return v, nil
+//	var v EnumWithLabel
+//	if err := v.FromWire(x); err != nil {
+//	    return EnumWithLabel(0), err
+//	}
+//	return v, nil
 func (v *EnumWithLabel) FromWire(w wire.Value) error {
 	*v = (EnumWithLabel)(w.GetI32())
 	return nil
@@ -1242,13 +1242,13 @@ func (v *EnumWithLabel) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded EnumWithLabel directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v EnumWithLabel
-//   if err := v.Decode(sReader); err != nil {
-//     return EnumWithLabel(0), err
-//   }
-//   return v, nil
+//	var v EnumWithLabel
+//	if err := v.Decode(sReader); err != nil {
+//	    return EnumWithLabel(0), err
+//	}
+//	return v, nil
 func (v *EnumWithLabel) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -1364,8 +1364,8 @@ func EnumWithValues_Values() []EnumWithValues {
 // UnmarshalText tries to decode EnumWithValues from a byte slice
 // containing its name.
 //
-//   var v EnumWithValues
-//   err := v.UnmarshalText([]byte("X"))
+//	var v EnumWithValues
+//	err := v.UnmarshalText([]byte("X"))
 func (v *EnumWithValues) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "X":
@@ -1429,10 +1429,10 @@ func (v EnumWithValues) Ptr() *EnumWithValues {
 
 // Encode encodes EnumWithValues directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v EnumWithValues
-//   return v.Encode(sWriter)
+//	var v EnumWithValues
+//	return v.Encode(sWriter)
 func (v EnumWithValues) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -1449,16 +1449,16 @@ func (v EnumWithValues) ToWire() (wire.Value, error) {
 // FromWire deserializes EnumWithValues from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return EnumWithValues(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return EnumWithValues(0), err
+//	}
 //
-//   var v EnumWithValues
-//   if err := v.FromWire(x); err != nil {
-//     return EnumWithValues(0), err
-//   }
-//   return v, nil
+//	var v EnumWithValues
+//	if err := v.FromWire(x); err != nil {
+//	    return EnumWithValues(0), err
+//	}
+//	return v, nil
 func (v *EnumWithValues) FromWire(w wire.Value) error {
 	*v = (EnumWithValues)(w.GetI32())
 	return nil
@@ -1466,13 +1466,13 @@ func (v *EnumWithValues) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded EnumWithValues directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v EnumWithValues
-//   if err := v.Decode(sReader); err != nil {
-//     return EnumWithValues(0), err
-//   }
-//   return v, nil
+//	var v EnumWithValues
+//	if err := v.Decode(sReader); err != nil {
+//	    return EnumWithValues(0), err
+//	}
+//	return v, nil
 func (v *EnumWithValues) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -1584,8 +1584,8 @@ func RecordType_Values() []RecordType {
 // UnmarshalText tries to decode RecordType from a byte slice
 // containing its name.
 //
-//   var v RecordType
-//   err := v.UnmarshalText([]byte("NAME"))
+//	var v RecordType
+//	err := v.UnmarshalText([]byte("NAME"))
 func (v *RecordType) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "NAME":
@@ -1649,10 +1649,10 @@ func (v RecordType) Ptr() *RecordType {
 
 // Encode encodes RecordType directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v RecordType
-//   return v.Encode(sWriter)
+//	var v RecordType
+//	return v.Encode(sWriter)
 func (v RecordType) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -1669,16 +1669,16 @@ func (v RecordType) ToWire() (wire.Value, error) {
 // FromWire deserializes RecordType from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return RecordType(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return RecordType(0), err
+//	}
 //
-//   var v RecordType
-//   if err := v.FromWire(x); err != nil {
-//     return RecordType(0), err
-//   }
-//   return v, nil
+//	var v RecordType
+//	if err := v.FromWire(x); err != nil {
+//	    return RecordType(0), err
+//	}
+//	return v, nil
 func (v *RecordType) FromWire(w wire.Value) error {
 	*v = (RecordType)(w.GetI32())
 	return nil
@@ -1686,13 +1686,13 @@ func (v *RecordType) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded RecordType directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v RecordType
-//   if err := v.Decode(sReader); err != nil {
-//     return RecordType(0), err
-//   }
-//   return v, nil
+//	var v RecordType
+//	if err := v.Decode(sReader); err != nil {
+//	    return RecordType(0), err
+//	}
+//	return v, nil
 func (v *RecordType) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -1794,8 +1794,8 @@ func RecordTypeValues_Values() []RecordTypeValues {
 // UnmarshalText tries to decode RecordTypeValues from a byte slice
 // containing its name.
 //
-//   var v RecordTypeValues
-//   err := v.UnmarshalText([]byte("FOO"))
+//	var v RecordTypeValues
+//	err := v.UnmarshalText([]byte("FOO"))
 func (v *RecordTypeValues) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "FOO":
@@ -1852,10 +1852,10 @@ func (v RecordTypeValues) Ptr() *RecordTypeValues {
 
 // Encode encodes RecordTypeValues directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v RecordTypeValues
-//   return v.Encode(sWriter)
+//	var v RecordTypeValues
+//	return v.Encode(sWriter)
 func (v RecordTypeValues) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -1872,16 +1872,16 @@ func (v RecordTypeValues) ToWire() (wire.Value, error) {
 // FromWire deserializes RecordTypeValues from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return RecordTypeValues(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return RecordTypeValues(0), err
+//	}
 //
-//   var v RecordTypeValues
-//   if err := v.FromWire(x); err != nil {
-//     return RecordTypeValues(0), err
-//   }
-//   return v, nil
+//	var v RecordTypeValues
+//	if err := v.FromWire(x); err != nil {
+//	    return RecordTypeValues(0), err
+//	}
+//	return v, nil
 func (v *RecordTypeValues) FromWire(w wire.Value) error {
 	*v = (RecordTypeValues)(w.GetI32())
 	return nil
@@ -1889,13 +1889,13 @@ func (v *RecordTypeValues) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded RecordTypeValues directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v RecordTypeValues
-//   if err := v.Decode(sReader); err != nil {
-//     return RecordTypeValues(0), err
-//   }
-//   return v, nil
+//	var v RecordTypeValues
+//	if err := v.Decode(sReader); err != nil {
+//	    return RecordTypeValues(0), err
+//	}
+//	return v, nil
 func (v *RecordTypeValues) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
@@ -1986,14 +1986,14 @@ type StructWithOptionalEnum struct {
 // An error is returned if the struct or any of its fields failed to
 // validate.
 //
-//   x, err := v.ToWire()
-//   if err != nil {
-//     return err
-//   }
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
 //
-//   if err := binaryProtocol.Encode(x, writer); err != nil {
-//     return err
-//   }
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
 func (v *StructWithOptionalEnum) ToWire() (wire.Value, error) {
 	var (
 		fields [1]wire.Field
@@ -2027,16 +2027,16 @@ func _EnumDefault_Read(w wire.Value) (EnumDefault, error) {
 // An error is returned if we were unable to build a StructWithOptionalEnum struct
 // from the provided intermediate representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-//   if err != nil {
-//     return nil, err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-//   var v StructWithOptionalEnum
-//   if err := v.FromWire(x); err != nil {
-//     return nil, err
-//   }
-//   return &v, nil
+//	var v StructWithOptionalEnum
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
 func (v *StructWithOptionalEnum) FromWire(w wire.Value) error {
 	var err error
 
@@ -2227,8 +2227,8 @@ func LowerCaseEnum_Values() []LowerCaseEnum {
 // UnmarshalText tries to decode LowerCaseEnum from a byte slice
 // containing its name.
 //
-//   var v LowerCaseEnum
-//   err := v.UnmarshalText([]byte("containing"))
+//	var v LowerCaseEnum
+//	err := v.UnmarshalText([]byte("containing"))
 func (v *LowerCaseEnum) UnmarshalText(value []byte) error {
 	switch s := string(value); s {
 	case "containing":
@@ -2292,10 +2292,10 @@ func (v LowerCaseEnum) Ptr() *LowerCaseEnum {
 
 // Encode encodes LowerCaseEnum directly to bytes.
 //
-//   sWriter := BinaryStreamer.Writer(writer)
+//	sWriter := BinaryStreamer.Writer(writer)
 //
-//   var v LowerCaseEnum
-//   return v.Encode(sWriter)
+//	var v LowerCaseEnum
+//	return v.Encode(sWriter)
 func (v LowerCaseEnum) Encode(sw stream.Writer) error {
 	return sw.WriteInt32(int32(v))
 }
@@ -2312,16 +2312,16 @@ func (v LowerCaseEnum) ToWire() (wire.Value, error) {
 // FromWire deserializes LowerCaseEnum from its Thrift-level
 // representation.
 //
-//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-//   if err != nil {
-//     return LowerCaseEnum(0), err
-//   }
+//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+//	if err != nil {
+//	    return LowerCaseEnum(0), err
+//	}
 //
-//   var v LowerCaseEnum
-//   if err := v.FromWire(x); err != nil {
-//     return LowerCaseEnum(0), err
-//   }
-//   return v, nil
+//	var v LowerCaseEnum
+//	if err := v.FromWire(x); err != nil {
+//	    return LowerCaseEnum(0), err
+//	}
+//	return v, nil
 func (v *LowerCaseEnum) FromWire(w wire.Value) error {
 	*v = (LowerCaseEnum)(w.GetI32())
 	return nil
@@ -2329,13 +2329,13 @@ func (v *LowerCaseEnum) FromWire(w wire.Value) error {
 
 // Decode reads off the encoded LowerCaseEnum directly off of the wire.
 //
-//   sReader := BinaryStreamer.Reader(reader)
+//	sReader := BinaryStreamer.Reader(reader)
 //
-//   var v LowerCaseEnum
-//   if err := v.Decode(sReader); err != nil {
-//     return LowerCaseEnum(0), err
-//   }
-//   return v, nil
+//	var v LowerCaseEnum
+//	if err := v.Decode(sReader); err != nil {
+//	    return LowerCaseEnum(0), err
+//	}
+//	return v, nil
 func (v *LowerCaseEnum) Decode(sr stream.Reader) error {
 	i, err := sr.ReadInt32()
 	if err != nil {
