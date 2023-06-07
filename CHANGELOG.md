@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.31.0] - 2023-6-08
 ### Changed
 - StreamReader ReadString() and WriteString() performance improvements.
 
@@ -438,7 +438,7 @@ this release.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.30.0...HEAD
+[1.31.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.30.0...v1.31.1
 [1.30.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.29.2...v1.30.0
 [1.29.2]: https://github.com/thriftrw/thriftrw-go/compare/v1.29.1...v1.29.2
 [1.29.1]: https://github.com/thriftrw/thriftrw-go/compare/v1.29.0...v1.29.1
