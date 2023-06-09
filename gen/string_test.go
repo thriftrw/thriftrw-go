@@ -109,6 +109,13 @@ func TestConstantName(t *testing.T) {
 			give: "API_VERSION",
 			want: "APIVersion",
 		},
+		{
+			// ensure code generation compatibility. strings.Title and
+			// golang.org/x/text/cases return different results in this
+			// case.
+			give: "10xDeveloper",
+			want: "10xDeveloper",
+		},
 	}
 
 	for _, tt := range tests {
