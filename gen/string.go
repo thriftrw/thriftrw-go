@@ -27,8 +27,6 @@ import (
 	"unicode/utf8"
 
 	"go.uber.org/thriftrw/compile"
-	"golang.org/x/text/cases"
-	"golang.org/x/text/language"
 )
 
 // isAllCaps checks if a string contains all capital letters only. Non-letters
@@ -65,7 +63,7 @@ func pascalCase(allowAllCaps bool, words ...string) string {
 		if isAllCaps(chunk) && !allowAllCaps {
 			// A single ALLCAPS word does not count as SCREAMING_SNAKE_CASE.
 			// There must be at least one underscore.
-			words[i] = cases.Title(language.English).String(strings.ToLower(chunk))
+			words[i] = strings.Title(strings.ToLower(chunk))
 			continue
 		}
 
