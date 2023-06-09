@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -12,7 +11,7 @@ import (
 )
 
 func TestThriftrwListDeps(t *testing.T) {
-	tmpDir, err := ioutil.TempDir("", "")
+	tmpDir, err := os.MkdirTemp("", "")
 	require.NoError(t, err)
 
 	defer os.RemoveAll(tmpDir)
@@ -29,7 +28,7 @@ include "./c.thrift"`,
 		path := filepath.Join(tmpDir, name)
 		err = os.MkdirAll(filepath.Dir(path), 0755)
 		require.NoError(t, err)
-		err = ioutil.WriteFile(path, []byte(content), 0644)
+		err = os.WriteFile(path, []byte(content), 0644)
 		require.NoError(t, err)
 	}
 

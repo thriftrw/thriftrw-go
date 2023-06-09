@@ -18,24 +18,31 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package ast provides types and intefaces representing the abstract syntax
-// tree for a single .thrift file.
-//
-// # Docstrings
-//
-// Types which have a Doc field support parsing docstrings in the form,
-// "/** ... */". For example, given the following,
-//
-//	/**
-//	 * Name of the user who composed this message.
-//	 *
-//	 * If unset, the comment was posted by an anonymous user.
-//	 */
-//	1: optional string author
-//
-// The Doc of the parsed Field will be,
-//
-//	Name of the user who composed this message.
-//
-//	If unset, the comment was posted by an anonymous user.
-package ast
+//go:build go1.20
+// +build go1.20
+
+package binary
+
+import "unsafe"
+
+// ReadString reads a Thrift encoded string.
+func (sr *StreamReader) ReadString() (string, error) {
+	bs, err := sr.ReadBinary()
+	// It is safe to use "unsafe" here because there are no
+	// mutable references to bs.
+	return unsafe.String(unsafe.SliceData(bs), len(bs)), err
+}
+
+// WriteString encodes a string
+func (sw *StreamWriter) WriteString(s string) error {
+	if err := sw.WriteInt32(int32(len(s))); err != nil {
+		return err
+	}
+	// It is safe to use "unsafe" here because there are no
+	// mutable references to the byte slice b.
+	// sw.write() delegates to the underlying io.Writer,
+	// and according to its documentation, "Write must
+	// not modify the slice data, even temporarily."
+	b := unsafe.Slice(unsafe.StringData(s), len(s))
+	return sw.write(b)
+}

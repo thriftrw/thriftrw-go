@@ -23,7 +23,6 @@ package main
 import (
 	"bytes"
 	"io"
-	"io/ioutil"
 	"os"
 	"testing"
 
@@ -90,7 +89,7 @@ func TestThriftBreakIntegration(t *testing.T) {
 			tmpDir := t.TempDir()
 			breaktest.CreateRepoAndCommit(t, tmpDir, from, to, remove)
 
-			f, err := ioutil.TempFile(tmpDir, "stdout")
+			f, err := os.CreateTemp(tmpDir, "stdout")
 			require.NoError(t, err, "create temporary file")
 			defer func(oldStdout *os.File) {
 				assert.NoError(t, f.Close())
@@ -103,7 +102,7 @@ func TestThriftBreakIntegration(t *testing.T) {
 			require.Error(t, err, "expected an error with Thrift backwards incompatible changes")
 			assert.EqualError(t, err, "found 5 issues")
 
-			stderr, err := ioutil.ReadFile(f.Name())
+			stderr, err := os.ReadFile(f.Name())
 			require.NoError(t, err)
 
 			out := string(stderr)
