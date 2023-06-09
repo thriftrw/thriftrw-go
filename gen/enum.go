@@ -119,8 +119,8 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		// containing its name.
 		<- if .Spec.Items>
 		//
-		//   var <$v> <$enumName>
-		//   err := <$v>.UnmarshalText([]byte("<(index .Spec.Items 0).Name>"))
+		//	var <$v> <$enumName>
+		//	err := <$v>.UnmarshalText([]byte("<(index .Spec.Items 0).Name>"))
 		<- end>
 		func (<$v> *<$enumName>) UnmarshalText(<$value> []byte) error {
 			<- $s := newVar "s" ->
@@ -196,10 +196,10 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<$sw := newVar "sw">
 		// Encode encodes <$enumName> directly to bytes.
 		//
-		//   sWriter := BinaryStreamer.Writer(writer)
+		//	sWriter := BinaryStreamer.Writer(writer)
 		//
-		//   var <$v> <$enumName>
-		//   return <$v>.Encode(sWriter)
+		//	var <$v> <$enumName>
+		//	return <$v>.Encode(sWriter)
 		func (<$v> <$enumName>) Encode(<$sw> <$stream>.Writer) error {
 			return <$sw>.WriteInt32(int32(<$v>))
 		}
@@ -217,16 +217,16 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		// FromWire deserializes <$enumName> from its Thrift-level
 		// representation.
 		//
-		//   x, err := binaryProtocol.Decode(reader, wire.TI32)
-		//   if err != nil {
-		//     return <$enumName>(0), err
-		//   }
+		//	x, err := binaryProtocol.Decode(reader, wire.TI32)
+		//	if err != nil {
+		//	    return <$enumName>(0), err
+		//	}
 		//
-		//   var <$v> <$enumName>
-		//   if err := <$v>.FromWire(x); err != nil {
-		//     return <$enumName>(0), err
-		//   }
-		//   return <$v>, nil
+		//	var <$v> <$enumName>
+		//	if err := <$v>.FromWire(x); err != nil {
+		//	    return <$enumName>(0), err
+		//	}
+		//	return <$v>, nil
 		func (<$v> *<$enumName>) FromWire(<$w> <$wire>.Value) error {
 			*<$v> = (<$enumName>)(<$w>.GetI32());
 			return nil
@@ -235,13 +235,13 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		<$sr := newVar "sr">
 		// Decode reads off the encoded <$enumName> directly off of the wire.
 		//
-		//   sReader := BinaryStreamer.Reader(reader)
+		//	sReader := BinaryStreamer.Reader(reader)
 		//
-		//   var <$v> <$enumName>
-		//   if err := <$v>.Decode(sReader); err != nil {
-		//     return <$enumName>(0), err
-		//   }
-		//   return <$v>, nil
+		//	var <$v> <$enumName>
+		//	if err := <$v>.Decode(sReader); err != nil {
+		//	    return <$enumName>(0), err
+		//	}
+		//	return <$v>, nil
 		func (<$v> *<$enumName>) Decode(<$sr> <$stream>.Reader) error {
 			<- $i := newVar "i" ->
 			<$i>, err := <$sr>.ReadInt32()

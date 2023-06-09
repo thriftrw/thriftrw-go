@@ -18,24 +18,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package ast provides types and intefaces representing the abstract syntax
-// tree for a single .thrift file.
-//
-// # Docstrings
-//
-// Types which have a Doc field support parsing docstrings in the form,
-// "/** ... */". For example, given the following,
-//
-//	/**
-//	 * Name of the user who composed this message.
-//	 *
-//	 * If unset, the comment was posted by an anonymous user.
-//	 */
-//	1: optional string author
-//
-// The Doc of the parsed Field will be,
-//
-//	Name of the user who composed this message.
-//
-//	If unset, the comment was posted by an anonymous user.
-package ast
+//go:build !go1.20
+// +build !go1.20
+
+package binary
+
+import "io"
+
+// ReadString reads a Thrift encoded string.
+func (sr *StreamReader) ReadString() (string, error) {
+	bs, err := sr.ReadBinary()
+	return string(bs), err
+}
+
+// WriteString encodes a string
+func (sw *StreamWriter) WriteString(s string) error {
+	if err := sw.WriteInt32(int32(len(s))); err != nil {
+		return err
+	}
+
+	_, err := io.WriteString(sw.writer, s)
+	return err
+}

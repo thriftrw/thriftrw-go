@@ -300,14 +300,14 @@ func (f fieldGroupGenerator) ToWire(g Generator) error {
 		// An error is returned if the struct or any of its fields failed to
 		// validate.
 		//
-		//   x, err := <$v>.ToWire()
-		//   if err != nil {
-		//     return err
-		//   }
+		//	x, err := <$v>.ToWire()
+		//	if err != nil {
+		//		return err
+		//	}
 		//
-		//   if err := binaryProtocol.Encode(x, writer); err != nil {
-		//     return err
-		//   }
+		//	if err := binaryProtocol.Encode(x, writer); err != nil {
+		//		return err
+		//	}
 		func (<$v> *<.Name>) ToWire() (<$wire>.Value, error) {
 			<$fields := newVar "fields" ->
 			<- $i := newVar "i" ->
@@ -392,16 +392,16 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 		// An error is returned if we were unable to build a <.Name> struct
 		// from the provided intermediate representation.
 		//
-		//   x, err := binaryProtocol.Decode(reader, wire.TStruct)
-		//   if err != nil {
-		//     return nil, err
-		//   }
+		//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+		//	if err != nil {
+		//		return nil, err
+		//	}
 		//
-		//   var <$v> <.Name>
-		//   if err := <$v>.FromWire(x); err != nil {
-		//     return nil, err
-		//   }
-		//   return &<$v>, nil
+		//	var <$v> <.Name>
+		//	if err := <$v>.FromWire(x); err != nil {
+		//		return nil, err
+		//	}
+		//	return &<$v>, nil
 		func (<$v> *<.Name>) FromWire(<$w> <$wire>.Value) error {
 			<if len .Fields> var err error <end>
 			<$f := newVar "field">

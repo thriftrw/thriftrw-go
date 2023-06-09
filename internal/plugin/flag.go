@@ -43,7 +43,7 @@ const _pluginExecPrefix = "thriftrw-plugin-"
 // An executable with the name thriftrw-plugin-$name is expected on the $PATH.
 // Remaining arguments are passed to the program. For example,
 //
-// 	-p "foo -a --bc"
+//	-p "foo -a --bc"
 //
 // Will pass the arguments "-a --bc" to the executable "thriftrw-plugin-foo".
 type Flag struct {

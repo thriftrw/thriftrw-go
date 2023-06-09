@@ -34,11 +34,11 @@ type setGenerator struct{}
 //
 // The following is generated:
 //
-// 	type $valueListName map[$valueType]struct{}
+//	type $valueListName map[$valueType]struct{}
 //
-// 	func (v $valueListName) ForEach(f func(wire.Value) error) error { ... }
+//	func (v $valueListName) ForEach(f func(wire.Value) error) error { ... }
 //
-// 	func (v $valueListName) Close() { ... }
+//	func (v $valueListName) Close() { ... }
 //
 // And $valueListName is returned. This may be used where a ValueList of the
 // given type is expected.
@@ -196,9 +196,9 @@ func (s *setGenerator) Encoder(g Generator, spec *compile.SetSpec) (string, erro
 // Decoder generates a function to read a set of the given type from a
 // stream.Reader.
 //
-//     func $name(sr *stream.Reader) ($setType, error) {
-//             ...
-//     }
+//	func $name(sr *stream.Reader) ($setType, error) {
+//	        ...
+//	}
 //
 // And returns its name.
 func (s *setGenerator) Decoder(g Generator, spec *compile.SetSpec) (string, error) {
@@ -261,9 +261,9 @@ func (s *setGenerator) Decoder(g Generator, spec *compile.SetSpec) (string, erro
 
 // Equals generates a function to compare sets of the given type
 //
-// func $name(lhs, rhs $setType) bool {
-//      ...
-// }
+//	func $name(lhs, rhs $setType) bool {
+//	     ...
+//	}
 //
 // And returns its name.
 func (s *setGenerator) Equals(g Generator, spec *compile.SetSpec) (string, error) {

@@ -18,24 +18,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package ast provides types and intefaces representing the abstract syntax
-// tree for a single .thrift file.
-//
-// # Docstrings
-//
-// Types which have a Doc field support parsing docstrings in the form,
-// "/** ... */". For example, given the following,
-//
-//	/**
-//	 * Name of the user who composed this message.
-//	 *
-//	 * If unset, the comment was posted by an anonymous user.
-//	 */
-//	1: optional string author
-//
-// The Doc of the parsed Field will be,
-//
-//	Name of the user who composed this message.
-//
-//	If unset, the comment was posted by an anonymous user.
-package ast
+package binary
+
+import (
+	"bytes"
+	"testing"
+)
+
+func BenchmarkWriteString(b *testing.B) {
+	var streamBuff bytes.Buffer
+	sw := NewStreamWriter(&streamBuff)
+	defer sw.Close()
+
+	b.ResetTimer()
+
+	s := "the quick brown fox jumps over the lazy dog"
+	for i := 0; i < b.N; i++ {
+		sw.WriteString(s)
+		streamBuff.Reset()
+	}
+}

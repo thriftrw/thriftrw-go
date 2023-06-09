@@ -21,7 +21,7 @@
 package compile
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 )
 
@@ -31,7 +31,7 @@ type Option func(*compiler)
 // FS is used by the compiler to interact with the filesystem.
 type FS interface {
 	// Read reads the file named by filename and returns the contents.
-	// See: https://golang.org/pkg/io/ioutil/#ReadFile
+	// See: https://golang.org/pkg/os/#ReadFile
 	Read(filename string) ([]byte, error)
 	// Abs returns an absolute representation of path.
 	// See: https://golang.org/pkg/path/filepath/#Abs
@@ -41,7 +41,7 @@ type FS interface {
 type realFS struct{}
 
 func (realFS) Read(filename string) ([]byte, error) {
-	return ioutil.ReadFile(filename)
+	return os.ReadFile(filename)
 }
 
 func (realFS) Abs(p string) (string, error) {

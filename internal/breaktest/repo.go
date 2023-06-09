@@ -21,7 +21,6 @@
 package breaktest
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -77,7 +76,7 @@ func (w *writeThrift) writeThrifts(extraMsg string) error {
 		if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 			return err
 		}
-		if err := ioutil.WriteFile(path, []byte(content), 0600); err != nil {
+		if err := os.WriteFile(path, []byte(content), 0600); err != nil {
 			return err
 		}
 	}

@@ -38,11 +38,11 @@ type mapGenerator struct{}
 //
 // The following is generated:
 //
-// 	type $mapItemListName map[$keyType]$valueType
+//	type $mapItemListName map[$keyType]$valueType
 //
-// 	func (v $mapItemListName) ForEach(f func(wire.MapItem) error) error { ... }
+//	func (v $mapItemListName) ForEach(f func(wire.MapItem) error) error { ... }
 //
-// 	func (v $mapItemListName) Close() { ... }
+//	func (v $mapItemListName) Close() { ... }
 //
 // And $mapItemListName is returned. This may be used where a MapItemList of the
 // given type is expected.
@@ -181,9 +181,9 @@ func (m *mapGenerator) Reader(g Generator, spec *compile.MapSpec) (string, error
 
 // Encoder generates a function to encode a map given a stream.Writer
 //
-//     func $name(val $mapType, sr *stream.Writer) error {
-//             ...
-//     }
+//	func $name(val $mapType, sr *stream.Writer) error {
+//	        ...
+//	}
 //
 // And returns its name.
 func (m *mapGenerator) Encoder(g Generator, spec *compile.MapSpec) (string, error) {
@@ -272,9 +272,9 @@ func (m *mapGenerator) Encoder(g Generator, spec *compile.MapSpec) (string, erro
 // Decoder generates a function to read a map of the given types from a
 // stream.Reader.
 //
-//     func $name(sr *stream.Reader) ($mapType, error) {
-//             ...
-//     }
+//	func $name(sr *stream.Reader) ($mapType, error) {
+//	        ...
+//	}
 //
 // And returns its name.
 func (m *mapGenerator) Decoder(g Generator, spec *compile.MapSpec) (string, error) {
@@ -351,9 +351,9 @@ func (m *mapGenerator) Decoder(g Generator, spec *compile.MapSpec) (string, erro
 
 // Equals generates a function to compare maps of the given type
 //
-// 	func $name(lhs, rhs $mapType) bool {
-// 		...
-// 	}
+//	func $name(lhs, rhs $mapType) bool {
+//		...
+//	}
 //
 // And returns its name.
 func (m *mapGenerator) Equals(g Generator, spec *compile.MapSpec) (string, error) {
@@ -456,12 +456,11 @@ func (m *mapGenerator) equalsUnhashable(g Generator, spec *compile.MapSpec) (str
 // string. If the key is not a string, maps are logged as arrays of
 // objects with a key and value.
 //
-//   map[string]int32{"foo": 1, "bar": 2}
-//   => {"foo": 1, "bar": 2}
+//	map[string]int32{"foo": 1, "bar": 2}
+//	=> {"foo": 1, "bar": 2}
 //
-//   map[int32]string{1: "foo", 2: "bar"}
-//   => [{"key": 1, "value": "foo"}, {"key": 2, "value": "bar"}]
-//
+//	map[int32]string{1: "foo", 2: "bar"}
+//	=> [{"key": 1, "value": "foo"}, {"key": 2, "value": "bar"}]
 func (m *mapGenerator) zapMarshaler(
 	g Generator,
 	root *compile.MapSpec,
