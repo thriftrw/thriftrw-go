@@ -89,7 +89,7 @@ To release new versions of ThriftRW Go, follow these instructions.
         git tag -a v$VERSION -m v$VERSION
         git push origin v$VERSION
 
-     Go to the "Release" section in the Github UI, a click "Draft a new release".
+     Go to the "Release" section in the Github UI, and click "Draft a new release".
      Select the tag you just pushed to origin. The release title should be the
      tag name (e.g. v$VERSION) and the contents of the CHANGELOG.md for the
      for the release version should be copied into the release description.
