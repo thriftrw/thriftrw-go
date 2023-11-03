@@ -134,3 +134,4 @@ cover:
 clean:
 	rm $(THRIFTRW)
 	go clean
+	rm $(GOBIN)/thriftrw
