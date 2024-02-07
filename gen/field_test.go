@@ -137,3 +137,80 @@ func TestCompileJSONTag(t *testing.T) {
 		})
 	}
 }
+
+func TestScrubPII(t *testing.T) {
+	foo := &compile.FieldSpec{
+		Name:        "foo",
+		Annotations: compile.Annotations{"go.label": "baz"},
+	}
+	pii := &compile.FieldSpec{
+		Name:        "foo",
+		Annotations: compile.Annotations{"go.pii": ""},
+	}
+	tests := []struct {
+		name string
+		spec compile.FieldGroup
+		want compile.FieldGroup
+	}{
+		{
+			name: "without pii annotation",
+			spec: compile.FieldGroup{
+				foo,
+				foo,
+			},
+			want: compile.FieldGroup{
+				foo,
+				foo,
+			},
+		},
+		{
+			name: "with pii annotation",
+			spec: compile.FieldGroup{
+				foo,
+				pii,
+				foo,
+			},
+			want: compile.FieldGroup{
+				foo,
+				foo,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, scrubPII(tt.spec), "scrubPII(%v)", tt.spec)
+		})
+	}
+}
+
+func TestHasPIIAnnotation(t *testing.T) {
+	foo := &compile.FieldSpec{
+		Name:        "foo",
+		Annotations: compile.Annotations{"go.label": "baz"},
+	}
+	pii := &compile.FieldSpec{
+		Name:        "foo",
+		Annotations: compile.Annotations{"go.pii": ""},
+	}
+	tests := []struct {
+		name string
+		spec *compile.FieldSpec
+		want bool
+	}{
+		{
+			name: "has pii annotation",
+			spec: pii,
+			want: true,
+		},
+		{
+			name: "has not pii annotation",
+			spec: foo,
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, hasPIIAnnotation(tt.spec), "hasPIIAnnotation(%v)", tt.spec)
+		})
+	}
+}

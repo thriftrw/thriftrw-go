@@ -878,3 +878,28 @@ func verifyUniqueFieldLabels(fs compile.FieldGroup) error {
 	}
 	return nil
 }
+
+// PIILabel provides a mechanism to excludes certain struct fields from
+// Zap logs, and from the outputs of String() and Error() methods.
+//
+//	struct Contact {
+//	    1: required string name
+//	    2: required string email (go.pii) // will be omitted from Zap logs, Stringer(), and Error() methods.
+//	}
+const PIILabel = "go.pii"
+
+func hasPIIAnnotation(spec *compile.FieldSpec) bool {
+	_, ok := spec.Annotations[PIILabel]
+	return ok
+}
+
+func scrubPII(fields compile.FieldGroup) compile.FieldGroup {
+	out := make(compile.FieldGroup, 0)
+	for _, field := range fields {
+		if hasPIIAnnotation(field) {
+			continue
+		}
+		out = append(out, field)
+	}
+	return out
+}
