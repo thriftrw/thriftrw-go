@@ -140,12 +140,11 @@ func TestCompileJSONTag(t *testing.T) {
 
 func TestScrubPII(t *testing.T) {
 	foo := &compile.FieldSpec{
-		Name:        "foo",
-		Annotations: compile.Annotations{"go.label": "baz"},
+		Name: "foo",
 	}
 	pii := &compile.FieldSpec{
-		Name:        "foo",
-		Annotations: compile.Annotations{"go.pii": ""},
+		Name:        "pii",
+		Annotations: compile.Annotations{PIILabel: ""},
 	}
 	tests := []struct {
 		name string
@@ -185,12 +184,11 @@ func TestScrubPII(t *testing.T) {
 
 func TestHasPIIAnnotation(t *testing.T) {
 	foo := &compile.FieldSpec{
-		Name:        "foo",
-		Annotations: compile.Annotations{"go.label": "baz"},
+		Name: "foo",
 	}
 	pii := &compile.FieldSpec{
-		Name:        "foo",
-		Annotations: compile.Annotations{"go.pii": ""},
+		Name:        "pii",
+		Annotations: compile.Annotations{PIILabel: ""},
 	}
 	tests := []struct {
 		name string
@@ -198,12 +196,12 @@ func TestHasPIIAnnotation(t *testing.T) {
 		want bool
 	}{
 		{
-			name: "has pii annotation",
+			name: "pii annotation",
 			spec: pii,
 			want: true,
 		},
 		{
-			name: "has not pii annotation",
+			name: "no pii annotation",
 			spec: foo,
 			want: false,
 		},

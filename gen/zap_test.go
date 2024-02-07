@@ -28,6 +28,7 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/thriftrw/compile"
 	tc "go.uber.org/thriftrw/gen/internal/tests/containers"
 	te "go.uber.org/thriftrw/gen/internal/tests/enums"
 	tz "go.uber.org/thriftrw/gen/internal/tests/nozap"
@@ -851,4 +852,45 @@ func TestLogNilStruct(t *testing.T) {
 	var x *ts.Edge
 	require.NoError(t, x.MarshalLogObject(enc))
 	assert.Empty(t, enc.Fields)
+}
+
+func TestZapOptOut(t *testing.T) {
+	foo := &compile.FieldSpec{
+		Name: "foo",
+	}
+	pii := &compile.FieldSpec{
+		Name:        "pii",
+		Annotations: compile.Annotations{PIILabel: ""},
+	}
+
+	nolog := &compile.FieldSpec{
+		Name:        "nolog",
+		Annotations: compile.Annotations{NoZapLabel: ""},
+	}
+	tests := []struct {
+		name string
+		spec *compile.FieldSpec
+		want bool
+	}{
+		{
+			name: "no annotation",
+			spec: foo,
+			want: false,
+		},
+		{
+			name: "pii annotation",
+			spec: pii,
+			want: true,
+		},
+		{
+			name: "nolog annotation",
+			spec: nolog,
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, zapOptOut(tt.spec), "zapOptOut(%v)", tt.spec)
+		})
+	}
 }
