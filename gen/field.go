@@ -694,9 +694,10 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			<$fields := newVar "fields">
 			<$i := newVar "i">
 
-			var <$fields> [<len .Fields>]string
+			<$sanitizedFields := scrubPII .Fields >
+			var <$fields> [<len $sanitizedFields>]string
 			<$i> := 0
-			<range .Fields>
+			<range $sanitizedFields >
 				<- $fname := goName . ->
 				<- $f := printf "%s.%s" $v $fname ->
 
@@ -717,7 +718,9 @@ func (f fieldGroupGenerator) String(g Generator) error {
 
 			return <$fmt>.Sprintf("<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
 		}
-		`, f)
+		`, f,
+		TemplateFunc("scrubPII", scrubPII),
+	)
 }
 
 func (f fieldGroupGenerator) ErrorName(g Generator) error {
