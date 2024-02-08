@@ -4751,10 +4751,8 @@ func (v *Omit) GetHidden() (o string) {
 }
 
 type PersonalInfo struct {
-	Age      *int32  `json:"age,omitempty"`
-	Race     *string `json:"race,omitempty"`
-	Ssn      *string `json:"ssn,omitempty"`
-	JobTitle *string `json:"jobTitle,omitempty"`
+	Age  *int32  `json:"age,omitempty"`
+	Race *string `json:"race,omitempty"`
 }
 
 // ToWire translates a PersonalInfo struct into a Thrift-level intermediate
@@ -4774,7 +4772,7 @@ type PersonalInfo struct {
 //	}
 func (v *PersonalInfo) ToWire() (wire.Value, error) {
 	var (
-		fields [4]wire.Field
+		fields [2]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -4794,22 +4792,6 @@ func (v *PersonalInfo) ToWire() (wire.Value, error) {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 2, Value: w}
-		i++
-	}
-	if v.Ssn != nil {
-		w, err = wire.NewValueString(*(v.Ssn)), error(nil)
-		if err != nil {
-			return w, err
-		}
-		fields[i] = wire.Field{ID: 3, Value: w}
-		i++
-	}
-	if v.JobTitle != nil {
-		w, err = wire.NewValueString(*(v.JobTitle)), error(nil)
-		if err != nil {
-			return w, err
-		}
-		fields[i] = wire.Field{ID: 4, Value: w}
 		i++
 	}
 
@@ -4858,26 +4840,6 @@ func (v *PersonalInfo) FromWire(w wire.Value) error {
 				}
 
 			}
-		case 3:
-			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.Ssn = &x
-				if err != nil {
-					return err
-				}
-
-			}
-		case 4:
-			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.JobTitle = &x
-				if err != nil {
-					return err
-				}
-
-			}
 		}
 	}
 
@@ -4910,30 +4872,6 @@ func (v *PersonalInfo) Encode(sw stream.Writer) error {
 			return err
 		}
 		if err := sw.WriteString(*(v.Race)); err != nil {
-			return err
-		}
-		if err := sw.WriteFieldEnd(); err != nil {
-			return err
-		}
-	}
-
-	if v.Ssn != nil {
-		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TBinary}); err != nil {
-			return err
-		}
-		if err := sw.WriteString(*(v.Ssn)); err != nil {
-			return err
-		}
-		if err := sw.WriteFieldEnd(); err != nil {
-			return err
-		}
-	}
-
-	if v.JobTitle != nil {
-		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 4, Type: wire.TBinary}); err != nil {
-			return err
-		}
-		if err := sw.WriteString(*(v.JobTitle)); err != nil {
 			return err
 		}
 		if err := sw.WriteFieldEnd(); err != nil {
@@ -4978,22 +4916,6 @@ func (v *PersonalInfo) Decode(sr stream.Reader) error {
 				return err
 			}
 
-		case fh.ID == 3 && fh.Type == wire.TBinary:
-			var x string
-			x, err = sr.ReadString()
-			v.Ssn = &x
-			if err != nil {
-				return err
-			}
-
-		case fh.ID == 4 && fh.Type == wire.TBinary:
-			var x string
-			x, err = sr.ReadString()
-			v.JobTitle = &x
-			if err != nil {
-				return err
-			}
-
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -5023,14 +4945,10 @@ func (v *PersonalInfo) String() string {
 		return "<nil>"
 	}
 
-	var fields [2]string
+	var fields [1]string
 	i := 0
 	if v.Age != nil {
 		fields[i] = fmt.Sprintf("Age: %v", *(v.Age))
-		i++
-	}
-	if v.JobTitle != nil {
-		fields[i] = fmt.Sprintf("JobTitle: %v", *(v.JobTitle))
 		i++
 	}
 
@@ -5053,12 +4971,6 @@ func (v *PersonalInfo) Equals(rhs *PersonalInfo) bool {
 	if !_String_EqualsPtr(v.Race, rhs.Race) {
 		return false
 	}
-	if !_String_EqualsPtr(v.Ssn, rhs.Ssn) {
-		return false
-	}
-	if !_String_EqualsPtr(v.JobTitle, rhs.JobTitle) {
-		return false
-	}
 
 	return true
 }
@@ -5073,9 +4985,6 @@ func (v *PersonalInfo) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 		enc.AddInt32("age", *v.Age)
 	}
 
-	if v.JobTitle != nil {
-		enc.AddString("jobTitle", *v.JobTitle)
-	}
 	return err
 }
 
@@ -5107,36 +5016,6 @@ func (v *PersonalInfo) GetRace() (o string) {
 // IsSetRace returns true if Race is not nil.
 func (v *PersonalInfo) IsSetRace() bool {
 	return v != nil && v.Race != nil
-}
-
-// GetSsn returns the value of Ssn if it is set or its
-// zero value if it is unset.
-func (v *PersonalInfo) GetSsn() (o string) {
-	if v != nil && v.Ssn != nil {
-		return *v.Ssn
-	}
-
-	return
-}
-
-// IsSetSsn returns true if Ssn is not nil.
-func (v *PersonalInfo) IsSetSsn() bool {
-	return v != nil && v.Ssn != nil
-}
-
-// GetJobTitle returns the value of JobTitle if it is set or its
-// zero value if it is unset.
-func (v *PersonalInfo) GetJobTitle() (o string) {
-	if v != nil && v.JobTitle != nil {
-		return *v.JobTitle
-	}
-
-	return
-}
-
-// IsSetJobTitle returns true if JobTitle is not nil.
-func (v *PersonalInfo) IsSetJobTitle() bool {
-	return v != nil && v.JobTitle != nil
 }
 
 // A point in 2D space.
@@ -8475,11 +8354,11 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "structs",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/structs",
 	FilePath: "structs.thrift",
-	SHA1:     "11a54af4d2d1b524d5f01c5e695e74f6a47f3228",
+	SHA1:     "b19a941227d7418b94291c00368b54bc89d663ff",
 	Includes: []*thriftreflect.ThriftModule{
 		enums.ThriftModule,
 	},
 	Raw: rawIDL,
 }
 
-const rawIDL = "include \"./enums.thrift\"\n\nstruct EmptyStruct {}\n\n//////////////////////////////////////////////////////////////////////////////\n// Structs with primitives\n\n/**\n * A struct that contains primitive fields exclusively.\n *\n * All fields are required.\n */\nstruct PrimitiveRequiredStruct {\n    1: required bool boolField\n    2: required byte byteField\n    3: required i16 int16Field\n    4: required i32 int32Field\n    5: required i64 int64Field\n    6: required double doubleField\n    7: required string stringField\n    8: required binary binaryField\n}\n\n/**\n * A struct that contains primitive fields exclusively.\n *\n * All fields are optional.\n */\nstruct PrimitiveOptionalStruct {\n    1: optional bool boolField\n    2: optional byte byteField\n    3: optional i16 int16Field\n    4: optional i32 int32Field\n    5: optional i64 int64Field\n    6: optional double doubleField\n    7: optional string stringField\n    8: optional binary binaryField\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Nested structs (Required)\n\n/**\n * A point in 2D space.\n */\nstruct Point {\n    1: required double x\n    2: required double y\n}\n\n/**\n * Size of something.\n */\nstruct Size {\n    /**\n     * Width in pixels.\n     */\n    1: required double width\n    /** Height in pixels. */\n    2: required double height\n}\n\nstruct Frame {\n    1: required Point topLeft\n    2: required Size size\n}\n\nstruct Edge {\n    1: required Point startPoint\n    2: required Point endPoint\n}\n\n/**\n * A graph is comprised of zero or more edges.\n */\nstruct Graph {\n    /**\n     * List of edges in the graph.\n     *\n     * May be empty.\n     */\n    1: required list<Edge> edges\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Nested structs (Optional)\n\nstruct ContactInfo {\n    1: required string emailAddress\n}\n\nstruct PersonalInfo {\n    1: optional i32 age\n    2: optional string race (go.pii)\n    3: optional string ssn (go.pii)\n    4: optional string jobTitle\n}\n\nstruct User {\n    1: required string name\n    2: optional ContactInfo contact\n    3: optional PersonalInfo personal\n}\n\ntypedef map<string, User> UserMap\n\n//////////////////////////////////////////////////////////////////////////////\n// self-referential struct\n\ntypedef Node List\n\n/**\n * Node is linked list of values.\n * All values are 32-bit integers.\n */\nstruct Node {\n    1: required i32 value\n    2: optional List tail\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// JSON tagged structs\n\nstruct Rename {\n    1: required string Default (go.tag = 'json:\"default\"')\n    2: required string camelCase (go.tag = 'json:\"snake_case\"')\n}\n\nstruct Omit {\n    1: required string serialized\n    2: required string hidden (go.tag = 'json:\"-\"')\n}\n\nstruct GoTags {\n        1: required string Foo (go.tag = 'json:\"-\" foo:\"bar\"')\n        2: optional string Bar (go.tag = 'bar:\"foo\"')\n        3: required string FooBar (go.tag = 'json:\"foobar,option1,option2\" bar:\"foo,option1\" foo:\"foobar\"')\n        4: required string FooBarWithSpace (go.tag = 'json:\"foobarWithSpace\" foo:\"foo bar foobar barfoo\"')\n        5: optional string FooBarWithOmitEmpty (go.tag = 'json:\"foobarWithOmitEmpty,omitempty\"')\n        6: required string FooBarWithRequired (go.tag = 'json:\"foobarWithRequired,required\"')\n}\n\nstruct NotOmitEmpty {\n    1: optional string NotOmitEmptyString (go.tag = 'json:\"notOmitEmptyString,!omitempty\"')\n    2: optional string NotOmitEmptyInt (go.tag = 'json:\"notOmitEmptyInt,!omitempty\"')\n    3: optional string NotOmitEmptyBool (go.tag = 'json:\"notOmitEmptyBool,!omitempty\"')\n    4: optional list<string> NotOmitEmptyList (go.tag = 'json:\"notOmitEmptyList,!omitempty\"')\n    5: optional map<string, string> NotOmitEmptyMap (go.tag = 'json:\"notOmitEmptyMap,!omitempty\"')\n    6: optional list<string> NotOmitEmptyListMixedWithOmitEmpty (go.tag = 'json:\"notOmitEmptyListMixedWithOmitEmpty,!omitempty,omitempty\"')\n    7: optional list<string> NotOmitEmptyListMixedWithOmitEmptyV2 (go.tag = 'json:\"notOmitEmptyListMixedWithOmitEmptyV2,omitempty,!omitempty\"')\n    8: optional string OmitEmptyString (go.tag = 'json:\"omitEmptyString,omitempty\"') // to test that there can be a mix of fields that do and don't have !omitempty\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Default values\n\nstruct DefaultsStruct {\n    1: required i32 requiredPrimitive = 100\n    2: optional i32 optionalPrimitive = 200\n\n    3: required enums.EnumDefault requiredEnum = enums.EnumDefault.Bar\n    4: optional enums.EnumDefault optionalEnum = 2\n\n    5: required list<string> requiredList = [\"hello\", \"world\"]\n    6: optional list<double> optionalList = [1, 2.0, 3]\n\n    7: required Frame requiredStruct = {\n        \"topLeft\": {\"x\": 1, \"y\": 2},\n        \"size\": {\"width\": 100, \"height\": 200},\n    }\n    8: optional Edge optionalStruct = {\n        \"startPoint\": {\"x\": 1, \"y\": 2},\n        \"endPoint\":   {\"x\": 3, \"y\": 4},\n    }\n\n    9:  required bool requiredBoolDefaultTrue = true\n    10: optional bool optionalBoolDefaultTrue = true\n\n    11: required bool requiredBoolDefaultFalse = false\n    12: optional bool optionalBoolDefaultFalse = false\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Opt-out of Zap\n\nstruct ZapOptOutStruct {\n    1: required string name\n    2: required string optout (go.nolog)\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Field jabels\n\nstruct StructLabels {\n    // reserved keyword as label\n    1: optional bool isRequired (go.label = \"required\")\n\n    // go.tag's JSON tag takes precedence over go.label\n    2: optional string foo (go.label = \"bar\", go.tag = 'json:\"not_bar\"')\n\n    // Empty label\n    3: optional string qux (go.label = \"\")\n\n    // All-caps label\n    4: optional string quux (go.label = \"QUUX\")\n}\n"
+const rawIDL = "include \"./enums.thrift\"\n\nstruct EmptyStruct {}\n\n//////////////////////////////////////////////////////////////////////////////\n// Structs with primitives\n\n/**\n * A struct that contains primitive fields exclusively.\n *\n * All fields are required.\n */\nstruct PrimitiveRequiredStruct {\n    1: required bool boolField\n    2: required byte byteField\n    3: required i16 int16Field\n    4: required i32 int32Field\n    5: required i64 int64Field\n    6: required double doubleField\n    7: required string stringField\n    8: required binary binaryField\n}\n\n/**\n * A struct that contains primitive fields exclusively.\n *\n * All fields are optional.\n */\nstruct PrimitiveOptionalStruct {\n    1: optional bool boolField\n    2: optional byte byteField\n    3: optional i16 int16Field\n    4: optional i32 int32Field\n    5: optional i64 int64Field\n    6: optional double doubleField\n    7: optional string stringField\n    8: optional binary binaryField\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Nested structs (Required)\n\n/**\n * A point in 2D space.\n */\nstruct Point {\n    1: required double x\n    2: required double y\n}\n\n/**\n * Size of something.\n */\nstruct Size {\n    /**\n     * Width in pixels.\n     */\n    1: required double width\n    /** Height in pixels. */\n    2: required double height\n}\n\nstruct Frame {\n    1: required Point topLeft\n    2: required Size size\n}\n\nstruct Edge {\n    1: required Point startPoint\n    2: required Point endPoint\n}\n\n/**\n * A graph is comprised of zero or more edges.\n */\nstruct Graph {\n    /**\n     * List of edges in the graph.\n     *\n     * May be empty.\n     */\n    1: required list<Edge> edges\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Nested structs (Optional)\n\nstruct ContactInfo {\n    1: required string emailAddress\n}\n\nstruct PersonalInfo {\n    1: optional i32 age\n    2: optional string race (go.pii)\n}\n\nstruct User {\n    1: required string name\n    2: optional ContactInfo contact\n    3: optional PersonalInfo personal\n}\n\ntypedef map<string, User> UserMap\n\n//////////////////////////////////////////////////////////////////////////////\n// self-referential struct\n\ntypedef Node List\n\n/**\n * Node is linked list of values.\n * All values are 32-bit integers.\n */\nstruct Node {\n    1: required i32 value\n    2: optional List tail\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// JSON tagged structs\n\nstruct Rename {\n    1: required string Default (go.tag = 'json:\"default\"')\n    2: required string camelCase (go.tag = 'json:\"snake_case\"')\n}\n\nstruct Omit {\n    1: required string serialized\n    2: required string hidden (go.tag = 'json:\"-\"')\n}\n\nstruct GoTags {\n        1: required string Foo (go.tag = 'json:\"-\" foo:\"bar\"')\n        2: optional string Bar (go.tag = 'bar:\"foo\"')\n        3: required string FooBar (go.tag = 'json:\"foobar,option1,option2\" bar:\"foo,option1\" foo:\"foobar\"')\n        4: required string FooBarWithSpace (go.tag = 'json:\"foobarWithSpace\" foo:\"foo bar foobar barfoo\"')\n        5: optional string FooBarWithOmitEmpty (go.tag = 'json:\"foobarWithOmitEmpty,omitempty\"')\n        6: required string FooBarWithRequired (go.tag = 'json:\"foobarWithRequired,required\"')\n}\n\nstruct NotOmitEmpty {\n    1: optional string NotOmitEmptyString (go.tag = 'json:\"notOmitEmptyString,!omitempty\"')\n    2: optional string NotOmitEmptyInt (go.tag = 'json:\"notOmitEmptyInt,!omitempty\"')\n    3: optional string NotOmitEmptyBool (go.tag = 'json:\"notOmitEmptyBool,!omitempty\"')\n    4: optional list<string> NotOmitEmptyList (go.tag = 'json:\"notOmitEmptyList,!omitempty\"')\n    5: optional map<string, string> NotOmitEmptyMap (go.tag = 'json:\"notOmitEmptyMap,!omitempty\"')\n    6: optional list<string> NotOmitEmptyListMixedWithOmitEmpty (go.tag = 'json:\"notOmitEmptyListMixedWithOmitEmpty,!omitempty,omitempty\"')\n    7: optional list<string> NotOmitEmptyListMixedWithOmitEmptyV2 (go.tag = 'json:\"notOmitEmptyListMixedWithOmitEmptyV2,omitempty,!omitempty\"')\n    8: optional string OmitEmptyString (go.tag = 'json:\"omitEmptyString,omitempty\"') // to test that there can be a mix of fields that do and don't have !omitempty\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Default values\n\nstruct DefaultsStruct {\n    1: required i32 requiredPrimitive = 100\n    2: optional i32 optionalPrimitive = 200\n\n    3: required enums.EnumDefault requiredEnum = enums.EnumDefault.Bar\n    4: optional enums.EnumDefault optionalEnum = 2\n\n    5: required list<string> requiredList = [\"hello\", \"world\"]\n    6: optional list<double> optionalList = [1, 2.0, 3]\n\n    7: required Frame requiredStruct = {\n        \"topLeft\": {\"x\": 1, \"y\": 2},\n        \"size\": {\"width\": 100, \"height\": 200},\n    }\n    8: optional Edge optionalStruct = {\n        \"startPoint\": {\"x\": 1, \"y\": 2},\n        \"endPoint\":   {\"x\": 3, \"y\": 4},\n    }\n\n    9:  required bool requiredBoolDefaultTrue = true\n    10: optional bool optionalBoolDefaultTrue = true\n\n    11: required bool requiredBoolDefaultFalse = false\n    12: optional bool optionalBoolDefaultFalse = false\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Opt-out of Zap\n\nstruct ZapOptOutStruct {\n    1: required string name\n    2: required string optout (go.nolog)\n}\n\n//////////////////////////////////////////////////////////////////////////////\n// Field jabels\n\nstruct StructLabels {\n    // reserved keyword as label\n    1: optional bool isRequired (go.label = \"required\")\n\n    // go.tag's JSON tag takes precedence over go.label\n    2: optional string foo (go.label = \"bar\", go.tag = 'json:\"not_bar\"')\n\n    // Empty label\n    3: optional string qux (go.label = \"\")\n\n    // All-caps label\n    4: optional string quux (go.label = \"QUUX\")\n}\n"

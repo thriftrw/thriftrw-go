@@ -25,10 +25,12 @@ import (
 	"strings"
 	"testing"
 
-	"go.uber.org/thriftrw/compile"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/thriftrw/compile"
+	"go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
+	"go.uber.org/zap/zapcore"
 )
 
 func TestFieldLabelConflict(t *testing.T) {
@@ -195,20 +197,50 @@ func TestHasPIIAnnotation(t *testing.T) {
 		spec *compile.FieldSpec
 		want bool
 	}{
-		{
-			name: "pii annotation",
-			spec: pii,
-			want: true,
-		},
-		{
-			name: "no pii annotation",
-			spec: foo,
-			want: false,
-		},
+		{name: "pii annotation", spec: pii, want: true},
+		{name: "no pii annotation", spec: foo, want: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equalf(t, tt.want, hasPIIAnnotation(tt.spec), "hasPIIAnnotation(%v)", tt.spec)
 		})
 	}
+}
+
+func TestSanitizePII(t *testing.T) {
+	age := int32(21)
+	pi := ts.PersonalInfo{
+		Age:  toPtr(age),
+		Race: toPtr("kryptonian"),
+	}
+	piiException := exceptions.DoesNotExistException{
+		Key:      "s",
+		UserName: toPtr("superman"),
+	}
+	piEncoder := zapcore.NewMapObjectEncoder()
+	require.NoError(t, pi.MarshalLogObject(piEncoder))
+
+	piiExceptionEncoder := zapcore.NewMapObjectEncoder()
+	require.NoError(t, piiException.MarshalLogObject(piiExceptionEncoder))
+
+	tests := []struct {
+		name string
+		got  any
+		want any
+	}{
+		{name: "struct/zap", got: piEncoder.Fields, want: map[string]interface{}{"age": age}},
+		{name: "struct/string", got: pi.String(), want: "PersonalInfo{Age: 21}"},
+		{name: "exception/zap", got: piiExceptionEncoder.Fields, want: map[string]interface{}{"key": "s"}},
+		{name: "exception/string", got: piiException.String(), want: "DoesNotExistException{Key: s}"},
+		{name: "exception/error", got: piiException.Error(), want: "DoesNotExistException{Key: s}"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, tt.got)
+		})
+	}
+}
+
+func toPtr[T any](input T) *T {
+	return &input
 }

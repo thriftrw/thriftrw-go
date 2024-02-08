@@ -16,8 +16,9 @@ import (
 // Raised when something doesn't exist.
 type DoesNotExistException struct {
 	// Key that was missing.
-	Key    string  `json:"key,required"`
-	Error2 *string `json:"Error,omitempty"`
+	Key      string  `json:"key,required"`
+	Error2   *string `json:"Error,omitempty"`
+	UserName *string `json:"userName,omitempty"`
 }
 
 // ToWire translates a DoesNotExistException struct into a Thrift-level intermediate
@@ -37,7 +38,7 @@ type DoesNotExistException struct {
 //	}
 func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 	var (
-		fields [2]wire.Field
+		fields [3]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -55,6 +56,14 @@ func (v *DoesNotExistException) ToWire() (wire.Value, error) {
 			return w, err
 		}
 		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
+	if v.UserName != nil {
+		w, err = wire.NewValueString(*(v.UserName)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
 		i++
 	}
 
@@ -103,6 +112,16 @@ func (v *DoesNotExistException) FromWire(w wire.Value) error {
 				}
 
 			}
+		case 3:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.UserName = &x
+				if err != nil {
+					return err
+				}
+
+			}
 		}
 	}
 
@@ -144,6 +163,18 @@ func (v *DoesNotExistException) Encode(sw stream.Writer) error {
 		}
 	}
 
+	if v.UserName != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := sw.WriteString(*(v.UserName)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
 	return sw.WriteStructEnd()
 }
 
@@ -177,6 +208,14 @@ func (v *DoesNotExistException) Decode(sr stream.Reader) error {
 			var x string
 			x, err = sr.ReadString()
 			v.Error2 = &x
+			if err != nil {
+				return err
+			}
+
+		case fh.ID == 3 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.UserName = &x
 			if err != nil {
 				return err
 			}
@@ -258,6 +297,9 @@ func (v *DoesNotExistException) Equals(rhs *DoesNotExistException) bool {
 	if !_String_EqualsPtr(v.Error2, rhs.Error2) {
 		return false
 	}
+	if !_String_EqualsPtr(v.UserName, rhs.UserName) {
+		return false
+	}
 
 	return true
 }
@@ -272,6 +314,7 @@ func (v *DoesNotExistException) MarshalLogObject(enc zapcore.ObjectEncoder) (err
 	if v.Error2 != nil {
 		enc.AddString("Error", *v.Error2)
 	}
+
 	return err
 }
 
@@ -297,6 +340,21 @@ func (v *DoesNotExistException) GetError2() (o string) {
 // IsSetError2 returns true if Error2 is not nil.
 func (v *DoesNotExistException) IsSetError2() bool {
 	return v != nil && v.Error2 != nil
+}
+
+// GetUserName returns the value of UserName if it is set or its
+// zero value if it is unset.
+func (v *DoesNotExistException) GetUserName() (o string) {
+	if v != nil && v.UserName != nil {
+		return *v.UserName
+	}
+
+	return
+}
+
+// IsSetUserName returns true if UserName is not nil.
+func (v *DoesNotExistException) IsSetUserName() bool {
+	return v != nil && v.UserName != nil
 }
 
 func (v *DoesNotExistException) Error() string {
@@ -739,8 +797,8 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "exceptions",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/exceptions",
 	FilePath: "exceptions.thrift",
-	SHA1:     "a31a29f9f7bca3221100e43e32b0d833ca9c774e",
+	SHA1:     "79cea1006d14acc62a1e637626fd242b25ad7bd6",
 	Raw:      rawIDL,
 }
 
-const rawIDL = "exception EmptyException {}\n\n/**\n * Raised when something doesn't exist.\n */\nexception DoesNotExistException {\n    /** Key that was missing. */\n    1: required string key\n    2: optional string Error (go.name=\"Error2\")\n}\n\nexception Does_Not_Exist_Exception_Collision {\n /** Key that was missing. */\n    1: required string key\n    2: optional string Error (go.name=\"Error2\")\n} (go.name=\"DoesNotExistException2\")\n"
+const rawIDL = "exception EmptyException {}\n\n/**\n * Raised when something doesn't exist.\n */\nexception DoesNotExistException {\n    /** Key that was missing. */\n    1: required string key\n    2: optional string Error (go.name=\"Error2\")\n    3: optional string userName (go.pii)\n}\n\nexception Does_Not_Exist_Exception_Collision {\n /** Key that was missing. */\n    1: required string key\n    2: optional string Error (go.name=\"Error2\")\n} (go.name=\"DoesNotExistException2\")\n"

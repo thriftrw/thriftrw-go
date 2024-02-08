@@ -872,21 +872,9 @@ func TestZapOptOut(t *testing.T) {
 		spec *compile.FieldSpec
 		want bool
 	}{
-		{
-			name: "no annotation",
-			spec: foo,
-			want: false,
-		},
-		{
-			name: "pii annotation",
-			spec: pii,
-			want: true,
-		},
-		{
-			name: "nolog annotation",
-			spec: nolog,
-			want: true,
-		},
+		{name: "no annotation", spec: foo, want: false},
+		{name: "pii annotation", spec: pii, want: true},
+		{name: "nolog annotation", spec: nolog, want: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
