@@ -140,103 +140,57 @@ func TestCompileJSONTag(t *testing.T) {
 	}
 }
 
-func TestScrubPII(t *testing.T) {
+func TestHasRedactedAnnotation(t *testing.T) {
 	foo := &compile.FieldSpec{
 		Name: "foo",
 	}
-	pii := &compile.FieldSpec{
-		Name:        "pii",
-		Annotations: compile.Annotations{PIILabel: ""},
-	}
-	tests := []struct {
-		name string
-		spec compile.FieldGroup
-		want compile.FieldGroup
-	}{
-		{
-			name: "without pii annotation",
-			spec: compile.FieldGroup{
-				foo,
-				foo,
-			},
-			want: compile.FieldGroup{
-				foo,
-				foo,
-			},
-		},
-		{
-			name: "with pii annotation",
-			spec: compile.FieldGroup{
-				foo,
-				pii,
-				foo,
-			},
-			want: compile.FieldGroup{
-				foo,
-				foo,
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equalf(t, tt.want, scrubPII(tt.spec), "scrubPII(%v)", tt.spec)
-		})
-	}
-}
-
-func TestHasPIIAnnotation(t *testing.T) {
-	foo := &compile.FieldSpec{
-		Name: "foo",
-	}
-	pii := &compile.FieldSpec{
-		Name:        "pii",
-		Annotations: compile.Annotations{PIILabel: ""},
+	redacted := &compile.FieldSpec{
+		Name:        "redacted",
+		Annotations: compile.Annotations{RedactedLabel: ""},
 	}
 	tests := []struct {
 		name string
 		spec *compile.FieldSpec
 		want bool
 	}{
-		{name: "pii annotation", spec: pii, want: true},
-		{name: "no pii annotation", spec: foo, want: false},
+		{name: "redacted annotation", spec: redacted, want: true},
+		{name: "no redacted annotation", spec: foo, want: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equalf(t, tt.want, hasPIIAnnotation(tt.spec), "hasPIIAnnotation(%v)", tt.spec)
+			assert.Equalf(t, tt.want, requiresRedaction(tt.spec), "requiresRedaction(%v)", tt.spec)
 		})
 	}
 }
 
-func TestSanitizePII(t *testing.T) {
+func TestSanitizeRedacted(t *testing.T) {
 	age := int32(21)
 	pi := ts.PersonalInfo{
 		Age:  toPtr(age),
-		Race: toPtr("kryptonian"),
+		Race: toPtr("martian"),
 	}
-	piiException := exceptions.DoesNotExistException{
+	redactedException := exceptions.DoesNotExistException{
 		Key:      "s",
-		UserName: toPtr("superman"),
+		UserName: toPtr("john doe"),
 	}
 	piEncoder := zapcore.NewMapObjectEncoder()
 	require.NoError(t, pi.MarshalLogObject(piEncoder))
 
-	piiExceptionEncoder := zapcore.NewMapObjectEncoder()
-	require.NoError(t, piiException.MarshalLogObject(piiExceptionEncoder))
+	redactedExceptionEncoder := zapcore.NewMapObjectEncoder()
+	require.NoError(t, redactedException.MarshalLogObject(redactedExceptionEncoder))
 
 	tests := []struct {
 		name string
 		got  any
 		want any
 	}{
-		{name: "struct/zap", got: piEncoder.Fields, want: map[string]interface{}{"age": age}},
-		{name: "struct/string", got: pi.String(), want: "PersonalInfo{Age: 21}"},
-		{name: "exception/zap", got: piiExceptionEncoder.Fields, want: map[string]interface{}{"key": "s"}},
-		{name: "exception/string", got: piiException.String(), want: "DoesNotExistException{Key: s}"},
-		{name: "exception/error", got: piiException.Error(), want: "DoesNotExistException{Key: s}"},
+		{name: "struct/string", got: pi.String(), want: "PersonalInfo{Age: 21, Race: <redacted>}"},
+		{name: "exception/string", got: redactedException.String(), want: "DoesNotExistException{Key: s, UserName: <redacted>}"},
+		{name: "exception/error", got: redactedException.Error(), want: "DoesNotExistException{Key: s, UserName: <redacted>}"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, tt.got)
+			assert.EqualValues(t, tt.want, tt.got)
 		})
 	}
 }

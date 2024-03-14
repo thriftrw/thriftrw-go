@@ -253,12 +253,16 @@ func (v *DoesNotExistException) String() string {
 		return "<nil>"
 	}
 
-	var fields [2]string
+	var fields [3]string
 	i := 0
 	fields[i] = fmt.Sprintf("Key: %v", v.Key)
 	i++
 	if v.Error2 != nil {
 		fields[i] = fmt.Sprintf("Error2: %v", *(v.Error2))
+		i++
+	}
+	if v.UserName != nil {
+		fields[i] = "UserName: <redacted>"
 		i++
 	}
 
@@ -314,7 +318,9 @@ func (v *DoesNotExistException) MarshalLogObject(enc zapcore.ObjectEncoder) (err
 	if v.Error2 != nil {
 		enc.AddString("Error", *v.Error2)
 	}
-
+	if v.UserName != nil {
+		enc.AddString("userName", *v.UserName)
+	}
 	return err
 }
 
@@ -797,8 +803,8 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "exceptions",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/exceptions",
 	FilePath: "exceptions.thrift",
-	SHA1:     "79cea1006d14acc62a1e637626fd242b25ad7bd6",
+	SHA1:     "95b2e50ab244e43227e9bd23ee272a48ee5a30b9",
 	Raw:      rawIDL,
 }
 
-const rawIDL = "exception EmptyException {}\n\n/**\n * Raised when something doesn't exist.\n */\nexception DoesNotExistException {\n    /** Key that was missing. */\n    1: required string key\n    2: optional string Error (go.name=\"Error2\")\n    3: optional string userName (go.pii)\n}\n\nexception Does_Not_Exist_Exception_Collision {\n /** Key that was missing. */\n    1: required string key\n    2: optional string Error (go.name=\"Error2\")\n} (go.name=\"DoesNotExistException2\")\n"
+const rawIDL = "exception EmptyException {}\n\n/**\n * Raised when something doesn't exist.\n */\nexception DoesNotExistException {\n    /** Key that was missing. */\n    1: required string key\n    2: optional string Error (go.name=\"Error2\")\n    3: optional string userName (go.redacted)\n}\n\nexception Does_Not_Exist_Exception_Collision {\n /** Key that was missing. */\n    1: required string key\n    2: optional string Error (go.name=\"Error2\")\n} (go.name=\"DoesNotExistException2\")\n"

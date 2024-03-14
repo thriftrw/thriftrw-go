@@ -694,24 +694,33 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			<$fields := newVar "fields">
 			<$i := newVar "i">
 
-			<$sanitizedFields := scrubPII .Fields >
-			var <$fields> [<len $sanitizedFields>]string
+			var <$fields> [<len .Fields>]string
 			<$i> := 0
-			<range $sanitizedFields >
+			<range .Fields>
 				<- $fname := goName . ->
 				<- $f := printf "%s.%s" $v $fname ->
+				<- $requiresRedaction := requiresRedaction . ->
+				<- $redactedContent := redactedContent ->
 
 				<- if not .Required ->
 					if <$f> != nil {
-						<if isPrimitiveType .Type ->
-							<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", *(<$f>))
-						<- else ->
-							<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
+						<- if $requiresRedaction ->
+							<$fields>[<$i>] = "<$fname>: <$redactedContent>"
+						<- else >
+							<if isPrimitiveType .Type ->
+								<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", *(<$f>))
+							<- else ->
+								<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
+							<- end>
 						<- end>
 						<$i>++
 					}
 				<- else ->
-					<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
+					<- if $requiresRedaction ->
+						<$fields>[<$i>] = "<$fname>: <$redactedContent>"
+					<- else ->
+						<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
+					<- end>
 					<$i>++
 				<- end>
 			<end>
@@ -719,7 +728,8 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			return <$fmt>.Sprintf("<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
 		}
 		`, f,
-		TemplateFunc("scrubPII", scrubPII),
+		TemplateFunc("requiresRedaction", requiresRedaction),
+		TemplateFunc("redactedContent", redactedContent),
 	)
 }
 
@@ -879,27 +889,22 @@ func verifyUniqueFieldLabels(fs compile.FieldGroup) error {
 	return nil
 }
 
-// PIILabel provides a mechanism to excludes certain struct fields from
-// Zap logs, and from the outputs of String() and Error() methods.
+// RedactedLabel provides a mechanism to redact certain struct fields from
+// the outputs of String() and Error() methods.
 //
 //	struct Contact {
 //	    1: required string name
-//	    2: required string email (go.pii) // will be omitted from Zap logs, Stringer(), and Error() methods.
+//	    2: required string email (go.redacted)
 //	}
-const PIILabel = "go.pii"
+const RedactedLabel = "go.redacted"
 
-func hasPIIAnnotation(spec *compile.FieldSpec) bool {
-	_, ok := spec.Annotations[PIILabel]
+func requiresRedaction(spec *compile.FieldSpec) bool {
+	_, ok := spec.Annotations[RedactedLabel]
 	return ok
 }
 
-func scrubPII(fields compile.FieldGroup) compile.FieldGroup {
-	out := make(compile.FieldGroup, 0)
-	for _, field := range fields {
-		if hasPIIAnnotation(field) {
-			continue
-		}
-		out = append(out, field)
-	}
-	return out
+const _redactedContent = "<redacted>"
+
+func redactedContent() string {
+	return _redactedContent
 }

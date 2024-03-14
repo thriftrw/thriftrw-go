@@ -192,5 +192,5 @@ func (z *zapGenerator) zapEncodeEnd(spec compile.TypeSpec) string {
 
 func zapOptOut(spec *compile.FieldSpec) bool {
 	_, ok := spec.Annotations[NoZapLabel]
-	return ok || hasPIIAnnotation(spec)
+	return ok
 }
