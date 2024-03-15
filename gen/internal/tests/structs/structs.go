@@ -4989,7 +4989,7 @@ func (v *PersonalInfo) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 		enc.AddInt32("age", *v.Age)
 	}
 	if v.Race != nil {
-		enc.AddString("race", *v.Race)
+		enc.AddString("race", "<redacted>")
 	}
 	return err
 }

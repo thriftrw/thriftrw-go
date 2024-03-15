@@ -163,7 +163,7 @@ func TestHasRedactedAnnotation(t *testing.T) {
 	}
 }
 
-func TestSanitizeRedacted(t *testing.T) {
+func TestRedactedAnnotation(t *testing.T) {
 	age := int32(21)
 	pi := ts.PersonalInfo{
 		Age:  toPtr(age),
@@ -173,11 +173,17 @@ func TestSanitizeRedacted(t *testing.T) {
 		Key:      "s",
 		UserName: toPtr("john doe"),
 	}
-	piEncoder := zapcore.NewMapObjectEncoder()
-	require.NoError(t, pi.MarshalLogObject(piEncoder))
+	enc := zapcore.NewMapObjectEncoder()
+	require.NoError(t, pi.MarshalLogObject(enc))
+	require.Len(t, enc.Fields, 2)
+	_, ok := enc.Fields["race"]
+	require.True(t, ok)
 
-	redactedExceptionEncoder := zapcore.NewMapObjectEncoder()
-	require.NoError(t, redactedException.MarshalLogObject(redactedExceptionEncoder))
+	eEncoder := zapcore.NewMapObjectEncoder()
+	require.NoError(t, redactedException.MarshalLogObject(eEncoder))
+	require.Len(t, eEncoder.Fields, 2)
+	_, ok = eEncoder.Fields["userName"]
+	require.True(t, ok)
 
 	tests := []struct {
 		name string
@@ -185,8 +191,10 @@ func TestSanitizeRedacted(t *testing.T) {
 		want any
 	}{
 		{name: "struct/string", got: pi.String(), want: "PersonalInfo{Age: 21, Race: <redacted>}"},
+		{name: "struct/MarshalLogObject", got: enc.Fields["race"], want: _redactedContent},
 		{name: "exception/string", got: redactedException.String(), want: "DoesNotExistException{Key: s, UserName: <redacted>}"},
 		{name: "exception/error", got: redactedException.Error(), want: "DoesNotExistException{Key: s, UserName: <redacted>}"},
+		{name: "exception/MarshalLogObject", got: eEncoder.Fields["userName"], want: _redactedContent},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

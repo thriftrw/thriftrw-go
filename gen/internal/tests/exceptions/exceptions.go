@@ -319,7 +319,7 @@ func (v *DoesNotExistException) MarshalLogObject(enc zapcore.ObjectEncoder) (err
 		enc.AddString("Error", *v.Error2)
 	}
 	if v.UserName != nil {
-		enc.AddString("userName", *v.UserName)
+		enc.AddString("userName", "<redacted>")
 	}
 	return err
 }

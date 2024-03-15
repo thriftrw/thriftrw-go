@@ -792,18 +792,28 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 			if <$v> == nil {
 				return nil
 			}
+			< $redactedContent := redactedContent ->
 			<range .Fields>
+				<- $requiresRedaction := requiresRedaction . ->
 				<- if not (zapOptOut .) ->
 					<- $fval := printf "%s.%s" $v (goName .) ->
 					<- if .Required ->
-						<zapEncodeBegin .Type ->
-							<$enc>.Add<zapEncoder .Type>("<fieldLabel .>", <zapMarshaler .Type $fval>)
-						<- zapEncodeEnd .Type>
+						<- if $requiresRedaction ->
+								<$enc>.AddString("<fieldLabel .>", "<$redactedContent>")
+						<- else ->
+							<- zapEncodeBegin .Type ->
+								<$enc>.Add<zapEncoder .Type>("<fieldLabel .>", <zapMarshaler .Type $fval>)
+							<- zapEncodeEnd .Type ->
+						<- end ->
 					<- else ->
 						if <$fval> != nil {
-							<zapEncodeBegin .Type ->
-								<$enc>.Add<zapEncoder .Type>("<fieldLabel .>", <zapMarshalerPtr .Type $fval>)
-							<- zapEncodeEnd .Type>
+							<- if $requiresRedaction ->
+								<$enc>.AddString("<fieldLabel .>", "<$redactedContent>")
+							<- else ->
+								<- zapEncodeBegin .Type ->
+									<$enc>.Add<zapEncoder .Type>("<fieldLabel .>", <zapMarshalerPtr .Type $fval>)
+								<- zapEncodeEnd .Type ->
+							<- end >
 						}
 					<- end>
 				<- end>
@@ -813,6 +823,8 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 		`, f,
 		TemplateFunc("zapOptOut", zapOptOut),
 		TemplateFunc("fieldLabel", entityLabel),
+		TemplateFunc("requiresRedaction", requiresRedaction),
+		TemplateFunc("redactedContent", redactedContent),
 	)
 }
 
@@ -890,7 +902,7 @@ func verifyUniqueFieldLabels(fs compile.FieldGroup) error {
 }
 
 // RedactedLabel provides a mechanism to redact certain struct fields from
-// the outputs of String() and Error() methods.
+// the outputs of String(), Error() and MarshalLogObject() methods.
 //
 //	struct Contact {
 //	    1: required string name
