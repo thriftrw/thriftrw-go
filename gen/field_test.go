@@ -144,21 +144,21 @@ func TestHasRedactedAnnotation(t *testing.T) {
 	foo := &compile.FieldSpec{
 		Name: "foo",
 	}
-	redacted := &compile.FieldSpec{
-		Name:        "redacted",
-		Annotations: compile.Annotations{RedactedLabel: ""},
+	redact := &compile.FieldSpec{
+		Name:        "redact",
+		Annotations: compile.Annotations{RedactLabel: ""},
 	}
 	tests := []struct {
 		name string
 		spec *compile.FieldSpec
 		want bool
 	}{
-		{name: "redacted annotation", spec: redacted, want: true},
-		{name: "no redacted annotation", spec: foo, want: false},
+		{name: "redact annotation", spec: redact, want: true},
+		{name: "no redact annotation", spec: foo, want: false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equalf(t, tt.want, requiresRedaction(tt.spec), "requiresRedaction(%v)", tt.spec)
+			assert.Equalf(t, tt.want, shouldRedact(tt.spec), "shouldRedact(%v)", tt.spec)
 		})
 	}
 }
@@ -169,7 +169,7 @@ func TestRedactedAnnotation(t *testing.T) {
 		Age:  toPtr(age),
 		Race: toPtr("martian"),
 	}
-	redactedException := exceptions.DoesNotExistException{
+	redactException := exceptions.DoesNotExistException{
 		Key:      "s",
 		UserName: toPtr("john doe"),
 	}
@@ -180,7 +180,7 @@ func TestRedactedAnnotation(t *testing.T) {
 	require.True(t, ok)
 
 	eEncoder := zapcore.NewMapObjectEncoder()
-	require.NoError(t, redactedException.MarshalLogObject(eEncoder))
+	require.NoError(t, redactException.MarshalLogObject(eEncoder))
 	require.Len(t, eEncoder.Fields, 2)
 	_, ok = eEncoder.Fields["userName"]
 	require.True(t, ok)
@@ -191,10 +191,10 @@ func TestRedactedAnnotation(t *testing.T) {
 		want any
 	}{
 		{name: "struct/string", got: pi.String(), want: "PersonalInfo{Age: 21, Race: <redacted>}"},
-		{name: "struct/MarshalLogObject", got: enc.Fields["race"], want: _redactedContent},
-		{name: "exception/string", got: redactedException.String(), want: "DoesNotExistException{Key: s, UserName: <redacted>}"},
-		{name: "exception/error", got: redactedException.Error(), want: "DoesNotExistException{Key: s, UserName: <redacted>}"},
-		{name: "exception/MarshalLogObject", got: eEncoder.Fields["userName"], want: _redactedContent},
+		{name: "struct/MarshalLogObject", got: enc.Fields["race"], want: _redactContent},
+		{name: "exception/string", got: redactException.String(), want: "DoesNotExistException{Key: s, UserName: <redacted>}"},
+		{name: "exception/error", got: redactException.Error(), want: "DoesNotExistException{Key: s, UserName: <redacted>}"},
+		{name: "exception/MarshalLogObject", got: eEncoder.Fields["userName"], want: _redactContent},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

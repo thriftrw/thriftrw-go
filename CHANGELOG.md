@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ## Added
-- Redacted annotation provides a mechanism to redact certain struct fields from 
-  logs.
+- Redacted annotation provides a mechanism to redact certain struct fields from
+errors messages and log objects.
 
 ## [1.31.0] - 2023-06-09
 ### Changed

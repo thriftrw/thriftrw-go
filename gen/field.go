@@ -699,12 +699,12 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			<range .Fields>
 				<- $fname := goName . ->
 				<- $f := printf "%s.%s" $v $fname ->
-				<- $requiresRedaction := requiresRedaction . ->
+				<- $shouldRedact := shouldRedact . ->
 				<- $redactedContent := redactedContent ->
 
 				<- if not .Required ->
 					if <$f> != nil {
-						<- if $requiresRedaction ->
+						<- if $shouldRedact ->
 							<$fields>[<$i>] = "<$fname>: <$redactedContent>"
 						<- else >
 							<if isPrimitiveType .Type ->
@@ -716,7 +716,7 @@ func (f fieldGroupGenerator) String(g Generator) error {
 						<$i>++
 					}
 				<- else ->
-					<- if $requiresRedaction ->
+					<- if $shouldRedact ->
 						<$fields>[<$i>] = "<$fname>: <$redactedContent>"
 					<- else ->
 						<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
@@ -728,7 +728,7 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			return <$fmt>.Sprintf("<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
 		}
 		`, f,
-		TemplateFunc("requiresRedaction", requiresRedaction),
+		TemplateFunc("shouldRedact", shouldRedact),
 		TemplateFunc("redactedContent", redactedContent),
 	)
 }
@@ -794,11 +794,11 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 			}
 			< $redactedContent := redactedContent ->
 			<range .Fields>
-				<- $requiresRedaction := requiresRedaction . ->
+				<- $shouldRedact := shouldRedact . ->
 				<- if not (zapOptOut .) ->
 					<- $fval := printf "%s.%s" $v (goName .) ->
 					<- if .Required ->
-						<- if $requiresRedaction ->
+						<- if $shouldRedact ->
 								<$enc>.AddString("<fieldLabel .>", "<$redactedContent>")
 						<- else ->
 							<- zapEncodeBegin .Type ->
@@ -807,7 +807,7 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 						<- end ->
 					<- else ->
 						if <$fval> != nil {
-							<- if $requiresRedaction ->
+							<- if $shouldRedact ->
 								<$enc>.AddString("<fieldLabel .>", "<$redactedContent>")
 							<- else ->
 								<- zapEncodeBegin .Type ->
@@ -823,7 +823,7 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 		`, f,
 		TemplateFunc("zapOptOut", zapOptOut),
 		TemplateFunc("fieldLabel", entityLabel),
-		TemplateFunc("requiresRedaction", requiresRedaction),
+		TemplateFunc("shouldRedact", shouldRedact),
 		TemplateFunc("redactedContent", redactedContent),
 	)
 }
@@ -901,22 +901,22 @@ func verifyUniqueFieldLabels(fs compile.FieldGroup) error {
 	return nil
 }
 
-// RedactedLabel provides a mechanism to redact certain struct fields from
+// RedactLabel provides a mechanism to redact certain struct fields from
 // the outputs of String(), Error() and MarshalLogObject() methods.
 //
 //	struct Contact {
 //	    1: required string name
-//	    2: required string email (go.redacted)
+//	    2: required string email (go.redact)
 //	}
-const RedactedLabel = "go.redacted"
+const RedactLabel = "go.redact"
 
-func requiresRedaction(spec *compile.FieldSpec) bool {
-	_, ok := spec.Annotations[RedactedLabel]
+func shouldRedact(spec *compile.FieldSpec) bool {
+	_, ok := spec.Annotations[RedactLabel]
 	return ok
 }
 
-const _redactedContent = "<redacted>"
+const _redactContent = "<redacted>"
 
 func redactedContent() string {
-	return _redactedContent
+	return _redactContent
 }
