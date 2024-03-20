@@ -25,10 +25,12 @@ import (
 	"strings"
 	"testing"
 
-	"go.uber.org/thriftrw/compile"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/thriftrw/compile"
+	"go.uber.org/thriftrw/gen/internal/tests/exceptions"
+	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
+	"go.uber.org/zap/zapcore"
 )
 
 func TestFieldLabelConflict(t *testing.T) {
@@ -136,4 +138,71 @@ func TestCompileJSONTag(t *testing.T) {
 			require.Equal(t, tt.wantOmitempty, result.HasOption(omitempty))
 		})
 	}
+}
+
+func TestHasRedactedAnnotation(t *testing.T) {
+	foo := &compile.FieldSpec{
+		Name: "foo",
+	}
+	redact := &compile.FieldSpec{
+		Name:        "redact",
+		Annotations: compile.Annotations{RedactLabel: ""},
+	}
+	tests := []struct {
+		name string
+		spec *compile.FieldSpec
+		want bool
+	}{
+		{name: "redact annotation", spec: redact, want: true},
+		{name: "no redact annotation", spec: foo, want: false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, shouldRedact(tt.spec), "shouldRedact(%v)", tt.spec)
+		})
+	}
+}
+
+func TestRedactedAnnotation(t *testing.T) {
+	age := int32(21)
+	pi := ts.PersonalInfo{
+		Age:  toPtr(age),
+		Race: toPtr("martian"),
+	}
+	redactException := exceptions.DoesNotExistException{
+		Key:      "s",
+		UserName: toPtr("john doe"),
+	}
+	enc := zapcore.NewMapObjectEncoder()
+	require.NoError(t, pi.MarshalLogObject(enc))
+	require.Len(t, enc.Fields, 2)
+	_, ok := enc.Fields["race"]
+	require.True(t, ok)
+
+	eEncoder := zapcore.NewMapObjectEncoder()
+	require.NoError(t, redactException.MarshalLogObject(eEncoder))
+	require.Len(t, eEncoder.Fields, 2)
+	_, ok = eEncoder.Fields["userName"]
+	require.True(t, ok)
+
+	tests := []struct {
+		name string
+		got  any
+		want any
+	}{
+		{name: "struct/string", got: pi.String(), want: "PersonalInfo{Age: 21, Race: <redacted>}"},
+		{name: "struct/MarshalLogObject", got: enc.Fields["race"], want: _redactContent},
+		{name: "exception/string", got: redactException.String(), want: "DoesNotExistException{Key: s, UserName: <redacted>}"},
+		{name: "exception/error", got: redactException.Error(), want: "DoesNotExistException{Key: s, UserName: <redacted>}"},
+		{name: "exception/MarshalLogObject", got: eEncoder.Fields["userName"], want: _redactContent},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.EqualValues(t, tt.want, tt.got)
+		})
+	}
+}
+
+func toPtr[T any](input T) *T {
+	return &input
 }

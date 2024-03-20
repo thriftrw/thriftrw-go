@@ -46,7 +46,7 @@ type zapGenerator struct {
 
 // zapEncoder returns the Zap type name of the root spec, determining what type
 // the Zap marshaler needs to log it as (i.e. AddString, AppendObject, etc.)
-func (z *zapGenerator) zapEncoder(g Generator, spec compile.TypeSpec) string {
+func (z *zapGenerator) zapEncoder(_ Generator, spec compile.TypeSpec) string {
 	root := compile.RootTypeSpec(spec)
 
 	switch t := root.(type) {
