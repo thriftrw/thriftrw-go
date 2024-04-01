@@ -91,6 +91,7 @@ struct ContactInfo {
 
 struct PersonalInfo {
     1: optional i32 age
+    2: optional string race (go.redact)
 }
 
 struct User {

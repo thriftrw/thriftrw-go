@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-- No changes yet.
+## Added
+- Redacted annotation provides a mechanism to redact certain struct fields from
+errors messages and log objects.
 
 ## [1.31.0] - 2023-06-09
 ### Changed

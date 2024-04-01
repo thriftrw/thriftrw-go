@@ -699,25 +699,38 @@ func (f fieldGroupGenerator) String(g Generator) error {
 			<range .Fields>
 				<- $fname := goName . ->
 				<- $f := printf "%s.%s" $v $fname ->
+				<- $shouldRedact := shouldRedact . ->
+				<- $redactedContent := redactedContent ->
 
 				<- if not .Required ->
 					if <$f> != nil {
-						<if isPrimitiveType .Type ->
-							<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", *(<$f>))
-						<- else ->
-							<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
+						<- if $shouldRedact ->
+							<$fields>[<$i>] = "<$fname>: <$redactedContent>"
+						<- else >
+							<if isPrimitiveType .Type ->
+								<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", *(<$f>))
+							<- else ->
+								<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
+							<- end>
 						<- end>
 						<$i>++
 					}
 				<- else ->
-					<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
+					<- if $shouldRedact ->
+						<$fields>[<$i>] = "<$fname>: <$redactedContent>"
+					<- else ->
+						<$fields>[<$i>] = <$fmt>.Sprintf("<$fname>: %v", <$f>)
+					<- end>
 					<$i>++
 				<- end>
 			<end>
 
 			return <$fmt>.Sprintf("<.Name>{%v}", <$strings>.Join(<$fields>[:<$i>], ", "))
 		}
-		`, f)
+		`, f,
+		TemplateFunc("shouldRedact", shouldRedact),
+		TemplateFunc("redactedContent", redactedContent),
+	)
 }
 
 func (f fieldGroupGenerator) ErrorName(g Generator) error {
@@ -779,18 +792,28 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 			if <$v> == nil {
 				return nil
 			}
+			< $redactedContent := redactedContent ->
 			<range .Fields>
+				<- $shouldRedact := shouldRedact . ->
 				<- if not (zapOptOut .) ->
 					<- $fval := printf "%s.%s" $v (goName .) ->
 					<- if .Required ->
-						<zapEncodeBegin .Type ->
-							<$enc>.Add<zapEncoder .Type>("<fieldLabel .>", <zapMarshaler .Type $fval>)
-						<- zapEncodeEnd .Type>
+						<- if $shouldRedact ->
+								<$enc>.AddString("<fieldLabel .>", "<$redactedContent>")
+						<- else ->
+							<- zapEncodeBegin .Type ->
+								<$enc>.Add<zapEncoder .Type>("<fieldLabel .>", <zapMarshaler .Type $fval>)
+							<- zapEncodeEnd .Type ->
+						<- end ->
 					<- else ->
 						if <$fval> != nil {
-							<zapEncodeBegin .Type ->
-								<$enc>.Add<zapEncoder .Type>("<fieldLabel .>", <zapMarshalerPtr .Type $fval>)
-							<- zapEncodeEnd .Type>
+							<- if $shouldRedact ->
+								<$enc>.AddString("<fieldLabel .>", "<$redactedContent>")
+							<- else ->
+								<- zapEncodeBegin .Type ->
+									<$enc>.Add<zapEncoder .Type>("<fieldLabel .>", <zapMarshalerPtr .Type $fval>)
+								<- zapEncodeEnd .Type ->
+							<- end >
 						}
 					<- end>
 				<- end>
@@ -800,6 +823,8 @@ func (f fieldGroupGenerator) Zap(g Generator) error {
 		`, f,
 		TemplateFunc("zapOptOut", zapOptOut),
 		TemplateFunc("fieldLabel", entityLabel),
+		TemplateFunc("shouldRedact", shouldRedact),
+		TemplateFunc("redactedContent", redactedContent),
 	)
 }
 
@@ -874,4 +899,24 @@ func verifyUniqueFieldLabels(fs compile.FieldGroup) error {
 		used[label] = f
 	}
 	return nil
+}
+
+// RedactLabel provides a mechanism to redact certain struct fields from
+// the outputs of String(), Error() and MarshalLogObject() methods.
+//
+//	struct Contact {
+//	    1: required string name
+//	    2: required string email (go.redact)
+//	}
+const RedactLabel = "go.redact"
+
+func shouldRedact(spec *compile.FieldSpec) bool {
+	_, ok := spec.Annotations[RedactLabel]
+	return ok
+}
+
+const _redactContent = "<redacted>"
+
+func redactedContent() string {
+	return _redactContent
 }
