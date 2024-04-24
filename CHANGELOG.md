@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.32.0] - 2024-04-23
 ## Added
 - Redacted annotation provides a mechanism to redact certain struct fields from
 errors messages and log objects.
@@ -443,7 +443,7 @@ this release.
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.31.0...HEAD
+[1.32.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.31.0...v1.32.0
 [1.31.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.30.0...v1.31.0
 [1.30.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.29.2...v1.30.0
 [1.29.2]: https://github.com/thriftrw/thriftrw-go/compare/v1.29.1...v1.29.2
