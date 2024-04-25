@@ -1,15 +1,6 @@
 Release process
 ===============
 
-Prerequisites
--------------
-
-Make sure you have `hub` installed.
-
-```
-brew install hub
-```
-
 Releasing
 ---------
 
@@ -66,9 +57,11 @@ To release new versions of ThriftRW Go, follow these instructions.
         git add version/version.go CHANGELOG.md
         git commit -m "Preparing release v$VERSION"
 
-8.  Make a pull request with these changes against `master`.
+8.  Make a pull request with these changes against `master`. Push the recently
+    created release branch to origin and create a new pull request into `master`
+    in the Github UI.
 
-        hub pull-request -b master --push
+        git push origin HEAD:$(whoami)/release
 
 9.  Land the pull request after approval as a **merge commit**. To do this,
     select **Create a merge commit** from the pull-down next to the merge
@@ -93,7 +86,13 @@ To release new versions of ThriftRW Go, follow these instructions.
 
 11. Tag a release.
 
-        hub release create -o -m v$VERSION -t master v$VERSION
+        git tag -a v$VERSION -m v$VERSION
+        git push origin v$VERSION
+
+     Go to the "Release" section in the Github UI, and click "Draft a new release".
+     Select the tag you just pushed to origin. The release title should be the
+     tag name (e.g. v$VERSION) and the contents of the CHANGELOG.md for the
+     for the release version should be copied into the release description.
 
 12. Copy the changelog entries for this release into the release description
     in the newly opened browser window.
@@ -134,10 +133,12 @@ To release new versions of ThriftRW Go, follow these instructions.
 
         make generate
 
-18. Open a PR with your changes against `dev` to back to development.
+18. Open a PR with your changes against `dev` to back to development. Push
+    the recently created `back-to-dev` branch to origin and create a pull
+    request into `dev` from the Github UI.
 
         git commit -am "Back to development"
-        hub pull-request -b dev --push
+        git push origin back-to-dev
 
 19. Merge this pull request once approved as a merge commit.
 
