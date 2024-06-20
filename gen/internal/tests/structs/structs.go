@@ -73,6 +73,10 @@ func (v *ContactInfo) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *ContactInfo) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	emailAddressIsSet := false
@@ -575,18 +579,6 @@ func _List_Double_Read(l wire.ValueList) ([]float64, error) {
 	return o, err
 }
 
-func _Frame_Read(w wire.Value) (*Frame, error) {
-	var v Frame
-	err := v.FromWire(w)
-	return &v, err
-}
-
-func _Edge_Read(w wire.Value) (*Edge, error) {
-	var v Edge
-	err := v.FromWire(w)
-	return &v, err
-}
-
 // FromWire deserializes a DefaultsStruct struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -605,15 +597,29 @@ func _Edge_Read(w wire.Value) (*Edge, error) {
 //	}
 //	return &v, nil
 func (v *DefaultsStruct) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		RequiredPrimitive int32
+		OptionalPrimitive int32
+		RequiredEnum      enums.EnumDefault
+		OptionalEnum      enums.EnumDefault
+
+		RequiredStruct           Frame
+		OptionalStruct           Edge
+		RequiredBoolDefaultTrue  bool
+		OptionalBoolDefaultTrue  bool
+		RequiredBoolDefaultFalse bool
+		OptionalBoolDefaultFalse bool
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TI32 {
-				var x int32
-				x, err = field.Value.GetI32(), error(nil)
-				v.RequiredPrimitive = &x
+				ptrFields.RequiredPrimitive, err = field.Value.GetI32(), error(nil)
+				v.RequiredPrimitive = &ptrFields.RequiredPrimitive
 				if err != nil {
 					return err
 				}
@@ -621,9 +627,8 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TI32 {
-				var x int32
-				x, err = field.Value.GetI32(), error(nil)
-				v.OptionalPrimitive = &x
+				ptrFields.OptionalPrimitive, err = field.Value.GetI32(), error(nil)
+				v.OptionalPrimitive = &ptrFields.OptionalPrimitive
 				if err != nil {
 					return err
 				}
@@ -631,9 +636,8 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 			}
 		case 3:
 			if field.Value.Type() == wire.TI32 {
-				var x enums.EnumDefault
-				x, err = _EnumDefault_Read(field.Value)
-				v.RequiredEnum = &x
+				ptrFields.RequiredEnum, err = _EnumDefault_Read(field.Value)
+				v.RequiredEnum = &ptrFields.RequiredEnum
 				if err != nil {
 					return err
 				}
@@ -641,9 +645,8 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 			}
 		case 4:
 			if field.Value.Type() == wire.TI32 {
-				var x enums.EnumDefault
-				x, err = _EnumDefault_Read(field.Value)
-				v.OptionalEnum = &x
+				ptrFields.OptionalEnum, err = _EnumDefault_Read(field.Value)
+				v.OptionalEnum = &ptrFields.OptionalEnum
 				if err != nil {
 					return err
 				}
@@ -667,7 +670,8 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 			}
 		case 7:
 			if field.Value.Type() == wire.TStruct {
-				v.RequiredStruct, err = _Frame_Read(field.Value)
+				err = ptrFields.RequiredStruct.FromWire(field.Value)
+				v.RequiredStruct = &ptrFields.RequiredStruct
 				if err != nil {
 					return err
 				}
@@ -675,7 +679,8 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 			}
 		case 8:
 			if field.Value.Type() == wire.TStruct {
-				v.OptionalStruct, err = _Edge_Read(field.Value)
+				err = ptrFields.OptionalStruct.FromWire(field.Value)
+				v.OptionalStruct = &ptrFields.OptionalStruct
 				if err != nil {
 					return err
 				}
@@ -683,9 +688,8 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 			}
 		case 9:
 			if field.Value.Type() == wire.TBool {
-				var x bool
-				x, err = field.Value.GetBool(), error(nil)
-				v.RequiredBoolDefaultTrue = &x
+				ptrFields.RequiredBoolDefaultTrue, err = field.Value.GetBool(), error(nil)
+				v.RequiredBoolDefaultTrue = &ptrFields.RequiredBoolDefaultTrue
 				if err != nil {
 					return err
 				}
@@ -693,9 +697,8 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 			}
 		case 10:
 			if field.Value.Type() == wire.TBool {
-				var x bool
-				x, err = field.Value.GetBool(), error(nil)
-				v.OptionalBoolDefaultTrue = &x
+				ptrFields.OptionalBoolDefaultTrue, err = field.Value.GetBool(), error(nil)
+				v.OptionalBoolDefaultTrue = &ptrFields.OptionalBoolDefaultTrue
 				if err != nil {
 					return err
 				}
@@ -703,9 +706,8 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 			}
 		case 11:
 			if field.Value.Type() == wire.TBool {
-				var x bool
-				x, err = field.Value.GetBool(), error(nil)
-				v.RequiredBoolDefaultFalse = &x
+				ptrFields.RequiredBoolDefaultFalse, err = field.Value.GetBool(), error(nil)
+				v.RequiredBoolDefaultFalse = &ptrFields.RequiredBoolDefaultFalse
 				if err != nil {
 					return err
 				}
@@ -713,9 +715,8 @@ func (v *DefaultsStruct) FromWire(w wire.Value) error {
 			}
 		case 12:
 			if field.Value.Type() == wire.TBool {
-				var x bool
-				x, err = field.Value.GetBool(), error(nil)
-				v.OptionalBoolDefaultFalse = &x
+				ptrFields.OptionalBoolDefaultFalse, err = field.Value.GetBool(), error(nil)
+				v.OptionalBoolDefaultFalse = &ptrFields.OptionalBoolDefaultFalse
 				if err != nil {
 					return err
 				}
@@ -1837,12 +1838,6 @@ func (v *Edge) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _Point_Read(w wire.Value) (*Point, error) {
-	var v Point
-	err := v.FromWire(w)
-	return &v, err
-}
-
 // FromWire deserializes a Edge struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -1861,6 +1856,12 @@ func _Point_Read(w wire.Value) (*Point, error) {
 //	}
 //	return &v, nil
 func (v *Edge) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		StartPoint Point
+		EndPoint   Point
+	}
+	_ = ptrFields
+
 	var err error
 
 	startPointIsSet := false
@@ -1870,7 +1871,8 @@ func (v *Edge) FromWire(w wire.Value) error {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.StartPoint, err = _Point_Read(field.Value)
+				err = ptrFields.StartPoint.FromWire(field.Value)
+				v.StartPoint = &ptrFields.StartPoint
 				if err != nil {
 					return err
 				}
@@ -1878,7 +1880,8 @@ func (v *Edge) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
-				v.EndPoint, err = _Point_Read(field.Value)
+				err = ptrFields.EndPoint.FromWire(field.Value)
+				v.EndPoint = &ptrFields.EndPoint
 				if err != nil {
 					return err
 				}
@@ -2126,6 +2129,9 @@ func (v *EmptyStruct) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *EmptyStruct) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -2273,12 +2279,6 @@ func (v *Frame) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _Size_Read(w wire.Value) (*Size, error) {
-	var v Size
-	err := v.FromWire(w)
-	return &v, err
-}
-
 // FromWire deserializes a Frame struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -2297,6 +2297,12 @@ func _Size_Read(w wire.Value) (*Size, error) {
 //	}
 //	return &v, nil
 func (v *Frame) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		TopLeft Point
+		Size    Size
+	}
+	_ = ptrFields
+
 	var err error
 
 	topLeftIsSet := false
@@ -2306,7 +2312,8 @@ func (v *Frame) FromWire(w wire.Value) error {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.TopLeft, err = _Point_Read(field.Value)
+				err = ptrFields.TopLeft.FromWire(field.Value)
+				v.TopLeft = &ptrFields.TopLeft
 				if err != nil {
 					return err
 				}
@@ -2314,7 +2321,8 @@ func (v *Frame) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
-				v.Size, err = _Size_Read(field.Value)
+				err = ptrFields.Size.FromWire(field.Value)
+				v.Size = &ptrFields.Size
 				if err != nil {
 					return err
 				}
@@ -2614,6 +2622,13 @@ func (v *GoTags) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *GoTags) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Bar string
+
+		FooBarWithOmitEmpty string
+	}
+	_ = ptrFields
+
 	var err error
 
 	FooIsSet := false
@@ -2635,9 +2650,8 @@ func (v *GoTags) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.Bar = &x
+				ptrFields.Bar, err = field.Value.GetString(), error(nil)
+				v.Bar = &ptrFields.Bar
 				if err != nil {
 					return err
 				}
@@ -2661,9 +2675,8 @@ func (v *GoTags) FromWire(w wire.Value) error {
 			}
 		case 5:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.FooBarWithOmitEmpty = &x
+				ptrFields.FooBarWithOmitEmpty, err = field.Value.GetString(), error(nil)
+				v.FooBarWithOmitEmpty = &ptrFields.FooBarWithOmitEmpty
 				if err != nil {
 					return err
 				}
@@ -3104,6 +3117,12 @@ func (v *Graph) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
+func _Edge_Read(w wire.Value) (*Edge, error) {
+	var v Edge
+	err := v.FromWire(w)
+	return &v, err
+}
+
 func _List_Edge_Read(l wire.ValueList) ([]*Edge, error) {
 	if l.ValueType() != wire.TStruct {
 		return nil, nil
@@ -3140,6 +3159,10 @@ func _List_Edge_Read(l wire.ValueList) ([]*Edge, error) {
 //	}
 //	return &v, nil
 func (v *Graph) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	edgesIsSet := false
@@ -3463,12 +3486,6 @@ func (v *Node) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _List_Read(w wire.Value) (*List, error) {
-	var x List
-	err := x.FromWire(w)
-	return &x, err
-}
-
 // FromWire deserializes a Node struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -3487,6 +3504,11 @@ func _List_Read(w wire.Value) (*List, error) {
 //	}
 //	return &v, nil
 func (v *Node) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Tail List
+	}
+	_ = ptrFields
+
 	var err error
 
 	valueIsSet := false
@@ -3503,7 +3525,8 @@ func (v *Node) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
-				v.Tail, err = _List_Read(field.Value)
+				err = ptrFields.Tail.FromWire(field.Value)
+				v.Tail = &ptrFields.Tail
 				if err != nil {
 					return err
 				}
@@ -3876,15 +3899,23 @@ func _Map_String_String_Read(m wire.MapItemList) (map[string]string, error) {
 //	}
 //	return &v, nil
 func (v *NotOmitEmpty) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		NotOmitEmptyString string
+		NotOmitEmptyInt    string
+		NotOmitEmptyBool   string
+
+		OmitEmptyString string
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.NotOmitEmptyString = &x
+				ptrFields.NotOmitEmptyString, err = field.Value.GetString(), error(nil)
+				v.NotOmitEmptyString = &ptrFields.NotOmitEmptyString
 				if err != nil {
 					return err
 				}
@@ -3892,9 +3923,8 @@ func (v *NotOmitEmpty) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.NotOmitEmptyInt = &x
+				ptrFields.NotOmitEmptyInt, err = field.Value.GetString(), error(nil)
+				v.NotOmitEmptyInt = &ptrFields.NotOmitEmptyInt
 				if err != nil {
 					return err
 				}
@@ -3902,9 +3932,8 @@ func (v *NotOmitEmpty) FromWire(w wire.Value) error {
 			}
 		case 3:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.NotOmitEmptyBool = &x
+				ptrFields.NotOmitEmptyBool, err = field.Value.GetString(), error(nil)
+				v.NotOmitEmptyBool = &ptrFields.NotOmitEmptyBool
 				if err != nil {
 					return err
 				}
@@ -3944,9 +3973,8 @@ func (v *NotOmitEmpty) FromWire(w wire.Value) error {
 			}
 		case 8:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.OmitEmptyString = &x
+				ptrFields.OmitEmptyString, err = field.Value.GetString(), error(nil)
+				v.OmitEmptyString = &ptrFields.OmitEmptyString
 				if err != nil {
 					return err
 				}
@@ -4552,6 +4580,10 @@ func (v *Omit) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *Omit) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	serializedIsSet := false
@@ -4816,15 +4848,19 @@ func (v *PersonalInfo) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *PersonalInfo) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Age int32
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TI32 {
-				var x int32
-				x, err = field.Value.GetI32(), error(nil)
-				v.Age = &x
+				ptrFields.Age, err = field.Value.GetI32(), error(nil)
+				v.Age = &ptrFields.Age
 				if err != nil {
 					return err
 				}
@@ -5088,6 +5124,10 @@ func (v *Point) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *Point) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	xIsSet := false
@@ -5409,15 +5449,25 @@ func (v *PrimitiveOptionalStruct) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		BoolField   bool
+		ByteField   int8
+		Int16Field  int16
+		Int32Field  int32
+		Int64Field  int64
+		DoubleField float64
+		StringField string
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
-				var x bool
-				x, err = field.Value.GetBool(), error(nil)
-				v.BoolField = &x
+				ptrFields.BoolField, err = field.Value.GetBool(), error(nil)
+				v.BoolField = &ptrFields.BoolField
 				if err != nil {
 					return err
 				}
@@ -5425,9 +5475,8 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TI8 {
-				var x int8
-				x, err = field.Value.GetI8(), error(nil)
-				v.ByteField = &x
+				ptrFields.ByteField, err = field.Value.GetI8(), error(nil)
+				v.ByteField = &ptrFields.ByteField
 				if err != nil {
 					return err
 				}
@@ -5435,9 +5484,8 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 			}
 		case 3:
 			if field.Value.Type() == wire.TI16 {
-				var x int16
-				x, err = field.Value.GetI16(), error(nil)
-				v.Int16Field = &x
+				ptrFields.Int16Field, err = field.Value.GetI16(), error(nil)
+				v.Int16Field = &ptrFields.Int16Field
 				if err != nil {
 					return err
 				}
@@ -5445,9 +5493,8 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 			}
 		case 4:
 			if field.Value.Type() == wire.TI32 {
-				var x int32
-				x, err = field.Value.GetI32(), error(nil)
-				v.Int32Field = &x
+				ptrFields.Int32Field, err = field.Value.GetI32(), error(nil)
+				v.Int32Field = &ptrFields.Int32Field
 				if err != nil {
 					return err
 				}
@@ -5455,9 +5502,8 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 			}
 		case 5:
 			if field.Value.Type() == wire.TI64 {
-				var x int64
-				x, err = field.Value.GetI64(), error(nil)
-				v.Int64Field = &x
+				ptrFields.Int64Field, err = field.Value.GetI64(), error(nil)
+				v.Int64Field = &ptrFields.Int64Field
 				if err != nil {
 					return err
 				}
@@ -5465,9 +5511,8 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 			}
 		case 6:
 			if field.Value.Type() == wire.TDouble {
-				var x float64
-				x, err = field.Value.GetDouble(), error(nil)
-				v.DoubleField = &x
+				ptrFields.DoubleField, err = field.Value.GetDouble(), error(nil)
+				v.DoubleField = &ptrFields.DoubleField
 				if err != nil {
 					return err
 				}
@@ -5475,9 +5520,8 @@ func (v *PrimitiveOptionalStruct) FromWire(w wire.Value) error {
 			}
 		case 7:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.StringField = &x
+				ptrFields.StringField, err = field.Value.GetString(), error(nil)
+				v.StringField = &ptrFields.StringField
 				if err != nil {
 					return err
 				}
@@ -6099,6 +6143,10 @@ func (v *PrimitiveRequiredStruct) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *PrimitiveRequiredStruct) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	boolFieldIsSet := false
@@ -6662,6 +6710,10 @@ func (v *Rename) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *Rename) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	DefaultIsSet := false
@@ -6926,6 +6978,10 @@ func (v *Size) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *Size) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	widthIsSet := false
@@ -7208,15 +7264,22 @@ func (v *StructLabels) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *StructLabels) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		IsRequired bool
+		Foo        string
+		Qux        string
+		Quux       string
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBool {
-				var x bool
-				x, err = field.Value.GetBool(), error(nil)
-				v.IsRequired = &x
+				ptrFields.IsRequired, err = field.Value.GetBool(), error(nil)
+				v.IsRequired = &ptrFields.IsRequired
 				if err != nil {
 					return err
 				}
@@ -7224,9 +7287,8 @@ func (v *StructLabels) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.Foo = &x
+				ptrFields.Foo, err = field.Value.GetString(), error(nil)
+				v.Foo = &ptrFields.Foo
 				if err != nil {
 					return err
 				}
@@ -7234,9 +7296,8 @@ func (v *StructLabels) FromWire(w wire.Value) error {
 			}
 		case 3:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.Qux = &x
+				ptrFields.Qux, err = field.Value.GetString(), error(nil)
+				v.Qux = &ptrFields.Qux
 				if err != nil {
 					return err
 				}
@@ -7244,9 +7305,8 @@ func (v *StructLabels) FromWire(w wire.Value) error {
 			}
 		case 4:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.Quux = &x
+				ptrFields.Quux, err = field.Value.GetString(), error(nil)
+				v.Quux = &ptrFields.Quux
 				if err != nil {
 					return err
 				}
@@ -7581,18 +7641,6 @@ func (v *User) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _ContactInfo_Read(w wire.Value) (*ContactInfo, error) {
-	var v ContactInfo
-	err := v.FromWire(w)
-	return &v, err
-}
-
-func _PersonalInfo_Read(w wire.Value) (*PersonalInfo, error) {
-	var v PersonalInfo
-	err := v.FromWire(w)
-	return &v, err
-}
-
 // FromWire deserializes a User struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -7611,6 +7659,12 @@ func _PersonalInfo_Read(w wire.Value) (*PersonalInfo, error) {
 //	}
 //	return &v, nil
 func (v *User) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Contact  ContactInfo
+		Personal PersonalInfo
+	}
+	_ = ptrFields
+
 	var err error
 
 	nameIsSet := false
@@ -7627,7 +7681,8 @@ func (v *User) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
-				v.Contact, err = _ContactInfo_Read(field.Value)
+				err = ptrFields.Contact.FromWire(field.Value)
+				v.Contact = &ptrFields.Contact
 				if err != nil {
 					return err
 				}
@@ -7635,7 +7690,8 @@ func (v *User) FromWire(w wire.Value) error {
 			}
 		case 3:
 			if field.Value.Type() == wire.TStruct {
-				v.Personal, err = _PersonalInfo_Read(field.Value)
+				err = ptrFields.Personal.FromWire(field.Value)
+				v.Personal = &ptrFields.Personal
 				if err != nil {
 					return err
 				}
@@ -8157,6 +8213,10 @@ func (v *ZapOptOutStruct) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *ZapOptOutStruct) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	nameIsSet := false

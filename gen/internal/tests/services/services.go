@@ -83,6 +83,10 @@ func (v *ConflictingNamesSetValueArgs) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *ConflictingNamesSetValueArgs) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	keyIsSet := false
@@ -346,15 +350,19 @@ func (v *InternalError) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *InternalError) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Message string
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
-				var x string
-				x, err = field.Value.GetString(), error(nil)
-				v.Message = &x
+				ptrFields.Message, err = field.Value.GetString(), error(nil)
+				v.Message = &ptrFields.Message
 				if err != nil {
 					return err
 				}
@@ -630,6 +638,9 @@ func (v *Cache_Clear_Args) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *Cache_Clear_Args) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -818,15 +829,19 @@ func (v *Cache_ClearAfter_Args) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *Cache_ClearAfter_Args) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		DurationMS int64
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TI64 {
-				var x int64
-				x, err = field.Value.GetI64(), error(nil)
-				v.DurationMS = &x
+				ptrFields.DurationMS, err = field.Value.GetI64(), error(nil)
+				v.DurationMS = &ptrFields.DurationMS
 				if err != nil {
 					return err
 				}
@@ -1060,12 +1075,6 @@ func (v *ConflictingNames_SetValue_Args) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _ConflictingNamesSetValueArgs_Read(w wire.Value) (*ConflictingNamesSetValueArgs, error) {
-	var v ConflictingNamesSetValueArgs
-	err := v.FromWire(w)
-	return &v, err
-}
-
 // FromWire deserializes a ConflictingNames_SetValue_Args struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -1084,13 +1093,19 @@ func _ConflictingNamesSetValueArgs_Read(w wire.Value) (*ConflictingNamesSetValue
 //	}
 //	return &v, nil
 func (v *ConflictingNames_SetValue_Args) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Request ConflictingNamesSetValueArgs
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.Request, err = _ConflictingNamesSetValueArgs_Read(field.Value)
+				err = ptrFields.Request.FromWire(field.Value)
+				v.Request = &ptrFields.Request
 				if err != nil {
 					return err
 				}
@@ -1377,6 +1392,9 @@ func (v *ConflictingNames_SetValue_Result) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *ConflictingNames_SetValue_Result) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -1555,15 +1573,19 @@ func _Key_Read(w wire.Value) (Key, error) {
 //	}
 //	return &v, nil
 func (v *KeyValue_DeleteValue_Args) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Key Key
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
-				var x Key
-				x, err = _Key_Read(field.Value)
-				v.Key = &x
+				ptrFields.Key, err = _Key_Read(field.Value)
+				v.Key = &ptrFields.Key
 				if err != nil {
 					return err
 				}
@@ -1895,18 +1917,6 @@ func (v *KeyValue_DeleteValue_Result) ToWire() (wire.Value, error) {
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
 
-func _DoesNotExistException_Read(w wire.Value) (*exceptions.DoesNotExistException, error) {
-	var v exceptions.DoesNotExistException
-	err := v.FromWire(w)
-	return &v, err
-}
-
-func _InternalError_Read(w wire.Value) (*InternalError, error) {
-	var v InternalError
-	err := v.FromWire(w)
-	return &v, err
-}
-
 // FromWire deserializes a KeyValue_DeleteValue_Result struct from its Thrift-level
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
@@ -1925,13 +1935,20 @@ func _InternalError_Read(w wire.Value) (*InternalError, error) {
 //	}
 //	return &v, nil
 func (v *KeyValue_DeleteValue_Result) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		DoesNotExist  exceptions.DoesNotExistException
+		InternalError InternalError
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.DoesNotExist, err = _DoesNotExistException_Read(field.Value)
+				err = ptrFields.DoesNotExist.FromWire(field.Value)
+				v.DoesNotExist = &ptrFields.DoesNotExist
 				if err != nil {
 					return err
 				}
@@ -1939,7 +1956,8 @@ func (v *KeyValue_DeleteValue_Result) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
-				v.InternalError, err = _InternalError_Read(field.Value)
+				err = ptrFields.InternalError.FromWire(field.Value)
+				v.InternalError = &ptrFields.InternalError
 				if err != nil {
 					return err
 				}
@@ -2290,6 +2308,10 @@ func _List_Key_Read(l wire.ValueList) ([]Key, error) {
 //	}
 //	return &v, nil
 func (v *KeyValue_GetManyValues_Args) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
@@ -2752,6 +2774,11 @@ func _List_ArbitraryValue_Read(l wire.ValueList) ([]*unions.ArbitraryValue, erro
 //	}
 //	return &v, nil
 func (v *KeyValue_GetManyValues_Result) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		DoesNotExist exceptions.DoesNotExistException
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
@@ -2766,7 +2793,8 @@ func (v *KeyValue_GetManyValues_Result) FromWire(w wire.Value) error {
 			}
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.DoesNotExist, err = _DoesNotExistException_Read(field.Value)
+				err = ptrFields.DoesNotExist.FromWire(field.Value)
+				v.DoesNotExist = &ptrFields.DoesNotExist
 				if err != nil {
 					return err
 				}
@@ -3144,15 +3172,19 @@ func (v *KeyValue_GetValue_Args) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *KeyValue_GetValue_Args) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Key Key
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
-				var x Key
-				x, err = _Key_Read(field.Value)
-				v.Key = &x
+				ptrFields.Key, err = _Key_Read(field.Value)
+				v.Key = &ptrFields.Key
 				if err != nil {
 					return err
 				}
@@ -3483,13 +3515,20 @@ func (v *KeyValue_GetValue_Result) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *KeyValue_GetValue_Result) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Success      unions.ArbitraryValue
+		DoesNotExist exceptions.DoesNotExistException
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 0:
 			if field.Value.Type() == wire.TStruct {
-				v.Success, err = _ArbitraryValue_Read(field.Value)
+				err = ptrFields.Success.FromWire(field.Value)
+				v.Success = &ptrFields.Success
 				if err != nil {
 					return err
 				}
@@ -3497,7 +3536,8 @@ func (v *KeyValue_GetValue_Result) FromWire(w wire.Value) error {
 			}
 		case 1:
 			if field.Value.Type() == wire.TStruct {
-				v.DoesNotExist, err = _DoesNotExistException_Read(field.Value)
+				err = ptrFields.DoesNotExist.FromWire(field.Value)
+				v.DoesNotExist = &ptrFields.DoesNotExist
 				if err != nil {
 					return err
 				}
@@ -3801,15 +3841,20 @@ func (v *KeyValue_SetValue_Args) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *KeyValue_SetValue_Args) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Key   Key
+		Value unions.ArbitraryValue
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 1:
 			if field.Value.Type() == wire.TBinary {
-				var x Key
-				x, err = _Key_Read(field.Value)
-				v.Key = &x
+				ptrFields.Key, err = _Key_Read(field.Value)
+				v.Key = &ptrFields.Key
 				if err != nil {
 					return err
 				}
@@ -3817,7 +3862,8 @@ func (v *KeyValue_SetValue_Args) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
-				v.Value, err = _ArbitraryValue_Read(field.Value)
+				err = ptrFields.Value.FromWire(field.Value)
+				v.Value = &ptrFields.Value
 				if err != nil {
 					return err
 				}
@@ -4146,6 +4192,9 @@ func (v *KeyValue_SetValue_Result) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *KeyValue_SetValue_Result) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -4330,6 +4379,11 @@ func (v *KeyValue_SetValueV2_Args) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *KeyValue_SetValueV2_Args) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Value unions.ArbitraryValue
+	}
+	_ = ptrFields
+
 	var err error
 
 	keyIsSet := false
@@ -4347,7 +4401,8 @@ func (v *KeyValue_SetValueV2_Args) FromWire(w wire.Value) error {
 			}
 		case 2:
 			if field.Value.Type() == wire.TStruct {
-				v.Value, err = _ArbitraryValue_Read(field.Value)
+				err = ptrFields.Value.FromWire(field.Value)
+				v.Value = &ptrFields.Value
 				if err != nil {
 					return err
 				}
@@ -4677,6 +4732,9 @@ func (v *KeyValue_SetValueV2_Result) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *KeyValue_SetValueV2_Result) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -4837,6 +4895,9 @@ func (v *KeyValue_Size_Args) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *KeyValue_Size_Args) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -5091,15 +5152,19 @@ func (v *KeyValue_Size_Result) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *KeyValue_Size_Result) FromWire(w wire.Value) error {
+	var ptrFields struct {
+		Success int64
+	}
+	_ = ptrFields
+
 	var err error
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
 		case 0:
 			if field.Value.Type() == wire.TI64 {
-				var x int64
-				x, err = field.Value.GetI64(), error(nil)
-				v.Success = &x
+				ptrFields.Success, err = field.Value.GetI64(), error(nil)
+				v.Success = &ptrFields.Success
 				if err != nil {
 					return err
 				}
@@ -5332,6 +5397,9 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Args) ToWire() (wire.Val
 //	}
 //	return &v, nil
 func (v *NonStandardServiceName_NonStandardFunctionName_Args) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -5561,6 +5629,9 @@ func (v *NonStandardServiceName_NonStandardFunctionName_Result) ToWire() (wire.V
 //	}
 //	return &v, nil
 func (v *NonStandardServiceName_NonStandardFunctionName_Result) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {

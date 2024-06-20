@@ -452,6 +452,10 @@ func _StringListList_Read(w wire.Value) (StringListList, error) {
 //	}
 //	return &v, nil
 func (v *Bar) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	requiredInt32ListFieldIsSet := false
@@ -1512,6 +1516,10 @@ func (v *Foo) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *Foo) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
+
 	var err error
 
 	stringFieldIsSet := false

@@ -57,6 +57,9 @@ func (v *First) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *First) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
@@ -199,6 +202,9 @@ func (v *Second) ToWire() (wire.Value, error) {
 //	}
 //	return &v, nil
 func (v *Second) FromWire(w wire.Value) error {
+	var ptrFields struct {
+	}
+	_ = ptrFields
 
 	for _, field := range w.GetStruct().Fields {
 		switch field.ID {
