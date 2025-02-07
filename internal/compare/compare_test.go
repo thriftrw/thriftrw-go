@@ -28,6 +28,85 @@ import (
 	"go.uber.org/thriftrw/compile"
 )
 
+func TestEnumValueChanges(t *testing.T) {
+	t.Parallel()
+	type test struct {
+		desc      string
+		fromEnum  *compile.EnumSpec
+		toEnum    *compile.EnumSpec
+		wantError string
+	}
+	tests := []test{
+		{
+			desc: "removing an enum value",
+			fromEnum: &compile.EnumSpec{
+				Name: "enumA",
+				Items: []compile.EnumItem{
+					{Name: "fieldA", Value: 1},
+					{Name: "fieldB", Value: 2},
+				},
+			},
+			toEnum: &compile.EnumSpec{
+				Name: "enumA",
+				Items: []compile.EnumItem{
+					{Name: "fieldA", Value: 1},
+				},
+			},
+			wantError: `foo.thrift:removing enum value "fieldB" from enum "enumA"`,
+		},
+		{
+			desc: "changing an enum value",
+			fromEnum: &compile.EnumSpec{
+				Name: "enumA",
+				Items: []compile.EnumItem{
+					{Name: "fieldA", Value: 1},
+					{Name: "fieldB", Value: 2},
+				},
+			},
+			toEnum: &compile.EnumSpec{
+				Name: "enumA",
+				Items: []compile.EnumItem{
+					{Name: "fieldA", Value: 1},
+					{Name: "fieldC", Value: 2},
+					{Name: "fieldB", Value: 3},
+				},
+			},
+			wantError: `foo.thrift:changing numeric value of enum constant "fieldB" in enum "enumA" from 2 to 3`,
+		},
+		{
+			desc: "adding an enum value",
+			fromEnum: &compile.EnumSpec{
+				Name: "enumA",
+				Items: []compile.EnumItem{
+					{Name: "fieldA", Value: 1},
+					{Name: "fieldB", Value: 2},
+				},
+			},
+			toEnum: &compile.EnumSpec{
+				Name: "enumA",
+				Items: []compile.EnumItem{
+					{Name: "fieldA", Value: 1},
+					{Name: "fieldB", Value: 2},
+					{Name: "fieldC", Value: 3},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			t.Parallel()
+			pass := Pass{}
+			pass.enumSpecs(tt.fromEnum, tt.toEnum, "foo.thrift")
+			if tt.wantError == "" {
+				assert.Equal(t, "", pass.String(), "wrong lint diagnostics")
+			} else {
+				want := fmt.Sprintf("%s\n", tt.wantError)
+				assert.Equal(t, want, pass.String(), "wrong lint diagnostics")
+			}
+		})
+	}
+}
+
 func TestErrorRequiredCase(t *testing.T) {
 	t.Parallel()
 	type test struct {
@@ -130,7 +209,6 @@ func TestErrorRequiredCase(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.desc, func(t *testing.T) {
 			t.Parallel()
 			pass := Pass{}
@@ -188,7 +266,6 @@ func TestRequiredCaseOk(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.desc, func(t *testing.T) {
 			t.Parallel()
 			pass := Pass{}
@@ -231,7 +308,6 @@ func TestServicesError(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.desc, func(t *testing.T) {
 			t.Parallel()
 			pass := Pass{}
@@ -261,7 +337,6 @@ func TestRelativePath(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.desc, func(t *testing.T) {
 			t.Parallel()
 			p := Pass{
