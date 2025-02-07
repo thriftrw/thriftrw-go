@@ -21,7 +21,6 @@
 package wire
 
 import (
-	"reflect"
 	"unsafe"
 )
 
@@ -29,19 +28,12 @@ import (
 // new memory for it with the assumption that the resulting byte slice will not
 // be mutated.
 func unsafeStringToBytes(s string) []byte {
-	p := unsafe.Pointer((*reflect.StringHeader)(unsafe.Pointer(&s)).Data)
-
-	var b []byte
-	hdr := (*reflect.SliceHeader)(unsafe.Pointer(&b))
-	hdr.Data = uintptr(p)
-	hdr.Cap = len(s)
-	hdr.Len = len(s)
-	return b
+	return unsafe.Slice(unsafe.StringData(s), len(s))
 }
 
 // unsafeBytesToString converts a byte slice into a string without allocating
 // new memory with the assumption that the source byte slice will not be mutated
 // after this.
 func unsafeBytesToString(b []byte) string {
-	return *(*string)(unsafe.Pointer(&b))
+	return unsafe.String(unsafe.SliceData(b), len(b))
 }
