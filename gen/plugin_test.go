@@ -528,6 +528,16 @@ func TestBuildType(t *testing.T) {
 			}},
 		},
 		{
+			// hashable set item with annotations
+			desc: "map[int32]struct{}",
+			spec: &compile.SetSpec{ValueSpec: &compile.I32Spec{}, Annotations: map[string]string{"go.type": "slice"}},
+			want: &api.Type{MapType: &api.TypePair{
+				Left:  &api.Type{SimpleType: simpleType(api.SimpleTypeInt32)},
+				Right: &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
+				Annotations: map[string]string{"go.type": "slice"},
+			}},
+		},
+		{
 			// unhashable set item
 			desc: "[]*foo.Foo",
 			spec: &compile.SetSpec{

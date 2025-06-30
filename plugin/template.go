@@ -29,6 +29,7 @@ import (
 	"sort"
 	"text/template"
 
+	"go.uber.org/thriftrw/internal/constants"
 	"go.uber.org/thriftrw/internal/goast"
 	"go.uber.org/thriftrw/plugin/api"
 
@@ -190,6 +191,10 @@ func (g *goFileGenerator) FormatType(t *api.Type) (string, error) {
 		k, err := g.FormatType(t.MapType.Left)
 		if err != nil {
 			return "", err
+		}
+
+		if t.MapType.Annotations != nil && t.MapType.Annotations[constants.GoTypeKey] == constants.SliceType {
+			return fmt.Sprintf("[]%v", k), err
 		}
 
 		v, err := g.FormatType(t.MapType.Right)

@@ -5764,8 +5764,9 @@ func (v *Type) IsSetPointerType() bool {
 
 // TypePair is a pair of two types.
 type TypePair struct {
-	Left  *Type `json:"left,required"`
-	Right *Type `json:"right,required"`
+	Left        *Type             `json:"left,required"`
+	Right       *Type             `json:"right,required"`
+	Annotations map[string]string `json:"annotations,omitempty"`
 }
 
 // ToWire translates a TypePair struct into a Thrift-level intermediate
@@ -5785,7 +5786,7 @@ type TypePair struct {
 //	}
 func (v *TypePair) ToWire() (wire.Value, error) {
 	var (
-		fields [2]wire.Field
+		fields [3]wire.Field
 		i      int = 0
 		w      wire.Value
 		err    error
@@ -5809,6 +5810,14 @@ func (v *TypePair) ToWire() (wire.Value, error) {
 	}
 	fields[i] = wire.Field{ID: 2, Value: w}
 	i++
+	if v.Annotations != nil {
+		w, err = wire.NewValueMap(_Map_String_String_MapItemList(v.Annotations)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
+		i++
+	}
 
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
 }
@@ -5853,6 +5862,14 @@ func (v *TypePair) FromWire(w wire.Value) error {
 					return err
 				}
 				rightIsSet = true
+			}
+		case 3:
+			if field.Value.Type() == wire.TMap {
+				v.Annotations, err = _Map_String_String_Read(field.Value.GetMap())
+				if err != nil {
+					return err
+				}
+
 			}
 		}
 	}
@@ -5903,6 +5920,18 @@ func (v *TypePair) Encode(sw stream.Writer) error {
 		return err
 	}
 
+	if v.Annotations != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TMap}); err != nil {
+			return err
+		}
+		if err := _Map_String_String_Encode(v.Annotations, sw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
 	return sw.WriteStructEnd()
 }
 
@@ -5939,6 +5968,12 @@ func (v *TypePair) Decode(sr stream.Reader) error {
 				return err
 			}
 			rightIsSet = true
+		case fh.ID == 3 && fh.Type == wire.TMap:
+			v.Annotations, err = _Map_String_String_Decode(sr)
+			if err != nil {
+				return err
+			}
+
 		default:
 			if err := sr.Skip(fh.Type); err != nil {
 				return err
@@ -5976,12 +6011,16 @@ func (v *TypePair) String() string {
 		return "<nil>"
 	}
 
-	var fields [2]string
+	var fields [3]string
 	i := 0
 	fields[i] = fmt.Sprintf("Left: %v", v.Left)
 	i++
 	fields[i] = fmt.Sprintf("Right: %v", v.Right)
 	i++
+	if v.Annotations != nil {
+		fields[i] = fmt.Sprintf("Annotations: %v", v.Annotations)
+		i++
+	}
 
 	return fmt.Sprintf("TypePair{%v}", strings.Join(fields[:i], ", "))
 }
@@ -6002,6 +6041,9 @@ func (v *TypePair) Equals(rhs *TypePair) bool {
 	if !v.Right.Equals(rhs.Right) {
 		return false
 	}
+	if !((v.Annotations == nil && rhs.Annotations == nil) || (v.Annotations != nil && rhs.Annotations != nil && _Map_String_String_Equals(v.Annotations, rhs.Annotations))) {
+		return false
+	}
 
 	return true
 }
@@ -6014,6 +6056,9 @@ func (v *TypePair) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	}
 	err = multierr.Append(err, enc.AddObject("left", v.Left))
 	err = multierr.Append(err, enc.AddObject("right", v.Right))
+	if v.Annotations != nil {
+		err = multierr.Append(err, enc.AddObject("annotations", (_Map_String_String_Zapper)(v.Annotations)))
+	}
 	return err
 }
 
@@ -6043,6 +6088,21 @@ func (v *TypePair) GetRight() (o *Type) {
 // IsSetRight returns true if Right is not nil.
 func (v *TypePair) IsSetRight() bool {
 	return v != nil && v.Right != nil
+}
+
+// GetAnnotations returns the value of Annotations if it is set or its
+// zero value if it is unset.
+func (v *TypePair) GetAnnotations() (o map[string]string) {
+	if v != nil && v.Annotations != nil {
+		return v.Annotations
+	}
+
+	return
+}
+
+// IsSetAnnotations returns true if Annotations is not nil.
+func (v *TypePair) IsSetAnnotations() bool {
+	return v != nil && v.Annotations != nil
 }
 
 // TypeReference is a reference to a user-defined type.
@@ -6391,11 +6451,11 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "api",
 	Package:  "go.uber.org/thriftrw/plugin/api",
 	FilePath: "api.thrift",
-	SHA1:     "f7eeea00e3002a17188f595c7117b9359ab244d3",
+	SHA1:     "fb81bce21306d445cc7f1967be37412ee33a6098",
 	Raw:      rawIDL,
 }
 
-const rawIDL = "/**\n * API_VERSION is the version of the plugin API.\n *\n * This MUST be provided in the HandshakeResponse.\n */\nconst i32 API_VERSION = 4\n\n/**\n * ServiceID is an arbitrary unique identifier to reference the different\n * services in this request.\n */\ntypedef i32 ServiceID\n\n/**\n * ModuleID is an arbitrary unique identifier to reference the different\n * modules in this request.\n */\ntypedef i32 ModuleID\n\n/**\n * TypeReference is a reference to a user-defined type.\n */\nstruct TypeReference {\n    1: required string name\n    /**\n     * Import path for the package defining this type.\n     */\n    2: required string importPath\n\n    /**\n     * Annotations defined on this type.\n     *\n     * Note that these are the Thrift annotations listed after the type\n     * declaration in the Thrift file.\n     *\n     * Given,\n     *\n     *   struct User {\n     *     1: required i32 id\n     *     2: required string name\n     *   } (key = \"id\", validate)\n     *\n     * The annotations will be,\n     *\n     *   {\n     *     \"key\": \"id\",\n     *     \"validate\": \"\",\n     *   }\n     */\n    3: optional map<string, string> annotations\n\n    // TODO(abg): Should this just be using ModuleID instead of a package?\n}\n\n/**\n * SimpleType is a standalone native Go type.\n */\nenum SimpleType {\n    BOOL = 1,     // bool\n    BYTE,         // byte\n    INT8,         // int8\n    INT16,        // int16\n    INT32,        // int32\n    INT64,        // int64\n    FLOAT64,      // float64\n    STRING,       // string\n    STRUCT_EMPTY, // struct{}\n}\n\n/**\n * TypePair is a pair of two types.\n */\nstruct TypePair {\n    1: required Type left\n    2: required Type right\n}\n\n/**\n * Type is a reference to a Go type which may be native or user defined.\n */\nunion Type {\n    1: SimpleType simpleType\n    /**\n     * Slice of a type\n     *\n     * []$sliceType\n     */\n    2: Type sliceType\n    /**\n     * Slice of key-value pairs of a pair of types.\n     *\n     * []struct{Key $left, Value $right}\n     */\n    3: TypePair keyValueSliceType\n    /**\n     * Map of a pair of types.\n     *\n     * map[$left]$right\n     */\n    4: TypePair mapType\n    /**\n     * Reference to a user-defined type.\n     */\n    5: TypeReference referenceType\n    /**\n     * Pointer to a type.\n     */\n    6: Type pointerType\n}\n\n/**\n * Argument is a single Argument inside a Function.\n * For,\n *\n *      void setValue(1: string key, 2: string value)\n *\n * You get the arguments,\n *\n *      Argument{Name: \"Key\", Type: Type{SimpleType: SimpleTypeString}}\n *\n *      Argument{Name: \"Value\", Type: Type{SimpleType: SimpleTypeString}}\n */\nstruct Argument {\n    /**\n     * Name of the argument. This is also the name of the argument field\n     * inside the args/result struct for that function.\n     */\n    1: required string name\n    /**\n     * Argument type.\n     */\n    2: required Type type\n    /**\n     * Annotations defined on this argument.\n     *\n     * Given,\n     *\n     *   void setValue(\n     *     1: SetValueRequest req\n     *   ) throws (\n     *     1: BadRequestError badRequestError (cache = \"false\")\n     *   )\n     *\n     * The annotations for the Argument representing badRequestError will be,\n     *\n     *  {\n     *    \"cache\": \"false\",\n     *  }\n     */\n    3: optional map<string, string> annotations;\n}\n\n/**\n * Function is a single function on a Thrift service.\n */\nstruct Function {\n    /**\n     * Name of the Go function.\n     */\n    1: required string name\n    /**\n     * Name of the function as defined in the Thrift file.\n     */\n    2: required string thriftName\n    /**\n     * List of arguments accepted by the function.\n     *\n     * This list is in the order specified by the user in the Thrift file.\n     */\n    3: required list<Argument> arguments\n    /**\n     * Return type of the function, if any. If this is not set, the function\n     * is a void function.\n     */\n    4: optional Type returnType\n    /**\n     * List of exceptions raised by the function.\n     *\n     * This list is in the order specified by the user in the Thrift file.\n     */\n    5: optional list<Argument> exceptions\n    /**\n     * Whether this function is oneway or not. This should be assumed to be\n     * false unless explicitly stated otherwise. If this is true, the\n     * returnType and exceptions will be null or empty.\n     */\n    6: optional bool oneWay\n    /**\n     * Annotations defined on this function.\n     *\n     * Given,\n     *\n     *   void setValue(1: SetValueRequest req) (cache = \"false\")\n     *\n     * The annotations will be,\n     *\n     *  {\n     *    \"cache\": \"false\",\n     *  }\n     */\n    7: optional map<string, string> annotations;\n}\n\n/**\n * Service is a service defined by the user in the Thrift file.\n */\nstruct Service {\n    /**\n     * Name of the Thrift service in Go code.\n     */\n    7: required string name\n    /**\n     * Name of the service as defined in the Thrift file.\n     */\n    1: required string thriftName\n    /**\n     * ID of the parent service.\n     */\n    4: optional ServiceID parentID\n    /**\n     * List of functions defined for this service.\n     */\n    5: required list<Function> functions\n    /**\n     * ID of the module where this service was declared.\n     */\n    6: required ModuleID moduleID\n    /**\n     * Annotations defined on this service.\n     *\n     * Given,\n     *\n     *   service KeyValue {\n     *   } (private = \"true\")\n     *\n     * The annotations will be,\n     *\n     *  {\n     *    \"private\": \"true\",\n     *  }\n     */\n    8: optional map<string, string> annotations;\n}\n\n/**\n * Module is a module generated from a single Thrift file. Each module\n * corresponds to exactly one Thrift file and contains all the types and\n * constants defined in that Thrift file.\n */\nstruct Module {\n    /**\n     * Import path for the package defining the types for this module.\n     */\n    1: required string importPath\n    /**\n     * Path to the directory containing the code for this module.\n     *\n     * The path is relative to the output directory into which ThriftRW is\n     * generating code. Plugins SHOULD NOT make any assumptions about the\n     * absolute location of the directory.\n     */\n    2: required string directory\n    /**\n     * Path to the Thrift file from which this module was generated.\n     */\n    3: required string thriftFilePath\n}\n\n//////////////////////////////////////////////////////////////////////////////\n\n/**\n * Feature is a functionality offered by a ThriftRW plugin.\n */\nenum Feature {\n    /**\n     * SERVICE_GENERATOR specifies that the plugin may generate arbitrary code\n     * for services defined in the Thrift file.\n     *\n     * If a plugin provides this, it MUST implement the ServiceGenerator\n     * service.\n     */\n    SERVICE_GENERATOR = 1,\n\n    // TODO: TAGGER for struct-tagging plugins\n}\n\n/**\n * HandshakeRequest is the initial request sent to the plugin as part of\n * establishing communication and feature negotiation.\n */\nstruct HandshakeRequest {\n}\n\n/**\n * HandshakeResponse is the response from the plugin for a HandshakeRequest.\n */\nstruct HandshakeResponse {\n    /**\n     * Name of the plugin. This MUST match the name of the plugin specified\n     * over the command line or the program will fail.\n     */\n    1: required string name\n    /**\n     * Version of the plugin API.\n     *\n     * This MUST be set to API_VERSION by the plugin.\n     */\n    2: required i32 apiVersion (go.name = \"APIVersion\")\n    /**\n     * List of features the plugin provides.\n     */\n    3: required list<Feature> features\n    /**\n     * Version of ThriftRW with which the plugin was built.\n     *\n     * This MUST be set to go.uber.org/thriftrw/version.Version by the plugin\n     * explicitly.\n     */\n    4: optional string libraryVersion\n}\n\nservice Plugin {\n    /**\n     * handshake performs a handshake with the plugin to negotiate the\n     * features provided by it and the version of the plugin API it expects.\n     */\n    HandshakeResponse handshake(1: HandshakeRequest request)\n\n    /**\n     * Informs the plugin process that it will not receive any more requests\n     * and it is safe for it to exit.\n     */\n    void goodbye()\n}\n\n//////////////////////////////////////////////////////////////////////////////\n\n/**\n * GenerateServiceRequest is a request to generate code for zero or more\n * Thrift services.\n */\nstruct GenerateServiceRequest {\n    /**\n     * IDs of services for which code should be generated.\n     *\n     * Note that the services map contains information about both, the\n     * services being generated and their transitive dependencies. Code should\n     * only be generated for service IDs listed here.\n     */\n    1: required list<ServiceID> rootServices\n    /**\n     * Map of service ID to service.\n     *\n     * Any service IDs present in this request will have a corresponding\n     * service definition in this map, including services for which code does\n     * not need to be generated.\n     */\n    2: required map<ServiceID, Service> services\n    /**\n     * Map of module ID to module.\n     *\n     * Any module IDs present in the request will have a corresponding module\n     * definition in this map.\n     */\n    3: required map<ModuleID, Module> modules\n    /**\n     * Prefix for import paths of generated module. In general, plugins should\n     * not need to use the package prefix unless instantiating a new\n     * Generator for more custom plugin generation.\n     */\n    4: required string packagePrefix\n    /**\n     * Directory whose descendants contain all Thrift files. In general,\n     * plugins should not need to use the thrift root unless instantiating a\n     * new Generator for more custom plugin generation.\n     */\n    5: required string thriftRoot\n    /**\n     *  IDs of Modules for which code should be generated.\n     *\n     *  Note that the modules map contains information about both, the\n     *  modules being generated and their transitive dependencies. Code should\n     *  only be generated for module IDs listed here.\n     */\n    6: optional list<ModuleID> rootModules\n}\n\n/**\n * GenerateServiceResponse is response to a GenerateServiceRequest.\n */\nstruct GenerateServiceResponse {\n    /**\n     * Map of file path to file contents.\n     *\n     * All paths MUST be relative to the output directory into which ThriftRW\n     * is generating code. Plugins SHOULD NOT make any assumptions about the\n     * absolute location of the directory.\n     *\n     * The paths MUST NOT contain the string \"..\" or the request will fail.\n     */\n    1: optional map<string, binary> files\n}\n\n/**\n * ServiceGenerator generates arbitrary code for services.\n *\n * This MUST be implemented if the SERVICE_GENERATOR feature is enabled.\n */\nservice ServiceGenerator {\n    /**\n     * Generates code for requested services.\n     */\n    GenerateServiceResponse generate(1: GenerateServiceRequest request)\n}\n"
+const rawIDL = "/**\n * API_VERSION is the version of the plugin API.\n *\n * This MUST be provided in the HandshakeResponse.\n */\nconst i32 API_VERSION = 4\n\n/**\n * ServiceID is an arbitrary unique identifier to reference the different\n * services in this request.\n */\ntypedef i32 ServiceID\n\n/**\n * ModuleID is an arbitrary unique identifier to reference the different\n * modules in this request.\n */\ntypedef i32 ModuleID\n\n/**\n * TypeReference is a reference to a user-defined type.\n */\nstruct TypeReference {\n    1: required string name\n    /**\n     * Import path for the package defining this type.\n     */\n    2: required string importPath\n\n    /**\n     * Annotations defined on this type.\n     *\n     * Note that these are the Thrift annotations listed after the type\n     * declaration in the Thrift file.\n     *\n     * Given,\n     *\n     *   struct User {\n     *     1: required i32 id\n     *     2: required string name\n     *   } (key = \"id\", validate)\n     *\n     * The annotations will be,\n     *\n     *   {\n     *     \"key\": \"id\",\n     *     \"validate\": \"\",\n     *   }\n     */\n    3: optional map<string, string> annotations\n\n    // TODO(abg): Should this just be using ModuleID instead of a package?\n}\n\n/**\n * SimpleType is a standalone native Go type.\n */\nenum SimpleType {\n    BOOL = 1,     // bool\n    BYTE,         // byte\n    INT8,         // int8\n    INT16,        // int16\n    INT32,        // int32\n    INT64,        // int64\n    FLOAT64,      // float64\n    STRING,       // string\n    STRUCT_EMPTY, // struct{}\n}\n\n/**\n * TypePair is a pair of two types.\n */\nstruct TypePair {\n    1: required Type left\n    2: required Type right\n    3: optional map<string, string> annotations\n}\n\n/**\n * Type is a reference to a Go type which may be native or user defined.\n */\nunion Type {\n    1: SimpleType simpleType\n    /**\n     * Slice of a type\n     *\n     * []$sliceType\n     */\n    2: Type sliceType\n    /**\n     * Slice of key-value pairs of a pair of types.\n     *\n     * []struct{Key $left, Value $right}\n     */\n    3: TypePair keyValueSliceType\n    /**\n     * Map of a pair of types.\n     *\n     * map[$left]$right\n     */\n    4: TypePair mapType\n    /**\n     * Reference to a user-defined type.\n     */\n    5: TypeReference referenceType\n    /**\n     * Pointer to a type.\n     */\n    6: Type pointerType\n}\n\n/**\n * Argument is a single Argument inside a Function.\n * For,\n *\n *      void setValue(1: string key, 2: string value)\n *\n * You get the arguments,\n *\n *      Argument{Name: \"Key\", Type: Type{SimpleType: SimpleTypeString}}\n *\n *      Argument{Name: \"Value\", Type: Type{SimpleType: SimpleTypeString}}\n */\nstruct Argument {\n    /**\n     * Name of the argument. This is also the name of the argument field\n     * inside the args/result struct for that function.\n     */\n    1: required string name\n    /**\n     * Argument type.\n     */\n    2: required Type type\n    /**\n     * Annotations defined on this argument.\n     *\n     * Given,\n     *\n     *   void setValue(\n     *     1: SetValueRequest req\n     *   ) throws (\n     *     1: BadRequestError badRequestError (cache = \"false\")\n     *   )\n     *\n     * The annotations for the Argument representing badRequestError will be,\n     *\n     *  {\n     *    \"cache\": \"false\",\n     *  }\n     */\n    3: optional map<string, string> annotations;\n}\n\n/**\n * Function is a single function on a Thrift service.\n */\nstruct Function {\n    /**\n     * Name of the Go function.\n     */\n    1: required string name\n    /**\n     * Name of the function as defined in the Thrift file.\n     */\n    2: required string thriftName\n    /**\n     * List of arguments accepted by the function.\n     *\n     * This list is in the order specified by the user in the Thrift file.\n     */\n    3: required list<Argument> arguments\n    /**\n     * Return type of the function, if any. If this is not set, the function\n     * is a void function.\n     */\n    4: optional Type returnType\n    /**\n     * List of exceptions raised by the function.\n     *\n     * This list is in the order specified by the user in the Thrift file.\n     */\n    5: optional list<Argument> exceptions\n    /**\n     * Whether this function is oneway or not. This should be assumed to be\n     * false unless explicitly stated otherwise. If this is true, the\n     * returnType and exceptions will be null or empty.\n     */\n    6: optional bool oneWay\n    /**\n     * Annotations defined on this function.\n     *\n     * Given,\n     *\n     *   void setValue(1: SetValueRequest req) (cache = \"false\")\n     *\n     * The annotations will be,\n     *\n     *  {\n     *    \"cache\": \"false\",\n     *  }\n     */\n    7: optional map<string, string> annotations;\n}\n\n/**\n * Service is a service defined by the user in the Thrift file.\n */\nstruct Service {\n    /**\n     * Name of the Thrift service in Go code.\n     */\n    7: required string name\n    /**\n     * Name of the service as defined in the Thrift file.\n     */\n    1: required string thriftName\n    /**\n     * ID of the parent service.\n     */\n    4: optional ServiceID parentID\n    /**\n     * List of functions defined for this service.\n     */\n    5: required list<Function> functions\n    /**\n     * ID of the module where this service was declared.\n     */\n    6: required ModuleID moduleID\n    /**\n     * Annotations defined on this service.\n     *\n     * Given,\n     *\n     *   service KeyValue {\n     *   } (private = \"true\")\n     *\n     * The annotations will be,\n     *\n     *  {\n     *    \"private\": \"true\",\n     *  }\n     */\n    8: optional map<string, string> annotations;\n}\n\n/**\n * Module is a module generated from a single Thrift file. Each module\n * corresponds to exactly one Thrift file and contains all the types and\n * constants defined in that Thrift file.\n */\nstruct Module {\n    /**\n     * Import path for the package defining the types for this module.\n     */\n    1: required string importPath\n    /**\n     * Path to the directory containing the code for this module.\n     *\n     * The path is relative to the output directory into which ThriftRW is\n     * generating code. Plugins SHOULD NOT make any assumptions about the\n     * absolute location of the directory.\n     */\n    2: required string directory\n    /**\n     * Path to the Thrift file from which this module was generated.\n     */\n    3: required string thriftFilePath\n}\n\n//////////////////////////////////////////////////////////////////////////////\n\n/**\n * Feature is a functionality offered by a ThriftRW plugin.\n */\nenum Feature {\n    /**\n     * SERVICE_GENERATOR specifies that the plugin may generate arbitrary code\n     * for services defined in the Thrift file.\n     *\n     * If a plugin provides this, it MUST implement the ServiceGenerator\n     * service.\n     */\n    SERVICE_GENERATOR = 1,\n\n    // TODO: TAGGER for struct-tagging plugins\n}\n\n/**\n * HandshakeRequest is the initial request sent to the plugin as part of\n * establishing communication and feature negotiation.\n */\nstruct HandshakeRequest {\n}\n\n/**\n * HandshakeResponse is the response from the plugin for a HandshakeRequest.\n */\nstruct HandshakeResponse {\n    /**\n     * Name of the plugin. This MUST match the name of the plugin specified\n     * over the command line or the program will fail.\n     */\n    1: required string name\n    /**\n     * Version of the plugin API.\n     *\n     * This MUST be set to API_VERSION by the plugin.\n     */\n    2: required i32 apiVersion (go.name = \"APIVersion\")\n    /**\n     * List of features the plugin provides.\n     */\n    3: required list<Feature> features\n    /**\n     * Version of ThriftRW with which the plugin was built.\n     *\n     * This MUST be set to go.uber.org/thriftrw/version.Version by the plugin\n     * explicitly.\n     */\n    4: optional string libraryVersion\n}\n\nservice Plugin {\n    /**\n     * handshake performs a handshake with the plugin to negotiate the\n     * features provided by it and the version of the plugin API it expects.\n     */\n    HandshakeResponse handshake(1: HandshakeRequest request)\n\n    /**\n     * Informs the plugin process that it will not receive any more requests\n     * and it is safe for it to exit.\n     */\n    void goodbye()\n}\n\n//////////////////////////////////////////////////////////////////////////////\n\n/**\n * GenerateServiceRequest is a request to generate code for zero or more\n * Thrift services.\n */\nstruct GenerateServiceRequest {\n    /**\n     * IDs of services for which code should be generated.\n     *\n     * Note that the services map contains information about both, the\n     * services being generated and their transitive dependencies. Code should\n     * only be generated for service IDs listed here.\n     */\n    1: required list<ServiceID> rootServices\n    /**\n     * Map of service ID to service.\n     *\n     * Any service IDs present in this request will have a corresponding\n     * service definition in this map, including services for which code does\n     * not need to be generated.\n     */\n    2: required map<ServiceID, Service> services\n    /**\n     * Map of module ID to module.\n     *\n     * Any module IDs present in the request will have a corresponding module\n     * definition in this map.\n     */\n    3: required map<ModuleID, Module> modules\n    /**\n     * Prefix for import paths of generated module. In general, plugins should\n     * not need to use the package prefix unless instantiating a new\n     * Generator for more custom plugin generation.\n     */\n    4: required string packagePrefix\n    /**\n     * Directory whose descendants contain all Thrift files. In general,\n     * plugins should not need to use the thrift root unless instantiating a\n     * new Generator for more custom plugin generation.\n     */\n    5: required string thriftRoot\n    /**\n     *  IDs of Modules for which code should be generated.\n     *\n     *  Note that the modules map contains information about both, the\n     *  modules being generated and their transitive dependencies. Code should\n     *  only be generated for module IDs listed here.\n     */\n    6: optional list<ModuleID> rootModules\n}\n\n/**\n * GenerateServiceResponse is response to a GenerateServiceRequest.\n */\nstruct GenerateServiceResponse {\n    /**\n     * Map of file path to file contents.\n     *\n     * All paths MUST be relative to the output directory into which ThriftRW\n     * is generating code. Plugins SHOULD NOT make any assumptions about the\n     * absolute location of the directory.\n     *\n     * The paths MUST NOT contain the string \"..\" or the request will fail.\n     */\n    1: optional map<string, binary> files\n}\n\n/**\n * ServiceGenerator generates arbitrary code for services.\n *\n * This MUST be implemented if the SERVICE_GENERATOR feature is enabled.\n */\nservice ServiceGenerator {\n    /**\n     * Generates code for requested services.\n     */\n    GenerateServiceResponse generate(1: GenerateServiceRequest request)\n}\n"
 
 // Plugin_Goodbye_Args represents the arguments for the Plugin.goodbye function.
 //
