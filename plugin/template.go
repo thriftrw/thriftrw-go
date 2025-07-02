@@ -29,8 +29,8 @@ import (
 	"sort"
 	"text/template"
 
-	"go.uber.org/thriftrw/internal/constants"
 	"go.uber.org/thriftrw/internal/goast"
+	"go.uber.org/thriftrw/internal/gotype"
 	"go.uber.org/thriftrw/plugin/api"
 
 	"golang.org/x/tools/go/ast/astutil"
@@ -193,7 +193,7 @@ func (g *goFileGenerator) FormatType(t *api.Type) (string, error) {
 			return "", err
 		}
 
-		if t.MapType.Annotations != nil && t.MapType.Annotations[constants.GoTypeKey] == constants.SliceType {
+		if t.MapType.Annotations != nil && t.MapType.Annotations[gotype.GoTypeKey] == gotype.SliceType {
 			return fmt.Sprintf("[]%v", k), err
 		}
 

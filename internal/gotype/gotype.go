@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Uber Technologies, Inc.
+// Copyright (c) 2025 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-package gen
+package gotype
 
 const (
 	// goTypeKey is a Thrift annotation that allows overriding the type of
@@ -30,6 +30,6 @@ const (
 	//     (go.type = "slice")
 	//
 	// Currently, only thrift set to go slice type overriding is supported.
-	goTypeKey = "go.type"
-	sliceType = "slice"
+	GoTypeKey = "go.type"
+	SliceType = "slice"
 )
