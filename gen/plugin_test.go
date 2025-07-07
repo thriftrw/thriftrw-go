@@ -533,8 +533,8 @@ func TestBuildType(t *testing.T) {
 			desc: "map[int32]struct{}",
 			spec: &compile.SetSpec{ValueSpec: &compile.I32Spec{}, Annotations: map[string]string{gotype.GoTypeKey: gotype.SliceType}},
 			want: &api.Type{MapType: &api.TypePair{
-				Left:  &api.Type{SimpleType: simpleType(api.SimpleTypeInt32)},
-				Right: &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
+				Left:        &api.Type{SimpleType: simpleType(api.SimpleTypeInt32)},
+				Right:       &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
 				Annotations: map[string]string{gotype.GoTypeKey: gotype.SliceType},
 			}},
 		},

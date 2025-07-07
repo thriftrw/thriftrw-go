@@ -324,8 +324,8 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 		}
 
 		return &api.Type{MapType: &api.TypePair{
-			Left:  v,
-			Right: &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
+			Left:        v,
+			Right:       &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
 			Annotations: s.Annotations,
 		}}, nil
 

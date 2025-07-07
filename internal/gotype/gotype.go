@@ -21,7 +21,7 @@
 package gotype
 
 const (
-	// goTypeKey is a Thrift annotation that allows overriding the type of
+	// GoTypeKey is a Thrift annotation that allows overriding the type of
 	// a typedef target type or a struct field type. By default, thrift set type
 	// corresponds to go map type. Following annotation on a typedef target type
 	// or struct field type, where the type is direct set type, causes thriftrw
@@ -31,5 +31,7 @@ const (
 	//
 	// Currently, only thrift set to go slice type overriding is supported.
 	GoTypeKey = "go.type"
+	// SliceType is a value for GoTypeKey that indicates that the
+	// thrift set type should be mapped to a Go slice type.
 	SliceType = "slice"
 )
