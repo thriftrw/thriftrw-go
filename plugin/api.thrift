@@ -73,6 +73,7 @@ enum SimpleType {
 struct TypePair {
     1: required Type left
     2: required Type right
+    3: optional map<string, string> annotations
 }
 
 /**

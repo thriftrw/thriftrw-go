@@ -301,6 +301,45 @@ func TestGoFileFromTemplate(t *testing.T) {
 			},
 			wantError: `failed to parse additional template test for file test.go: template: test:2: missing value for range`,
 		},
+		{
+			desc: "set type with go.type slice annotation",
+			template: `
+				package foo
+
+				var foo <formatType .> = nil
+			`,
+			data: &api.Type{
+				MapType: &api.TypePair{
+					Left:        &api.Type{SimpleType: simpleType(api.SimpleTypeInt32)},
+					Right:       &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
+					Annotations: map[string]string{"go.type": "slice"},
+				},
+			},
+			wantBody: unlines(
+				`package foo`,
+				``,
+				`var foo []int32 = nil`,
+			),
+		},
+		{
+			desc: "set type without go.type annotation",
+			template: `
+				package foo
+
+				var foo <formatType .> = nil
+			`,
+			data: &api.Type{
+				MapType: &api.TypePair{
+					Left:  &api.Type{SimpleType: simpleType(api.SimpleTypeString)},
+					Right: &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
+				},
+			},
+			wantBody: unlines(
+				`package foo`,
+				``,
+				`var foo map[string]struct{} = nil`,
+			),
+		},
 	}
 
 	for _, tt := range tests {
@@ -351,4 +390,8 @@ func typeAnnotations(t *api.Type) []annotationPair {
 		return annotationPairs
 	}
 	return nil
+}
+
+func simpleType(s api.SimpleType) *api.SimpleType {
+	return &s
 }

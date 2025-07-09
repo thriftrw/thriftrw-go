@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Uber Technologies, Inc.
+// Copyright (c) 2025 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@ import (
 	"fmt"
 
 	"go.uber.org/thriftrw/compile"
+	"go.uber.org/thriftrw/internal/gotype"
 )
 
 // TypeDefinition generates code for the given TypeSpec.
@@ -53,7 +54,7 @@ func isHashable(t compile.TypeSpec) bool {
 // (go.type = "slice") and the value of the set is considered hashable
 // by thriftrw.
 func setUsesMap(spec *compile.SetSpec) bool {
-	return (spec.Annotations[goTypeKey] != sliceType) && isHashable(spec.ValueSpec)
+	return (spec.Annotations[gotype.GoTypeKey] != gotype.SliceType) && isHashable(spec.ValueSpec)
 }
 
 // isPrimitiveType returns true if the given type is a primitive type.

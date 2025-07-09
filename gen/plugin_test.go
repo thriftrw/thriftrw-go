@@ -5,6 +5,7 @@ import (
 
 	"go.uber.org/thriftrw/ast"
 	"go.uber.org/thriftrw/compile"
+	"go.uber.org/thriftrw/internal/gotype"
 	"go.uber.org/thriftrw/plugin/api"
 	"go.uber.org/thriftrw/ptr"
 
@@ -525,6 +526,16 @@ func TestBuildType(t *testing.T) {
 			want: &api.Type{MapType: &api.TypePair{
 				Left:  &api.Type{SimpleType: simpleType(api.SimpleTypeFloat64)},
 				Right: &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
+			}},
+		},
+		{
+			// hashable set item with annotations
+			desc: "map[int32]struct{}",
+			spec: &compile.SetSpec{ValueSpec: &compile.I32Spec{}, Annotations: map[string]string{gotype.GoTypeKey: gotype.SliceType}},
+			want: &api.Type{MapType: &api.TypePair{
+				Left:        &api.Type{SimpleType: simpleType(api.SimpleTypeInt32)},
+				Right:       &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
+				Annotations: map[string]string{gotype.GoTypeKey: gotype.SliceType},
 			}},
 		},
 		{

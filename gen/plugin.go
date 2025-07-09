@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Uber Technologies, Inc.
+// Copyright (c) 2025 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -324,8 +324,9 @@ func (g *generateServiceBuilder) buildType(spec compile.TypeSpec, required bool)
 		}
 
 		return &api.Type{MapType: &api.TypePair{
-			Left:  v,
-			Right: &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
+			Left:        v,
+			Right:       &api.Type{SimpleType: simpleType(api.SimpleTypeStructEmpty)},
+			Annotations: s.Annotations,
 		}}, nil
 
 	case *compile.StructSpec:

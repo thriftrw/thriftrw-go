@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Uber Technologies, Inc.
+// Copyright (c) 2025 Uber Technologies, Inc.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import (
 	"text/template"
 
 	"go.uber.org/thriftrw/internal/goast"
+	"go.uber.org/thriftrw/internal/gotype"
 	"go.uber.org/thriftrw/plugin/api"
 
 	"golang.org/x/tools/go/ast/astutil"
@@ -190,6 +191,10 @@ func (g *goFileGenerator) FormatType(t *api.Type) (string, error) {
 		k, err := g.FormatType(t.MapType.Left)
 		if err != nil {
 			return "", err
+		}
+
+		if t.MapType.Annotations != nil && t.MapType.Annotations[gotype.GoTypeKey] == gotype.SliceType {
+			return fmt.Sprintf("[]%v", k), err
 		}
 
 		v, err := g.FormatType(t.MapType.Right)
