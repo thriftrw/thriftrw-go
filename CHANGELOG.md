@@ -450,6 +450,7 @@ this release.
 ### Added
 - Initial release.
 
+[Unreleased]: https://github.com/thriftrw/thriftrw-go/compare/v1.33.0...HEAD
 [1.33.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.32.0...v1.33.0
 [1.32.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.31.0...v1.32.0
 [1.31.0]: https://github.com/thriftrw/thriftrw-go/compare/v1.30.0...v1.31.0
