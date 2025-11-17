@@ -137,6 +137,7 @@ type generator struct {
 
 	fset                  *token.FileSet
 	enumTextMarshalStrict bool
+	unionDecodeRelaxed    bool
 
 	// TODO use something to group related decls together
 }
@@ -149,6 +150,7 @@ type GeneratorOptions struct {
 
 	NoZap                 bool
 	EnumTextMarshalStrict bool
+	UnionDecodeRelaxed    bool
 }
 
 // NewGenerator sets up a new generator for Go code.
@@ -165,6 +167,7 @@ func NewGenerator(o *GeneratorOptions) Generator {
 		fset:                  token.NewFileSet(),
 		noZap:                 o.NoZap,
 		enumTextMarshalStrict: o.EnumTextMarshalStrict,
+		unionDecodeRelaxed:    o.UnionDecodeRelaxed,
 	}
 }
 
@@ -179,6 +182,13 @@ func checkNoZap(g Generator) bool {
 func checkEnumTextMarshalStrict(g Generator) bool {
 	if gen, ok := g.(*generator); ok {
 		return gen.enumTextMarshalStrict
+	}
+	return false
+}
+
+func checkDecodeRelaxed(g Generator) bool {
+	if gen, ok := g.(*generator); ok {
+		return gen.unionDecodeRelaxed
 	}
 	return false
 }

@@ -24,3 +24,6 @@ enum-text-marshal-strict: thrift/enum-text-marshal-strict.thrift $(THRIFTRW)
 
 %: thrift/%.thrift $(THRIFTRW)
 	$(THRIFTRW) $(THRIFTRW_FLAGS) $<
+
+union-decode-relaxed: thrift/union_decode_relaxed.thrift $(THRIFTRW)
+	$(THRIFTRW) $(THRIFTRW_FLAGS) --no-recurse --union-decode-relaxed $<

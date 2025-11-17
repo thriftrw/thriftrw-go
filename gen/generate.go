@@ -88,6 +88,10 @@ type Options struct {
 	// Generates an error on MarshalText and MarshalJSON if the enum value is
 	// unrecognized.
 	EnumTextMarshalStrict bool
+
+	// Enables a flexible union decoding mode that permits unknown values and
+	// returns an empty union struct in such cases.
+	UnionDecodeRelaxed bool
 }
 
 // Generate generates code based on the given options.
@@ -279,6 +283,7 @@ func generateModule(
 		PackageName:           normalizedPackageName,
 		NoZap:                 o.NoZap,
 		EnumTextMarshalStrict: o.EnumTextMarshalStrict,
+		UnionDecodeRelaxed:    o.UnionDecodeRelaxed,
 	})
 
 	if len(m.Constants) > 0 {
