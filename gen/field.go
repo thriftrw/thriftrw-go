@@ -58,9 +58,9 @@ type fieldGroupGenerator struct {
 
 	// If this field group represents a union of values, exactly one field
 	// must be set for it to be valid.
-	IsUnion         bool
-	AllowEmptyUnion bool
-	DecodeRelaxed   bool
+	IsUnion            bool
+	AllowEmptyUnion    bool
+	UnionDecodeRelaxed bool
 
 	// This field group represents a Thrift exception.
 	IsException bool
@@ -454,7 +454,7 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 				<end>
 			<end>
 
-			<if and (not .DecodeRelaxed) .IsUnion (len .Fields)>
+			<if and (not .UnionDecodeRelaxed) .IsUnion (len .Fields)>
 				<$fmt := import "fmt">
 				<$count := newVar "count">
 				<$count> := 0
@@ -654,7 +654,7 @@ func (f fieldGroupGenerator) Decode(g Generator) error {
 				<end>
 			<end>
 
-			<if and (not .DecodeRelaxed) .IsUnion (len .Fields)>
+			<if and (not .UnionDecodeRelaxed) .IsUnion (len .Fields)>
 				<$fmt := import "fmt">
 				<$count := newVar "count">
 				<$count> := 0

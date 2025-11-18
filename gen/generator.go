@@ -186,7 +186,7 @@ func checkEnumTextMarshalStrict(g Generator) bool {
 	return false
 }
 
-func checkDecodeRelaxed(g Generator) bool {
+func checkUnionDecodeRelaxed(g Generator) bool {
 	if gen, ok := g.(*generator); ok {
 		return gen.unionDecodeRelaxed
 	}
