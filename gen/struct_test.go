@@ -21,6 +21,7 @@
 package gen
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -35,6 +36,7 @@ import (
 	tss "go.uber.org/thriftrw/gen/internal/tests/set_to_slice"
 	ts "go.uber.org/thriftrw/gen/internal/tests/structs"
 	td "go.uber.org/thriftrw/gen/internal/tests/typedefs"
+	ru "go.uber.org/thriftrw/gen/internal/tests/union_decode_relaxed"
 	tu "go.uber.org/thriftrw/gen/internal/tests/unions"
 	"go.uber.org/thriftrw/protocol/binary"
 	"go.uber.org/thriftrw/ptr"
@@ -855,6 +857,45 @@ func TestUnionFromWireInconsistencies(t *testing.T) {
 					assert.Contains(t, err.Error(), tt.failure, tt.desc)
 				}
 			}
+		})
+	}
+}
+
+func TestUnionDecodeRelaxed(t *testing.T) {
+	tests := []struct {
+		desc   string
+		input  ru.NewValue
+		output ru.Value
+	}{
+		{
+			desc:   "known value",
+			input:  ru.NewValue{I: int64p(42)},
+			output: ru.Value{I: int64p(42)},
+		},
+		{
+			desc:   "unknown value results into empty union struct",
+			input:  ru.NewValue{C: bytep(42)},
+			output: ru.Value{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.desc+"/wire", func(t *testing.T) {
+			w, err := tt.input.ToWire()
+			assert.NoError(t, err)
+			var got ru.Value
+			assert.NoError(t, got.FromWire(w))
+			assert.Equal(t, tt.output, got)
+		})
+		t.Run(tt.desc+"/streaming", func(t *testing.T) {
+			var b bytes.Buffer
+			w := binary.NewStreamWriter(&b)
+			assert.NoError(t, tt.input.Encode(w))
+			assert.NoError(t, w.Close())
+			var got ru.Value
+			r := binary.NewStreamReader(&b)
+			assert.NoError(t, got.Decode(r))
+			assert.NoError(t, r.Close())
+			assert.Equal(t, tt.output, got)
 		})
 	}
 }

@@ -5,3 +5,12 @@ union Value {
     4: bool b
     5: binary raw
 }
+
+union NewValue {
+    1: string s
+    2: i64 i
+    3: double f
+    4: bool b
+    5: binary raw
+    6: byte c
+}

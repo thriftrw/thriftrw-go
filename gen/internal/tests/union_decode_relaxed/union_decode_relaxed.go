@@ -14,6 +14,610 @@ import (
 	strings "strings"
 )
 
+type NewValue struct {
+	S   *string  `json:"s,omitempty"`
+	I   *int64   `json:"i,omitempty"`
+	F   *float64 `json:"f,omitempty"`
+	B   *bool    `json:"b,omitempty"`
+	Raw []byte   `json:"raw,omitempty"`
+	C   *int8    `json:"c,omitempty"`
+}
+
+// ToWire translates a NewValue struct into a Thrift-level intermediate
+// representation. This intermediate representation may be serialized
+// into bytes using a ThriftRW protocol implementation.
+//
+// An error is returned if the struct or any of its fields failed to
+// validate.
+//
+//	x, err := v.ToWire()
+//	if err != nil {
+//		return err
+//	}
+//
+//	if err := binaryProtocol.Encode(x, writer); err != nil {
+//		return err
+//	}
+func (v *NewValue) ToWire() (wire.Value, error) {
+	var (
+		fields [6]wire.Field
+		i      int = 0
+		w      wire.Value
+		err    error
+	)
+
+	if v.S != nil {
+		w, err = wire.NewValueString(*(v.S)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 1, Value: w}
+		i++
+	}
+	if v.I != nil {
+		w, err = wire.NewValueI64(*(v.I)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 2, Value: w}
+		i++
+	}
+	if v.F != nil {
+		w, err = wire.NewValueDouble(*(v.F)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 3, Value: w}
+		i++
+	}
+	if v.B != nil {
+		w, err = wire.NewValueBool(*(v.B)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 4, Value: w}
+		i++
+	}
+	if v.Raw != nil {
+		w, err = wire.NewValueBinary(v.Raw), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 5, Value: w}
+		i++
+	}
+	if v.C != nil {
+		w, err = wire.NewValueI8(*(v.C)), error(nil)
+		if err != nil {
+			return w, err
+		}
+		fields[i] = wire.Field{ID: 6, Value: w}
+		i++
+	}
+
+	if i != 1 {
+		return wire.Value{}, fmt.Errorf("NewValue should have exactly one field: got %v fields", i)
+	}
+
+	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+// FromWire deserializes a NewValue struct from its Thrift-level
+// representation. The Thrift-level representation may be obtained
+// from a ThriftRW protocol implementation.
+//
+// An error is returned if we were unable to build a NewValue struct
+// from the provided intermediate representation.
+//
+//	x, err := binaryProtocol.Decode(reader, wire.TStruct)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	var v NewValue
+//	if err := v.FromWire(x); err != nil {
+//		return nil, err
+//	}
+//	return &v, nil
+func (v *NewValue) FromWire(w wire.Value) error {
+	var err error
+
+	for _, field := range w.GetStruct().Fields {
+		switch field.ID {
+		case 1:
+			if field.Value.Type() == wire.TBinary {
+				var x string
+				x, err = field.Value.GetString(), error(nil)
+				v.S = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 2:
+			if field.Value.Type() == wire.TI64 {
+				var x int64
+				x, err = field.Value.GetI64(), error(nil)
+				v.I = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 3:
+			if field.Value.Type() == wire.TDouble {
+				var x float64
+				x, err = field.Value.GetDouble(), error(nil)
+				v.F = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 4:
+			if field.Value.Type() == wire.TBool {
+				var x bool
+				x, err = field.Value.GetBool(), error(nil)
+				v.B = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		case 5:
+			if field.Value.Type() == wire.TBinary {
+				v.Raw, err = field.Value.GetBinary(), error(nil)
+				if err != nil {
+					return err
+				}
+
+			}
+		case 6:
+			if field.Value.Type() == wire.TI8 {
+				var x int8
+				x, err = field.Value.GetI8(), error(nil)
+				v.C = &x
+				if err != nil {
+					return err
+				}
+
+			}
+		}
+	}
+
+	return nil
+}
+
+// Encode serializes a NewValue struct directly into bytes, without going
+// through an intermediary type.
+//
+// An error is returned if a NewValue struct could not be encoded.
+func (v *NewValue) Encode(sw stream.Writer) error {
+	if err := sw.WriteStructBegin(); err != nil {
+		return err
+	}
+
+	if v.S != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 1, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := sw.WriteString(*(v.S)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.I != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 2, Type: wire.TI64}); err != nil {
+			return err
+		}
+		if err := sw.WriteInt64(*(v.I)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.F != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 3, Type: wire.TDouble}); err != nil {
+			return err
+		}
+		if err := sw.WriteDouble(*(v.F)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.B != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 4, Type: wire.TBool}); err != nil {
+			return err
+		}
+		if err := sw.WriteBool(*(v.B)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.Raw != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TBinary}); err != nil {
+			return err
+		}
+		if err := sw.WriteBinary(v.Raw); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	if v.C != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 6, Type: wire.TI8}); err != nil {
+			return err
+		}
+		if err := sw.WriteInt8(*(v.C)); err != nil {
+			return err
+		}
+		if err := sw.WriteFieldEnd(); err != nil {
+			return err
+		}
+	}
+
+	count := 0
+	if v.S != nil {
+		count++
+	}
+	if v.I != nil {
+		count++
+	}
+	if v.F != nil {
+		count++
+	}
+	if v.B != nil {
+		count++
+	}
+	if v.Raw != nil {
+		count++
+	}
+	if v.C != nil {
+		count++
+	}
+
+	if count != 1 {
+		return fmt.Errorf("NewValue should have exactly one field: got %v fields", count)
+	}
+
+	return sw.WriteStructEnd()
+}
+
+// Decode deserializes a NewValue struct directly from its Thrift-level
+// representation, without going through an intemediary type.
+//
+// An error is returned if a NewValue struct could not be generated from the wire
+// representation.
+func (v *NewValue) Decode(sr stream.Reader) error {
+
+	if err := sr.ReadStructBegin(); err != nil {
+		return err
+	}
+
+	fh, ok, err := sr.ReadFieldBegin()
+	if err != nil {
+		return err
+	}
+
+	for ok {
+		switch {
+		case fh.ID == 1 && fh.Type == wire.TBinary:
+			var x string
+			x, err = sr.ReadString()
+			v.S = &x
+			if err != nil {
+				return err
+			}
+
+		case fh.ID == 2 && fh.Type == wire.TI64:
+			var x int64
+			x, err = sr.ReadInt64()
+			v.I = &x
+			if err != nil {
+				return err
+			}
+
+		case fh.ID == 3 && fh.Type == wire.TDouble:
+			var x float64
+			x, err = sr.ReadDouble()
+			v.F = &x
+			if err != nil {
+				return err
+			}
+
+		case fh.ID == 4 && fh.Type == wire.TBool:
+			var x bool
+			x, err = sr.ReadBool()
+			v.B = &x
+			if err != nil {
+				return err
+			}
+
+		case fh.ID == 5 && fh.Type == wire.TBinary:
+			v.Raw, err = sr.ReadBinary()
+			if err != nil {
+				return err
+			}
+
+		case fh.ID == 6 && fh.Type == wire.TI8:
+			var x int8
+			x, err = sr.ReadInt8()
+			v.C = &x
+			if err != nil {
+				return err
+			}
+
+		default:
+			if err := sr.Skip(fh.Type); err != nil {
+				return err
+			}
+		}
+
+		if err := sr.ReadFieldEnd(); err != nil {
+			return err
+		}
+
+		if fh, ok, err = sr.ReadFieldBegin(); err != nil {
+			return err
+		}
+	}
+
+	if err := sr.ReadStructEnd(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// String returns a readable string representation of a NewValue
+// struct.
+func (v *NewValue) String() string {
+	if v == nil {
+		return "<nil>"
+	}
+
+	var fields [6]string
+	i := 0
+	if v.S != nil {
+		fields[i] = fmt.Sprintf("S: %v", *(v.S))
+		i++
+	}
+	if v.I != nil {
+		fields[i] = fmt.Sprintf("I: %v", *(v.I))
+		i++
+	}
+	if v.F != nil {
+		fields[i] = fmt.Sprintf("F: %v", *(v.F))
+		i++
+	}
+	if v.B != nil {
+		fields[i] = fmt.Sprintf("B: %v", *(v.B))
+		i++
+	}
+	if v.Raw != nil {
+		fields[i] = fmt.Sprintf("Raw: %v", v.Raw)
+		i++
+	}
+	if v.C != nil {
+		fields[i] = fmt.Sprintf("C: %v", *(v.C))
+		i++
+	}
+
+	return fmt.Sprintf("NewValue{%v}", strings.Join(fields[:i], ", "))
+}
+
+func _String_EqualsPtr(lhs, rhs *string) bool {
+	if lhs != nil && rhs != nil {
+
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func _I64_EqualsPtr(lhs, rhs *int64) bool {
+	if lhs != nil && rhs != nil {
+
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func _Double_EqualsPtr(lhs, rhs *float64) bool {
+	if lhs != nil && rhs != nil {
+
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func _Bool_EqualsPtr(lhs, rhs *bool) bool {
+	if lhs != nil && rhs != nil {
+
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+func _Byte_EqualsPtr(lhs, rhs *int8) bool {
+	if lhs != nil && rhs != nil {
+
+		x := *lhs
+		y := *rhs
+		return (x == y)
+	}
+	return lhs == nil && rhs == nil
+}
+
+// Equals returns true if all the fields of this NewValue match the
+// provided NewValue.
+//
+// This function performs a deep comparison.
+func (v *NewValue) Equals(rhs *NewValue) bool {
+	if v == nil {
+		return rhs == nil
+	} else if rhs == nil {
+		return false
+	}
+	if !_String_EqualsPtr(v.S, rhs.S) {
+		return false
+	}
+	if !_I64_EqualsPtr(v.I, rhs.I) {
+		return false
+	}
+	if !_Double_EqualsPtr(v.F, rhs.F) {
+		return false
+	}
+	if !_Bool_EqualsPtr(v.B, rhs.B) {
+		return false
+	}
+	if !((v.Raw == nil && rhs.Raw == nil) || (v.Raw != nil && rhs.Raw != nil && bytes.Equal(v.Raw, rhs.Raw))) {
+		return false
+	}
+	if !_Byte_EqualsPtr(v.C, rhs.C) {
+		return false
+	}
+
+	return true
+}
+
+// MarshalLogObject implements zapcore.ObjectMarshaler, enabling
+// fast logging of NewValue.
+func (v *NewValue) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
+	if v == nil {
+		return nil
+	}
+	if v.S != nil {
+		enc.AddString("s", *v.S)
+	}
+	if v.I != nil {
+		enc.AddInt64("i", *v.I)
+	}
+	if v.F != nil {
+		enc.AddFloat64("f", *v.F)
+	}
+	if v.B != nil {
+		enc.AddBool("b", *v.B)
+	}
+	if v.Raw != nil {
+		enc.AddString("raw", base64.StdEncoding.EncodeToString(v.Raw))
+	}
+	if v.C != nil {
+		enc.AddInt8("c", *v.C)
+	}
+	return err
+}
+
+// GetS returns the value of S if it is set or its
+// zero value if it is unset.
+func (v *NewValue) GetS() (o string) {
+	if v != nil && v.S != nil {
+		return *v.S
+	}
+
+	return
+}
+
+// IsSetS returns true if S is not nil.
+func (v *NewValue) IsSetS() bool {
+	return v != nil && v.S != nil
+}
+
+// GetI returns the value of I if it is set or its
+// zero value if it is unset.
+func (v *NewValue) GetI() (o int64) {
+	if v != nil && v.I != nil {
+		return *v.I
+	}
+
+	return
+}
+
+// IsSetI returns true if I is not nil.
+func (v *NewValue) IsSetI() bool {
+	return v != nil && v.I != nil
+}
+
+// GetF returns the value of F if it is set or its
+// zero value if it is unset.
+func (v *NewValue) GetF() (o float64) {
+	if v != nil && v.F != nil {
+		return *v.F
+	}
+
+	return
+}
+
+// IsSetF returns true if F is not nil.
+func (v *NewValue) IsSetF() bool {
+	return v != nil && v.F != nil
+}
+
+// GetB returns the value of B if it is set or its
+// zero value if it is unset.
+func (v *NewValue) GetB() (o bool) {
+	if v != nil && v.B != nil {
+		return *v.B
+	}
+
+	return
+}
+
+// IsSetB returns true if B is not nil.
+func (v *NewValue) IsSetB() bool {
+	return v != nil && v.B != nil
+}
+
+// GetRaw returns the value of Raw if it is set or its
+// zero value if it is unset.
+func (v *NewValue) GetRaw() (o []byte) {
+	if v != nil && v.Raw != nil {
+		return v.Raw
+	}
+
+	return
+}
+
+// IsSetRaw returns true if Raw is not nil.
+func (v *NewValue) IsSetRaw() bool {
+	return v != nil && v.Raw != nil
+}
+
+// GetC returns the value of C if it is set or its
+// zero value if it is unset.
+func (v *NewValue) GetC() (o int8) {
+	if v != nil && v.C != nil {
+		return *v.C
+	}
+
+	return
+}
+
+// IsSetC returns true if C is not nil.
+func (v *NewValue) IsSetC() bool {
+	return v != nil && v.C != nil
+}
+
 type Value struct {
 	S   *string  `json:"s,omitempty"`
 	I   *int64   `json:"i,omitempty"`
@@ -373,46 +977,6 @@ func (v *Value) String() string {
 	return fmt.Sprintf("Value{%v}", strings.Join(fields[:i], ", "))
 }
 
-func _String_EqualsPtr(lhs, rhs *string) bool {
-	if lhs != nil && rhs != nil {
-
-		x := *lhs
-		y := *rhs
-		return (x == y)
-	}
-	return lhs == nil && rhs == nil
-}
-
-func _I64_EqualsPtr(lhs, rhs *int64) bool {
-	if lhs != nil && rhs != nil {
-
-		x := *lhs
-		y := *rhs
-		return (x == y)
-	}
-	return lhs == nil && rhs == nil
-}
-
-func _Double_EqualsPtr(lhs, rhs *float64) bool {
-	if lhs != nil && rhs != nil {
-
-		x := *lhs
-		y := *rhs
-		return (x == y)
-	}
-	return lhs == nil && rhs == nil
-}
-
-func _Bool_EqualsPtr(lhs, rhs *bool) bool {
-	if lhs != nil && rhs != nil {
-
-		x := *lhs
-		y := *rhs
-		return (x == y)
-	}
-	return lhs == nil && rhs == nil
-}
-
 // Equals returns true if all the fields of this Value match the
 // provided Value.
 //
@@ -546,8 +1110,8 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "union_decode_relaxed",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/union_decode_relaxed",
 	FilePath: "union_decode_relaxed.thrift",
-	SHA1:     "ee2805af0b7be21cb760b00441989f8aae1725a7",
+	SHA1:     "c70cd34f1a43361232d49354b6a8b0ec6fb8666f",
 	Raw:      rawIDL,
 }
 
-const rawIDL = "union Value {\n    1: string s\n    2: i64 i\n    3: double f\n    4: bool b\n    5: binary raw\n}\n"
+const rawIDL = "union Value {\n    1: string s\n    2: i64 i\n    3: double f\n    4: bool b\n    5: binary raw\n}\n\nunion NewValue {\n    1: string s\n    2: i64 i\n    3: double f\n    4: bool b\n    5: binary raw\n    6: byte c\n}\n"
