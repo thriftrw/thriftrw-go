@@ -389,6 +389,12 @@ func (f fieldGroupGenerator) FromWire(g Generator) error {
 		// FromWire deserializes a <.Name> struct from its Thrift-level
 		// representation. The Thrift-level representation may be obtained
 		// from a ThriftRW protocol implementation.
+		<- if and .UnionDecodeRelaxed .IsUnion >
+		//
+		// FromWire handles unknown fields gracefully. If it encounters a field
+		// that the client does not recognize (e.g., a newer case added by the sender),
+		// it returns an empty union struct with no fields set.
+		<- end >
 		//
 		// An error is returned if we were unable to build a <.Name> struct
 		// from the provided intermediate representation.
@@ -579,6 +585,12 @@ func (f fieldGroupGenerator) Decode(g Generator) error {
 		<$v := newVar "v">
 		// Decode deserializes a <.Name> struct directly from its Thrift-level
 		// representation, without going through an intemediary type.
+		<- if and .UnionDecodeRelaxed .IsUnion >
+		//
+		// Decode handles unknown fields gracefully. If it encounters a field
+		// that the client does not recognize (e.g., a newer case added by the sender),
+		// it returns an empty union struct with no fields set.
+		<- end >
 		//
 		// An error is returned if a <.Name> struct could not be generated from the wire
 		// representation.

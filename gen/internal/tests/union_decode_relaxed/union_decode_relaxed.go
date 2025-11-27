@@ -106,6 +106,10 @@ func (v *NewValue) ToWire() (wire.Value, error) {
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 //
+// FromWire handles unknown fields gracefully. If it encounters a field
+// that the client does not recognize (e.g., a newer case added by the sender),
+// it returns an empty union struct with no fields set.
+//
 // An error is returned if we were unable to build a NewValue struct
 // from the provided intermediate representation.
 //
@@ -298,6 +302,10 @@ func (v *NewValue) Encode(sw stream.Writer) error {
 
 // Decode deserializes a NewValue struct directly from its Thrift-level
 // representation, without going through an intemediary type.
+//
+// Decode handles unknown fields gracefully. If it encounters a field
+// that the client does not recognize (e.g., a newer case added by the sender),
+// it returns an empty union struct with no fields set.
 //
 // An error is returned if a NewValue struct could not be generated from the wire
 // representation.
@@ -701,6 +709,10 @@ func (v *Value) ToWire() (wire.Value, error) {
 // representation. The Thrift-level representation may be obtained
 // from a ThriftRW protocol implementation.
 //
+// FromWire handles unknown fields gracefully. If it encounters a field
+// that the client does not recognize (e.g., a newer case added by the sender),
+// it returns an empty union struct with no fields set.
+//
 // An error is returned if we were unable to build a Value struct
 // from the provided intermediate representation.
 //
@@ -868,6 +880,10 @@ func (v *Value) Encode(sw stream.Writer) error {
 
 // Decode deserializes a Value struct directly from its Thrift-level
 // representation, without going through an intemediary type.
+//
+// Decode handles unknown fields gracefully. If it encounters a field
+// that the client does not recognize (e.g., a newer case added by the sender),
+// it returns an empty union struct with no fields set.
 //
 // An error is returned if a Value struct could not be generated from the wire
 // representation.
