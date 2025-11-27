@@ -3,7 +3,7 @@ union Value {
     2: i64 i
     3: double f
     4: bool b
-    5: binary raw
+    5: Value val
 }
 
 union NewValue {
@@ -11,6 +11,6 @@ union NewValue {
     2: i64 i
     3: double f
     4: bool b
-    5: binary raw
+    5: NewValue val
     6: byte c
 }

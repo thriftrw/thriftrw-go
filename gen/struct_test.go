@@ -877,6 +877,11 @@ func TestUnionDecodeRelaxed(t *testing.T) {
 			input:  ru.NewValue{C: bytep(42)},
 			output: ru.Value{},
 		},
+		{
+			desc:   "unknown value nested",
+			input:  ru.NewValue{Val: &ru.NewValue{C: bytep(42)}},
+			output: ru.Value{Val: &ru.Value{}},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.desc+"/wire", func(t *testing.T) {

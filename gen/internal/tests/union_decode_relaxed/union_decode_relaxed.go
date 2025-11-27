@@ -4,9 +4,8 @@
 package union_decode_relaxed
 
 import (
-	bytes "bytes"
-	base64 "encoding/base64"
 	fmt "fmt"
+	multierr "go.uber.org/multierr"
 	stream "go.uber.org/thriftrw/protocol/stream"
 	thriftreflect "go.uber.org/thriftrw/thriftreflect"
 	wire "go.uber.org/thriftrw/wire"
@@ -15,12 +14,12 @@ import (
 )
 
 type NewValue struct {
-	S   *string  `json:"s,omitempty"`
-	I   *int64   `json:"i,omitempty"`
-	F   *float64 `json:"f,omitempty"`
-	B   *bool    `json:"b,omitempty"`
-	Raw []byte   `json:"raw,omitempty"`
-	C   *int8    `json:"c,omitempty"`
+	S   *string   `json:"s,omitempty"`
+	I   *int64    `json:"i,omitempty"`
+	F   *float64  `json:"f,omitempty"`
+	B   *bool     `json:"b,omitempty"`
+	Val *NewValue `json:"val,omitempty"`
+	C   *int8     `json:"c,omitempty"`
 }
 
 // ToWire translates a NewValue struct into a Thrift-level intermediate
@@ -78,8 +77,8 @@ func (v *NewValue) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 4, Value: w}
 		i++
 	}
-	if v.Raw != nil {
-		w, err = wire.NewValueBinary(v.Raw), error(nil)
+	if v.Val != nil {
+		w, err = v.Val.ToWire()
 		if err != nil {
 			return w, err
 		}
@@ -100,6 +99,12 @@ func (v *NewValue) ToWire() (wire.Value, error) {
 	}
 
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _NewValue_Read(w wire.Value) (*NewValue, error) {
+	var v NewValue
+	err := v.FromWire(w)
+	return &v, err
 }
 
 // FromWire deserializes a NewValue struct from its Thrift-level
@@ -169,8 +174,8 @@ func (v *NewValue) FromWire(w wire.Value) error {
 
 			}
 		case 5:
-			if field.Value.Type() == wire.TBinary {
-				v.Raw, err = field.Value.GetBinary(), error(nil)
+			if field.Value.Type() == wire.TStruct {
+				v.Val, err = _NewValue_Read(field.Value)
 				if err != nil {
 					return err
 				}
@@ -249,11 +254,11 @@ func (v *NewValue) Encode(sw stream.Writer) error {
 		}
 	}
 
-	if v.Raw != nil {
-		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TBinary}); err != nil {
+	if v.Val != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TStruct}); err != nil {
 			return err
 		}
-		if err := sw.WriteBinary(v.Raw); err != nil {
+		if err := v.Val.Encode(sw); err != nil {
 			return err
 		}
 		if err := sw.WriteFieldEnd(); err != nil {
@@ -286,7 +291,7 @@ func (v *NewValue) Encode(sw stream.Writer) error {
 	if v.B != nil {
 		count++
 	}
-	if v.Raw != nil {
+	if v.Val != nil {
 		count++
 	}
 	if v.C != nil {
@@ -298,6 +303,12 @@ func (v *NewValue) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+func _NewValue_Decode(sr stream.Reader) (*NewValue, error) {
+	var v NewValue
+	err := v.Decode(sr)
+	return &v, err
 }
 
 // Decode deserializes a NewValue struct directly from its Thrift-level
@@ -354,8 +365,8 @@ func (v *NewValue) Decode(sr stream.Reader) error {
 				return err
 			}
 
-		case fh.ID == 5 && fh.Type == wire.TBinary:
-			v.Raw, err = sr.ReadBinary()
+		case fh.ID == 5 && fh.Type == wire.TStruct:
+			v.Val, err = _NewValue_Decode(sr)
 			if err != nil {
 				return err
 			}
@@ -415,8 +426,8 @@ func (v *NewValue) String() string {
 		fields[i] = fmt.Sprintf("B: %v", *(v.B))
 		i++
 	}
-	if v.Raw != nil {
-		fields[i] = fmt.Sprintf("Raw: %v", v.Raw)
+	if v.Val != nil {
+		fields[i] = fmt.Sprintf("Val: %v", v.Val)
 		i++
 	}
 	if v.C != nil {
@@ -499,7 +510,7 @@ func (v *NewValue) Equals(rhs *NewValue) bool {
 	if !_Bool_EqualsPtr(v.B, rhs.B) {
 		return false
 	}
-	if !((v.Raw == nil && rhs.Raw == nil) || (v.Raw != nil && rhs.Raw != nil && bytes.Equal(v.Raw, rhs.Raw))) {
+	if !((v.Val == nil && rhs.Val == nil) || (v.Val != nil && rhs.Val != nil && v.Val.Equals(rhs.Val))) {
 		return false
 	}
 	if !_Byte_EqualsPtr(v.C, rhs.C) {
@@ -527,8 +538,8 @@ func (v *NewValue) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.B != nil {
 		enc.AddBool("b", *v.B)
 	}
-	if v.Raw != nil {
-		enc.AddString("raw", base64.StdEncoding.EncodeToString(v.Raw))
+	if v.Val != nil {
+		err = multierr.Append(err, enc.AddObject("val", v.Val))
 	}
 	if v.C != nil {
 		enc.AddInt8("c", *v.C)
@@ -596,19 +607,19 @@ func (v *NewValue) IsSetB() bool {
 	return v != nil && v.B != nil
 }
 
-// GetRaw returns the value of Raw if it is set or its
+// GetVal returns the value of Val if it is set or its
 // zero value if it is unset.
-func (v *NewValue) GetRaw() (o []byte) {
-	if v != nil && v.Raw != nil {
-		return v.Raw
+func (v *NewValue) GetVal() (o *NewValue) {
+	if v != nil && v.Val != nil {
+		return v.Val
 	}
 
 	return
 }
 
-// IsSetRaw returns true if Raw is not nil.
-func (v *NewValue) IsSetRaw() bool {
-	return v != nil && v.Raw != nil
+// IsSetVal returns true if Val is not nil.
+func (v *NewValue) IsSetVal() bool {
+	return v != nil && v.Val != nil
 }
 
 // GetC returns the value of C if it is set or its
@@ -631,7 +642,7 @@ type Value struct {
 	I   *int64   `json:"i,omitempty"`
 	F   *float64 `json:"f,omitempty"`
 	B   *bool    `json:"b,omitempty"`
-	Raw []byte   `json:"raw,omitempty"`
+	Val *Value   `json:"val,omitempty"`
 }
 
 // ToWire translates a Value struct into a Thrift-level intermediate
@@ -689,8 +700,8 @@ func (v *Value) ToWire() (wire.Value, error) {
 		fields[i] = wire.Field{ID: 4, Value: w}
 		i++
 	}
-	if v.Raw != nil {
-		w, err = wire.NewValueBinary(v.Raw), error(nil)
+	if v.Val != nil {
+		w, err = v.Val.ToWire()
 		if err != nil {
 			return w, err
 		}
@@ -703,6 +714,12 @@ func (v *Value) ToWire() (wire.Value, error) {
 	}
 
 	return wire.NewValueStruct(wire.Struct{Fields: fields[:i]}), nil
+}
+
+func _Value_Read(w wire.Value) (*Value, error) {
+	var v Value
+	err := v.FromWire(w)
+	return &v, err
 }
 
 // FromWire deserializes a Value struct from its Thrift-level
@@ -772,8 +789,8 @@ func (v *Value) FromWire(w wire.Value) error {
 
 			}
 		case 5:
-			if field.Value.Type() == wire.TBinary {
-				v.Raw, err = field.Value.GetBinary(), error(nil)
+			if field.Value.Type() == wire.TStruct {
+				v.Val, err = _Value_Read(field.Value)
 				if err != nil {
 					return err
 				}
@@ -842,11 +859,11 @@ func (v *Value) Encode(sw stream.Writer) error {
 		}
 	}
 
-	if v.Raw != nil {
-		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TBinary}); err != nil {
+	if v.Val != nil {
+		if err := sw.WriteFieldBegin(stream.FieldHeader{ID: 5, Type: wire.TStruct}); err != nil {
 			return err
 		}
-		if err := sw.WriteBinary(v.Raw); err != nil {
+		if err := v.Val.Encode(sw); err != nil {
 			return err
 		}
 		if err := sw.WriteFieldEnd(); err != nil {
@@ -867,7 +884,7 @@ func (v *Value) Encode(sw stream.Writer) error {
 	if v.B != nil {
 		count++
 	}
-	if v.Raw != nil {
+	if v.Val != nil {
 		count++
 	}
 
@@ -876,6 +893,12 @@ func (v *Value) Encode(sw stream.Writer) error {
 	}
 
 	return sw.WriteStructEnd()
+}
+
+func _Value_Decode(sr stream.Reader) (*Value, error) {
+	var v Value
+	err := v.Decode(sr)
+	return &v, err
 }
 
 // Decode deserializes a Value struct directly from its Thrift-level
@@ -932,8 +955,8 @@ func (v *Value) Decode(sr stream.Reader) error {
 				return err
 			}
 
-		case fh.ID == 5 && fh.Type == wire.TBinary:
-			v.Raw, err = sr.ReadBinary()
+		case fh.ID == 5 && fh.Type == wire.TStruct:
+			v.Val, err = _Value_Decode(sr)
 			if err != nil {
 				return err
 			}
@@ -985,8 +1008,8 @@ func (v *Value) String() string {
 		fields[i] = fmt.Sprintf("B: %v", *(v.B))
 		i++
 	}
-	if v.Raw != nil {
-		fields[i] = fmt.Sprintf("Raw: %v", v.Raw)
+	if v.Val != nil {
+		fields[i] = fmt.Sprintf("Val: %v", v.Val)
 		i++
 	}
 
@@ -1015,7 +1038,7 @@ func (v *Value) Equals(rhs *Value) bool {
 	if !_Bool_EqualsPtr(v.B, rhs.B) {
 		return false
 	}
-	if !((v.Raw == nil && rhs.Raw == nil) || (v.Raw != nil && rhs.Raw != nil && bytes.Equal(v.Raw, rhs.Raw))) {
+	if !((v.Val == nil && rhs.Val == nil) || (v.Val != nil && rhs.Val != nil && v.Val.Equals(rhs.Val))) {
 		return false
 	}
 
@@ -1040,8 +1063,8 @@ func (v *Value) MarshalLogObject(enc zapcore.ObjectEncoder) (err error) {
 	if v.B != nil {
 		enc.AddBool("b", *v.B)
 	}
-	if v.Raw != nil {
-		enc.AddString("raw", base64.StdEncoding.EncodeToString(v.Raw))
+	if v.Val != nil {
+		err = multierr.Append(err, enc.AddObject("val", v.Val))
 	}
 	return err
 }
@@ -1106,19 +1129,19 @@ func (v *Value) IsSetB() bool {
 	return v != nil && v.B != nil
 }
 
-// GetRaw returns the value of Raw if it is set or its
+// GetVal returns the value of Val if it is set or its
 // zero value if it is unset.
-func (v *Value) GetRaw() (o []byte) {
-	if v != nil && v.Raw != nil {
-		return v.Raw
+func (v *Value) GetVal() (o *Value) {
+	if v != nil && v.Val != nil {
+		return v.Val
 	}
 
 	return
 }
 
-// IsSetRaw returns true if Raw is not nil.
-func (v *Value) IsSetRaw() bool {
-	return v != nil && v.Raw != nil
+// IsSetVal returns true if Val is not nil.
+func (v *Value) IsSetVal() bool {
+	return v != nil && v.Val != nil
 }
 
 // ThriftModule represents the IDL file used to generate this package.
@@ -1126,8 +1149,8 @@ var ThriftModule = &thriftreflect.ThriftModule{
 	Name:     "union_decode_relaxed",
 	Package:  "go.uber.org/thriftrw/gen/internal/tests/union_decode_relaxed",
 	FilePath: "union_decode_relaxed.thrift",
-	SHA1:     "c70cd34f1a43361232d49354b6a8b0ec6fb8666f",
+	SHA1:     "5b877c864ce795a4c47e4bbb4af77036663616e4",
 	Raw:      rawIDL,
 }
 
-const rawIDL = "union Value {\n    1: string s\n    2: i64 i\n    3: double f\n    4: bool b\n    5: binary raw\n}\n\nunion NewValue {\n    1: string s\n    2: i64 i\n    3: double f\n    4: bool b\n    5: binary raw\n    6: byte c\n}\n"
+const rawIDL = "union Value {\n    1: string s\n    2: i64 i\n    3: double f\n    4: bool b\n    5: Value val\n}\n\nunion NewValue {\n    1: string s\n    2: i64 i\n    3: double f\n    4: bool b\n    5: NewValue val\n    6: byte c\n}\n"
