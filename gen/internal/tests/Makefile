@@ -22,8 +22,8 @@ nozap: thrift/nozap.thrift $(THRIFTRW)
 enum-text-marshal-strict: thrift/enum-text-marshal-strict.thrift $(THRIFTRW)
 	$(THRIFTRW) $(THRIFTRW_FLAGS) --no-recurse --enum-text-marshal-strict $<
 
+union_decode_relaxed: thrift/union_decode_relaxed.thrift $(THRIFTRW)
+	$(THRIFTRW) $(THRIFTRW_FLAGS) --no-recurse --union-decode-relaxed $<
+
 %: thrift/%.thrift $(THRIFTRW)
 	$(THRIFTRW) $(THRIFTRW_FLAGS) $<
-
-union-decode-relaxed: thrift/union_decode_relaxed.thrift $(THRIFTRW)
-	$(THRIFTRW) $(THRIFTRW_FLAGS) --no-recurse --union-decode-relaxed $<
