@@ -61,7 +61,7 @@ type genOptions struct {
 	NoZap                 bool   `long:"no-zap" description:"Do not generate code for Zap logging."`
 	OutputFile            string `long:"output-file" value-name:"FILENAME" description:"Generates a single .go file as an output. Specifying an OutputFile prevents code generation for included Thrift Files."`
 	EnumTextMarshalStrict bool   `long:"enum-text-marshal-strict" hidden:"true" description:"Generate code to throw error on trying to marshal unknown enum"`
-	UnionDecodeRelaxed    bool   `long:"union-decode-relaxed" hidden:"true" description:"Setting this flag to true enables a flexible union decoding mode that permits unknown values and returns an empty union struct in such cases."`
+	UnionDecodeRelaxed    bool   `long:"union-decode-relaxed" hidden:"true" description:"Setting this flag to true enables a flexible union decoding mode that permits unknown values and returns an empty union struct in such cases. The returned empty union cannot be re-encoded."`
 	// Eventually we would want thriftrw to default to union-decode-relaxed mode. But this requires careful migration by clients to avoid null pointer dereferences on empty union struct.
 
 	// TODO(abg): Detailed help with examples of --thrift-root, --pkg-prefix,
