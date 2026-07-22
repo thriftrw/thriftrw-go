@@ -36,10 +36,11 @@ type Module struct {
 	// Mapping from the /Thrift name/ to the compiled representation of
 	// different definitions.
 
-	Includes  map[string]*IncludedModule
-	Constants map[string]*Constant
-	Types     map[string]TypeSpec
-	Services  map[string]*ServiceSpec
+	Includes   map[string]*IncludedModule
+	Constants  map[string]*Constant
+	Types      map[string]TypeSpec
+	Services   map[string]*ServiceSpec
+	Namespaces map[string]string
 
 	Raw []byte // The raw IDL input.
 }

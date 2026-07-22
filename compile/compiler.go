@@ -145,6 +145,7 @@ func (c compiler) load(p string) (*Module, error) {
 		Constants:  make(map[string]*Constant),
 		Types:      make(map[string]TypeSpec),
 		Services:   make(map[string]*ServiceSpec),
+		Namespaces: make(map[string]string),
 	}
 
 	m.Raw = s
@@ -174,6 +175,10 @@ func (c compiler) gather(m *Module, prog *ast.Program) error {
 
 	// Process all included modules first.
 	for _, h := range prog.Headers {
+		if ns, ok := h.(*ast.Namespace); ok {
+			m.Namespaces[ns.Scope] = ns.Name
+			continue
+		}
 		header, ok := h.(*ast.Include)
 		if !ok {
 			continue
