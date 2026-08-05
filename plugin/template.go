@@ -30,6 +30,7 @@ import (
 	"text/template"
 
 	"go.uber.org/thriftrw/internal/goast"
+	"go.uber.org/thriftrw/internal/gocase"
 	"go.uber.org/thriftrw/internal/gotype"
 	"go.uber.org/thriftrw/plugin/api"
 
@@ -221,6 +222,7 @@ func (g *goFileGenerator) Generate(filename, tmpl string, data interface{}) ([]b
 	funcs := template.FuncMap{
 		"import":     g.Import,
 		"formatType": g.FormatType,
+		"goCase":     gocase.GoCase,
 	}
 	for k, v := range g.templateFuncs {
 		funcs[k] = v
@@ -296,6 +298,13 @@ func (g *goFileGenerator) Generate(filename, tmpl string, data interface{}) ([]b
 // assumed to be available in the same package.
 //
 //	var value <formatType .Type>
+//
+// goCase: Converts a Thrift identifier into a PascalCase Go identifier,
+// applying the same naming rules that thriftrw uses when generating Go code.
+// Known initialisms (ID, UUID, HTTP, ...) are uppercased. Use this to
+// reference thriftrw-generated types and fields from plugin templates.
+//
+//	func (t *<goCase $svc.Name>_<goCase $fn.Name>_Args) MyMethod() { ... }
 //
 // More functions may be added to the template using the TemplateFunc template
 // option. If the name of a TemplateFunc conflicts with a pre-defined function,
