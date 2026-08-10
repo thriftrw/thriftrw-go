@@ -11,6 +11,7 @@ STATICCHECK = $(GOBIN)/staticcheck
 LINT_EXCLUDES = \
 	gen/internal/tests/ \
 	gen/string.go \
+	internal/gocase/gocase.go \
 	idl/internal/lex.go \
 	idl/internal/y.go \
 	plugin/api/plugin.go \
