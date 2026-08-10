@@ -340,6 +340,23 @@ func TestGoFileFromTemplate(t *testing.T) {
 				`var foo map[string]struct{} = nil`,
 			),
 		},
+		{
+			desc: "goCase built-in",
+			template: `
+				package foo
+
+				func (t *<goCase "my_service">_<goCase "get_value">_Args) ActorUUID() string {
+					return t.Get<goCase "actor_uuid">()
+				}
+			`,
+			wantBody: unlines(
+				`package foo`,
+				``,
+				`func (t *MyService_GetValue_Args) ActorUUID() string {`,
+				`	return t.GetActorUUID()`,
+				`}`,
+			),
+		},
 	}
 
 	for _, tt := range tests {
