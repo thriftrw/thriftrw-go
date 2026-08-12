@@ -85,6 +85,40 @@ func (p *Pass) typ(from, to compile.TypeSpec, file string) {
 		}
 		p.structSpecs(f, t, file)
 	}
+
+	if f, ok := from.(*compile.EnumSpec); ok {
+		t, _ := to.(*compile.EnumSpec)
+		// TODO: should we flag if enum was deleted?
+		p.enumSpecs(f, t, file)
+	}
+}
+
+func (p *Pass) enumSpecs(from, to *compile.EnumSpec, file string) {
+	fromValues := make(map[string]int32)
+	for _, v := range from.Items {
+		fromValues[v.Name] = v.Value
+	}
+
+	toValues := make(map[string]struct{})
+	for _, v := range to.Items {
+		toValues[v.Name] = struct{}{}
+		if oldValue, ok := fromValues[v.Name]; ok && oldValue != v.Value {
+			p.Report(Diagnostic{
+				FilePath: file,
+				Message:  fmt.Sprintf("changing numeric value of enum constant %q in enum %q from %d to %d", v.Name, from.ThriftName(), oldValue, v.Value),
+			})
+		}
+	}
+
+	// Check for removed values
+	for name, _ := range fromValues {
+		if _, exists := toValues[name]; !exists {
+			p.Report(Diagnostic{
+				FilePath: file,
+				Message:  fmt.Sprintf("removing enum value %q from enum %q", name, from.Name),
+			})
+		}
+	}
 }
 
 func (p *Pass) requiredField(fromField, toField *compile.FieldSpec, to *compile.StructSpec, file string) {
