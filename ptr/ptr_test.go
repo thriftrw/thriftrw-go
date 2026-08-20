@@ -18,40 +18,47 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Package ptr provides helpers to convert basic types to pointers.
 package ptr
 
-// Bool converts a bool to a pointer
-func Bool(x bool) *bool {
-	return &x
-}
+import (
+	"testing"
 
-// Int8 converts an int8 to a pointer
-func Int8(x int8) *int8 {
-	return &x
-}
+	"github.com/stretchr/testify/assert"
+)
 
-// Int16 converts an int16 to a pointer
-func Int16(x int16) *int16 {
-	return &x
-}
+func TestPtrHelpers(t *testing.T) {
+	t.Run("Bool", func(t *testing.T) {
+		assert.Equal(t, true, *Bool(true))
+		assert.Equal(t, false, *Bool(false))
+	})
 
-// Int32 converts an int32 to a pointer
-func Int32(x int32) *int32 {
-	return &x
-}
+	t.Run("Int8", func(t *testing.T) {
+		val := int8(42)
+		assert.Equal(t, val, *Int8(val))
+	})
 
-// Int64 converts an int64 to a pointer
-func Int64(x int64) *int64 {
-	return &x
-}
+	t.Run("Int16", func(t *testing.T) {
+		val := int16(42)
+		assert.Equal(t, val, *Int16(val))
+	})
 
-// Float64 converts a float64 to a pointer
-func Float64(x float64) *float64 {
-	return &x
-}
+	t.Run("Int32", func(t *testing.T) {
+		val := int32(42)
+		assert.Equal(t, val, *Int32(val))
+	})
 
-// String converts a string to a pointer
-func String(x string) *string {
-	return &x
+	t.Run("Int64", func(t *testing.T) {
+		val := int64(42)
+		assert.Equal(t, val, *Int64(val))
+	})
+
+	t.Run("Float64", func(t *testing.T) {
+		val := 3.14159
+		assert.Equal(t, val, *Float64(val))
+	})
+
+	t.Run("String", func(t *testing.T) {
+		val := "hello"
+		assert.Equal(t, val, *String(val))
+	})
 }
