@@ -17,6 +17,18 @@ import (
 	strings "strings"
 )
 
+func _EnumJSON_IsPlainString(b []byte) bool {
+	if len(b) < 2 || b[0] != '"' || b[len(b)-1] != '"' {
+		return false
+	}
+	for _, c := range b[1 : len(b)-1] {
+		if c < 0x20 || c > 0x7e || c == '"' || c == '\\' {
+			return false
+		}
+	}
+	return true
+}
+
 type EmptyEnum int32
 
 // EmptyEnum_Values returns all recognized values of EmptyEnum.
@@ -147,6 +159,10 @@ func (v EmptyEnum) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *EmptyEnum) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
@@ -359,6 +375,10 @@ func (v EnumDefault) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *EnumDefault) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
@@ -649,6 +669,10 @@ func (v EnumWithDuplicateName) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *EnumWithDuplicateName) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
@@ -853,6 +877,10 @@ func (v EnumWithDuplicateValues) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *EnumWithDuplicateValues) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
@@ -1065,6 +1093,10 @@ func (v EnumWithHexValues) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *EnumWithHexValues) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
@@ -1316,6 +1348,10 @@ func (v EnumWithLabel) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *EnumWithLabel) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
@@ -1528,6 +1564,10 @@ func (v EnumWithValues) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *EnumWithValues) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
@@ -1748,6 +1788,10 @@ func (v RecordType) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *RecordType) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
@@ -1947,6 +1991,10 @@ func (v RecordTypeValues) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *RecordTypeValues) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
@@ -2391,6 +2439,10 @@ func (v LowerCaseEnum) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *LowerCaseEnum) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()

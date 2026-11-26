@@ -311,6 +311,10 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 			<- $d := newVar "d" ->
 			<- $t := newVar "t" ->
 
+			if <enumIsPlainJSONString>(<$text>) {
+				return <$v>.UnmarshalText(<$text>[1 : len(<$text>)-1])
+			}
+
 			<$d> := <$json>.NewDecoder(<$bytes>.NewReader(<$text>))
 			<$d>.UseNumber()
 			<$t>, err := <$d>.Token()
@@ -350,6 +354,7 @@ func enum(g Generator, spec *compile.EnumSpec) error {
 		TemplateFunc("enumItemLabelName", entityLabel),
 		TemplateFunc("checkNoZap", checkNoZap),
 		TemplateFunc("checkEnumTextMarshalStrict", checkEnumTextMarshalStrict),
+		TemplateFunc("enumIsPlainJSONString", enumIsPlainJSONString),
 	)
 
 	return wrapGenerateError(spec.Name, err)
@@ -399,4 +404,25 @@ func enumUniqueItems(items []compile.EnumItem) []compile.EnumItem {
 		used[i.Value] = struct{}{}
 	}
 	return filtered
+}
+
+func enumIsPlainJSONString(g Generator) (string, error) {
+	const name = "_EnumJSON_IsPlainString"
+	err := g.EnsureDeclared(
+		`
+		func <.>(b []byte) bool {
+			if len(b) <"<"> 2 || b[0] != '"' || b[len(b)-1] != '"' {
+				return false
+			}
+			for _, c := range b[1 : len(b)-1] {
+				if c <"<"> 0x20 || c <">"> 0x7e || c == '"' || c == '\\' {
+					return false
+				}
+			}
+			return true
+		}
+		`,
+		name,
+	)
+	return name, err
 }

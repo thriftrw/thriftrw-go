@@ -704,6 +704,18 @@ func (lhs LittlePotatoe) Equals(rhs LittlePotatoe) bool {
 	return ((int64)(lhs) == (int64)(rhs))
 }
 
+func _EnumJSON_IsPlainString(b []byte) bool {
+	if len(b) < 2 || b[0] != '"' || b[len(b)-1] != '"' {
+		return false
+	}
+	for _, c := range b[1 : len(b)-1] {
+		if c < 0x20 || c > 0x7e || c == '"' || c == '\\' {
+			return false
+		}
+	}
+	return true
+}
+
 type MyEnum int32
 
 const (
@@ -914,6 +926,10 @@ func (v MyEnum) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *MyEnum) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
@@ -2727,6 +2743,10 @@ func (v MyEnum2) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *MyEnum2) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
