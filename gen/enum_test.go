@@ -23,6 +23,7 @@ package gen
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -677,6 +678,37 @@ func TestEnumLabelConflict(t *testing.T) {
 		t.Run(tt.desc, func(t *testing.T) {
 			err := enum(nil /* generator */, &tt.spec)
 			assert.Contains(t, err.Error(), tt.wantErr)
+		})
+	}
+}
+
+func TestEnumUnmarshalJSONPlainString(t *testing.T) {
+	for _, s := range []string{
+		`"Bar"`, `"B\u0061r"`, `"Bar" "Baz"`, `Bar"`, `"Bar`, `"`, "\"Bar\n\"", "\"Bar\xff\"",
+	} {
+		var got, want te.EnumDefault
+		tok, wantErr := json.NewDecoder(strings.NewReader(s)).Token()
+		if wantErr == nil {
+			wantErr = want.UnmarshalText([]byte(tok.(string)))
+		}
+		assert.Equal(t, wantErr, got.UnmarshalJSON([]byte(s)), s)
+		assert.Equal(t, want, got, s)
+	}
+
+	text := []byte(`"Bar"`)
+	var v te.EnumDefault
+	assert.LessOrEqual(t, testing.AllocsPerRun(10, func() { _ = v.UnmarshalJSON(text) }), 1.0)
+}
+
+func BenchmarkEnumUnmarshalJSON(b *testing.B) {
+	for _, s := range []string{`"hashed_password"`, `"unknown"`, `"hashed\u005fpassword"`, `4`} {
+		b.Run(s, func(b *testing.B) {
+			text := []byte(s)
+			b.ReportAllocs()
+			for i := 0; i < b.N; i++ {
+				var v te.EnumWithLabel
+				_ = v.UnmarshalJSON(text)
+			}
 		})
 	}
 }

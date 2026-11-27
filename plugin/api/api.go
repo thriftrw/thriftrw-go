@@ -569,6 +569,18 @@ func (v *Argument) IsSetAnnotations() bool {
 	return v != nil && v.Annotations != nil
 }
 
+func _EnumJSON_IsPlainString(b []byte) bool {
+	if len(b) < 2 || b[0] != '"' || b[len(b)-1] != '"' {
+		return false
+	}
+	for _, c := range b[1 : len(b)-1] {
+		if c < 0x20 || c > 0x7e || c == '"' || c == '\\' {
+			return false
+		}
+	}
+	return true
+}
+
 // Feature is a functionality offered by a ThriftRW plugin.
 type Feature int32
 
@@ -733,6 +745,10 @@ func (v Feature) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *Feature) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
@@ -5092,6 +5108,10 @@ func (v SimpleType) MarshalJSON() ([]byte, error) {
 //
 // This implements json.Unmarshaler.
 func (v *SimpleType) UnmarshalJSON(text []byte) error {
+	if _EnumJSON_IsPlainString(text) {
+		return v.UnmarshalText(text[1 : len(text)-1])
+	}
+
 	d := json.NewDecoder(bytes.NewReader(text))
 	d.UseNumber()
 	t, err := d.Token()
